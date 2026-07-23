@@ -33,8 +33,30 @@ import {
   supportReplyBatchGovernance,
   productReviewGovernance,
   securitySecureAccountGovernance,
+  studioProposalSendGovernance,
+  studioDeployApproveGovernance,
+  studioJobCancelGovernance,
+  studioJobBudgetIncreaseGovernance,
+  studioJobPauseGovernance,
+  studioJobResumeGovernance,
+  studioClientReplyGovernance,
   type FounderActionGovernance,
 } from "./action-governance";
+import {
+  applyStudioClientReply,
+  applyStudioDeployApprove,
+  applyStudioJobBudgetIncrease,
+  applyStudioJobCancel,
+  applyStudioJobHold,
+  applyStudioProposalSend,
+  readStudioJobForBudgetIncrease,
+  readStudioJobForCancel,
+  readStudioJobForDeployApprove,
+  readStudioJobForHold,
+  readStudioProjectForReply,
+  readStudioProposalForSend,
+} from "@/lib/studio-agency-write";
+import { formatNairaFromKobo } from "./studio-agency-model";
 
 /**
  * Founder Intelligence F3 — THE closed write-action catalog.
@@ -579,6 +601,141 @@ const secureAccount: FounderActionEntry = {
   entityType: "customer_account",
 };
 
+// ── Tranche 3 — SA-4 studio-agency operator actions ──────────────────────────
+// Bindings are hub-local service-role mirrors of the studio console's guarded
+// writes (lib/studio-agency-write.ts); the DB transition trigger + write-once
+// approved_artifact_hash are the second wall. All dark until
+// FOUNDER_ACTIONS_TRANCHE>=3 and null-carded until STUDIO_AGENCY_LIVE=1
+// (every reader checks the agency flag first).
+
+// ── Entry 11: release a held studio proposal (SA-D5 one-tap release) ─────────
+const studioProposalSend: FounderActionEntry = {
+  ...studioProposalSendGovernance,
+  title: "Send a reviewed studio proposal to the client",
+  trueStateReader: async ({ params }) => readStudioProposalForSend(params.proposalId as string),
+  confirmationCopy: (trueState) => ({
+    title: "Send this proposal",
+    body: `Release "${String(trueState.title)}" to the client. They see it in their portal immediately — a sent proposal cannot be unsent.`,
+    confirmLabel: "Send proposal",
+  }),
+  executionBinding: async ({ trueState, ownerId }) =>
+    applyStudioProposalSend({ proposalId: String(trueState.proposalId), actorId: ownerId }),
+  auditAction: "founder.owner.studio.proposal.send",
+  entityType: "studio_proposal",
+};
+
+// ── Entry 12: approve a build for production deploy (HARD GATE, reauth) ──────
+const studioDeployApprove: FounderActionEntry = {
+  ...studioDeployApproveGovernance,
+  title: "Approve a studio build for production deploy",
+  trueStateReader: async ({ params }) => readStudioJobForDeployApprove(params.jobId as string),
+  confirmationCopy: (trueState) => ({
+    title: `Approve deploy — ${String(trueState.projectTitle)}`,
+    body: `Approve this reviewed build for production. The deploy is pinned to the exact build you are approving (${String(trueState.artifactHash).slice(0, 12)}…) — a later change can never ship under this approval. Spend so far ${formatNairaFromKobo(Number(trueState.costKobo))} of ${formatNairaFromKobo(Number(trueState.budgetKobo))}.`,
+    confirmLabel: "Approve deploy",
+  }),
+  executionBinding: async ({ trueState, ownerId }) =>
+    applyStudioDeployApprove({
+      jobId: String(trueState.jobId),
+      artifactHash: String(trueState.artifactHash),
+      actorId: ownerId,
+    }),
+  auditAction: "founder.owner.studio.deploy.approve",
+  entityType: "studio_build_job",
+};
+
+// ── Entry 13: cancel a build job (reauth — refund policy follows) ────────────
+const studioJobCancel: FounderActionEntry = {
+  ...studioJobCancelGovernance,
+  title: "Cancel a studio build job",
+  trueStateReader: async ({ params }) => readStudioJobForCancel(params.jobId as string),
+  confirmationCopy: (trueState) => ({
+    title: `Cancel build — ${String(trueState.projectTitle)}`,
+    body: `Stop this build job (currently ${String(trueState.stage).replace(/_/g, " ")}). Nothing ships; any refund follows the standard policy through the existing rails. This cannot be undone for this job.`,
+    confirmLabel: "Cancel the job",
+  }),
+  executionBinding: async ({ trueState, ownerId }) =>
+    applyStudioJobCancel({ jobId: String(trueState.jobId), actorId: ownerId }),
+  auditAction: "founder.owner.studio.job.cancel",
+  entityType: "studio_build_job",
+};
+
+// ── Entry 14: raise a job's cost envelope (money-adjacent, reauth) ───────────
+const studioJobBudgetIncrease: FounderActionEntry = {
+  ...studioJobBudgetIncreaseGovernance,
+  title: "Raise a build job's cost envelope",
+  trueStateReader: async ({ params }) =>
+    readStudioJobForBudgetIncrease(params.jobId as string, params.step as "10" | "25" | "50"),
+  confirmationCopy: (trueState) => ({
+    title: `Raise the envelope — ${String(trueState.projectTitle)}`,
+    body: `Raise this job's cost envelope by ${String(trueState.step)}%: ${formatNairaFromKobo(Number(trueState.budgetKobo))} → ${formatNairaFromKobo(Number(trueState.newBudgetKobo))} (computed by the server from the preset step). Spend so far ${formatNairaFromKobo(Number(trueState.costKobo))}. A stalled job resumes on the new envelope.`,
+    confirmLabel: "Raise envelope",
+  }),
+  executionBinding: async ({ trueState, ownerId }) =>
+    applyStudioJobBudgetIncrease({
+      jobId: String(trueState.jobId),
+      step: String(trueState.step) as "10" | "25" | "50",
+      actorId: ownerId,
+    }),
+  auditAction: "founder.owner.studio.job.budget_increase",
+  entityType: "studio_build_job",
+};
+
+// ── Entry 15/16: pause / resume a job (claim-hold, reversible) ───────────────
+const studioJobPause: FounderActionEntry = {
+  ...studioJobPauseGovernance,
+  title: "Pause a studio build job",
+  trueStateReader: async ({ params }) => readStudioJobForHold(params.jobId as string, "pause"),
+  confirmationCopy: (trueState) => ({
+    title: `Pause build — ${String(trueState.projectTitle)}`,
+    body: `Hold this job where it is (${String(trueState.stage).replace(/_/g, " ")}). The orchestrator will not touch it — including stall watching — until you resume it.`,
+    confirmLabel: "Pause the job",
+  }),
+  executionBinding: async ({ trueState, ownerId }) =>
+    applyStudioJobHold({ jobId: String(trueState.jobId), intent: "pause", actorId: ownerId }),
+  auditAction: "founder.owner.studio.job.pause",
+  entityType: "studio_build_job",
+};
+
+const studioJobResume: FounderActionEntry = {
+  ...studioJobResumeGovernance,
+  title: "Resume a paused studio build job",
+  trueStateReader: async ({ params }) => readStudioJobForHold(params.jobId as string, "resume"),
+  confirmationCopy: (trueState) => ({
+    title: `Resume build — ${String(trueState.projectTitle)}`,
+    body: `Release the hold on this job (${String(trueState.stage).replace(/_/g, " ")}). The orchestrator picks it back up on its next pass.`,
+    confirmLabel: "Resume the job",
+  }),
+  executionBinding: async ({ trueState, ownerId }) =>
+    applyStudioJobHold({ jobId: String(trueState.jobId), intent: "resume", actorId: ownerId }),
+  auditAction: "founder.owner.studio.job.resume",
+  entityType: "studio_build_job",
+};
+
+// ── Entry 17: send an AI-drafted reply into a client project thread ──────────
+const studioClientReply: FounderActionEntry = {
+  ...studioClientReplyGovernance,
+  title: "Reply in a studio client's project thread",
+  trueStateReader: async ({ params }) => {
+    const state = await readStudioProjectForReply(params.projectId as string);
+    if (!state) return null;
+    return { ...state, body: params.body as string };
+  },
+  confirmationCopy: (trueState) => ({
+    title: `Reply to ${String(trueState.projectTitle)}`,
+    body: `Send this to the client's project thread (it is contact-safety screened, and it cannot be unsent):\n\n"${String(trueState.body)}"`,
+    confirmLabel: "Send the reply",
+  }),
+  executionBinding: async ({ trueState, ownerId }) =>
+    applyStudioClientReply({
+      projectId: String(trueState.projectId),
+      body: String(trueState.body),
+      actorId: ownerId,
+    }),
+  auditAction: "founder.owner.studio.client.reply",
+  entityType: "studio_project",
+};
+
 export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [brandSettingsUpdate.key]: brandSettingsUpdate,
   [staffStatusToggle.key]: staffStatusToggle,
@@ -590,6 +747,13 @@ export const FOUNDER_ACTION_CATALOG: Record<string, FounderActionEntry> = {
   [supportReplyBatch.key]: supportReplyBatch,
   [productReview.key]: productReview,
   [secureAccount.key]: secureAccount,
+  [studioProposalSend.key]: studioProposalSend,
+  [studioDeployApprove.key]: studioDeployApprove,
+  [studioJobCancel.key]: studioJobCancel,
+  [studioJobBudgetIncrease.key]: studioJobBudgetIncrease,
+  [studioJobPause.key]: studioJobPause,
+  [studioJobResume.key]: studioJobResume,
+  [studioClientReply.key]: studioClientReply,
 };
 
 /** Own-property lookup (prototype-key probes resolve to undefined). */

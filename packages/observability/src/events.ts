@@ -126,6 +126,17 @@ export type HenryEventName =
   | "henry.studio.build.decision_queued"
   | "henry.studio.build.client_reviewed"
   | "henry.studio.build.aftercare_scheduled"
+  // studio Owner-AI operator (SA-4) — the digital-executive spine. The operator
+  // tick runs while the owner is offline: it reads durable job/decision state,
+  // raises consequential one-tap proposals into the founder inbox, and escalates
+  // urgent conditions. Payloads carry ids + counts + outcome only — never the
+  // spec, client PII, provider/model, or money amounts. `action` fires when an
+  // owner.studio.* one-tap executes (approve deploy, cancel, budget increase,
+  // send proposal, reply, pause/resume) with its outcome.
+  | "henry.studio.operator.tick"
+  | "henry.studio.operator.proposal_raised"
+  | "henry.studio.operator.escalated"
+  | "henry.studio.operator.action"
   // gaming arena (V3-GAMING-01) — free-play match lifecycle. No money/PII in
   // payloads: game id, hashed actor ids, and PII-free outcome only.
   | "henry.gaming.match.created"

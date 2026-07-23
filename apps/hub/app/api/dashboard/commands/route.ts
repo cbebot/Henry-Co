@@ -38,6 +38,7 @@ const OWNER_COMMANDS: WireCommand[] = [
   { id: "nav-operations-approvals", source: "navigation", label: "Approval center", kicker: "Operations", groupLabel: "Navigation", href: "/owner/operations/approvals", keywords: ["approval", "decision", "queue", "review", "vendor", "dispute"], shortcut: null, recencyAt: null },
   { id: "nav-operations-alerts", source: "navigation", label: "Operational alerts", kicker: "Operations", groupLabel: "Navigation", href: "/owner/operations/alerts", keywords: ["alerts", "warnings", "critical", "support"], shortcut: null, recencyAt: null },
   { id: "nav-operations-queues", source: "navigation", label: "Operations queues", kicker: "Operations", groupLabel: "Navigation", href: "/owner/operations/queues", keywords: ["queue", "backlog", "tasks", "pending"], shortcut: null, recencyAt: null },
+  { id: "nav-operations-decisions", source: "navigation", label: "Operator decisions inbox", kicker: "Operations", groupLabel: "Navigation", href: "/owner/operations/decisions", keywords: ["decision", "operator", "studio", "agency", "deploy", "approve", "inbox"], shortcut: null, recencyAt: null },
 
   // --- AI & Intelligence ---
   { id: "nav-ai", source: "navigation", label: "Henry Onyx Intelligence", kicker: "AI", groupLabel: "Navigation", href: "/owner/ai", keywords: ["ai", "intelligence", "assistant", "helper"], shortcut: null, recencyAt: null },

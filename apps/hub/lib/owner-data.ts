@@ -24,6 +24,11 @@ import {
   type ThreatLogRow,
   type ThreatDeviceRow,
 } from "@/lib/security/threat-signals";
+import {
+  isStudioAgencyLiveHub,
+  listAgencyJobs,
+  listProposalsInReview,
+} from "@/lib/studio-agency-read";
 
 export type {
   WorkforceMember,
@@ -2102,6 +2107,12 @@ export type FounderActionQueue = {
   vendorApplications: Array<{ id: string; store: string; email: string }>;
   kycSubmissions: Array<{ id: string; docType: string; user: string }>;
   productReviews: Array<{ id: string; title: string }>;
+  // SA-4 — the studio-agency operator queue. Empty while STUDIO_AGENCY_LIVE is
+  // dark (the flag check lives in getFounderActionQueue, so a dark agency is
+  // invisible to the model). Proposals held at the SA-D5 review gate + build
+  // jobs waiting on the owner's reauth-gated deploy tap.
+  pendingStudioProposals: Array<{ id: string; title: string }>;
+  studioJobsAwaitingOwner: Array<{ id: string; stage: string }>;
 };
 
 /**
@@ -2119,7 +2130,8 @@ export type FounderActionQueue = {
  * so a schema gap quietly drops a category rather than erroring the turn.
  */
 export async function getFounderActionQueue(): Promise<FounderActionQueue> {
-  const [threads, vendors, kyc, products] = await Promise.all([
+  const agencyLive = isStudioAgencyLiveHub();
+  const [threads, vendors, kyc, products, studioProposals, studioJobs] = await Promise.all([
     safeSelect("support_threads", "id, user_id, subject, division, status", {
       orderBy: "updated_at",
       ascending: false,
@@ -2132,6 +2144,11 @@ export async function getFounderActionQueue(): Promise<FounderActionQueue> {
     }),
     safeSelect("customer_verification_submissions", "id, user_id, document_type, status", { limit: 40 }),
     safeSelect("marketplace_products", "id, title, approval_status, vendor_id", { limit: 60 }),
+    // SA-4: dark agency = empty arrays = invisible to the model.
+    agencyLive ? listProposalsInReview(6) : Promise.resolve([]),
+    agencyLive
+      ? listAgencyJobs({ stages: ["owner_review", "approved_for_deploy", "stalled"], limit: 12 })
+      : Promise.resolve([]),
   ]);
 
   const isOpen = (status: string) => {
@@ -2197,6 +2214,12 @@ export async function getFounderActionQueue(): Promise<FounderActionQueue> {
       .filter((p) => isPending(toText(p.approval_status)))
       .slice(0, 6)
       .map((p) => ({ id: toText(p.id), title: toText(p.title) || "a product" })),
+    pendingStudioProposals: studioProposals
+      .slice(0, 6)
+      .map((p) => ({ id: p.id, title: p.title || "a proposal" })),
+    studioJobsAwaitingOwner: studioJobs
+      .slice(0, 6)
+      .map((j) => ({ id: j.id, stage: j.stage })),
   };
 }
 
