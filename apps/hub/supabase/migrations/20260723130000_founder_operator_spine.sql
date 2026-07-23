@@ -37,20 +37,31 @@ set check_function_bodies = off;
 
 -- ─────────────────────────────────────────────────────────────────────
 -- 1. Server-initiated proposals — origin + per-origin lifetime
+--    Guarded by table existence: the runbook applies the base
+--    founder_action_proposals migration (20260710160000) first, but the guard
+--    makes this spine safe to run standalone (it no-ops the origin add rather
+--    than aborting on a prod that has not yet applied the founder stack).
 -- ─────────────────────────────────────────────────────────────────────
-alter table public.founder_action_proposals
-  add column if not exists origin text not null default 'chat'
-    check (origin in ('chat', 'operator'));
+do $$
+begin
+  if to_regclass('public.founder_action_proposals') is not null then
+    alter table public.founder_action_proposals
+      add column if not exists origin text not null default 'chat'
+        check (origin in ('chat', 'operator'));
 
-comment on column public.founder_action_proposals.origin is
-  'SA-4 — who raised this proposal: ''chat'' (born inside an owner chat turn, '
-  '15-min viewing TTL) or ''operator'' (raised by the offline operator tick; '
-  'lives until acted on or superseded — the confirm route re-reads true state '
-  'via driftKeys, so a long-lived row is never trusted as authority).';
+    comment on column public.founder_action_proposals.origin is
+      'SA-4 — who raised this proposal: ''chat'' (born inside an owner chat turn, '
+      '15-min viewing TTL) or ''operator'' (raised by the offline operator tick; '
+      'lives until acted on or superseded — the confirm route re-reads true state '
+      'via driftKeys, so a long-lived row is never trusted as authority).';
 
--- The decisions-inbox read: pending operator proposals for an owner, newest first.
-create index if not exists founder_action_proposals_operator_inbox_idx
-  on public.founder_action_proposals (user_id, origin, status, created_at desc);
+    -- The decisions-inbox read: pending operator proposals for an owner, newest first.
+    create index if not exists founder_action_proposals_operator_inbox_idx
+      on public.founder_action_proposals (user_id, origin, status, created_at desc);
+  else
+    raise notice 'founder_action_proposals absent — apply 20260710160000 first; origin column skipped';
+  end if;
+end $$;
 
 -- ─────────────────────────────────────────────────────────────────────
 -- 2. ai_operator_spend_ledger — the operator's daily internal-spend counter

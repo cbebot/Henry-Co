@@ -170,3 +170,12 @@ test("SA-4 pin: the confirm route runs reauth BEFORE the CAS claim (challenged p
   assert.ok(reauthIdx > 0 && claimIdx > 0, "both steps must exist");
   assert.ok(reauthIdx < claimIdx, "reauth must precede the CAS claim");
 });
+
+test("SA-4 pin: the confirm route re-gates EXECUTE on the live tranche (a darkened tranche is a real kill-switch)", () => {
+  const src = read("../../../app/api/owner/intelligence/actions/confirm/route.ts");
+  assert.match(src, /entry\.tranche > liveTranche\(\)/, "execute must re-check the tranche gate");
+  // The gate must sit before the execution binding is invoked.
+  const gateIdx = src.indexOf("entry.tranche > liveTranche()");
+  const execIdx = src.indexOf("entry.executionBinding(");
+  assert.ok(gateIdx > 0 && execIdx > 0 && gateIdx < execIdx, "the tranche gate must precede execute");
+});
