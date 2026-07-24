@@ -15,6 +15,12 @@ import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 import { writeAuditLog } from "@henryco/observability/audit-log";
 import { emitEvent } from "@henryco/observability/events";
 import {
+  acquireWorkflowLock,
+  LOCK_KEYS,
+  releaseWorkflowLock,
+  workflowLockStore,
+} from "@henryco/workflow";
+import {
   checkTransition,
   isActiveStage,
   type BuildStage,
@@ -252,36 +258,37 @@ export async function releaseJobClaim(jobId: string): Promise<void> {
 export const TICK_LOCK_TTL_SECONDS = 90;
 
 /**
- * Acquire the single-flight tick lock (CAS on the sentinel row's expiry). Returns
+ * Acquire the single-flight tick lock (CAS on the lock row's expiry). Returns
  * true only when this worker won — a concurrent/overlapping cron run gets false
  * and must no-op. This is what makes the daily-ceiling reservation hold ACROSS
  * ticks (not just within one): serialized ticks each read a fresh spend baseline.
  * PostgREST-safe (a plain conditional UPDATE, not a session advisory lock).
+ *
+ * V3-43: the backing table is now the ONE consolidated `workflow_locks` primitive
+ * (key 'studio.agency.tick'), reached through @henryco/workflow. The CAS
+ * semantics are byte-identical to the retired studio_agency_tick_lock sentinel;
+ * a broken lock store degrades CLOSED (returns false → tick no-ops).
  */
 export async function acquireTickLock(worker: string, ttlSeconds = TICK_LOCK_TTL_SECONDS): Promise<boolean> {
   if (!hasAdminSupabaseEnv()) return false;
   const admin = createAdminSupabase();
-  const nowIso = new Date().toISOString();
-  const untilIso = new Date(Date.now() + ttlSeconds * 1000).toISOString();
-  const { data } = await admin
-    .from("studio_agency_tick_lock")
-    .update({ locked_until: untilIso, holder: worker, updated_at: nowIso } as never)
-    .eq("id", true)
-    .lt("locked_until", nowIso) // only when the prior lock has expired — the CAS
-    .select("id")
-    .maybeSingle();
-  return Boolean(data);
+  return acquireWorkflowLock(workflowLockStore(admin as never), {
+    key: LOCK_KEYS.studioAgencyTick,
+    ttlSeconds,
+    worker,
+    now: new Date(),
+  });
 }
 
 /** Release the tick lock (only if we still hold it) so the next cron can proceed. */
 export async function releaseTickLock(worker: string): Promise<void> {
   if (!hasAdminSupabaseEnv()) return;
   const admin = createAdminSupabase();
-  await admin
-    .from("studio_agency_tick_lock")
-    .update({ locked_until: new Date().toISOString(), updated_at: new Date().toISOString() } as never)
-    .eq("id", true)
-    .eq("holder", worker);
+  await releaseWorkflowLock(workflowLockStore(admin as never), {
+    key: LOCK_KEYS.studioAgencyTick,
+    worker,
+    now: new Date(),
+  });
 }
 
 /** Active jobs (a tick candidate set) — one active job per project is enforced by the index. */

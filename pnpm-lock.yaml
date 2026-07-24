@@ -710,6 +710,9 @@ importers:
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@henryco/workflow':
+        specifier: workspace:^
+        version: link:../../packages/workflow
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.2.3))
@@ -1623,6 +1626,9 @@ importers:
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@henryco/workflow':
+        specifier: workspace:^
+        version: link:../../packages/workflow
       '@henryco/workspace-shell':
         specifier: workspace:^
         version: link:../../packages/workspace-shell

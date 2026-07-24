@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { runOperatorTick } from "@/lib/founder-intelligence/operator-tick";
+import { runOperatorTickViaRail } from "@/lib/founder-intelligence/operator-rail";
 
 /**
  * SA-4 — the Owner-AI operator tick cron (every 30 min; ARCHITECTURE §4.3).
@@ -39,7 +39,7 @@ async function handle(request: NextRequest): Promise<Response> {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   try {
-    const summary = await runOperatorTick(new Date());
+    const summary = await runOperatorTickViaRail(new Date());
     return NextResponse.json({ ok: true, summary, executedAt: new Date().toISOString() });
   } catch (error) {
     return NextResponse.json(

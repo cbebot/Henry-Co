@@ -10,6 +10,7 @@ export * from "./types";
 export * from "./retry";
 export * from "./store";
 export * from "./engine";
+export * from "./dispatch";
 export * from "./lock";
 export * from "./spend";
 export * from "./db";

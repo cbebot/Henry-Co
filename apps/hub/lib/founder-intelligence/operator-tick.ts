@@ -15,13 +15,14 @@ import "server-only";
  *            independent by design.
  *
  * Discipline (all enforced OUTSIDE the model):
- *   - single-flight: CAS lock on ai_operator_tick_lock (TTL 90s > route
- *     maxDuration 60s) — overlapping crons no-op, so the daily-spend read is
- *     always fresh relative to peers (the SA-3 concurrent-tick lesson);
+ *   - single-flight: CAS lock on the ONE workflow_locks primitive, key
+ *     'hub.operator.tick' (V3-43; TTL 90s > route maxDuration 60s) — overlapping
+ *     crons no-op, so the daily-spend read is always fresh relative to peers
+ *     (the SA-3 concurrent-tick lesson);
  *   - ₦5,000/day AI ceiling: reserve the UPPER-BOUND estimate into
  *     `committedKobo` BEFORE each model call, settle into the durable ledger
- *     after; a broken ledger degrades CLOSED (no AI, deterministic work
- *     continues);
+ *     (internal_ai_spend_ledger, budget_key 'operator') after; a broken ledger
+ *     degrades CLOSED (no AI, deterministic work continues);
  *   - the tick executes NOTHING consequential — every card still crosses the
  *     confirm route's requireOwner → reauth → CAS → drift gate.
  */
@@ -32,6 +33,14 @@ import { estimateFreeTurnCostKobo, noBillingPort, runAiTask } from "@henryco/ai-
 import { sendTransactionalEmail } from "@henryco/email";
 import { publishNotification } from "@henryco/notifications";
 import { emitEvent } from "@henryco/observability/events";
+import {
+  acquireWorkflowLock,
+  BUDGET_KEYS,
+  internalSpendStore,
+  LOCK_KEYS,
+  releaseWorkflowLock,
+  workflowLockStore,
+} from "@henryco/workflow";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   isStudioAgencyLiveHub,
@@ -63,21 +72,20 @@ function emptySummary(reason?: string): OperatorTickSummary {
   return { ran: false, reason, scanned: 0, raised: 0, deduped: 0, escalated: 0, aiPrepared: 0, aiSkipped: 0 };
 }
 
-// ── single-flight lock (the SA-3 CAS-row idiom, on the operator's OWN row) ───
+// ── single-flight lock (V3-43: the ONE consolidated workflow_locks primitive) ─
+// The operator's own ai_operator_tick_lock row is retired; single-flight now runs
+// on workflow_locks key 'hub.operator.tick'. Same CAS-row semantics (win iff the
+// prior holder's TTL expired), degrade-CLOSED on a broken store.
 
 async function acquireOperatorTickLock(worker: string, ttlSeconds = OPERATOR_TICK_LOCK_TTL_SECONDS): Promise<boolean> {
   try {
     const admin = createAdminSupabase();
-    const nowIso = new Date().toISOString();
-    const untilIso = new Date(Date.now() + ttlSeconds * 1000).toISOString();
-    const { data } = await admin
-      .from("ai_operator_tick_lock")
-      .update({ locked_until: untilIso, holder: worker, updated_at: nowIso } as never)
-      .eq("id", true)
-      .lt("locked_until", nowIso) // CAS — only when the prior lock has expired
-      .select("id")
-      .maybeSingle();
-    return Boolean(data);
+    return await acquireWorkflowLock(workflowLockStore(admin as never), {
+      key: LOCK_KEYS.hubOperatorTick,
+      ttlSeconds,
+      worker,
+      now: new Date(),
+    });
   } catch {
     return false;
   }
@@ -86,24 +94,25 @@ async function acquireOperatorTickLock(worker: string, ttlSeconds = OPERATOR_TIC
 async function releaseOperatorTickLock(worker: string): Promise<void> {
   try {
     const admin = createAdminSupabase();
-    await admin
-      .from("ai_operator_tick_lock")
-      .update({ locked_until: new Date().toISOString(), updated_at: new Date().toISOString() } as never)
-      .eq("id", true)
-      .eq("holder", worker);
+    await releaseWorkflowLock(workflowLockStore(admin as never), {
+      key: LOCK_KEYS.hubOperatorTick,
+      worker,
+      now: new Date(),
+    });
   } catch {
     // a stuck lock self-heals at TTL expiry.
   }
 }
 
-// ── durable spend ledger ─────────────────────────────────────────────────────
+// ── durable spend ledger (V3-43: the ONE consolidated internal_ai_spend_ledger) ─
+// The operator's own ai_operator_spend_ledger is retired; its NON-BILLABLE daily
+// counter now lives under budget_key 'operator' in internal_ai_spend_ledger. A
+// failed read returns null → the budget evaluator degrades CLOSED (no AI).
 
 async function operatorSpendTodayKobo(): Promise<number | null> {
   try {
     const admin = createAdminSupabase();
-    const { data, error } = await admin.rpc("ai_operator_spend_today");
-    if (error) return null; // degrade CLOSED — the caller treats null as exhausted
-    return Number(data) || 0;
+    return await internalSpendStore(admin as never).spentToday({ budgetKey: BUDGET_KEYS.operator, now: new Date() });
   } catch {
     return null;
   }
@@ -113,7 +122,11 @@ async function recordOperatorSpend(costKobo: number): Promise<void> {
   if (!(costKobo > 0)) return;
   try {
     const admin = createAdminSupabase();
-    await admin.rpc("ai_operator_spend_add", { p_add_kobo: Math.round(costKobo) });
+    await internalSpendStore(admin as never).add({
+      budgetKey: BUDGET_KEYS.operator,
+      addKobo: Math.round(costKobo),
+      now: new Date(),
+    });
   } catch {
     // best-effort settle; the reservation already bounded this tick.
   }

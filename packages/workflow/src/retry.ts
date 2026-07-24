@@ -34,8 +34,11 @@ export type FailureDisposition =
 
 /**
  * Given a job that just failed at `attempt`, decide whether it dead-letters or
- * re-queues with a backoff. `retryable:false` OR attempts>=maxAttempts ⇒
- * dead_letter (the search-outbox MAX_ATTEMPTS rule, generalized).
+ * re-queues with a backoff. `retryable:false` OR attempts>=cap ⇒ dead_letter
+ * (the search-outbox MAX_ATTEMPTS rule, generalized). The cap is the STRICTER of
+ * the fleet policy and the job's own `maxAttempts`, so a per-job override (e.g. a
+ * sweep enqueued with maxAttempts:1) is honored even under a looser policy — and
+ * a tight policy still bounds a job that asked for more.
  */
 export function disposeFailure(input: {
   job: WorkflowJob;
@@ -44,7 +47,8 @@ export function disposeFailure(input: {
   now: Date;
 }): FailureDisposition {
   const attempt = input.job.attempts; // already incremented by the engine
-  if (!input.retryable || attempt >= input.policy.maxAttempts) {
+  const cap = Math.min(input.policy.maxAttempts, Math.max(1, input.job.maxAttempts));
+  if (!input.retryable || attempt >= cap) {
     return { state: "dead_letter" };
   }
   const wait = backoffMs(input.policy, input.job.id, attempt);
