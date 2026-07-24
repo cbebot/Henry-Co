@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export * from "./analytics";
 export * from "./search";
+export * from "./availability";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -109,6 +110,13 @@ export const HenryEventNames = {
   AI_USAGE_METERED: "henry.ai.usage.metered",
   AI_USAGE_BLOCKED: "henry.ai.usage.blocked",
   AI_PROVIDER_FAILED: "henry.ai.provider.failed",
+  // V3-38 local availability (Phase E). Envelope division = the resolving
+  // division app. Payloads carry aggregate counts + coarse location codes
+  // (country/region) only — never a user id key, never provider counts per
+  // offering, never coordinates.
+  AVAILABILITY_BATCH_RESOLVED: "henry.availability.batch.resolved",
+  AVAILABILITY_UNAVAILABLE_SHOWN: "henry.availability.unavailable.shown",
+  AVAILABILITY_FIND_SIMILAR_CLICKED: "henry.availability.find_similar.clicked",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
@@ -310,7 +318,12 @@ export type HenryFeatureFlagName =
   // V3-34 (Phase E) — per-surface kill switch for the personalized home layout.
   // Default OFF: the account home falls back to pure DASH weight ordering instantly.
   // Deterministic + AI-free; gates only the user-preference/signal projection.
-  | "personalization_home";
+  | "personalization_home"
+  // V3-38 (Phase E) — local-availability badges/states. Default OFF: catalog
+  // surfaces render exactly as before (no badge, no fetch). Stays dark until
+  // `service_area_coverage` seeding is verified on prod (the soak note: a flood
+  // of unavailable_shown means missing rows, not a broken resolver).
+  | "personalization_availability";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -364,6 +377,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
       list.has("personalization_home") ||
       list.has("personalization"),
+    // V3-38 local-availability kill switch — default OFF (dark until seeded).
+    personalization_availability:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_AVAILABILITY) ||
+      list.has("personalization_availability") ||
+      list.has("availability"),
   };
 }
 
