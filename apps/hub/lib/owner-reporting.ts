@@ -11,6 +11,7 @@ import {
   type OwnerReportProps,
 } from "@henryco/branded-documents";
 import { getFinanceCenterData, getMessagingCenterData, getOperationsCenterData, getOwnerOverviewData } from "@/lib/owner-data";
+import { getAgencyBriefSnapshot, type AgencyBriefSnapshot } from "@/lib/studio-agency-read";
 import { divisionLabel, formatCurrencyAmount } from "@/lib/format";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -324,6 +325,8 @@ function renderOwnerReportEmail(input: {
   messaging: Awaited<ReturnType<typeof getMessagingCenterData>>;
   /** F2b: the AI-composed executive opening (daily brief, flag-gated) — null ships the deterministic brief. */
   narrative?: string | null;
+  /** SA-4: the studio-agency snapshot (deterministic; null while the agency is dark or has nothing). */
+  agency?: AgencyBriefSnapshot | null;
 }) {
   const title =
     input.kind === "monthly"
@@ -362,6 +365,24 @@ function renderOwnerReportEmail(input: {
   const recommendations = input.overview.helperInsights
     .slice(0, 4)
     .map((insight) => `${insight.title}: ${insight.body}`);
+  // SA-4 — the agency section: jobs moved, decisions waiting, money accrued.
+  // Deterministic (no AI, no flag dependency beyond the snapshot itself being
+  // empty while STUDIO_AGENCY_LIVE is dark).
+  const agencyLines = input.agency
+    ? [
+        `${input.agency.activeJobs} build job(s) active — ${input.agency.awaitingOwner} waiting on your approval, ${input.agency.stalled} stalled.`,
+        `${input.agency.proposalsInReview} agency proposal(s) held at the review gate.`,
+        `${input.agency.studioDecisionsPending} orchestrator decision(s) pending in the studio inbox.`,
+        `Provider cost accrued on jobs created today: ${formatCurrencyAmount(Math.floor(input.agency.accruedTodayKobo / 100))}.`,
+      ]
+    : [];
+  const agencyHasSubstance = Boolean(
+    input.agency &&
+      (input.agency.activeJobs > 0 ||
+        input.agency.proposalsInReview > 0 ||
+        input.agency.studioDecisionsPending > 0 ||
+        input.agency.stalled > 0),
+  );
   const movementRows = input.finance.recentPayments
     .slice(0, input.kind === "monthly" ? 8 : 5)
     .map(
@@ -445,6 +466,17 @@ function renderOwnerReportEmail(input: {
           </section>
 
           ${
+            agencyHasSubstance
+              ? `
+          <section style="margin-top:24px;">
+            <h2 style="margin:0 0 10px;font-size:18px;font-weight:700;color:#17120f;">Studio agency</h2>
+            ${renderList(agencyLines)}
+          </section>
+          `
+              : ""
+          }
+
+          ${
             recommendations.length
               ? `
           <section style="margin-top:24px;">
@@ -508,6 +540,7 @@ function renderOwnerReportEmail(input: {
     "",
     "Division pressure:",
     ...divisionPressure.map((line) => `- ${line}`),
+    ...(agencyHasSubstance ? ["", "Studio agency:", ...agencyLines.map((line) => `- ${line}`)] : []),
     ...(recommendations.length
       ? ["", "Practical next actions:", ...recommendations.map((line) => `- ${line}`)]
       : []),
@@ -706,12 +739,15 @@ export async function runOwnerReport(
     };
   }
 
-  const [overview, finance, operations, messaging, recipients] = await Promise.all([
+  const [overview, finance, operations, messaging, recipients, agency] = await Promise.all([
     getOwnerOverviewData(),
     getFinanceCenterData(),
     getOperationsCenterData(),
     getMessagingCenterData(),
     listOwnerRecipients(),
+    // SA-4: deterministic studio-agency snapshot — degrades to zeros while the
+    // agency tables are absent/dark, in which case the section simply doesn't render.
+    getAgencyBriefSnapshot(now).catch(() => null),
   ]);
 
   if (!recipients.length) {
@@ -777,6 +813,7 @@ export async function runOwnerReport(
       operations,
       messaging,
       narrative,
+      agency,
     });
     const pdfHtml = pdfUpload?.signedUrl
       ? `\n<div style="margin-top:24px;padding:18px;border:1px solid rgba(23,18,15,0.08);border-radius:18px;background:#fffdfa;">
