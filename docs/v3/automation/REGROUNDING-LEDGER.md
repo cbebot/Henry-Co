@@ -59,7 +59,7 @@
 ### 2.5 AI gateway (V3-44/46 AI steps)
 - **CONFIRMED** server-only boundary + model opacity (`packages/ai-gateway/src/server/config.ts:13-17`; `redactReceipt`/`assertClientSafe` `redaction.ts`); `computeAiUsageBreakdown` margin engine (`packages/pricing/src/ai-usage.ts:102`); guarded RPCs `reserve_wallet_for_ai_usage`→`post_ai_usage_charge`→`release_wallet_ai_hold` (secdef, service_role, `payments_private`) — migration `20260627120000` lines 129/213/341; hard-cap in TS (`orchestrator.ts:277-279`) **and** SQL (`:267-271`).
 - **CHANGED** the holds table is `customer_wallet_ai_holds` (migration :49), **not** `ai_usage_holds` as the prompt naming implies. `ai_usage_events` confirmed (:70).
-- **CONFIRMED** the E internal-spend precedent: `billable:false` surfaces skip the wallet entirely (zero-kobo receipt — `orchestrator.ts:253-260`); `evaluateFreeBudget` allow/conserve/exhausted (`free-budget.ts:35`), default `FREE_AI_DAILY_BUDGET_KOBO` ₦5,000/day (:18); durable `ai_free_spend_ledger` (`20260705150000`).
+- **CONFIRMED** the E internal-spend precedent: `billable:false` surfaces skip the wallet entirely (zero-kobo receipt — `orchestrator.ts:253-260`); `evaluateFreeBudget` allow/conserve/exhausted (`free-budget.ts:35`), default `FREE_AI_DAILY_BUDGET_KOBO` ₦5,000/day (:18); durable `ai_free_spend_ledger` (`20260705200844`).
 - **PROD-ACTUAL** the metered-billing migration `20260627120000` header says **COMMITTED-NOT-APPLIED** (applies at FL2 after a specific chain); `ai_free_spend_ledger` applied-state unconfirmed. Verify the wallet-metered path + the `ai-usage-rate-card-v1` rule-book row exist on prod before any Phase F step relies on **metered** AI.
 
 ### 2.6 Money spine (do-not-touch context)
@@ -109,7 +109,7 @@
 |---|---|---|---|
 | ledger + `payments_private` RPCs live | context for all | schema snapshot partial; MEMORY = live | confirm `journal_entries`/`post_ledger_entry` exist |
 | AI metered-billing migration `20260627120000` | V3-44/46 metered path | COMMITTED-NOT-APPLIED | confirm `customer_wallet_ai_holds`/`ai_usage_events`/`reserve_*`/`post_ai_usage_charge` + `ai-usage-rate-card-v1` |
-| `ai_free_spend_ledger` (`20260705150000`) | V3-44/46 internal AI cap | applied-state unknown | confirm table + `ai_free_spend_today/add` RPCs |
+| `ai_free_spend_ledger` (`20260705200844`) | V3-44/46 internal AI cap | applied-state unknown | confirm table + `ai_free_spend_today/add` RPCs |
 | `customer_preferences` full column set | V3-45/48 | present in snapshot | confirm live (quiet-hours + muted_* + fallback) |
 | `email_provider` CHECK widened for `postmark` | V3-45/48 email path | snapshot: resend/brevo; widening migration `20260714090000` in-repo | confirm the widening migration is applied on prod |
 | Postmark streams (`marketing-broadcast`, per-division) exist | V3-45/48 | env/dashboard | confirm streams created + `POSTMARK_SERVER_TOKEN` set |
