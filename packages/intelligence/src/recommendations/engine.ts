@@ -143,14 +143,20 @@ export async function generateRecommendations(
   const profiling = input.consentAllowed ? await collect(input.readers.profiling) : [];
   const profiled = profiling.length > 0;
 
-  // 2. Deterministic floor: sort, dedupe by ctaHref (first — highest — wins), cap.
+  // 2. Deterministic floor: sort, dedupe by ctaHref AND by id (first — highest —
+  //    wins), cap. Id-uniqueness is enforced here, not assumed: the re-rank
+  //    permutation check (isPermutation) compares a sorted id multiset, which is
+  //    only sound when floor ids are distinct — so a duplicate-id rerank can
+  //    never slip a substitution past it (adversarial round-1 hardening).
   const ordered = [...local, ...profiling].sort(deterministicSort);
-  const seen = new Set<string>();
+  const seenHref = new Set<string>();
+  const seenId = new Set<string>();
   const floor: RecommendationCandidate[] = [];
   for (const candidate of ordered) {
     if (floor.length >= limit) break;
-    if (seen.has(candidate.ctaHref)) continue;
-    seen.add(candidate.ctaHref);
+    if (seenHref.has(candidate.ctaHref) || seenId.has(candidate.id)) continue;
+    seenHref.add(candidate.ctaHref);
+    seenId.add(candidate.id);
     floor.push(candidate);
   }
 

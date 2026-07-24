@@ -194,6 +194,25 @@ test("V3-36: the public recommendation carries NO numeric score / tier / origin 
 
 // ── 5. No cross-user leak — the engine surfaces only what the reader returned ─
 
+test("V3-36 hardening: floor ids are unique (a duplicate-id candidate is deduped) — the permutation guard's invariant is enforced, not assumed", async () => {
+  // Two candidates sharing an id but different hrefs — the floor must keep only
+  // the first, so isPermutation's sorted-id-multiset compare stays sound.
+  const local = reader([
+    candidate({ id: "dup", score: 0.9, ctaHref: "/one" }),
+    candidate({ id: "dup", score: 0.5, ctaHref: "/two" }),
+    candidate({ id: "unique", score: 0.7, ctaHref: "/three" }),
+  ]);
+  const result = await generateRecommendations({
+    viewerId: "u1",
+    consentAllowed: false,
+    readers: { local: [local], profiling: [] },
+    limit: 6,
+  });
+  const ids = result.recommendations.map((r) => r.id);
+  assert.equal(new Set(ids).size, ids.length, "no duplicate ids in the floor");
+  assert.deepEqual(ids, ["dup", "unique"], "the higher-scored duplicate-id candidate wins; the second is dropped");
+});
+
 test("V3-36 leak-proof: given viewer A's readers, user B's rows can never appear", async () => {
   // The engine has NO table access; it can only emit what the injected,
   // viewer-scoped readers hand it. Model reader A (scoped to user A) — user B's
