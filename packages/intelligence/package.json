@@ -9,6 +9,9 @@
       "default": "./src/index.ts"
     }
   },
+  "scripts": {
+    "test": "tsx --test src/recommendations/__tests__/*.test.ts"
+  },
   "dependencies": {
     "@henryco/config": "workspace:^",
     "zod": "^4.3.6"
