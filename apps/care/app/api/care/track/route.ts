@@ -90,20 +90,37 @@ export async function GET(req: NextRequest) {
     const booking = await applyEffectiveBookingStatus(bookingByCode);
     const resolvedBooking = booking ?? bookingByCode;
 
-    const payment = await getPaymentVerificationSnapshotForBooking(resolvedBooking.id);
+    const paymentSnapshot = await getPaymentVerificationSnapshotForBooking(resolvedBooking.id);
+    // Public tracking exposes only the payment fields the tracking UI needs —
+    // never the payer email/phone, internal request IDs, or the raw proof
+    // submission (payer name, bank reference, attachments).
+    const payment = paymentSnapshot
+      ? {
+          verificationStatus: paymentSnapshot.verificationStatus,
+          verificationLabel: paymentSnapshot.verificationLabel,
+          verificationMessage: paymentSnapshot.verificationMessage,
+          amountDue: paymentSnapshot.amountDue,
+          amountPaidRecorded: paymentSnapshot.amountPaidRecorded,
+          balanceDue: paymentSnapshot.balanceDue,
+          paymentStatus: paymentSnapshot.paymentStatus,
+          supportEmail: paymentSnapshot.supportEmail,
+          supportWhatsApp: paymentSnapshot.supportWhatsApp,
+          canSubmitReceipt: paymentSnapshot.canSubmitReceipt,
+        }
+      : null;
 
     // V3 PASS 21 — stage photos: garment intake + completion, plus
     // per-leg POD captures. Best-effort: tables may not exist on
     // older environments, so we tolerate query failures.
+    // Public tracking response intentionally excludes operational POD
+    // metadata (GPS coordinates of the customer's location, delivery
+    // recipient name) — a code-only lookup must not expose it.
     const stagePhotos: Array<{
       id: string;
       url: string;
       caption: string;
       stage: "intake" | "completion" | "pickup_pod" | "delivery_pod";
       captured_at: string;
-      recipient_name: string | null;
-      gps_lat: number | null;
-      gps_lng: number | null;
     }> = [];
 
     try {
@@ -127,9 +144,6 @@ export async function GET(req: NextRequest) {
             caption: `${label} — intake`,
             stage: "intake",
             captured_at: updatedAt,
-            recipient_name: null,
-            gps_lat: null,
-            gps_lng: null,
           });
         }
         if (completionUrl) {
@@ -139,9 +153,6 @@ export async function GET(req: NextRequest) {
             caption: `${label} — completion`,
             stage: "completion",
             captured_at: updatedAt,
-            recipient_name: null,
-            gps_lat: null,
-            gps_lng: null,
           });
         }
       }
@@ -152,9 +163,7 @@ export async function GET(req: NextRequest) {
     try {
       const { data: pods } = await supabase
         .from("care_pod_records")
-        .select(
-          "id, leg, photo_url, captured_at, recipient_name, gps_lat, gps_lng",
-        )
+        .select("id, leg, photo_url, captured_at")
         .eq("booking_id", resolvedBooking.id)
         .not("photo_url", "is", null);
 
@@ -164,9 +173,6 @@ export async function GET(req: NextRequest) {
           leg: string;
           photo_url: string;
           captured_at: string;
-          recipient_name: string | null;
-          gps_lat: number | null;
-          gps_lng: number | null;
         };
         const isPickup = podRow.leg === "pickup";
         stagePhotos.push({
@@ -175,21 +181,49 @@ export async function GET(req: NextRequest) {
           caption: isPickup ? "Pickup confirmation" : "Delivery confirmation",
           stage: isPickup ? "pickup_pod" : "delivery_pod",
           captured_at: podRow.captured_at,
-          recipient_name: podRow.recipient_name,
-          gps_lat: podRow.gps_lat,
-          gps_lng: podRow.gps_lng,
         });
       }
     } catch {
       // care_pod_records table absent
     }
 
+    // Drop the internal booking UUID from the public payload — the tracking
+    // UI keys off tracking_code, never the row id.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _internalBookingId, ...bookingPublic } = resolvedBooking;
+
+    // special_instructions stores internal ops annotations and duplicated
+    // structured fields (payment path, property label, and the site-contact
+    // NAME — third-party PII) alongside the customer's own text. Strip those
+    // internal segments from the public tracking view; keep the customer's
+    // free-text note and their own "Return address:" (which the UI parses).
+    const INTERNAL_INSTRUCTION_PREFIXES = ["payment path:", "property label:", "site contact:"];
+    const publicSpecialInstructions =
+      String(bookingPublic.special_instructions || "")
+        .split(" | ")
+        .map((segment) => segment.trim())
+        .filter((segment) => {
+          if (!segment) return false;
+          const lower = segment.toLowerCase();
+          return !INTERNAL_INSTRUCTION_PREFIXES.some((prefix) => lower.startsWith(prefix));
+        })
+        .join(" | ") || null;
+
+    // service_summary is parsed from item_summary, which also embeds the
+    // site-contact NAME (third-party PII) — drop it from the public view
+    // (same reason the "Site contact:" special_instructions segment is stripped).
+    const serviceSummary = parseServiceBookingSummary(resolvedBooking.item_summary);
+    if (serviceSummary) {
+      serviceSummary.siteContactName = null;
+    }
+
     return NextResponse.json({
       ok: true,
       booking: {
-        ...resolvedBooking,
+        ...bookingPublic,
+        special_instructions: publicSpecialInstructions,
         family: inferCareServiceFamily(resolvedBooking),
-        service_summary: parseServiceBookingSummary(resolvedBooking.item_summary),
+        service_summary: serviceSummary,
         payment,
         stage_photos: stagePhotos,
       },

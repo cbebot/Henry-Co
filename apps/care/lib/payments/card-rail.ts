@@ -235,7 +235,9 @@ export async function reconcileCareCardPayment(input: {
         amountPaid: `₦${input.amountMajor.toLocaleString()}`,
         balanceDue: `₦${Number(row.balance_due ?? 0).toLocaleString()}`,
         paymentMethod: "card",
-        reference: matched.id,
+        // Customer-facing reference is the tracking code, not the internal
+        // payment_intents UUID.
+        reference: row.tracking_code,
         trackUrl,
       });
     }

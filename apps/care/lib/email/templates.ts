@@ -454,11 +454,11 @@ function buildLayout(template: CareEmailTemplate): EmailLayout {
     case "booking_confirmation": {
       const props = template.props;
       return {
-        subject: `Booking confirmed • ${props.trackingCode}`,
+        subject: `Booking received • ${props.trackingCode}`,
         templateKey: template.type,
-        preview: `Your ${props.serviceFamilyLabel.toLowerCase()} booking is confirmed.`,
-        eyebrow: "Booking confirmation",
-        title: "Your service request is confirmed.",
+        preview: `Your ${props.serviceFamilyLabel.toLowerCase()} booking has been received.`,
+        eyebrow: "Booking received",
+        title: "Your service request has been received.",
         intro:
           "Henry Onyx Care has registered the request and issued a live tracking code so you can follow every next step clearly. If payment is required before processing, the next message in this same email thread will carry the account details.",
         highlightLabel: "Tracking code",

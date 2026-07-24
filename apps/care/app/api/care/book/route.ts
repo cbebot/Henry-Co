@@ -45,17 +45,20 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
+      console.error("[care:book] create_care_booking failed", error);
       return NextResponse.json(
-        { ok: false, error: error.message || "Booking failed." },
+        { ok: false, error: "Booking failed. Please check your details and try again." },
         { status: 400 }
       );
     }
 
     const booking = Array.isArray(data) ? data[0] : data;
 
+    // Return only the customer-facing tracking code — not the raw RPC row
+    // (which includes the internal care_bookings UUID).
     return NextResponse.json({
       ok: true,
-      booking,
+      trackingCode: booking?.tracking_code ?? null,
     });
   } catch {
     return NextResponse.json(
