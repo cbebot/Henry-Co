@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 
-import { runAgencyTick } from "@/lib/agency/tick";
+import { runStudioAgencyTick } from "@/lib/agency/rail";
 
 /**
  * GET|POST /api/agency/tick — the orchestration cron (ARCHITECTURE §3.1). Auth
@@ -42,7 +42,7 @@ async function handle(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const summary = await runAgencyTick(new Date());
+    const summary = await runStudioAgencyTick(new Date());
     return NextResponse.json({ ok: true, summary, executedAt: new Date().toISOString() });
   } catch (error) {
     return NextResponse.json(
