@@ -33,6 +33,9 @@ export type NextActionCopy = {
     toggleDescription: string;
   };
   actions: {
+    accountTrust: NextActionEntryCopy;
+    accountProfile: NextActionEntryCopy;
+    accountSavedJobs: NextActionEntryCopy;
     marketplaceSave: NextActionEntryCopy;
     marketplaceCompare: NextActionEntryCopy;
     careBook: NextActionEntryCopy;
@@ -62,6 +65,21 @@ const EN: NextActionCopy = {
       "Show a small “do this next” suggestion on relevant pages. Turning this off hides all suggestions.",
   },
   actions: {
+    accountTrust: {
+      title: "Complete your trust verification",
+      description: "A verified account can use more services across your account.",
+      ctaLabel: "Review trust status",
+    },
+    accountProfile: {
+      title: "Finish your profile",
+      description: "A complete profile improves support and service continuity.",
+      ctaLabel: "Complete profile",
+    },
+    accountSavedJobs: {
+      title: "Follow up on saved roles",
+      description: "Review the roles you saved and apply when you are ready.",
+      ctaLabel: "Open jobs",
+    },
     marketplaceSave: {
       title: "Save this for later",
       description: "Keep this item in your saved list to compare or buy when you're ready.",
@@ -143,6 +161,9 @@ const FR: Partial<NextActionCopy> = {
       "Affiche une petite suggestion « à faire ensuite » sur les pages pertinentes. Désactiver masque toutes les suggestions.",
   },
   actions: {
+    accountTrust: { title: "Terminez votre vérification de confiance", description: "Un compte vérifié peut utiliser davantage de services.", ctaLabel: "Voir le statut de confiance" },
+    accountProfile: { title: "Complétez votre profil", description: "Un profil complet améliore l'assistance et la continuité du service.", ctaLabel: "Compléter le profil" },
+    accountSavedJobs: { title: "Reprenez vos postes enregistrés", description: "Consultez les postes enregistrés et postulez quand vous êtes prêt.", ctaLabel: "Ouvrir les offres" },
     marketplaceSave: { title: "Enregistrer pour plus tard", description: "Gardez cet article dans votre liste pour comparer ou acheter quand vous serez prêt.", ctaLabel: "Enregistrer l'article" },
     marketplaceCompare: { title: "Comparer avec des articles similaires", description: "Consultez des annonces similaires côte à côte avant de décider.", ctaLabel: "Comparer" },
     careBook: { title: "Réserver un prestataire Care", description: "Choisissez un service et confirmez votre réservation en quelques étapes.", ctaLabel: "Commencer la réservation" },
@@ -164,6 +185,9 @@ const ES: Partial<NextActionCopy> = {
   chip: { prefix: "Continuar", dismiss: "Descartar sugerencia", region: "Siguiente paso sugerido" },
   settings: { toggleLabel: "Sugerencias de siguiente paso", toggleDescription: "Muestra una pequeña sugerencia de “haz esto ahora” en las páginas relevantes. Al desactivarla se ocultan todas las sugerencias." },
   actions: {
+    accountTrust: { title: "Completa tu verificación de confianza", description: "Una cuenta verificada puede usar más servicios.", ctaLabel: "Ver estado de confianza" },
+    accountProfile: { title: "Termina tu perfil", description: "Un perfil completo mejora el soporte y la continuidad del servicio.", ctaLabel: "Completar perfil" },
+    accountSavedJobs: { title: "Retoma tus puestos guardados", description: "Revisa los puestos guardados y postúlate cuando estés listo.", ctaLabel: "Abrir empleos" },
     marketplaceSave: { title: "Guardar para más tarde", description: "Mantén este artículo en tu lista para comparar o comprar cuando estés listo.", ctaLabel: "Guardar artículo" },
     marketplaceCompare: { title: "Comparar con artículos similares", description: "Mira anuncios similares lado a lado antes de decidir.", ctaLabel: "Comparar" },
     careBook: { title: "Reservar un proveedor de Care", description: "Elige un servicio y confirma tu reserva en pocos pasos.", ctaLabel: "Iniciar reserva" },
@@ -185,6 +209,9 @@ const PT: Partial<NextActionCopy> = {
   chip: { prefix: "Continuar", dismiss: "Dispensar sugestão", region: "Próximo passo sugerido" },
   settings: { toggleLabel: "Sugestões de próximo passo", toggleDescription: "Mostra uma pequena sugestão de “faça isto a seguir” nas páginas relevantes. Desativar oculta todas as sugestões." },
   actions: {
+    accountTrust: { title: "Conclua sua verificação de confiança", description: "Uma conta verificada pode usar mais serviços.", ctaLabel: "Ver status de confiança" },
+    accountProfile: { title: "Finalize seu perfil", description: "Um perfil completo melhora o suporte e a continuidade do serviço.", ctaLabel: "Completar perfil" },
+    accountSavedJobs: { title: "Retome suas vagas salvas", description: "Revise as vagas salvas e candidate-se quando estiver pronto.", ctaLabel: "Abrir vagas" },
     marketplaceSave: { title: "Salvar para depois", description: "Mantenha este item na sua lista para comparar ou comprar quando estiver pronto.", ctaLabel: "Salvar item" },
     marketplaceCompare: { title: "Comparar com itens semelhantes", description: "Veja anúncios semelhantes lado a lado antes de decidir.", ctaLabel: "Comparar" },
     careBook: { title: "Reservar um profissional Care", description: "Escolha um serviço e confirme sua reserva em poucos passos.", ctaLabel: "Iniciar reserva" },
@@ -206,6 +233,9 @@ const DE: Partial<NextActionCopy> = {
   chip: { prefix: "Weiter", dismiss: "Vorschlag ausblenden", region: "Vorgeschlagener nächster Schritt" },
   settings: { toggleLabel: "Nächste-Schritte-Vorschläge", toggleDescription: "Zeigt auf relevanten Seiten einen kleinen „als Nächstes“-Vorschlag. Beim Deaktivieren werden alle Vorschläge ausgeblendet." },
   actions: {
+    accountTrust: { title: "Schließe deine Vertrauensprüfung ab", description: "Ein verifiziertes Konto kann mehr Dienste nutzen.", ctaLabel: "Vertrauensstatus ansehen" },
+    accountProfile: { title: "Vervollständige dein Profil", description: "Ein vollständiges Profil verbessert Support und Servicekontinuität.", ctaLabel: "Profil vervollständigen" },
+    accountSavedJobs: { title: "Gespeicherte Stellen weiterverfolgen", description: "Sieh dir deine gespeicherten Stellen an und bewirb dich, wenn du bereit bist.", ctaLabel: "Stellen öffnen" },
     marketplaceSave: { title: "Für später speichern", description: "Behalte diesen Artikel in deiner Liste, um zu vergleichen oder später zu kaufen.", ctaLabel: "Artikel speichern" },
     marketplaceCompare: { title: "Mit ähnlichen Artikeln vergleichen", description: "Sieh dir ähnliche Angebote nebeneinander an, bevor du entscheidest.", ctaLabel: "Vergleichen" },
     careBook: { title: "Care-Anbieter buchen", description: "Wähle einen Service und bestätige deine Buchung in wenigen Schritten.", ctaLabel: "Buchung starten" },
@@ -227,6 +257,9 @@ const IT: Partial<NextActionCopy> = {
   chip: { prefix: "Continua", dismiss: "Ignora suggerimento", region: "Prossimo passo suggerito" },
   settings: { toggleLabel: "Suggerimenti sul prossimo passo", toggleDescription: "Mostra un piccolo suggerimento “fai questo ora” sulle pagine pertinenti. Disattivando si nascondono tutti i suggerimenti." },
   actions: {
+    accountTrust: { title: "Completa la verifica di fiducia", description: "Un account verificato può usare più servizi.", ctaLabel: "Vedi stato di fiducia" },
+    accountProfile: { title: "Completa il tuo profilo", description: "Un profilo completo migliora l'assistenza e la continuità del servizio.", ctaLabel: "Completa profilo" },
+    accountSavedJobs: { title: "Riprendi i ruoli salvati", description: "Rivedi i ruoli salvati e candidati quando sei pronto.", ctaLabel: "Apri i ruoli" },
     marketplaceSave: { title: "Salva per dopo", description: "Tieni questo articolo nella tua lista per confrontare o acquistare quando sei pronto.", ctaLabel: "Salva articolo" },
     marketplaceCompare: { title: "Confronta con articoli simili", description: "Guarda annunci simili fianco a fianco prima di decidere.", ctaLabel: "Confronta" },
     careBook: { title: "Prenota un professionista Care", description: "Scegli un servizio e conferma la prenotazione in pochi passi.", ctaLabel: "Inizia la prenotazione" },
@@ -248,6 +281,9 @@ const AR: Partial<NextActionCopy> = {
   chip: { prefix: "متابعة", dismiss: "تجاهل الاقتراح", region: "الخطوة التالية المقترحة" },
   settings: { toggleLabel: "اقتراحات الخطوة التالية", toggleDescription: "يعرض اقتراحًا صغيرًا “افعل هذا تاليًا” على الصفحات ذات الصلة. إيقافه يخفي جميع الاقتراحات." },
   actions: {
+    accountTrust: { title: "أكمل التحقق من الثقة", description: "الحساب الموثّق يمكنه استخدام مزيد من الخدمات.", ctaLabel: "عرض حالة الثقة" },
+    accountProfile: { title: "أكمل ملفك الشخصي", description: "الملف المكتمل يحسّن الدعم واستمرارية الخدمة.", ctaLabel: "إكمال الملف" },
+    accountSavedJobs: { title: "تابع الوظائف المحفوظة", description: "راجع الوظائف التي حفظتها وقدّم عندما تكون مستعدًا.", ctaLabel: "فتح الوظائف" },
     marketplaceSave: { title: "احفظه لوقت لاحق", description: "أبقِ هذا المنتج في قائمتك المحفوظة للمقارنة أو الشراء عندما تكون مستعدًا.", ctaLabel: "حفظ المنتج" },
     marketplaceCompare: { title: "قارن مع منتجات مشابهة", description: "اطّلع على عروض مشابهة جنبًا إلى جنب قبل أن تقرر.", ctaLabel: "قارن" },
     careBook: { title: "احجز مقدم رعاية", description: "اختر خدمة وأكّد حجزك في خطوات قليلة.", ctaLabel: "ابدأ الحجز" },
@@ -269,6 +305,9 @@ const IG: Partial<NextActionCopy> = {
   chip: { prefix: "Gaa n'ihu", dismiss: "Wepụ aro a", region: "Nzọụkwụ ọzọ a tụrụ aro" },
   settings: { toggleLabel: "Aro nzọụkwụ ọzọ", toggleDescription: "Na-egosi obere aro “mee nke a ọzọ” na ibe ndị dabara. Ịgbanyụ ya na-ezochi aro niile." },
   actions: {
+    accountTrust: { title: "Mechaa nkwenye ntụkwasị obi gị", description: "Akaụntụ e kwadoro nwere ike iji ọtụtụ ọrụ.", ctaLabel: "Lee ọnọdụ ntụkwasị obi" },
+    accountProfile: { title: "Mechaa profaịlụ gị", description: "Profaịlụ zuru ezu na-eme ka nkwado na ịga n'ihu nke ọrụ ka mma.", ctaLabel: "Mezue profaịlụ" },
+    accountSavedJobs: { title: "Gaa n'ihu na ọrụ ndị i chekwara", description: "Lee ọrụ ndị i chekwara ma tinye akwụkwọ mgbe ị dị njikere.", ctaLabel: "Mepee ọrụ" },
     marketplaceSave: { title: "Chekwaa maka oge ọzọ", description: "Debe ihe a na ndepụta gị ka i jiri tulee ma ọ bụ zụta mgbe ị dị njikere.", ctaLabel: "Chekwaa ihe" },
     marketplaceCompare: { title: "Jiri ya tulee ihe ndị yiri ya", description: "Lee ihe ndị yiri ya n'akụkụ ibe ha tupu i kpebie.", ctaLabel: "Tulee" },
     careBook: { title: "Debe onye ọrụ Care", description: "Họrọ ọrụ ma kwado ndebe gị na nzọụkwụ ole na ole.", ctaLabel: "Malite ndebe" },
@@ -290,6 +329,9 @@ const YO: Partial<NextActionCopy> = {
   chip: { prefix: "Tẹ̀síwájú", dismiss: "Fori àbá yìí kọjá", region: "Ìgbésẹ̀ tó kàn tí a dábàá" },
   settings: { toggleLabel: "Àwọn àbá ìgbésẹ̀ tó kàn", toggleDescription: "Ó máa ń fi àbá kékeré “ṣe èyí lẹ́yìn náà” hàn lórí àwọn ojú-ìwé tó bá mu. Pípa rẹ̀ yóò fi gbogbo àbá pamọ́." },
   actions: {
+    accountTrust: { title: "Parí ìmúdájú ìgbẹ́kẹ̀lé rẹ", description: "Àkántì tí a ti múdájú lè lo àwọn iṣẹ́ púpọ̀ síi.", ctaLabel: "Wo ipò ìgbẹ́kẹ̀lé" },
+    accountProfile: { title: "Parí profaili rẹ", description: "Profaili pípé máa ń mú ìtìlẹ́yìn àti ìtẹ̀síwájú iṣẹ́ dára síi.", ctaLabel: "Parí profaili" },
+    accountSavedJobs: { title: "Tẹ̀lé àwọn iṣẹ́ tí o fi pamọ́", description: "Ṣàyẹ̀wò àwọn iṣẹ́ tí o fi pamọ́ kí o sì bèèrè nígbà tí o bá ṣetán.", ctaLabel: "Ṣí àwọn iṣẹ́" },
     marketplaceSave: { title: "Fi pamọ́ fún ìgbà míì", description: "Pa ohun èlò yìí mọ́ sínú àkójọ rẹ láti fiwéra tàbí rà nígbà tí o bá ṣetán.", ctaLabel: "Fi ohun èlò pamọ́" },
     marketplaceCompare: { title: "Fiwéra pẹ̀lú àwọn ohun tó jọ ọ́", description: "Wo àwọn ìpolówó tó jọra lẹ́gbẹ̀ẹ́ ara kí o tó pinnu.", ctaLabel: "Fiwéra" },
     careBook: { title: "Ṣe ìforúkọ olùtọ́jú Care", description: "Yan iṣẹ́ kan kí o sì jẹ́rìí sí ìforúkọ rẹ ní àwọn ìgbésẹ̀ díẹ̀.", ctaLabel: "Bẹ̀rẹ̀ ìforúkọ" },
@@ -311,6 +353,9 @@ const HA: Partial<NextActionCopy> = {
   chip: { prefix: "Ci gaba", dismiss: "Watsar da shawara", region: "Mataki na gaba da aka ba da shawara" },
   settings: { toggleLabel: "Shawarwarin mataki na gaba", toggleDescription: "Yana nuna ƙaramar shawara ta “yi wannan a gaba” a shafukan da suka dace. Kashe shi yana ɓoye duk shawarwari." },
   actions: {
+    accountTrust: { title: "Kammala tabbatar da amincin ka", description: "Asusun da aka tabbatar zai iya amfani da ƙarin ayyuka.", ctaLabel: "Duba matsayin aminci" },
+    accountProfile: { title: "Kammala bayananka", description: "Cikakken bayani yana inganta tallafi da ci gaban sabis.", ctaLabel: "Kammala bayani" },
+    accountSavedJobs: { title: "Bibiyi ayyukan da ka ajiye", description: "Duba ayyukan da ka ajiye ka nema idan ka shirya.", ctaLabel: "Buɗe ayyuka" },
     marketplaceSave: { title: "Ajiye don gaba", description: "Riƙe wannan kaya a jerin ajiyarka don kwatantawa ko siya idan ka shirya.", ctaLabel: "Ajiye kaya" },
     marketplaceCompare: { title: "Kwatanta da kayayyaki masu kama", description: "Duba tallace-tallace masu kama gefe da gefe kafin ka yanke shawara.", ctaLabel: "Kwatanta" },
     careBook: { title: "Yi ajiyar mai ba da kulawa na Care", description: "Zaɓi sabis ka tabbatar da ajiyarka a matakai kaɗan.", ctaLabel: "Fara ajiya" },
@@ -332,6 +377,9 @@ const ZH: Partial<NextActionCopy> = {
   chip: { prefix: "继续", dismiss: "忽略建议", region: "建议的下一步" },
   settings: { toggleLabel: "下一步建议", toggleDescription: "在相关页面上显示一条小的“接下来做这个”建议。关闭后将隐藏所有建议。" },
   actions: {
+    accountTrust: { title: "完成信任验证", description: "通过验证的账户可以使用更多服务。", ctaLabel: "查看信任状态" },
+    accountProfile: { title: "完善你的资料", description: "完整的资料有助于获得更好的支持和服务连续性。", ctaLabel: "完善资料" },
+    accountSavedJobs: { title: "跟进已保存的职位", description: "查看你保存的职位，准备好后再申请。", ctaLabel: "打开职位" },
     marketplaceSave: { title: "先保存起来", description: "把这件商品放进你的收藏，方便比较或在准备好时购买。", ctaLabel: "保存商品" },
     marketplaceCompare: { title: "与相似商品比较", description: "在决定之前，并排查看相似的商品。", ctaLabel: "比较" },
     careBook: { title: "预约 Care 服务人员", description: "选择服务，几步内确认你的预约。", ctaLabel: "开始预约" },
@@ -353,6 +401,9 @@ const HI: Partial<NextActionCopy> = {
   chip: { prefix: "जारी रखें", dismiss: "सुझाव हटाएँ", region: "सुझाया गया अगला कदम" },
   settings: { toggleLabel: "अगले कदम के सुझाव", toggleDescription: "प्रासंगिक पृष्ठों पर एक छोटा “अब यह करें” सुझाव दिखाता है। बंद करने पर सभी सुझाव छिप जाते हैं।" },
   actions: {
+    accountTrust: { title: "अपना विश्वास सत्यापन पूरा करें", description: "सत्यापित खाता अधिक सेवाओं का उपयोग कर सकता है।", ctaLabel: "विश्वास स्थिति देखें" },
+    accountProfile: { title: "अपनी प्रोफ़ाइल पूरी करें", description: "पूरी प्रोफ़ाइल सहायता और सेवा की निरंतरता बेहतर बनाती है।", ctaLabel: "प्रोफ़ाइल पूरी करें" },
+    accountSavedJobs: { title: "सहेजी गई भूमिकाओं पर आगे बढ़ें", description: "सहेजी गई भूमिकाएँ देखें और तैयार होने पर आवेदन करें।", ctaLabel: "भूमिकाएँ खोलें" },
     marketplaceSave: { title: "बाद के लिए सहेजें", description: "इस वस्तु को अपनी सूची में रखें ताकि तुलना कर सकें या तैयार होने पर खरीद सकें।", ctaLabel: "वस्तु सहेजें" },
     marketplaceCompare: { title: "समान वस्तुओं से तुलना करें", description: "निर्णय लेने से पहले समान लिस्टिंग साथ-साथ देखें।", ctaLabel: "तुलना करें" },
     careBook: { title: "Care सेवा प्रदाता बुक करें", description: "सेवा चुनें और कुछ चरणों में अपनी बुकिंग की पुष्टि करें।", ctaLabel: "बुकिंग शुरू करें" },

@@ -25,6 +25,9 @@ const entry = (key: string) => ({
 });
 
 const COPY: NextActionCatalogCopy = {
+  accountTrust: entry("accountTrust"),
+  accountProfile: entry("accountProfile"),
+  accountSavedJobs: entry("accountSavedJobs"),
   marketplaceSave: entry("marketplaceSave"),
   marketplaceCompare: entry("marketplaceCompare"),
   careBook: entry("careBook"),
@@ -124,6 +127,26 @@ test("account_home defers to nextAccountSteps (saved jobs surface)", () => {
   const ctx: UserContext = { ...baseCtx, savedJobIds: ["a"] };
   const actions = resolveNextAction(ctx, page("account_home", "account"), OPTS);
   assert.ok(actions.some((a) => a.id === "jobs-saved"));
+});
+
+test("account_home steps are re-titled from the localized copy bundle (no legacy EN literal)", () => {
+  const ctx: UserContext = {
+    ...baseCtx,
+    trustState: "needs_action",
+    profileCompleteness: 0.1,
+    savedJobIds: ["a"],
+  };
+  const actions = resolveNextAction(ctx, page("account_home", "account"), OPTS);
+  assert.ok(actions.length > 0);
+  for (const action of actions) {
+    // Every known account step must carry catalog copy, not the recommender's
+    // pre-i18n EN literal ("Complete your trust verification" et al.).
+    assert.ok(
+      action.title.startsWith("title:account"),
+      `${action.id} kept a legacy literal: ${action.title}`,
+    );
+    assert.ok(action.ctaLabel.startsWith("cta:account"), `${action.id} ctaLabel not localized`);
+  }
 });
 
 // ---------------------------------------------------------------------------

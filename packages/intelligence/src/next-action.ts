@@ -102,6 +102,15 @@ export interface NextActionCopyEntry {
  * agree, keeping this package free of an i18n dependency.
  */
 export interface NextActionCatalogCopy {
+  /** Localized re-titles for the three known `nextAccountSteps` ids — the
+   *  legacy account recommender predates the i18n copy modules and carries EN
+   *  literals; these entries replace them at the catalog boundary so no
+   *  unlocalized string ever reaches a user surface. Unknown future ids keep
+   *  their own strings (forward-compat) — a host adding a step to
+   *  `nextAccountSteps` must add its copy entry here too. */
+  accountTrust: NextActionCopyEntry;
+  accountProfile: NextActionCopyEntry;
+  accountSavedJobs: NextActionCopyEntry;
   marketplaceSave: NextActionCopyEntry;
   marketplaceCompare: NextActionCopyEntry;
   careBook: NextActionCopyEntry;
@@ -174,17 +183,35 @@ const CONFIDENCE_SCORE: Record<RecommendationConfidence, number> = {
   low: 0.3,
 };
 
+/** The known `nextAccountSteps` ids → their localized copy entries. */
+const ACCOUNT_STEP_COPY_KEYS: Record<
+  string,
+  "accountTrust" | "accountProfile" | "accountSavedJobs"
+> = {
+  "trust-next": "accountTrust",
+  "profile-next": "accountProfile",
+  "jobs-saved": "accountSavedJobs",
+};
+
 function accountHomeCandidates(
   ctx: UserContext,
   page: PageContext,
+  copy: NextActionCatalogCopy,
 ): NextActionCandidate[] {
   // Defer entirely to the existing account-wide recommender — it stays the
-  // single source of truth for account-level steps. The trust/KYC step is
-  // sensitive by classification (identity documents) and therefore inline-only.
+  // single source of truth for WHICH account-level steps exist; the localized
+  // catalog copy re-titles the known steps (the legacy recommender's strings
+  // predate i18n). The trust/KYC step is sensitive by classification (identity
+  // documents) and therefore inline-only.
   return nextAccountSteps(ctx).map((rec) => {
     const sensitive = rec.reasonCodes.includes("trust_pending");
+    const copyKey = ACCOUNT_STEP_COPY_KEYS[rec.id];
+    const entry = copyKey ? copy[copyKey] : null;
     return {
       ...rec,
+      ...(entry
+        ? { title: entry.title, description: entry.description, ctaLabel: entry.ctaLabel }
+        : {}),
       contextKind: page.kind,
       sensitive,
       stitched: false,
@@ -235,7 +262,7 @@ function pageCandidates(
 
   switch (page.kind) {
     case "account_home":
-      return accountHomeCandidates(ctx, page);
+      return accountHomeCandidates(ctx, page, copy);
     case "marketplace_listing":
       return [
         candidate(
@@ -492,7 +519,15 @@ export function resolveNextAction(
   // Opt-out wins over everything: no nags past a user's "off".
   if (options.promptsEnabled === false) return [];
 
-  const href = options.buildHref ?? henryDomain;
+  // Default to henryDomain. Its DivisionKey parameter is the PUBLIC-SITE
+  // subset of HenryDivision (no staff/hq/wallet/system/ai); the seed catalog
+  // and stitch map only ever link into real division sites, so the narrowing
+  // is safe by construction — a catalog entry pointing at a non-site division
+  // would be a config error regardless of the href builder.
+  const href: (division: HenryDivision, path: string) => string =
+    options.buildHref ??
+    ((division, path) =>
+      henryDomain(division as Parameters<typeof henryDomain>[0], path));
   const limit = Math.max(0, Math.min(options.limit ?? 2, 2));
 
   const candidates: NextActionCandidate[] = [
