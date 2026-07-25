@@ -29,6 +29,7 @@ import { resolveModuleHomeHref } from "@/lib/module-home-href";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 import { MobileChromeBridge } from "./MobileChromeBridge";
 import { MobileDashboardNavigator } from "./MobileDashboardNavigator";
+import { NextActionDock } from "@/components/next-action/NextActionDock";
 import { COMPANY } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 
@@ -313,6 +314,19 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
             navigatorSlot={<MobileDashboardNavigator labels={mobileDashboardLabels} />}
           />
           <NotificationsToastViewport audience="customer" />
+          {/* V3-39 (flag-dark) — the single next-action chrome affordance for
+              the account division. Server-resolved; arbitrated with the
+              IntelligenceLauncher corner via the shared mobile lift + the
+              package clearance contract (chip stacks above the launcher).
+              Renders nothing while personalization_next_action is unset. */}
+          <NextActionDock
+            viewer={viewer}
+            preferences={
+              preferences && typeof preferences === "object"
+                ? (preferences as Record<string, unknown>)
+                : null
+            }
+          />
         </div>
       </AccountPaletteHost>
       </SensitiveActionProviderBridge>

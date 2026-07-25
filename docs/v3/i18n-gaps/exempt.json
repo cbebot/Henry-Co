@@ -37,6 +37,7 @@
     "Your uploaded documents are stored securely and used only to verify your store during review.",
     "(r.ok ? (r.json() as Promise",
     "): Promise",
+    "void | Promise",
     "Clear search",
     "Filter results by division",
     "Search results",

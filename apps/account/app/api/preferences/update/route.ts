@@ -17,6 +17,9 @@ const ALLOWED_FIELDS = [
   "quiet_hours_start", "quiet_hours_end",
   // V3-34 — account-scoped NDPR personalization consent (governs profiling).
   "personalization_enabled",
+  // V3-39 — the "do this next" suggestion control (legitimate-interest
+  // default-ON with user control; distinct from the profiling consent above).
+  "next_action_prompts_enabled",
 ];
 
 function normalizeTimeValue(value: unknown) {
@@ -58,6 +61,14 @@ export async function POST(request: Request) {
       // literal `true` grants profiling; anything else is a withhold).
       if (key === "personalization_enabled") {
         updates[key] = body[key] === true;
+        continue;
+      }
+
+      // V3-39 — the next-action control accepts only literal booleans; the
+      // DB default (TRUE) owns every other case, so a malformed payload can
+      // never silently flip the preference either way.
+      if (key === "next_action_prompts_enabled") {
+        if (typeof body[key] === "boolean") updates[key] = body[key];
         continue;
       }
 

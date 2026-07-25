@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export * from "./analytics";
 export * from "./search";
+export * from "./next-action";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -310,7 +311,12 @@ export type HenryFeatureFlagName =
   // V3-34 (Phase E) — per-surface kill switch for the personalized home layout.
   // Default OFF: the account home falls back to pure DASH weight ordering instantly.
   // Deterministic + AI-free; gates only the user-preference/signal projection.
-  | "personalization_home";
+  | "personalization_home"
+  // V3-39 (Phase E) — kill switch for the per-page "do this next" chip + resolver.
+  // Default OFF (dark launch): with the flag unset nothing mounts, nothing reads,
+  // nothing emits. Deterministic + AI-free; the stitch inside is additionally
+  // consent-gated at runtime (E-D2) — the flag gates the whole surface.
+  | "personalization_next_action";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -364,6 +370,12 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
       list.has("personalization_home") ||
       list.has("personalization"),
+    // V3-39 next-action kill switch — default OFF (dark launch). Deliberately
+    // NOT covered by the broad "personalization" alias: the chip is a new
+    // chrome affordance and turns on only by its own explicit name.
+    personalization_next_action:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_NEXT_ACTION) ||
+      list.has("personalization_next_action"),
   };
 }
 

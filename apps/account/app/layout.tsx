@@ -17,6 +17,7 @@ import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { createSurfaceMetadata } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
+import { ACCOUNT_CHROME_MOBILE_LIFT } from "@/lib/chrome";
 
 // The brand editorial reading serif — loaded straight into the shared `--font-reading`
 // seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
@@ -112,7 +113,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
             // Lift the launcher above the mobile bottom action bar (3.5rem) + a 1rem gap, so
             // the AI support button is never hidden behind it on the dashboard.
-            <IntelligenceLauncher division="account" bottomOffset="calc(3.5rem + 1rem)" />
+            <IntelligenceLauncher division="account" bottomOffset={ACCOUNT_CHROME_MOBILE_LIFT} />
           ) : (
             <SupportAssist division="account" />
           )}
