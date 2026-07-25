@@ -228,7 +228,7 @@ export default async function BookPage({
               {flowSteps.map((item) => (
                 <li
                   key={item.step}
-                  className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                  className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
                     {t("Step")} {item.step}

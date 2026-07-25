@@ -53,7 +53,7 @@ export default async function ContactPage() {
     >
       <div className="mx-auto max-w-[92rem] space-y-14">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--home-accent-text)]">
                 <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
@@ -101,7 +101,7 @@ export default async function ContactPage() {
           </div>
         </section>
 
-        <section className="grid gap-12 xl:grid-cols-[1.08fr,0.92fr]">
+        <section className="grid gap-12 xl:grid-cols-[1.08fr_0.92fr]">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
               {copy.sendMessage.eyebrow}
@@ -220,7 +220,7 @@ function SupportRow({
   copyLabel: CareContactCopy["channels"]["copyLabel"];
 }) {
   return (
-    <li className="grid gap-3 py-5 sm:grid-cols-[auto,1fr,auto] sm:items-start sm:gap-6">
+    <li className="grid gap-3 py-5 sm:grid-cols-[auto_1fr_auto] sm:items-start sm:gap-6">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] text-[color:var(--home-accent-text)]">
         <Icon className="h-4 w-4" />
       </span>

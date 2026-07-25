@@ -46,7 +46,7 @@ export default async function CertificationsPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
               {copy.hero.eyebrow}
@@ -97,7 +97,7 @@ export default async function CertificationsPage() {
       </section>
 
       <section className="mt-16 border-t border-[var(--learn-line)] pt-10">
-        <div className="grid gap-6 lg:grid-cols-[1fr,0.9fr] lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
               {copy.verify.eyebrow}
@@ -112,7 +112,7 @@ export default async function CertificationsPage() {
           <form
             action="/certifications/verify"
             method="get"
-            className="grid gap-3 sm:grid-cols-[1fr,auto]"
+            className="grid gap-3 sm:grid-cols-[1fr_auto]"
           >
             <input
               name="code"

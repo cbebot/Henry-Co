@@ -383,7 +383,7 @@ export default async function JobDetailPage({
                 {job.pipelineStages.map((stage, index) => (
                   <li
                     key={stage}
-                    className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                    className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
                   >
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
                       {t("Step")} {String(index + 1).padStart(2, "0")}
@@ -419,7 +419,7 @@ export default async function JobDetailPage({
                 {job.pipelineStages.map((stage, index) => (
                   <li
                     key={stage}
-                    className="grid gap-3 py-5 sm:grid-cols-[auto,1fr,auto] sm:items-start sm:gap-6"
+                    className="grid gap-3 py-5 sm:grid-cols-[auto_1fr_auto] sm:items-start sm:gap-6"
                   >
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
                       {t("Stage")} {String(index + 1).padStart(2, "0")}

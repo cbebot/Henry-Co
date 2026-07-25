@@ -73,7 +73,7 @@ export default async function VendorOrdersPage() {
                 successTitle={t("Order updated.")}
                 successBody={t("The buyer sees the new fulfilment state on their tracking page.")}
                 errorTitle={t("Order could not be updated.")}
-                className="mt-4 grid gap-3 md:grid-cols-[1fr,1fr,1fr,auto]"
+                className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_1fr_auto]"
                 buttonClassName="market-button-primary rounded-full px-4 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80"
               >
                 <select

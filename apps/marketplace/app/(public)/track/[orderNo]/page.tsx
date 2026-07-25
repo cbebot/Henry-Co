@@ -131,7 +131,7 @@ export default async function TrackOrderPage({
       ) : null}
 
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">{t.hero.kicker}</p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
@@ -234,7 +234,7 @@ export default async function TrackOrderPage({
         </section>
       ) : null}
 
-      <section className="grid gap-12 lg:grid-cols-[0.95fr,1.05fr] lg:divide-x lg:divide-[var(--market-line)]">
+      <section className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:divide-x lg:divide-[var(--market-line)]">
         <div>
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">{t.timeline.kicker}</p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
@@ -244,7 +244,7 @@ export default async function TrackOrderPage({
             {order.timeline.map((step: string, i: number) => (
               <li
                 key={step}
-                className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
               >
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
                   {String(i + 1).padStart(2, "0")}

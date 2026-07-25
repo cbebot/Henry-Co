@@ -38,7 +38,7 @@ export default async function InstructorsPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
               {copy.hero.eyebrow}
@@ -103,7 +103,7 @@ export default async function InstructorsPage() {
             {instructorsLocalized.map((instructor) => (
               <li
                 key={instructor.id}
-                className="grid gap-3 py-6 sm:grid-cols-[1fr,auto] sm:items-start sm:gap-8"
+                className="grid gap-3 py-6 sm:grid-cols-[1fr_auto] sm:items-start sm:gap-8"
               >
                 <div>
                   <h3 className="text-base font-semibold tracking-tight text-[var(--learn-ink)]">

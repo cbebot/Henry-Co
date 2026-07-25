@@ -69,7 +69,7 @@ export function MarketplaceCartDrawer() {
                     key={item.id}
                     className="rounded-[1.6rem] border border-[var(--home-line)] bg-[var(--home-surface-04)] p-4"
                   >
-                    <div className="grid grid-cols-[84px,1fr] gap-4">
+                    <div className="grid grid-cols-[84px_1fr] gap-4">
                       <div className="relative aspect-square overflow-hidden rounded-[1.15rem] bg-[var(--home-surface-07)]">
                         {item.image ? (
                           <DivisionImage
