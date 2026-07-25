@@ -146,6 +146,18 @@ begin
   end;
   reset role;
 
+  -- (7) GOVERNANCE — at most ONE live model per kind (the concurrent-double-promote
+  --     backstop). The seed model is shadow; promote it, then a SECOND live insert
+  --     for the same kind must be rejected by the partial-unique index.
+  update public.model_versions set status = 'live', approved_at = now()
+    where model_kind = 'fraud_risk' and version = '1.0.0';
+  begin
+    insert into public.model_versions (model_kind, version, status, config)
+      values ('fraud_risk', '9.9.9', 'live', '{"weights":{},"behavioralScales":{},"thresholds":{"monitor":30,"review":60,"freeze":85},"advisoryCapPoints":0}'::jsonb);
+    raise warning 'GOVERNANCE FAIL: two live fraud_risk models coexist'; violations := violations + 1;
+  exception when unique_violation then raise notice 'OK: a second live model was rejected (single-live-per-kind)';
+  end;
+
   if violations > 0 then
     raise exception 'V3-40 risk RLS behavioural proof FAILED: % violation(s)', violations;
   end if;

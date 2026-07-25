@@ -77,7 +77,16 @@ export async function promoteRiskModel(
     .eq("model_kind", modelKind)
     .eq("version", version)
     .eq("status", "shadow");
-  if (promoteError) return { ok: false, message: `Promotion failed: ${promoteError.message}` };
+  if (promoteError) {
+    // A concurrent promote of another version won the `model_versions_one_live_per_kind`
+    // partial-unique index — this promote loses ATOMICALLY (no two-live window). The
+    // demoted prior-live is already retired; the winner is live. Surface it calmly.
+    const raced = /unique|duplicate|23505/i.test(promoteError.message);
+    return {
+      ok: false,
+      message: raced ? "Another version was promoted concurrently. Refresh and retry." : `Promotion failed: ${promoteError.message}`,
+    };
+  }
 
   const payload = { modelKind, version, shadowDays: distinctDays };
   emitEvent({ name: "henry.risk.model.promoted", classification: "user_action", outcome: "approved", actorId: actor.userId, payload });

@@ -85,6 +85,15 @@ create table if not exists public.model_versions (
   unique (model_kind, version)
 );
 
+-- AT MOST ONE live version per model_kind — the enforcement doctrine's DB backstop.
+-- Promotion is demote-first (retire the live, then promote the shadow); this partial
+-- unique index makes a concurrent double-promote FAIL ATOMICALLY at the second write
+-- rather than leaving two live models (the TOCTOU that app-level ordering alone can't
+-- close). loadActiveRiskModel would otherwise pick one arbitrarily; here it can't happen.
+create unique index if not exists model_versions_one_live_per_kind
+  on public.model_versions (model_kind)
+  where status = 'live';
+
 -- ---------------------------------------------------------------------------
 -- 2. risk_scores — one explainable row per entity per batch run. Idempotent per
 --    (entity, model, day) via the partial-free unique below; `contributing_factors`

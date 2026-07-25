@@ -19,7 +19,6 @@ import {
   isFlagEnabled,
   parseHenryFeatureFlags,
   planSystemEnforcement,
-  scoreEntity,
   type RiskScoreResult,
   type RiskTier,
 } from "@henryco/intelligence";
@@ -34,6 +33,7 @@ import {
   readTransactionCandidates,
   type RiskEntityCandidate,
 } from "./readers";
+import { scoreCandidateWithAdvisory } from "./score-candidate";
 
 export interface RiskBatchSummary {
   skipped?: "flag_dark" | "no_model" | "lock_held" | "tables_absent";
@@ -101,49 +101,27 @@ export async function runRiskScoreBatch(now: Date): Promise<RiskBatchSummary> {
     let aiAssisted = 0;
     const assistOn = riskAssistEnabled();
     for (const candidate of candidates) {
-      let floor: RiskScoreResult;
+      // Cap gate here; the helper computes the floor, applies the tier gate, and owns the
+      // floor-never-dropped guarantee (an advisory throw falls back to the floor).
+      const underCap = assistOn && model.advisoryCapPoints > 0 && aiAssisted < RISK_ASSIST_MAX_PER_RUN;
+      let outcome;
       try {
-        floor = scoreEntity({
-          entityType: candidate.entityType,
-          entityId: candidate.entityId,
-          features: candidate.features,
+        outcome = await scoreCandidateWithAdvisory({
+          candidate,
           model,
+          wantsAdvisory: underCap,
+          isEligible: (floor) => floor.deterministicTier === "review" || floor.deterministicTier === "freeze",
+          requestAdvisory: (floor) => requestRiskAdvisory(floor, day),
         });
       } catch (error) {
+        // Only a FLOOR failure reaches here (the advisory is caught inside the helper).
         errors.push(`score:${candidate.entityType}:${error instanceof Error ? error.message : "unknown"}`);
         continue;
       }
-      // The deterministic floor is computed and CANNOT be discarded by the advisory
-      // step: the advisory runs in its own try, and any throw falls back to `floor`.
-      let result = floor;
-      const wantsAdvisory =
-        assistOn &&
-        model.advisoryCapPoints > 0 &&
-        (floor.deterministicTier === "review" || floor.deterministicTier === "freeze") &&
-        aiAssisted < RISK_ASSIST_MAX_PER_RUN;
-      if (wantsAdvisory) {
-        try {
-          const outcome = await requestRiskAdvisory(floor, day);
-          if (outcome.advisory) {
-            aiAssisted += 1;
-            result = scoreEntity({
-              entityType: candidate.entityType,
-              entityId: candidate.entityId,
-              features: { ...candidate.features, advisory: outcome.advisory },
-              model,
-            });
-          } else {
-            aiSkipped[outcome.skipped] = (aiSkipped[outcome.skipped] ?? 0) + 1;
-          }
-        } catch (error) {
-          // Advisory failed — keep the deterministic floor (fail-safe, never dropped).
-          aiSkipped.advisory_error = (aiSkipped.advisory_error ?? 0) + 1;
-          errors.push(`advisory:${candidate.entityType}:${error instanceof Error ? error.message : "unknown"}`);
-          result = floor;
-        }
-      }
-      tiers[result.tier] += 1;
-      results.push(result);
+      if (outcome.advisoryApplied) aiAssisted += 1;
+      if (outcome.advisorySkipped) aiSkipped[outcome.advisorySkipped] = (aiSkipped[outcome.advisorySkipped] ?? 0) + 1;
+      tiers[outcome.result.tier] += 1;
+      results.push(outcome.result);
     }
 
     // ---- Persist scores (idempotent per entity/model/day) --------------------

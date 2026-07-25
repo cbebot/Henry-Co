@@ -100,6 +100,13 @@ begin
   ) then
     raise warning 'VIOLATION: risk_scores_daily_unique index missing'; violations := violations + 1;
   end if;
+  -- The single-live-per-kind backstop (no two live models can coexist).
+  if not exists (
+    select 1 from pg_indexes
+    where schemaname = 'public' and tablename = 'model_versions' and indexname = 'model_versions_one_live_per_kind'
+  ) then
+    raise warning 'VIOLATION: model_versions_one_live_per_kind partial-unique index missing'; violations := violations + 1;
+  end if;
   for t in select unnest(array['risk_scores','risk_enforcement_log']) loop
     if not exists (
       select 1 from pg_constraint
