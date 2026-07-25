@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export * from "./analytics";
 export * from "./search";
+export * from "./risk/index";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -109,6 +110,18 @@ export const HenryEventNames = {
   AI_USAGE_METERED: "henry.ai.usage.metered",
   AI_USAGE_BLOCKED: "henry.ai.usage.blocked",
   AI_PROVIDER_FAILED: "henry.ai.provider.failed",
+  // Predictive fraud & risk (V3-40). Division 'system' (platform-invoked batch) except
+  // staff actions, which ride division 'staff'. Properties carry entity ids + tiers ONLY —
+  // never PII, never a raw score outside the staff surface, never a provider/model name.
+  // (The pass spec's two-segment names, e.g. "henry.risk.scored", fail the registered
+  // henry.<domain>.<object>.<verb> schema — these are the schema-valid forms.)
+  RISK_ENTITY_SCORED: "henry.risk.entity.scored",
+  RISK_ENFORCEMENT_HELD: "henry.risk.enforcement.held",
+  RISK_ENFORCEMENT_FROZEN: "henry.risk.enforcement.frozen",
+  RISK_ENFORCEMENT_RELEASED: "henry.risk.enforcement.released",
+  RISK_STAFF_OVERRIDE: "henry.risk.staff.overrode",
+  RISK_MODEL_PROMOTED: "henry.risk.model.promoted",
+  RISK_MODEL_ROLLED_BACK: "henry.risk.model.rolled_back",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
@@ -310,7 +323,16 @@ export type HenryFeatureFlagName =
   // V3-34 (Phase E) — per-surface kill switch for the personalized home layout.
   // Default OFF: the account home falls back to pure DASH weight ordering instantly.
   // Deterministic + AI-free; gates only the user-preference/signal projection.
-  | "personalization_home";
+  | "personalization_home"
+  // V3-40 (Phase E) — the predictive risk batch scorer, shadow-first. Default OFF:
+  // no batch runs, no rows written, the staff risk queue renders its empty state.
+  // Deterministic + AI-free; enforcement additionally requires a LIVE model version
+  // (owner-promoted) and a STAFF-applied action — this flag alone affects no user.
+  | "predictive_shadow"
+  // V3-40 — the OPTIONAL LLM-advisory slice on top of the deterministic risk floor
+  // (E-D1-A). Default OFF. Also requires `ai_gateway` + `predictive_shadow`; spend is
+  // platform COGS under the internal daily ledger, reserve-before-run, degrade-CLOSED.
+  | "predictive_risk_assist";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -364,6 +386,16 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
       list.has("personalization_home") ||
       list.has("personalization"),
+    // V3-40 predictive risk batch (shadow-first) — default OFF (dark launch).
+    predictive_shadow:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_SHADOW) ||
+      list.has("predictive_shadow") ||
+      list.has("predictive"),
+    // V3-40 LLM-advisory slice — default OFF; deterministic floor never needs it.
+    predictive_risk_assist:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_RISK_ASSIST) ||
+      list.has("predictive_risk_assist") ||
+      list.has("risk_assist"),
   };
 }
 
