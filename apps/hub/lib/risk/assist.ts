@@ -23,8 +23,10 @@ import {
   isFlagEnabled,
   parseHenryFeatureFlags,
   reservePlatformAiSpend,
+  RISK_ADVISORY_NOTE_KEYS,
   type PlatformSpendRefusal,
   type RiskAdvisoryInput,
+  type RiskAdvisoryNoteKey,
   type RiskScoreResult,
 } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -99,10 +101,10 @@ export async function requestRiskAdvisory(
     const parsed = JSON.parse(match[0]) as { adjustmentPoints?: unknown; noteKey?: unknown };
     const points = Number(parsed.adjustmentPoints);
     if (!Number.isFinite(points)) return { advisory: null, skipped: "parse" };
-    const noteKey =
+    const noteKey: RiskAdvisoryNoteKey =
       typeof parsed.noteKey === "string" &&
-      ["corroborating_pattern", "likely_benign", "insufficient_evidence"].includes(parsed.noteKey)
-        ? parsed.noteKey
+      (RISK_ADVISORY_NOTE_KEYS as readonly string[]).includes(parsed.noteKey)
+        ? (parsed.noteKey as RiskAdvisoryNoteKey)
         : "insufficient_evidence";
     return {
       advisory: {

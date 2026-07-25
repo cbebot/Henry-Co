@@ -248,6 +248,25 @@ test("AI OFF: absent advisory leaves the deterministic result untouched — the 
   assert.ok(!withOut.contributingFactors.some((f) => f.signal.startsWith("advisory.")));
 });
 
+test("ABSOLUTE: the engine clamps a hostile advisory note to the fixed vocabulary (no verbatim model text stored)", () => {
+  const result = scoreEntity({
+    entityType: "account",
+    entityId: "a",
+    features: {
+      signals: [],
+      behavioral: { velocity_events_24h: 40 },
+      // A jailbroken advisory reply forwarded unchecked by a hypothetical caller —
+      // the engine, not the caller, must refuse to store it verbatim.
+      advisory: { adjustmentPoints: 5, noteKey: "claude-secret-model-xyz leaked here" as never },
+    },
+    model: model(),
+  });
+  const advisoryFactor = result.contributingFactors.find((f) => f.signal === "advisory.adjustment");
+  assert.ok(advisoryFactor);
+  assert.equal(advisoryFactor?.value, "advisory", "an unrecognized note is replaced, never stored verbatim");
+  assert.equal(JSON.stringify(result).includes("claude-secret-model-xyz"), false);
+});
+
 test("advisoryCapPoints 0 disables the advisory entirely", () => {
   const result = scoreEntity({
     entityType: "account",

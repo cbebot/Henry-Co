@@ -13,6 +13,7 @@
 
 import type { RiskSeverity } from "../index";
 import { tierForScore, validateRiskModelConfig } from "./tiers";
+import { RISK_ADVISORY_NOTE_KEYS } from "./types";
 import type {
   RiskContributingFactor,
   RiskEntityType,
@@ -133,10 +134,17 @@ export function scoreEntity(input: ScoreEntityInput): RiskScoreResult {
       Math.min(model.advisoryCapPoints, advisory.adjustmentPoints),
     );
     riskScore = round2(clampScore(deterministicScore + capped));
+    // Clamp the note to the fixed vocabulary at RUNTIME too (types erase) — the engine
+    // OWNS the "no verbatim model text in a stored, staff-visible factor" invariant, so
+    // it never depends on a caller sanitizing a jailbroken advisory reply.
+    const noteKey =
+      advisory.noteKey && (RISK_ADVISORY_NOTE_KEYS as readonly string[]).includes(advisory.noteKey)
+        ? advisory.noteKey
+        : "advisory";
     factors.push({
       signal: "advisory.adjustment",
       weight: round2(riskScore - deterministicScore),
-      value: advisory.noteKey ?? "advisory",
+      value: noteKey,
     });
   }
 

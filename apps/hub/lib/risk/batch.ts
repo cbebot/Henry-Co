@@ -101,20 +101,28 @@ export async function runRiskScoreBatch(now: Date): Promise<RiskBatchSummary> {
     let aiAssisted = 0;
     const assistOn = riskAssistEnabled();
     for (const candidate of candidates) {
+      let floor: RiskScoreResult;
       try {
-        const floor = scoreEntity({
+        floor = scoreEntity({
           entityType: candidate.entityType,
           entityId: candidate.entityId,
           features: candidate.features,
           model,
         });
-        let result = floor;
-        const wantsAdvisory =
-          assistOn &&
-          model.advisoryCapPoints > 0 &&
-          (floor.deterministicTier === "review" || floor.deterministicTier === "freeze") &&
-          aiAssisted < RISK_ASSIST_MAX_PER_RUN;
-        if (wantsAdvisory) {
+      } catch (error) {
+        errors.push(`score:${candidate.entityType}:${error instanceof Error ? error.message : "unknown"}`);
+        continue;
+      }
+      // The deterministic floor is computed and CANNOT be discarded by the advisory
+      // step: the advisory runs in its own try, and any throw falls back to `floor`.
+      let result = floor;
+      const wantsAdvisory =
+        assistOn &&
+        model.advisoryCapPoints > 0 &&
+        (floor.deterministicTier === "review" || floor.deterministicTier === "freeze") &&
+        aiAssisted < RISK_ASSIST_MAX_PER_RUN;
+      if (wantsAdvisory) {
+        try {
           const outcome = await requestRiskAdvisory(floor, day);
           if (outcome.advisory) {
             aiAssisted += 1;
@@ -127,12 +135,15 @@ export async function runRiskScoreBatch(now: Date): Promise<RiskBatchSummary> {
           } else {
             aiSkipped[outcome.skipped] = (aiSkipped[outcome.skipped] ?? 0) + 1;
           }
+        } catch (error) {
+          // Advisory failed — keep the deterministic floor (fail-safe, never dropped).
+          aiSkipped.advisory_error = (aiSkipped.advisory_error ?? 0) + 1;
+          errors.push(`advisory:${candidate.entityType}:${error instanceof Error ? error.message : "unknown"}`);
+          result = floor;
         }
-        tiers[result.tier] += 1;
-        results.push(result);
-      } catch (error) {
-        errors.push(`score:${candidate.entityType}:${error instanceof Error ? error.message : "unknown"}`);
       }
+      tiers[result.tier] += 1;
+      results.push(result);
     }
 
     // ---- Persist scores (idempotent per entity/model/day) --------------------

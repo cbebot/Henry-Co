@@ -53,6 +53,20 @@ export type BehavioralFeatureKey =
   | "trust_deficit"; // 100 - calculateTrustScore(...), so higher = riskier like every other feature
 
 /**
+ * The closed vocabulary an advisory may attach as a staff-facing note. Narrowing this
+ * to a literal union is a structural guarantee: no model-produced free text (which could
+ * carry a leaked provider/model name from a jailbroken reply) can be typed into the
+ * advisory, and the engine additionally clamps to this list at runtime (types erase).
+ */
+export const RISK_ADVISORY_NOTE_KEYS = [
+  "corroborating_pattern",
+  "likely_benign",
+  "insufficient_evidence",
+] as const;
+
+export type RiskAdvisoryNoteKey = (typeof RISK_ADVISORY_NOTE_KEYS)[number];
+
+/**
  * Advisory (LLM-assisted) input — E-D1 Option A. Strictly optional, strictly bounded:
  * the engine clamps `adjustmentPoints` to the model's `advisoryCapPoints`, and a freeze
  * tier can NEVER rest on the advisory alone (see score.ts). The deterministic floor must
@@ -61,8 +75,8 @@ export type BehavioralFeatureKey =
 export interface RiskAdvisoryInput {
   /** Points to add (or subtract) from the deterministic score. Clamped by config. */
   adjustmentPoints: number;
-  /** i18n-safe note key for the staff queue — NEVER free text with PII/provider names. */
-  noteKey?: string;
+  /** Fixed-vocabulary note for the staff queue — NEVER free text with PII/provider names. */
+  noteKey?: RiskAdvisoryNoteKey;
 }
 
 export interface RiskFeatures {
