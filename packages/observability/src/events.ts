@@ -305,6 +305,7 @@ export type HenryEventName =
   // scored` fires once per batch with per-tier counts; enforcement verbs track
   // the log rows (held/frozen are STAFF one-taps — the system can only flag);
   // model verbs track the governed shadow→live lifecycle.
+  | "henry.auth.sensitive_action.risk_held"
   | "henry.risk.entity.scored"
   | "henry.risk.enforcement.held"
   | "henry.risk.enforcement.frozen"
