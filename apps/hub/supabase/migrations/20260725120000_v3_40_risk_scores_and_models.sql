@@ -368,23 +368,26 @@ begin
     return jsonb_build_object('ok', false, 'reason', 'not_live');
   end if;
 
-  -- Restore the most recently retired previously-live version (if any).
+  -- Restore the most recently retired previously-live version (if any). The id
+  -- tiebreaker keeps the choice deterministic even under a same-approved_at tie.
   select version into v_restored from public.model_versions
     where model_kind = p_model_kind and status = 'retired' and approved_at is not null
-    order by approved_at desc limit 1;
+    order by approved_at desc, id desc limit 1;
   if v_restored is not null then
     update public.model_versions set status = 'live'
       where model_kind = p_model_kind and version = v_restored and status = 'retired';
   end if;
 
-  -- Release EVERY open hold/freeze whose CURRENT state (latest action across all
-  -- versions) is a hold/freeze taken under the rolled-back version. Set-based — no
-  -- row cap, so an enforcement can never outlive the model that justified it.
+  -- Release EVERY open hold/freeze whose CURRENT state (latest action) is a hold/
+  -- freeze taken under the rolled-back (kind, version). Scoped to p_model_kind so a
+  -- version STRING shared by a different, still-live kind is never touched. Set-based
+  -- — no row cap, so an enforcement can never outlive the model that justified it.
   with latest as (
     select distinct on (entity_type, entity_id)
-      entity_type, entity_id, action, tier_at_action, model_version
+      entity_type, entity_id, action, tier_at_action, model_kind, model_version
     from public.risk_enforcement_log
     where action in ('hold', 'freeze', 'release', 'staff_override')
+      and model_kind = p_model_kind
     -- id is the deterministic tiebreaker for the (rare) same-timestamp case, so
     -- "latest action per entity" is never ambiguous.
     order by entity_type, entity_id, created_at desc, id desc

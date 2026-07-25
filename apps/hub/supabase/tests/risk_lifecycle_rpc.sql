@@ -126,6 +126,46 @@ begin
   if v_live <> 1 then raise warning 'FAIL: after rollback expected 1 live, saw %', v_live; violations := violations + 1;
   else raise notice 'OK: rollback restored exactly one live'; end if;
 
+  -- (7) the hold under 1.0.0 (held-1, a DIFFERENT version than the rolled-back 2.0.0)
+  --     must be UNTOUCHED — a rollback releases only holds under the rolled-back version.
+  if not exists (
+    select 1 from (
+      select distinct on (entity_type, entity_id) action
+      from public.risk_enforcement_log where entity_id = 'held-1'
+      order by entity_type, entity_id, created_at desc, id desc
+    ) t where action = 'freeze'
+  ) then raise warning 'FAIL: held-1 (under 1.0.0) was wrongly released by the 2.0.0 rollback'; violations := violations + 1;
+  else raise notice 'OK: a hold under a different version was left untouched'; end if;
+
+  -- (8) CROSS-KIND: a hold under a DIFFERENT model_kind that SHARES the version string
+  --     must never be released by rolling back this kind. Seed a second kind, hold an
+  --     entity under its '3.0.0', promote+rollback this kind's '3.0.0', assert untouched.
+  insert into public.model_versions (model_kind, version, status, config) values
+    ('other_kind', '3.0.0', 'shadow',
+     '{"weights":{},"behavioralScales":{},"thresholds":{"monitor":30,"review":60,"freeze":85},"advisoryCapPoints":0}'::jsonb),
+    ('lifecycle_test', '3.0.0', 'shadow',
+     '{"weights":{},"behavioralScales":{},"thresholds":{"monitor":30,"review":60,"freeze":85},"advisoryCapPoints":0}'::jsonb)
+    on conflict (model_kind, version) do nothing;
+  insert into public.risk_enforcement_log
+    (entity_type, entity_id, action, tier_at_action, model_kind, model_version, shadow, actor, created_at)
+  values ('account', 'cross-held', 'freeze', 'freeze', 'other_kind', '3.0.0', false,
+          'e0000000-0000-0000-0000-000000000001', now() - interval '3 minutes');
+  insert into public.risk_scores
+    (entity_type, entity_id, risk_score, deterministic_score, tier, deterministic_tier,
+     contributing_factors, model_kind, model_version, shadow, scored_on)
+  select 'account', 'lt3-' || g, 10, 10, 'pass', 'pass', '[]'::jsonb, 'lifecycle_test', '3.0.0', true, (current_date - g)
+  from generate_series(0, 29) g;
+  v := public.promote_risk_model('lifecycle_test', '3.0.0', 'e0000000-0000-0000-0000-000000000001', 30);
+  v := public.rollback_risk_model('lifecycle_test', '3.0.0', 'x', 'e0000000-0000-0000-0000-000000000001');
+  if not exists (
+    select 1 from (
+      select distinct on (entity_type, entity_id) action
+      from public.risk_enforcement_log where entity_id = 'cross-held'
+      order by entity_type, entity_id, created_at desc, id desc
+    ) t where action = 'freeze'
+  ) then raise warning 'SECURITY FAIL: a cross-kind hold sharing the version string was released'; violations := violations + 1;
+  else raise notice 'OK: a cross-kind hold sharing the version string was NOT released'; end if;
+
   if violations > 0 then
     raise exception 'V3-40 lifecycle RPC proof FAILED: % violation(s)', violations;
   end if;
