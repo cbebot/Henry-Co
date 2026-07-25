@@ -29,6 +29,7 @@ export {
 } from "./logistics-staff-owner-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
 export { getRiskStatusCopy, type RiskStatusCopy } from "./risk-status-copy";
+export { getStaffRiskCopy, type StaffRiskCopy } from "./staff-risk-copy";
 export {
   getPersonalizationCopy,
   formatPersonalizationTemplate,

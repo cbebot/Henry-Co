@@ -117,3 +117,11 @@ export async function handleStaffFinanceOperatorExport(
 ): Promise<void> {
   await recordExport({ module: "staff-finance-operator", division: null, entityType: "payout_request", format, capturedFilters, visibleIds });
 }
+
+export async function handleStaffRiskExport(
+  format: BulkExportFormat,
+  capturedFilters: ReadonlyArray<{ label: string; value: string }>,
+  visibleIds: string[],
+): Promise<void> {
+  await recordExport({ module: "staff-risk", division: null, entityType: "risk_entity", format, capturedFilters, visibleIds });
+}
