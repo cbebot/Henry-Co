@@ -33,6 +33,14 @@ export type AiSurfaceKey =
   // requireOwner BEFORE runAiTask, and its own flag (NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE)
   // keeps it dark until activation.
   | "hub.founder.assist"
+  // V3-36 (Phase E) — the cross-division recommendation RE-RANK. PLATFORM-INVOKED
+  // (the customer never asked): billable:false so it NEVER touches a wallet
+  // (E-D1 — a person cannot be charged for a suggestion they didn't request),
+  // fast tier, tiny output (it returns an ORDERING, not content), audit ON. Its
+  // cost is company COGS bounded by the shared free-AI daily ceiling; the engine
+  // treats a refusal/failure as "keep the deterministic order" — enhancement,
+  // never the floor.
+  | "intelligence.recommendations.rerank"
   // V3-40 (Phase E) — the predictive-risk ADVISORY. PLATFORM-INVOKED (the scored
   // party never asked and can never be billed for surveillance of themselves —
   // E-D1): billable:false so no wallet is ever touched; runs with noBillingPort;
@@ -248,6 +256,20 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     // One person holds this surface, but the anti-abuse lesson still applies —
     // a leaked owner session must not be able to burn unbounded provider spend.
     freeAllowancePerDay: 400,
+  },
+  // V3-36 — the recommendation re-rank. NON-BILLABLE (no wallet, ever), fast
+  // tier, tiny cap (an ordering of ≤6 ids fits in well under 200 tokens), and a
+  // modest per-actor daily allowance so a busy home can never compound provider
+  // spend. The caller ALSO gates it on the company free-AI daily budget, so the
+  // platform-invoked cost is doubly bounded.
+  "intelligence.recommendations.rerank": {
+    surface: "intelligence.recommendations.rerank",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 200,
+    maxCalls: 1,
+    freeAllowancePerDay: 60,
   },
   // V3-40 — platform-invoked risk advisory. Never a wallet; bounded twice over
   // (freeAllowancePerDay here + reserve-before-run against the internal daily

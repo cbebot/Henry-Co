@@ -298,6 +298,10 @@ export type HenryEventName =
   | "henry.personalization.module.hidden"
   | "henry.personalization.consent.granted"
   | "henry.personalization.consent.revoked"
+  // V3-36 — cross-division recommendation engine. Payload carries counts + the
+  // profiled/ai-applied booleans only; never per-item content, never a score,
+  // never a provider/model name.
+  | "henry.personalization.recommendations.computed"
   // V3-40 predictive fraud & risk (Phase E, Wave E.3). Platform-invoked batch
   // events ride actorless (system); staff actions carry the acting staff id.
   // Payloads are entity ids + tiers + counts ONLY — never PII, never a raw

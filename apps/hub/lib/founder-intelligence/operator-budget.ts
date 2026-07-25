@@ -6,11 +6,13 @@
  * ₦5,000/day by default (the shipped free-budget order of magnitude), enforced
  * OUTSIDE the model at the tick:
  *
- *   - the durable counter is public.ai_operator_spend_ledger (its own ledger —
- *     never the customer free-spend one);
- *   - the tick is single-flight (ai_operator_tick_lock), so the start-of-tick
- *     spend read is always fresh relative to peer crons (the SA-3 lesson: two
- *     concurrent ticks must not each spend a full ceiling);
+ *   - the durable counter is public.internal_ai_spend_ledger under budget_key
+ *     'operator' (V3-43 — the ONE consolidated internal-spend ledger; the
+ *     customer free-spend counter is a SEPARATE key on the same table, never
+ *     co-mingled);
+ *   - the tick is single-flight (workflow_locks key 'hub.operator.tick'), so the
+ *     start-of-tick spend read is always fresh relative to peer crons (the SA-3
+ *     lesson: two concurrent ticks must not each spend a full ceiling);
  *   - WITHIN a tick, every model call reserves its UPPER-BOUND estimate into
  *     `committedKobo` BEFORE the call (reserve-then-run — never the free-chat
  *     route's post-pay shape, which is only safe for single-turn fan-out-free
