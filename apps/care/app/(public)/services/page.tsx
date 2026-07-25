@@ -18,12 +18,21 @@ import {
 } from "lucide-react";
 import { WashingMachine } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
-import { getServicesCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { isFlagEnabled, parseHenryFeatureFlags } from "@henryco/intelligence";
+import {
+  getAvailabilityCopy,
+  getServicesCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
 import { getCarePublicLocale } from "@/lib/locale-server";
 import { getServicesCatalog } from "@/lib/care-data";
 import { groupServicesByVertical } from "@/lib/services-catalog";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
 import { emitServicesCatalogViewed } from "@/lib/services-telemetry";
+import {
+  CareAvailabilityChip,
+  CareAvailabilityProvider,
+} from "@/components/availability/CareAvailability";
 
 export const revalidate = 60;
 
@@ -65,6 +74,14 @@ export default async function ServicesPage() {
   const catalog = await getServicesCatalog();
   const groups = groupServicesByVertical(catalog);
 
+  // V3-38 — availability badges, flag-dark: with the governed flag off the
+  // page renders exactly as before (no client component, no fetch).
+  const availabilityEnabled = isFlagEnabled(
+    parseHenryFeatureFlags(process.env as Record<string, string | undefined>),
+    "personalization_availability",
+  );
+  const availabilityCopy = availabilityEnabled ? getAvailabilityCopy(locale).availability : null;
+
   // Localize Supabase-driven vertical names/summaries (Pattern B runtime fallback).
   const localizedGroups = await Promise.all(
     groups.map(async (group) => ({
@@ -89,6 +106,43 @@ export default async function ServicesPage() {
   );
 
   emitServicesCatalogViewed({ surface: "care_directory", verticalCount: localizedGroups.length });
+
+  const directoryList = (
+    <ul className="mt-8 border-t border-[color:var(--home-line)] [&:hover>li:not(:hover)]:opacity-60 [&:focus-within>li:not(:focus-within)]:opacity-60">
+      {localizedGroups.map((group) => {
+        const Icon = VERTICAL_ICONS[group.icon] ?? Sparkles;
+        return (
+          <li key={group.slug} className="transition-opacity duration-300">
+            <Link
+              href={`/services/${group.slug}`}
+              className="group relative grid grid-cols-[auto_1fr_auto] items-center gap-5 border-b border-[color:var(--home-line)] py-7 transition-colors hover:bg-[color:var(--home-surface-04)]"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] text-[color:var(--home-accent-text)]">
+                <Icon className="h-5 w-5" aria-hidden />
+              </span>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <h2 className="text-[1.25rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
+                    {group.name}
+                  </h2>
+                  {availabilityCopy ? <CareAvailabilityChip offeringKey={group.slug} /> : null}
+                </div>
+                <p className="mt-1 max-w-2xl truncate text-sm leading-7 text-[color:var(--home-ink-70)]">
+                  {group.summary}
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="hidden text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)] sm:inline">
+                  {serviceCountLabel(group.count, copy)}
+                </span>
+                <ArrowUpRight className="h-5 w-5 text-[color:var(--home-ink-50)] transition-colors group-hover:text-[color:var(--home-accent-text)]" />
+              </div>
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
 
   return (
     <main
@@ -126,37 +180,16 @@ export default async function ServicesPage() {
           <p className="care-kicker">{copy.directory.linesEyebrow}</p>
           <span className="h-px flex-1 bg-[color:var(--home-line)]" />
         </div>
-        <ul className="mt-8 border-t border-[color:var(--home-line)] [&:hover>li:not(:hover)]:opacity-60 [&:focus-within>li:not(:focus-within)]:opacity-60">
-          {localizedGroups.map((group) => {
-            const Icon = VERTICAL_ICONS[group.icon] ?? Sparkles;
-            return (
-              <li key={group.slug} className="transition-opacity duration-300">
-                <Link
-                  href={`/services/${group.slug}`}
-                  className="group relative grid grid-cols-[auto_1fr_auto] items-center gap-5 border-b border-[color:var(--home-line)] py-7 transition-colors hover:bg-[color:var(--home-surface-04)]"
-                >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] text-[color:var(--home-accent-text)]">
-                    <Icon className="h-5 w-5" aria-hidden />
-                  </span>
-                  <div className="min-w-0">
-                    <h2 className="text-[1.25rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
-                      {group.name}
-                    </h2>
-                    <p className="mt-1 max-w-2xl truncate text-sm leading-7 text-[color:var(--home-ink-70)]">
-                      {group.summary}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="hidden text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-50)] sm:inline">
-                      {serviceCountLabel(group.count, copy)}
-                    </span>
-                    <ArrowUpRight className="h-5 w-5 text-[color:var(--home-ink-50)] transition-colors group-hover:text-[color:var(--home-accent-text)]" />
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        {availabilityCopy ? (
+          <CareAvailabilityProvider
+            offeringKeys={localizedGroups.map((group) => group.slug)}
+            copy={availabilityCopy}
+          >
+            {directoryList}
+          </CareAvailabilityProvider>
+        ) : (
+          directoryList
+        )}
       </section>
 
       {/* Closing band — theme-aware raised surface (flips light/dark). */}

@@ -4,12 +4,22 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, BadgeCheck } from "lucide-react";
 import { getDivisionConfig } from "@henryco/config";
-import { getServicesCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { isFlagEnabled, parseHenryFeatureFlags } from "@henryco/intelligence";
+import {
+  getAvailabilityCopy,
+  getServicesCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
 import { getCarePublicLocale } from "@/lib/locale-server";
 import { getServicesCatalog } from "@/lib/care-data";
 import { findVerticalBySlug } from "@/lib/services-catalog";
 import { formatServicePrice } from "@/lib/services-format";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
+import {
+  CareAvailabilityChip,
+  CareAvailabilityNotice,
+  CareAvailabilityProvider,
+} from "@/components/availability/CareAvailability";
 
 export const revalidate = 60;
 
@@ -49,6 +59,14 @@ export default async function VerticalPage({ params }: RouteParams) {
   if (!vertical) {
     notFound();
   }
+
+  // V3-38 — availability, flag-dark: with the governed flag off this page
+  // renders exactly as before (no client component, no fetch).
+  const availabilityEnabled = isFlagEnabled(
+    parseHenryFeatureFlags(process.env as Record<string, string | undefined>),
+    "personalization_availability",
+  );
+  const availabilityCopy = availabilityEnabled ? getAvailabilityCopy(locale).availability : null;
 
   const services = catalog.services
     .filter((service) => service.status === "active" && service.vertical_slug === vertical.slug)
@@ -91,6 +109,19 @@ export default async function VerticalPage({ params }: RouteParams) {
     })),
   );
 
+  const header = (
+    <div className="mt-5 max-w-3xl">
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-balance care-display text-[color:var(--home-ink)]">{verticalName}</h1>
+        {availabilityCopy ? <CareAvailabilityChip offeringKey={vertical.slug} /> : null}
+      </div>
+      <p className="hc-font-reading mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-70)]">
+        {verticalSummary}
+      </p>
+      {availabilityCopy ? <CareAvailabilityNotice offeringKey={vertical.slug} /> : null}
+    </div>
+  );
+
   return (
     <main
       id="henryco-main"
@@ -111,12 +142,13 @@ export default async function VerticalPage({ params }: RouteParams) {
           <ArrowLeft className="h-3.5 w-3.5" />
           {copy.vertical.backToDirectory}
         </Link>
-        <div className="mt-5 max-w-3xl">
-          <h1 className="text-balance care-display text-[color:var(--home-ink)]">{verticalName}</h1>
-          <p className="hc-font-reading mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-70)]">
-            {verticalSummary}
-          </p>
-        </div>
+        {availabilityCopy ? (
+          <CareAvailabilityProvider offeringKeys={[vertical.slug]} copy={availabilityCopy}>
+            {header}
+          </CareAvailabilityProvider>
+        ) : (
+          header
+        )}
       </section>
 
       <section className="mx-auto mt-12 max-w-[92rem] px-5 sm:px-8 lg:px-10">
