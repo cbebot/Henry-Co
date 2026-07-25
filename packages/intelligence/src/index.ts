@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export * from "./analytics";
 export * from "./search";
+export * from "./recommendations";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -155,13 +156,24 @@ export interface TaskItem {
 export type TrustState = "unverified" | "pending_review" | "needs_action" | "verified" | "restricted" | "frozen";
 export type UserRoleHint = "guest" | "buyer" | "seller" | "staff" | "owner";
 export type RecommendationConfidence = "low" | "medium" | "high";
+// The ONE cross-division recommendation-reason vocabulary (ARCHITECTURE §7:
+// "defined once … reused by every division surface"). The first six are the
+// V3 floor (`nextAccountSteps`); V3-36 extends the set for the cross-division
+// engine — every new code maps to a localized reason string, never a raw score.
 export type RecommendationReasonCode =
   | "profile_incomplete"
   | "trust_pending"
   | "saved_items"
   | "recent_activity"
   | "cross_sell_division"
-  | "role_default";
+  | "role_default"
+  // V3-36 cross-division engine
+  | "saved_item_match"
+  | "cross_division_bridge"
+  | "frequently_bought_together"
+  | "lifecycle_stage_fit"
+  | "popular_in_segment"
+  | "continue_where_you_left_off";
 
 export interface UserContext {
   roleHint: UserRoleHint;
