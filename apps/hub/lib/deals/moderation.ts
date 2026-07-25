@@ -112,7 +112,11 @@ export async function moderateDealSubmission(
 
   if (applied) {
     // Every transition is audited (ids + enums only — never offer text).
-    await writeAuditLog(admin, {
+    // The admin client is TypedSupabaseClient; writeAuditLog wants the
+    // narrower AuditLogSupabaseClient (its rpc overload pins
+    // p_correlation_id as string|undefined, not |null) — cast at the seam,
+    // the repo idiom (owner-audit-log.ts, marketplace seller-tier-reconcile).
+    await writeAuditLog(admin as unknown as Parameters<typeof writeAuditLog>[0], {
       action: "deal.status.changed",
       entityType: "deal",
       entityId: deal.id,
