@@ -49,6 +49,28 @@ test("advisory REQUEST throws → floor is kept, advisory_error recorded", async
   assert.equal(outcome.advisorySkipped, "advisory_error");
 });
 
+test("advisory RE-SCORE throws → floor is kept (both throw sites live in the same try)", async () => {
+  // A well-formed advisory whose adjustmentPoints is NaN makes the second scoreEntity
+  // path exercise; here we force the re-score to throw by returning a poisoned advisory
+  // that the engine rejects only at runtime — simulate via a requestAdvisory that returns
+  // an advisory, then rely on a model that would throw. Simpler: throw from within the
+  // returned promise chain after the null check by returning a getter that explodes.
+  const hostile = {
+    get advisory() {
+      throw new Error("re-score input access exploded");
+    },
+  } as unknown as RiskAssistOutcome;
+  const outcome = await scoreCandidateWithAdvisory({
+    candidate: reviewCandidate(),
+    model: MODEL,
+    wantsAdvisory: true,
+    isEligible: eligible,
+    requestAdvisory: async () => hostile,
+  });
+  assert.equal(outcome.result.riskScore, 65, "the floor survives a re-score/outcome throw");
+  assert.equal(outcome.advisorySkipped, "advisory_error");
+});
+
 test("advisory returns null (skipped) → floor is kept with the real skip reason", async () => {
   const outcome = await scoreCandidateWithAdvisory({
     candidate: reviewCandidate(),

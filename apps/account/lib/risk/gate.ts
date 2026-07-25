@@ -33,11 +33,14 @@ export async function readActiveEnforcement(
     const admin = createAdminSupabase();
     const { data, error } = await admin
       .from("risk_enforcement_log")
-      .select("action, actor, model_kind, model_version, created_at")
+      .select("action, actor, model_kind, model_version, created_at, id")
       .eq("entity_type", entityType)
       .eq("entity_id", entityId)
       .in("action", ["hold", "freeze", "release", "staff_override"])
       .order("created_at", { ascending: false })
+      // id tiebreaker: on the rare same-timestamp tie the latest action is still
+      // deterministic (a stale hold can never win over its own release).
+      .order("id", { ascending: false })
       .limit(1)
       .maybeSingle();
     if (error || !data) return null;

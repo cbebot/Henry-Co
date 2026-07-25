@@ -107,6 +107,16 @@ begin
   ) then
     raise warning 'VIOLATION: model_versions_one_live_per_kind partial-unique index missing'; violations := violations + 1;
   end if;
+
+  -- Lifecycle RPCs are service-role only (staff/owner authz re-derived in the app).
+  for t in select unnest(array['public.promote_risk_model(text,text,uuid,integer)', 'public.rollback_risk_model(text,text,text,uuid)']) loop
+    if has_function_privilege('anon', t, 'EXECUTE') or has_function_privilege('authenticated', t, 'EXECUTE') then
+      raise warning 'VIOLATION: % is executable by a request role', t; violations := violations + 1;
+    end if;
+    if not has_function_privilege('service_role', t, 'EXECUTE') then
+      raise warning 'VIOLATION: service_role cannot execute %', t; violations := violations + 1;
+    end if;
+  end loop;
   for t in select unnest(array['risk_scores','risk_enforcement_log']) loop
     if not exists (
       select 1 from pg_constraint

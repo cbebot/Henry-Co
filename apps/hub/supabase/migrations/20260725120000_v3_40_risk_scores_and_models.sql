@@ -284,3 +284,129 @@ values (
   }'::jsonb
 )
 on conflict (model_kind, version) do nothing;
+
+-- ---------------------------------------------------------------------------
+-- 8. Governed lifecycle RPCs — TRANSACTIONAL so the demote+promote and the
+--    rollback+restore+release are each ALL-OR-NOTHING. App-level ordering alone
+--    left a TOCTOU window (a concurrent status flip could retire the live model
+--    then match zero rows on the promote, silently disarming enforcement while
+--    reporting success). Here a `for update` row-lock serializes lifecycle ops per
+--    kind, and any mid-sequence failure aborts the whole function — so the only
+--    reachable failure is ZERO change (fail-safe), never a half-applied lifecycle.
+--    Service-role only (staff/owner authz is re-derived in the app before calling).
+-- ---------------------------------------------------------------------------
+create or replace function public.promote_risk_model(
+  p_model_kind text,
+  p_version text,
+  p_approver uuid,
+  p_min_shadow_days integer
+) returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_status text;
+  v_days integer;
+begin
+  -- Serialize concurrent promote/rollback on this kind.
+  perform 1 from public.model_versions where model_kind = p_model_kind for update;
+
+  select status into v_status from public.model_versions
+    where model_kind = p_model_kind and version = p_version;
+  if v_status is null then
+    return jsonb_build_object('ok', false, 'reason', 'unknown_version');
+  end if;
+  if v_status <> 'shadow' then
+    return jsonb_build_object('ok', false, 'reason', 'not_shadow');
+  end if;
+
+  select count(distinct scored_on) into v_days from public.risk_scores
+    where model_kind = p_model_kind and model_version = p_version;
+  if v_days < p_min_shadow_days then
+    return jsonb_build_object('ok', false, 'reason', 'shadow_window', 'days', v_days);
+  end if;
+
+  -- ONE transaction: retire the current live, then promote the target. If the target
+  -- is no longer shadow (a concurrent flip), the promote matches zero rows and the
+  -- raise aborts the whole function — the demote is rolled back, no zero-live window.
+  update public.model_versions set status = 'retired'
+    where model_kind = p_model_kind and status = 'live';
+  update public.model_versions
+    set status = 'live', approved_by = p_approver, approved_at = now()
+    where model_kind = p_model_kind and version = p_version and status = 'shadow';
+  if not found then
+    raise exception 'promote target % is no longer shadow', p_version;
+  end if;
+
+  return jsonb_build_object('ok', true, 'version', p_version, 'shadow_days', v_days);
+end
+$$;
+
+revoke all on function public.promote_risk_model(text, text, uuid, integer) from public, anon, authenticated;
+grant execute on function public.promote_risk_model(text, text, uuid, integer) to service_role;
+
+create or replace function public.rollback_risk_model(
+  p_model_kind text,
+  p_version text,
+  p_reason text,
+  p_actor uuid
+) returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_restored text;
+  v_released integer := 0;
+begin
+  perform 1 from public.model_versions where model_kind = p_model_kind for update;
+
+  update public.model_versions set status = 'rolled_back'
+    where model_kind = p_model_kind and version = p_version and status = 'live';
+  if not found then
+    return jsonb_build_object('ok', false, 'reason', 'not_live');
+  end if;
+
+  -- Restore the most recently retired previously-live version (if any).
+  select version into v_restored from public.model_versions
+    where model_kind = p_model_kind and status = 'retired' and approved_at is not null
+    order by approved_at desc limit 1;
+  if v_restored is not null then
+    update public.model_versions set status = 'live'
+      where model_kind = p_model_kind and version = v_restored and status = 'retired';
+  end if;
+
+  -- Release EVERY open hold/freeze whose CURRENT state (latest action across all
+  -- versions) is a hold/freeze taken under the rolled-back version. Set-based — no
+  -- row cap, so an enforcement can never outlive the model that justified it.
+  with latest as (
+    select distinct on (entity_type, entity_id)
+      entity_type, entity_id, action, tier_at_action, model_version
+    from public.risk_enforcement_log
+    where action in ('hold', 'freeze', 'release', 'staff_override')
+    -- id is the deterministic tiebreaker for the (rare) same-timestamp case, so
+    -- "latest action per entity" is never ambiguous.
+    order by entity_type, entity_id, created_at desc, id desc
+  ),
+  open_holds as (
+    select entity_type, entity_id, tier_at_action
+    from latest
+    where action in ('hold', 'freeze') and model_version = p_version
+  ),
+  inserted as (
+    insert into public.risk_enforcement_log
+      (entity_type, entity_id, action, tier_at_action, model_kind, model_version, shadow, actor, reason)
+    select entity_type, entity_id, 'release', tier_at_action, p_model_kind, p_version, false,
+           p_actor::text, 'model rolled back: ' || p_reason
+    from open_holds
+    returning 1
+  )
+  select count(*) into v_released from inserted;
+
+  return jsonb_build_object('ok', true, 'version', p_version, 'restored', v_restored, 'released', v_released);
+end
+$$;
+
+revoke all on function public.rollback_risk_model(text, text, text, uuid) from public, anon, authenticated;
+grant execute on function public.rollback_risk_model(text, text, text, uuid) to service_role;

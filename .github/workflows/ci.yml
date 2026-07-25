@@ -379,3 +379,6 @@ jobs:
 
       - name: Prove risk RLS + doctrine at runtime (scored party sees nothing; DB rejects system-actor hold/freeze)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_rls_behaviour.sql
+
+      - name: Prove risk model lifecycle RPCs (transactional promote/rollback, shadow window, single-live, set-based release)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_lifecycle_rpc.sql

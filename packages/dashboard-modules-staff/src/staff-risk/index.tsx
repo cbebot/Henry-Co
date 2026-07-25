@@ -111,13 +111,22 @@ export async function loadRiskQueueSnapshot(supabase: RiskSupabaseClient, copy: 
   try {
     const { data } = await supabase
       .from("risk_enforcement_log")
-      .select("entity_type, entity_id, action, created_at")
+      .select("entity_type, entity_id, action, created_at, id")
       .order("created_at", { ascending: false })
       .limit(600);
     enforcement = data ?? [];
   } catch {
     // degrade quietly
   }
+
+  // Deterministic newest-first with an id tiebreaker for the rare same-timestamp case,
+  // so "latest action per entity" never flickers between a hold and its release.
+  enforcement.sort((a, b) => {
+    const ca = String(a.created_at ?? "");
+    const cb = String(b.created_at ?? "");
+    if (ca !== cb) return ca < cb ? 1 : -1;
+    return String(a.id ?? "") < String(b.id ?? "") ? 1 : -1;
+  });
 
   // Latest user-affecting state per entity (rows arrive newest-first).
   const state = new Map<string, "flag" | "hold" | "freeze" | "none">();

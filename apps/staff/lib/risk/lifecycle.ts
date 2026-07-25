@@ -3,19 +3,19 @@ import "server-only";
 /**
  * V3-40 — governed model lifecycle (owner-approved, shadow-first).
  *
- * Promotion (shadow → live):
- *   * OWNER access required (security-staff alone cannot arm enforcement);
- *   * refuses before ≥30 DISTINCT shadow-scored days exist for the version —
- *     the mandatory validation window is enforced in code, not convention;
- *   * demote-first ordering: the currently-live version is retired BEFORE the
- *     target goes live, so a mid-sequence failure leaves NO live model (gates
- *     off — the fail-safe direction) rather than two.
+ * The state transitions run inside TRANSACTIONAL guarded RPCs
+ * (`promote_risk_model` / `rollback_risk_model`, migration 20260725120000) so the
+ * demote+promote and the rollback+restore+release are each ALL-OR-NOTHING and
+ * serialized per model_kind by a row lock — the app can never leave a half-applied
+ * lifecycle (zero-live-but-reported-ok, or a two-live window). This TS layer only:
+ *   1. gates on OWNER access (security-staff alone cannot arm enforcement);
+ *   2. requires a reason for rollback;
+ *   3. calls the RPC and translates its verdict into a LifecycleResult + telemetry.
  *
- * Rollback (live → rolled_back):
- *   * restores the most recently retired previously-live version (if any);
- *   * RELEASES every open staff hold/freeze taken under the rolled-back
- *     version (a release row per entity, actor = the rolling-back owner) —
- *     an enforcement may never outlive the model that justified it.
+ * Promotion refuses before ≥30 DISTINCT shadow-scored days exist (enforced INSIDE
+ * the RPC, so it cannot be raced). Rollback releases EVERY open hold/freeze taken
+ * under the rolled-back version (set-based in SQL, no row cap) — an enforcement can
+ * never outlive the model that justified it.
  */
 
 import { emitEvent, persistEvent } from "@henryco/observability";
@@ -29,6 +29,12 @@ export interface LifecycleResult {
   message: string;
 }
 
+const PROMOTE_REASON_COPY: Record<string, string> = {
+  unknown_version: "Unknown model version.",
+  not_shadow: "Only a shadow version can be promoted (it may have been promoted already).",
+  shadow_window: "Shadow window not met.",
+};
+
 export async function promoteRiskModel(
   version: string,
   actor: SecurityStaffActor,
@@ -37,58 +43,26 @@ export async function promoteRiskModel(
   if (!actor.hasOwnerAccess) return { ok: false, message: "Owner approval required." };
   const admin = createStaffAdminSupabase();
 
-  const { data: target } = await admin
-    .from("model_versions")
-    .select("id, status")
-    .eq("model_kind", modelKind)
-    .eq("version", version)
-    .maybeSingle();
-  if (!target) return { ok: false, message: "Unknown model version." };
-  if ((target as { status: string }).status !== "shadow") {
-    return { ok: false, message: "Only a shadow version can be promoted." };
+  const { data, error } = await admin.rpc("promote_risk_model", {
+    p_model_kind: modelKind,
+    p_version: version,
+    p_approver: actor.userId,
+    p_min_shadow_days: RISK_SHADOW_WINDOW_DAYS,
+  });
+  if (error) return { ok: false, message: `Promotion failed: ${error.message}` };
+
+  const result = (data ?? {}) as { ok?: boolean; reason?: string; days?: number; shadow_days?: number };
+  if (!result.ok) {
+    if (result.reason === "shadow_window") {
+      return {
+        ok: false,
+        message: `Shadow window not met: ${result.days ?? 0}/${RISK_SHADOW_WINDOW_DAYS} scored days.`,
+      };
+    }
+    return { ok: false, message: PROMOTE_REASON_COPY[result.reason ?? ""] ?? "Promotion failed." };
   }
 
-  // The mandatory ≥30-day shadow window, counted as DISTINCT scored days.
-  const { data: days } = await admin
-    .from("risk_scores")
-    .select("scored_on")
-    .eq("model_kind", modelKind)
-    .eq("model_version", version)
-    .limit(5000);
-  const distinctDays = new Set(((days ?? []) as { scored_on: string }[]).map((d) => d.scored_on)).size;
-  if (distinctDays < RISK_SHADOW_WINDOW_DAYS) {
-    return {
-      ok: false,
-      message: `Shadow window not met: ${distinctDays}/${RISK_SHADOW_WINDOW_DAYS} scored days.`,
-    };
-  }
-
-  // Demote-first: a failure between the two steps leaves no live model (safe).
-  const { error: demoteError } = await admin
-    .from("model_versions")
-    .update({ status: "retired" })
-    .eq("model_kind", modelKind)
-    .eq("status", "live");
-  if (demoteError) return { ok: false, message: `Demote failed: ${demoteError.message}` };
-
-  const { error: promoteError } = await admin
-    .from("model_versions")
-    .update({ status: "live", approved_by: actor.userId, approved_at: new Date().toISOString() })
-    .eq("model_kind", modelKind)
-    .eq("version", version)
-    .eq("status", "shadow");
-  if (promoteError) {
-    // A concurrent promote of another version won the `model_versions_one_live_per_kind`
-    // partial-unique index — this promote loses ATOMICALLY (no two-live window). The
-    // demoted prior-live is already retired; the winner is live. Surface it calmly.
-    const raced = /unique|duplicate|23505/i.test(promoteError.message);
-    return {
-      ok: false,
-      message: raced ? "Another version was promoted concurrently. Refresh and retry." : `Promotion failed: ${promoteError.message}`,
-    };
-  }
-
-  const payload = { modelKind, version, shadowDays: distinctDays };
+  const payload = { modelKind, version, shadowDays: result.shadow_days ?? 0 };
   emitEvent({ name: "henry.risk.model.promoted", classification: "user_action", outcome: "approved", actorId: actor.userId, payload });
   void persistEvent({ supabase: admin, name: "henry.risk.model.promoted", actorId: actor.userId, payload });
   return { ok: true, message: `Version ${version} is live.` };
@@ -104,80 +78,21 @@ export async function rollbackRiskModel(
   if (!reason.trim()) return { ok: false, message: "A reason is required." };
   const admin = createStaffAdminSupabase();
 
-  const { error: rollbackError, data: rolled } = await admin
-    .from("model_versions")
-    .update({ status: "rolled_back" })
-    .eq("model_kind", modelKind)
-    .eq("version", version)
-    .eq("status", "live")
-    .select("version");
-  if (rollbackError) return { ok: false, message: `Rollback failed: ${rollbackError.message}` };
-  if (!rolled || rolled.length === 0) return { ok: false, message: "That version is not live." };
+  const { data, error } = await admin.rpc("rollback_risk_model", {
+    p_model_kind: modelKind,
+    p_version: version,
+    p_reason: reason.trim(),
+    p_actor: actor.userId,
+  });
+  if (error) return { ok: false, message: `Rollback failed: ${error.message}` };
 
-  // Restore the most recently retired previously-live version, if one exists.
-  const { data: prior } = await admin
-    .from("model_versions")
-    .select("version, approved_at")
-    .eq("model_kind", modelKind)
-    .eq("status", "retired")
-    .not("approved_at", "is", null)
-    .order("approved_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (prior) {
-    await admin
-      .from("model_versions")
-      .update({ status: "live" })
-      .eq("model_kind", modelKind)
-      .eq("version", (prior as { version: string }).version)
-      .eq("status", "retired");
+  const result = (data ?? {}) as { ok?: boolean; reason?: string; restored?: string | null; released?: number };
+  if (!result.ok) {
+    return { ok: false, message: result.reason === "not_live" ? "That version is not live." : "Rollback failed." };
   }
 
-  // Release every open staff hold/freeze taken under the rolled-back version.
-  let released = 0;
-  const { data: actions } = await admin
-    .from("risk_enforcement_log")
-    .select("entity_type, entity_id, action, tier_at_action, model_kind, model_version, created_at")
-    .in("action", ["hold", "freeze", "release", "staff_override"])
-    .order("created_at", { ascending: false })
-    .limit(2000);
-  const latest = new Map<string, { action: string; tier: string; modelVersion: string }>();
-  for (const row of (actions ?? []) as Array<{
-    entity_type: string;
-    entity_id: string;
-    action: string;
-    tier_at_action: string;
-    model_version: string;
-  }>) {
-    const key = `${row.entity_type}|${row.entity_id}`;
-    if (!latest.has(key)) {
-      latest.set(key, { action: row.action, tier: row.tier_at_action, modelVersion: row.model_version });
-    }
-  }
-  const releases = Array.from(latest.entries())
-    .filter(
-      ([, s]) => (s.action === "hold" || s.action === "freeze") && s.modelVersion === version,
-    )
-    .map(([key, s]) => {
-      const [entityType, entityId] = key.split("|");
-      return {
-        entity_type: entityType,
-        entity_id: entityId,
-        action: "release",
-        tier_at_action: s.tier,
-        model_kind: modelKind,
-        model_version: version,
-        shadow: false,
-        actor: actor.userId,
-        reason: `model rolled back: ${reason.trim()}`,
-      };
-    });
-  if (releases.length > 0) {
-    const { error: releaseError } = await admin.from("risk_enforcement_log").insert(releases);
-    if (!releaseError) released = releases.length;
-  }
-
-  const payload = { modelKind, version, released, restored: prior ? (prior as { version: string }).version : null };
+  const released = result.released ?? 0;
+  const payload = { modelKind, version, released, restored: result.restored ?? null };
   emitEvent({ name: "henry.risk.model.rolled_back", classification: "user_action", outcome: "completed", actorId: actor.userId, payload });
   void persistEvent({ supabase: admin, name: "henry.risk.model.rolled_back", actorId: actor.userId, payload });
   return { ok: true, message: `Version ${version} rolled back; ${released} enforcement(s) released.` };

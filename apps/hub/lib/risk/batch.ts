@@ -119,6 +119,9 @@ export async function runRiskScoreBatch(now: Date): Promise<RiskBatchSummary> {
         continue;
       }
       if (outcome.advisoryApplied) aiAssisted += 1;
+      // Advisory failure is NON-FATAL by design: the deterministic floor is the product,
+      // so a best-effort AI outage is a skip (surfaced in counts.ai.skipped), NOT a run
+      // failure — it must not flip the journal to 'failed' or trigger a re-spend retry.
       if (outcome.advisorySkipped) aiSkipped[outcome.advisorySkipped] = (aiSkipped[outcome.advisorySkipped] ?? 0) + 1;
       tiers[outcome.result.tier] += 1;
       results.push(outcome.result);
