@@ -96,10 +96,19 @@ export type SensitiveActionGuardOptions<TUser> = {
   riskGate?: SensitiveActionRiskGate;
 };
 
+/**
+ * Discriminated so `message` is REQUIRED whenever `gated` is true — the neutral,
+ * localized customer copy is supplied by the gate (from typed i18n copy), never a
+ * hardcoded fallback in this shared guard.
+ */
+export type SensitiveActionRiskVerdict =
+  | { gated: false }
+  | { gated: true; message: string };
+
 export type SensitiveActionRiskGate = (ctx: {
   userId: string;
   action: string;
-}) => Promise<{ gated: boolean; message?: string } | null>;
+}) => Promise<SensitiveActionRiskVerdict | null>;
 
 type GuardResult<TUser> =
   | { ok: true; context: SensitiveActionGuardContext<TUser> }
@@ -190,9 +199,9 @@ export async function evaluateSensitiveActionGuard<TUser>(
       });
       const response = NextResponse.json(
         {
-          error:
-            verdict.message ??
-            "This action needs an additional review by our team. Please contact support.",
+          // Localized neutral copy is supplied by the gate (typed i18n) — the type
+          // makes `message` required when gated, so there is no hardcoded fallback here.
+          error: verdict.message,
           code: "sensitive_action_hold",
           intent: options.action,
         },

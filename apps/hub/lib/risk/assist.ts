@@ -3,9 +3,11 @@
 // ABSOLUTES enforced here:
 //   * NEVER a wallet debit — surface `risk.entity.assist` is billable:false and the
 //     task runs with `noBillingPort` (fail-closed even if billing were attempted).
-//   * ONE internal counter — spend reserves against the existing free-AI daily
-//     ledger via the signature-preserved `ai_free_spend_add` RPC (the primitive
-//     V3-43 folds into `internal_ai_spend_ledger`); no new counter exists.
+//   * ONE unified ledger, DEDICATED key — spend reserves against V3-43's unified
+//     `internal_ai_spend_ledger` via `internal_ai_spend_add('risk_predictive', …)`:
+//     a dedicated per-day counter ROW on the one primitive (own ceiling via
+//     RISK_AI_DAILY_BUDGET_KOBO, E-D1-A ₦2,000/day), isolated from the customer
+//     free-chat `free_ai` key. NOT a new counter table.
 //   * RESERVE BEFORE RUN, DEGRADE CLOSED — reservePlatformAiSpend adds the estimate
 //     atomically FIRST and refuses at the ceiling or on ANY ledger failure. Two
 //     concurrent batches cannot each spend the ceiling.
@@ -29,24 +31,16 @@ import {
   type RiskScoreResult,
 } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
+import {
+  RISK_AI_DAILY_BUDGET_KOBO_DEFAULT,
+  RISK_SPEND_BUDGET_KEY,
+  resolveRiskBudgetKobo,
+} from "./budget-config";
+
+export { RISK_AI_DAILY_BUDGET_KOBO_DEFAULT, RISK_SPEND_BUDGET_KEY, resolveRiskBudgetKobo };
 
 /** Hard per-run cap on advisory calls — bounds risk's share of the daily budget. */
 export const RISK_ASSIST_MAX_PER_RUN = 5;
-
-/**
- * Risk predictive AI rides its OWN budget_key on the unified internal_ai_spend_ledger
- * (V3-43 / #527) — isolated from the customer free-chat 'free_ai' key so a busy chat
- * day can never starve fraud scoring and vice versa. This is the unified primitive,
- * not a new counter (E-D1-A: a dedicated per-day counter + ceiling on the one ledger).
- */
-export const RISK_SPEND_BUDGET_KEY = "risk_predictive";
-/** E-D1-A default: start at ₦2,000/day (owner-tunable via RISK_AI_DAILY_BUDGET_KOBO). */
-export const RISK_AI_DAILY_BUDGET_KOBO_DEFAULT = 200_000;
-
-export function resolveRiskBudgetKobo(env: Record<string, string | undefined> = {}): number {
-  const raw = Number(env.RISK_AI_DAILY_BUDGET_KOBO);
-  return Number.isFinite(raw) && raw > 0 ? Math.round(raw) : RISK_AI_DAILY_BUDGET_KOBO_DEFAULT;
-}
 
 export function riskAssistEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
   const flags = parseHenryFeatureFlags(env as Record<string, string | undefined>);
@@ -98,7 +92,7 @@ export async function requestRiskAdvisory(
       },
     },
     estimateKobo: estimate,
-    ceilingKobo: resolveRiskBudgetKobo(process.env),
+    ceilingKobo: resolveRiskBudgetKobo(env),
   });
   if (!reservation.allowed) return { advisory: null, skipped: reservation.reason };
 

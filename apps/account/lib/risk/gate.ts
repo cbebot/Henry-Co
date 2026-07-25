@@ -38,8 +38,10 @@ export async function readActiveEnforcement(
       .eq("entity_id", entityId)
       .in("action", ["hold", "freeze", "release", "staff_override"])
       .order("created_at", { ascending: false })
-      // id tiebreaker: on the rare same-timestamp tie the latest action is still
-      // deterministic (a stale hold can never win over its own release).
+      // id tiebreaker makes the pick DETERMINISTIC on a same-created_at tie (the uuid
+      // is not chronological, so this stabilizes rather than orders — in practice a
+      // hold and its release land in separate requests with distinct timestamps, so
+      // created_at is authoritative and the tiebreaker only removes flicker).
       .order("id", { ascending: false })
       .limit(1)
       .maybeSingle();

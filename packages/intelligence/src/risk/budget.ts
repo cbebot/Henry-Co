@@ -1,11 +1,11 @@
 // V3-40 — the platform-invoked AI spend guard: reserve-before-run, degrade-CLOSED.
 //
 // Predictive scoring is PLATFORM-invoked — the customer never asked, so there is nothing
-// to bill them for (E-D1). Its provider cost is company COGS, bounded by the ONE internal
-// daily spend counter that already exists on main (`ai_free_spend_ledger`, via the
-// signature-preserved RPCs `ai_free_spend_today`/`ai_free_spend_add` — the same counter
-// V3-43's `internal_ai_spend_ledger` folds into behind identical signatures). No new
-// counter is created here; only the reservation DISCIPLINE is new:
+// to bill them for (E-D1). Its provider cost is company COGS, bounded by V3-43's ONE unified
+// `internal_ai_spend_ledger` under a DEDICATED `risk_predictive` budget_key (a per-day
+// counter ROW on the one primitive, its own ceiling — isolated from the customer free-chat
+// `free_ai` key). This module is the injected-ledger DISCIPLINE, agnostic to which key the
+// caller (apps/hub/lib/risk/assist.ts) wires in; no new counter table is created:
 //
 //   * RESERVE BEFORE RUN — the estimate is added to the ledger BEFORE the provider call.
 //     The atomic post-increment total is the decision input, so two concurrent runs can
