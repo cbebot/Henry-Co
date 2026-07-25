@@ -683,6 +683,9 @@ importers:
       '@henryco/media':
         specifier: workspace:^
         version: link:../../packages/media
+      '@henryco/moderation':
+        specifier: workspace:^
+        version: link:../../packages/moderation
       '@henryco/newsletter':
         specifier: workspace:^
         version: link:../../packages/newsletter
@@ -2876,6 +2879,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../config
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../intelligence
     devDependencies:
       '@henryco/auth':
         specifier: workspace:^

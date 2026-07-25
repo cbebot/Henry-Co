@@ -34,3 +34,8 @@ export {
   MAX_IMPRESSION_ROWS_PER_BATCH,
   type DealImpressionEntry,
 } from "./impressions";
+export {
+  resolveDealSubmissionStatus,
+  type DealPublishGateDecision,
+  type DealSubmissionStatus,
+} from "./approval";

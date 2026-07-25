@@ -30,6 +30,11 @@ const DOMAIN_PROMPTS: Record<ContentType, string> = {
   service_profile:
     "Assess this provider profile/bio for: impersonation, fabricated credentials, abusive language, " +
     "and attempts to solicit contact or payment off-platform.",
+  // V3-35 — deal/campaign offer artifacts ride the same publish gate.
+  deal:
+    "Assess this promotional offer (title + description) for: deceptive discount claims, " +
+    "bait-and-switch terms, prohibited/regulated goods or services, and attempts to move " +
+    "buyers or payment off-platform.",
 };
 
 /** Build the system + task prompt pair for a given content domain. */
