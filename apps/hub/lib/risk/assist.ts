@@ -17,7 +17,6 @@
 import "server-only";
 
 import { noBillingPort, runAiTask } from "@henryco/ai-gateway/server";
-import { resolveFreeBudgetKobo } from "@henryco/ai-gateway";
 import { estimateFreeTurnCostKobo } from "@henryco/ai-gateway/server";
 import {
   isFlagEnabled,
@@ -31,8 +30,23 @@ import {
 } from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 
-/** Hard per-run cap on advisory calls — bounds risk's share of the shared budget. */
+/** Hard per-run cap on advisory calls — bounds risk's share of the daily budget. */
 export const RISK_ASSIST_MAX_PER_RUN = 5;
+
+/**
+ * Risk predictive AI rides its OWN budget_key on the unified internal_ai_spend_ledger
+ * (V3-43 / #527) — isolated from the customer free-chat 'free_ai' key so a busy chat
+ * day can never starve fraud scoring and vice versa. This is the unified primitive,
+ * not a new counter (E-D1-A: a dedicated per-day counter + ceiling on the one ledger).
+ */
+export const RISK_SPEND_BUDGET_KEY = "risk_predictive";
+/** E-D1-A default: start at ₦2,000/day (owner-tunable via RISK_AI_DAILY_BUDGET_KOBO). */
+export const RISK_AI_DAILY_BUDGET_KOBO_DEFAULT = 200_000;
+
+export function resolveRiskBudgetKobo(env: Record<string, string | undefined> = {}): number {
+  const raw = Number(env.RISK_AI_DAILY_BUDGET_KOBO);
+  return Number.isFinite(raw) && raw > 0 ? Math.round(raw) : RISK_AI_DAILY_BUDGET_KOBO_DEFAULT;
+}
 
 export function riskAssistEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
   const flags = parseHenryFeatureFlags(env as Record<string, string | undefined>);
@@ -73,14 +87,18 @@ export async function requestRiskAdvisory(
   const estimate = estimateFreeTurnCostKobo({ surface: "risk.entity.assist", inputText: prompt });
   const reservation = await reservePlatformAiSpend({
     ledger: {
+      // Reserve BEFORE the run against the unified ledger's dedicated risk budget_key.
       async add(kobo: number): Promise<number> {
-        const { data, error } = await admin.rpc("ai_free_spend_add", { p_add_kobo: kobo });
+        const { data, error } = await admin.rpc("internal_ai_spend_add", {
+          p_budget_key: RISK_SPEND_BUDGET_KEY,
+          p_add_kobo: kobo,
+        });
         if (error) throw new Error(error.message);
         return Number(data);
       },
     },
     estimateKobo: estimate,
-    ceilingKobo: resolveFreeBudgetKobo(process.env),
+    ceilingKobo: resolveRiskBudgetKobo(process.env),
   });
   if (!reservation.allowed) return { advisory: null, skipped: reservation.reason };
 
