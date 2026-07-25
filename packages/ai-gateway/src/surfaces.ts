@@ -32,7 +32,15 @@ export type AiSurfaceKey =
   // Access model is INDEPENDENT of the customer support brain: the hub route gates on
   // requireOwner BEFORE runAiTask, and its own flag (NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE)
   // keeps it dark until activation.
-  | "hub.founder.assist";
+  | "hub.founder.assist"
+  // V3-40 (Phase E) — the predictive-risk ADVISORY. PLATFORM-INVOKED (the scored
+  // party never asked and can never be billed for surveillance of themselves —
+  // E-D1): billable:false so no wallet is ever touched; runs with noBillingPort;
+  // spend is company COGS reserved BEFORE the call against the internal daily
+  // ledger (reserve-before-run, degrade-CLOSED). Output is a clamped score
+  // adjustment only — a freeze can never rest on it (engine rule). Fast tier,
+  // tiny output, audit ON. Dark behind `predictive_risk_assist` + `ai_gateway`.
+  | "risk.entity.assist";
 
 export interface AiSurfacePolicy {
   surface: AiSurfaceKey;
@@ -240,6 +248,18 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     // One person holds this surface, but the anti-abuse lesson still applies —
     // a leaked owner session must not be able to burn unbounded provider spend.
     freeAllowancePerDay: 400,
+  },
+  // V3-40 — platform-invoked risk advisory. Never a wallet; bounded twice over
+  // (freeAllowancePerDay here + reserve-before-run against the internal daily
+  // spend ledger at the call site, RISK_ASSIST_MAX_PER_RUN per batch).
+  "risk.entity.assist": {
+    surface: "risk.entity.assist",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 120,
+    maxCalls: 1,
+    freeAllowancePerDay: 40,
   },
 };
 
