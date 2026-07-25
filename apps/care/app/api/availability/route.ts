@@ -70,11 +70,17 @@ async function resolveCareViewerLocation(req: Request): Promise<AvailabilityLoca
     const supabase = await createSupabaseServer();
     const { data: auth } = await supabase.auth.getUser();
     if (auth?.user) {
-      // Viewer-scoped by construction: the SESSION client reads under RLS
-      // own-row policies — there is no caller-supplied user id anywhere.
+      // Viewer-scoped in CODE, not just by RLS: pin the read to auth.uid().
+      // The session client's `user_addresses_staff_select` policy widens SELECT
+      // to ALL rows for platform staff (is_platform_staff()), so relying on RLS
+      // alone would hand a staffer another user's saved city. The explicit
+      // .eq("user_id", …) matches every other user_addresses reader in the repo
+      // (account-data, book/page, marketplace addresses) and PRIVACY-NDPR §5.1
+      // Prime Directive 10 (no personalization query without a viewer predicate).
       const { data, error } = await supabase
         .from("user_addresses")
         .select("country, state, city, is_default")
+        .eq("user_id", auth.user.id)
         .order("is_default", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(1)
