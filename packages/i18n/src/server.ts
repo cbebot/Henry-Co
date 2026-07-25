@@ -33,6 +33,7 @@ export {
   formatPersonalizationTemplate,
   type PersonalizationCopy,
 } from "./personalization-copy";
+export { getDealsCopy, formatDealsTemplate, type DealsCopy } from "./deals-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
 export { getErrorFallbackCopy, type ErrorFallbackCopy } from "./error-fallback-copy";

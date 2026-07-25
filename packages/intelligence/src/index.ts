@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export * from "./analytics";
 export * from "./search";
+export * from "./deals";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -310,7 +311,11 @@ export type HenryFeatureFlagName =
   // V3-34 (Phase E) — per-surface kill switch for the personalized home layout.
   // Default OFF: the account home falls back to pure DASH weight ordering instantly.
   // Deterministic + AI-free; gates only the user-preference/signal projection.
-  | "personalization_home";
+  | "personalization_home"
+  // V3-35 (Phase E) — kill switch for the deals & campaigns surfaces. Default
+  // OFF: the deal pages/actions do not activate; the legacy marketplace
+  // curation fallback keeps serving its widget. Deterministic + AI-free.
+  | "personalization_deals";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -364,6 +369,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
       list.has("personalization_home") ||
       list.has("personalization"),
+    // V3-35 deals & campaigns kill switch — default OFF (dark launch).
+    personalization_deals:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_DEALS) ||
+      list.has("personalization_deals") ||
+      list.has("deals"),
   };
 }
 

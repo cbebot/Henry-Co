@@ -298,6 +298,19 @@ export type HenryEventName =
   | "henry.personalization.module.hidden"
   | "henry.personalization.consent.granted"
   | "henry.personalization.consent.revoked"
+  // V3-35 deals & campaigns (Phase E). `campaign.created` fires on authoring;
+  // `status.changed` on every lifecycle transition (audit pairs it with the
+  // deal.status.changed audit-log row); `offer.impressed` per batched surface
+  // render (counts only — the durable per-deal rows live in deal_impressions);
+  // `offer.claimed` on claim-through; `fairness.alerted` when the impression
+  // audit finds a creator above the governed share cap. Outcome axis:
+  // created→started, status→completed, impressed→completed, claimed→completed,
+  // fairness→flagged.
+  | "henry.deal.campaign.created"
+  | "henry.deal.status.changed"
+  | "henry.deal.offer.impressed"
+  | "henry.deal.offer.claimed"
+  | "henry.deal.fairness.alerted"
   // payments / provider router — V3-13 foundation lock (vendor-agnostic
   // routing). `intent.*` track the money lifecycle of a payment_intent
   // (created → succeeded | failed → refunded); the outcome axis maps

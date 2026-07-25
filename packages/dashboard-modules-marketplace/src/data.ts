@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
-import { createDataAdminClient, loadOperatorMembership } from "@henryco/data";
+import { createDataAdminClient, listLiveDeals, loadOperatorMembership } from "@henryco/data";
 import { getDivisionUrl } from "@henryco/config";
 import { listSavedItems } from "@henryco/cart-saved-items/server";
 import type { SavedItemRecord } from "@henryco/cart-saved-items";
@@ -78,7 +78,7 @@ export async function loadMarketplaceSnapshot(
   const client = createDataAdminClient();
   const userId = viewer.user.id;
 
-  const [ordersRes, savedItems, dealsRes] = await Promise.all([
+  const [ordersRes, savedItems, curatedDeals] = await Promise.all([
     client
       .from("marketplace_orders")
       .select("id, order_no, status, payment_status, grand_total, display_currency, placed_at, archived_at")
@@ -91,12 +91,7 @@ export async function loadMarketplaceSnapshot(
       includeStatuses: ["active"],
       limit: 6,
     }).catch(() => [] as SavedItemRecord[]),
-    client
-      .from("marketplace_deals_curation")
-      .select("id, product_slug, slot, sort_order, starts_at, ends_at, note")
-      .eq("active", true)
-      .order("sort_order", { ascending: true })
-      .limit(6),
+    readCuratedDeals(client).catch(() => [] as MarketplaceCuratedDeal[]),
   ]);
 
   const ordersInFlight: MarketplaceOrderInFlight[] = (ordersRes.data ?? []).map((row) => ({
@@ -107,16 +102,6 @@ export async function loadMarketplaceSnapshot(
     grandTotal: Number(row.grand_total) || 0,
     currency: row.display_currency,
     placedAt: row.placed_at,
-  }));
-
-  const curatedDeals: MarketplaceCuratedDeal[] = (dealsRes.data ?? []).map((row) => ({
-    id: row.id,
-    productSlug: row.product_slug,
-    slot: row.slot,
-    sortOrder: row.sort_order,
-    startsAt: row.starts_at,
-    endsAt: row.ends_at,
-    note: row.note,
   }));
 
   const marketplaceSavedItems = savedItems.filter(
@@ -221,4 +206,54 @@ async function readVendorStatus(
  */
 export function isVendor(snapshot: MarketplaceSnapshot | null): boolean {
   return Boolean(snapshot?.vendorStatus);
+}
+
+/**
+ * V3-35 — ONE deal model. The module now prefers the ecosystem `deals` table
+ * (marketplace-scoped live rows; the old curation rows were migrated in by
+ * 20260724120000_v3_35_deals.sql) and falls back to the SUPERSEDED
+ * marketplace_deals_curation table ONLY while that migration is unapplied on
+ * the target database (the new-model read errors). Rows keep the legacy
+ * widget shape so DealsOfTheMomentCard renders unchanged; only rows with a
+ * product `target_ref` surface here (the widget deep-links to products).
+ */
+async function readCuratedDeals(
+  client: ReturnType<typeof createDataAdminClient>,
+): Promise<MarketplaceCuratedDeal[]> {
+  try {
+    const rows = await listLiveDeals(client, {
+      division: "marketplace",
+      visibility: "public",
+      limit: 6,
+    });
+    return rows
+      .filter((row) => Boolean(row.target_ref))
+      .map((row, index) => ({
+        id: row.id,
+        productSlug: row.target_ref as string,
+        slot: row.deal_type,
+        sortOrder: index,
+        startsAt: row.starts_at,
+        endsAt: row.ends_at,
+        note: row.description,
+      }));
+  } catch {
+    // Superseded-table fallback (pre-apply only). Supabase read errors return
+    // an error object, not a throw — an empty list is the safe floor.
+    const res = await client
+      .from("marketplace_deals_curation")
+      .select("id, product_slug, slot, sort_order, starts_at, ends_at, note")
+      .eq("active", true)
+      .order("sort_order", { ascending: true })
+      .limit(6);
+    return (res.data ?? []).map((row) => ({
+      id: row.id,
+      productSlug: row.product_slug,
+      slot: row.slot,
+      sortOrder: row.sort_order,
+      startsAt: row.starts_at,
+      endsAt: row.ends_at,
+      note: row.note,
+    }));
+  }
 }

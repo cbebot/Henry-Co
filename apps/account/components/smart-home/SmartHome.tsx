@@ -20,6 +20,10 @@ import {
 } from "@/lib/smart-home/widgets";
 import { resolvePersonalizedHome } from "@/lib/personalization/home";
 import { detectDevice } from "@/lib/personalization/device";
+import { resolveDealsRail } from "@/lib/deals/offers";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { getDealsCopy, type DealsCopy, type AppLocale } from "@henryco/i18n/server";
+import { DealsRail } from "./DealsRail";
 import { rankNextBestActions } from "@/lib/smart-home/recommender";
 import { AttentionPanel } from "./AttentionPanel";
 import { ModuleWidgetGrid } from "./ModuleWidgetGrid";
@@ -207,6 +211,41 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
     );
   }
 
+  // V3-35 — the deals offers rail (flag-dark behind `personalization_deals`).
+  // Resolved AFTER the empty-state early return so impressions are recorded
+  // only for offers that actually render. Best-effort + timeout-bounded; any
+  // failure (including the deals tables being absent on prod pre-apply)
+  // renders the home without the rail — never broken, never stalled.
+  let dealsRail: Awaited<ReturnType<typeof resolveDealsRail>> = null;
+  let dealsCopy: DealsCopy | null = null;
+  let dealsLocale: AppLocale = "en";
+  if (
+    isFlagEnabled(
+      parseHenryFeatureFlags(process.env as Record<string, string | undefined>),
+      "personalization_deals",
+    )
+  ) {
+    const dealsClient =
+      (await createSupabaseServer()) as unknown as TypedSupabaseClient;
+    const [rail, locale] = await Promise.all([
+      withTimeout(
+        resolveDealsRail({
+          viewer,
+          client: dealsClient,
+          signals: signalFeed.items,
+          limit: 4,
+        }),
+        1500,
+      ).catch(() => null),
+      getAccountAppLocale().catch(() => "en" as AppLocale),
+    ]);
+    if (rail) {
+      dealsRail = rail;
+      dealsLocale = locale;
+      dealsCopy = getDealsCopy(locale);
+    }
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       {/* ACCOUNT-PREMIUM-01: the editorial hero band sits above the
@@ -231,6 +270,14 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
       <NextBestActions actions={nextBestActions} />
 
       <RankedMetricStrip widgets={rankedMetrics} />
+
+      {dealsRail && dealsCopy ? (
+        <DealsRail
+          offers={dealsRail.offers}
+          copy={dealsCopy}
+          locale={dealsLocale}
+        />
+      ) : null}
 
       <SignalFeed
         items={restSignals}
