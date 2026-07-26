@@ -34,7 +34,6 @@ export const MARKETPLACE_SEED_VERSION = "2026-06-09-henry-onyx-store-v1";
 
 export const HENRY_ONYX_STORE_SLUG = "henry-onyx-store";
 const HOUSE_BRAND_SLUG = "henry-onyx";
-const CURRENCY = "NGN";
 
 /** Deterministic UUIDs for rows that have no natural slug (media,
  *  collection items, reviews) so re-seeding is idempotent. */

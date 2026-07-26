@@ -30,7 +30,6 @@ import { formatCurrency } from "@/lib/utils";
 
 type CheckoutStep = "delivery" | "payment" | "confirm";
 
-const STEP_IDS: CheckoutStep[] = ["delivery", "payment", "confirm"];
 
 /**
  * Persisted user-input shape for the checkout draft.
@@ -653,7 +652,7 @@ export function CheckoutExperience({
       {/* Stepper — bespoke Henry Onyx brass-on-noir, motion-aware */}
       <CheckoutStepper currentStep={step} />
 
-      <section className="grid gap-6 lg:grid-cols-[1fr,380px]">
+      <section className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <form
           ref={formRef}
           action="/api/marketplace"
@@ -1727,7 +1726,7 @@ function ConfirmStep({
             return (
               <li
                 key={item.id}
-                className="grid grid-cols-[64px,1fr,auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-3"
+                className="grid grid-cols-[64px_1fr_auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-3"
               >
                 <div className="relative h-14 w-14 overflow-hidden rounded-[0.9rem] bg-[var(--market-soft-wash)]">
                   {item.image ? (
@@ -1830,7 +1829,7 @@ function OrderSummaryRail({
         {cart.items.slice(0, 4).map((item) => {
           const moving = pendingSavedItemIds.includes(item.id);
           return (
-            <div key={item.id} className="grid grid-cols-[40px,1fr,auto] items-center gap-3 text-sm">
+            <div key={item.id} className="grid grid-cols-[40px_1fr_auto] items-center gap-3 text-sm">
               <div className="relative h-10 w-10 overflow-hidden rounded-md bg-[var(--market-soft-wash)]">
                 {item.image ? (
                   <DivisionImage src={item.image} alt={item.title} fill sizes="40px" className="object-cover" radius="0" />

@@ -18,6 +18,7 @@ import {
   formatAuditActorDisplay,
   formatAuditEntityDisplay,
 } from "@/lib/owner-identity";
+import { MARKETPLACE_SELLER_APPLICATIONS_URL } from "@/lib/owner-division-external";
 import {
   assessThreats,
   type ThreatAssessment,
@@ -761,7 +762,7 @@ function buildOwnerSignals(
       body: `${pendingMarketplaceApplications.length} vendor applications are waiting for trust and moderation review.`,
       severity: "warning",
       division: "marketplace",
-      href: "/owner/divisions/marketplace",
+      href: MARKETPLACE_SELLER_APPLICATIONS_URL,
       source: "marketplace_vendor_applications",
       createdAt: toNullableText(pendingMarketplaceApplications[0]?.submitted_at),
     });
@@ -2255,7 +2256,9 @@ export async function getApprovalQueueData(): Promise<{
       description: `${pendingVendors.length} seller applications are waiting for trust and onboarding approval.`,
       division: "marketplace",
       severity: "warning",
-      href: "/owner/divisions/marketplace",
+      // Deep-link to the surface with the approve/reject buttons, not the HQ
+      // info room — the queue must never show a decision without its actions.
+      href: MARKETPLACE_SELLER_APPLICATIONS_URL,
       count: pendingVendors.length,
     });
   }

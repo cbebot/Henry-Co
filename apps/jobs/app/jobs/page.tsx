@@ -120,7 +120,7 @@ export default async function JobsPage({
                 return (
                   <li
                     key={card.label}
-                    className="grid gap-2 border-b border-[var(--jobs-line)] py-4 last:border-b-0 sm:grid-cols-[auto,1fr,auto] sm:items-baseline sm:gap-4"
+                    className="grid gap-2 border-b border-[var(--jobs-line)] py-4 last:border-b-0 sm:grid-cols-[auto_1fr_auto] sm:items-baseline sm:gap-4"
                   >
                     <Icon
                       className="h-3.5 w-3.5 text-[var(--jobs-accent)]"

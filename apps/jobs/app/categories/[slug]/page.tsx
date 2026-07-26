@@ -48,7 +48,7 @@ export default async function CategoryPage({
         </nav>
 
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{t("Category")}</p>
               <h1 className="mt-4 jobs-display max-w-3xl text-balance">{name}</h1>
