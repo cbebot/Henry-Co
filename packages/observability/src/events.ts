@@ -302,6 +302,21 @@ export type HenryEventName =
   // profiled/ai-applied booleans only; never per-item content, never a score,
   // never a provider/model name.
   | "henry.personalization.recommendations.computed"
+  // V3-40 predictive fraud & risk (Phase E, Wave E.3). Platform-invoked batch
+  // events ride actorless (system); staff actions carry the acting staff id.
+  // Payloads are entity ids + tiers + counts ONLY — never PII, never a raw
+  // score outside the staff surface, never a provider/model name. `entity.
+  // scored` fires once per batch with per-tier counts; enforcement verbs track
+  // the log rows (held/frozen are STAFF one-taps — the system can only flag);
+  // model verbs track the governed shadow→live lifecycle.
+  | "henry.auth.sensitive_action.risk_held"
+  | "henry.risk.entity.scored"
+  | "henry.risk.enforcement.held"
+  | "henry.risk.enforcement.frozen"
+  | "henry.risk.enforcement.released"
+  | "henry.risk.staff.overrode"
+  | "henry.risk.model.promoted"
+  | "henry.risk.model.rolled_back"
   // payments / provider router — V3-13 foundation lock (vendor-agnostic
   // routing). `intent.*` track the money lifecycle of a payment_intent
   // (created → succeeded | failed → refunded); the outcome axis maps

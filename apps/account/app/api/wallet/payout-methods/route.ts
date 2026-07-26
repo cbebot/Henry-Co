@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
+import { buildAccountRiskGate } from "@/lib/risk/gate";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -93,6 +94,8 @@ export async function POST(request: Request) {
       entityType: "payout_method",
       resolveUser: async () => user,
       userId: (u) => u.id,
+      // V3-40: staff-applied risk hold pauses payout-destination changes.
+      riskGate: buildAccountRiskGate(),
     });
     if (!guard.ok) return guard.response;
 
