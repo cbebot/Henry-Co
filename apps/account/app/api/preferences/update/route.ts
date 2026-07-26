@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { emitEvent, persistEvent } from "@henryco/observability";
+import { PERSONALIZATION_CONSENT_TEXT_VERSION } from "@henryco/ui/public";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -13,6 +15,8 @@ const ALLOWED_FIELDS = [
   "default_division", "in_app_toast_enabled", "notification_sound_enabled",
   "notification_vibration_enabled", "high_priority_only", "quiet_hours_enabled",
   "quiet_hours_start", "quiet_hours_end",
+  // V3-34 — account-scoped NDPR personalization consent (governs profiling).
+  "personalization_enabled",
 ];
 
 function normalizeTimeValue(value: unknown) {
@@ -50,10 +54,30 @@ export async function POST(request: Request) {
         continue;
       }
 
+      // V3-34 — the personalization consent flag is a strict boolean (only a
+      // literal `true` grants profiling; anything else is a withhold).
+      if (key === "personalization_enabled") {
+        updates[key] = body[key] === true;
+        continue;
+      }
+
       updates[key] = body[key];
     }
 
     const admin = createAdminSupabase();
+
+    // V3-34 — capture the prior consent state BEFORE the upsert so the NDPR
+    // ledger records an actual CHANGE, not every save (no-op de-dup).
+    let priorPersonalization: boolean | null = null;
+    if ("personalization_enabled" in body) {
+      const { data: priorPref } = await admin
+        .from("customer_preferences")
+        .select("personalization_enabled")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      priorPersonalization = priorPref?.personalization_enabled ?? null;
+    }
+
     const { error } = await admin
       .from("customer_preferences")
       .upsert({ user_id: user.id, ...updates }, { onConflict: "user_id" });
@@ -61,6 +85,50 @@ export async function POST(request: Request) {
     if (error) {
       logApiError("preferences/update", error);
       return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
+    }
+
+    // V3-34 — append an NDPR consent-ledger row (append-only, service-role
+    // insert) pinning the exact copy version, and emit owner-tile telemetry —
+    // ONLY when the value actually changed. Best-effort but OBSERVABLE: the
+    // insert error is checked (supabase-js resolves errors, it does not throw),
+    // so a lost consent record is logged rather than silently dropped.
+    if ("personalization_enabled" in body) {
+      const granted = updates["personalization_enabled"] === true;
+      if (priorPersonalization !== granted) {
+        const outcome = granted ? "approved" : "rejected";
+        const eventName = granted
+          ? "henry.personalization.consent.granted"
+          : "henry.personalization.consent.revoked";
+        const { error: ledgerError } = await admin
+          .from("personalization_consent_events")
+          .insert({
+            user_id: user.id,
+            action: granted ? "granted" : "revoked",
+            consent_text_version: PERSONALIZATION_CONSENT_TEXT_VERSION,
+            source: "account_preferences",
+          });
+        if (ledgerError) {
+          logApiError("preferences/update:consent-ledger", ledgerError);
+        }
+        const payload = {
+          surface: "account_preferences" as const,
+          consent_text_version: PERSONALIZATION_CONSENT_TEXT_VERSION,
+          outcome,
+        };
+        emitEvent({
+          name: eventName,
+          classification: "user_action",
+          outcome,
+          actorId: user.id,
+          payload,
+        });
+        void persistEvent({
+          supabase: admin,
+          name: eventName,
+          actorId: user.id,
+          payload,
+        });
+      }
     }
 
     return NextResponse.json({ success: true });

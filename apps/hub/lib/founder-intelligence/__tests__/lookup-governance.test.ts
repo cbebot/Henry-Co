@@ -59,10 +59,17 @@ function sampleFor(key: string): Record<string, unknown> {
       return { focus: "urgent" };
     case "support.thread.get":
       return { threadId: "c3d4e5f6-a7b8-4c9d-8e1f-2a3b4c5d6e7f" };
+    // SA-4 studio-agency reads
+    case "studio.brief.get":
+      return { briefId: "d4e5f6a7-b8c9-4d0e-9f2a-3b4c5d6e7f8a" };
+    case "studio.job.get":
+      return { jobId: "e5f6a7b8-c9d0-4e1f-8a2b-3c4d5e6f7a8b" };
     case "marketplace.vendor_applications.list":
     case "kyc.submissions.list":
     case "marketplace.products.pending.list":
     case "staff.list":
+    case "studio.briefs.pending.list":
+    case "studio.jobs.active.list":
       return {};
     default:
       return {};

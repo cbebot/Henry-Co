@@ -105,7 +105,7 @@ export default async function OwnerInstructorsPage({
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-4 xl:grid-cols-[1fr,0.95fr]">
+              <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_0.95fr]">
                 <div className="space-y-4">
                   <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">

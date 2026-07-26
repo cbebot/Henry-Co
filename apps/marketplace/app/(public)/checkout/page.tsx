@@ -92,7 +92,7 @@ export default async function CheckoutPage({
           title="Sign in with your Henry Onyx account to continue."
           description="Browsing stays open, but checkout uses your Henry Onyx account so orders, payments, addresses, notifications, and support history stay together — across every device, every session."
         />
-        <div className="grid gap-6 lg:grid-cols-[1.02fr,0.98fr]">
+        <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
           <EmptyState
             title="Sign in required"
             body="Your cart is intact and waiting. Sign in once and we'll bring you back to this exact step."

@@ -103,7 +103,7 @@ export default async function HirePage() {
     >
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 lg:px-8">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{copy.eyebrow}</p>
               <h1 className="mt-4 jobs-display max-w-3xl text-balance">
@@ -161,7 +161,7 @@ export default async function HirePage() {
               return (
                 <li
                   key={item.step}
-                  className="grid gap-3 py-6 sm:grid-cols-[auto,1fr,auto] sm:items-start sm:gap-8"
+                  className="grid gap-3 py-6 sm:grid-cols-[auto_1fr_auto] sm:items-start sm:gap-8"
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
                     {copy.stepPrefix} {item.step}
@@ -203,7 +203,7 @@ export default async function HirePage() {
         </section>
 
         <section className="border-t border-black/10 pt-10 dark:border-white/10">
-          <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{copy.qualityKicker}</p>
               <h2 className="mt-3 jobs-heading max-w-2xl text-balance">

@@ -53,8 +53,52 @@ test("every entry is founder-only (never inherits a division-role union)", () =>
 test("every entry declares at least one driftKey and a valid tranche", () => {
   for (const g of FOUNDER_ACTION_GOVERNANCE) {
     assert.ok(g.driftKeys.length >= 1, `${g.key} needs at least one driftKey`);
-    assert.ok(g.tranche === 1 || g.tranche === 2, `${g.key} tranche must be 1 or 2`);
+    assert.ok(g.tranche === 1 || g.tranche === 2 || g.tranche === 3, `${g.key} tranche must be 1, 2, or 3`);
   }
+});
+
+// ── SA-4 invariants — the studio-agency operator tranche ─────────────────────
+
+test("SA-4: every owner.studio.* entry is tranche 3 (dark until FOUNDER_ACTIONS_TRANCHE>=3)", () => {
+  for (const g of FOUNDER_ACTION_GOVERNANCE) {
+    if (g.key.startsWith("owner.studio.")) {
+      assert.equal(g.tranche, 3, `${g.key} must be tranche 3`);
+      assert.equal(g.division, "studio", `${g.key} must carry the studio division`);
+    }
+  }
+});
+
+test("SA-4: deploy approve, cancel, and budget increase demand the founder's print (reauth)", () => {
+  const reauthRequired = [
+    "owner.studio.deploy.approve",
+    "owner.studio.job.cancel",
+    "owner.studio.job.budget_increase",
+  ];
+  for (const key of reauthRequired) {
+    const g = FOUNDER_ACTION_GOVERNANCE.find((entry) => entry.key === key);
+    assert.ok(g, `${key} must exist in governance`);
+    assert.equal(g?.requiresReauth, true, `${key} must require reauth`);
+  }
+});
+
+test("SA-4: budget increase is money-adjacent and offers ONLY preset steps (no free amount)", () => {
+  const g = FOUNDER_ACTION_GOVERNANCE.find((entry) => entry.key === "owner.studio.job.budget_increase");
+  assert.ok(g, "budget_increase must exist");
+  assert.equal(g?.moneyAdjacent, true, "budget_increase is money-adjacent");
+  // The schema accepts only the bounded enum — a raw number/amount is rejected.
+  assert.ok(g?.paramsSchema.safeParse({ jobId: "3f1a9c7e-2b4d-4e6a-9c8b-1d2e3f4a5b6c", step: "25" }).success);
+  assert.ok(!g?.paramsSchema.safeParse({ jobId: "3f1a9c7e-2b4d-4e6a-9c8b-1d2e3f4a5b6c", step: "37" }).success);
+  assert.ok(
+    !g?.paramsSchema.safeParse({ jobId: "3f1a9c7e-2b4d-4e6a-9c8b-1d2e3f4a5b6c", step: "25", amount: 999 }).success,
+    "an injected amount key must be rejected (strict)",
+  );
+});
+
+test("SA-4: deploy approve drift-keys pin BOTH stage and the artifact hash", () => {
+  const g = FOUNDER_ACTION_GOVERNANCE.find((entry) => entry.key === "owner.studio.deploy.approve");
+  assert.ok(g, "deploy.approve must exist");
+  assert.ok(g?.driftKeys.includes("stage"), "deploy.approve must drift-check stage");
+  assert.ok(g?.driftKeys.includes("artifactHash"), "deploy.approve must drift-check the artifact hash");
 });
 
 test("action keys are unique", () => {
@@ -101,6 +145,21 @@ function sampleFor(key: string): Record<string, unknown> {
       return { productId: "e5f6a7b8-c9d0-4e1f-8a2b-3c4d5e6f7a8b", decision: "approved" };
     case "owner.security.account.secure":
       return { userId: "f6a7b8c9-d0e1-4f2a-9b3c-4d5e6f7a8b9c" };
+    // SA-4 studio-agency operator actions
+    case "owner.studio.proposal.send":
+      return { proposalId: "a7b8c9d0-e1f2-4a3b-8c4d-5e6f7a8b9c0d" };
+    case "owner.studio.deploy.approve":
+      return { jobId: "b8c9d0e1-f2a3-4b4c-9d5e-6f7a8b9c0d1e" };
+    case "owner.studio.job.cancel":
+      return { jobId: "c9d0e1f2-a3b4-4c5d-8e6f-7a8b9c0d1e2f" };
+    case "owner.studio.job.budget_increase":
+      return { jobId: "d0e1f2a3-b4c5-4d6e-9f7a-8b9c0d1e2f3a", step: "25" };
+    case "owner.studio.job.pause":
+      return { jobId: "e1f2a3b4-c5d6-4e7f-8a8b-9c0d1e2f3a4b" };
+    case "owner.studio.job.resume":
+      return { jobId: "f2a3b4c5-d6e7-4f8a-9b9c-0d1e2f3a4b5c" };
+    case "owner.studio.client.reply":
+      return { projectId: "a3b4c5d6-e7f8-4a9b-8c0d-1e2f3a4b5c6d", body: "The first preview is ready for your review." };
     default:
       return {};
   }

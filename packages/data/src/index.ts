@@ -81,6 +81,16 @@ export {
   type StudioViewerIdentity,
 } from "./studio-scope";
 
+// V3-34 (Phase E) — per-user home-layout persistence (RLS owner-only).
+export {
+  getUserHomeLayout,
+  upsertUserHomeLayout,
+  isLayoutStale,
+  type UserHomeLayout,
+  type UserHomeLayoutPatch,
+  type HomeLayoutSurface,
+} from "./home-layout";
+
 export {
   captureAbandonedTask,
   listPendingAbandonedTasks,

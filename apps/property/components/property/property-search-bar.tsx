@@ -133,7 +133,7 @@ function PropertySearchBarInner({
 
   return (
     <form
-      className="property-paper grid gap-4 rounded-[1.9rem] p-5 lg:grid-cols-[1.4fr,0.9fr,0.9fr,auto]"
+      className="property-paper grid gap-4 rounded-[1.9rem] p-5 lg:grid-cols-[1.4fr_0.9fr_0.9fr_auto]"
       onSubmit={(event) => {
         event.preventDefault();
         navigate();

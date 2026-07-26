@@ -55,7 +55,7 @@ export default async function CoursesPage({
         </a>
       </div>
 
-      <form className="learn-panel mt-8 grid gap-4 rounded-[2rem] p-5 md:grid-cols-[1.4fr,1fr,1fr,auto]">
+      <form className="learn-panel mt-8 grid gap-4 rounded-[2rem] p-5 md:grid-cols-[1.4fr_1fr_1fr_auto]">
         <input name="q" defaultValue={params.q} placeholder={t("Search by title, skill, or tag")} className="learn-input rounded-2xl px-4 py-3" />
         <select name="category" defaultValue={params.category || ""} className="learn-select rounded-2xl px-4 py-3">
           <option value="">{t("All categories")}</option>

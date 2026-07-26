@@ -43,7 +43,13 @@ export type EventTypeId =
   // V3-37 abandoned-journey recovery reminder (day-1 in-app nudge). Adding this
   // REQUIRES a widen of customer_notifications_category_check (publisher writes
   // category = eventType) — see the paired migration.
-  | "account.recovery.reminder";
+  | "account.recovery.reminder"
+  // SA-4 Owner-AI operator escalation — the operator tick ringing the OWNER
+  // when a decision needs a human (stall, budget breach, deploy waiting).
+  // Severity 'urgent' so the publisher fans out to the owner's push devices;
+  // Postmark owner email rides beside it as the always-on fallback. Paired
+  // category-check widening: 20260723130000_founder_operator_spine.sql.
+  | "owner.operator.escalation";
 
 export type EventTypeSpec = {
   defaultSeverity: Severity;
@@ -156,6 +162,14 @@ export const EVENT_TYPES: Record<EventTypeId, EventTypeSpec> = {
     defaultSeverity: "info",
     deepLinkTemplate: "/continue",
     allowedPayloadKeys: ["task_type", "count"],
+  },
+  // SA-4: ids only in the payload — never client PII, never money amounts
+  // (looksLikePii would reject them in title/body anyway; keep them out of
+  // payload by allow-list too). Deep link lands on the hub decisions inbox.
+  "owner.operator.escalation": {
+    defaultSeverity: "urgent",
+    deepLinkTemplate: "/owner/operations/decisions",
+    allowedPayloadKeys: ["kind", "job_id", "decision_id"],
   },
 } as const;
 

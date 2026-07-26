@@ -68,7 +68,7 @@ export default async function ServicesPage() {
 
         <ol className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
           {localizedServices.map((s, i) => (
-            <li key={s.slug} className="grid gap-6 py-8 md:grid-cols-[0.32fr,0.68fr]">
+            <li key={s.slug} className="grid gap-6 py-8 md:grid-cols-[0.32fr_0.68fr]">
               <div>
                 <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
                   {copy.serviceRow.label} {String(i + 1).padStart(2, "0")} &middot; {s.badge}

@@ -129,7 +129,7 @@ export default async function CertificateVerifyPage({
         body={t("Enter or follow a verification code to see the official record: learner name, course, issue date, and status. This is the same check employers and partners use—no login required.")}
       />
 
-      <section className="mt-8 grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+      <section className="mt-8 grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <LearnPanel className="learn-print-sheet rounded-[2.4rem] p-0">
           <div className="rounded-[2.4rem] border border-[var(--learn-line)] bg-[linear-gradient(160deg,rgba(227,188,126,0.16),rgba(95,197,171,0.1))] p-8 sm:p-10">
             <div className="learn-print-hidden flex flex-wrap items-center justify-between gap-3">
