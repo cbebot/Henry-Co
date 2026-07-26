@@ -130,7 +130,7 @@ export default async function AboutPage() {
     >
       <div className="mx-auto max-w-[92rem] space-y-16">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--home-accent-text)]">
                 <Sparkles className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
@@ -223,7 +223,7 @@ export default async function AboutPage() {
                 {flow.map((item) => (
                   <li
                     key={item.step}
-                    className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                    className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
                   >
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
                       {copy.flow.stepLabel} {item.step}

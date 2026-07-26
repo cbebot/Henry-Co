@@ -81,6 +81,43 @@ export const staffListLookup: FounderLookupGovernance = {
   paramsSchema: z.object({}).strict(),
 };
 
+// ── SA-4 — studio-agency reads (the operator's eyes) ─────────────────────────
+// "Pending brief" precision: the SA-D5 review hold lives on studio_proposals
+// (status='in_review'), not on studio_briefs — the list lookup reads the held
+// proposals; the get lookup reads one brief's substance by its own id.
+
+export const studioBriefsPendingListLookup: FounderLookupGovernance = {
+  key: "studio.briefs.pending.list",
+  description:
+    "studio.briefs.pending.list — agency briefs held for your review (proposals in review), with proposal ids and titles. params: {}",
+  readOnly: true,
+  paramsSchema: z.object({}).strict(),
+};
+
+export const studioBriefGetLookup: FounderLookupGovernance = {
+  key: "studio.brief.get",
+  description:
+    'studio.brief.get — one brief\'s goals, business type, budget band, urgency, timeline, and class. params: {"briefId": uuid}',
+  readOnly: true,
+  paramsSchema: z.object({ briefId: UUID }).strict(),
+};
+
+export const studioJobsActiveListLookup: FounderLookupGovernance = {
+  key: "studio.jobs.active.list",
+  description:
+    "studio.jobs.active.list — active build jobs with ids, stage, spend vs envelope, heartbeat age, and holds. params: {}",
+  readOnly: true,
+  paramsSchema: z.object({}).strict(),
+};
+
+export const studioJobGetLookup: FounderLookupGovernance = {
+  key: "studio.job.get",
+  description:
+    'studio.job.get — one build job\'s stage, attempt, spend vs envelope, heartbeat age, QA outcome, and pending decisions. params: {"jobId": uuid}',
+  readOnly: true,
+  paramsSchema: z.object({ jobId: UUID }).strict(),
+};
+
 export const FOUNDER_LOOKUP_GOVERNANCE: FounderLookupGovernance[] = [
   supportThreadsListLookup,
   supportThreadGetLookup,
@@ -88,6 +125,10 @@ export const FOUNDER_LOOKUP_GOVERNANCE: FounderLookupGovernance[] = [
   kycSubmissionsListLookup,
   productsPendingListLookup,
   staffListLookup,
+  studioBriefsPendingListLookup,
+  studioBriefGetLookup,
+  studioJobsActiveListLookup,
+  studioJobGetLookup,
 ];
 
 export function lookupParamKeys(g: FounderLookupGovernance): string[] {

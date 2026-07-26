@@ -1,7 +1,13 @@
 import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
-import type { DashboardModule, HomeWidget, ModuleSize } from "@henryco/dashboard-shell";
+import type {
+  DashboardModule,
+  HomeWidget,
+  ModuleSize,
+  ModuleSlug,
+  HomeLayoutResult,
+} from "@henryco/dashboard-shell";
 import { resolveModuleState, type ModuleDataState } from "@henryco/dashboard-shell";
 import { emitEvent, logger, persistEvent } from "@henryco/observability";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -172,4 +178,65 @@ export function widgetKey(w: AnnotatedHomeWidget): string {
 function weightDescending(a: AnnotatedHomeWidget, b: AnnotatedHomeWidget): number {
   if (b.weight !== a.weight) return b.weight - a.weight;
   return a.module.slug.localeCompare(b.module.slug);
+}
+
+// ── V3-34 personalization-home — projection-aware ranking ────────────────────
+// When the personalization_home flag is ON, the two widget strips honour the
+// user's projected MODULE order first, then weight within a module. When the
+// flag is OFF, the pickRankedMetrics/pickRemainingWidgets above run unchanged
+// (pure DASH weight order — the kill-switch fallback).
+
+/** Map ModuleSlug → its ordinal in the projected layout (0 = first). */
+export function moduleRankFromLayout(
+  layout: HomeLayoutResult,
+): Map<ModuleSlug, number> {
+  const rank = new Map<ModuleSlug, number>();
+  layout.ordered.forEach((entry, i) => rank.set(entry.slug, i));
+  return rank;
+}
+
+/** Drop every widget whose module the layout marks hidden. */
+export function filterHiddenWidgets(
+  widgets: ReadonlyArray<AnnotatedHomeWidget>,
+  hidden: ReadonlyArray<ModuleSlug>,
+): ReadonlyArray<AnnotatedHomeWidget> {
+  const hiddenSet = new Set<ModuleSlug>(hidden);
+  return widgets.filter((w) => !hiddenSet.has(w.module.slug));
+}
+
+function projectedComparator(moduleRank: ReadonlyMap<ModuleSlug, number>) {
+  return (a: AnnotatedHomeWidget, b: AnnotatedHomeWidget): number => {
+    // A module not in the projected order (e.g. hidden or unknown) sinks last.
+    const ra = moduleRank.get(a.module.slug) ?? Number.MAX_SAFE_INTEGER;
+    const rb = moduleRank.get(b.module.slug) ?? Number.MAX_SAFE_INTEGER;
+    if (ra !== rb) return ra - rb;
+    if (b.weight !== a.weight) return b.weight - a.weight;
+    return widgetKey(a).localeCompare(widgetKey(b));
+  };
+}
+
+/** pickRankedMetrics, but ordered by the projected module layout. */
+export function pickRankedMetricsProjected(
+  widgets: ReadonlyArray<AnnotatedHomeWidget>,
+  moduleRank: ReadonlyMap<ModuleSlug, number>,
+  count = 6,
+): ReadonlyArray<AnnotatedHomeWidget> {
+  return widgets
+    .filter((w) => w.size === "sm" || w.size === "md")
+    .slice()
+    .sort(projectedComparator(moduleRank))
+    .slice(0, count);
+}
+
+/** pickRemainingWidgets, but ordered by the projected module layout. */
+export function pickRemainingWidgetsProjected(
+  widgets: ReadonlyArray<AnnotatedHomeWidget>,
+  picked: ReadonlyArray<AnnotatedHomeWidget>,
+  moduleRank: ReadonlyMap<ModuleSlug, number>,
+): ReadonlyArray<AnnotatedHomeWidget> {
+  const pickedKeys = new Set(picked.map(widgetKey));
+  return widgets
+    .filter((w) => !pickedKeys.has(widgetKey(w)))
+    .slice()
+    .sort(projectedComparator(moduleRank));
 }

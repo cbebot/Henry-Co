@@ -2596,6 +2596,7 @@ export type Database = {
           notification_studio: boolean | null
           notification_vibration_enabled: boolean
           notification_wallet: boolean | null
+          personalization_enabled: boolean | null
           push_enabled: boolean | null
           quiet_hours_enabled: boolean
           quiet_hours_end: string
@@ -2633,6 +2634,7 @@ export type Database = {
           notification_studio?: boolean | null
           notification_vibration_enabled?: boolean
           notification_wallet?: boolean | null
+          personalization_enabled?: boolean | null
           push_enabled?: boolean | null
           quiet_hours_enabled?: boolean
           quiet_hours_end?: string
@@ -2670,6 +2672,7 @@ export type Database = {
           notification_studio?: boolean | null
           notification_vibration_enabled?: boolean
           notification_wallet?: boolean | null
+          personalization_enabled?: boolean | null
           push_enabled?: boolean | null
           quiet_hours_enabled?: boolean
           quiet_hours_end?: string
@@ -2681,6 +2684,69 @@ export type Database = {
           user_id?: string
           whatsapp_enabled?: boolean | null
           withdrawal_pin_hash?: string | null
+        }
+        Relationships: []
+      }
+      personalization_consent_events: {
+        Row: {
+          action: string
+          consent_text_version: string
+          created_at: string
+          id: string
+          source: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          consent_text_version: string
+          created_at?: string
+          id?: string
+          source?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          consent_text_version?: string
+          created_at?: string
+          id?: string
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_home_layouts: {
+        Row: {
+          desktop_module_order: string[]
+          hidden_modules: string[]
+          last_personalized_at: string
+          mobile_module_order: string[]
+          personalization_signal_version: number
+          pinned_modules: string[]
+          surface: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          desktop_module_order?: string[]
+          hidden_modules?: string[]
+          last_personalized_at?: string
+          mobile_module_order?: string[]
+          personalization_signal_version?: number
+          pinned_modules?: string[]
+          surface?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          desktop_module_order?: string[]
+          hidden_modules?: string[]
+          last_personalized_at?: string
+          mobile_module_order?: string[]
+          personalization_signal_version?: number
+          pinned_modules?: string[]
+          surface?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -13,7 +13,9 @@ import { z, type ZodType } from "zod";
 export type FounderActionGovernance = {
   key: string;
   division: string;
-  tranche: 1 | 2;
+  /** Tranche 3 = the SA-4 studio-agency operator actions (dark until
+   *  FOUNDER_ACTIONS_TRANCHE >= 3). */
+  tranche: 1 | 2 | 3;
   moneyAdjacent: boolean;
   requiresReauth: boolean;
   reversibility: "reversible" | "hard-to-reverse" | "irreversible";
@@ -230,6 +232,146 @@ export const securitySecureAccountGovernance: FounderActionGovernance = {
   driftKeys: ["activeDeviceCount"],
 };
 
+// ── Tranche 3 — SA-4 studio-agency operator actions ──────────────────────────
+// The Owner-AI operator's one-tap decisions over the SA-3 build orchestration
+// (docs/v3/studio-agency/ARCHITECTURE.md §4.1). Every binding is a hub-local
+// service-role core that MIRRORS the studio console's guarded write path; the
+// DB is the second wall (transition trigger + write-once approved_artifact_hash
+// + budget_kobo >= 0 CHECK + deny-RLS). Dark until FOUNDER_ACTIONS_TRANCHE>=3
+// AND STUDIO_AGENCY_LIVE=1 (the readers null out while the agency flag is off).
+//
+// Per SA-D5 + PHASED-PLAN §SA-1(3), the ratified brief-approval tap for an
+// agency-class brief IS the proposal release — `owner.studio.proposal.send`
+// (ARCHITECTURE §5 step 1: approve → proposal sent → client pays → job
+// created). Job creation itself stays with the studio orchestrator, post-pay.
+
+export const studioProposalSendGovernance: FounderActionGovernance = {
+  key: "owner.studio.proposal.send",
+  division: "studio",
+  tranche: 3,
+  moneyAdjacent: false,
+  requiresReauth: false,
+  // The client reads the released proposal — a send cannot be unsent.
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      proposalId: z.string().uuid(),
+    })
+    .strict(),
+  driftKeys: ["status"],
+};
+
+export const studioDeployApproveGovernance: FounderActionGovernance = {
+  key: "owner.studio.deploy.approve",
+  division: "studio",
+  tranche: 3,
+  moneyAdjacent: false,
+  // THE hard gate (SAFETY-MODEL §6): a production deploy demands the founder's
+  // print even though rollback exists — what ships carries the company's name.
+  requiresReauth: true,
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      jobId: z.string().uuid(),
+    })
+    .strict(),
+  // Stage AND the artifact hash the owner is approving — a post-card rebuild
+  // (new artifact) must abort to a fresh card, never deploy unseen bytes.
+  driftKeys: ["stage", "artifactHash"],
+};
+
+export const studioJobCancelGovernance: FounderActionGovernance = {
+  key: "owner.studio.job.cancel",
+  division: "studio",
+  tranche: 3,
+  moneyAdjacent: false,
+  // Cancel triggers the refund-policy path downstream — reauth per SA-D1.
+  requiresReauth: true,
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      jobId: z.string().uuid(),
+    })
+    .strict(),
+  driftKeys: ["stage"],
+};
+
+/** Preset budget-increase steps (percent of the CURRENT envelope). The model
+ *  names a step; the server computes the new envelope — the AI never fills a
+ *  money amount (FORBIDDEN_MONEY_PARAM_KEYS stands; 'step' is a bounded enum). */
+export const STUDIO_BUDGET_STEPS = ["10", "25", "50"] as const;
+
+export const studioJobBudgetIncreaseGovernance: FounderActionGovernance = {
+  key: "owner.studio.job.budget_increase",
+  division: "studio",
+  tranche: 3,
+  // Raising a cost envelope is money-adjacent by definition ⇒ reauth (gate).
+  moneyAdjacent: true,
+  requiresReauth: true,
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      jobId: z.string().uuid(),
+      step: z.enum(STUDIO_BUDGET_STEPS),
+    })
+    .strict(),
+  driftKeys: ["budgetKobo", "stage"],
+};
+
+export const studioJobPauseGovernance: FounderActionGovernance = {
+  key: "owner.studio.job.pause",
+  division: "studio",
+  tranche: 3,
+  moneyAdjacent: false,
+  requiresReauth: false,
+  reversibility: "reversible",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      jobId: z.string().uuid(),
+    })
+    .strict(),
+  driftKeys: ["stage", "holdState"],
+};
+
+export const studioJobResumeGovernance: FounderActionGovernance = {
+  key: "owner.studio.job.resume",
+  division: "studio",
+  tranche: 3,
+  moneyAdjacent: false,
+  requiresReauth: false,
+  reversibility: "reversible",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      jobId: z.string().uuid(),
+    })
+    .strict(),
+  driftKeys: ["stage", "holdState"],
+};
+
+export const studioClientReplyGovernance: FounderActionGovernance = {
+  key: "owner.studio.client.reply",
+  division: "studio",
+  tranche: 3,
+  moneyAdjacent: false,
+  requiresReauth: false,
+  // A message the client reads cannot be unsent — the card says so.
+  reversibility: "hard-to-reverse",
+  ownerPermission: "founder-only",
+  paramsSchema: z
+    .object({
+      projectId: z.string().uuid(),
+      body: z.string().min(1).max(2000),
+    })
+    .strict(),
+  driftKeys: ["status"],
+};
+
 export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   brandSettingsGovernance,
   staffStatusGovernance,
@@ -241,6 +383,13 @@ export const FOUNDER_ACTION_GOVERNANCE: FounderActionGovernance[] = [
   supportReplyBatchGovernance,
   productReviewGovernance,
   securitySecureAccountGovernance,
+  studioProposalSendGovernance,
+  studioDeployApproveGovernance,
+  studioJobCancelGovernance,
+  studioJobBudgetIncreaseGovernance,
+  studioJobPauseGovernance,
+  studioJobResumeGovernance,
+  studioClientReplyGovernance,
 ];
 
 /** Money-amount field names the AI must NEVER be able to fill (the gate). */

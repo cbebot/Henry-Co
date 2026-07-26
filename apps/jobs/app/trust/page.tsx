@@ -37,7 +37,7 @@ export default async function TrustPage() {
     >
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 lg:px-8">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{t("Trust & safety")}</p>
               <h1 className="mt-4 jobs-display max-w-3xl text-balance">
@@ -127,7 +127,7 @@ export default async function TrustPage() {
         </section>
 
         <section className="border-t border-black/10 pt-10 dark:border-white/10">
-          <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{t("Where to from here")}</p>
               <h2 className="mt-3 jobs-heading max-w-2xl text-balance">

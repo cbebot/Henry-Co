@@ -29,7 +29,7 @@ export default async function ProcessPage() {
           {catalog.process.map((step, index) => (
             <li
               key={step}
-              className="grid gap-5 py-6 md:grid-cols-[0.18fr,0.82fr] md:items-baseline"
+              className="grid gap-5 py-6 md:grid-cols-[0.18fr_0.82fr] md:items-baseline"
             >
               <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
                 Step {String(index + 1).padStart(2, "0")}

@@ -539,7 +539,7 @@ export async function WorkspaceShell({
       : [{ label: tShell("Workspace"), items: nav }];
   const activeLabel = nav.find((item) => item.active)?.label ?? null;
   return (
-    <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[300px,1fr] xl:px-8">
+    <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[300px_1fr] xl:px-8">
       <WorkspaceMobileNav
         title={title}
         description={description}

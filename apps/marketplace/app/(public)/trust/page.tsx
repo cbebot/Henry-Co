@@ -37,7 +37,7 @@ export default async function TrustPage() {
   return (
     <main className="mx-auto max-w-7xl space-y-16 px-4 py-10 sm:px-6 lg:px-8">
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">
               {copy.trust.hero.kicker}
@@ -88,7 +88,7 @@ export default async function TrustPage() {
         </ul>
       </section>
 
-      <section className="grid gap-12 xl:grid-cols-[1fr,1fr] xl:divide-x xl:divide-[var(--market-line)]">
+      <section className="grid gap-12 xl:grid-cols-[1fr_1fr] xl:divide-x xl:divide-[var(--market-line)]">
         <div>
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
             {copy.trust.sellerLadder.kicker}
@@ -100,7 +100,7 @@ export default async function TrustPage() {
             {sellerTrustTierRules.map((tier) => (
               <li
                 key={tier.tier}
-                className="grid gap-3 py-5 sm:grid-cols-[1fr,auto] sm:items-start sm:gap-8"
+                className="grid gap-3 py-5 sm:grid-cols-[1fr_auto] sm:items-start sm:gap-8"
               >
                 <div>
                   <h3 className="text-base font-semibold tracking-tight text-[var(--market-ink)]">

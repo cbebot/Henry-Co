@@ -159,7 +159,7 @@
 | V3-70 | enterprise-employer-hiring-suite | **MERGED-NOT-APPLIED** | #319 `67c9a2a3`; `v3_70_hiring_*` migs committed-NOT-applied (no `jobs_application_scores` on prod) |
 | V3-71 | enterprise-seller-business-suite | PENDING | |
 | V3-72 | enterprise-service-provider-crm | PENDING | |
-| V3-73 | enterprise-studio-project-suite | **MERGED-NOT-APPLIED** | #321 `b7f51f27`; `studio_deliverable_revisions` mig committed-NOT-applied (dormant; needs `STUDIO_APPROVAL_SIGNATURE_SECRET`) |
+| V3-73 | enterprise-studio-project-suite | **MERGED-NOT-APPLIED** | #321 `b7f51f27`; `studio_deliverable_revisions` mig (`20260620120000`) committed-NOT-applied (needs `STUDIO_APPROVAL_SIGNATURE_SECRET`). **⚠ ACTIVATION PREREQUISITE for the studio-agency SA-1/2/3 stack** (corrected 2026-07-19, V3-73-RELAND-01): it adds `studio_projects.client_business_id`, hard-referenced by SA-2's `studio_build_jobs_client_stage_v` view — applying SA-2 first aborts `42703` (dry-run-proven). Ratified order **V3-73→SA-1→SA-2→SA-3**, dry-run-verified on prod-actual with **no drift**. Runbook: `docs/v3/studio-agency/ACTIVATION-APPLY-ORDER.md` |
 | V3-74 | enterprise-logistics-business-dashboard | PENDING | |
 | V3-75 | enterprise-bulk-invoicing-team-roles-admin | PENDING | gate D9 |
 

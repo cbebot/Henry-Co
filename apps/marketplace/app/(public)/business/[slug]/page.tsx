@@ -30,7 +30,7 @@ export default async function PublicBusinessProfilePage({
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-14 px-4 py-10 sm:px-6 xl:px-8">
-      <section className="grid gap-12 xl:grid-cols-[1.1fr,0.9fr]">
+      <section className="grid gap-12 xl:grid-cols-[1.1fr_0.9fr]">
         <article>
           <p className="market-kicker">{toBrandName("Henry Onyx · Business")}</p>
           <h1 className="market-display mt-5">{business.tradingName}</h1>
