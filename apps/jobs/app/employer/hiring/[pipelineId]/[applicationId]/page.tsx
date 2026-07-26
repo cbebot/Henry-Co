@@ -238,7 +238,12 @@ export default async function ApplicationDetailPage({
                 >
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-xs font-semibold text-[var(--jobs-muted)]">
-                      {msg.senderName || msg.senderType}
+                      {msg.senderName ||
+                        (msg.senderType === "system"
+                          ? "Henry Onyx"
+                          : msg.senderType === "employer"
+                            ? "Employer"
+                            : "Candidate")}
                     </span>
                     <span className="text-xs text-[var(--jobs-muted)]">
                       {new Date(msg.createdAt).toLocaleString()}
@@ -247,7 +252,7 @@ export default async function ApplicationDetailPage({
                   <p className="mt-1.5 text-sm leading-6">{msg.body}</p>
                   {msg.isFlagged && (
                     <div className="mt-2 rounded-lg bg-[var(--jobs-warning-soft)] px-3 py-1.5 text-xs text-[var(--jobs-warning)]">
-                      Flagged: {msg.flagReason}
+                      This message is under review for platform safety.
                     </div>
                   )}
                 </div>

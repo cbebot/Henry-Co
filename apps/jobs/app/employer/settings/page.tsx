@@ -87,7 +87,7 @@ export default async function EmployerSettingsPage() {
 
       <SectionCard
         title={t("Conversations & alerts")}
-        body={t("Inbound applicant messages, interview reminders and hiring nudges all route through the unified Henry Onyx notification rail. Manage channels in your account preferences.")}
+        body={t("Applicant messages, interview reminders, and hiring alerts are all managed from your account preferences.")}
         actions={
           <Link
             href={getAccountUrl("/settings/notifications")}
@@ -103,7 +103,7 @@ export default async function EmployerSettingsPage() {
               <MessageSquare size={14} aria-hidden /> {t("Applicant messages")}
             </div>
             <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
-              {t("Every applicant thread surfaces in your candidate inbox and in the unified /messages view across Henry Onyx.")}
+              {t("Every applicant thread appears in your conversations inbox and in your unified messages view across Henry Onyx.")}
             </p>
           </div>
           <div className="jobs-soft-panel rounded-[1.5rem] p-4">
@@ -134,14 +134,14 @@ export default async function EmployerSettingsPage() {
             <Wallet size={14} aria-hidden /> {t("Posting credits")}
           </div>
           <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
-            {t("Free credits and featured-listing fees draw from the same balance you use across Marketplace, Studio and Property. Team-seat invoicing is owner-flagged — contact support if your headcount needs a seat plan.")}
+            {t("Posting credits and listing fees draw from your Henry Onyx wallet. For team billing, contact support.")}
           </p>
         </div>
       </SectionCard>
 
       <SectionCard
         title={t("Identity & access")}
-        body={t("Account-level identity, password, session security and the unified Henry Onyx trust score sit at the account-hub level — every division (Jobs, Care, Studio, Marketplace, Learn, Property, Logistics) reads from the same record.")}
+        body={t("Your identity, password, and session security apply across every Henry Onyx service you use — manage them from your account.")}
         actions={
           <Link
             href={getAccountUrl("/security")}
