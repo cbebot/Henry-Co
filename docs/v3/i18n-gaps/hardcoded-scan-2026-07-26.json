@@ -1,6 +1,6 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-07-26T04:19:22.587Z",
+  "generatedAt": "2026-07-26T04:39:56.260Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
@@ -12,7 +12,7 @@
       "EXEMPT": 125,
       "AMBIGUOUS": 52
     },
-    "durationMs": 4602
+    "durationMs": 4426
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
@@ -4709,7 +4709,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 44,
+        "line": 42,
         "col": 69,
         "kind": "jsx_text",
         "text": "Room types:",
@@ -4717,7 +4717,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 52,
+        "line": 50,
         "col": 69,
         "kind": "jsx_text",
         "text": "Retention & audit:",
@@ -4725,7 +4725,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 60,
+        "line": 58,
         "col": 69,
         "kind": "jsx_text",
         "text": "Operators & leadership:",
@@ -4733,7 +4733,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 64,
+        "line": 62,
         "col": 67,
         "kind": "jsx_text",
         "text": "Team internal chat",
@@ -4741,7 +4741,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 72,
+        "line": 70,
         "col": 19,
         "kind": "attr:title",
         "text": "Voice / live sessions",
