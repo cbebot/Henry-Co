@@ -34,7 +34,7 @@ export default async function InstructorCoursesPage() {
         kicker={t("New course")}
         title={t("Define the syllabus")}
         body={t(
-          "Every field here is a server action — saving updates the live catalogue. Keep titles plain, descriptions outcome-focused, and the syllabus tight.",
+          "Saving publishes these changes to the live catalogue. Keep titles plain, descriptions outcome-focused, and the syllabus tight.",
         )}
       />
       {LEARN_AI_COURSE_ASSIST ? (
@@ -174,7 +174,7 @@ export default async function InstructorCoursesPage() {
         kicker={t("Add lesson")}
         title={t("Lesson editor")}
         body={t(
-          "Pick a course, then add a module or extend an existing one with a new lesson. Lesson body uses markdown; video lessons reference a hosted video URL.",
+          "Pick a course, then add a module or extend an existing one with a new lesson. Lesson body uses markdown; for a video lesson, paste the video link.",
         )}
       />
       <LearnPanel className="mt-6 rounded-[1.6rem]">
