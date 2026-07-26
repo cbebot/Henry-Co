@@ -21,29 +21,27 @@ export class SupabaseDatabaseAdapter implements DatabaseAdapter {
       message: payload.message,
       division_slug: payload.divisionSlug ?? null,
     });
-    if (error) return { ok: false, error: error.message };
+    if (error) {
+      console.error("[super-app:db] contact submit failed", error);
+      return { ok: false, error: "We couldn't send your message. Please try again shortly." };
+    }
     return { ok: true };
   }
 
   async fetchDivisions(): Promise<DbResult<Division[] | null>> {
     const { data, error } = await this.client.from("divisions").select("*").order("name");
-    if (error) return { ok: false, error: error.message };
+    if (error) {
+      console.error("[super-app:db] fetch divisions failed", error);
+      return { ok: false, error: "We couldn't load divisions. Please try again." };
+    }
     if (!data?.length) return { ok: true, data: null };
     return { ok: true, data: data.map((row) => mapDivisionRow(row as DivisionRow)) };
   }
 
   async listActivity(limit = 8): Promise<DbResult<ActivityItem[]>> {
-    // Placeholder until unified activity table exists; merge from modules later.
-    const mock: ActivityItem[] = [
-      {
-        id: "remote-placeholder",
-        title: "Connect activity spine",
-        subtitle: "Wire Supabase activity feed when schema is ready.",
-        divisionSlug: "hub",
-        status: "pending",
-        at: new Date().toISOString(),
-      },
-    ];
-    return { ok: true, data: mock.slice(0, limit) };
+    // No unified cross-module activity feed yet — return empty rather than a
+    // stand-in row until the real feed is available.
+    const items: ActivityItem[] = [];
+    return { ok: true, data: items.slice(0, limit) };
   }
 }
