@@ -195,6 +195,7 @@ export const customerOverviewModule: DashboardModule = {
       { path: "support", kind: "detail", label: "Support" },
       { path: "referrals", kind: "detail", label: "Referrals" },
       { path: "settings", kind: "detail", label: "Settings" },
+      { path: "customize", kind: "detail", label: "Customize home" },
       {
         path: "notifications/recently-deleted",
         kind: "detail",
@@ -240,6 +241,15 @@ export const customerOverviewModule: DashboardModule = {
         groupLabel: "Settings",
         href: "/settings",
         keywords: ["profile", "settings", "account preferences"],
+      },
+      {
+        id: "co.customize-home",
+        source: "customer-overview",
+        label: "Customize home",
+        kicker: "Home",
+        groupLabel: "Settings",
+        href: "/customize",
+        keywords: ["customize", "personalize", "home layout", "pin", "hide", "reorder"],
       },
       {
         id: "co.recently-deleted",

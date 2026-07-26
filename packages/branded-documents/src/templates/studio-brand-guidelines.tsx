@@ -251,7 +251,9 @@ export function StudioBrandGuidelinesDocument({ brand, project, studio }: Studio
             </Text>
           ))}
           {project.archiveUrl ? (
-            <Text style={styles.archive}>{`Asset archive: ${project.archiveUrl}`}</Text>
+            <Text style={styles.archive}>
+              Download your full asset pack from your Henry Onyx Studio project workspace.
+            </Text>
           ) : null}
         </DocumentSection>
       ) : null}

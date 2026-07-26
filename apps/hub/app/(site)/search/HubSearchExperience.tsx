@@ -893,7 +893,7 @@ function ResultRow({
           onActivate();
         }}
         className={cn(
-          "group grid grid-cols-[auto,1fr,auto] items-start gap-4 py-5 pl-4 pr-3 transition-colors sm:gap-6",
+          "group grid grid-cols-[auto_1fr_auto] items-start gap-4 py-5 pl-4 pr-3 transition-colors sm:gap-6",
           active ? "bg-[color:var(--home-surface-04)]" : "hover:bg-[color:var(--home-surface-02)]",
         )}
         style={active ? { boxShadow: `inset 2px 0 0 0 ${meta.accent}` } : undefined}
@@ -962,7 +962,7 @@ function ResultRow({
 
 function EmptyState({ recents, onPick }: { recents: string[]; onPick: (q: string) => void }) {
   return (
-    <section className="grid gap-10 lg:grid-cols-[1fr,1px,1fr] lg:gap-12">
+    <section className="grid gap-10 lg:grid-cols-[1fr_1px_1fr] lg:gap-12">
       <div>
         <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
           <Sparkles className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden /> Start here
@@ -1058,7 +1058,7 @@ function ZeroState({
 }) {
   const suggestions = useMemo(() => curatedBrowse(catalog, "all", 2).slice(0, 6), [catalog]);
   return (
-    <section className="grid gap-10 lg:grid-cols-[1fr,1px,1fr] lg:gap-12">
+    <section className="grid gap-10 lg:grid-cols-[1fr_1px_1fr] lg:gap-12">
       <div>
         <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
           <Search className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden /> Nothing exact

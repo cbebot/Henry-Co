@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export * from "./analytics";
 export * from "./search";
+export * from "./recommendations";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -155,13 +156,24 @@ export interface TaskItem {
 export type TrustState = "unverified" | "pending_review" | "needs_action" | "verified" | "restricted" | "frozen";
 export type UserRoleHint = "guest" | "buyer" | "seller" | "staff" | "owner";
 export type RecommendationConfidence = "low" | "medium" | "high";
+// The ONE cross-division recommendation-reason vocabulary (ARCHITECTURE §7:
+// "defined once … reused by every division surface"). The first six are the
+// V3 floor (`nextAccountSteps`); V3-36 extends the set for the cross-division
+// engine — every new code maps to a localized reason string, never a raw score.
 export type RecommendationReasonCode =
   | "profile_incomplete"
   | "trust_pending"
   | "saved_items"
   | "recent_activity"
   | "cross_sell_division"
-  | "role_default";
+  | "role_default"
+  // V3-36 cross-division engine
+  | "saved_item_match"
+  | "cross_division_bridge"
+  | "frequently_bought_together"
+  | "lifecycle_stage_fit"
+  | "popular_in_segment"
+  | "continue_where_you_left_off";
 
 export interface UserContext {
   roleHint: UserRoleHint;
@@ -306,7 +318,11 @@ export type HenryFeatureFlagName =
   // V3-AI-01 — the system-wide Henry Onyx Intelligence kill switch. Default OFF
   // (absent env ⇒ false), so the AI engine launches dark; flipping it off halts all
   // gateway dispatch instantly (in-flight holds expire and release — no stranded funds).
-  | "ai_gateway";
+  | "ai_gateway"
+  // V3-34 (Phase E) — per-surface kill switch for the personalized home layout.
+  // Default OFF: the account home falls back to pure DASH weight ordering instantly.
+  // Deterministic + AI-free; gates only the user-preference/signal projection.
+  | "personalization_home";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -355,6 +371,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_AI_GATEWAY) ||
       list.has("ai_gateway") ||
       list.has("ai"),
+    // V3-34 personalization-home kill switch — default OFF (dark launch).
+    personalization_home:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
+      list.has("personalization_home") ||
+      list.has("personalization"),
   };
 }
 

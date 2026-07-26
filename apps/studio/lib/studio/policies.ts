@@ -66,7 +66,7 @@ export const studioPolicyIndex: PolicyDocument[] = [
       {
         heading: "3. Pricing and currency",
         body: [
-          "Pricing is quoted in Nigerian naira (NGN) and stored in kobo (1 NGN = 100 kobo) to avoid float arithmetic. Where a quote includes a foreign-currency reference, the naira figure is the authoritative price. We do not pass along bank or settlement charges — what you see on the invoice is what you pay.",
+          "Pricing is quoted and charged in Nigerian naira (NGN). Where a quote includes a foreign-currency reference, the naira figure is the authoritative price. We do not pass along bank or transfer charges — what you see on the invoice is what you pay.",
         ],
         bullets: [
           "Template reservations are fixed-price; the deposit and balance figures shown on the template page are final.",

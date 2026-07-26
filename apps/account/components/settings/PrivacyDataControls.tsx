@@ -22,6 +22,21 @@ function buildSupportPrefill(subject: string, message: string) {
   return `/support/new?${params.toString()}`;
 }
 
+/**
+ * V3-34 — mirror the device personalization-consent choice to the account-scoped
+ * flag (customer_preferences.personalization_enabled), which the server route
+ * also records in the NDPR consent ledger. Best-effort: a network failure never
+ * blocks the device-side save (the cookie is still written).
+ */
+function persistAccountPersonalization(enabled: boolean) {
+  if (typeof window === "undefined") return;
+  void fetch("/api/preferences/update", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ personalization_enabled: enabled }),
+  }).catch(() => undefined);
+}
+
 function Toggle({
   label,
   description,
@@ -94,6 +109,7 @@ export default function PrivacyDataControls() {
     if (typeof window !== "undefined") {
       persistHenryCoConsent(nextConsent, window.location.hostname);
     }
+    persistAccountPersonalization(nextConsent.personalizedExperience);
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2400);
   }
@@ -172,6 +188,7 @@ export default function PrivacyDataControls() {
             if (typeof window !== "undefined") {
               persistHenryCoConsent(essentialOnly, window.location.hostname);
             }
+            persistAccountPersonalization(essentialOnly.personalizedExperience);
           }}
           className="rounded-xl border border-[var(--acct-line)] px-4 py-2 text-sm font-semibold text-[var(--acct-ink)] transition-colors hover:bg-[var(--acct-surface)]"
         >
