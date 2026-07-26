@@ -29,7 +29,7 @@ export function BankDetails({
             Pay {amountLabel} into the verified Henry Onyx account
           </h2>
           <p className="mt-1 text-[13px] leading-5 text-[var(--studio-ink-soft)]">
-            Bank transfer is the active method for this invoice. Card payments are coming soon.
+            Bank transfer is the payment method for this invoice.
           </p>
         </div>
       </div>

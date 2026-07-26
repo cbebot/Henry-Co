@@ -159,6 +159,17 @@ const styles = StyleSheet.create({
   },
 });
 
+function signatureMethodLabel(provider: string): string {
+  switch (provider) {
+    case "typed_name":
+      return "Typed signature (electronic)";
+    case "signwell":
+      return "Verified e-signature";
+    default:
+      return "Electronic signature";
+  }
+}
+
 export function StudioProposalDocument({ proposal, client, studio, signature }: StudioProposalProps) {
   const milestoneColumns: Array<DataTableColumn<StudioProposalMilestone>> = [
     {
@@ -312,8 +323,8 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
             </View>
           ) : null}
           <View style={styles.signatureRow}>
-            <Text style={styles.signatureLabel}>Provider</Text>
-            <Text style={styles.signatureValue}>{signature.provider}</Text>
+            <Text style={styles.signatureLabel}>Signature method</Text>
+            <Text style={styles.signatureValue}>{signatureMethodLabel(signature.provider)}</Text>
           </View>
           {signature.ipAddress ? (
             <View style={styles.signatureRow}>
@@ -333,7 +344,7 @@ export function StudioProposalDocument({ proposal, client, studio, signature }: 
       <LegalFooter
         lines={[
           "This proposal is governed by the Henry Onyx Studio engagement terms. Acceptance is recorded electronically with timestamp, IP address, user agent, and locale captured for audit replay.",
-          "Investment + deposit figures above are exclusive of statutory tax unless explicitly noted. Currency converts at the gateway rate on the day of settlement.",
+          "Investment and deposit figures above are exclusive of statutory tax unless explicitly noted. Where currency conversion applies, the exchange rate on the payment date is used.",
         ]}
       />
     </BrandedDocument>
