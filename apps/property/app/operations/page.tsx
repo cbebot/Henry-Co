@@ -128,7 +128,7 @@ export default async function OperationsPage() {
                   key={inspection.id}
                   className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4"
                 >
-                  <div className="grid gap-4 xl:grid-cols-[1fr,0.9fr]">
+                  <div className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
                     <div>
                       <div className="text-lg font-semibold text-[var(--property-ink)]">
                         {listing ? listingTitleById.get(listing.id) ?? listing.title : t("Inspection-linked listing")}

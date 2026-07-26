@@ -3,7 +3,7 @@ import path from "node:path";
 import { defaultSecurityHeadersConfig } from "@henryco/config";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@henryco/config", "@henryco/ui", "@henryco/notifications"],
+  transpilePackages: ["@henryco/config", "@henryco/ui", "@henryco/notifications", "@henryco/workflow"],
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
   turbopack: {
     root: path.resolve(__dirname, "../.."),

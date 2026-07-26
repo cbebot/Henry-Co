@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Filter, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
+import { Filter, Search, ShieldCheck, X } from "lucide-react";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
@@ -11,10 +11,55 @@ import type {
   MarketplaceProduct,
 } from "@/lib/marketplace/types";
 
+/**
+ * Every user-facing string, localized on the server (Pattern B) and passed in
+ * as plain data — this client component stays locale-dumb. Templates carry
+ * {count}/{shown}/{total} placeholders substituted here with replaceAll.
+ */
+export type SearchExperienceLabels = {
+  searchKicker: string;
+  searchPlaceholder: string;
+  category: string;
+  allCategories: string;
+  brand: string;
+  allBrands: string;
+  trustFilters: string;
+  onyxVerified: string;
+  onyxVerifiedHint: string;
+  verifiedSellersOnly: string;
+  verifiedSellersChip: string;
+  codEligible: string;
+  codChip: string;
+  filters: string;
+  done: string;
+  resultsKicker: string;
+  refreshingKicker: string;
+  refreshingResults: string;
+  resultCountOne: string;
+  resultCountMany: string;
+  sortFeatured: string;
+  sortPriceLow: string;
+  sortPriceHigh: string;
+  sortRating: string;
+  activeFilters: string;
+  showingOf: string;
+  showMore: string;
+  allShown: string;
+  moreArrivingKicker: string;
+  moreArrivingTitle: string;
+  moreArrivingBody: string;
+  applyToSell: string;
+  howTrustWorks: string;
+  emptyTitle: string;
+  emptyBody: string;
+  resetSearch: string;
+};
+
 type SearchExperienceProps = {
   categories: MarketplaceCategory[];
   brands: MarketplaceBrand[];
   initialItems: MarketplaceProduct[];
+  labels: SearchExperienceLabels;
   initialQuery: {
     q?: string;
     category?: string;
@@ -31,6 +76,7 @@ export function SearchExperience({
   categories,
   brands,
   initialItems,
+  labels,
   initialQuery,
 }: SearchExperienceProps) {
   const [query, setQuery] = useState(initialQuery.q || "");
@@ -183,17 +229,17 @@ export function SearchExperience({
         }
       : null,
     onyxVerified
-      ? { label: "Henry Onyx Verified", clear: () => setOnyxVerified(false) }
+      ? { label: labels.onyxVerified, clear: () => setOnyxVerified(false) }
       : null,
-    verified ? { label: "Verified sellers", clear: () => setVerified(false) } : null,
-    cod ? { label: "COD eligible", clear: () => setCod(false) } : null,
+    verified ? { label: labels.verifiedSellersChip, clear: () => setVerified(false) } : null,
+    cod ? { label: labels.codChip, clear: () => setCod(false) } : null,
   ].filter(Boolean) as Array<{ label: string; clear: () => void }>;
 
   const filters = (
     <div className="space-y-8">
       <div>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-          Search intent
+          {labels.searchKicker}
         </p>
         <div ref={searchWrapRef} className="relative mt-3">
           <div className="flex items-center gap-3 border-b border-[var(--market-line)] pb-3 transition focus-within:border-[var(--market-brass)]">
@@ -210,7 +256,7 @@ export function SearchExperience({
               aria-autocomplete="list"
               aria-controls="marketplace-search-suggestions"
               aria-expanded={suggestOpen && suggestions.length > 0}
-              placeholder="Desk lamp, cashmere throw, executive chair"
+              placeholder={labels.searchPlaceholder}
               className="w-full bg-transparent text-sm text-[var(--market-paper-white)] outline-none placeholder:text-[rgba(213,224,245,0.42)]"
             />
             {suggestBusy ? (
@@ -246,14 +292,14 @@ export function SearchExperience({
 
       <div>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-          Category
+          {labels.category}
         </p>
         <select
           value={category}
           onChange={(event) => setCategory(event.target.value)}
           className="market-select mt-3 w-full rounded-full border border-[var(--market-line)] bg-transparent px-4 py-2.5 text-sm"
         >
-          <option value="">All categories</option>
+          <option value="">{labels.allCategories}</option>
           {categories.map((item) => (
             <option key={item.slug} value={item.slug}>
               {item.name}
@@ -264,14 +310,14 @@ export function SearchExperience({
 
       <div>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-          Brand
+          {labels.brand}
         </p>
         <select
           value={brand}
           onChange={(event) => setBrand(event.target.value)}
           className="market-select mt-3 w-full rounded-full border border-[var(--market-line)] bg-transparent px-4 py-2.5 text-sm"
         >
-          <option value="">All brands</option>
+          <option value="">{labels.allBrands}</option>
           {brands.map((item) => (
             <option key={item.slug} value={item.slug}>
               {item.name}
@@ -282,7 +328,7 @@ export function SearchExperience({
 
       <div>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-          Trust filters
+          {labels.trustFilters}
         </p>
         <ul className="mt-3 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
           <li>
@@ -296,10 +342,10 @@ export function SearchExperience({
               <span className="flex-1">
                 <span className="flex items-center gap-1.5 font-medium">
                   <ShieldCheck className="h-3.5 w-3.5 text-[var(--market-brass)]" aria-hidden />
-                  Henry Onyx Verified
+                  {labels.onyxVerified}
                 </span>
                 <span className="mt-1 block text-xs leading-5 text-[var(--market-muted)]">
-                  Listings independently checked by Henry Onyx.
+                  {labels.onyxVerifiedHint}
                 </span>
               </span>
             </label>
@@ -312,7 +358,7 @@ export function SearchExperience({
                 type="checkbox"
                 className="h-4 w-4 rounded border-[var(--market-line)] bg-transparent accent-[var(--market-brass)]"
               />
-              <span className="flex-1">Verified sellers only</span>
+              <span className="flex-1">{labels.verifiedSellersOnly}</span>
             </label>
           </li>
           <li>
@@ -323,7 +369,7 @@ export function SearchExperience({
                 type="checkbox"
                 className="h-4 w-4 rounded border-[var(--market-line)] bg-transparent accent-[var(--market-brass)]"
               />
-              <span className="flex-1">Cash on delivery eligible</span>
+              <span className="flex-1">{labels.codEligible}</span>
             </label>
           </li>
         </ul>
@@ -333,7 +379,7 @@ export function SearchExperience({
 
   return (
     <>
-      <section className="relative grid gap-12 xl:grid-cols-[280px,1fr]">
+      <section className="relative grid gap-12 xl:grid-cols-[280px_1fr]">
         <aside className="sticky top-28 z-10 hidden self-start xl:block">{filters}</aside>
 
         <div className="relative z-20 space-y-8">
@@ -341,16 +387,14 @@ export function SearchExperience({
           <div className="flex flex-col gap-5 border-b border-[var(--market-line)] pb-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--market-brass)]">
-                {loading ? "Refreshing" : "Results"}
+                {loading ? labels.refreshingKicker : labels.resultsKicker}
               </p>
               <p className="mt-3 text-[1.6rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[2rem]">
                 {loading
-                  ? "Refreshing results..."
-                  : `${sortedItems.length} refined result${sortedItems.length === 1 ? "" : "s"}`}
-              </p>
-              <p className="mt-2 max-w-xl text-sm leading-7 text-[var(--market-muted)]">
-                Search reacts quickly, filters stay visible, and trust context stays readable
-                instead of being buried.
+                  ? labels.refreshingResults
+                  : sortedItems.length === 1
+                    ? labels.resultCountOne
+                    : labels.resultCountMany.replaceAll("{count}", String(sortedItems.length))}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -360,21 +404,17 @@ export function SearchExperience({
                 className="market-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold xl:hidden"
               >
                 <Filter className="h-4 w-4" />
-                Filters
+                {labels.filters}
               </button>
-              <span className="hidden items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)] sm:inline-flex">
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-                Premium filtering
-              </span>
               <select
                 value={sort}
                 onChange={(event) => setSort(event.target.value as SortMode)}
                 className="market-select min-w-[180px] rounded-full border border-[var(--market-line)] bg-transparent px-4 py-2.5 text-sm"
               >
-                <option value="featured">Sort: Featured</option>
-                <option value="price_low">Price: Low to high</option>
-                <option value="price_high">Price: High to low</option>
-                <option value="rating">Rating first</option>
+                <option value="featured">{labels.sortFeatured}</option>
+                <option value="price_low">{labels.sortPriceLow}</option>
+                <option value="price_high">{labels.sortPriceHigh}</option>
+                <option value="rating">{labels.sortRating}</option>
               </select>
             </div>
           </div>
@@ -382,7 +422,7 @@ export function SearchExperience({
           {activeChips.length ? (
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                Active filters
+                {labels.activeFilters}
               </span>
               {activeChips.map((chip) => (
                 <button
@@ -425,28 +465,26 @@ export function SearchExperience({
               {activeChips.length === 0 && !deferredQuery.trim() && sortedItems.length < SPARSE_THRESHOLD ? (
                 <div className="mt-8 rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.025)] p-6 sm:p-8">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-                    More arriving soon
+                    {labels.moreArrivingKicker}
                   </p>
                   <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--market-paper-white)]">
-                    Henry Onyx Marketplace is opening with a small, hand-picked set of vendors
-                    so the trust signals stay real.
+                    {labels.moreArrivingTitle}
                   </p>
                   <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-                    New stores and listings are being verified weekly. Save the categories you
-                    care about and we will surface fresh inventory as it lands.
+                    {labels.moreArrivingBody}
                   </p>
                   <div className="mt-5 flex flex-wrap gap-3">
                     <Link
                       href="/sell"
                       className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                     >
-                      Apply to sell
+                      {labels.applyToSell}
                     </Link>
                     <Link
                       href="/trust"
                       className="market-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                     >
-                      How trust works
+                      {labels.howTrustWorks}
                     </Link>
                   </div>
                 </div>
@@ -454,36 +492,40 @@ export function SearchExperience({
               {hasMore ? (
                 <div className="mt-10 flex flex-col items-center gap-3 border-t border-[var(--market-line)] pt-8">
                   <p className="text-sm text-[var(--market-muted)]">
-                    Showing {visibleItems.length} of {sortedItems.length} products
+                    {labels.showingOf
+                      .replaceAll("{shown}", String(visibleItems.length))
+                      .replaceAll("{total}", String(sortedItems.length))}
                   </p>
                   <button
                     type="button"
                     onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
                     className="market-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
                   >
-                    Show {Math.min(PAGE_SIZE, sortedItems.length - visibleCount)} more
+                    {labels.showMore.replaceAll(
+                      "{count}",
+                      String(Math.min(PAGE_SIZE, sortedItems.length - visibleCount)),
+                    )}
                   </button>
                 </div>
               ) : sortedItems.length > PAGE_SIZE ? (
                 <p className="mt-10 border-t border-[var(--market-line)] pt-8 text-center text-sm text-[var(--market-muted)]">
-                  All {sortedItems.length} products shown.
+                  {labels.allShown.replaceAll("{count}", String(sortedItems.length))}
                 </p>
               ) : null}
             </>
           ) : (
             <div className="border-l-2 border-[var(--market-brass)]/55 pl-5 py-3">
               <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
-                Nothing matched that exact combination.
+                {labels.emptyTitle}
               </p>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-                Ease one trust filter or widen the keyword. Henry Onyx search is meant to keep buyers
-                moving, not trap them in dead-end clutter.
+                {labels.emptyBody}
               </p>
               <Link
                 href="/search"
                 className="market-button-primary mt-5 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Reset search
+                {labels.resetSearch}
               </Link>
             </div>
           )}
@@ -494,13 +536,13 @@ export function SearchExperience({
         <div className="fixed inset-0 z-[65] bg-[rgba(2,4,10,0.58)] backdrop-blur-md xl:hidden">
           <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[2rem] border-t border-[var(--market-line)] bg-[rgba(5,7,13,0.96)] p-6 shadow-[0_-24px_80px_rgba(0,0,0,0.36)]">
             <div className="mb-6 flex items-center justify-between">
-              <p className="text-lg font-semibold text-[var(--market-paper-white)]">Filters</p>
+              <p className="text-lg font-semibold text-[var(--market-paper-white)]">{labels.filters}</p>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
                 className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
               >
-                Done
+                {labels.done}
               </button>
             </div>
             {filters}

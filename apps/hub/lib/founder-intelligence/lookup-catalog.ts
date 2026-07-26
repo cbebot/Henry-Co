@@ -4,6 +4,14 @@ import type { FounderLookupRequest } from "@henryco/ai-gateway";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getWorkforceCenterData } from "@/lib/owner-data";
 import {
+  getAgencyJob,
+  getStudioBrief,
+  isOperatorHeld,
+  listActiveAgencyJobs,
+  listProposalsInReview,
+} from "@/lib/studio-agency-read";
+import { formatNairaFromKobo, heartbeatAgeMs } from "./studio-agency-model";
+import {
   FOUNDER_LOOKUP_GOVERNANCE,
   type FounderLookupGovernance,
 } from "./lookup-governance";
@@ -199,6 +207,61 @@ const staffList: LookupExecutor = async () => {
   };
 };
 
+// ── SA-4 — studio-agency reads (owner-only surface; amounts allowed here) ────
+
+const studioBriefsPendingList: LookupExecutor = async () => {
+  const proposals = await listProposalsInReview(8);
+  if (proposals.length === 0) return null;
+  return {
+    title: `${proposals.length} agency briefs held for your review`,
+    lines: proposals.map((p) => `proposalId=${clip(p.id, 40)} · "${clip(p.title, 70)}" · in review`),
+  };
+};
+
+const studioBriefGet: LookupExecutor = async (params) => {
+  const brief = await getStudioBrief(String(params.briefId));
+  if (!brief) return null;
+  return {
+    title: `Brief ${clip(brief.id, 12)} (${brief.briefClass ?? "unclassified"})`,
+    lines: [
+      `id=${clip(brief.id, 40)} · class=${brief.briefClass ?? "unclassified"} · intent=${clip(brief.packageIntent, 20)}`,
+      `goals: ${clip(brief.goals, 160) || "(none recorded)"}`,
+      `business: ${clip(brief.businessType, 60) || "—"} · budget band: ${clip(brief.budgetBand, 30) || "—"}`,
+      `urgency: ${clip(brief.urgency, 30) || "—"} · timeline: ${clip(brief.timeline, 40) || "—"}`,
+    ],
+  };
+};
+
+const studioJobsActiveList: LookupExecutor = async () => {
+  const jobs = await listActiveAgencyJobs(10);
+  if (jobs.length === 0) return null;
+  const now = Date.now();
+  return {
+    title: `${jobs.length} active build jobs`,
+    lines: jobs.map((job) => {
+      const age = heartbeatAgeMs(job, now);
+      const ageLabel = age === null ? "—" : `${Math.round(age / 60000)}m`;
+      const held = isOperatorHeld(job) ? " · PAUSED" : "";
+      return `jobId=${clip(job.id, 40)} · ${clip(job.stage, 24)} · spend ${formatNairaFromKobo(job.costKobo)}/${formatNairaFromKobo(job.budgetKobo)} · heartbeat ${ageLabel}${held}`;
+    }),
+  };
+};
+
+const studioJobGet: LookupExecutor = async (params) => {
+  const job = await getAgencyJob(String(params.jobId));
+  if (!job) return null;
+  const age = heartbeatAgeMs(job, Date.now());
+  return {
+    title: `Build job ${clip(job.id, 12)} — ${clip(job.stage, 24)}`,
+    lines: [
+      `jobId=${clip(job.id, 40)} · stage=${clip(job.stage, 24)} · attempt=${job.attempt}${isOperatorHeld(job) ? " · PAUSED" : ""}`,
+      `spend ${formatNairaFromKobo(job.costKobo)} of ${formatNairaFromKobo(job.budgetKobo)} envelope`,
+      `heartbeat age: ${age === null ? "—" : `${Math.round(age / 60000)}m`} · internal=${job.isInternal ? "yes" : "no"} · class=${job.briefClass ?? "—"}`,
+      `artifact: ${job.artifactHash ? `pinned ${clip(job.artifactHash, 16)}…` : "not built yet"}${job.approvedArtifactHash ? " · approval pinned" : ""}`,
+    ],
+  };
+};
+
 const EXECUTORS: Record<string, LookupExecutor> = {
   "support.threads.list": supportThreadsList,
   "support.thread.get": supportThreadGet,
@@ -206,6 +269,10 @@ const EXECUTORS: Record<string, LookupExecutor> = {
   "kyc.submissions.list": kycSubmissionsList,
   "marketplace.products.pending.list": productsPendingList,
   "staff.list": staffList,
+  "studio.briefs.pending.list": studioBriefsPendingList,
+  "studio.brief.get": studioBriefGet,
+  "studio.jobs.active.list": studioJobsActiveList,
+  "studio.job.get": studioJobGet,
 };
 
 function getLookupGovernance(key: string): FounderLookupGovernance | undefined {

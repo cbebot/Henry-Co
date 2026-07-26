@@ -153,7 +153,7 @@ export default async function PricingPage() {
     >
       <div className="mx-auto max-w-[92rem] space-y-16">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="care-kicker text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--home-accent-text)]">
                 {copy.hero.eyebrow}
@@ -235,7 +235,7 @@ export default async function PricingPage() {
                 {group.rows.map((item) => (
                   <li
                     key={item.id}
-                    className="grid gap-3 py-5 sm:grid-cols-[1fr,auto] sm:items-center sm:gap-8"
+                    className="grid gap-3 py-5 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-8"
                   >
                     <div>
                       <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
@@ -324,7 +324,7 @@ function PackageList({
         {items.map((item) => (
           <li
             key={item.id}
-            className="grid gap-3 py-5 sm:grid-cols-[1fr,auto] sm:items-start sm:gap-8"
+            className="grid gap-3 py-5 sm:grid-cols-[1fr_auto] sm:items-start sm:gap-8"
           >
             <div>
               <h3 className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
@@ -372,7 +372,7 @@ function ModifierList({
         {items.map((item) => (
           <li
             key={item.id}
-            className="grid gap-3 py-5 sm:grid-cols-[1fr,auto] sm:items-start sm:gap-8"
+            className="grid gap-3 py-5 sm:grid-cols-[1fr_auto] sm:items-start sm:gap-8"
           >
             <div>
               <h3 className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
