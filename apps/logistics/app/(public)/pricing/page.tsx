@@ -75,7 +75,7 @@ export default async function PricingPage() {
           </div>
           <ul className="mt-6 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
             {zonesLocalized.map((z) => (
-              <li key={z.id} className="grid gap-5 py-6 md:grid-cols-[0.4fr,1fr,0.4fr,0.4fr]">
+              <li key={z.id} className="grid gap-5 py-6 md:grid-cols-[0.4fr_1fr_0.4fr_0.4fr]">
                 <div>
                   <h3 className="text-[1.05rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {z.name}

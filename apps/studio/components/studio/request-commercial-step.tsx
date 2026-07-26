@@ -89,6 +89,7 @@ export function StudioRequestCommercialStep({
   setInspirationSummary,
   setDomainIntentJson,
   errors,
+  domainLookupEnabled = false,
 }: Pick<
   RequestBuilderSelectionProps,
   | "requestConfig"
@@ -107,7 +108,7 @@ export function StudioRequestCommercialStep({
   | "inspirationSummary"
   | "setInspirationSummary"
   | "setDomainIntentJson"
-> & { errors?: Record<string, string> }) {
+> & { errors?: Record<string, string>; domainLookupEnabled?: boolean }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const urgencyOptions = requestConfig.urgencyOptions.filter((item) => item.isActive !== false);
@@ -115,7 +116,10 @@ export function StudioRequestCommercialStep({
 
   return (
     <div className="space-y-8">
-      <StudioDomainLaunchSection onIntentChange={setDomainIntentJson} />
+      <StudioDomainLaunchSection
+        onIntentChange={setDomainIntentJson}
+        lookupEnabled={domainLookupEnabled}
+      />
 
       <section className="studio-panel rounded-[1.6rem] p-5 sm:p-7">
         <div className="studio-kicker">{t("Commercial context")}</div>

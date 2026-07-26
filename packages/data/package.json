@@ -9,6 +9,7 @@
     "./client": "./src/client.ts",
     "./dashboard-summary": "./src/dashboard-summary.ts",
     "./signal-feed": "./src/signal-feed.ts",
+    "./home-layout": "./src/home-layout.ts",
     "./cross-division-activity": "./src/cross-division-activity.ts",
     "./support-summary": "./src/support-summary.ts",
     "./abandoned-tasks": "./src/abandoned-tasks.ts",

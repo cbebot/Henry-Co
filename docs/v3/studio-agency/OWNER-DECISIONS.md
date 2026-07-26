@@ -1,6 +1,16 @@
 # Owner Decisions — What Only You Can Ratify (Defaults Included)
 
-**Pass:** V3-STUDIO-AGENCY-DESIGN-01 · Each decision below blocks the phase named next to it; everything else in this design proceeds on the recommended default if you simply say "defaults." Recommendations are marked ✦.
+**Pass:** V3-STUDIO-AGENCY-DESIGN-01 · **Status: RATIFIED 2026-07-18 — defaults + confirmations.** The owner ratified SA-D1–SA-D5 on the recommended ✦ defaults, with the two SA-D1 sub-confirmations recorded below. The original framing of each decision is preserved beneath the record.
+
+## Ratification record — 2026-07-18
+
+- **SA-D1 — ratified on the default classification**, with both sub-confirmations explicit:
+  - **Templated-notifications carve-out: YES.** Templated stage notifications (`build_started`, `preview_ready`, `site_live` — fixed copy, tone-gated) go out **without a tap**; they are the purchased service's own progress reporting. Only AI-authored free text waits for a human.
+  - **Class-B delegation pre-approved at ~5 jobs/week.** Once volume exceeds roughly 5 jobs/week, `client_review`-stage approvals (proposal send, AI-drafted replies) delegate to `studio_owner`/`sales_consultation` via `requireStudioRoles`. The owner keeps **deploy, money (budget increase, cancel/refund), and social** permanently.
+- **SA-D2 — ratified on the default** (Mode A fixed-price; envelope 20% of package price, floor ₦10,000 / ceiling ₦100,000; all figures seed values in the governed `studio-build-rate-card-v1` rule book).
+- **SA-D3 — ratified on the default** (Executor E1 — GitHub Actions in a dedicated repo; Track 1 bundle renderer; deploy staff-manual in SA-2, orchestrator-automated post-approval from SA-3).
+- **SA-D4 — ratified on the default** (draft-and-approve social, permanently; no scheduled auto-publish).
+- **SA-D5 — ratified on the default** (template packages keep instant auto-send; agency-build briefs hold in `in_review` for a one-tap release with an AI-prepared review card) — **unblocks SA-1**.
 
 ---
 
@@ -37,4 +47,4 @@ Today every brief auto-prices and auto-sends a proposal with no human look.
 
 ---
 
-**To proceed:** ratify D1–D3 + D5 (D4 can wait until SA-5). "Defaults" as a one-word answer is a valid ratification of all five.
+**Ratified 2026-07-18** — D1–D5 on the ✦ defaults, with the two SA-D1 sub-confirmations recorded above. SA-1 (brief refactor) is unblocked immediately; SA-2 is unblocked on D1–D3; SA-5's social posture is settled by D4.

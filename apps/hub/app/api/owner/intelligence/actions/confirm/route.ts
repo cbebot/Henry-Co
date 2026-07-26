@@ -8,6 +8,13 @@ import { getFounderAction } from "@/lib/founder-intelligence/action-catalog";
 
 export const runtime = "nodejs";
 
+/** The live action tranche — the same gate both propose paths apply, so a
+ *  darkened tranche also blocks the EXECUTE of an already-minted card. */
+function liveTranche(): number {
+  const raw = Number(process.env.FOUNDER_ACTIONS_TRANCHE ?? "1");
+  return Number.isFinite(raw) && raw >= 1 ? Math.floor(raw) : 1;
+}
+
 /**
  * POST /api/owner/intelligence/actions/confirm — the OWNER-initiated execute
  * step of a governed founder action (F3). NOT called from a chat turn; the AI
@@ -83,6 +90,15 @@ export async function POST(request: NextRequest) {
   const entry = getFounderAction(proposal.action_key);
   if (!entry) {
     return NextResponse.json({ error: "Unknown action." }, { status: 400 });
+  }
+
+  // Tranche kill-switch (SA-4 adversarial round 1): re-gate the EXECUTE path on
+  // the live tranche, exactly as both propose paths do. Without this, a pending
+  // card minted while a tranche was live still executes after the tranche is
+  // darkened — so lowering FOUNDER_ACTIONS_TRANCHE would not actually stop
+  // already-queued actions. Now a dark tranche means no execute, no exceptions.
+  if (entry.tranche > liveTranche()) {
+    return NextResponse.json({ error: "Not available." }, { status: 404 });
   }
 
   // The real owner role for audit fidelity — the app-gate returns only

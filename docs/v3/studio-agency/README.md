@@ -1,6 +1,6 @@
 # Studio Agency — Autonomous Build Agent, Orchestration & Owner-AI Operator
 
-**Pass:** V3-STUDIO-AGENCY-DESIGN-01 · **Type:** Design / architecture only (no feature code, no migration) · **Risk class:** M (money-adjacent; metered AI + deploys) · **Status:** Draft for owner ratification · **Base:** `origin/main @ 5f1139ff`
+**Pass:** V3-STUDIO-AGENCY-DESIGN-01 · **Type:** Design / architecture only (no feature code, no migration) · **Risk class:** M (money-adjacent; metered AI + deploys) · **Status:** RATIFIED 2026-07-18 — defaults + confirmations ([OWNER-DECISIONS.md](./OWNER-DECISIONS.md)); build passes proceeding, SA-1 first · **Base:** `origin/main @ 5f1139ff`
 
 > This folder is the blueprint for the **autonomous Studio build agency**: an approved brief spawns a coding agent that builds the client's site in a sandbox, returns it for review, and — only after a human one-tap approval — deploys it; one orchestration layer walks every job through request → review → build → QA → deploy → aftercare; and an **Owner-AI operator** (an extension of the shipped Founder Intelligence) runs the preparation, coordination, and monitoring that continue while the owner is offline. It introduces **no code and no migration**; it specifies them, phase by phase, on top of what is actually on `main`.
 

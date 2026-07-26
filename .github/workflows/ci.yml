@@ -348,3 +348,19 @@ jobs:
 
       - name: Prove gaming RLS at runtime (authenticated cannot forge moves/insert matches/read non-participant data)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/gaming_rls_behaviour.sql
+
+      # V3-34 PERSONALIZATION (Phase E) — per-user home layout + NDPR consent
+      # ledger. Net-new tables, default-deny RLS, NO money path. The migration
+      # creates its own tables (customer_preferences ALTER is table-guarded, so it
+      # skips on the fresh DB), so apply-then-assert on the same fresh DB.
+      - name: Seed V3-34 prod-standing table ACL (so the migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/personalization_min.sql
+
+      - name: Apply V3-34 personalization-home migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260718120000_v3_34_personalization_home.sql
+
+      - name: Assert personalization grant invariant (layout owner-only, no admin reads; consent ledger append-only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/personalization_grant_invariant.sql
+
+      - name: Prove personalization RLS at runtime (user B never reads/writes user A's layout or consent — 0 rows)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/personalization_rls_behaviour.sql

@@ -124,7 +124,7 @@ export default async function PathDetailPage({
 
         <ol className="mt-8 divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
           {itemsLocalized.map((item, index) => (
-            <li key={item.id} className="grid gap-5 py-6 md:grid-cols-[0.32fr,0.68fr]">
+            <li key={item.id} className="grid gap-5 py-6 md:grid-cols-[0.32fr_0.68fr]">
               <div>
                 <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
                   {t("Step")} {String(index + 1).padStart(2, "0")}

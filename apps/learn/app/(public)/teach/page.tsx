@@ -225,7 +225,7 @@ export default async function TeachPage({
         </ul>
       </section>
 
-      <section className="mt-14 grid gap-12 xl:grid-cols-[0.95fr,1.05fr] xl:divide-x xl:divide-[var(--learn-line)]">
+      <section className="mt-14 grid gap-12 xl:grid-cols-[0.95fr_1.05fr] xl:divide-x xl:divide-[var(--learn-line)]">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Who should apply")}
@@ -377,7 +377,7 @@ export default async function TeachPage({
               {reviewStages.map((stage) => (
                 <li
                   key={stage.step}
-                  className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                  className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
                     {stage.step}

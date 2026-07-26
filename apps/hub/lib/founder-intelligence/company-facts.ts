@@ -110,7 +110,13 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
   if (actionQueue) {
     const q = actionQueue;
     const hasAny =
-      q.supportThreads.length + q.vendorApplications.length + q.kycSubmissions.length + q.productReviews.length > 0;
+      q.supportThreads.length +
+        q.vendorApplications.length +
+        q.kycSubmissions.length +
+        q.productReviews.length +
+        q.pendingStudioProposals.length +
+        q.studioJobsAwaitingOwner.length >
+      0;
     if (hasAny) {
       lines.push(
         "",
@@ -137,6 +143,21 @@ export async function buildCompanyFactsForFounderAI(): Promise<string> {
         lines.push(
           `- PRODUCT REVIEW id=${fenceSafe(product.id, 40)} · "${fenceSafe(product.title, 60)}" → owner.marketplace.product.review (productId, decision)`,
         );
+      }
+      // SA-4 studio-agency queue (empty while STUDIO_AGENCY_LIVE is dark).
+      for (const proposal of q.pendingStudioProposals) {
+        lines.push(
+          `- STUDIO PROPOSAL id=${fenceSafe(proposal.id, 40)} · "${fenceSafe(proposal.title, 60)}" held for your review → owner.studio.proposal.send (proposalId)`,
+        );
+      }
+      for (const job of q.studioJobsAwaitingOwner) {
+        const hint =
+          job.stage === "owner_review"
+            ? "awaiting your deploy approval → owner.studio.deploy.approve (jobId)"
+            : job.stage === "stalled"
+              ? "stalled — raise the envelope or cancel → owner.studio.job.budget_increase (jobId, step) / owner.studio.job.cancel (jobId)"
+              : "approved and deploying — details via studio.job.get (jobId)";
+        lines.push(`- STUDIO BUILD JOB id=${fenceSafe(job.id, 40)} · ${fenceSafe(job.stage, 24)} · ${hint}`);
       }
     }
   }

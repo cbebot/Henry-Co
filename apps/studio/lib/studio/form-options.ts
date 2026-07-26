@@ -11,6 +11,7 @@ export const STUDIO_LEAD_STATUS_OPTIONS = [
 
 export const STUDIO_PROPOSAL_STATUS_OPTIONS = [
   { value: "draft", label: "Draft" },
+  { value: "in_review", label: "In review" },
   { value: "sent", label: "Sent" },
   { value: "accepted", label: "Accepted" },
   { value: "rejected", label: "Rejected" },
