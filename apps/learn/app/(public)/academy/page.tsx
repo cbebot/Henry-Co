@@ -56,7 +56,7 @@ export default async function AcademyPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
               {t("How Henry Onyx Learn works")}
@@ -133,7 +133,7 @@ export default async function AcademyPage() {
         </ol>
       </section>
 
-      <section className="mt-14 grid gap-12 xl:grid-cols-[1.05fr,0.95fr] xl:divide-x xl:divide-[var(--learn-line)]">
+      <section className="mt-14 grid gap-12 xl:grid-cols-[1.05fr_0.95fr] xl:divide-x xl:divide-[var(--learn-line)]">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Your dashboard")}

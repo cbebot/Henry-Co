@@ -44,7 +44,7 @@ export default function InviteMemberForm({
   return (
     <form ref={formRef} action={onSubmit} className="space-y-4">
       <input type="hidden" name="slug" value={slug} />
-      <div className="grid gap-4 sm:grid-cols-[2fr,1fr]">
+      <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
         <Field label={copy.email} htmlFor="invite-email">
           <input id="invite-email" name="email" type="email" required className={inputCls} />
         </Field>

@@ -48,3 +48,7 @@ export * from "./staff-register";
 
 // Track B (DASH-8) — owner dashboard registry.
 export * from "./owner-register";
+
+// V3-34 (Phase E) — the deterministic per-user home-layout projection.
+// Also importable via the explicit subpath `@henryco/dashboard-shell/personalization`.
+export * from "./personalization";

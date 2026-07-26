@@ -151,7 +151,7 @@ export default async function TrustPage() {
             return (
               <li
                 key={item.title}
-                className="grid gap-3 py-6 sm:grid-cols-[auto,1fr] sm:items-start sm:gap-6"
+                className="grid gap-3 py-6 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-6"
               >
                 <Icon
                   className="h-5 w-5 text-[var(--property-accent-strong)]"
