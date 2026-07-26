@@ -1,6 +1,6 @@
 import "server-only";
 
-import { publishNotification } from "@henryco/notifications";
+import { publishNotification, publishStaffNotification } from "@henryco/notifications";
 import type { SupportAssistTurn } from "@henryco/ai-gateway";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -112,14 +112,21 @@ export async function persistIntelligenceTurn(input: PersistInput): Promise<Pers
     //    not theirs (or is gone), we silently start a FRESH conversation — never write across.
     let conversationId: string | null = null;
     let escalatedThreadId: string | null = null;
+    let priorStatus: string | null = null;
     if (input.conversationId) {
       const { data } = await admin
         .from("intelligence_conversations")
-        .select("id, user_id, session_id, escalated_thread_id")
+        .select("id, user_id, session_id, escalated_thread_id, status")
         .eq("id", input.conversationId)
         .maybeSingle();
       const row = data as
-        | { id: string; user_id: string | null; session_id: string; escalated_thread_id: string | null }
+        | {
+            id: string;
+            user_id: string | null;
+            session_id: string;
+            escalated_thread_id: string | null;
+            status: string | null;
+          }
         | null;
       const owns = row
         ? input.userId
@@ -129,6 +136,7 @@ export async function persistIntelligenceTurn(input: PersistInput): Promise<Pers
       if (row && owns) {
         conversationId = row.id;
         escalatedThreadId = row.escalated_thread_id;
+        priorStatus = row.status;
         await admin
           .from("intelligence_conversations")
           .update({ status, last_message_at: new Date().toISOString() } as never)
@@ -173,7 +181,27 @@ export async function persistIntelligenceTurn(input: PersistInput): Promise<Pers
           .from("intelligence_conversations")
           .update({ escalated_thread_id: threadId } as never)
           .eq("id", conversationId);
+        // The owner's bell rings: a customer asked for a live person.
+        await alertOwnersOfHandoff(admin, {
+          division,
+          subject: deriveSubject(input.lastUserText),
+          conversationId,
+          threadId,
+          anonymous: false,
+        });
       }
+    } else if (input.turn.handoff && !input.userId && priorStatus !== "escalated") {
+      // Anonymous visitor asked for a live person. No support thread can be
+      // forged (no auth user), but the OWNER still gets the alert with the
+      // conversation pointer — previously an anonymous plea went nowhere a
+      // human would see. Fires only on the transition into "escalated".
+      await alertOwnersOfHandoff(admin, {
+        division,
+        subject: deriveSubject(input.lastUserText),
+        conversationId,
+        threadId: null,
+        anonymous: true,
+      });
     }
 
     return { conversationId, assistantMessageId: (assistantRow as { id: string } | null)?.id ?? null };
@@ -184,6 +212,67 @@ export async function persistIntelligenceTurn(input: PersistInput): Promise<Pers
 }
 
 type Admin = ReturnType<typeof createAdminSupabase>;
+
+/**
+ * Ring the owner's bell: a customer (signed-in or anonymous) asked the AI for
+ * a live person. Targeted directly at each ACTIVE owner_profiles user (direct
+ * userId targeting — no dependency on role-RLS semantics), riding the staff
+ * notification spine the owner console's bell already subscribes to.
+ * Best-effort by contract: an alert failure never disturbs the customer turn.
+ */
+async function alertOwnersOfHandoff(
+  admin: Admin,
+  input: {
+    division: string;
+    subject: string;
+    conversationId: string;
+    threadId: string | null;
+    anonymous: boolean;
+  },
+): Promise<void> {
+  try {
+    const { data } = await admin
+      .from("owner_profiles")
+      .select("user_id")
+      .eq("is_active", true)
+      .limit(5);
+    const ownerIds = ((data ?? []) as Array<{ user_id: string | null }>)
+      .map((row) => row.user_id)
+      .filter((id): id is string => Boolean(id));
+    if (ownerIds.length === 0) return;
+
+    const deepLink = input.threadId
+      ? `/owner/support?thread=${input.threadId}`
+      : `/owner/support?conversation=${input.conversationId}`;
+
+    await Promise.all(
+      ownerIds.map((ownerId) =>
+        publishStaffNotification({
+          division: (DIVISIONS.has(input.division) ? input.division : "account") as never,
+          recipient: { userId: ownerId },
+          eventType: "staff.support.handoff.requested",
+          severity: "urgent",
+          title: input.anonymous
+            ? "An anonymous visitor needs a live person"
+            : "A customer needs a live person",
+          body: `${input.division} · ${input.subject}`,
+          deepLink,
+          actionLabel: "Open support command",
+          payload: {
+            conversationId: input.conversationId,
+            ...(input.threadId ? { threadId: input.threadId } : {}),
+            division: input.division,
+          },
+          relatedId: input.threadId ?? input.conversationId,
+          relatedType: input.threadId ? "support_thread" : "intelligence_conversation",
+          publisher: "intelligence-live",
+        }).catch(() => undefined),
+      ),
+    );
+  } catch {
+    /* the customer's turn already succeeded; the alert is a relay, not a gate */
+  }
+}
 
 async function escalateToOnyxLine(
   admin: Admin,

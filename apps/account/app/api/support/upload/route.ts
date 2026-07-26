@@ -56,13 +56,11 @@ export async function POST(request: Request) {
       size: file.size,
     });
   } catch (error) {
+    console.error("[support/upload] Upload error:", error);
     return NextResponse.json(
       {
         ok: false,
-        reason:
-          error instanceof Error
-            ? error.message
-            : "We couldn't upload that file.",
+        reason: "We couldn't upload that file. Please try again.",
       },
       { status: 500 },
     );

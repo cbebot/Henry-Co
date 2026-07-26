@@ -1463,10 +1463,10 @@ export async function ingestInboundSupportEmail(input: InboundSupportEmailInput)
   const customerName = sender.name || "Customer";
   const settings = await getCareSettings();
   const internalAddresses = [
-    // EMAIL-SES-ONLY (2026-07-09): SES is the outbound rail; the legacy
+    // EMAIL-POSTMARK (2026-07-14): Postmark is the outbound rail; the legacy
     // RESEND_* entries stay in this loop-detection list only while those env
     // vars still exist on deployments (membership checks, not senders).
-    extractMailbox(process.env.AWS_SES_FROM_EMAIL).email,
+    extractMailbox(process.env.POSTMARK_FROM_EMAIL).email,
     extractMailbox(process.env.RESEND_FROM_EMAIL).email,
     extractMailbox(process.env.RESEND_FROM).email,
     extractMailbox(settings.support_email).email,

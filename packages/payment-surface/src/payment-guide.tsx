@@ -128,7 +128,7 @@ export function PaymentGuide({
           {[
             "Copy the amount and account details from the section above.",
             "Transfer from your bank or company account using your record name as reference.",
-            "Upload your receipt or proof below — finance reviews and confirms within one business day.",
+            "Upload your receipt or proof below — we review and confirm it within one business day.",
             "Once confirmed, your record advances and you receive an update by email.",
           ].map((step, index) => (
             <li

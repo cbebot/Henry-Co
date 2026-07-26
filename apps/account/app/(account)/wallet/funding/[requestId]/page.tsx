@@ -103,16 +103,16 @@ export default async function WalletFundingRequestPage({ params }: Props) {
             </div>
             <span className="acct-wal__step-title">{t("Request created")}</span>
             <span className="acct-wal__step-desc">
-              {t("Your funding reference is registered on the payment rail.")}
+              {t("Your funding reference is saved.")}
             </span>
           </div>
           <div className="acct-wal__step">
             <div className="acct-wal__step-rail">
               <span className="acct-wal__step-bubble" data-state={confirmed ? "done" : "active"}>2</span>
             </div>
-            <span className="acct-wal__step-title">{t("Reference matching")}</span>
+            <span className="acct-wal__step-title">{t("Confirming payment")}</span>
             <span className="acct-wal__step-desc">
-              {t("We reconcile the provider reference automatically when payment settles.")}
+              {t("We match your payment to your reference automatically once it clears.")}
             </span>
           </div>
           <div className="acct-wal__step">
@@ -121,7 +121,7 @@ export default async function WalletFundingRequestPage({ params }: Props) {
             </div>
             <span className="acct-wal__step-title">{t("Wallet credit")}</span>
             <span className="acct-wal__step-desc">
-              {t("Your balance updates once the live rail confirms the payment.")}
+              {t("Your balance updates as soon as your payment is confirmed.")}
             </span>
           </div>
         </div>
@@ -129,9 +129,9 @@ export default async function WalletFundingRequestPage({ params }: Props) {
 
       <section className="acct-wal__section">
         <div className="acct-wal__section-head">
-          <h2 className="acct-wal__section-title acct-display">{t("Payment rail")}</h2>
+          <h2 className="acct-wal__section-title acct-display">{t("Transfer details")}</h2>
           <span className="acct-wal__section-meta">
-            {request.note ? request.note : t("Keep the reference intact so reconciliation stays automatic.")}
+            {request.note ? request.note : t("Keep this reference so we can match your payment automatically.")}
           </span>
         </div>
         <div className="acct-wal__columns acct-wal__columns--single">

@@ -672,10 +672,8 @@ async function main() {
     "Teacher application notifications were not stored."
   );
 
-  // EMAIL-SES-ONLY (2026-07-09): SES is the only outbound rail.
-  const emailConfigured = Boolean(
-    cleanText(process.env.AWS_SES_ACCESS_KEY_ID) || cleanText(process.env.AWS_ACCESS_KEY_ID)
-  );
+  // EMAIL-POSTMARK (2026-07-14): Postmark is the only outbound rail.
+  const emailConfigured = Boolean(cleanText(process.env.POSTMARK_SERVER_TOKEN));
   const whatsappConfigured = Boolean(
     cleanText(process.env.TWILIO_ACCOUNT_SID) ||
       cleanText(process.env.WHATSAPP_PHONE_NUMBER_ID)

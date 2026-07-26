@@ -37,7 +37,7 @@ export default async function VendorProductsPage() {
           ctaLabel={t("New product")}
         />
       ) : (
-        <div className="grid gap-5 xl:grid-cols-[1.1fr,0.9fr]">
+        <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
           <section className="space-y-4">
             {data.products.map((product) => (
               <article key={product.id} className="market-paper rounded-[1.9rem] p-6">

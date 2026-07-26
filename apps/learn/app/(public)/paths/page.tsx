@@ -29,7 +29,7 @@ export default async function PathsPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
               {copy.hero.eyebrow}

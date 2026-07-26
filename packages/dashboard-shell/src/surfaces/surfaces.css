@@ -423,6 +423,79 @@
 }
 
 /* ────────────────────────────────────────────────────────────────────
+ * Alive on arrival — the hero entrance (2026-07-16).
+ *
+ * The hero was correct but static: it SNAPPED in. The auth surfaces the
+ * owner loves feel alive the instant they paint, and the marketing hero
+ * reveals in sequence — the product hero didn't. This brings that same
+ * premium arrival to the ONE hero every dashboard landing renders
+ * (account + jobs + marketplace + studio), so the whole authenticated
+ * ecosystem greets you rather than blinking on.
+ *
+ * Faithful to the "gravity not size, hairlines not glass" language: this
+ * is MOTION, not ornament — no glow, no glass. A graceful staggered rise
+ * (eyebrow → headline → blurb → CTAs → stat rail → side), plus one
+ * signature: the closing hairline is drawn in with a gold ink-stroke that
+ * fades to nothing — the hairline made kinetic.
+ *
+ * Safety: compositor-only (opacity + transform), and gated ENTIRELY behind
+ * `no-preference`. Reduced-motion (and any no-CSS path) gets the finished
+ * hero instantly with nothing hidden — the animation only ever ADDS an
+ * arrival, it never holds content back. `both` keeps the resting state.
+ * ────────────────────────────────────────────────────────────────────*/
+@media (prefers-reduced-motion: no-preference) {
+  .acct-hero__eyebrow,
+  .acct-hero__headline,
+  .acct-hero__blurb,
+  .acct-hero__ctas,
+  .acct-hero__tiles,
+  .acct-hero__below-tiles,
+  .acct-hero__progress,
+  .acct-hero__side {
+    animation: acct-hero-enter 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
+  }
+  .acct-hero__headline { animation-delay: 55ms; }
+  .acct-hero__blurb { animation-delay: 110ms; }
+  .acct-hero__ctas { animation-delay: 165ms; }
+  .acct-hero__side { animation-delay: 190ms; }
+  .acct-hero__tiles { animation-delay: 220ms; }
+  .acct-hero__below-tiles { animation-delay: 260ms; }
+  .acct-hero__progress { animation-delay: 300ms; }
+
+  /* The signature: a gold ink-stroke draws the hero's closing hairline in
+     from the lead edge, then fades to nothing — the design language's
+     hairline, made kinetic. Sits over (not instead of) the neutral border,
+     so no-motion users still get the clean rule. */
+  .acct-hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--acct-gold, #C9A227) 60%, transparent),
+      transparent 58%
+    );
+    transform-origin: left center;
+    animation: acct-hero-rule 920ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+    pointer-events: none;
+  }
+}
+
+@keyframes acct-hero-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes acct-hero-rule {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+/* ────────────────────────────────────────────────────────────────────
  * <NextStepRow />
  * ────────────────────────────────────────────────────────────────────*/
 

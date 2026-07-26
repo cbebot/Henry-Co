@@ -114,7 +114,7 @@ export default async function CoveragePage() {
                   {groupedByRegion[region].map((zone: LogisticsZone) => (
                     <li
                       key={zone.id}
-                      className="grid gap-4 py-6 md:grid-cols-[0.32fr,0.5fr,0.18fr]"
+                      className="grid gap-4 py-6 md:grid-cols-[0.32fr_0.5fr_0.18fr]"
                     >
                       <div>
                         <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">

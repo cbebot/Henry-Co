@@ -323,7 +323,7 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <article className="overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)]">
-      <div className="grid gap-0 sm:grid-cols-[0.5fr,1fr]">
+      <div className="grid gap-0 sm:grid-cols-[0.5fr_1fr]">
         <div className="relative h-72 sm:h-full">
           <Image
             src={agent.photoUrl}
@@ -526,7 +526,7 @@ export function PropertyWorkspaceShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[260px,1fr] lg:px-10">
+    <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[260px_1fr] lg:px-10">
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <p className="property-kicker">{kicker}</p>
         <h1 className="mt-4 text-balance text-[1.65rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">

@@ -6,7 +6,8 @@
   "exports": {
     ".": "./index.ts",
     "./scroll-to-top": "./scroll-to-top.tsx",
-    "./whatsapp-webhook": "./whatsapp-webhook.ts"
+    "./whatsapp-webhook": "./whatsapp-webhook.ts",
+    "./live-divisions": "./live-divisions.ts"
   },
   "scripts": {
     "test": "tsx --test __tests__/*.test.mjs"
@@ -16,8 +17,12 @@
     "react": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
-    "next": { "optional": true },
-    "react": { "optional": true }
+    "next": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/react": "^19.2.14"

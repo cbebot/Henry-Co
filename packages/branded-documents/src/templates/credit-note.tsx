@@ -150,13 +150,6 @@ export function CreditNoteDocument({ creditNote, issuer, customer, items, labels
   settlementRows.push({ label: labels.total, value: formatKobo(creditNote.totalKobo, creditNote.currency), mono: true });
   settlementRows.push({ label: labels.metaStatus, value: labels.statusRefunded });
 
-  // Audit tie: refund row + posted refund-settlement entry + the intent.
-  const auditParts = [
-    creditNote.paymentIntentId ? `intent ${creditNote.paymentIntentId}` : null,
-    creditNote.refundId ? `refund ${creditNote.refundId}` : null,
-    creditNote.ledgerEntryId ? `ledger ${creditNote.ledgerEntryId}` : null,
-  ].filter(Boolean);
-
   const meta: Array<{ label: string; value: string }> = [
     { label: labels.metaRefunded, value: formatDateTime(creditNote.refundedAt) },
     { label: labels.metaMethod, value: method },
@@ -177,9 +170,6 @@ export function CreditNoteDocument({ creditNote, issuer, customer, items, labels
           creditNote.division,
           creditNote.creditNoteNo,
           creditNote.receiptNo ? `receipt:${creditNote.receiptNo}` : "",
-          creditNote.paymentIntentId ? `intent:${creditNote.paymentIntentId}` : "",
-          creditNote.refundId ? `refund:${creditNote.refundId}` : "",
-          creditNote.ledgerEntryId ? `ledger:${creditNote.ledgerEntryId}` : "",
         ].filter(Boolean),
       }}
       header={{
@@ -225,10 +215,6 @@ export function CreditNoteDocument({ creditNote, issuer, customer, items, labels
       <DocumentSection kicker={labels.settlement}>
         <DefinitionList rows={settlementRows} />
       </DocumentSection>
-
-      {auditParts.length ? (
-        <Text style={styles.audit}>{`${labels.auditReference} · ${auditParts.join(" · ")}`}</Text>
-      ) : null}
 
       <LegalFooter
         lines={[

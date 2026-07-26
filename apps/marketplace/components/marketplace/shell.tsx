@@ -27,7 +27,7 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
 import type { SellerTier } from "@henryco/ui";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
-import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { LivePublicSiteFooter } from "@henryco/ui/public-design";
 import { manrope, MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
@@ -79,7 +79,7 @@ export async function PublicSurface({ children }: { children: React.ReactNode })
       <main id="henryco-main" tabIndex={-1} className="flex-1">
         {children}
       </main>
-      <PublicSiteFooter
+      <LivePublicSiteFooter
         copy={{
           statement: t(
             "A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.",
@@ -539,7 +539,7 @@ export async function WorkspaceShell({
       : [{ label: tShell("Workspace"), items: nav }];
   const activeLabel = nav.find((item) => item.active)?.label ?? null;
   return (
-    <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[300px,1fr] xl:px-8">
+    <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[300px_1fr] xl:px-8">
       <WorkspaceMobileNav
         title={title}
         description={description}

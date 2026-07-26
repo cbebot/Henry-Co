@@ -255,7 +255,7 @@ export default function WalletWithdrawalsClient({
       <section className="acct-card p-5">
         <p className="acct-kicker">{t("Verified payout account")}</p>
         <p className="mt-1 text-sm text-[var(--acct-muted)]">
-          {t("Add the bank account withdrawals should be sent to after finance approval.")}
+          {t("Add the bank account your withdrawals will be sent to once approved.")}
         </p>
         <form onSubmit={addPayout} className="mt-4 grid gap-3 sm:grid-cols-2">
           <input

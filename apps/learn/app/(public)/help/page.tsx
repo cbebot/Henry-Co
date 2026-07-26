@@ -50,7 +50,7 @@ export default async function HelpPage({
         </section>
       ) : null}
 
-      <section className="mt-12 grid gap-12 lg:grid-cols-[1fr,0.9fr] lg:divide-x lg:divide-[var(--learn-line)]">
+      <section className="mt-12 grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:divide-x lg:divide-[var(--learn-line)]">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Send a message")}

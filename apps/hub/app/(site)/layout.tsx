@@ -12,6 +12,7 @@ import { EcosystemPreferences } from "@henryco/ui/public";
 import { SupportAssist } from "@henryco/ui/support";
 import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { getAccountUrl } from "@henryco/config";
+import { getLivePublicDivisions } from "@henryco/config/live-divisions";
 import { onyxTypeAttr } from "@henryco/ui/fonts";
 import PublicSiteShell from "../components/PublicSiteShell";
 import { HubPublicProviders } from "../components/HubPublicProviders";
@@ -272,6 +273,7 @@ export default async function SiteLayout({
             accountChip={accountChip}
             copy={shellCopy}
             footer={footer}
+            footerDivisions={await getLivePublicDivisions()}
           >
             {children}
           </PublicSiteShell>

@@ -139,10 +139,12 @@ export async function POST(request: Request) {
       );
     }
     if (lower.includes("already") || lower.includes("registered") || lower.includes("exists")) {
-      return NextResponse.json(
-        { error: "email_already_registered", message: "That email is already registered." },
-        { status: 409 },
-      );
+      // Anti-enumeration: respond exactly as a genuine new signup (the
+      // `{ ok: true }` success returned below) so an unauthenticated caller
+      // cannot tell a registered email from a new one via status or shape.
+      // The real account owner is informed out-of-band by Supabase (existing-
+      // account / password-reset email), never through this response.
+      return NextResponse.json({ ok: true });
     }
     if (lower.includes("password")) {
       return NextResponse.json(

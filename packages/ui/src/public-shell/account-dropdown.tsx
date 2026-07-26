@@ -48,14 +48,16 @@ function toneIdentity(tone: DropdownTone) {
   }
 }
 
+// Focus rings are accent-governed (CHROME-64 amber retirement) — --hc-accent
+// flips per theme; the solid* tones sit on fixed surfaces so one mix serves.
 function toneRow(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "text-zinc-200 hover:bg-zinc-800/90 focus-visible:bg-zinc-800/90 focus-visible:ring-2 focus-visible:ring-amber-400/30";
+      return "text-zinc-200 hover:bg-zinc-800/90 focus-visible:bg-zinc-800/90 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_30%,transparent)]";
     case "solidLight":
-      return "text-zinc-800 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-600/25";
+      return "text-zinc-800 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_25%,transparent)]";
     default:
-      return "text-zinc-700 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-500/30 dark:text-zinc-200 dark:hover:bg-zinc-800/80 dark:focus-visible:bg-zinc-800/80 dark:focus-visible:ring-amber-400/28";
+      return "text-zinc-700 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_30%,transparent)] dark:text-zinc-200 dark:hover:bg-zinc-800/80 dark:focus-visible:bg-zinc-800/80";
   }
 }
 

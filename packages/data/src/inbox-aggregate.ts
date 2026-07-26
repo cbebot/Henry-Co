@@ -3,6 +3,11 @@ import "server-only";
 import type { UnifiedViewer } from "@henryco/auth";
 import { createDataAdminClient, type TypedSupabaseClient } from "./client";
 import { supportThreadHref } from "./inbox-href";
+import {
+  studioViewerIdentity,
+  loadViewerStudioProjectIds,
+  filterToAllowedProjects,
+} from "./studio-scope";
 
 /**
  * @henryco/data/inbox-aggregate — V3 Wave A1 D3.
@@ -141,10 +146,19 @@ export async function getInboxAggregate(
   const userId = viewer.user.id;
   const limit = Math.min(Math.max(opts.limit ?? 60, 5), 200);
 
+  // Resolve the studio projects this viewer is a party to BEFORE the
+  // reads. The admin client bypasses RLS, so studio_project_messages
+  // must be constrained to these ids — otherwise the inbox leaks every
+  // other customer's project threads (FIRE cross-user-leak class).
+  const studioIdentity = studioViewerIdentity(viewer);
+  const studioProjectIds = studioIdentity
+    ? await loadViewerStudioProjectIds(client, studioIdentity)
+    : new Set<string>();
+
   // Fire every source in parallel. Each branch is wrapped in a
   // try/catch so one slow / missing table can never take the whole
   // inbox down.
-  const [supportRows, marketplaceRows, jobsRows, studioRows] = await Promise.all([
+  const [supportRows, marketplaceRows, jobsRows, studioRowsRaw] = await Promise.all([
     safeRead(() =>
       client
         .from("support_threads")
@@ -173,21 +187,30 @@ export async function getInboxAggregate(
         .order("updated_at", { ascending: false })
         .limit(limit),
     ),
-    // Studio per-project messages — pick the most recent message per
-    // project the viewer is a participant on. Cheap top-N then group
-    // in memory (Wave B4 may add a dedicated SQL view). The viewer
-    // filter is the project-membership side (sender_id), kept loose
-    // here so we surface threads where the viewer participated even
-    // briefly. Wave B4 narrows via studio_project_assignments join.
-    safeRead(() =>
-      client
-        .from("studio_project_messages")
-        .select("id, project_id, body, sender_id, created_at")
-        .is("deleted_at", null)
-        .order("created_at", { ascending: false })
-        .limit(limit),
-    ),
+    // Studio per-project messages — most recent message per project the
+    // viewer is a party to. Scoped in SQL to studioProjectIds (resolved
+    // from studio_projects by the session viewer's ownership/email), so
+    // no other customer's project threads are ever read. When the viewer
+    // has no studio projects we skip the query entirely (zero rows).
+    studioProjectIds.size > 0
+      ? safeRead(() =>
+          client
+            .from("studio_project_messages")
+            .select("id, project_id, body, sender_id, created_at")
+            .in("project_id", [...studioProjectIds])
+            .is("deleted_at", null)
+            .order("created_at", { ascending: false })
+            .limit(limit),
+        )
+      : Promise.resolve(null),
   ]);
+
+  // Defence in depth on top of the SQL `.in(...)` scope: drop any row
+  // whose project is not in the viewer's allowed set.
+  const studioRows = filterToAllowedProjects(
+    studioRowsRaw ?? [],
+    studioProjectIds,
+  );
 
   const threads: InboxThread[] = [];
 

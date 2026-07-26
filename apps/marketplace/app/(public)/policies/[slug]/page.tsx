@@ -88,7 +88,7 @@ export default async function MarketplacePolicyPage({
   return (
     <main className="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6 lg:px-8">
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">
               {policy.kicker}
@@ -155,7 +155,7 @@ export default async function MarketplacePolicyPage({
           {policy.bullets.map((bullet, i) => (
             <li
               key={bullet}
-              className="grid gap-3 py-5 sm:grid-cols-[auto,1fr] sm:gap-6"
+              className="grid gap-3 py-5 sm:grid-cols-[auto_1fr] sm:gap-6"
             >
               <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
                 {String(i + 1).padStart(2, "0")}

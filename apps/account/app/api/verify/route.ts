@@ -211,7 +211,8 @@ export async function POST(request: Request) {
     console.error("[verify] Upload error:", err);
     return redirectOrJson(request, {
       ok: false,
-      error: err instanceof Error ? err.message : "Upload failed.",
+      error:
+        "We couldn't add that file to the review queue. Try again in a moment, or contact support if it keeps happening.",
       status: 500,
       code: "upload_failed",
     });

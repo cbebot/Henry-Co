@@ -332,7 +332,7 @@ export default async function CourseDetailPage({
           {courseSubtitle}
         </p>
 
-        <div className="mt-10 grid gap-12 lg:grid-cols-[1.2fr,0.8fr]">
+        <div className="mt-10 grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
           {/* Description + tags — editorial column */}
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-copper)]">
@@ -508,7 +508,7 @@ export default async function CourseDetailPage({
       </section>
 
       {/* Modules + sidebar — editorial split */}
-      <section className="mt-16 grid gap-12 xl:grid-cols-[1.2fr,0.8fr]">
+      <section className="mt-16 grid gap-12 xl:grid-cols-[1.2fr_0.8fr]">
         <div>
           <LearnSectionIntro
             kicker={t("Course structure")}

@@ -56,7 +56,12 @@ export function HenryCoThemeBlocking() {
       --site-header-bg: rgba(5,8,22,0.82);
       --site-footer-bg: rgba(0,0,0,0.20);
       --site-card-shadow: 0 24px 100px rgba(0,0,0,0.24);
-      --site-accent: #b2863b;
+      /* Slice C (2026-07-16): value-aligned to the canonical brand gold
+         (--acct-gold / --hc-accent dark ramp). The legacy #b2863b painted an
+         off-brand gold pre-paint wherever a --site-accent consumer rendered
+         under this blocking style — same-value alignment means the pre-paint
+         and hydrated accents are now identical (no flash, no drift). */
+      --site-accent: #D4AF37;
       --site-radius-sm: 0.5rem;
       --site-radius-md: 0.75rem;
       --site-radius-lg: 1rem;
@@ -75,7 +80,8 @@ export function HenryCoThemeBlocking() {
       --site-header-bg: rgba(246,248,252,0.82);
       --site-footer-bg: rgba(255,255,255,0.70);
       --site-card-shadow: 0 24px 80px rgba(15,23,42,0.08);
-      --site-accent: #9a6f2e;
+      /* Slice C: canonical light-theme brand gold (--acct-gold light ramp). */
+      --site-accent: #C9A227;
       color-scheme: light;
     }
 

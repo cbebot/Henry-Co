@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/search-index-worker",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/operator-tick",
+      "schedule": "*/30 * * * *"
     }
   ],
   "rewrites": [
@@ -25,7 +29,7 @@
       "destination": "/owner"
     },
     {
-      "source": "/:path((?!(?:owner|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
+      "source": "/:path((?!(?:owner|api|privacy|terms|OneSignalSDKWorker.js|push-sw.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
@@ -55,7 +59,7 @@
       "destination": "/workspace"
     },
     {
-      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js|push-sw.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
@@ -65,7 +69,7 @@
       "destination": "/workspace/:path*"
     },
     {
-      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js|push-sw.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",

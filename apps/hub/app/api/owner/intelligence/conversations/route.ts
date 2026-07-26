@@ -86,3 +86,55 @@ export async function GET(request: NextRequest) {
     ),
   });
 }
+
+/**
+ * DELETE /api/owner/intelligence/conversations?id=<uuid> — the owner erases one
+ * of his own conversations (the portal's Recent rail exposes this). Ownership
+ * is verified before anything is touched; messages go first so a partial
+ * failure can never orphan a transcript under a deleted conversation row.
+ * Same access model as GET: flag-dark ⇒ 404, non-owner ⇒ 404.
+ */
+export async function DELETE(request: NextRequest) {
+  if (process.env.NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE !== "1") {
+    return NextResponse.json({ error: "Not available." }, { status: 404 });
+  }
+
+  const auth = await requireOwner();
+  if (!auth.ok) {
+    return NextResponse.json({ error: "Not available." }, { status: 404 });
+  }
+
+  const id = request.nextUrl.searchParams.get("id");
+  if (!id) {
+    return NextResponse.json({ error: "Missing conversation id." }, { status: 400 });
+  }
+
+  const admin = createAdminSupabase();
+  const { data: conversation } = await admin
+    .from("founder_intelligence_conversations")
+    .select("id, user_id")
+    .eq("id", id)
+    .maybeSingle();
+  const row = conversation as { id: string; user_id: string } | null;
+  if (!row || row.user_id !== auth.user.id) {
+    return NextResponse.json({ error: "Not available." }, { status: 404 });
+  }
+
+  const { error: messagesError } = await admin
+    .from("founder_intelligence_messages")
+    .delete()
+    .eq("conversation_id", row.id);
+  if (messagesError) {
+    return NextResponse.json({ error: "Please try again." }, { status: 502 });
+  }
+  const { error: conversationError } = await admin
+    .from("founder_intelligence_conversations")
+    .delete()
+    .eq("id", row.id)
+    .eq("user_id", auth.user.id);
+  if (conversationError) {
+    return NextResponse.json({ error: "Please try again." }, { status: 502 });
+  }
+
+  return NextResponse.json({ ok: true, deleted: row.id });
+}

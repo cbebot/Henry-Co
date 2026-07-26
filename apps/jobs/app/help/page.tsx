@@ -108,7 +108,7 @@ export default async function HelpPage() {
               <li
                 key={item.id}
                 id={item.id}
-                className="scroll-mt-28 grid gap-3 py-6 sm:grid-cols-[auto,1fr] sm:gap-8"
+                className="scroll-mt-28 grid gap-3 py-6 sm:grid-cols-[auto_1fr] sm:gap-8"
               >
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
                   {String(i + 1).padStart(2, "0")}
@@ -129,7 +129,7 @@ export default async function HelpPage() {
         </section>
 
         <section className="border-t border-[var(--jobs-line)] pt-10">
-          <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{t("Henry Onyx account")}</p>
               <h2 className="mt-3 jobs-heading max-w-xl text-balance">

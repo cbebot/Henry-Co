@@ -23,3 +23,5 @@ export {
   type SiteFooterLink,
   type SiteFooterColumn,
 } from "./site-footer";
+// Live-registry footer: same footer, minus owner-paused/unpublished divisions.
+export { LivePublicSiteFooter } from "./live-site-footer";

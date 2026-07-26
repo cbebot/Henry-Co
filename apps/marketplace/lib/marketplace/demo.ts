@@ -346,8 +346,8 @@ export const demoBuyerOrders: MarketplaceOrder[] = [
     shippingRegion: "Lagos",
     timeline: [
       "Order placed",
-      "Payment verified by finance",
-      "Split fulfillment prepared",
+      "Payment confirmed",
+      "Preparing your items for delivery",
       "One vendor shipment is in transit",
     ],
     groups: [

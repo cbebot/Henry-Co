@@ -170,10 +170,10 @@ async function updateNotificationRecord(
 }
 
 function buildFromAddress(settings: Awaited<ReturnType<typeof getCareSettings>>) {
-  // EMAIL-SES-ONLY (2026-07-09): the SES from-address replaces the retired
-  // RESEND_FROM_EMAIL/RESEND_FROM env pair as the sender override.
+  // EMAIL-POSTMARK (2026-07-14): the Postmark from-address replaces the retired
+  // AWS_SES_FROM_EMAIL env as the sender override.
   const rawFrom =
-    process.env.AWS_SES_FROM_EMAIL ||
+    process.env.POSTMARK_FROM_EMAIL ||
     settings.notification_reply_to_email ||
     settings.support_email ||
     "";

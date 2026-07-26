@@ -69,7 +69,7 @@ export default async function StorePage({
   return (
     <div className="mx-auto max-w-[1480px] space-y-14 px-4 py-10 sm:px-6 xl:px-8">
       {/* Editorial passport hero — eyebrow + display + body + CTA + ProofRail */}
-      <section className="grid gap-12 xl:grid-cols-[1.1fr,0.9fr]">
+      <section className="grid gap-12 xl:grid-cols-[1.1fr_0.9fr]">
         <article>
           <p className="market-kicker">{copy.store.hero.eyebrow}</p>
           <h1 className="market-display mt-5 max-w-3xl text-balance">{data.vendor.name}</h1>
@@ -173,7 +173,7 @@ export default async function StorePage({
               buyer voice; translate per-row via client-side fetch on demand. */}
           <ul className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {data.reviews.slice(0, 4).map((review) => (
-              <li key={review.id} className="grid gap-5 py-6 lg:grid-cols-[0.3fr,0.7fr]">
+              <li key={review.id} className="grid gap-5 py-6 lg:grid-cols-[0.3fr_0.7fr]">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
                   {review.verifiedPurchase ? copy.store.reviews.verifiedPurchase : copy.store.reviews.review}
                 </p>

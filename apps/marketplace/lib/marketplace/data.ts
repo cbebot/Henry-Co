@@ -324,22 +324,22 @@ async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; i
       campaignsRes.error ||
       reviewsRes.error
     ) {
+      // Keep raw driver/PostgREST errors (table/column/policy names) in server
+      // logs only — never concatenate them into a user-visible field.
+      console.error("[marketplace] catalog snapshot query error", {
+        categories: categoriesRes.error?.message,
+        brands: brandsRes.error?.message,
+        vendors: vendorsRes.error?.message,
+        products: productsRes.error?.message,
+        media: mediaRes.error?.message,
+        collections: collectionsRes.error?.message,
+        collectionItems: collectionItemsRes.error?.message,
+        campaigns: campaignsRes.error?.message,
+        reviews: reviewsRes.error?.message,
+      });
       return {
         snapshot: null,
-        issue:
-          [
-            categoriesRes.error?.message,
-            brandsRes.error?.message,
-            vendorsRes.error?.message,
-            productsRes.error?.message,
-            mediaRes.error?.message,
-            collectionsRes.error?.message,
-            collectionItemsRes.error?.message,
-            campaignsRes.error?.message,
-            reviewsRes.error?.message,
-          ]
-            .filter(Boolean)
-            .join(" | ") || "Marketplace catalog tables are unavailable.",
+        issue: "Some products can't load right now. Please refresh in a moment.",
       };
     }
 
@@ -554,9 +554,10 @@ async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; i
           : null,
     };
   } catch (error) {
+    console.error("[marketplace] catalog snapshot failed", error);
     return {
       snapshot: null,
-      issue: error instanceof Error ? error.message : "Marketplace catalog failed to load.",
+      issue: "Marketplace catalog failed to load.",
     };
   }
 }

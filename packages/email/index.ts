@@ -14,9 +14,15 @@ export {
   type ResolvedEmailProvider,
 } from "./send";
 
-// EMAIL-SES-ONLY (2026-07-09): the Resend/Brevo provider modules are deleted —
-// SES is the only outbound rail. Import sendTransactionalEmail, not a provider.
-export { sendSesEmail, getSesConfig, getSesSender } from "./providers/ses";
+// EMAIL-POSTMARK (2026-07-14): the SES/Resend/Brevo provider modules are
+// deleted — Postmark is the only outbound rail. Import sendTransactionalEmail,
+// not a provider, unless you specifically need the token/stream helpers.
+export {
+  sendPostmarkEmail,
+  getPostmarkServerToken,
+  getPostmarkSender,
+  resolvePostmarkStream,
+} from "./providers/postmark";
 
 export { resolveSenderIdentity, getNoReplyIdentity } from "./sender-identity";
 

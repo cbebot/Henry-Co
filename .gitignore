@@ -31,13 +31,25 @@ apps/company-hub/dist
 codex-*.log
 
 # Environment files (use .env.example instead)
+# Broad deny on every .env* variant; .env.example is explicitly re-included so
+# documented templates (which carry NO real values) can still be committed.
+.env
+.env.*
+!.env.example
+!**/.env.example
 .env*.local
+.env.production
 .env.production.vercel
 .env.vercel.*
 .env.pull.*
 # Vercel CLI pull artefacts — never commit (carry tokens + anon keys)
 .env.*.pulled
 **/.env.*.pulled
+# Committed Vercel env EXPORTS carry LIVE secrets (service_role, Stripe, Twilio,
+# Postmark, etc.) — never commit these directories.
+vercel-env-exports/
+**/vercel-env-exports/
+.tmp-vercel-env/
 
 # IDE and tooling
 .claude/

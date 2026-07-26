@@ -26,12 +26,12 @@ import type { PaymentSurfaceContext } from "./types";
 
 const DEFAULT_BODY: Record<string, string> = {
   pending:
-    "Send your payment using the verified company details below, then attach your proof so finance can confirm and unlock the next step.",
+    "Send your payment using the verified company details below, then attach your proof so we can confirm and unlock the next step.",
   processing:
     "Payment proof received. Finance is verifying — you can track confirmation here.",
   paid: "Payment confirmed. Thank you — your record stays moving.",
   failed:
-    "We could not match this transfer. Please re-upload your proof or contact finance support below.",
+    "We could not match this transfer. Please re-upload your proof or contact support below.",
   refunded: "Refund issued. The transfer was returned to the source account.",
   cancelled: "This payment was cancelled. No further action is needed.",
 };

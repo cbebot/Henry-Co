@@ -668,8 +668,8 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     paymentRecord: {
       kicker: t("Payment record"),
       walletBody: t("Wallet balance was debited and the order is held in escrow for fulfillment."),
-      proofBody: t("Transfer proof is attached for Henry Onyx finance review."),
-      awaitingBody: t("Payment is waiting for finance evidence or delivery reconciliation."),
+      proofBody: t("Your transfer proof is attached and under review."),
+      awaitingBody: t("This payment is waiting for your transfer to be confirmed, or for delivery to be completed."),
       methodLabel: t("Method"),
       statusLabel: t("Status"),
       proofLabel: t("Proof"),
@@ -1023,10 +1023,10 @@ function buildEN(locale: AppLocale): MarketplacePublicCopy {
     metadata: {
       titleTemplate: t("{policy} — Henry Onyx Marketplace"),
       descriptionTemplate:
-        t("{policy} on Henry Onyx Marketplace — server-logged enforcement, escrow controls, and trust posture surfaced before checkout."),
+        t("{policy} on Henry Onyx Marketplace — clear rules, buyer protection, and seller standards."),
       fallbackTitle: t("Marketplace policy — Henry Onyx Marketplace"),
       fallbackDescription:
-        t("A Henry Onyx Marketplace policy — server-logged enforcement, escrow controls, and trust posture surfaced before checkout."),
+        t("A Henry Onyx Marketplace policy — clear rules, buyer protection, and seller standards."),
     },
     hero: {
       backToTrust: t("Back to trust standards"),
@@ -1273,8 +1273,8 @@ function buildFR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Trace de paiement"),
       walletBody: t("Le solde du portefeuille a été débité et la commande est mise sous entiercement jusqu'à l'expédition."),
-      proofBody: t("Le justificatif de virement est joint pour examen par la finance Henry Onyx"),
-      awaitingBody: t("Le paiement attend la pièce justificative finance ou la réconciliation à la livraison."),
+      proofBody: t("Votre justificatif de virement est joint et en cours d'examen."),
+      awaitingBody: t("Ce paiement attend la confirmation de votre virement ou la finalisation de la livraison."),
       methodLabel: t("Méthode"),
       statusLabel: t("Statut"),
       proofLabel: t("Justificatif"),
@@ -1879,8 +1879,8 @@ function buildES(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Registro de pago"),
       walletBody: t("Se cargó el saldo de la cartera y el pedido queda en depósito hasta el envío."),
-      proofBody: t("Se adjuntó el comprobante de transferencia para revisión de finanzas de Henry Onyx"),
-      awaitingBody: t("El pago espera el comprobante de finanzas o la conciliación tras la entrega."),
+      proofBody: t("Tu comprobante de transferencia está adjunto y en revisión."),
+      awaitingBody: t("Este pago está a la espera de que se confirme tu transferencia o de que se complete la entrega."),
       methodLabel: t("Método"),
       statusLabel: t("Estado"),
       proofLabel: t("Comprobante"),
@@ -2458,8 +2458,8 @@ function buildPT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Registo de pagamento"),
       walletBody: t("O saldo da carteira foi debitado e o pedido fica em depósito até à entrega."),
-      proofBody: t("O comprovativo de transferência foi anexado para análise da equipa financeira da Henry Onyx"),
-      awaitingBody: t("O pagamento aguarda a evidência financeira ou a reconciliação na entrega."),
+      proofBody: t("O seu comprovativo de transferência foi anexado e está em análise."),
+      awaitingBody: t("Este pagamento aguarda a confirmação da sua transferência ou a conclusão da entrega."),
       methodLabel: t("Método"),
       statusLabel: t("Estado"),
       proofLabel: t("Comprovativo"),
@@ -3064,8 +3064,8 @@ function buildDE(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Zahlungsnachweis"),
       walletBody: t("Das Wallet-Guthaben wurde belastet und die Bestellung liegt bis zur Erfüllung in der Treuhand."),
-      proofBody: t("Der Überweisungsbeleg ist zur Prüfung durch das Henry Onyx-Finanzteam angehängt."),
-      awaitingBody: t("Die Zahlung wartet auf den Finanznachweis oder den Abgleich bei Lieferung."),
+      proofBody: t("Ihr Überweisungsbeleg ist angehängt und wird geprüft."),
+      awaitingBody: t("Diese Zahlung wartet auf die Bestätigung Ihrer Überweisung oder auf den Abschluss der Lieferung."),
       methodLabel: t("Methode"),
       statusLabel: t("Status"),
       proofLabel: t("Nachweis"),
@@ -3670,8 +3670,8 @@ function buildIT(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Traccia di pagamento"),
       walletBody: t("Il saldo del portafoglio è stato addebitato e l'ordine resta in escrow fino all'evasione."),
-      proofBody: t("La ricevuta di bonifico è allegata per la verifica del team finanziario Henry Onyx"),
-      awaitingBody: t("Il pagamento attende l'evidenza finanziaria o la riconciliazione alla consegna."),
+      proofBody: t("La tua ricevuta di bonifico è allegata ed è in fase di verifica."),
+      awaitingBody: t("Questo pagamento è in attesa della conferma del tuo bonifico o del completamento della consegna."),
       methodLabel: t("Metodo"),
       statusLabel: t("Stato"),
       proofLabel: t("Ricevuta"),
@@ -4276,8 +4276,8 @@ function buildAR(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("سجلّ الدفع"),
       walletBody: t("تم خصم رصيد المحفظة، والطلب محتجَز في الضمان حتى يكتمل الشحن."),
-      proofBody: t("أُرفِق إثبات التحويل لمراجعة فريق المالية في Henry Onyx"),
-      awaitingBody: t("الدفع بانتظار إثبات من الفريق المالي أو مطابقة عند التسليم."),
+      proofBody: t("تم إرفاق إثبات التحويل الخاص بك وهو قيد المراجعة."),
+      awaitingBody: t("هذه الدفعة بانتظار تأكيد تحويلك أو اكتمال التسليم."),
       methodLabel: t("الطريقة"),
       statusLabel: t("الحالة"),
       proofLabel: t("الإثبات"),
@@ -4882,8 +4882,8 @@ function buildZH(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("付款记录"),
       walletBody: t("钱包余额已扣款,订单进入代管,等待履约。"),
-      proofBody: t("转账凭证已附上,等待 Henry Onyx 财务核验。"),
-      awaitingBody: t("付款正在等待财务凭证或交付对账。"),
+      proofBody: t("您的转账凭证已附上,正在审核中。"),
+      awaitingBody: t("此付款正在等待您的转账确认,或等待交付完成。"),
       methodLabel: t("方式"),
       statusLabel: t("状态"),
       proofLabel: t("凭证"),
@@ -5379,8 +5379,8 @@ function buildHI(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("पेमेंट रिकॉर्ड"),
       walletBody: t("वॉलेट बैलेंस से कटौती हो गई है और ऑर्डर डिलीवरी तक एस्क्रो में सुरक्षित है।"),
-      proofBody: t("ट्रांसफ़र का प्रमाण Henry Onyx फ़ाइनेंस की समीक्षा के लिए लगा दिया गया है।"),
-      awaitingBody: t("पेमेंट फ़ाइनेंस के प्रमाण या डिलीवरी मिलान का इंतज़ार कर रहा है।"),
+      proofBody: t("Your transfer proof is attached and under review."),
+      awaitingBody: t("This payment is waiting for your transfer to be confirmed, or for delivery to be completed."),
       methodLabel: t("तरीक़ा"),
       statusLabel: t("स्थिति"),
       proofLabel: t("प्रमाण"),
@@ -5876,8 +5876,8 @@ function buildIG(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Ndekọ ịkwụ ụgwọ"),
       walletBody: t("E sitere n'akpa ego wepụ ego, iwu nọkwa n'escrow ruo mgbe nnyefe gachara."),
-      proofBody: t("E tinyere ihe akaebe nke nkwụnye ego ka ndị na-elekọta ego Henry Onyx nyochaa ya."),
-      awaitingBody: t("Ịkwụ ụgwọ na-eche ihe akaebe sitere n'aka ndị na-elekọta ego ma ọ bụ idokọ mgbe nnyefe ruru."),
+      proofBody: t("Your transfer proof is attached and under review."),
+      awaitingBody: t("This payment is waiting for your transfer to be confirmed, or for delivery to be completed."),
       methodLabel: t("Ụzọ"),
       statusLabel: t("Ọnọdụ"),
       proofLabel: t("Akaebe"),
@@ -6373,8 +6373,8 @@ function buildYO(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Àkọsílẹ̀ ìsanwó"),
       walletBody: t("A ti yọ owó kúrò nínú àpamọ́wọ́, àṣẹ náà sì wà nínú escrow títí ìfijiṣẹ́ yóò fi parí."),
-      proofBody: t("A ti fi ẹ̀rí ìfìránṣẹ́ owó hàn fún àyẹ̀wò ẹgbẹ́ ìṣúná Henry Onyx"),
-      awaitingBody: t("Ìsanwó ń dúró de ẹ̀rí ìṣúná tàbí ìbámu ní àkókò ìfijiṣẹ́."),
+      proofBody: t("Your transfer proof is attached and under review."),
+      awaitingBody: t("This payment is waiting for your transfer to be confirmed, or for delivery to be completed."),
       methodLabel: t("Ọ̀nà"),
       statusLabel: t("Ipò"),
       proofLabel: t("Ẹ̀rí"),
@@ -6911,8 +6911,8 @@ function buildHA(locale: AppLocale): DeepPartial<MarketplacePublicCopy> {
     paymentRecord: {
       kicker: t("Bayanin biyan kuɗi"),
       walletBody: t("An cire kuɗi daga walat, kuma odar tana cikin escrow har sai an isar da kayan."),
-      proofBody: t("An haɗa hujjar canja wurin kuɗi don bita daga ƙungiyar kuɗi ta Henry Onyx"),
-      awaitingBody: t("Biyan kuɗi yana jiran hujja daga ƙungiyar kuɗi ko daidaita lokacin isarwa."),
+      proofBody: t("Your transfer proof is attached and under review."),
+      awaitingBody: t("This payment is waiting for your transfer to be confirmed, or for delivery to be completed."),
       methodLabel: t("Hanya"),
       statusLabel: t("Matsayi"),
       proofLabel: t("Hujja"),

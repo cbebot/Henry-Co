@@ -24,18 +24,35 @@ export async function GET() {
   const failingChecks = checks
     .map((result, index) => {
       if (result.status === "rejected") return `query_${index}`;
-      return result.value.error ? `query_${index}:${result.value.error.message}` : null;
+      return result.value.error ? `query_${index}` : null;
     })
     .filter(Boolean);
 
   const ready = shell.schemaReady && missingEnv.length === 0 && failingChecks.length === 0;
 
+  if (!ready) {
+    // Operators need the detail; the public body must never carry env-var
+    // names or raw DB error text. Log the specifics server-side only.
+    console.error("[readiness] not ready", {
+      missingEnv,
+      failingChecks: checks
+        .map((result, index) =>
+          result.status === "rejected"
+            ? `query_${index}:rejected`
+            : result.value.error
+              ? `query_${index}:${result.value.error.message}`
+              : null,
+        )
+        .filter(Boolean),
+    });
+  }
+
   return NextResponse.json(
     {
       ready,
       shellReady: shell.schemaReady,
-      missingEnv,
-      failingChecks,
+      envReady: missingEnv.length === 0,
+      failingCheckCount: failingChecks.length,
       checkedAt: new Date().toISOString(),
     },
     {
