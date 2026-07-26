@@ -47,7 +47,7 @@ export default async function DeliveryDashboardPage() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {deliverable.fileIds.map((fileId) => (
                   <span key={fileId} className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs text-[var(--studio-ink-soft)]">
-                    File {fileId.slice(0, 8)}
+                    {snapshot.files.find((file) => file.id === fileId)?.label ?? "Attached file"}
                   </span>
                 ))}
               </div>

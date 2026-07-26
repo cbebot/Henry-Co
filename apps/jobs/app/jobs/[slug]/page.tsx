@@ -163,7 +163,7 @@ export default async function JobDetailPage({
                       : "text-[var(--jobs-ink)]"
                   }`}
                 >
-                  {job.employerVerification === "verified" ? t("Verified") : t("Pending review")}
+                  {job.employerVerification === "verified" ? t("Verified") : t("Not yet verified")}
                 </span>
               </li>
               <li className="flex items-baseline gap-3 border-b border-[var(--jobs-line)] py-3">
@@ -269,7 +269,17 @@ export default async function JobDetailPage({
                 {t("Benefits & what they want you to know")}
               </p>
               <ul className="mt-5 divide-y divide-[var(--jobs-line)] border-y border-[var(--jobs-line)]">
-                {[...job.benefits, ...job.trustHighlights].map((item) => (
+                {[...job.benefits, ...job.trustHighlights]
+                  .filter(
+                    // Legacy stored highlights may carry internal tier/queue
+                    // labels — never render those on the public listing.
+                    (item) =>
+                      !item.startsWith("Shared trust") &&
+                      item !== "Awaiting moderation review" &&
+                      item !== "Moderated posting" &&
+                      item !== "High employer trust score",
+                  )
+                  .map((item) => (
                   <li
                     key={item}
                     className="py-4 text-sm leading-7 text-[var(--jobs-muted)]"
@@ -665,7 +675,7 @@ export default async function JobDetailPage({
                     {t("Status")}
                   </span>
                   <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
-                    {job.employerVerification === "verified" ? t("Verified") : t("Under review")}
+                    {job.employerVerification === "verified" ? t("Verified") : t("Not yet verified")}
                   </span>
                 </li>
                 <li className="flex items-baseline gap-3 py-3">

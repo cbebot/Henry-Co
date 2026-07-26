@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   try {
     const ctx = await resolveHiringActingContext();
     if (ctx.kind !== "business") {
-      return NextResponse.json({ error: "forbidden", message: "Switch to your business to schedule interviews." }, { status: 403 });
+      return NextResponse.json({ error: "forbidden", message: "This action requires a business account." }, { status: 403 });
     }
 
     let payload: Record<string, unknown> = {};
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       meetingUrl,
     });
     if (!res.ok) {
-      return NextResponse.json({ error: "schedule_failed", message: res.error }, { status: 500 });
+      return NextResponse.json({ error: "schedule_failed", message: "Couldn't schedule the interview. Please check the details and try again." }, { status: 500 });
     }
 
     await writeAuditLog(hiringAuditClient(), {

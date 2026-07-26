@@ -34,7 +34,7 @@ export default async function HelpPage({
             (--learn-ink-soft already maps to the ink-70 equivalent). */}
         <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
           {t(
-            "Send a note about certificates, enrollment, assignments, or billing. Include your course name and account email so the academy team can help without back-and-forth.",
+            "Send a note about certificates, enrollment, assignments, or billing. Include your course name and account email so we can help without back-and-forth.",
           )}
         </p>
       </section>

@@ -64,8 +64,11 @@ export async function POST(request: Request) {
         fileSize = file.size || null;
         fileMimeType = file.type || null;
       } catch (error) {
+        // Raw storage/provider error text (bucket names, paths) stays in the
+        // server log — the learner gets a stable, actionable code + message.
+        console.error("[learn][assignments/submit] upload failed:", error);
         return NextResponse.json(
-          { ok: false, error: "upload_failed", detail: String(error) },
+          { ok: false, error: "upload_failed", message: "We couldn't upload that file. Check it and try again." },
           { status: 502 },
         );
       }

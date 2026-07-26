@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   try {
     const ctx = await resolveHiringActingContext();
     if (ctx.kind !== "business") {
-      return NextResponse.json({ error: "forbidden", message: "Switch to your business to comment." }, { status: 403 });
+      return NextResponse.json({ error: "forbidden", message: "This action requires a business account." }, { status: 403 });
     }
 
     let payload: Record<string, unknown> = {};
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       requestedMentions: mentions,
     });
     if (!result.ok) {
-      return NextResponse.json({ error: "comment_failed", message: result.error }, { status: 422 });
+      return NextResponse.json({ error: "comment_failed", message: "Couldn't post the note. Please try again." }, { status: 422 });
     }
 
     // Notify each delivered mention (members only) — best-effort, never blocks.

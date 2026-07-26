@@ -60,7 +60,7 @@ export default async function EmployerPage({
                       : "text-[var(--jobs-muted)]"
                   }
                 >
-                  {verified ? t("Verified employer") : t("Verification pending")}
+                  {verified ? t("Verified employer") : t("Not yet verified")}
                 </span>
                 <span className="text-[var(--jobs-line)]">·</span>
                 <span>
@@ -81,7 +81,7 @@ export default async function EmployerPage({
                   {t("Verification")}
                 </span>
                 <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
-                  {verified ? t("Verified") : t("Pending review")}
+                  {verified ? t("Verified") : t("Not yet verified")}
                 </span>
               </li>
               {employer.responseSlaHours ? (
@@ -155,7 +155,7 @@ export default async function EmployerPage({
                     {t("Verification")}
                   </span>
                   <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
-                    {verified ? t("Verified") : t("Pending review")}
+                    {verified ? t("Verified") : t("Not yet verified")}
                   </span>
                 </li>
                 {employer.responseSlaHours ? (

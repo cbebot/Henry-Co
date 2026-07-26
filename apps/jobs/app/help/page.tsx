@@ -50,7 +50,7 @@ const sections: { id: string; question: string; answer: string }[] = [
     id: "whatsapp",
     question: "Why might WhatsApp updates not arrive?",
     answer:
-      "Messaging apps sometimes hold or delay business messages outside an active conversation window. Email and in-app notifications stay on, and we log delivery issues so support can help.",
+      "Messaging apps sometimes hold or delay messages outside an active conversation window. Email and in-app notifications are always on — contact support if WhatsApp updates are missing.",
   },
 ];
 

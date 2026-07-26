@@ -88,8 +88,14 @@ export default async function EmployerNewJobPage() {
                 <div className="space-y-3">
                   <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
                     <div className="jobs-kicker">{copy.rightRailAccountTierKicker}</div>
-                    <div className="mt-2 text-lg font-semibold capitalize">
-                      {eligibility.trustTier.replace(/_/g, " ")}
+                    <div className="mt-2 text-lg font-semibold">
+                      {eligibility.trustTier === "premium_verified"
+                        ? "Premium"
+                        : eligibility.trustTier === "trusted"
+                          ? "Trusted"
+                          : eligibility.trustTier === "verified"
+                            ? "Verified"
+                            : "Getting started"}
                     </div>
                     <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
                       {copy.rightRailAccountTierBody}
@@ -133,7 +139,7 @@ export default async function EmployerNewJobPage() {
               <InlineNotice
                 tone="warn"
                 title={copy.subscriptionRequiredTitle}
-                body={copy.subscriptionRequiredBodyTemplate.replace("{status}", subscription.status)}
+                body={copy.subscriptionRequiredBodyTemplate}
               />
             </div>
           ) : null}

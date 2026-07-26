@@ -206,8 +206,10 @@ async function runOfferLetterExpiryReminders(admin: AdminClient) {
 async function runAlerts(request: Request) {
   const secret = String(process.env.CRON_SECRET || "").trim();
   if (!secret) {
+    // Do not name the gating env var to unauthenticated callers.
+    console.error("[jobs][cron] alerts cron secret not configured — rejecting");
     return NextResponse.json(
-      { ok: false, error: "CRON_SECRET is not configured for jobs alerts." },
+      { ok: false, error: "service_unavailable" },
       { status: 503 }
     );
   }

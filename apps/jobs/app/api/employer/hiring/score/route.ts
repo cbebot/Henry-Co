@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   try {
     const ctx = await resolveHiringActingContext();
     if (ctx.kind !== "business") {
-      return NextResponse.json({ error: "forbidden", message: "Switch to your business to score candidates." }, { status: 403 });
+      return NextResponse.json({ error: "forbidden", message: "This action requires a business account." }, { status: 403 });
     }
 
     let payload: Record<string, unknown> = {};
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       comment,
     });
     if (!res.ok) {
-      return NextResponse.json({ error: "score_failed", message: res.error ?? "Couldn't save score." }, { status: 500 });
+      return NextResponse.json({ error: "score_failed", message: "Couldn't save the score. Please try again." }, { status: 500 });
     }
 
     await writeAuditLog(hiringAuditClient(), {
