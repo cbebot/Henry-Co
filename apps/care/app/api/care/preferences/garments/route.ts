@@ -42,8 +42,9 @@ export async function GET() {
     .order("updated_at", { ascending: false });
 
   if (error) {
+    console.error("[care:preferences] query failed", error);
     return NextResponse.json(
-      { ok: false, error: error.message || "Preferences query failed." },
+      { ok: false, error: "Preferences could not be loaded. Please try again." },
       { status: 400 },
     );
   }
@@ -127,8 +128,9 @@ export async function POST(request: NextRequest) {
         .single();
 
   if (error) {
+    console.error("[care:preferences] save failed", error);
     return NextResponse.json(
-      { ok: false, error: error.message || "Preference could not be saved." },
+      { ok: false, error: "Preference could not be saved. Please try again." },
       { status: 400 },
     );
   }
@@ -166,8 +168,9 @@ export async function DELETE(request: NextRequest) {
     .eq("user_id", user.id);
 
   if (error) {
+    console.error("[care:preferences] remove failed", error);
     return NextResponse.json(
-      { ok: false, error: error.message || "Preference could not be removed." },
+      { ok: false, error: "Preference could not be removed. Please try again." },
       { status: 400 },
     );
   }
