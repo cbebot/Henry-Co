@@ -167,6 +167,21 @@ async function renderLocalizedEmail(layout: EmailLayout, locale: string): Promis
   };
 }
 
+// Exported (additive, no behavior change) so the SA-2 agency email module can
+// reuse the exact owner-resolution + render + base-url path.
+export { baseUrl as studioEmailBaseUrl };
+export async function getStudioOwnerRecipients() {
+  return getOwnerRecipients();
+}
+export async function renderAndSendStudioEmail(input: {
+  to: string | null | undefined;
+  entityId?: string | null;
+  templateKey: string;
+  layout: EmailLayout;
+}) {
+  return renderAndSendEmail(input);
+}
+
 async function getOwnerRecipients() {
   const envTarget = extractEmailAddress(process.env.OWNER_ALERT_EMAIL);
   if (envTarget) return [envTarget];

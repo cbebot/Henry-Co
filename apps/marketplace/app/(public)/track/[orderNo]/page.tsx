@@ -11,6 +11,75 @@ import { PlacementAcknowledgement } from "@/components/marketplace/placement-ack
 
 export const dynamic = "force-dynamic";
 
+// Buyer-safe humanizers. The order/payment/payout enums are internal
+// operational states; surfacing the raw column value to a buyer (who may reach
+// this page with only an order number) both reads as jargon and leaks internal
+// wording. These map known states to reassuring buyer-facing language and fall
+// back to a clean humanized form for anything unrecognised — never the raw
+// underscore enum.
+function humanizeEnum(value: string): string {
+  return value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function buyerPaymentStatusLabel(status: string): string {
+  switch (status) {
+    case "pending":
+    case "awaiting_payment":
+    case "proof_submitted":
+    case "processing":
+      return "Confirming";
+    case "paid":
+    case "verified":
+    case "confirmed":
+    case "paid_held":
+      return "Confirmed";
+    case "refunded":
+      return "Refunded";
+    case "failed":
+      return "Not confirmed";
+    default:
+      return humanizeEnum(status);
+  }
+}
+
+function buyerFulfillmentStatusLabel(status: string): string {
+  switch (status) {
+    case "pending":
+    case "awaiting_fulfillment":
+      return "Awaiting dispatch";
+    case "fulfillment_in_progress":
+    case "processing":
+    case "preparing":
+      return "Being prepared";
+    case "shipped":
+    case "dispatched":
+    case "in_transit":
+      return "On the way";
+    case "delivered":
+      return "Delivered";
+    case "cancelled":
+    case "canceled":
+      return "Cancelled";
+    default:
+      return humanizeEnum(status);
+  }
+}
+
+function buyerPayoutStatusLabel(status: string): string {
+  switch (status) {
+    case "payout_released":
+      return "Order complete";
+    case "payout_frozen":
+      return "Under review";
+    default:
+      // held / eligible / awaiting_auto_release / requested / approved etc. all
+      // read the same to a buyer: their payment is protected until completion.
+      return "In buyer protection";
+  }
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);
@@ -62,7 +131,7 @@ export default async function TrackOrderPage({
       ) : null}
 
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="market-kicker text-[10.5px] uppercase tracking-[0.32em]">{t.hero.kicker}</p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
@@ -88,7 +157,7 @@ export default async function TrackOrderPage({
                 {t.hero.paymentLabel}
               </span>
               <span className="ml-auto text-right text-sm font-semibold capitalize tracking-tight text-[var(--market-ink)]">
-                {order.paymentStatus}
+                {buyerPaymentStatusLabel(order.paymentStatus)}
               </span>
             </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0">
@@ -136,7 +205,7 @@ export default async function TrackOrderPage({
                   {t.paymentRecord.statusLabel}
                 </dt>
                 <dd className="mt-1 font-semibold capitalize text-[var(--market-ink)]">
-                  {order.paymentRecord.status.replace(/_/g, " ")}
+                  {buyerPaymentStatusLabel(order.paymentRecord.status)}
                 </dd>
               </div>
               <div className="rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--home-surface-02)] p-4">
@@ -165,7 +234,7 @@ export default async function TrackOrderPage({
         </section>
       ) : null}
 
-      <section className="grid gap-12 lg:grid-cols-[0.95fr,1.05fr] lg:divide-x lg:divide-[var(--market-line)]">
+      <section className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:divide-x lg:divide-[var(--market-line)]">
         <div>
           <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">{t.timeline.kicker}</p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
@@ -175,7 +244,7 @@ export default async function TrackOrderPage({
             {order.timeline.map((step: string, i: number) => (
               <li
                 key={step}
-                className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
               >
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
                   {String(i + 1).padStart(2, "0")}
@@ -208,7 +277,7 @@ export default async function TrackOrderPage({
                       {t.segments.fulfillmentLabel}
                     </dt>
                     <dd className="mt-0.5 text-base font-semibold capitalize tracking-tight text-[var(--market-ink)]">
-                      {group.fulfillmentStatus}
+                      {buyerFulfillmentStatusLabel(group.fulfillmentStatus)}
                     </dd>
                   </div>
                   <div>
@@ -224,7 +293,7 @@ export default async function TrackOrderPage({
                       {t.segments.payoutLabel}
                     </dt>
                     <dd className="mt-0.5 text-base font-semibold capitalize tracking-tight text-[var(--market-ink)]">
-                      {group.payoutStatus.replace(/_/g, " ")}
+                      {buyerPayoutStatusLabel(group.payoutStatus)}
                     </dd>
                   </div>
                 </dl>

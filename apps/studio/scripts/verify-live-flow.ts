@@ -35,9 +35,14 @@ for (const file of [
 process.env.OWNER_ALERT_EMAIL = "delivered@resend.dev";
 
 async function main() {
-  const { submitStudioBrief, setMilestoneStatus, setPaymentStatus, createProjectUpdate } = await import(
-    "../lib/studio/workflows"
-  );
+  const {
+    submitStudioBrief,
+    setMilestoneStatus,
+    setPaymentStatus,
+    createProjectUpdate,
+    createProjectFromProposal,
+    releaseStudioProposal,
+  } = await import("../lib/studio/workflows");
   const { getStudioSnapshot } = await import("../lib/studio/store");
   const { createAdminSupabase } = await import("../lib/supabase");
   const verificationEmail = "delivered@resend.dev";
@@ -112,11 +117,24 @@ async function main() {
     },
   });
 
-  const createdProject = result.project;
-  const createdPayment = result.payment;
+  // SA-D5: a custom brief is agency-class, so the submit HOLDS in review —
+  // no project or payment yet. The live verification now walks the real
+  // path: held → one-tap release → project conversion.
+  if (!result.heldForReview || result.project || result.payment) {
+    throw new Error(
+      "Expected the agency-class verification brief to hold in review (no project/payment at submit).",
+    );
+  }
 
-  if (!createdProject || !createdPayment) {
-    throw new Error("Expected the live verification brief to create both a project and a payment record.");
+  await releaseStudioProposal(result.proposal.id);
+  const createdProject = await createProjectFromProposal(result.proposal.id);
+
+  const postReleaseSnapshot = await getStudioSnapshot();
+  const createdPayment =
+    postReleaseSnapshot.payments.find((item) => item.projectId === createdProject.id) ?? null;
+
+  if (!createdPayment) {
+    throw new Error("Expected the released proposal conversion to create a payment record.");
   }
 
   await setPaymentStatus({

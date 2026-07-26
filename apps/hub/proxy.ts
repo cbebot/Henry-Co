@@ -21,13 +21,24 @@ const csp = [
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  `connect-src 'self' ${getIntelligenceConnectSrc().join(" ")} https://*.supabase.co https://api.cloudinary.com`,
+  // wss://*.supabase.co is REQUIRED for the realtime WebSocket. Safari/WebKit
+  // (iOS) does NOT allow a wss: connection under an https: source — it blocks
+  // the socket, and `new WebSocket()` then throws synchronously ("The operation
+  // is insecure"), which crashes SupabaseRealtimeProvider into the error
+  // boundary and the whole owner dashboard fails to open. Chrome derives wss:
+  // from https: and never hit this, so it was desktop-invisible.
+  `connect-src 'self' ${getIntelligenceConnectSrc().join(" ")} https://*.supabase.co wss://*.supabase.co https://api.cloudinary.com`,
   "media-src 'self' blob: https://res.cloudinary.com",
   "object-src 'none'",
   "upgrade-insecure-requests",
 ].join("; ");
 
-const sharedSecurityHeaders = buildSecurityHeaders();
+// microphone=(self): the Founder Intelligence portal (owner console) listens
+// via SpeechRecognition. The default Permissions-Policy denies the microphone
+// outright — the browser blocks it before any permission prompt — so voice
+// could never work. (self) scopes it to our origin; per-site user consent
+// still applies. Mirrors next.config.ts (both layers emit this header).
+const sharedSecurityHeaders = buildSecurityHeaders({ permissions: { microphone: "(self)" } });
 
 function applyBaselineSecurityHeaders(res: NextResponse) {
   for (const { key, value } of sharedSecurityHeaders) {

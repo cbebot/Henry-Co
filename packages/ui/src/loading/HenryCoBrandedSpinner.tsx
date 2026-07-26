@@ -46,14 +46,17 @@ export function HenryCoBrandedSpinner({
             ? "inset-[9px]"
             : "inset-[5px]";
 
+  // Accent-governed arcs (CHROME-64 amber retirement): --hc-accent flips per
+  // theme so the auto tone needs no dark: twin; onDark pins the bright ramp
+  // for permanently-dark hosts. Fallbacks reproduce brand gold.
   const outerArc =
     tone === "onDark"
-      ? "border-amber-300/75 border-t-transparent"
-      : "border-amber-500/70 border-t-transparent dark:border-amber-300/70 dark:border-t-transparent";
+      ? "border-[color:color-mix(in_srgb,var(--hc-accent-strong,#E5C870)_75%,transparent)] border-t-transparent"
+      : "border-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_70%,transparent)] border-t-transparent";
   const innerArc =
     tone === "onDark"
-      ? "border-amber-200/45 border-b-transparent"
-      : "border-amber-600/45 border-b-transparent dark:border-amber-200/55 dark:border-b-transparent";
+      ? "border-[color:color-mix(in_srgb,var(--hc-accent-strong,#E5C870)_45%,transparent)] border-b-transparent"
+      : "border-[color:color-mix(in_srgb,var(--hc-accent-strong,#A88718)_45%,transparent)] border-b-transparent";
 
   return (
     <span
@@ -81,7 +84,9 @@ export function HenryCoBrandedSpinner({
         aria-hidden
         className={cn(
           "hidden motion-reduce:block h-2 w-2 rounded-full",
-          tone === "onDark" ? "bg-amber-300/85" : "bg-amber-500/85 dark:bg-amber-300/85",
+          tone === "onDark"
+            ? "bg-[color:color-mix(in_srgb,var(--hc-accent-strong,#E5C870)_85%,transparent)]"
+            : "bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_85%,transparent)]",
           "animate-pulse"
         )}
       />

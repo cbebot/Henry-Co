@@ -3,7 +3,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, type PublicDivisionLink } from "@henryco/config";
 import { PublicSiteFooter } from "@henryco/ui/public-design";
 import type { HubPublicCopy } from "@henryco/i18n";
 import type { HubFooterInputs } from "../lib/site-footer";
@@ -43,6 +43,7 @@ export default function PublicSiteShell({
   children,
   copy,
   footer,
+  footerDivisions,
 }: {
   initialSettings:
     | Partial<CompanySettingsRecord>
@@ -60,6 +61,9 @@ export default function PublicSiteShell({
   copy: HubPublicCopy["publicSiteShell"];
   /** Pre-assembled shared-footer inputs (see lib/site-footer.ts). */
   footer: HubFooterInputs;
+  /** Live division list (owner-paused divisions removed) from the server layout —
+   *  this shell is a client component, so the registry read happens upstream. */
+  footerDivisions?: PublicDivisionLink[];
 }) {
   const pathname = usePathname();
   const settings = useMemo(
@@ -160,6 +164,7 @@ export default function PublicSiteShell({
               copy={footer.copy}
               columns={footer.columns}
               support={footer.support}
+              divisions={footerDivisions}
             />
           </>
         )}

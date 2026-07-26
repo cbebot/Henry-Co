@@ -27,6 +27,7 @@ export type {
   FounderAssistAction,
   FounderAssistEnvelope,
   FounderProposedAction,
+  FounderLookupRequest,
   FounderAssistTurn,
   ResolvedFounderAction,
 } from "./src/founder-assist";

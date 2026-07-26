@@ -348,7 +348,7 @@ export default async function TrackPage({ searchParams }: Props) {
           meta={t("Both fields required for secure lookup")}
         >
           <form
-            className="mt-2 grid gap-4 border-y border-[var(--logistics-line)] py-6 sm:grid-cols-[1fr,1fr,auto] sm:items-end"
+            className="mt-2 grid gap-4 border-y border-[var(--logistics-line)] py-6 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
             method="get"
             action="/track"
           >
@@ -469,7 +469,7 @@ export default async function TrackPage({ searchParams }: Props) {
 
             <TrackingMapPanel map={map} shipment={detail.shipment} locale={locale} />
 
-            <section className="grid gap-10 lg:grid-cols-[1.1fr,0.9fr]">
+            <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
               <div>
                 <div className="flex items-baseline gap-3">
                   <Clock3 className="h-4 w-4 text-[color:var(--home-accent-text)]" aria-hidden />

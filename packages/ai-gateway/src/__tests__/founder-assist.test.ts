@@ -159,3 +159,77 @@ test("F3: salvage never carries a proposed action", () => {
   assert.ok(env);
   assert.equal(env.proposeAction, null);
 });
+
+// ── F4: the lookup request transport ─────────────────────────────────────────
+
+test("F4: parses a lookup request with string params", () => {
+  const env = parseFounderAssistEnvelope(
+    JSON.stringify({
+      reply: "Pulling up the urgent threads now.",
+      navigate: [],
+      lookup: { key: "support.threads.list", params: { focus: "urgent" } },
+    }),
+  );
+  assert.ok(env);
+  assert.ok(env.lookup);
+  assert.equal(env.lookup.key, "support.threads.list");
+  assert.equal(env.lookup.params.focus, "urgent");
+});
+
+test("F4: lookup is null when absent, malformed, or keyless", () => {
+  const absent = parseFounderAssistEnvelope(JSON.stringify({ reply: "Hi.", navigate: [] }));
+  assert.ok(absent);
+  assert.equal(absent.lookup, null);
+
+  const malformed = parseFounderAssistEnvelope(
+    JSON.stringify({ reply: "Hi.", navigate: [], lookup: "support.threads.list" }),
+  );
+  assert.ok(malformed);
+  assert.equal(malformed.lookup, null);
+
+  const keyless = parseFounderAssistEnvelope(
+    JSON.stringify({ reply: "Hi.", navigate: [], lookup: { params: { focus: "urgent" } } }),
+  );
+  assert.ok(keyless);
+  assert.equal(keyless.lookup, null);
+});
+
+test("F4: lookup params drop non-strings and cap size", () => {
+  const env = parseFounderAssistEnvelope(
+    JSON.stringify({
+      reply: "Looking.",
+      navigate: [],
+      lookup: {
+        key: "support.thread.get",
+        params: { threadId: "abc", depth: 9, nested: { a: 1 }, long: "x".repeat(500) },
+      },
+    }),
+  );
+  assert.ok(env);
+  assert.ok(env.lookup);
+  assert.equal(env.lookup.params.threadId, "abc");
+  assert.equal("depth" in env.lookup.params, false);
+  assert.equal("nested" in env.lookup.params, false);
+  assert.equal(env.lookup.params.long.length, 200);
+});
+
+test("F4: interpret carries the lookup through to the turn", () => {
+  const turn = interpretFounderAssistOutput(
+    JSON.stringify({
+      reply: "One moment.",
+      navigate: [],
+      lookup: { key: "staff.list", params: {} },
+    }),
+  );
+  assert.ok(turn);
+  assert.ok(turn.lookup);
+  assert.equal(turn.lookup.key, "staff.list");
+});
+
+test("F4: salvage never carries a lookup", () => {
+  const salvaged = salvageFounderAssistEnvelope("Just show me the staff.");
+  assert.ok(salvaged);
+  const env = parseFounderAssistEnvelope(salvaged);
+  assert.ok(env);
+  assert.equal(env.lookup, null);
+});

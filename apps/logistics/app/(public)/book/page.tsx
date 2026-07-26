@@ -72,7 +72,7 @@ export default async function BookPage() {
     <main id="henryco-main" tabIndex={-1} className="px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[88rem] space-y-14">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-start">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
             <div>
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
                 {copy.hero.eyebrow}
@@ -111,7 +111,7 @@ export default async function BookPage() {
           </div>
         </section>
 
-        <section className="grid gap-10 lg:grid-cols-[1.05fr,0.95fr] lg:items-start">
+        <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
               {copy.form.heading}
@@ -128,7 +128,7 @@ export default async function BookPage() {
               </p>
               <ol className="mt-5 divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
                 {afterSubmitSteps.map(({ step, title, body }) => (
-                  <li key={step} className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6">
+                  <li key={step} className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
                       {copy.afterSubmit.stepLabel} {step}
                     </span>

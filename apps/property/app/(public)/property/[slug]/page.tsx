@@ -374,7 +374,7 @@ export default async function PropertyDetailPage({
               <p className="property-kicker">{t("Listing trust")}</p>
               <span className="h-px flex-1 bg-[var(--property-line)]" />
             </div>
-            <div className="mt-6 grid gap-8 md:grid-cols-[0.85fr,1.15fr]">
+            <div className="mt-6 grid gap-8 md:grid-cols-[0.85fr_1.15fr]">
               <div className="flex items-start gap-4">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[color:var(--home-accent-soft)] text-[var(--property-accent-strong)]">
                   <ShieldCheck className="h-5 w-5" />

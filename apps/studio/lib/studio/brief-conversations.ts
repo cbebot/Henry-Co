@@ -32,6 +32,12 @@ export type StoredBriefChat = {
   covered?: string[];
   /** Set when the conversation was handed off to /request/build. */
   finalizedAt: number | null;
+  /**
+   * SA-1 — id of the server-persisted transcript (studio_brief_conversations).
+   * Optional (older drafts load unchanged); null until the first persisted
+   * turn returns one. Ownership is re-verified server-side on every use.
+   */
+  serverConversationId?: string | null;
 };
 
 export type BriefChatStore = {
@@ -138,6 +144,7 @@ export function updateConversation(
     progress?: number;
     covered?: string[];
     finalizedAt?: number | null;
+    serverConversationId?: string | null;
     now: number;
   },
 ): BriefChatStore {
@@ -152,6 +159,10 @@ export function updateConversation(
       progress: patch.progress ?? c.progress,
       covered: patch.covered ?? c.covered,
       finalizedAt: patch.finalizedAt !== undefined ? patch.finalizedAt : c.finalizedAt,
+      serverConversationId:
+        patch.serverConversationId !== undefined
+          ? patch.serverConversationId
+          : c.serverConversationId,
       updatedAt: patch.now,
     };
   });

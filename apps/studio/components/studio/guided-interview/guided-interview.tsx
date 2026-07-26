@@ -10,6 +10,7 @@ import { useHenryCoLocale } from "@henryco/i18n/react";
 import { saveDraft, useFormDraft } from "@henryco/lifecycle/drafts";
 import { GuidedQuestionCard } from "@/components/studio/guided-interview/question-card";
 import { generateStudioBriefDraftAction } from "@/lib/studio/brief-copilot-action";
+import { saveStudioBriefFlowDraftAction } from "@/lib/studio/brief-draft-actions";
 import { useStudioMotion } from "@/lib/studio/motion";
 import type { StudioRequestConfig } from "@/lib/studio/request-config";
 import {
@@ -167,6 +168,13 @@ export function GuidedInterview({
       value: { ...draftValue, stepIndex: 1 },
       savedAt: Date.now(),
       version: STUDIO_BRIEF_DRAFT_VERSION,
+    });
+
+    // SA-1 — durable copy: the interview's brief survives a device change.
+    // Fire-and-forget; failure never blocks the handoff.
+    void saveStudioBriefFlowDraftAction({
+      draft: { ...draftValue, stepIndex: 1 },
+      source: "guided",
     });
 
     router.push("/request/build");

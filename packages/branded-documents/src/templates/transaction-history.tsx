@@ -162,8 +162,8 @@ export function TransactionHistoryDocument({
 
       <LegalFooter
         lines={[
-          "This statement is a record of activity surfaced from Henry Onyx Limited's unified ledger. Where a division marks a transaction pending or under review, the canonical settlement remains with that division until the status here updates.",
-          "If a row looks unfamiliar, contact Henry Onyx support before disputing with your bank — most queries resolve faster through the originating division.",
+          "This is a statement of your activity with Henry Onyx Limited. A transaction shown as pending or under review may still change until it is finalized.",
+          "If a row looks unfamiliar, contact Henry Onyx support before disputing with your bank — most questions are resolved faster that way.",
         ]}
       />
     </BrandedDocument>

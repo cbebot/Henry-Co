@@ -25,19 +25,38 @@ export interface FounderAssistAction {
  * dropped before the owner ever sees a card. The AI cannot fill an amount —
  * money-relevant values are server-fetched true state by construction.
  */
+/** A flat batch item — string fields only (e.g. one reply: {threadId, body}). */
+export type FounderActionBatchItem = Record<string, string>;
+
 export interface FounderProposedAction {
   key: string;
-  params: Record<string, string | number | boolean>;
+  params: Record<string, string | number | boolean | FounderActionBatchItem[]>;
   /** One short sentence of the assistant's reasoning, shown on the card. */
   rationale?: string;
 }
 
-/** The `{reply, navigate, proposeAction?}` output envelope of `hub.founder.assist`. */
+/**
+ * F4 — a server-run READ the assistant REQUESTS (never executes). Pure naming,
+ * exactly like proposeAction: `key` must match the hub's closed
+ * FOUNDER_LOOKUP_CATALOG and `params` are re-validated server-side against that
+ * entry's strict schema. The hub runs the read inside the same POST and hands
+ * the records back as fenced LOOKUP_RESULT data for a follow-up model turn —
+ * this is what lets the assistant fetch the thread/application/staff ids it
+ * needs instead of telling the founder "give me the ID".
+ */
+export interface FounderLookupRequest {
+  key: string;
+  params: Record<string, string>;
+}
+
+/** The `{reply, navigate, proposeAction?, lookup?}` output envelope of `hub.founder.assist`. */
 export interface FounderAssistEnvelope {
   reply: string;
   navigate: FounderAssistAction[];
   /** F3, optional and additive — absent in every F2-only turn. */
   proposeAction: FounderProposedAction | null;
+  /** F4, optional and additive — a requested server-side read, or null. */
+  lookup: FounderLookupRequest | null;
 }
 
 // 2, not 3: IntelligenceLauncher renders navigate.slice(0, 2) — a third button
@@ -48,6 +67,12 @@ const MAX_TARGET_CHARS = 64;
 const MAX_ACTION_PARAMS = 12;
 const MAX_PARAM_STRING_CHARS = 500;
 const MAX_RATIONALE_CHARS = 240;
+// Batch params (e.g. many support replies in one action): a bounded array of
+// FLAT string records. Bounds are transport-level only — the hub's strict
+// schema re-validates every item before the owner ever sees a card.
+const MAX_BATCH_ITEMS = 10;
+const MAX_BATCH_ITEM_KEYS = 4;
+const MAX_BATCH_STRING_CHARS = 2000;
 
 /**
  * Sanitize the AI-proposed action into a flat, bounded shape. This is only the
@@ -60,7 +85,7 @@ function sanitizeProposedAction(raw: unknown): FounderProposedAction | null {
   const key = String(record.key ?? "").trim().slice(0, MAX_TARGET_CHARS);
   if (!key) return null;
 
-  const params: Record<string, string | number | boolean> = {};
+  const params: Record<string, string | number | boolean | FounderActionBatchItem[]> = {};
   const rawParams = record.params;
   if (rawParams && typeof rawParams === "object" && !Array.isArray(rawParams)) {
     let count = 0;
@@ -74,6 +99,26 @@ function sanitizeProposedAction(raw: unknown): FounderProposedAction | null {
         params[cleanName] = value;
       } else if (typeof value === "boolean") {
         params[cleanName] = value;
+      } else if (Array.isArray(value)) {
+        // Bounded batch: ≤10 FLAT items, string values only (≤2000 chars,
+        // ≤4 keys each). Anything nested, non-string, or oversized is dropped
+        // item-by-item; an empty result drops the param entirely.
+        const items: FounderActionBatchItem[] = [];
+        for (const raw of value.slice(0, MAX_BATCH_ITEMS)) {
+          if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+          const item: FounderActionBatchItem = {};
+          let keys = 0;
+          for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+            if (keys >= MAX_BATCH_ITEM_KEYS) break;
+            const cleanKey = k.trim().slice(0, 64);
+            if (!cleanKey || typeof v !== "string") continue;
+            item[cleanKey] = v.slice(0, MAX_BATCH_STRING_CHARS);
+            keys += 1;
+          }
+          if (Object.keys(item).length > 0) items.push(item);
+        }
+        if (items.length === 0) continue;
+        params[cleanName] = items;
       } else {
         continue;
       }
@@ -87,6 +132,37 @@ function sanitizeProposedAction(raw: unknown): FounderProposedAction | null {
       : undefined;
 
   return { key, params, ...(rationale ? { rationale } : {}) };
+}
+
+// F4 lookup transport bounds — string params only (a read filter is never a
+// number the model must invent), tightly capped. The hub re-validates against
+// the closed lookup catalog's strict schema before running anything.
+const MAX_LOOKUP_PARAMS = 6;
+const MAX_LOOKUP_VALUE_CHARS = 200;
+
+/** Sanitize the AI-requested lookup into a flat, bounded, string-only shape. */
+function sanitizeLookupRequest(raw: unknown): FounderLookupRequest | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const record = raw as Record<string, unknown>;
+  const key = String(record.key ?? "").trim().slice(0, MAX_TARGET_CHARS);
+  if (!key) return null;
+
+  const params: Record<string, string> = {};
+  const rawParams = record.params;
+  if (rawParams && typeof rawParams === "object" && !Array.isArray(rawParams)) {
+    let count = 0;
+    for (const [name, value] of Object.entries(rawParams as Record<string, unknown>)) {
+      if (count >= MAX_LOOKUP_PARAMS) break;
+      const cleanName = name.trim().slice(0, 64);
+      if (!cleanName || typeof value !== "string") continue;
+      const cleanValue = value.trim().slice(0, MAX_LOOKUP_VALUE_CHARS);
+      if (!cleanValue) continue;
+      params[cleanName] = cleanValue;
+      count += 1;
+    }
+  }
+
+  return { key, params };
 }
 
 /**
@@ -143,6 +219,11 @@ const DESTINATIONS: Record<string, { description: string; href: string }> = {
   "owner.inbox": {
     description: "The owner email inbox — all mail to the company addresses",
     href: "/owner/inbox",
+  },
+  "owner.support": {
+    description:
+      "Support Command — every AI conversation (named or anonymous), live-person handoffs, and open support threads with an owner reply box",
+    href: "/owner/support",
   },
   "owner.team": {
     description: "HQ internal team chat",
@@ -209,6 +290,7 @@ export function parseFounderAssistEnvelope(text: string): FounderAssistEnvelope 
         reply,
         navigate,
         proposeAction: sanitizeProposedAction(record.proposeAction),
+        lookup: sanitizeLookupRequest(record.lookup),
       };
     } catch {
       return null;
@@ -250,7 +332,7 @@ export function salvageFounderAssistEnvelope(rawText: string): string | null {
   const reply = humanizeAssistantText(candidate);
   if (!reply || /^[[{]/.test(reply.trim())) return null;
 
-  return JSON.stringify({ reply, navigate: [], proposeAction: null });
+  return JSON.stringify({ reply, navigate: [], proposeAction: null, lookup: null });
 }
 
 /** A resolved, render-ready navigation button (relative hub href). */
@@ -282,6 +364,9 @@ export interface FounderAssistTurn {
   reply: string;
   navigate: ResolvedFounderAction[];
   proposeAction: FounderProposedAction | null;
+  /** F4 — a requested server-side read the hub validates against its closed
+   *  lookup catalog and (when valid) runs inside the same POST. */
+  lookup: FounderLookupRequest | null;
 }
 
 /** The one call the hub route makes on the raw model output. */
@@ -292,6 +377,7 @@ export function interpretFounderAssistOutput(rawText: string): FounderAssistTurn
     reply: envelope.reply,
     navigate: resolveFounderAssistActions(envelope.navigate),
     proposeAction: envelope.proposeAction,
+    lookup: envelope.lookup,
   };
 }
 

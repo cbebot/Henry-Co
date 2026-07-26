@@ -30,7 +30,6 @@ import { formatCurrency } from "@/lib/utils";
 
 type CheckoutStep = "delivery" | "payment" | "confirm";
 
-const STEP_IDS: CheckoutStep[] = ["delivery", "payment", "confirm"];
 
 /**
  * Persisted user-input shape for the checkout draft.
@@ -653,7 +652,7 @@ export function CheckoutExperience({
       {/* Stepper — bespoke Henry Onyx brass-on-noir, motion-aware */}
       <CheckoutStepper currentStep={step} />
 
-      <section className="grid gap-6 lg:grid-cols-[1fr,380px]">
+      <section className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <form
           ref={formRef}
           action="/api/marketplace"
@@ -826,7 +825,7 @@ export function CheckoutExperience({
               {paymentMethod === "wallet_balance"
                 ? t("On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches.")
                 : paymentMethod === "bank_transfer"
-                ? t("On confirm, your transfer proof routes to finance. Verification typically completes within a few business hours and the timeline updates the moment it does.")
+                ? t("On confirm, your payment proof is submitted for review. Verification usually completes within a few business hours and the timeline updates automatically the moment it does.")
                 : paymentMethod === "card"
                 ? t("On confirm, you continue to a secure page to complete card payment. Your order is confirmed automatically the moment payment clears.")
                 : t("On confirm, the order opens for vendor acceptance. The rider collects payment when the order arrives.")}
@@ -1212,7 +1211,7 @@ function PaymentStep({
 
       <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
         {t(
-          "Use cleared Henry Onyx balance first when it covers the total, or transfer the exact amount and upload proof before the order enters finance review.",
+          "Use your cleared Henry Onyx balance first when it covers the total, or transfer the exact amount and upload proof so we can confirm your payment.",
         )}
       </p>
 
@@ -1294,7 +1293,7 @@ function PaymentStep({
             <p className="mt-4 flex items-start gap-2 text-sm leading-7 text-[var(--market-muted)]">
               <Check className="mt-1 h-4 w-4 text-[var(--market-brass)]" />
               {t(
-                "Balance payment will debit your wallet and create the order as paid-held for fulfillment and escrow controls.",
+                "Your wallet is debited and the payment is held securely in escrow until the seller fulfils your order.",
               )}
             </p>
           ) : (
@@ -1414,8 +1413,8 @@ function PaymentStep({
             Cash on delivery
           </p>
           <p className="mt-2">
-            COD keeps payment pending for this {cart.count}-item order until delivery collection is
-            reconciled. Wallet or transfer remains faster when available.
+            With cash on delivery, payment stays pending for this {cart.count}-item order until the
+            rider collects it on delivery. Wallet or transfer is faster when available.
           </p>
         </aside>
       ) : null}
@@ -1544,7 +1543,7 @@ function ProofUploadField({
         >
           <span className="flex items-center gap-2 text-[var(--market-aurora)]">
             <Check className="h-3 w-3" aria-hidden="true" />
-            {t("Proof received. Finance will verify after submit.")}
+            {t("Proof received. We'll verify it after you submit.")}
           </span>
           <button
             type="button"
@@ -1727,7 +1726,7 @@ function ConfirmStep({
             return (
               <li
                 key={item.id}
-                className="grid grid-cols-[64px,1fr,auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-3"
+                className="grid grid-cols-[64px_1fr_auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-3"
               >
                 <div className="relative h-14 w-14 overflow-hidden rounded-[0.9rem] bg-[var(--market-soft-wash)]">
                   {item.image ? (
@@ -1830,7 +1829,7 @@ function OrderSummaryRail({
         {cart.items.slice(0, 4).map((item) => {
           const moving = pendingSavedItemIds.includes(item.id);
           return (
-            <div key={item.id} className="grid grid-cols-[40px,1fr,auto] items-center gap-3 text-sm">
+            <div key={item.id} className="grid grid-cols-[40px_1fr_auto] items-center gap-3 text-sm">
               <div className="relative h-10 w-10 overflow-hidden rounded-md bg-[var(--market-soft-wash)]">
                 {item.image ? (
                   <DivisionImage src={item.image} alt={item.title} fill sizes="40px" className="object-cover" radius="0" />

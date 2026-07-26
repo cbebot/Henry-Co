@@ -199,18 +199,18 @@ function divisionTitle(division: string | null | undefined): string {
   return DIVISION_TITLE[key] || "Henry Onyx";
 }
 
-// ─── Dispatch (EMAIL-SES-ONLY, 2026-07-09) ─────────────────────────────────
+// ─── Dispatch (EMAIL-POSTMARK, 2026-07-14) ─────────────────────────────────
 //
-// The shared router IS the dispatch policy now: Amazon SES only, no vendor
-// fallback — Resend and Brevo are permanently retired. A failed send is
+// The shared router IS the dispatch policy now: Postmark only, no vendor
+// fallback — Amazon SES, Resend and Brevo are permanently retired. A failed send is
 // simply retried by the next cron run (bounded by RETRY_CAP).
 
 async function dispatchEmail(
   input: SendTransactionalEmailInput,
-): Promise<{ result: EmailDispatchResult; providerUsed: "ses" | null }> {
+): Promise<{ result: EmailDispatchResult; providerUsed: "postmark" | null }> {
   const result = await sendTransactionalEmail(input);
-  if (result.status === "sent" && result.provider === "ses") {
-    return { result, providerUsed: "ses" };
+  if (result.status === "sent" && result.provider === "postmark") {
+    return { result, providerUsed: "postmark" };
   }
 
   // Do not log title/body/email values per info-disclosure rules.
@@ -385,7 +385,7 @@ async function logDelivery(
     division: string | null;
     eventType: string | null;
     status: "sent" | "error" | "skipped";
-    provider: "ses" | "none";
+    provider: "postmark" | "none";
     errorCode?: string | null;
     errorMessage?: string | null;
     metadata?: Record<string, unknown>;
@@ -414,7 +414,7 @@ async function logDelivery(
 async function markDispatched(
   admin: AdminClient,
   notificationId: string,
-  provider: "ses" | null,
+  provider: "postmark" | null,
   metadataPatch?: Record<string, unknown>,
 ): Promise<void> {
   // Read existing metadata to merge — supabase-js doesn't support JSON merge
@@ -510,7 +510,7 @@ function buildDigestEmail(args: {
 // ─── Per-row dispatch ──────────────────────────────────────────────────────
 
 type DispatchOutcome =
-  | { kind: "sent"; provider: "ses" }
+  | { kind: "sent"; provider: "postmark" }
   | { kind: "skipped" }
   | { kind: "failed"; reason: string };
 

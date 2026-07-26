@@ -156,7 +156,7 @@ function latestVerificationMessage(
   const balanceDue = sanitizeAmount(booking.balance_due);
 
   if (normalized === "approved") {
-    return "Payment has been verified and the booking can continue through live operations.";
+    return "Payment confirmed. Your booking can now go ahead.";
   }
 
   if (normalized === "receipt_submitted") {

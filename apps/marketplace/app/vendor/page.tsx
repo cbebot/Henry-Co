@@ -113,7 +113,7 @@ export default async function VendorOverviewPage() {
         <MetricCard
           label={t("Held")}
           value={money(data.balanceSummary.held)}
-          hint={t("Escrow-held funds waiting on delivery, timeout, or trust checks.")}
+          hint={t("Funds held in escrow until the order is delivered and confirmed, or a review completes.")}
         />
         <MetricCard
           label={t("Awaiting auto-release")}

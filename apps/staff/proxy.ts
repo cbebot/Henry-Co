@@ -11,7 +11,11 @@ const csp = [
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "connect-src 'self' https://*.supabase.co https://api.cloudinary.com",
+  // wss://*.supabase.co is REQUIRED for the realtime WebSocket. Safari/WebKit
+  // (iOS) will not open a wss: socket under an https: source, so `new WebSocket()`
+  // throws synchronously and crashes the realtime provider into the error
+  // boundary (dashboard fails to open on iOS). Chrome derives wss: from https:.
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.cloudinary.com",
   "media-src 'self' blob: https://*.supabase.co https://res.cloudinary.com",
   "object-src 'none'",
   "upgrade-insecure-requests",

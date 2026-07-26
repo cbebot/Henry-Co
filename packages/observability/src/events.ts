@@ -113,6 +113,30 @@ export type HenryEventName =
   | "henry.studio_project.client_viewed"
   | "henry.studio_project.revision_requested"
   | "henry.studio_project.deliverable_approved"
+  // studio agency build orchestration (SA-2/SA-3) — the autonomous build job
+  // lifecycle. Payloads carry job/project ids + stage/reason only; never the
+  // spec, never client PII, never provider/model, never money amounts. The
+  // generic `transitioned` fires on EVERY stage move (from/to/reason); the rest
+  // mark the milestones the owner reviews (created, deployed, escalated, a
+  // queued decision, a client review, aftercare).
+  | "henry.studio.build.job_created"
+  | "henry.studio.build.transitioned"
+  | "henry.studio.build.deployed"
+  | "henry.studio.build.escalated"
+  | "henry.studio.build.decision_queued"
+  | "henry.studio.build.client_reviewed"
+  | "henry.studio.build.aftercare_scheduled"
+  // studio Owner-AI operator (SA-4) — the digital-executive spine. The operator
+  // tick runs while the owner is offline: it reads durable job/decision state,
+  // raises consequential one-tap proposals into the founder inbox, and escalates
+  // urgent conditions. Payloads carry ids + counts + outcome only — never the
+  // spec, client PII, provider/model, or money amounts. `action` fires when an
+  // owner.studio.* one-tap executes (approve deploy, cancel, budget increase,
+  // send proposal, reply, pause/resume) with its outcome.
+  | "henry.studio.operator.tick"
+  | "henry.studio.operator.proposal_raised"
+  | "henry.studio.operator.escalated"
+  | "henry.studio.operator.action"
   // gaming arena (V3-GAMING-01) — free-play match lifecycle. No money/PII in
   // payloads: game id, hashed actor ids, and PII-free outcome only.
   | "henry.gaming.match.created"
@@ -262,6 +286,22 @@ export type HenryEventName =
   | "henry.dashboard.module.rendered"
   | "henry.dashboard.module.refreshed"
   | "henry.dashboard.empty_state.cta_clicked"
+  // V3-34 personalization-home (Phase E). `layout.computed` fires each time
+  // the deterministic projection is applied (owner tile: daily layouts). The
+  // module verbs track explicit user intent (pin/hide) and `layout.reset`
+  // clears overrides. `consent.granted|revoked` record the account-scoped
+  // personalization consent decision (NDPR ledger). Outcome axis: computed→
+  // completed, pinned/hidden→saved, reset→removed, consent→approved|rejected.
+  | "henry.personalization.layout.computed"
+  | "henry.personalization.layout.reset"
+  | "henry.personalization.module.pinned"
+  | "henry.personalization.module.hidden"
+  | "henry.personalization.consent.granted"
+  | "henry.personalization.consent.revoked"
+  // V3-36 — cross-division recommendation engine. Payload carries counts + the
+  // profiled/ai-applied booleans only; never per-item content, never a score,
+  // never a provider/model name.
+  | "henry.personalization.recommendations.computed"
   // payments / provider router — V3-13 foundation lock (vendor-agnostic
   // routing). `intent.*` track the money lifecycle of a payment_intent
   // (created → succeeded | failed → refunded); the outcome axis maps

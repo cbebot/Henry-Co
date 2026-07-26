@@ -11,7 +11,7 @@ import { translateSurfaceLabel } from "@henryco/i18n";
 import { getJobsPublicCopy } from "@/lib/public-copy";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { HenryCoPublicAccountPresets } from "@henryco/ui";
-import { PublicSiteFooter } from "@henryco/ui/public-design";
+import { LivePublicSiteFooter } from "@henryco/ui/public-design";
 import { HenryCoMonogram } from "@henryco/ui/brand";
 import { PublicChrome, getSiteNavigationConfig } from "@henryco/ui/public-shell";
 import { JobsAccountChip } from "@/components/JobsAccountChip";
@@ -152,7 +152,7 @@ export async function PublicShell({
         {children}
       </main>
 
-      <PublicSiteFooter
+      <LivePublicSiteFooter
         copy={{
           statement: t(
             "A premium hiring operating system — verified talent, trusted employers, and cleaner recruitment on one record.",

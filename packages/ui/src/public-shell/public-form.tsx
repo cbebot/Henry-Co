@@ -12,12 +12,12 @@ import { forwardRef, useId } from "react";
 import { cn } from "../lib/cn";
 
 const FOCUS_RING =
-  "focus:outline-none focus:ring-2 focus:ring-amber-500/55 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-amber-400/50 dark:focus:ring-offset-[#0a0f14]";
+  "focus:outline-none focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_55%,transparent)] focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#0a0f14]";
 
 const CONTROL_BASE =
   "block w-full rounded-2xl border bg-white text-[0.95rem] leading-6 text-zinc-900 placeholder:text-zinc-400 transition-colors shadow-[0_1px_0_rgba(15,23,42,0.02)] " +
-  "border-zinc-200/90 hover:border-zinc-300 focus:border-amber-400 " +
-  "dark:border-white/10 dark:bg-[#0b1018]/85 dark:text-white dark:placeholder:text-white/40 dark:hover:border-white/20 dark:focus:border-amber-300/70";
+  "border-zinc-200/90 hover:border-zinc-300 focus:border-[color:var(--hc-accent,#C9A227)] " +
+  "dark:border-white/10 dark:bg-[#0b1018]/85 dark:text-white dark:placeholder:text-white/40 dark:hover:border-white/20";
 
 const CONTROL_ERROR =
   "border-rose-400/70 focus:border-rose-400 dark:border-rose-400/60";
@@ -89,7 +89,7 @@ export function PublicField({
             <span />
           )}
           {sideLabel ? (
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-300/85">
+            <span className="text-xs font-medium text-[color:var(--hc-accent-text,#A88718)]">
               {sideLabel}
             </span>
           ) : null}

@@ -138,6 +138,13 @@ export function useIntelligenceChat({ division, endpoint }: UseIntelligenceChatO
   const [actionExpanded, setActionExpanded] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
   const [actionOutcome, setActionOutcome] = useState<ActionOutcome | null>(null);
+  // Deep-action step-up (the founder's "print"): the confirm route answered
+  // with the sensitive-action challenge — the owner must re-enter their
+  // password (verified server-side, which writes the signed hc_last_reauth
+  // marker) before this confirm can execute. The proposal card stays visible.
+  const [reauthNeeded, setReauthNeeded] = useState(false);
+  const [reauthBusy, setReauthBusy] = useState(false);
+  const [reauthError, setReauthError] = useState<string | null>(null);
 
   const sessionId = useSessionId(division);
   // The conversation of record for building each request + the server's returned id.
@@ -150,6 +157,19 @@ export function useIntelligenceChat({ division, endpoint }: UseIntelligenceChatO
   // F3 — the governed-action confirm endpoint sits beside the founder chat
   // endpoint (same owner origin): /api/owner/intelligence/chat → /actions/confirm.
   const confirmEndpoint = useMemo(() => endpoint.replace(/\/chat\/?$/, "/actions/confirm"), [endpoint]);
+  // The reauth completion route lives at the chat endpoint's ORIGIN root
+  // (/api/auth/reauth exists on hub, account, learn, and jobs) — origin-derived
+  // so a cross-origin chat endpoint reauths against its own origin.
+  const reauthEndpoint = useMemo(() => {
+    if (/^https?:\/\//i.test(endpoint)) {
+      try {
+        return new URL("/api/auth/reauth", endpoint).toString();
+      } catch {
+        /* fall through to same-origin */
+      }
+    }
+    return "/api/auth/reauth";
+  }, [endpoint]);
 
   // The SECOND deliberate click (the first being "Review"): confirm the action.
   // The AI is entirely absent here — this posts only the opaque token; the server
@@ -165,10 +185,17 @@ export function useIntelligenceChat({ division, endpoint }: UseIntelligenceChatO
         body: JSON.stringify({ token: proposedAction.token }),
       });
       const data = (await res.json().catch(() => null)) as
-        | { outcome?: string; reason?: string; error?: string }
+        | { outcome?: string; reason?: string; error?: string; code?: string }
         | null;
+      // Deep-action step-up challenge: keep the card, ask for the password.
+      if (res.status === 401 && data?.code === "sensitive_action_reauth_required") {
+        setReauthNeeded(true);
+        setReauthError(null);
+        return;
+      }
       const outcome = data?.outcome;
       if (res.ok && outcome === "executed") {
+        setReauthNeeded(false);
         setActionOutcome({ kind: "executed", message: t("Done. The change is live.") });
       } else if (outcome === "conflict" || outcome === "already_resolved") {
         setActionOutcome({
@@ -197,9 +224,56 @@ export function useIntelligenceChat({ division, endpoint }: UseIntelligenceChatO
     }
   }, [proposedAction, actionBusy, confirmEndpoint, t]);
 
+  /**
+   * Complete the deep-action step-up: verify the owner's password against the
+   * origin's /api/auth/reauth (which writes the signed hc_last_reauth marker
+   * on success) and immediately retry the confirm — one seamless "verify &
+   * execute" for the owner. The password travels ONLY to this origin's
+   * verified reauth route, never through the AI or the chat pipeline.
+   */
+  const submitReauth = useCallback(
+    async (password: string) => {
+      if (reauthBusy) return;
+      const secret = password.trim();
+      if (!secret) {
+        setReauthError(t("Enter your password."));
+        return;
+      }
+      setReauthBusy(true);
+      setReauthError(null);
+      try {
+        const res = await fetch(reauthEndpoint, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ method: "password", password: secret }),
+        });
+        const data = (await res.json().catch(() => null)) as { ok?: boolean; reason?: string } | null;
+        if (data?.ok) {
+          setReauthNeeded(false);
+          setReauthBusy(false);
+          await confirmAction();
+          return;
+        }
+        setReauthError(
+          data?.reason === "rate_limited"
+            ? t("Too many attempts. Wait a few minutes and try again.")
+            : t("That password didn't match. Try again."),
+        );
+      } catch {
+        setReauthError(t("We couldn't verify right now. Try again."));
+      } finally {
+        setReauthBusy(false);
+      }
+    },
+    [reauthBusy, reauthEndpoint, confirmAction, t],
+  );
+
   const dismissAction = useCallback(() => {
     setProposedAction(null);
     setActionExpanded(false);
+    setReauthNeeded(false);
+    setReauthError(null);
   }, []);
   const lastUserText = useCallback(
     () => [...historyRef.current].reverse().find((m) => m.role === "user")?.content ?? "",
@@ -223,6 +297,8 @@ export function useIntelligenceChat({ division, endpoint }: UseIntelligenceChatO
       setProposedAction(null);
       setActionExpanded(false);
       setActionOutcome(null);
+      setReauthNeeded(false);
+      setReauthError(null);
       try {
         const res = await fetch(endpoint, {
           method: "POST",
@@ -399,6 +475,8 @@ export function useIntelligenceChat({ division, endpoint }: UseIntelligenceChatO
       setProposedAction(null);
       setActionExpanded(false);
       setActionOutcome(null);
+      setReauthNeeded(false);
+      setReauthError(null);
     },
     [],
   );
@@ -443,6 +521,10 @@ export function useIntelligenceChat({ division, endpoint }: UseIntelligenceChatO
     runDeep,
     confirmAction,
     dismissAction,
+    reauthNeeded,
+    reauthBusy,
+    reauthError,
+    submitReauth,
     hydrate,
     reset,
   };

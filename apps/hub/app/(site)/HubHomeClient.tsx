@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import type { AppLocale, HubHomeCopy } from "@henryco/i18n";
 import type { PublicAccountUser } from "@henryco/ui";
 import { LaunchTransitionProvider } from "@henryco/ui/public-shell";
-import { PublicSiteFooter, ScrollProgress } from "@henryco/ui/public-design";
+import { LivePublicSiteFooter, ScrollProgress } from "@henryco/ui/public-design";
 import type { DivisionRow } from "../lib/divisions";
 import type { DivisionLiveStat } from "../lib/division-stats";
 import type { HubFooterInputs } from "../lib/site-footer";
@@ -106,7 +106,7 @@ export default function HubHomeClient({
         <HomeFaq copy={copy} faqs={initialFaqs ?? []} />
       </main>
 
-      <PublicSiteFooter
+      <LivePublicSiteFooter
         copy={footer.copy}
         columns={footer.columns}
         support={footer.support}

@@ -24,12 +24,12 @@ function readFirst(...names: string[]): string | null {
  * unrelated mail going out as "Henry Onyx Care" damages trust.
  */
 function noreplyIdentity(): ResolvedSender {
-  // EMAIL-SES-ONLY (2026-07-09): the from-address falls back to the SES sender
-  // env, never a retired-vendor alias (BREVO_SENDER_EMAIL / RESEND_* removed) —
-  // a stale @henrycogroup.com value in a retired-vendor var can no longer poison
-  // the sender identity.
+  // EMAIL-POSTMARK (2026-07-14): the from-address falls back to the Postmark
+  // sender env, never a retired-vendor alias (AWS_SES_FROM_EMAIL /
+  // BREVO_SENDER_EMAIL / RESEND_* removed) — a stale value in a retired-vendor
+  // var can no longer poison the sender identity.
   return {
-    email: readFirst("HENRYCO_NOREPLY_EMAIL", "AWS_SES_FROM_EMAIL") || NOREPLY_FALLBACK_EMAIL,
+    email: readFirst("HENRYCO_NOREPLY_EMAIL", "POSTMARK_FROM_EMAIL") || NOREPLY_FALLBACK_EMAIL,
     name: readFirst("HENRYCO_NOREPLY_FROM_NAME") || NOREPLY_FALLBACK_NAME,
   };
 }
@@ -47,7 +47,7 @@ const RULES: Record<EmailPurpose, IdentityRule> = {
     defaultName: "Henry Onyx Accounts",
   },
   support: {
-    // EMAIL-SES-ONLY (2026-07-09): legacy RESEND_SUPPORT_* aliases removed.
+    // EMAIL-POSTMARK (2026-07-14): legacy RESEND_SUPPORT_* aliases removed.
     emailVars: ["HENRYCO_SUPPORT_EMAIL"],
     nameVars: ["HENRYCO_SUPPORT_FROM_NAME"],
     defaultName: "Henry Onyx Support",
@@ -109,10 +109,10 @@ const RULES: Record<EmailPurpose, IdentityRule> = {
  *
  * Resolution order, per-purpose:
  *   1. Purpose-specific env vars (e.g., HENRYCO_STUDIO_EMAIL).
- *   2. The shared HENRYCO_NOREPLY_EMAIL (or its alias BREVO_SENDER_EMAIL),
+ *   2. The shared HENRYCO_NOREPLY_EMAIL (or POSTMARK_FROM_EMAIL),
  *      using the purpose's branded name (e.g., "Henry Onyx Studio") so the
  *      message is still labelled correctly even if individual aliases
- *      are not yet DNS/Brevo-verified.
+ *      are not yet DNS/DKIM-verified in Postmark.
  *   3. Hard fallback to BRAND_EMAILS.noreply / "Henry Onyx".
  *
  * Critical invariant: nothing here ever falls back to the Care identity.

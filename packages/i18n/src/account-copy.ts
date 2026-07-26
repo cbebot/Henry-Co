@@ -2357,7 +2357,7 @@ const EN: AccountCopy = {
     },
     signalsTitle: "Signals",
     signalsMeta:
-      "What our verification + scoring engines see on your account right now.",
+      "A quick read on your account's verification and security checks right now.",
     signalsAriaLabel: "Security signals",
     guideTitle: "Where you are · what advances you",
     guideMetaTemplate: "Honest scoring, not a marketing number. {tier}.",
@@ -2422,7 +2422,7 @@ const EN: AccountCopy = {
       "No trust-based restrictions are currently blocking your core account workflows.",
     recentActivity: "Recent Security Activity",
     recentActivityDescription:
-      "Sign-ins, sign-outs, device fingerprints, and suspicious access signals are recorded here so session continuity remains reviewable even before separate per-device revoke controls ship.",
+      "Your recent sign-ins, sign-outs, and any unusual access are listed here so you can review your account activity and sign out everywhere if something looks unfamiliar.",
     emptyTitle: "No recent security activity",
     emptyDescription:
       "Sign-ins, session closures, alerts, and sensitive account changes will appear here.",
@@ -2466,7 +2466,7 @@ const EN: AccountCopy = {
     requirements: {
       verified: {
         verification:
-          "Complete identity verification so trust-based lanes stop relying on optimistic profile signals.",
+          "Complete identity verification to unlock trust-gated actions across Henry Onyx.",
         email: "Verify your email address.",
         identity:
           "Complete identity verification for seller, property, payout, and finance-sensitive workflows.",
@@ -2515,17 +2515,17 @@ const EN: AccountCopy = {
     description:
       "This signs the current account out across Henry Onyx divisions and devices, then returns you to the account login surface.",
     note:
-      "Recent device and session activity stays visible below even though live per-device revocation is not yet exposed as a separate control.",
+      "Signing out everywhere ends this account's sessions on all your devices. You can review recent device and session activity below.",
     unavailable:
       "We couldn’t end every Henry Onyx session right now. Try again in a moment.",
     ending: "Ending all sessions...",
     endAllSessions: "Sign out all Henry Onyx sessions",
   },
   errorBoundary: {
-    kicker: "Account runtime",
-    title: "This account surface hit a client or rendering fault",
+    kicker: "Something went wrong",
+    title: "This page didn't load correctly",
     description:
-      "The failure has been captured for investigation. Reload this surface and continue from the last stable state.",
+      "Your data is safe. Reload to continue — and if it keeps happening, contact support.",
     reload: "Reload this view",
     contactSupport: "Contact support",
   },
@@ -2868,7 +2868,7 @@ const EN: AccountCopy = {
         verifiedLabel: "Verified balance",
         verifiedFoot: "Spendable across Henry Onyx services",
         pendingFundingLabel: "Pending funding",
-        pendingFundingFoot: "Sits separately until finance confirms",
+        pendingFundingFoot: "Sits separately until confirmed",
         pendingWithdrawalLabel: "Held for withdrawal",
         pendingWithdrawalFoot: "Reserved until payout clears",
       },
@@ -2888,7 +2888,7 @@ const EN: AccountCopy = {
     quickActions: {
       ariaLabel: "Wallet quick actions",
       addFundsLabel: "Add funds",
-      addFundsDesc: "Bank transfer with proof upload and instant confirmation.",
+      addFundsDesc: "Top up by card, your bank app, or USSD — confirmed automatically.",
       withdrawLabel: "Withdraw",
       withdrawDesc: "Move available balance to a verified bank account.",
       paymentsLabel: "Payments",
@@ -2898,12 +2898,12 @@ const EN: AccountCopy = {
     },
     pendingOps: {
       fundingKicker: "Pending funding",
-      fundingDescEmpty: "Funds you transfer in stay here until finance confirms the bank reference.",
-      fundingDescSingular: "{count} request sitting in review — proof keeps the queue moving.",
-      fundingDescPlural: "{count} requests sitting in review — proof keeps the queue moving.",
+      fundingDescEmpty: "Funds you add stay here until the payment is confirmed.",
+      fundingDescSingular: "{count} request still being confirmed.",
+      fundingDescPlural: "{count} requests still being confirmed.",
       fundingCta: "Open funding lane",
       withdrawalKicker: "Pending withdrawals",
-      withdrawalDescEmpty: "Withdrawals queue up here while finance reviews them — your available balance is never double-promised.",
+      withdrawalDescEmpty: "Withdrawals are held here while they're reviewed, so your available balance is always accurate.",
       withdrawalDescSingular: "{count} withdrawal awaiting payout. Reserved off your available balance.",
       withdrawalDescPlural: "{count} withdrawals awaiting payout. Reserved off your available balance.",
       withdrawalCta: "Open withdrawal lane",
@@ -2949,7 +2949,7 @@ const EN: AccountCopy = {
       fallbackTitle: "Wallet transaction",
     },
     funding: {
-      proofUploaded: "Rail verified",
+      proofUploaded: "Payment confirmed",
       awaitingProof: "Processing",
       ariaLabelTemplate: "Funding request {reference} for ₦{amount}",
     },
@@ -2972,9 +2972,9 @@ const EN: AccountCopy = {
       ctaWithdraw: "Withdraw",
     },
     alert: {
-      proofTitle: "Rail check pending",
-      proofDescTemplate: "{reference} is waiting for live rail confirmation.",
-      proofCta: "View rail",
+      proofTitle: "Confirming payment",
+      proofDescTemplate: "{reference} is waiting to be confirmed.",
+      proofCta: "View details",
       identityTitle: "Verify your identity",
       identityDescTemplate: "{label}. Verify once to unlock withdrawals.",
       identityCta: "Continue",
@@ -3222,7 +3222,7 @@ const EN: AccountCopy = {
     empty: {
       title: "No synced subscriptions yet",
       description:
-        "This can mean you have no active plan, or that the division has not published subscription records into the shared account ledger yet.",
+        "You don't have an active plan right now. If you subscribed to something and don't see it here, contact support.",
       ctaLabel: "Browse the marketplace",
       footnote:
         "Subscriptions are created by the division you buy from. When one syncs into your account, it appears here automatically.",
@@ -3315,7 +3315,7 @@ const EN: AccountCopy = {
         "After signup, the referral enters a {days}-day hold window. We track the referred account only once — self-referrals, duplicate households, and recycled signups do not qualify.",
       step3Title: "Rewards clear after qualification",
       step3Body:
-        "Qualified referrals credit {amount} to your Henry Onyx wallet after finance review. Pending rewards are not spendable until cleared.",
+        "Qualified referrals credit {amount} to your Henry Onyx wallet once reviewed. Pending rewards aren't spendable until cleared.",
     },
     policy: {
       eyebrow: "Referral Policy",
@@ -4618,7 +4618,7 @@ const FR: DeepPartial<AccountCopy> = {
     },
     signalsTitle: "Signaux",
     signalsMeta:
-      "Ce que nos moteurs de vérification et de scoring voient actuellement sur votre compte.",
+      "Un aperçu rapide des vérifications d’identité et de sécurité de votre compte en ce moment.",
     signalsAriaLabel: "Signaux de sécurité",
     guideTitle: "Où vous en êtes · ce qui vous fait avancer",
     guideMetaTemplate:
@@ -4686,7 +4686,7 @@ const FR: DeepPartial<AccountCopy> = {
       "Aucune restriction liée à la confiance ne bloque actuellement vos flux principaux.",
     recentActivity: "Activité de sécurité récente",
     recentActivityDescription:
-      "Les connexions, déconnexions, empreintes d’appareil et signaux d’accès suspects sont enregistrés ici afin que la continuité de session reste vérifiable avant l’arrivée d’un contrôle séparé par appareil.",
+      "Vos connexions, déconnexions et tout accès inhabituel récents sont listés ici afin que vous puissiez consulter l’activité de votre compte et vous déconnecter partout si quelque chose vous semble inhabituel.",
     emptyTitle: "Aucune activité de sécurité récente",
     emptyDescription:
       "Les connexions, fermetures de session, alertes et changements sensibles du compte apparaîtront ici.",
@@ -4734,7 +4734,7 @@ const FR: DeepPartial<AccountCopy> = {
     requirements: {
       verified: {
         verification:
-          "Terminez la vérification d’identité afin que les voies de confiance ne reposent plus sur des signaux de profil optimistes.",
+          "Terminez la vérification d’identité pour débloquer les actions soumises à la confiance sur Henry Onyx.",
         email: "Vérifiez votre adresse e-mail.",
         identity:
           "Terminez la vérification d’identité pour les flux vendeur, property, payout et finance sensible.",
@@ -4786,18 +4786,18 @@ const FR: DeepPartial<AccountCopy> = {
     description:
       "Cela déconnecte le compte actuel sur toutes les divisions et tous les appareils Henry Onyx, puis vous renvoie vers l’écran de connexion du compte.",
     note:
-      "L’activité récente des appareils et des sessions reste visible ci-dessous, même si la révocation appareil par appareil n’est pas encore exposée séparément.",
+      "Vous déconnecter partout met fin aux sessions de ce compte sur tous vos appareils. Vous pouvez consulter l’activité récente des appareils et des sessions ci-dessous.",
     unavailable:
       "Impossible de terminer toutes les sessions Henry Onyx pour le moment. Réessayez dans un instant.",
     ending: "Fin de toutes les sessions...",
     endAllSessions: "Déconnecter toutes les sessions Henry Onyx",
   },
   errorBoundary: {
-    kicker: "Exécution du compte",
+    kicker: "Une erreur est survenue",
     title:
-      "Cette surface du compte a rencontré une erreur de rendu ou côté client",
+      "Cette page ne s’est pas chargée correctement",
     description:
-      "L’échec a été capturé pour investigation. Rechargez cette vue et reprenez depuis le dernier état stable.",
+      "Vos données sont en sécurité. Rechargez pour continuer — et si le problème persiste, contactez le support.",
     reload: "Recharger cette vue",
     contactSupport: "Contacter le support",
   },
@@ -5140,7 +5140,7 @@ const FR: DeepPartial<AccountCopy> = {
         verifiedLabel: "Solde vérifié",
         verifiedFoot: "Utilisable dans tous les services Henry Onyx",
         pendingFundingLabel: "Approvisionnement en attente",
-        pendingFundingFoot: "Reste isolé jusqu’à confirmation par la finance",
+        pendingFundingFoot: "Reste isolé jusqu’à confirmation",
         pendingWithdrawalLabel: "Retenu pour retrait",
         pendingWithdrawalFoot: "Réservé jusqu’au paiement effectif",
       },
@@ -5160,7 +5160,7 @@ const FR: DeepPartial<AccountCopy> = {
     quickActions: {
       ariaLabel: "Actions rapides du portefeuille",
       addFundsLabel: "Ajouter des fonds",
-      addFundsDesc: "Virement bancaire avec preuve et confirmation immédiate.",
+      addFundsDesc: "Rechargez par carte, votre application bancaire ou USSD — confirmé automatiquement.",
       withdrawLabel: "Retirer",
       withdrawDesc: "Transférer le solde disponible vers un compte vérifié.",
       paymentsLabel: "Paiements",
@@ -5170,12 +5170,12 @@ const FR: DeepPartial<AccountCopy> = {
     },
     pendingOps: {
       fundingKicker: "Approvisionnement en attente",
-      fundingDescEmpty: "Les fonds que vous transférez restent ici jusqu’à confirmation de la référence bancaire par la finance.",
-      fundingDescSingular: "{count} demande en cours d’examen — la preuve fait avancer la file.",
-      fundingDescPlural: "{count} demandes en cours d’examen — la preuve fait avancer la file.",
+      fundingDescEmpty: "Les fonds que vous ajoutez restent ici jusqu’à confirmation du paiement.",
+      fundingDescSingular: "{count} demande en cours de confirmation.",
+      fundingDescPlural: "{count} demandes en cours de confirmation.",
       fundingCta: "Ouvrir la voie d’approvisionnement",
       withdrawalKicker: "Retraits en attente",
-      withdrawalDescEmpty: "Les retraits patientent ici pendant l’examen — votre solde disponible n’est jamais promis deux fois.",
+      withdrawalDescEmpty: "Les retraits sont conservés ici pendant leur examen, pour que votre solde disponible reste toujours exact.",
       withdrawalDescSingular: "{count} retrait en attente de paiement. Réservé sur votre solde disponible.",
       withdrawalDescPlural: "{count} retraits en attente de paiement. Réservés sur votre solde disponible.",
       withdrawalCta: "Ouvrir la voie de retrait",
@@ -5221,7 +5221,7 @@ const FR: DeepPartial<AccountCopy> = {
       fallbackTitle: "Transaction du portefeuille",
     },
     funding: {
-      proofUploaded: "Rail vérifié",
+      proofUploaded: "Paiement confirmé",
       awaitingProof: "Traitement",
       ariaLabelTemplate: "Demande d’approvisionnement {reference} de ₦{amount}",
     },
@@ -5528,7 +5528,7 @@ const FR: DeepPartial<AccountCopy> = {
         "Après inscription, le parrainage entre dans une fenêtre de blocage de {days} jours. Nous suivons le compte parrainé une seule fois — les auto-parrainages, doublons de foyer et inscriptions recyclées ne se qualifient pas.",
       step3Title: "Les récompenses se libèrent après qualification",
       step3Body:
-        "Les parrainages qualifiés créditent {amount} sur votre portefeuille Henry Onyx après contrôle financier. Les récompenses en attente ne sont pas dépensables avant validation.",
+        "Les parrainages qualifiés créditent {amount} sur votre portefeuille Henry Onyx après examen. Les récompenses en attente ne sont pas dépensables avant validation.",
     },
     policy: {
       eyebrow: "Politique de parrainage",
@@ -6864,7 +6864,7 @@ const DE: DeepPartial<AccountCopy> = {
     "currentRestrictions": "Derzeit eingeschränkte Aktionen",
     "noRestrictions": "Derzeit blockieren keine vertrauenswürdigen Einschränkungen die Arbeitsabläufe Ihres Kernkontos.",
     "recentActivity": "Aktuelle Sicherheitsaktivitäten",
-    "recentActivityDescription": "Anmeldungen, Abmeldungen, Gerätefingerabdrücke und verdächtige Zugriffssignale werden hier aufgezeichnet, sodass die Sitzungskontinuität auch vor der Auslieferung separater Sperrkontrollen pro Gerät überprüfbar bleibt.",
+    "recentActivityDescription": "Ihre letzten Anmeldungen, Abmeldungen und alle ungewöhnlichen Zugriffe sind hier aufgeführt, damit Sie Ihre Kontoaktivität prüfen und sich überall abmelden können, falls Ihnen etwas unbekannt vorkommt.",
     "emptyTitle": "Keine aktuellen Sicherheitsaktivitäten",
     "emptyDescription": "Hier werden Anmeldungen, Sitzungsschließungen, Warnungen und vertrauliche Kontoänderungen angezeigt.",
     "risk": "Risiko",
@@ -6894,7 +6894,7 @@ const DE: DeepPartial<AccountCopy> = {
     },
     "requirements": {
       "verified": {
-        "verification": "Vollständige Identitätsüberprüfung, damit sich vertrauensbasierte Lanes nicht mehr auf optimistische Profilsignale verlassen.",
+        "verification": "Schließen Sie die Identitätsprüfung ab, um vertrauensbasierte Aktionen bei Henry Onyx freizuschalten.",
         "email": "Bestätigen Sie Ihre E-Mail-Adresse.",
         "identity": "Vollständige Identitätsüberprüfung für Verkäufer-, Eigentums-, Auszahlungs- und finanzsensible Arbeitsabläufe.",
         "phone": "Fügen Sie eine verwendbare Telefonnummer hinzu.",
@@ -6932,15 +6932,15 @@ const DE: DeepPartial<AccountCopy> = {
   "globalSignOut": {
     "title": "Beenden Sie jede Henry Onyx-Sitzung",
     "description": "Dadurch wird das aktuelle Konto über Henry Onyx Abteilungen und Geräte hinweg abgemeldet und Sie kehren dann zur Konto-Anmeldeoberfläche zurück.",
-    "note": "Aktuelle Geräte- und Sitzungsaktivitäten bleiben unten sichtbar, auch wenn der Live-Widerruf pro Gerät noch nicht als separates Steuerelement angezeigt wird.",
+    "note": "Wenn Sie sich überall abmelden, werden die Sitzungen dieses Kontos auf allen Ihren Geräten beendet. Die letzten Geräte- und Sitzungsaktivitäten können Sie unten einsehen.",
     "unavailable": "Wir konnten derzeit nicht jede Henry Onyx-Sitzung beenden. Versuchen Sie es gleich noch einmal.",
     "ending": "Alle Sitzungen werden beendet...",
     "endAllSessions": "Melden Sie alle Henry Onyx Sitzungen ab"
   },
   "errorBoundary": {
-    "kicker": "Kontolaufzeit",
-    "title": "Bei dieser Kontooberfläche ist ein Client- oder Renderingfehler aufgetreten",
-    "description": "Der Fehler wurde zur Untersuchung erfasst. Laden Sie diese Oberfläche neu und fahren Sie mit dem letzten stabilen Zustand fort.",
+    "kicker": "Etwas ist schiefgelaufen",
+    "title": "Diese Seite wurde nicht korrekt geladen",
+    "description": "Ihre Daten sind sicher. Laden Sie die Seite neu, um fortzufahren — und wenn das Problem weiterhin auftritt, kontaktieren Sie den Support.",
     "reload": "Laden Sie diese Ansicht neu",
     "contactSupport": "Kontaktieren Sie den Support"
   },
@@ -7279,7 +7279,7 @@ const DE: DeepPartial<AccountCopy> = {
         verifiedLabel: "Verifizierter Saldo",
         verifiedFoot: "Übergreifend in Henry Onyx-Diensten nutzbar",
         pendingFundingLabel: "Ausstehende Einzahlung",
-        pendingFundingFoot: "Bleibt separat, bis Finance bestätigt",
+        pendingFundingFoot: "Bleibt separat, bis bestätigt",
         pendingWithdrawalLabel: "Für Auszahlung reserviert",
         pendingWithdrawalFoot: "Bis zur Auszahlung gesperrt",
       },
@@ -7299,7 +7299,7 @@ const DE: DeepPartial<AccountCopy> = {
     quickActions: {
       ariaLabel: "Schnellaktionen Wallet",
       addFundsLabel: "Geld einzahlen",
-      addFundsDesc: "Banküberweisung mit Beleg-Upload und sofortiger Bestätigung.",
+      addFundsDesc: "Aufladen per Karte, Banking-App oder USSD — automatisch bestätigt.",
       withdrawLabel: "Auszahlen",
       withdrawDesc: "Verfügbaren Saldo auf ein verifiziertes Bankkonto übertragen.",
       paymentsLabel: "Zahlungen",
@@ -7309,12 +7309,12 @@ const DE: DeepPartial<AccountCopy> = {
     },
     pendingOps: {
       fundingKicker: "Ausstehende Einzahlung",
-      fundingDescEmpty: "Eingezahlte Beträge bleiben hier, bis Finance die Bankreferenz bestätigt hat.",
-      fundingDescSingular: "{count} Anfrage in Prüfung — ein Beleg hält die Warteschlange in Bewegung.",
-      fundingDescPlural: "{count} Anfragen in Prüfung — Belege halten die Warteschlange in Bewegung.",
+      fundingDescEmpty: "Eingezahlte Beträge bleiben hier, bis die Zahlung bestätigt ist.",
+      fundingDescSingular: "{count} Anfrage wird noch bestätigt.",
+      fundingDescPlural: "{count} Anfragen werden noch bestätigt.",
       fundingCta: "Einzahlungsspur öffnen",
       withdrawalKicker: "Ausstehende Auszahlungen",
-      withdrawalDescEmpty: "Auszahlungen warten hier während der Finance-Prüfung — Ihr verfügbarer Saldo wird nie doppelt zugesagt.",
+      withdrawalDescEmpty: "Auszahlungen werden hier während der Prüfung gehalten, damit Ihr verfügbarer Saldo immer korrekt ist.",
       withdrawalDescSingular: "{count} Auszahlung wartet auf Auszahlung. Vom verfügbaren Saldo reserviert.",
       withdrawalDescPlural: "{count} Auszahlungen warten auf Auszahlung. Vom verfügbaren Saldo reserviert.",
       withdrawalCta: "Auszahlungsspur öffnen",
@@ -7360,7 +7360,7 @@ const DE: DeepPartial<AccountCopy> = {
       fallbackTitle: "Wallet-Transaktion",
     },
     funding: {
-      proofUploaded: "Rail verifiziert",
+      proofUploaded: "Zahlung bestätigt",
       awaitingProof: "Wird verarbeitet",
       ariaLabelTemplate: "Einzahlungsanfrage {reference} über ₦{amount}",
     },
@@ -7667,7 +7667,7 @@ const DE: DeepPartial<AccountCopy> = {
         "Nach der Anmeldung beginnt für die Empfehlung ein Sperrfenster von {days} Tagen. Das geworbene Konto wird nur einmal gezählt — Selbstempfehlungen, Haushaltsduplikate und wiederverwendete Anmeldungen qualifizieren nicht.",
       step3Title: "Prämien werden nach Qualifizierung freigegeben",
       step3Body:
-        "Qualifizierte Empfehlungen schreiben nach Finanzprüfung {amount} Ihrer Henry Onyx-Wallet gut. Ausstehende Prämien sind erst nach Freigabe ausgabefähig.",
+        "Qualifizierte Empfehlungen schreiben nach Prüfung {amount} Ihrer Henry Onyx-Wallet gut. Ausstehende Prämien sind erst nach Freigabe ausgabefähig.",
     },
     policy: {
       eyebrow: "Empfehlungsrichtlinie",
@@ -9003,7 +9003,7 @@ const IT: DeepPartial<AccountCopy> = {
     "currentRestrictions": "Azioni attualmente limitate",
     "noRestrictions": "Nessuna restrizione basata sulla fiducia sta attualmente bloccando i flussi di lavoro principali del tuo account.",
     "recentActivity": "Attività di sicurezza recente",
-    "recentActivityDescription": "Gli accessi, le disconnessioni, le impronte digitali del dispositivo e i segnali di accesso sospetto vengono registrati qui in modo che la continuità della sessione rimanga verificabile anche prima che vengano spediti controlli di revoca separati per dispositivo.",
+    "recentActivityDescription": "Qui trovi i tuoi accessi, le disconnessioni e qualsiasi accesso insolito recente, così puoi controllare l'attività del tuo account e disconnetterti ovunque se qualcosa non ti è familiare.",
     "emptyTitle": "Nessuna attività di sicurezza recente",
     "emptyDescription": "Qui verranno visualizzati gli accessi, le chiusure delle sessioni, gli avvisi e le modifiche sensibili dell'account.",
     "risk": "rischio",
@@ -9071,15 +9071,15 @@ const IT: DeepPartial<AccountCopy> = {
   "globalSignOut": {
     "title": "Termina ogni Henry Onyx sessione",
     "description": "In questo modo l'account corrente verrà disconnesso da tutte le divisioni e dispositivi Henry Onyx, quindi verrai riportato alla superficie di accesso dell'account.",
-    "note": "L'attività recente del dispositivo e della sessione rimane visibile di seguito anche se la revoca in tempo reale per dispositivo non è ancora esposta come controllo separato.",
+    "note": "Disconnettendoti ovunque terminerai le sessioni di questo account su tutti i tuoi dispositivi. Puoi controllare l'attività recente di dispositivi e sessioni qui sotto.",
     "unavailable": "Non è possibile terminare ogni sessione di Henry Onyx in questo momento. Riprova tra un attimo.",
     "ending": "Fine di tutte le sessioni...",
     "endAllSessions": "Esci da tutte le sessioni Henry Onyx"
   },
   "errorBoundary": {
-    "kicker": "Durata dell'account",
-    "title": "La superficie dell'account ha riscontrato un errore nel client o nel rendering",
-    "description": "Il guasto è stato catturato per le indagini. Ricarica questa superficie e continua dall'ultimo stato stabile.",
+    "kicker": "Qualcosa è andato storto",
+    "title": "Questa pagina non è stata caricata correttamente",
+    "description": "I tuoi dati sono al sicuro. Ricarica per continuare — e se il problema persiste, contatta l'assistenza.",
     "reload": "Ricarica questa visualizzazione",
     "contactSupport": "Contatta l'assistenza"
   },
@@ -9420,7 +9420,7 @@ const IT: DeepPartial<AccountCopy> = {
         verifiedLabel: "Saldo verificato",
         verifiedFoot: "Spendibile in tutti i servizi Henry Onyx",
         pendingFundingLabel: "Ricarica in attesa",
-        pendingFundingFoot: "Resta separata fino alla conferma di Finance",
+        pendingFundingFoot: "Resta separata fino alla conferma",
         pendingWithdrawalLabel: "Trattenuto per prelievo",
         pendingWithdrawalFoot: "Riservato fino al completamento del pagamento",
       },
@@ -9440,7 +9440,7 @@ const IT: DeepPartial<AccountCopy> = {
     quickActions: {
       ariaLabel: "Azioni rapide del portafoglio",
       addFundsLabel: "Aggiungi fondi",
-      addFundsDesc: "Bonifico con caricamento prova e conferma immediata.",
+      addFundsDesc: "Ricarica con carta, la tua app bancaria o USSD — confermato automaticamente.",
       withdrawLabel: "Preleva",
       withdrawDesc: "Sposta il saldo disponibile su un conto bancario verificato.",
       paymentsLabel: "Pagamenti",
@@ -9450,12 +9450,12 @@ const IT: DeepPartial<AccountCopy> = {
     },
     pendingOps: {
       fundingKicker: "Ricarica in attesa",
-      fundingDescEmpty: "I fondi che trasferisci restano qui finché Finance non conferma il riferimento bancario.",
-      fundingDescSingular: "{count} richiesta in revisione — la prova fa avanzare la coda.",
-      fundingDescPlural: "{count} richieste in revisione — la prova fa avanzare la coda.",
+      fundingDescEmpty: "I fondi che aggiungi restano qui finché il pagamento non viene confermato.",
+      fundingDescSingular: "{count} richiesta ancora in fase di conferma.",
+      fundingDescPlural: "{count} richieste ancora in fase di conferma.",
       fundingCta: "Apri corsia ricarica",
       withdrawalKicker: "Prelievi in attesa",
-      withdrawalDescEmpty: "I prelievi attendono qui durante la revisione di Finance — il tuo saldo disponibile non viene mai promesso due volte.",
+      withdrawalDescEmpty: "I prelievi restano qui durante la revisione, così il tuo saldo disponibile è sempre accurato.",
       withdrawalDescSingular: "{count} prelievo in attesa di pagamento. Riservato sul saldo disponibile.",
       withdrawalDescPlural: "{count} prelievi in attesa di pagamento. Riservati sul saldo disponibile.",
       withdrawalCta: "Apri corsia prelievo",
@@ -9501,7 +9501,7 @@ const IT: DeepPartial<AccountCopy> = {
       fallbackTitle: "Transazione del portafoglio",
     },
     funding: {
-      proofUploaded: "Rail verificato",
+      proofUploaded: "Pagamento confermato",
       awaitingProof: "In elaborazione",
       ariaLabelTemplate: "Richiesta di ricarica {reference} per ₦{amount}",
     },
@@ -9808,7 +9808,7 @@ const IT: DeepPartial<AccountCopy> = {
         "Dopo l’iscrizione, la referenza entra in una finestra di blocco di {days} giorni. Tracciamo l’account segnalato una sola volta — le auto-referenze, i duplicati di nucleo familiare e le iscrizioni riciclate non si qualificano.",
       step3Title: "I premi si sbloccano dopo la qualifica",
       step3Body:
-        "Le referenze qualificate accreditano {amount} sul tuo portafoglio Henry Onyx dopo la revisione finanziaria. I premi in sospeso non sono spendibili finché non vengono autorizzati.",
+        "Le referenze qualificate accreditano {amount} sul tuo portafoglio Henry Onyx dopo la revisione. I premi in sospeso non sono spendibili finché non vengono autorizzati.",
     },
     policy: {
       eyebrow: "Politica delle referenze",
@@ -11087,7 +11087,7 @@ const IG: DeepPartial<AccountCopy> = {
       },
     },
     signalsTitle: "Akara",
-    signalsMeta: "Ihe igwe nyocha na akara anyị na-ahụ n'akaụntụ gị ugbu a.",
+    signalsMeta: "A quick read on your account's verification and security checks right now.",
     signalsAriaLabel: "Akara nchedo",
     guideTitle: "Ebe ị nọ · ihe na-akwalite gị",
     guideMetaTemplate: "Ọnụ ọgụgụ eziokwu, ọ bụghị nke ahịa. {tier}.",
@@ -11145,7 +11145,7 @@ const IG: DeepPartial<AccountCopy> = {
     currentRestrictions: "Omume e gbochiri ugbu a",
     noRestrictions: "Ọ dịghị mmachi dabere na ntụkwasị obi na-egbochi ihe arụ ọrụ akaụntụ gị isi ugbu a.",
     recentActivity: "Omume Nchedo Ọgbọ Ọhụrụ",
-    recentActivityDescription: "A na-edebanye ịbanye, ịpụ, ihe nzacha ngwaọrụ, na ọkwa nnabata ndị na-atọ egwu ebe a ka ọganihu nnọkọ nọgide na-enwe ike inyocha.",
+    recentActivityDescription: "Your recent sign-ins, sign-outs, and any unusual access are listed here so you can review your account activity and sign out everywhere if something looks unfamiliar.",
     emptyTitle: "Ọ dịghị omume nchedo ọgbọ ọhụrụ",
     emptyDescription: "Ịbanye, nkwụsị nnọkọ, ịdọ aka ná ntị, na mgbanwe akaụntụ ndị dị nwayọọ ga-apụta ebe a.",
     risk: "ihe ize ndụ",
@@ -11175,7 +11175,7 @@ const IG: DeepPartial<AccountCopy> = {
     },
     requirements: {
       verified: {
-        verification: "Mezuo nyocha nnabata ka ụzọ dabere na ntụkwasị obi kwụsị ịdabere na ọkwa profaịlụ ndị na-atọ obi ụtọ.",
+        verification: "Complete identity verification to unlock trust-gated actions across Henry Onyx.",
         email: "Nyochaa adreesị email gị.",
         identity: "Mezuo nyocha nnabata maka onye ire ahịa, ụlọ, ọnụọgụ, na ihe arụ ọrụ ndị mmetụta ego.",
         phone: "Tinye nọmba ekwentị enwere ike iji.",
@@ -11213,15 +11213,15 @@ const IG: DeepPartial<AccountCopy> = {
   globalSignOut: {
     title: "Kwụsị nnọkọ Henry Onyx niile",
     description: "Nke a na-apụ akaụntụ ugbu a n'ịdị ìhè Henry Onyx niile na ngwaọrụ, wee laghachi gị n'ebe ịbanye akaụntụ.",
-    note: "Omume ngwaọrụ na nnọkọ ọgbọ ọhụrụ ka na-apụta n'okpuru n'agbanyeghị na a naweghị imepe nkwụsị ndị ọ bụ onye isi n'ngwaọrụ ọ bụla dị ka ihe njikwa dị iche.",
+    note: "Signing out everywhere ends this account's sessions on all your devices. You can review recent device and session activity below.",
     unavailable: "Enweghị ike ikwụsị nnọkọ Henry Onyx niile ugbu a. Nwalee ọzọ n'oge na-adịghị anya.",
     ending: "Na-akwụsị nnọkọ niile...",
     endAllSessions: "Pụọ n'nnọkọ Henry Onyx niile",
   },
   errorBoundary: {
-    kicker: "Oge arụmọrụ akaụntụ",
-    title: "Ebe a na-arụ ọrụ n'akaụntụ a nwetara nsogbu onye ahịa ma ọ bụ ntọpụta",
-    description: "A jidere ọdịda ahụ maka nyocha. Ọjọọ ebe a ma gaa n'ihu site na ọnọdụ kwụ ọtọ ikpeazụ.",
+    kicker: "Something went wrong",
+    title: "This page didn't load correctly",
+    description: "Your data is safe. Reload to continue — and if it keeps happening, contact support.",
     reload: "Ọjọọ nlele a",
     contactSupport: "Kpọọ nkwado",
   },
@@ -11564,7 +11564,7 @@ const IG: DeepPartial<AccountCopy> = {
         verifiedLabel: "Ego enyochara",
         verifiedFoot: "Enwere ike iji ya na ọrụ Henry Onyx niile",
         pendingFundingLabel: "Ego ana-eche",
-        pendingFundingFoot: "Ọ na-anọ iche ruo mgbe ego kwado",
+        pendingFundingFoot: "Sits separately until confirmed",
         pendingWithdrawalLabel: "Edebere maka mpụta",
         pendingWithdrawalFoot: "Edebere ruo mgbe ịkwụ ụgwọ zuru",
       },
@@ -11584,7 +11584,7 @@ const IG: DeepPartial<AccountCopy> = {
     quickActions: {
       ariaLabel: "Omume ngwa ngwa obere akpa ego",
       addFundsLabel: "Tinye ego",
-      addFundsDesc: "Mbufe ụlọ akụ na nbulite ihe akaebe na nkwado ozugbo.",
+      addFundsDesc: "Top up by card, your bank app, or USSD — confirmed automatically.",
       withdrawLabel: "Wepụ",
       withdrawDesc: "Bufee ego dị nri n'akaụntụ ụlọ akụ enyochara.",
       paymentsLabel: "Ịkwụ ụgwọ",
@@ -11594,12 +11594,12 @@ const IG: DeepPartial<AccountCopy> = {
     },
     pendingOps: {
       fundingKicker: "Ego ana-eche",
-      fundingDescEmpty: "Ego ị tinyere na-anọ ebe a ruo mgbe ego nyochara ntụaka ụlọ akụ.",
-      fundingDescSingular: "{count} arịrịọ nọ na nyocha — ihe akaebe na-eme ka kwụụ na-aga n'ihu.",
-      fundingDescPlural: "{count} arịrịọ nọ na nyocha — ihe akaebe na-eme ka kwụụ na-aga n'ihu.",
+      fundingDescEmpty: "Funds you add stay here until the payment is confirmed.",
+      fundingDescSingular: "{count} request still being confirmed.",
+      fundingDescPlural: "{count} requests still being confirmed.",
       fundingCta: "Mepee ụzọ itinye ego",
       withdrawalKicker: "Mpụta ana-eche",
-      withdrawalDescEmpty: "Mpụta na-eche ebe a mgbe ego na-eme nyocha — ego gị dị nri anaghị ekwe nkwa ugboro abụọ.",
+      withdrawalDescEmpty: "Withdrawals are held here while they're reviewed, so your available balance is always accurate.",
       withdrawalDescSingular: "{count} mpụta na-eche ịkwụ ụgwọ. Edebere site na ego gị dị nri.",
       withdrawalDescPlural: "{count} mpụta na-eche ịkwụ ụgwọ. Edebere site na ego gị dị nri.",
       withdrawalCta: "Mepee ụzọ mpụta",
@@ -11645,7 +11645,7 @@ const IG: DeepPartial<AccountCopy> = {
       fallbackTitle: "Azụmahịa obere akpa ego",
     },
     funding: {
-      proofUploaded: "Rail enyochala",
+      proofUploaded: "Payment confirmed",
       awaitingProof: "Na-arụ ọrụ",
       ariaLabelTemplate: "Arịrịọ itinye ego {reference} maka ₦{amount}",
     },
@@ -11952,7 +11952,7 @@ const IG: DeepPartial<AccountCopy> = {
         "Mgbe ha debanyere aha, nzipu ahụ na-abanye n'ime windo njide nke ụbọchị {days}. Anyị na-eso akaụntụ a kpọrọ naanị otu ugboro — nzipu onwe, ndị ezinụlọ ndabara, na ndebanye aha emejiri arụghị ọrụ ruo eru.",
       step3Title: "Ụgwọ ọrụ na-edebanye mgbe ọ ruru eru",
       step3Body:
-        "Nzipu ndị ruru eru na-akwụnye {amount} na obere akpa Henry Onyx gị mgbe nyochaa ego. Ụgwọ ọrụ na-eche enweghị ike imefu tutu eweputara.",
+        "Qualified referrals credit {amount} to your Henry Onyx wallet once reviewed. Pending rewards aren't spendable until cleared.",
     },
     policy: {
       eyebrow: "Iwu Nzipu",
@@ -13230,7 +13230,7 @@ const YO: DeepPartial<AccountCopy> = {
       },
     },
     signalsTitle: "Àmì",
-    signalsMeta: "Ohun tí àwọn ẹrọ ìjẹ́rìí àti ìmọ̀ wa rí lórí akọọlẹ rẹ lọ́wọ́lọ́wọ́.",
+    signalsMeta: "A quick read on your account's verification and security checks right now.",
     signalsAriaLabel: "Àwọn àmì aabo",
     guideTitle: "Ibi tí o wà · ohun tó ń tì ọ́ síwájú",
     guideMetaTemplate: "Ikun olótítọ́, kì í ṣe nọ́mbà títà. {tier}.",
@@ -13288,7 +13288,7 @@ const YO: DeepPartial<AccountCopy> = {
     currentRestrictions: "Awọn iṣe ti ni ihamọ lọwọlọwọ",
     noRestrictions: "Ko si awọn ihamọ ti o da lori igbẹkẹle ti n dina awọn ṣiṣẹ akọọlẹ akọkọ rẹ lọwọlọwọ.",
     recentActivity: "Iṣẹ Aabo Aipẹ",
-    recentActivityDescription: "Awọn iwọle, iwọde, awọn itẹwe ika ẹrọ, ati awọn ami iraye si ifura ni a gbasilẹ nibi ki itesiwaju igba naa wa ni atunyẹwo.",
+    recentActivityDescription: "Your recent sign-ins, sign-outs, and any unusual access are listed here so you can review your account activity and sign out everywhere if something looks unfamiliar.",
     emptyTitle: "Ko si iṣẹ aabo aipẹ",
     emptyDescription: "Awọn iwọle, pipade igba, awọn itaniji, ati awọn iyipada akọọlẹ ifura yoo han nibi.",
     risk: "ewu",
@@ -13318,7 +13318,7 @@ const YO: DeepPartial<AccountCopy> = {
     },
     requirements: {
       verified: {
-        verification: "Pari ijẹrisi idanimo ki awọn ọna ti o da lori igbẹkẹle ki o dẹkun gbigbekele awọn ami profaili ireti.",
+        verification: "Complete identity verification to unlock trust-gated actions across Henry Onyx.",
         email: "Jẹrisi adirẹsi imeeli rẹ.",
         identity: "Pari ijẹrisi idanimo fun olutaja, ohun-ini, isanwo, ati awọn ṣiṣẹ ifura owo.",
         phone: "Fi nọmba foonu ti o le lo kun.",
@@ -13356,15 +13356,15 @@ const YO: DeepPartial<AccountCopy> = {
   globalSignOut: {
     title: "Pari gbogbo igba Henry Onyx",
     description: "Eyi fọwọsi akọọlẹ lọwọlọwọ jade kọja awọn ẹka ati ẹrọ Henry Onyx, lẹhinna pada si dada iwọle akọọlẹ.",
-    note: "Iṣẹ ẹrọ ati igba aipẹ wa han ni isalẹ botilẹjẹpe ipadabọ ẹrọ kọọkan laaye ko ti han bi iṣakoso ọtọ.",
+    note: "Signing out everywhere ends this account's sessions on all your devices. You can review recent device and session activity below.",
     unavailable: "A ko le pari gbogbo igba Henry Onyx ni bayi. Tún gbiyanju ni iṣẹju kan.",
     ending: "Ipari gbogbo awọn igba...",
     endAllSessions: "Jade kuro ninu gbogbo awọn igba Henry Onyx",
   },
   errorBoundary: {
-    kicker: "Akoko ṣiṣẹ akọọlẹ",
-    title: "Dada akọọlẹ yii lu aṣiṣe alabara tabi fifun",
-    description: "Ikuna ti gba fun iwadii. Ṣe atunbẹrẹ dada yii ki o tẹsiwaju lati ipo iduroṣinṣin ikẹhin.",
+    kicker: "Something went wrong",
+    title: "This page didn't load correctly",
+    description: "Your data is safe. Reload to continue — and if it keeps happening, contact support.",
     reload: "Tun ṣe agbele iwo yii",
     contactSupport: "Kan si atilẹyin",
   },
@@ -13707,7 +13707,7 @@ const YO: DeepPartial<AccountCopy> = {
         verifiedLabel: "Iwọntunwọnsi tí a ti jẹrisi",
         verifiedFoot: "Lè lò ní gbogbo ọrọ̀ iṣẹ́ Henry Onyx",
         pendingFundingLabel: "Ìfowóran tí ó dúró",
-        pendingFundingFoot: "Ó dúró sípá títí ìṣúná-ìnáwó yóò fi jẹrisi",
+        pendingFundingFoot: "Sits separately until confirmed",
         pendingWithdrawalLabel: "A pamọ́ fún yíyọ kúrò",
         pendingWithdrawalFoot: "A pamọ́ títí ìsanwó yóò fi parí",
       },
@@ -13727,7 +13727,7 @@ const YO: DeepPartial<AccountCopy> = {
     quickActions: {
       ariaLabel: "Ìṣe yara àpamọ́wọ́",
       addFundsLabel: "Fi owó kún",
-      addFundsDesc: "Gbígbé owó báńkì pẹ̀lú ẹ̀rí àti ìjẹ́risí lẹ́sẹ̀kẹsẹ̀.",
+      addFundsDesc: "Top up by card, your bank app, or USSD — confirmed automatically.",
       withdrawLabel: "Yọ owó kúrò",
       withdrawDesc: "Gbé iwọntunwọnsi tó wà lọ sí àkáǹtì báńkì tí a ti jẹrisi.",
       paymentsLabel: "Ìsanwó",
@@ -13737,12 +13737,12 @@ const YO: DeepPartial<AccountCopy> = {
     },
     pendingOps: {
       fundingKicker: "Ìfowóran tí ó dúró",
-      fundingDescEmpty: "Owó tí o gbé wá á dúró níbí títí ìṣúná-ìnáwó yóò fi jẹrisi ìtọ́ka báńkì.",
-      fundingDescSingular: "{count} ìbéèrè nínú àyẹ̀wò — ẹ̀rí ń jẹ́ kí ìlà náà tẹ̀síwájú.",
-      fundingDescPlural: "{count} ìbéèrè nínú àyẹ̀wò — ẹ̀rí ń jẹ́ kí ìlà náà tẹ̀síwájú.",
+      fundingDescEmpty: "Funds you add stay here until the payment is confirmed.",
+      fundingDescSingular: "{count} request still being confirmed.",
+      fundingDescPlural: "{count} requests still being confirmed.",
       fundingCta: "Ṣí ìlà ìfowóran",
       withdrawalKicker: "Yíyọ kúrò tó dúró",
-      withdrawalDescEmpty: "Yíyọ kúrò ń dúró níbí lákòókò àyẹ̀wò — iwọntunwọnsi rẹ tó wà kò ní fẹjọ́n méjì.",
+      withdrawalDescEmpty: "Withdrawals are held here while they're reviewed, so your available balance is always accurate.",
       withdrawalDescSingular: "{count} yíyọ kúrò tó ń dúró ìsanwó. A pamọ́ ní iwọntunwọnsi tó wà.",
       withdrawalDescPlural: "{count} yíyọ kúrò tó ń dúró ìsanwó. A pamọ́ ní iwọntunwọnsi tó wà.",
       withdrawalCta: "Ṣí ìlà yíyọ kúrò",
@@ -13788,7 +13788,7 @@ const YO: DeepPartial<AccountCopy> = {
       fallbackTitle: "Owó-iṣẹ́ àpamọ́wọ́",
     },
     funding: {
-      proofUploaded: "Rail ti jẹrisi",
+      proofUploaded: "Payment confirmed",
       awaitingProof: "Ń ṣiṣẹ́",
       ariaLabelTemplate: "Ìbéèrè ìfowóran {reference} fún ₦{amount}",
     },
@@ -14095,7 +14095,7 @@ const YO: DeepPartial<AccountCopy> = {
         "Lẹ́yìn ìforúkọsílẹ̀, ìfilọ̀ náà yóò wọnú àkókò ìpamọ́ ọjọ́ {days}. À ń tọ́jú ìbáṣepọ̀ ẹni tí a fi ránṣẹ́ sí lẹ́ẹ̀kanṣoṣo — ìfilọ̀ ara-ẹni, ẹbí olùpíbarbar, àti àwọn ìforúkọsílẹ̀ tí a yí padà kò tó.",
       step3Title: "Ẹ̀san yóò gba wọlé lẹ́yìn ìjẹrísí",
       step3Body:
-        "Ìfilọ̀ tí ó dára yóò fi {amount} sí àpamọ́wọ́ Henry Onyx rẹ lẹ́yìn àyẹ̀wò ètò ìnáwó. Ẹ̀san dídúró kò ṣeé ná àyàfi tí a bá tu sílẹ̀.",
+        "Qualified referrals credit {amount} to your Henry Onyx wallet once reviewed. Pending rewards aren't spendable until cleared.",
     },
     policy: {
       eyebrow: "Òfin Ìfilọ̀",
@@ -15373,7 +15373,7 @@ const HA: DeepPartial<AccountCopy> = {
       },
     },
     signalsTitle: "Alamomi",
-    signalsMeta: "Abin da injinan tabbatarwa da makin namu ke gani a asusunka a yanzu.",
+    signalsMeta: "A quick read on your account's verification and security checks right now.",
     signalsAriaLabel: "Alamomin tsaro",
     guideTitle: "Inda kake · abin da ke ci gaba da kai gaba",
     guideMetaTemplate: "Makin gaskiya, ba lambar talla ba. {tier}.",
@@ -15431,7 +15431,7 @@ const HA: DeepPartial<AccountCopy> = {
     currentRestrictions: "Ayyuka da aka iyakance a halin yanzu",
     noRestrictions: "Babu iyakance bisa amana da ke toshe workflows na asusun ku na asali a halin yanzu.",
     recentActivity: "Ayyukan Tsaro na Kwanan Nan",
-    recentActivityDescription: "Shigowa, fita, yatsan rantsuwar na'ura, da siginar samun damar da ake zargi ana yin rikodin su a nan don ci gaban zama ya kasance mai iya dubawa.",
+    recentActivityDescription: "Your recent sign-ins, sign-outs, and any unusual access are listed here so you can review your account activity and sign out everywhere if something looks unfamiliar.",
     emptyTitle: "Babu ayyukan tsaro na kwanan nan",
     emptyDescription: "Shigowa, rufe zama, faɗakarwa, da canje-canjen asusun masu kima za su bayyana a nan.",
     risk: "haɗari",
@@ -15461,7 +15461,7 @@ const HA: DeepPartial<AccountCopy> = {
     },
     requirements: {
       verified: {
-        verification: "Kammala tabbatarwar shaida don tashohin da suka danganci amana su daina dogaro da siginar bayanan martaba masu kyakkyawar fata.",
+        verification: "Complete identity verification to unlock trust-gated actions across Henry Onyx.",
         email: "Tabbatar da adireshin imel ɗinku.",
         identity: "Cikakken tabbatarwar shaida don mai siyarwa, dukiya, biya, da workflows masu mahimmanci na kuɗi.",
         phone: "Ƙara lambar waya mai amfani.",
@@ -15499,15 +15499,15 @@ const HA: DeepPartial<AccountCopy> = {
   globalSignOut: {
     title: "Ƙare kowane zaman Henry Onyx",
     description: "Wannan yana fitar da asusun yanzu a duk sassan Henry Onyx da na'urorin, sannan ya mayar da ku zuwa ɓangaren shiga asusun.",
-    note: "Ayyukan na'ura da zama na kwanan nan suna bayyane a ƙasa ko da an fitar da sarrafa guda ɗaya ta kowane na'ura tukuna.",
+    note: "Signing out everywhere ends this account's sessions on all your devices. You can review recent device and session activity below.",
     unavailable: "Ba za mu iya ƙare kowane zaman Henry Onyx yanzu ba. Da fatan za a sake gwadawa nan ba da jimawa ba.",
     ending: "Ana ƙarewa duk zaman...",
     endAllSessions: "Fita daga duk zaman Henry Onyx",
   },
   errorBoundary: {
-    kicker: "Lokacin aiki na asusun",
-    title: "Wannan ɓangaren asusun ya sami kuskuren abokin ciniki ko bayyanawa",
-    description: "An kama gazawa don bincike. Sake loda wannan ɓangaren ku ci gaba daga yanayin da ya kwanta na ƙarshe.",
+    kicker: "Something went wrong",
+    title: "This page didn't load correctly",
+    description: "Your data is safe. Reload to continue — and if it keeps happening, contact support.",
     reload: "Sake loda wannan ra'ayi",
     contactSupport: "Tuntuɓi tallafi",
   },
@@ -15850,7 +15850,7 @@ const HA: DeepPartial<AccountCopy> = {
         verifiedLabel: "Ma'aunin da aka tabbatar",
         verifiedFoot: "Ana iya amfani da shi a duk ayyukan Henry Onyx",
         pendingFundingLabel: "Kuɗin shigarwa da yake jiran",
-        pendingFundingFoot: "Yana zama keɓe har sai sashin kuɗi ya tabbatar",
+        pendingFundingFoot: "Sits separately until confirmed",
         pendingWithdrawalLabel: "An riƙe don cirewa",
         pendingWithdrawalFoot: "An ajiye har sai biyan kuɗi ya kammala",
       },
@@ -15870,7 +15870,7 @@ const HA: DeepPartial<AccountCopy> = {
     quickActions: {
       ariaLabel: "Ayyuka masu sauri na walat",
       addFundsLabel: "Ƙara kuɗi",
-      addFundsDesc: "Canja-wuri ta banki tare da lodi shaida da tabbatar da nan take.",
+      addFundsDesc: "Top up by card, your bank app, or USSD — confirmed automatically.",
       withdrawLabel: "Cire kuɗi",
       withdrawDesc: "Motsa ma'aunin da yake samuwa zuwa asusun banki da aka tabbatar.",
       paymentsLabel: "Biyan kuɗi",
@@ -15880,12 +15880,12 @@ const HA: DeepPartial<AccountCopy> = {
     },
     pendingOps: {
       fundingKicker: "Kuɗin shigarwa da yake jiran",
-      fundingDescEmpty: "Kuɗin da ka tura ya rage nan har sai sashin kuɗi ya tabbatar da bayanan banki.",
-      fundingDescSingular: "{count} buƙata cikin bita — shaida tana sa layi ya gudana.",
-      fundingDescPlural: "{count} buƙatu cikin bita — shaida tana sa layi ya gudana.",
+      fundingDescEmpty: "Funds you add stay here until the payment is confirmed.",
+      fundingDescSingular: "{count} request still being confirmed.",
+      fundingDescPlural: "{count} requests still being confirmed.",
       fundingCta: "Buɗe layin shigar da kuɗi",
       withdrawalKicker: "Cirewa da ke jira",
-      withdrawalDescEmpty: "Cirewa suna jira nan yayin bitar — ma'aunin da yake samuwa ba a ƙaddamar da shi sau biyu ba.",
+      withdrawalDescEmpty: "Withdrawals are held here while they're reviewed, so your available balance is always accurate.",
       withdrawalDescSingular: "{count} cirewa da ke jiran biyan kuɗi. An ajiye daga ma'aunin da yake samuwa.",
       withdrawalDescPlural: "{count} cirewa da ke jiran biyan kuɗi. An ajiye daga ma'aunin da yake samuwa.",
       withdrawalCta: "Buɗe layin cirewa",
@@ -15931,7 +15931,7 @@ const HA: DeepPartial<AccountCopy> = {
       fallbackTitle: "Cinikayyar walat",
     },
     funding: {
-      proofUploaded: "An tabbatar da rail",
+      proofUploaded: "Payment confirmed",
       awaitingProof: "Ana sarrafawa",
       ariaLabelTemplate: "Buƙatar shigar da kuɗi {reference} don ₦{amount}",
     },
@@ -16238,7 +16238,7 @@ const HA: DeepPartial<AccountCopy> = {
         "Bayan rajista, turawar tana shiga cikin tagar riƙe na kwanaki {days}. Muna bin diddigin asusun da aka tura sau ɗaya kawai — tura kai, kwafin gida, da sake rajistar da aka sake amfani ba su cancanta ba.",
       step3Title: "Lada na fitowa bayan cancanta",
       step3Body:
-        "Turawar da ta cancanta tana ɗora {amount} a walat ɗin Henry Onyx ka bayan nazarin kuɗi. Ladan da ke tafe ba a iya kashe shi har sai an tabbatar da shi.",
+        "Qualified referrals credit {amount} to your Henry Onyx wallet once reviewed. Pending rewards aren't spendable until cleared.",
     },
     policy: {
       eyebrow: "Manufar Tura",
@@ -17515,7 +17515,7 @@ const ZH: DeepPartial<AccountCopy> = {
       },
     },
     signalsTitle: "信号",
-    signalsMeta: "我们的验证和评分引擎目前在您账户上看到的内容。",
+    signalsMeta: "快速了解您账户当前的验证和安全检查情况。",
     signalsAriaLabel: "安全信号",
     guideTitle: "您的位置 · 下一步推进",
     guideMetaTemplate: "诚实评分，不是营销数字。{tier}。",
@@ -17573,7 +17573,7 @@ const ZH: DeepPartial<AccountCopy> = {
     currentRestrictions: "当前受限操作",
     noRestrictions: "目前没有基于信任的限制阻止您的核心账户工作流程。",
     recentActivity: "近期安全活动",
-    recentActivityDescription: "登录、退出、设备指纹和可疑访问信号记录在此，以便在单独的每设备撤销控件发布之前，会话连续性仍可审查。",
+    recentActivityDescription: "此处列出您近期的登录、退出以及任何异常访问，方便您查看账户活动，若发现不熟悉的情况可随时在所有设备上退出登录。",
     emptyTitle: "没有近期安全活动",
     emptyDescription: "登录、会话关闭、警报和敏感账户更改将显示在此处。",
     risk: "风险",
@@ -17603,7 +17603,7 @@ const ZH: DeepPartial<AccountCopy> = {
     },
     requirements: {
       verified: {
-        verification: "完成身份验证，以便基于信任的通道不再依赖乐观的档案信号。",
+        verification: "完成身份验证，即可解锁 Henry Onyx 上需要信任的操作。",
         email: "验证您的电子邮件地址。",
         identity: "完成卖家、房产、付款和财务敏感工作流程的身份验证。",
         phone: "添加可用的电话号码。",
@@ -17641,15 +17641,15 @@ const ZH: DeepPartial<AccountCopy> = {
   globalSignOut: {
     title: "结束所有 Henry Onyx 会话",
     description: "这将在所有 Henry Onyx 部门和设备上注销当前账户，然后将您返回到账户登录界面。",
-    note: "近期设备和会话活动仍然在下方可见，尽管实时按设备撤销尚未作为单独控件公开。",
+    note: "在所有设备上退出登录将结束此账户在您所有设备上的会话。您可以在下方查看近期的设备和会话活动。",
     unavailable: "我们目前无法结束所有 Henry Onyx 会话。请稍后重试。",
     ending: "正在结束所有会话...",
     endAllSessions: "退出所有 Henry Onyx 会话",
   },
   errorBoundary: {
-    kicker: "账户运行时",
-    title: "此账户界面遇到客户端或渲染故障",
-    description: "故障已被捕获以供调查。请重新加载此界面并从最后稳定状态继续。",
+    kicker: "出了点问题",
+    title: "此页面未能正确加载",
+    description: "您的数据是安全的。请重新加载以继续——如果问题持续出现，请联系支持。",
     reload: "重新加载此视图",
     contactSupport: "联系支持",
   },
@@ -17991,7 +17991,7 @@ const ZH: DeepPartial<AccountCopy> = {
         verifiedLabel: "已核实余额",
         verifiedFoot: "可在所有 Henry Onyx 服务中使用",
         pendingFundingLabel: "待入账",
-        pendingFundingFoot: "在财务确认前单独保留",
+        pendingFundingFoot: "确认前单独保留",
         pendingWithdrawalLabel: "已为提现保留",
         pendingWithdrawalFoot: "在到账完成前保留",
       },
@@ -18011,7 +18011,7 @@ const ZH: DeepPartial<AccountCopy> = {
     quickActions: {
       ariaLabel: "钱包快捷操作",
       addFundsLabel: "充值",
-      addFundsDesc: "银行转账,凭证上传,即时确认。",
+      addFundsDesc: "通过银行卡、银行 App 或 USSD 充值——自动确认。",
       withdrawLabel: "提现",
       withdrawDesc: "将可用余额转入已核实银行账户。",
       paymentsLabel: "付款",
@@ -18021,12 +18021,12 @@ const ZH: DeepPartial<AccountCopy> = {
     },
     pendingOps: {
       fundingKicker: "待入账",
-      fundingDescEmpty: "您转入的资金会保留在此,直到财务确认银行参考号。",
-      fundingDescSingular: "{count} 项申请审核中——凭证可推动队列前进。",
-      fundingDescPlural: "{count} 项申请审核中——凭证可推动队列前进。",
+      fundingDescEmpty: "您添加的资金会保留在此,直到付款确认。",
+      fundingDescSingular: "{count} 项申请仍在确认中。",
+      fundingDescPlural: "{count} 项申请仍在确认中。",
       fundingCta: "打开充值通道",
       withdrawalKicker: "待提现",
-      withdrawalDescEmpty: "提现在财务审核期间在此排队——您的可用余额绝不会被重复承诺。",
+      withdrawalDescEmpty: "提现在审核期间保留在此,因此您的可用余额始终准确。",
       withdrawalDescSingular: "{count} 项提现等待到账。已从可用余额中保留。",
       withdrawalDescPlural: "{count} 项提现等待到账。已从可用余额中保留。",
       withdrawalCta: "打开提现通道",
@@ -18072,7 +18072,7 @@ const ZH: DeepPartial<AccountCopy> = {
       fallbackTitle: "钱包交易",
     },
     funding: {
-      proofUploaded: "通道已验证",
+      proofUploaded: "付款已确认",
       awaitingProof: "处理中",
       ariaLabelTemplate: "充值申请 {reference} 金额 ₦{amount}",
     },
@@ -18368,7 +18368,7 @@ const ZH: DeepPartial<AccountCopy> = {
       step2Body:
         "注册后,该推荐进入 {days} 天保留期。我们仅追踪被推荐帐户一次——自我推荐、家庭重复和重复注册均不符合资格。",
       step3Title: "合格后奖励到账",
-      step3Body: "合格推荐在财务审核后将 {amount} 记入您的 Henry Onyx 钱包。待处理奖励在审核前不可支出。",
+      step3Body: "合格推荐经审核后将 {amount} 记入您的 Henry Onyx 钱包。待处理奖励在结算前不可支出。",
     },
     policy: {
       eyebrow: "推荐政策",
@@ -19637,7 +19637,7 @@ const HI: DeepPartial<AccountCopy> = {
       },
     },
     signalsTitle: "संकेत",
-    signalsMeta: "हमारे सत्यापन और स्कोरिंग इंजन इस समय आपके खाते पर क्या देख रहे हैं।",
+    signalsMeta: "आपके खाते की सत्यापन और सुरक्षा जांच का इस समय एक त्वरित अवलोकन।",
     signalsAriaLabel: "सुरक्षा संकेत",
     guideTitle: "आप कहाँ हैं · आगे क्या ले जाता है",
     guideMetaTemplate: "ईमानदार स्कोरिंग, कोई मार्केटिंग संख्या नहीं। {tier}।",
@@ -19695,7 +19695,7 @@ const HI: DeepPartial<AccountCopy> = {
     currentRestrictions: "वर्तमान में प्रतिबंधित क्रियाएं",
     noRestrictions: "वर्तमान में कोई विश्वास-आधारित प्रतिबंध नहीं हैं जो आपके मुख्य खाते के वर्कफ़्लो को अवरुद्ध कर रहे हों।",
     recentActivity: "हाल की सुरक्षा गतिविधि",
-    recentActivityDescription: "साइन-इन, साइन-आउट, डिवाइस फिंगरप्रिंट और संदिग्ध एक्सेस सिग्नल यहां दर्ज किए जाते हैं ताकि सत्र निरंतरता समीक्षा योग्य रहे।",
+    recentActivityDescription: "आपके हाल के साइन-इन, साइन-आउट और कोई भी असामान्य एक्सेस यहाँ सूचीबद्ध हैं ताकि आप अपने खाते की गतिविधि देख सकें और कुछ अपरिचित लगने पर हर जगह से साइन आउट कर सकें।",
     emptyTitle: "कोई हाल की सुरक्षा गतिविधि नहीं",
     emptyDescription: "साइन-इन, सत्र बंद होना, अलर्ट और संवेदनशील खाता बदलाव यहां दिखाई देंगे।",
     risk: "जोखिम",
@@ -19725,7 +19725,7 @@ const HI: DeepPartial<AccountCopy> = {
     },
     requirements: {
       verified: {
-        verification: "पहचान सत्यापन पूरा करें ताकि विश्वास-आधारित लेन आशावादी प्रोफाइल संकेतों पर निर्भर करना बंद कर दें।",
+        verification: "Henry Onyx पर विश्वास-आधारित क्रियाओं को अनलॉक करने के लिए पहचान सत्यापन पूरा करें।",
         email: "अपना ईमेल पता सत्यापित करें।",
         identity: "विक्रेता, संपत्ति, भुगतान और वित्त-संवेदनशील वर्कफ़्लो के लिए पहचान सत्यापन पूरा करें।",
         phone: "एक उपयोग योग्य फोन नंबर जोड़ें।",
@@ -19763,15 +19763,15 @@ const HI: DeepPartial<AccountCopy> = {
   globalSignOut: {
     title: "सभी Henry Onyx सत्र समाप्त करें",
     description: "यह वर्तमान खाते को सभी Henry Onyx डिवीजनों और उपकरणों पर साइन आउट करता है, फिर आपको खाता लॉगिन सतह पर वापस करता है।",
-    note: "हाल की डिवाइस और सत्र गतिविधि नीचे दिखती रहती है, हालांकि लाइव प्रति-डिवाइस रद्दीकरण अभी तक एक अलग नियंत्रण के रूप में उजागर नहीं किया गया है।",
+    note: "हर जगह से साइन आउट करने पर सभी डिवाइस पर इस खाते के सत्र समाप्त हो जाते हैं। आप नीचे हाल की डिवाइस और सत्र गतिविधि देख सकते हैं।",
     unavailable: "हम अभी सभी Henry Onyx सत्र समाप्त नहीं कर सके। कुछ देर बाद पुनः प्रयास करें।",
     ending: "सभी सत्र समाप्त हो रहे हैं...",
     endAllSessions: "सभी Henry Onyx सत्रों से साइन आउट करें",
   },
   errorBoundary: {
-    kicker: "खाता रनटाइम",
-    title: "इस खाता सतह पर क्लाइंट या रेंडरिंग दोष आया",
-    description: "विफलता को जांच के लिए कैप्चर किया गया है। इस सतह को पुनः लोड करें और अंतिम स्थिर स्थिति से जारी रखें।",
+    kicker: "कुछ गड़बड़ हो गई",
+    title: "यह पेज सही ढंग से लोड नहीं हुआ",
+    description: "आपका डेटा सुरक्षित है। जारी रखने के लिए पुनः लोड करें — और अगर यह बार-बार हो, तो सहायता से संपर्क करें।",
     reload: "इस दृश्य को पुनः लोड करें",
     contactSupport: "सहायता से संपर्क करें",
   },
@@ -20114,7 +20114,7 @@ const HI: DeepPartial<AccountCopy> = {
         verifiedLabel: "सत्यापित शेष",
         verifiedFoot: "सभी Henry Onyx सेवाओं में खर्च योग्य",
         pendingFundingLabel: "लंबित जमा",
-        pendingFundingFoot: "वित्त की पुष्टि तक अलग रखा गया",
+        pendingFundingFoot: "पुष्टि होने तक अलग रखा गया",
         pendingWithdrawalLabel: "निकासी के लिए होल्ड",
         pendingWithdrawalFoot: "भुगतान पूरा होने तक आरक्षित",
       },
@@ -20134,7 +20134,7 @@ const HI: DeepPartial<AccountCopy> = {
     quickActions: {
       ariaLabel: "वॉलेट त्वरित क्रियाएँ",
       addFundsLabel: "धन जोड़ें",
-      addFundsDesc: "प्रमाण अपलोड और तत्काल पुष्टि के साथ बैंक स्थानांतरण।",
+      addFundsDesc: "कार्ड, अपने बैंक ऐप या USSD से टॉप-अप करें — अपने आप पुष्टि हो जाती है।",
       withdrawLabel: "निकालें",
       withdrawDesc: "उपलब्ध शेष को सत्यापित बैंक खाते में स्थानांतरित करें।",
       paymentsLabel: "भुगतान",
@@ -20144,12 +20144,12 @@ const HI: DeepPartial<AccountCopy> = {
     },
     pendingOps: {
       fundingKicker: "लंबित जमा",
-      fundingDescEmpty: "आपके भेजे गए फ़ंड यहीं रहते हैं जब तक वित्त बैंक संदर्भ की पुष्टि नहीं कर देता।",
-      fundingDescSingular: "{count} अनुरोध समीक्षा में — प्रमाण कतार को आगे बढ़ाता है।",
-      fundingDescPlural: "{count} अनुरोध समीक्षा में — प्रमाण कतार को आगे बढ़ाता है।",
+      fundingDescEmpty: "आपके जोड़े गए फ़ंड यहीं रहते हैं जब तक भुगतान की पुष्टि नहीं हो जाती।",
+      fundingDescSingular: "{count} अनुरोध की अभी पुष्टि हो रही है।",
+      fundingDescPlural: "{count} अनुरोधों की अभी पुष्टि हो रही है।",
       fundingCta: "जमा लेन खोलें",
       withdrawalKicker: "लंबित निकासी",
-      withdrawalDescEmpty: "निकासी समीक्षा के दौरान यहाँ कतार में रहती हैं — आपका उपलब्ध शेष कभी दो बार वादा नहीं किया जाता।",
+      withdrawalDescEmpty: "निकासी समीक्षा के दौरान यहाँ रोकी रहती हैं, ताकि आपका उपलब्ध शेष हमेशा सटीक रहे।",
       withdrawalDescSingular: "{count} निकासी भुगतान की प्रतीक्षा में। उपलब्ध शेष से आरक्षित।",
       withdrawalDescPlural: "{count} निकासी भुगतान की प्रतीक्षा में। उपलब्ध शेष से आरक्षित।",
       withdrawalCta: "निकासी लेन खोलें",
@@ -20195,7 +20195,7 @@ const HI: DeepPartial<AccountCopy> = {
       fallbackTitle: "वॉलेट लेनदेन",
     },
     funding: {
-      proofUploaded: "रेल सत्यापित",
+      proofUploaded: "भुगतान की पुष्टि हुई",
       awaitingProof: "प्रसंस्करण",
       ariaLabelTemplate: "₦{amount} के लिए जमा अनुरोध {reference}",
     },
@@ -20501,7 +20501,7 @@ const HI: DeepPartial<AccountCopy> = {
         "साइन अप के बाद, रेफरल {days}-दिवसीय होल्ड विंडो में प्रवेश करता है। हम रेफर किए गए खाते को केवल एक बार ट्रैक करते हैं — स्व-रेफरल, डुप्लिकेट परिवार, और पुनर्नवीनीकरण साइनअप योग्य नहीं हैं।",
       step3Title: "योग्यता के बाद पुरस्कार जारी होते हैं",
       step3Body:
-        "योग्य रेफरल वित्त समीक्षा के बाद {amount} आपके Henry Onyx वॉलेट में जमा करते हैं। लंबित पुरस्कार जारी होने तक खर्च करने योग्य नहीं हैं।",
+        "योग्य रेफरल समीक्षा के बाद {amount} आपके Henry Onyx वॉलेट में जमा करते हैं। लंबित पुरस्कार जारी होने तक खर्च करने योग्य नहीं हैं।",
     },
     policy: {
       eyebrow: "रेफरल नीति",

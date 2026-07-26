@@ -1,11 +1,19 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { writeAuditLog } from "@henryco/observability/audit-log";
+import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
 import { requireOwner } from "@/app/lib/owner-auth";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getFounderAction } from "@/lib/founder-intelligence/action-catalog";
 
 export const runtime = "nodejs";
+
+/** The live action tranche — the same gate both propose paths apply, so a
+ *  darkened tranche also blocks the EXECUTE of an already-minted card. */
+function liveTranche(): number {
+  const raw = Number(process.env.FOUNDER_ACTIONS_TRANCHE ?? "1");
+  return Number.isFinite(raw) && raw >= 1 ? Math.floor(raw) : 1;
+}
 
 /**
  * POST /api/owner/intelligence/actions/confirm — the OWNER-initiated execute
@@ -84,6 +92,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unknown action." }, { status: 400 });
   }
 
+  // Tranche kill-switch (SA-4 adversarial round 1): re-gate the EXECUTE path on
+  // the live tranche, exactly as both propose paths do. Without this, a pending
+  // card minted while a tranche was live still executes after the tranche is
+  // darkened — so lowering FOUNDER_ACTIONS_TRANCHE would not actually stop
+  // already-queued actions. Now a dark tranche means no execute, no exceptions.
+  if (entry.tranche > liveTranche()) {
+    return NextResponse.json({ error: "Not available." }, { status: 404 });
+  }
+
   // The real owner role for audit fidelity — the app-gate returns only
   // {id, email}, so an admin acting via F3 must not be logged as "owner"
   // (review finding, 2026-07-10). Falls back to "owner" if unreadable.
@@ -96,15 +113,22 @@ export async function POST(request: NextRequest) {
     .trim()
     .toLowerCase() || "owner";
 
-  // 4. Money-tranche step-up (no first-tranche action sets this, but the rail
-  //    honors it). requireSensitiveAction lives on the account origin; the hub
-  //    money actions arrive in F3c, which wires the concrete guard. Until then,
-  //    a requiresReauth action cannot be confirmed here — fail closed.
+  // 4. Deep-action step-up — the founder's "print". requiresReauth entries
+  //    demand a fresh identity proof: the platform sensitive-action guard
+  //    verifies the signed hc_last_reauth cookie (5-minute window, HMAC-bound
+  //    to this user) and rate-limits attempts. Absent/stale → the standard
+  //    401 challenge {code: "sensitive_action_reauth_required"}; the client
+  //    collects the owner's password inline (POST /api/auth/reauth on this
+  //    origin writes the marker) and retries the confirm. Runs BEFORE the CAS
+  //    claim so a challenged proposal stays pending and confirmable.
   if (entry.requiresReauth) {
-    return NextResponse.json(
-      { error: "This action needs identity re-verification, which is not enabled yet." },
-      { status: 403 },
-    );
+    const guard = await requireSensitiveAction(request, {
+      action: entry.auditAction,
+      entityType: entry.entityType,
+      resolveUser: async () => auth.user,
+      userId: (user) => user.id,
+    });
+    if (!guard.ok) return guard.response;
   }
 
   // 3. CAS claim — single-winner. owner_id in WHERE so a race cannot let anyone

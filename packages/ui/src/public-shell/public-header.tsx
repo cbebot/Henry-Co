@@ -196,24 +196,31 @@ export function PublicHeader({
     setTimeout(() => setOpen(false), 0);
   }, []);
 
+  // CHROME-64 amber retirement (2026-07-16): the header's brand marks (focus
+  // rings, active underline, active sheet row, primary CTA) are accent-governed
+  // — --hc-accent maps to each division's colour and flips per theme at the
+  // token layer (no dark: twins needed); fallbacks reproduce brand gold. The
+  // ring OFFSETS stay surface-coloured (they are canvas, not accent).
   const focusRingBar =
-    "rounded-md outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/45 dark:focus-visible:ring-offset-[#0a0f14]";
+    "rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_50%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0a0f14]";
   const defaultBarLink =
     `relative text-sm font-medium text-zinc-600 transition hover:text-zinc-950 dark:text-white/70 dark:hover:text-white ${focusRingBar}`;
   const defaultBarLinkActive =
-    "font-semibold text-zinc-950 after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-px after:rounded-full after:bg-gradient-to-r after:from-amber-500/90 after:via-amber-400/70 after:to-amber-600/50 dark:text-white dark:after:from-amber-400/90 dark:after:via-amber-300/60 dark:after:to-amber-500/40";
+    "font-semibold text-zinc-950 after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-px after:rounded-full after:bg-gradient-to-r after:from-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_90%,transparent)] after:via-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_65%,transparent)] after:to-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_45%,transparent)] dark:text-white";
   const defaultSheetLink = HenryCoPublicSurfaceTokens.menuSheetLink;
   const defaultSheetLinkActive =
-    "border-amber-400/55 bg-amber-50/95 font-semibold text-zinc-900 shadow-[0_12px_40px_rgba(245,158,11,0.12)] dark:border-amber-400/35 dark:bg-amber-950/35 dark:text-white";
+    "border-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_55%,transparent)] bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_12%,transparent)] font-semibold text-zinc-900 shadow-[0_12px_40px_color-mix(in_srgb,var(--hc-accent,#C9A227)_12%,transparent)] dark:text-white";
 
   const focusRingPill =
-    "outline-none focus-visible:ring-2 focus-visible:ring-amber-500/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/50 dark:focus-visible:ring-offset-[#0a0f14]";
+    "outline-none focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_55%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0a0f14]";
   const defaultAuxClass =
     `rounded-full border border-black/8 bg-white/90 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 dark:border-white/12 dark:bg-zinc-950/55 dark:text-white/85 dark:hover:bg-zinc-900/75 ${focusRingPill}`;
   const defaultSecondaryClass =
     `rounded-full border border-black/12 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-800 shadow-sm transition hover:bg-zinc-50 dark:border-white/12 dark:bg-zinc-900/80 dark:text-white/90 dark:hover:bg-zinc-800/90 ${focusRingPill}`;
+  // Primary CTA: canonical accent fill + the AA-designed dark-on-accent ink
+  // (the chip precedent) — replaces the off-palette amber-600/white pairing.
   const defaultPrimaryClass =
-    `rounded-full border border-amber-600/20 bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700 dark:border-amber-400/30 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400 ${focusRingPill}`;
+    `rounded-full border border-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_30%,transparent)] bg-[color:var(--hc-accent,#C9A227)] px-4 py-2.5 text-sm font-semibold text-[color:var(--hc-ink-on-accent,#1A1814)] shadow-sm transition hover:bg-[color:var(--hc-accent-strong,#A88718)] ${focusRingPill}`;
 
   const auxDesktopClass = cn(defaultAuxClass, auxLinkClassName, auxLinkDesktopClassName);
   const secondaryDesktopClass = cn(
