@@ -77,7 +77,13 @@ export async function applyProductReview(input: {
   note: string;
   actorId: string;
   actorRole: string;
-}): Promise<{ ok: true; executionRef: string } | { ok: false; error: string }> {
+  /**
+   * Prior status the verdict was decided against — the compare-and-set anchor.
+   * The `current.status === decision` check above is a read, and a read cannot
+   * stop a second verdict landing between it and the write below.
+   */
+  expectedStatus?: string;
+}): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
   if (!DECISIONS.includes(input.decision)) {
     return { ok: false, error: "That decision isn't recognised." };
   }
@@ -112,7 +118,7 @@ export async function applyProductReview(input: {
     return { ok: false, error: "Audit logging failed; the product was not changed." };
   }
 
-  const { error: writeError } = await admin
+  let write = admin
     .from("marketplace_products")
     .update({
       approval_status: input.decision,
@@ -121,8 +127,16 @@ export async function applyProductReview(input: {
       reviewed_by: input.actorId,
     } as never)
     .eq("id", current.productId);
+  if (input.expectedStatus) write = write.eq("approval_status", input.expectedStatus);
+  const { data: written, error: writeError } = await write.select("id");
   if (writeError) {
     return { ok: false, error: "The verdict could not be saved." };
+  }
+  if (!Array.isArray(written) || written.length !== 1) {
+    return {
+      ok: false,
+      error: "That listing moved while you were deciding it. Refresh to see where it stands now.",
+    };
   }
 
   // Best-effort vendor notification tail — the verdict already landed.
@@ -153,5 +167,5 @@ export async function applyProductReview(input: {
     }
   }
 
-  return { ok: true, executionRef: `product:${current.productId}:${input.decision}` };
+  return { ok: true, executionRef: `product:${current.productId}:${input.decision}`, changed: true };
 }

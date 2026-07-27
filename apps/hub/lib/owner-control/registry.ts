@@ -175,7 +175,14 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "marketplace",
     requiresReauth: false,
     requiresNote: true,
-    fromStates: ["pending", "approved", "flagged"],
+    // 'approved' is EXCLUDED, and the exclusion is the whole point. Marketplace
+    // builds its public catalogue with `.eq("approval_status", "approved")`, so
+    // moving a live listing to `changes_requested` delists it — the same
+    // commercial effect as rejecting it. Leaving 'approved' here would have made
+    // this unprompted button a way around the password step-up on
+    // `marketplace.product.reject`. Taking a live listing down goes through the
+    // gated verdict; this action is for listings not yet in the catalogue.
+    fromStates: ["pending", "flagged"],
     toState: "changes_requested",
   },
   "marketplace.product.reject": {
@@ -275,6 +282,13 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
  */
 export function getOwnerControlAction(key: unknown): OwnerControlAction | null {
   if (typeof key !== "string") return null;
+  // `Object.hasOwn` rather than a bare index: `ACTIONS["constructor"]` and
+  // `ACTIONS["__proto__"]` are truthy inherited members, and an object that is
+  // not an action has `requiresReauth === undefined` — i.e. every gate off. The
+  // request is refused a step later today because `readOwnerControlState` does
+  // not recognise the entity type, but that is ordering luck, not a guarantee.
+  // Refuse it here, where the guarantee belongs.
+  if (!Object.hasOwn(ACTIONS, key)) return null;
   return ACTIONS[key as OwnerControlActionKey] ?? null;
 }
 

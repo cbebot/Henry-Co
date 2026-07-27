@@ -70,8 +70,16 @@ export async function applyLearnTeacherDecision(input: {
   note: string;
   actorId: string;
   actorRole: string;
-}): Promise<{ ok: true; executionRef: string } | { ok: false; error: string }> {
-  const { applicationId, decision, note, actorId, actorRole } = input;
+  /**
+   * Prior status the decision was made against — the compare-and-set anchor.
+   * The console's fresh read and this write are two round trips, and between
+   * them another operator (or the applicant withdrawing) can move the row. CAS
+   * makes the UPDATE itself the check, so the second decision matches nothing
+   * instead of silently overwriting the first.
+   */
+  expectedStatus?: string;
+}): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
+  const { applicationId, decision, note, actorId, actorRole, expectedStatus } = input;
 
   if (decision !== "approved" && decision !== "rejected") {
     return { ok: false, error: "Choose a valid teacher review decision." };
@@ -122,7 +130,7 @@ export async function applyLearnTeacherDecision(input: {
     return { ok: false, error: "Audit logging failed; the application was not changed." };
   }
 
-  const { error: updateError } = await admin
+  let statusUpdate = admin
     .from("learn_teacher_applications")
     .update({
       status: decision,
@@ -132,9 +140,20 @@ export async function applyLearnTeacherDecision(input: {
       updated_at: now,
     } as never)
     .eq("id", applicationId);
+  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
+  const { data: updated, error: updateError } = await statusUpdate.select("id");
   if (updateError) {
     console.error("[learn-teacher-decision-write] status update failed", updateError.message);
     return { ok: false, error: "That application could not be updated." };
+  }
+  const changed = Array.isArray(updated) && updated.length === 1;
+  if (!changed) {
+    // CAS lost: somebody else decided this application first. Stop here rather
+    // than granting the teacher role off a decision that never applied.
+    return {
+      ok: false,
+      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
+    };
   }
 
   // Approval is what actually makes someone a teacher: without the membership
@@ -191,5 +210,5 @@ export async function applyLearnTeacherDecision(input: {
     console.error("[learn-teacher-decision-write] notify step failed (decision landed)", error);
   }
 
-  return { ok: true, executionRef: `learn-teacher:${applicationId}:${decision}` };
+  return { ok: true, executionRef: `learn-teacher:${applicationId}:${decision}`, changed: true };
 }

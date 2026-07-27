@@ -11,8 +11,8 @@ import { createAdminSupabase } from "@/lib/supabase";
  *
  *   1. `requireOwner()` — the app gate. Resolves the session and checks
  *      `owner_profiles`. This is TypeScript reading a table.
- *   2. `is_owner()` — the SQL gate, executed under the CALLER'S OWN JWT (the
- *      cookie-scoped client, never the service-role client). The function is
+ *   2. `owner_control_is_owner()` — the SQL gate, executed under the CALLER'S
+ *      OWN JWT (the cookie-scoped client, never the service-role client). It is
  *      SECURITY DEFINER over `auth.uid()`, so it cannot be satisfied by any
  *      value the request supplies; it can only be satisfied by actually being
  *      the signed-in owner.
@@ -22,9 +22,20 @@ import { createAdminSupabase } from "@/lib/supabase";
  * as good as every future caller remembering to run it. Anchoring on
  * `auth.uid()` means the database itself, not app code, decides.
  *
+ * WHY NOT THE SHARED `is_owner()`: on prod as captured in
+ * supabase/prod-actual/schema.sql it is SECURITY INVOKER, so it reads
+ * owner_profiles subject to owner_profiles' own RLS — whose
+ * `owner_profiles_owner_write ... using (is_owner())` policy calls it again.
+ * That is the HUB-1 recursion trap, masked today only because every existing
+ * caller reaches that table through service-role. The hardening migration that
+ * fixes it is committed but not confirmed applied, and a gate that fails closed
+ * on a recursion error would leave the owner unable to act — reproducing the
+ * outage this pass exists to end. So the rail ships and calls its own
+ * SECURITY DEFINER predicate; see the note above it in the migration.
+ *
  * DELIBERATELY NARROWER THAN THE PAGE GATE: `requireOwner()` will match an
  * owner_profiles row by EMAIL when the session's email is confirmed and no
- * user_id row exists (the HUB-4 fallback). `is_owner()` matches on `user_id`
+ * user_id row exists (the HUB-4 fallback). The SQL gate matches on `user_id`
  * only. The rail therefore refuses an email-only-bound owner. That is
  * intentional — the "email-OR role binding" pattern is a named ecosystem-wide
  * finding from the FIRE audits, and a surface that suspends sellers is the last
@@ -43,9 +54,41 @@ import { createAdminSupabase } from "@/lib/supabase";
 export type OwnerControlActor = {
   id: string;
   email: string | null;
-  /** Real `owner_profiles.role` — so an admin acting is not logged as "owner". */
+  /**
+   * Real `owner_profiles.role`, verbatim. Recorded on the owner-control ledger,
+   * whose `actor_role` is plain text — so an admin acting is not logged as
+   * "owner".
+   */
   role: string;
+  /**
+   * The same role narrowed to something `staff_audit_logs.actor_role` can hold.
+   * That column is the `app_role` ENUM ('owner','manager','rider','customer',
+   * 'support','cashier','promoter'); `owner_profiles.role` is free text under a
+   * CHECK admitting ('owner','editor','viewer'), and the SQL gate additionally
+   * accepts 'admin'. Those vocabularies overlap only at 'owner'.
+   *
+   * Today the intersection makes this a no-op: passing the gate requires
+   * ('owner','admin') and the CHECK forbids 'admin', so the role is always
+   * 'owner'. The mapping exists because of what happens WHEN that changes — an
+   * out-of-enum value makes the audit INSERT fail with 22P02, and since the
+   * audit is written BEFORE the mutation ("no trail, no action"), the owner's
+   * button would simply stop working with a type error in the logs. Fail-closed,
+   * but a silly way to lose the console. The ledger keeps the true role either
+   * way, so nothing is lost by narrowing here.
+   */
+  auditRole: string;
 };
+
+/** Members of the `app_role` enum — see supabase/prod-actual/schema.sql. */
+const APP_ROLE_VALUES = new Set([
+  "owner",
+  "manager",
+  "rider",
+  "customer",
+  "support",
+  "cashier",
+  "promoter",
+]);
 
 /**
  * The caller's cookie-scoped Supabase client. It must be carried out of this
@@ -81,14 +124,14 @@ export async function authorizeOwnerControl(): Promise<OwnerControlAuthz> {
   // Gate 2 — SQL gate under the caller's own JWT.
   let sqlOwner = false;
   try {
-    const { data, error } = await auth.supabase.rpc("is_owner");
+    const { data, error } = await auth.supabase.rpc("owner_control_is_owner");
     if (error) {
-      console.error("[owner-control] is_owner() gate failed", error.message);
+      console.error("[owner-control] owner_control_is_owner() gate failed", error.message);
       return { ok: false, response: refuse() };
     }
     sqlOwner = data === true;
   } catch (error) {
-    console.error("[owner-control] is_owner() gate threw", error);
+    console.error("[owner-control] owner_control_is_owner() gate threw", error);
     return { ok: false, response: refuse() };
   }
   if (!sqlOwner) {
@@ -120,6 +163,9 @@ export async function authorizeOwnerControl(): Promise<OwnerControlAuthz> {
       id: auth.user.id,
       email: auth.user.email?.trim().toLowerCase() || null,
       role,
+      // Both gates have already passed, so whatever this actor is called, they
+      // are owner-class. 'owner' is the honest enum member for that.
+      auditRole: APP_ROLE_VALUES.has(role) ? role : "owner",
     },
     supabase: auth.supabase,
   };

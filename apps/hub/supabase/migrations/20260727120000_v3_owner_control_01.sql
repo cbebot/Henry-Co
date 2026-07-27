@@ -100,11 +100,62 @@ comment on table public.owner_control_actions is
 -- 2. Guarded RPCs
 -- ---------------------------------------------------------------------------
 
+-- The SQL half of the rail's authorization gate, called by the app under the
+-- CALLER'S OWN JWT so the answer is anchored on auth.uid() and cannot be
+-- influenced by anything the request supplies.
+--
+-- WHY NOT JUST CALL public.is_owner()? Because on prod as captured in
+-- supabase/prod-actual/schema.sql it is SECURITY INVOKER, and reading
+-- owner_profiles re-triggers owner_profiles' own RLS — whose
+-- `owner_profiles_owner_write ... using (is_owner())` policy calls it again.
+-- That is the HUB-1 recursion trap ("stack depth limit exceeded"), which is
+-- masked today only because every existing caller reaches owner_profiles
+-- through service-role. 20260710180000_hub_security_hardening.sql redefines
+-- is_owner() as SECURITY DEFINER to fix exactly this, but that migration is
+-- committed, not confirmed applied — and an authorization gate that fails
+-- closed on a recursion error would leave the owner unable to act, which is the
+-- very outage this pass exists to end.
+--
+-- So the rail owns its predicate. SECURITY DEFINER reads owner_profiles without
+-- being subject to owner_profiles' RLS, breaking the cycle; the function is a
+-- boolean self-check that returns no rows, so it leaks nothing. This mirrors
+-- public.owner_inbox_is_owner() (20260615103000), which is already proven on
+-- this database by apps/hub/scripts/owner-inbox/prove-owner-inbox-rls.sql.
+--
+-- Bound on user_id ONLY, never email: "email-OR role binding" is a named
+-- ecosystem-wide FIRE finding, and a surface that suspends sellers is the last
+-- place to honour the looser binding.
+create or replace function public.owner_control_is_owner()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select exists (
+    select 1 from public.owner_profiles op
+    where op.user_id = (select auth.uid())
+      and op.is_active = true
+      and lower(trim(op.role)) in ('owner', 'admin')
+  );
+$$;
+
+-- EXECUTE is granted to PUBLIC by default, so the revoke is mandatory, not
+-- tidiness. Only a signed-in session evaluates this; anon has a NULL auth.uid()
+-- and would always get false, but it has no business calling it at all.
+revoke all on function public.owner_control_is_owner() from public, anon, authenticated, service_role;
+grant execute on function public.owner_control_is_owner() to authenticated;
+
 -- Shared actor assertion. Under service_role auth.uid() is NULL, so the app
 -- must pass the actor it resolved from the session. That would be a
 -- caller-supplied actor if the app were the only check — this function makes
 -- the DATABASE the check: the id must resolve to a live owner_profiles row or
--- the call raises. A forged actor id therefore buys nothing.
+-- the call raises. A forged actor id therefore cannot name a non-owner.
+--
+-- SCOPE, STATED HONESTLY: this guards the ledger RPCs and owner_set_vendor_active.
+-- The other write cores mutate their division tables through the service-role
+-- client directly, so for those the database is not re-checking the actor — the
+-- route's two gates are. That is why the actor is never read from the body.
 create or replace function public.owner_control_assert_actor(p_actor uuid)
 returns void
 language plpgsql

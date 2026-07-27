@@ -69,8 +69,16 @@ export async function applyKycReview(input: {
   note: string;
   actorId: string;
   actorRole: string;
-}): Promise<{ ok: true; executionRef: string; profileStatus: string } | { ok: false; error: string }> {
-  const { submissionId, decision, note, actorId, actorRole } = input;
+  /**
+   * Prior status the decision was made against — the compare-and-set anchor, so
+   * a second reviewer cannot overwrite the first verdict and re-derive the
+   * applicant's profile status from it.
+   */
+  expectedStatus?: string;
+}): Promise<
+  { ok: true; executionRef: string; profileStatus: string; changed: boolean } | { ok: false; error: string }
+> {
+  const { submissionId, decision, note, actorId, actorRole, expectedStatus } = input;
 
   if (decision !== "approved" && decision !== "rejected") {
     return { ok: false, error: "Choose a valid review decision." };
@@ -112,7 +120,10 @@ export async function applyKycReview(input: {
     return { ok: false, error: "Audit logging failed; verification review was not changed." };
   }
 
-  await admin
+  // Checked, not fire-and-forget: everything below re-derives the applicant's
+  // profile verification status from the submission set, so a write that did
+  // not land would have the profile advance off a decision that was not saved.
+  let submissionUpdate = admin
     .from("customer_verification_submissions")
     .update({
       status: decision,
@@ -121,6 +132,18 @@ export async function applyKycReview(input: {
       reviewed_at: now,
     })
     .eq("id", submissionId);
+  if (expectedStatus) submissionUpdate = submissionUpdate.eq("status", expectedStatus);
+  const { data: submissionUpdated, error: submissionError } = await submissionUpdate.select("id");
+  if (submissionError) {
+    console.error("[kyc-review-write] submission update failed", submissionError.message);
+    return { ok: false, error: "That verification submission could not be updated." };
+  }
+  if (!Array.isArray(submissionUpdated) || submissionUpdated.length !== 1) {
+    return {
+      ok: false,
+      error: "That submission moved while you were deciding it. Refresh to see where it stands now.",
+    };
+  }
 
   let profileStatus = decision === "approved" ? "pending" : "rejected";
 
@@ -220,5 +243,5 @@ export async function applyKycReview(input: {
     console.error("[kyc-review-write] post-write notify step failed (review landed)", e);
   }
 
-  return { ok: true, executionRef: `kyc:${submissionId}:${decision}`, profileStatus };
+  return { ok: true, executionRef: `kyc:${submissionId}:${decision}`, profileStatus, changed: true };
 }

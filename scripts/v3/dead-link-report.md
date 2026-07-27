@@ -1,6 +1,6 @@
 # V3-06 — Dead-Link Static Scan Report
 
-Generated: 2026-07-27T10:50:27.686Z
+Generated: 2026-07-27T11:30:48.145Z
 Generator: scripts/v3/dead-link-scan.mjs
 
 ANTI-CLONE: internal route-table catalog — do not publish.

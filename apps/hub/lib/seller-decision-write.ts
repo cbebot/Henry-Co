@@ -110,8 +110,16 @@ export async function applySellerDecision(input: {
   note: string;
   actorId: string;
   actorRole: string;
-}): Promise<{ ok: true; executionRef: string } | { ok: false; error: string }> {
-  const { applicationId, decision, note, actorId, actorRole } = input;
+  /**
+   * Prior status the decision was made against — the compare-and-set anchor.
+   * The console's fresh read and this write are two round trips, and between
+   * them another operator can decide the same application. CAS makes the UPDATE
+   * itself the check, so the second decision matches nothing instead of
+   * silently overwriting the first and re-running the activation below.
+   */
+  expectedStatus?: string;
+}): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
+  const { applicationId, decision, note, actorId, actorRole, expectedStatus } = input;
 
   if (decision !== "approved" && decision !== "changes_requested" && decision !== "rejected") {
     return { ok: false, error: "Choose a valid seller review decision." };
@@ -134,6 +142,48 @@ export async function applySellerDecision(input: {
 
   const applicantUserId = application.user_id ? String(application.user_id) : null;
   const storeName = String(application.store_name || "your store");
+  const proposedSlug = String(application.proposed_store_slug || "").trim();
+
+  // STORE-URL COLLISION GATE (V3-OWNER-CONTROL-01).
+  //
+  // `proposed_store_slug` is typed by the applicant and never checked for
+  // uniqueness at submission. `marketplace_vendors.slug` carries a UNIQUE
+  // constraint, and the approval below used to upsert `onConflict: "slug"` —
+  // which is an UPDATE when the slug already exists, setting every supplied
+  // column including `owner_user_id`. Store slugs are public (/store/[slug]).
+  //
+  // So: apply naming yourself as some existing seller's slug, wait for the
+  // one-tap approve, and the approval hands you their store row, their vendor
+  // role membership, and with it their catalogue and their payout balance. The
+  // guard the rail already had was on the wrong entity — it verified the
+  // APPLICATION was pending, and nothing verified the VENDOR row the write
+  // actually lands on.
+  //
+  // Refuse the approval instead. The owner is told exactly what is wrong, and
+  // no state moves: an applicant cannot be allowed to choose which row the
+  // owner's button writes to.
+  let existingVendorId: string | null = null;
+  if (decision === "approved") {
+    if (!proposedSlug) {
+      return { ok: false, error: "That application has no store URL, so no store can be opened for it." };
+    }
+    const { data: slugHolder, error: slugError } = await admin
+      .from("marketplace_vendors")
+      .select("id, owner_user_id")
+      .eq("slug", proposedSlug)
+      .maybeSingle();
+    if (slugError) {
+      return { ok: false, error: "The store URL could not be checked; the seller was not approved." };
+    }
+    const holderOwnerId = slugHolder?.owner_user_id ? String(slugHolder.owner_user_id) : null;
+    if (slugHolder && holderOwnerId !== applicantUserId) {
+      return {
+        ok: false,
+        error: `The store URL "${proposedSlug}" already belongs to another seller. Ask the applicant to choose a different one before approving.`,
+      };
+    }
+    existingVendorId = slugHolder?.id ? String(slugHolder.id) : null;
+  }
 
   // Audit-first: its failure aborts before any state moves (staff-route parity).
   const { error: auditError } = await admin.from("staff_audit_logs").insert({
@@ -158,7 +208,12 @@ export async function applySellerDecision(input: {
 
   // The application status update — matches the marketplace route's columns
   // exactly (status, review_note, reviewed_at, reviewed_by).
-  await admin
+  //
+  // Its result is CHECKED, which it previously was not. The activation below
+  // grants a store and a vendor role membership; running that off an update
+  // whose outcome nobody looked at means a failed or lost write still ends with
+  // the applicant holding seller access while their application says otherwise.
+  let statusUpdate = admin
     .from("marketplace_vendor_applications")
     .update({
       status: decision,
@@ -167,6 +222,18 @@ export async function applySellerDecision(input: {
       reviewed_by: actorId,
     } as never)
     .eq("id", applicationId);
+  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
+  const { data: statusUpdated, error: statusError } = await statusUpdate.select("id");
+  if (statusError) {
+    console.error("[seller-decision-write] status update failed", statusError.message);
+    return { ok: false, error: "That application could not be updated." };
+  }
+  if (!Array.isArray(statusUpdated) || statusUpdated.length !== 1) {
+    return {
+      ok: false,
+      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
+    };
+  }
 
   // On approval, actually activate the seller: upsert the vendor store record
   // and grant the vendor role membership (marketplace route parity).
@@ -182,49 +249,88 @@ export async function applySellerDecision(input: {
     const vendorVerificationLevel = getVendorVerificationLevel(sharedVerificationStatus);
     const vendorTrustScore = getInitialVendorTrustScore(sharedVerificationStatus);
 
-    const { data: vendor } = await admin
-      .from("marketplace_vendors")
-      .upsert(
-        {
-          slug: application.proposed_store_slug,
-          name: application.store_name,
-          description: application.story || `${application.store_name} storefront`,
-          owner_user_id: application.user_id,
-          owner_type: "vendor",
-          status: "approved",
-          verification_level: vendorVerificationLevel,
-          trust_score: vendorTrustScore,
-          response_sla_hours: 6,
-          fulfillment_rate: 93,
-          dispute_rate: 2.5,
-          review_score: 4.5,
-          followers_count: 0,
-          accent: "#4D5F34",
-          hero_image_url: null,
-          badges: [
-            "Approved vendor",
-            sharedVerificationStatus === "verified"
-              ? "Identity verified"
-              : sharedVerificationStatus === "pending"
-                ? "Identity under review"
-                : "Identity required",
-          ],
-          support_email: application.normalized_email,
-          support_phone: application.contact_phone,
-        } as never,
-        { onConflict: "slug" },
-      )
+    // Written by id when the applicant already has this store, by insert when
+    // they do not — never keyed on the applicant's own text. The old
+    // `onConflict: "slug"` upsert let the applicant pick which row this write
+    // landed on; see the collision gate above.
+    const vendorPayload = {
+      slug: proposedSlug,
+      name: application.store_name,
+      description: application.story || `${application.store_name} storefront`,
+      owner_user_id: application.user_id,
+      owner_type: "vendor",
+      status: "approved",
+      verification_level: vendorVerificationLevel,
+      trust_score: vendorTrustScore,
+      response_sla_hours: 6,
+      fulfillment_rate: 93,
+      dispute_rate: 2.5,
+      review_score: 4.5,
+      followers_count: 0,
+      accent: "#4D5F34",
+      hero_image_url: null,
+      badges: [
+        "Approved vendor",
+        sharedVerificationStatus === "verified"
+          ? "Identity verified"
+          : sharedVerificationStatus === "pending"
+            ? "Identity under review"
+            : "Identity required",
+      ],
+      support_email: application.normalized_email,
+      support_phone: application.contact_phone,
+    };
+
+    const written = existingVendorId
+      ? await admin
+          .from("marketplace_vendors")
+          .update(vendorPayload as never)
+          .eq("id", existingVendorId)
+          .select("id")
+          .maybeSingle()
+      : await admin
+          .from("marketplace_vendors")
+          .insert(vendorPayload as never)
+          .select("id")
+          .maybeSingle();
+
+    if (written.error || !written.data) {
+      return {
+        ok: false,
+        error: "The store record could not be written, so the seller was not activated.",
+      };
+    }
+    const vendorId = String((written.data as { id: string }).id);
+
+    // Read-then-write rather than upsert. The only unique index on
+    // marketplace_role_memberships is an EXPRESSION index that PostgREST cannot
+    // name in `onConflict`, so an upsert here degrades to a plain insert and a
+    // repeat approval raises a unique violation instead of being a no-op. Learn
+    // teacher grants already do it this way for the same reason.
+    const { data: existingMembership } = await admin
+      .from("marketplace_role_memberships")
       .select("id")
+      .eq("user_id", application.user_id)
+      .eq("scope_type", "vendor")
+      .eq("scope_id", vendorId)
+      .eq("role", "vendor")
       .maybeSingle();
 
-    await admin.from("marketplace_role_memberships").upsert({
-      user_id: application.user_id,
-      normalized_email: application.normalized_email,
-      scope_type: "vendor",
-      scope_id: vendor?.id ?? null,
-      role: "vendor",
-      is_active: true,
-    } as never);
+    if (existingMembership?.id) {
+      await admin
+        .from("marketplace_role_memberships")
+        .update({ is_active: true } as never)
+        .eq("id", existingMembership.id);
+    } else {
+      await admin.from("marketplace_role_memberships").insert({
+        user_id: application.user_id,
+        normalized_email: application.normalized_email,
+        scope_type: "vendor",
+        scope_id: vendorId,
+        role: "vendor",
+        is_active: true,
+      } as never);
+    }
   }
 
   const reviewerBody =
@@ -284,5 +390,5 @@ export async function applySellerDecision(input: {
     console.error("[seller-decision-write] post-write notify step failed (decision landed)", e);
   }
 
-  return { ok: true, executionRef: `seller:${applicationId}:${decision}` };
+  return { ok: true, executionRef: `seller:${applicationId}:${decision}`, changed: true };
 }

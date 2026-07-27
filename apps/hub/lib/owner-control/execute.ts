@@ -108,7 +108,11 @@ export async function executeOwnerControlAction(input: {
   priorStatus: string;
 }): Promise<OwnerControlExecution> {
   const { action, entityId, note, actorId, actorRole, priorStatus } = input;
-  const common = { note, actorId, actorRole };
+  // `expectedStatus` goes to every core: the route checked legality against a
+  // read, and only a compare-and-set on the write itself can hold that check
+  // true through to the mutation. Cores treat a zero-row match as "somebody
+  // else decided this first" and refuse rather than reporting a phantom change.
+  const common = { note, actorId, actorRole, expectedStatus: priorStatus };
 
   switch (action.key) {
     case "marketplace.seller.approve":
@@ -122,7 +126,7 @@ export async function executeOwnerControlAction(input: {
             : "changes_requested";
       const result = await applySellerDecision({ applicationId: entityId, decision, ...common });
       return result.ok
-        ? { ok: true, executionRef: result.executionRef, changed: true }
+        ? { ok: true, executionRef: result.executionRef, changed: result.changed }
         : { ok: false, error: result.error };
     }
 
@@ -149,7 +153,7 @@ export async function executeOwnerControlAction(input: {
             : "changes_requested";
       const result = await applyProductReview({ productId: entityId, decision, ...common });
       return result.ok
-        ? { ok: true, executionRef: result.executionRef, changed: true }
+        ? { ok: true, executionRef: result.executionRef, changed: result.changed }
         : { ok: false, error: result.error };
     }
 
@@ -161,7 +165,7 @@ export async function executeOwnerControlAction(input: {
         ...common,
       });
       return result.ok
-        ? { ok: true, executionRef: result.executionRef, changed: true }
+        ? { ok: true, executionRef: result.executionRef, changed: result.changed }
         : { ok: false, error: result.error };
     }
 
@@ -173,7 +177,7 @@ export async function executeOwnerControlAction(input: {
         ...common,
       });
       return result.ok
-        ? { ok: true, executionRef: result.executionRef, changed: true }
+        ? { ok: true, executionRef: result.executionRef, changed: result.changed }
         : { ok: false, error: result.error };
     }
 
@@ -182,7 +186,6 @@ export async function executeOwnerControlAction(input: {
       const result = await applyModerationVerdict({
         itemId: entityId,
         verdict: action.key === "moderation.item.remove" ? "actioned" : "dismissed",
-        expectedStatus: priorStatus,
         ...common,
       });
       return result.ok

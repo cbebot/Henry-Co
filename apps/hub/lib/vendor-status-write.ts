@@ -62,8 +62,16 @@ export async function applyVendorStatus(input: {
   note: string;
   actorId: string;
   actorRole: string;
+  /**
+   * Prior status the decision was made against. The atomic guard here is
+   * `owner_set_vendor_active`, which decides suspend/reinstate legality inside
+   * the database and reports `changed` honestly — so this is the outer half of
+   * the same idea: refuse before writing an audit row for a transition the
+   * caller was reasoning about from a status that has since moved.
+   */
+  expectedStatus?: string;
 }): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
-  const { vendorId, intent, note, actorId, actorRole } = input;
+  const { vendorId, intent, note, actorId, actorRole, expectedStatus } = input;
 
   if (intent !== "suspend" && intent !== "reinstate") {
     return { ok: false, error: "Choose a valid vendor status change." };
@@ -77,6 +85,12 @@ export async function applyVendorStatus(input: {
   const before = await readVendorStatus(vendorId);
   if (!before) {
     return { ok: false, error: "That seller could not be found." };
+  }
+  if (expectedStatus && before.status !== expectedStatus) {
+    return {
+      ok: false,
+      error: "That seller moved while you were deciding. Refresh to see where they stand now.",
+    };
   }
 
   // Audit-first: no trail, no action.

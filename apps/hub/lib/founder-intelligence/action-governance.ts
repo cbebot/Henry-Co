@@ -198,8 +198,18 @@ export const productReviewGovernance: FounderActionGovernance = {
   division: "hub",
   tranche: 2,
   moneyAdjacent: false,
-  requiresReauth: false,
-  reversibility: "reversible",
+  // Reauth-gated because `rejected` is in the schema below, and rejecting takes
+  // a live listing out of the public catalogue — marketplace builds it with
+  // `.eq("approval_status", "approved")`. V3-OWNER-CONTROL-01 gates that same
+  // verdict behind a fresh password step-up on the approvals console, and both
+  // paths drive the identical write core (`applyProductReview`). Leaving this
+  // one ungated would have made the F3 confirm card a way around the console's
+  // gate — on the path where a model proposed the action, which is the side
+  // that warrants MORE friction, not less. The flag is per action key, so the
+  // step-up covers the approve branch too; F3 is the assisted single-decision
+  // card, not the bulk queue, so that is proportionate.
+  requiresReauth: true,
+  reversibility: "hard-to-reverse",
   ownerPermission: "founder-only",
   paramsSchema: z
     .object({
