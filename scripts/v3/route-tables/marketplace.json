@@ -6,6 +6,14 @@
       "api": false
     },
     {
+      "route": "/.well-known/apple-app-site-association",
+      "api": true
+    },
+    {
+      "route": "/.well-known/assetlinks.json",
+      "api": true
+    },
+    {
       "route": "/account",
       "api": false
     },
@@ -19,6 +27,18 @@
     },
     {
       "route": "/account/following",
+      "api": false
+    },
+    {
+      "route": "/account/messages",
+      "api": false
+    },
+    {
+      "route": "/account/messages/:param",
+      "api": false
+    },
+    {
+      "route": "/account/messages/new",
       "api": false
     },
     {
@@ -90,11 +110,19 @@
       "api": true
     },
     {
+      "route": "/api/checkout/card",
+      "api": true
+    },
+    {
       "route": "/api/checkout/payment-proof",
       "api": true
     },
     {
       "route": "/api/cron/marketplace-automation",
+      "api": true
+    },
+    {
+      "route": "/api/cron/seller-tier-reconcile",
       "api": true
     },
     {
@@ -114,6 +142,10 @@
       "api": true
     },
     {
+      "route": "/api/marketplace/images",
+      "api": true
+    },
+    {
       "route": "/api/orders",
       "api": true
     },
@@ -127,6 +159,10 @@
     },
     {
       "route": "/api/readiness",
+      "api": true
+    },
+    {
+      "route": "/api/report",
       "api": true
     },
     {
@@ -155,6 +191,10 @@
     },
     {
       "route": "/brand/:param",
+      "api": false
+    },
+    {
+      "route": "/business/:param",
       "api": false
     },
     {
@@ -222,6 +262,10 @@
       "api": false
     },
     {
+      "route": "/pay/:param/card",
+      "api": false
+    },
+    {
       "route": "/policies/:param",
       "api": false
     },
@@ -279,6 +323,18 @@
     },
     {
       "route": "/vendor/disputes",
+      "api": false
+    },
+    {
+      "route": "/vendor/intelligence",
+      "api": false
+    },
+    {
+      "route": "/vendor/messages",
+      "api": false
+    },
+    {
+      "route": "/vendor/messages/:param",
       "api": false
     },
     {

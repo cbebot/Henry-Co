@@ -6,7 +6,19 @@
       "api": false
     },
     {
+      "route": "/.well-known/apple-app-site-association",
+      "api": true
+    },
+    {
+      "route": "/.well-known/assetlinks.json",
+      "api": true
+    },
+    {
       "route": "/academy",
+      "api": false
+    },
+    {
+      "route": "/academy/seller",
       "api": false
     },
     {
@@ -19,6 +31,10 @@
     },
     {
       "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/auth/reauth",
       "api": true
     },
     {
@@ -51,6 +67,10 @@
     },
     {
       "route": "/api/learn/bootstrap",
+      "api": true
+    },
+    {
+      "route": "/api/learn/candidate-optin",
       "api": true
     },
     {
@@ -143,6 +163,10 @@
     },
     {
       "route": "/learner",
+      "api": false
+    },
+    {
+      "route": "/learner/career-visibility",
       "api": false
     },
     {

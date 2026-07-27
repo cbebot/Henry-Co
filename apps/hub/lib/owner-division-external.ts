@@ -31,18 +31,31 @@ export function isOwnerDivisionExternalHref(href: string): boolean {
 }
 
 /**
- * The one live, protected staff route where seller applications can actually
- * be approved or rejected. Queue items and signals about pending vendor
- * applications deep-link HERE (not to an HQ info page) so the owner is never
- * shown a decision without the buttons to make it.
+ * Where a pending seller application is actually decided.
+ *
+ * This used to point at `marketplace.../admin/seller-applications`. That route
+ * is real and it does have approve/reject buttons — but it is gated by
+ * `requireMarketplaceRoles()` reading `marketplace_role_memberships`, while HQ
+ * is gated by `requireOwner()` reading `owner_profiles`, and nothing maps one
+ * onto the other. On live those are two different users, so following this link
+ * as the owner ended in a silent redirect to /account. That is how two real
+ * seller registrations came to be approved by hand in the SQL editor: HQ showed
+ * the count, and the only link out of it went nowhere for the person holding it.
+ *
+ * V3-OWNER-CONTROL-01 puts the buttons in HQ, behind the owner's own gate, so
+ * the link now lands on a surface the owner can definitely act on.
  */
-export const MARKETPLACE_SELLER_APPLICATIONS_URL = `${getDivisionUrl("marketplace")}/admin/seller-applications`;
+export const OWNER_SELLER_APPLICATIONS_HREF = "/owner/operations/approvals#seller-applications";
 
 /**
- * Approval-center destinations verified against **live** henrycogroup.com (Apr 2026):
- * Subdomain `/owner`, `/moderation`, and similar staff shells currently render `StaffSurfaceRetired`.
- * HQ must not send owners there for real work. We keep one external staff path that still serves
- * a real sign-in shell: Marketplace `/admin/seller-applications`. Everything else is HQ.
+ * Approval-center destinations verified against **live** henrycogroup.com:
+ * subdomain `/owner`, `/moderation`, and similar staff shells render
+ * `StaffSurfaceRetired`, so HQ must not send owners there for real work.
+ *
+ * As of V3-OWNER-CONTROL-01 every entry below is an HQ route. The one external
+ * staff path that used to live here — the Marketplace seller-applications admin
+ * page — was removed because the owner cannot pass its role gate; the decision
+ * it offered now lives in the HQ approvals console instead.
  */
 export const OWNER_APPROVAL_CENTER_LINKS: OwnerDivisionReviewLink[] = [
   {
@@ -53,10 +66,10 @@ export const OWNER_APPROVAL_CENTER_LINKS: OwnerDivisionReviewLink[] = [
     division: "marketplace",
   },
   {
-    label: "Marketplace — seller applications (staff sign-in)",
+    label: "Seller applications & live stores (HQ)",
     description:
-      "Protected admin URL on the Marketplace subdomain (sign-in required). Use marketplace staff/owner roles.",
-    href: MARKETPLACE_SELLER_APPLICATIONS_URL,
+      "Approve, reject, or ask for changes on seller applications, and suspend or reinstate a live store — decided here, recorded in the audit log.",
+    href: OWNER_SELLER_APPLICATIONS_HREF,
     division: "marketplace",
   },
   {
@@ -116,7 +129,6 @@ export function getDivisionExternalActions(slug: string): DivisionExternalAction
 
   switch (slug) {
     case "marketplace": {
-      const sellerAdmin = MARKETPLACE_SELLER_APPLICATIONS_URL;
       return [
         {
           label: "Marketplace division room (HQ)",
@@ -124,9 +136,9 @@ export function getDivisionExternalActions(slug: string): DivisionExternalAction
           hint: "Owner-grade telemetry. Subdomain /owner and /moderation are retired on live until rebuild.",
         },
         {
-          label: "Seller applications (Marketplace admin)",
-          href: sellerAdmin,
-          hint: "Staff sign-in on the Marketplace app — live protected route.",
+          label: "Seller applications (HQ)",
+          href: OWNER_SELLER_APPLICATIONS_HREF,
+          hint: "Approve, reject, or request changes without leaving HQ.",
         },
         {
           label: "Finance & payouts (HQ)",

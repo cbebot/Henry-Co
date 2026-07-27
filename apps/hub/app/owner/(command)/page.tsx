@@ -178,6 +178,10 @@ export default async function OwnerOverviewPage() {
           </div>
         </OwnerPanel>
 
+        {/* Anchor target for the command palette's "Urgent signals" entry
+            (dashboard-modules-owner → /owner#urgent-signals). The link shipped
+            with nothing to land on, so choosing it scrolled nowhere. */}
+        <div id="urgent-signals" className="scroll-mt-24">
         <OwnerPanel title={t("Urgent signals")} description={t("Evidence-backed risk and anomaly detection from live tables.")}>
           <div className="space-y-3">
             {data.signals.slice(0, 5).map((signal) => (
@@ -194,6 +198,7 @@ export default async function OwnerOverviewPage() {
             ))}
           </div>
         </OwnerPanel>
+        </div>
       </div>
 
       <OwnerPanel title={t("Division control center")} description={t("One health map for every live or future Henry Onyx division.")} action={<Link href="/owner/divisions" className="acct-button-ghost">{t("View all divisions")}</Link>}>

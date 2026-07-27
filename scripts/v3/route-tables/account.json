@@ -10,11 +10,23 @@
       "api": false
     },
     {
+      "route": "/.well-known/apple-app-site-association",
+      "api": true
+    },
+    {
+      "route": "/.well-known/assetlinks.json",
+      "api": true
+    },
+    {
       "route": "/activity",
       "api": false
     },
     {
       "route": "/addresses",
+      "api": false
+    },
+    {
+      "route": "/admin/refund",
       "api": false
     },
     {
@@ -50,6 +62,10 @@
       "api": true
     },
     {
+      "route": "/api/auth/reauth",
+      "api": true
+    },
+    {
       "route": "/api/auth/resend",
       "api": true
     },
@@ -62,7 +78,15 @@
       "api": true
     },
     {
+      "route": "/api/business/context",
+      "api": true
+    },
+    {
       "route": "/api/cron/engagement-sweep",
+      "api": true
+    },
+    {
+      "route": "/api/cron/kyc-retention",
       "api": true
     },
     {
@@ -75,6 +99,10 @@
     },
     {
       "route": "/api/cron/notification-redelivery",
+      "api": true
+    },
+    {
+      "route": "/api/cron/recovery-sweep",
       "api": true
     },
     {
@@ -95,6 +123,22 @@
     },
     {
       "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/intelligence/chat",
+      "api": true
+    },
+    {
+      "route": "/api/intelligence/health",
+      "api": true
+    },
+    {
+      "route": "/api/intelligence/quote",
+      "api": true
+    },
+    {
+      "route": "/api/intelligence/run",
       "api": true
     },
     {
@@ -142,6 +186,38 @@
       "api": true
     },
     {
+      "route": "/api/payments/intents",
+      "api": true
+    },
+    {
+      "route": "/api/payments/intents/:param/finalize",
+      "api": true
+    },
+    {
+      "route": "/api/payments/intents/:param/refund",
+      "api": true
+    },
+    {
+      "route": "/api/payments/webhooks/:param",
+      "api": true
+    },
+    {
+      "route": "/api/play/match/:param",
+      "api": true
+    },
+    {
+      "route": "/api/play/match/:param/leave",
+      "api": true
+    },
+    {
+      "route": "/api/play/match/:param/move",
+      "api": true
+    },
+    {
+      "route": "/api/play/quick-match",
+      "api": true
+    },
+    {
       "route": "/api/preferences/update",
       "api": true
     },
@@ -162,6 +238,18 @@
       "api": true
     },
     {
+      "route": "/api/push/public-key",
+      "api": true
+    },
+    {
+      "route": "/api/push/subscribe",
+      "api": true
+    },
+    {
+      "route": "/api/push/unsubscribe",
+      "api": true
+    },
+    {
       "route": "/api/referral/code",
       "api": true
     },
@@ -175,6 +263,18 @@
     },
     {
       "route": "/api/search",
+      "api": true
+    },
+    {
+      "route": "/api/security/confirm",
+      "api": true
+    },
+    {
+      "route": "/api/security/device",
+      "api": true
+    },
+    {
+      "route": "/api/security/secure",
       "api": true
     },
     {
@@ -218,11 +318,15 @@
       "api": true
     },
     {
-      "route": "/api/wallet/funding/:param/proof",
+      "route": "/api/wallet/payout-methods",
       "api": true
     },
     {
-      "route": "/api/wallet/payout-methods",
+      "route": "/api/wallet/topup/init",
+      "api": true
+    },
+    {
+      "route": "/api/wallet/topup/sync",
       "api": true
     },
     {
@@ -266,6 +370,26 @@
       "api": false
     },
     {
+      "route": "/business",
+      "api": false
+    },
+    {
+      "route": "/business/:param",
+      "api": false
+    },
+    {
+      "route": "/business/:param/insights",
+      "api": false
+    },
+    {
+      "route": "/business/:param/team",
+      "api": false
+    },
+    {
+      "route": "/business/accept",
+      "api": false
+    },
+    {
       "route": "/calendar",
       "api": false
     },
@@ -275,6 +399,14 @@
     },
     {
       "route": "/care/bookings/:param",
+      "api": false
+    },
+    {
+      "route": "/continue",
+      "api": false
+    },
+    {
+      "route": "/customize",
       "api": false
     },
     {
@@ -355,6 +487,30 @@
     },
     {
       "route": "/payments",
+      "api": false
+    },
+    {
+      "route": "/payments/callback",
+      "api": false
+    },
+    {
+      "route": "/play",
+      "api": false
+    },
+    {
+      "route": "/play/:param",
+      "api": false
+    },
+    {
+      "route": "/play/fair-play",
+      "api": false
+    },
+    {
+      "route": "/play/practice",
+      "api": false
+    },
+    {
+      "route": "/play/verify",
       "api": false
     },
     {

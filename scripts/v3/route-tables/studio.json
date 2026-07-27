@@ -18,7 +18,35 @@
       "api": false
     },
     {
+      "route": "/api/agency/executor-callback",
+      "api": true
+    },
+    {
+      "route": "/api/agency/jobs/:param/approve-deploy",
+      "api": true
+    },
+    {
+      "route": "/api/agency/jobs/:param/client-review",
+      "api": true
+    },
+    {
+      "route": "/api/agency/jobs/:param/deploy",
+      "api": true
+    },
+    {
+      "route": "/api/agency/spec/:param",
+      "api": true
+    },
+    {
+      "route": "/api/agency/tick",
+      "api": true
+    },
+    {
       "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/auth/reauth",
       "api": true
     },
     {
@@ -42,7 +70,15 @@
       "api": true
     },
     {
+      "route": "/api/studio/asset-download",
+      "api": true
+    },
+    {
       "route": "/api/studio/asset-packs/generate",
+      "api": true
+    },
+    {
+      "route": "/api/studio/asset-unlock",
       "api": true
     },
     {
@@ -54,11 +90,19 @@
       "api": true
     },
     {
+      "route": "/api/studio/pay/card",
+      "api": true
+    },
+    {
       "route": "/api/studio/proposals/sign",
       "api": true
     },
     {
       "route": "/api/studio/revisions",
+      "api": true
+    },
+    {
+      "route": "/api/studio/revisions/deliverable",
       "api": true
     },
     {
@@ -170,6 +214,10 @@
       "api": false
     },
     {
+      "route": "/dev/chat-thread",
+      "api": false
+    },
+    {
       "route": "/faq",
       "api": false
     },
@@ -194,7 +242,15 @@
       "api": false
     },
     {
+      "route": "/owner/agency",
+      "api": false
+    },
+    {
       "route": "/pay/:param",
+      "api": false
+    },
+    {
+      "route": "/pay/:param/card",
       "api": false
     },
     {

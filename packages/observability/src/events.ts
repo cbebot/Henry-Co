@@ -378,7 +378,15 @@ export type HenryEventName =
   | "henry.v3.announcement.delivered"
   | "henry.v3.announcement.engaged"
   | "henry.v3.launch_window.metric_breach"
-  | "henry.v3.closure_certificate.signed";
+  | "henry.v3.closure_certificate.signed"
+  // Owner control rail (V3-OWNER-CONTROL-01). ONE canonical name for every
+  // governed owner action — registration approvals, lifecycle changes,
+  // moderation. The specific action travels in `payload.actionKey` rather than
+  // in the event name so adding an action to the registry never requires
+  // widening this union (and so an operator can chart "all owner actions"
+  // without knowing the catalogue). `outcome` carries the verdict:
+  // approved / rejected / removed / resolved / updated / blocked / failed.
+  | "henry.owner.control.action";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

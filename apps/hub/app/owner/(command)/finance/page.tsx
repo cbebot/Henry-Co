@@ -113,7 +113,12 @@ export default async function FinanceCenterPage() {
 
         <OwnerPanel
           title={t("Wallet withdrawal lane")}
-          description={t("Withdrawal requests that finance still needs to approve, reject, or complete with payout evidence.")}
+          // Truth-in-copy (V3-OWNER-CONTROL-01): this used to say finance "still
+          // needs to approve, reject, or complete" these, which described a
+          // control that does not exist. Withdrawals are settled by the guarded
+          // payout RPCs off the transfer result — reserve, then settle or
+          // release — so this lane is evidence, not a queue anyone works.
+          description={t("Withdrawal requests the payout rail has not settled yet. These settle themselves on the transfer result through the guarded payout path — HQ shows them so you can see the money in flight, not to approve them by hand.")}
         >
           <div className="overflow-x-auto">
             <table className="owner-table">

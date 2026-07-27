@@ -6,6 +6,14 @@
       "api": false
     },
     {
+      "route": "/.well-known/apple-app-site-association",
+      "api": true
+    },
+    {
+      "route": "/.well-known/assetlinks.json",
+      "api": true
+    },
+    {
       "route": "/admin",
       "api": false
     },
@@ -18,6 +26,10 @@
       "api": true
     },
     {
+      "route": "/api/auth/reauth",
+      "api": true
+    },
+    {
       "route": "/api/candidate/documents",
       "api": true
     },
@@ -27,6 +39,30 @@
     },
     {
       "route": "/api/cron/jobs-alerts",
+      "api": true
+    },
+    {
+      "route": "/api/employer/hiring/comment",
+      "api": true
+    },
+    {
+      "route": "/api/employer/hiring/decision",
+      "api": true
+    },
+    {
+      "route": "/api/employer/hiring/document",
+      "api": true
+    },
+    {
+      "route": "/api/employer/hiring/schedule-interview",
+      "api": true
+    },
+    {
+      "route": "/api/employer/hiring/score",
+      "api": true
+    },
+    {
+      "route": "/api/employer/hiring/stage-move",
       "api": true
     },
     {
@@ -43,6 +79,14 @@
     },
     {
       "route": "/api/hiring/messages/flag",
+      "api": true
+    },
+    {
+      "route": "/api/jobs/candidate-invites",
+      "api": true
+    },
+    {
+      "route": "/api/jobs/course-gates",
       "api": true
     },
     {
@@ -150,6 +194,10 @@
       "api": false
     },
     {
+      "route": "/employer/conversations/:param",
+      "api": false
+    },
+    {
       "route": "/employer/hiring",
       "api": false
     },
@@ -223,6 +271,10 @@
     },
     {
       "route": "/recruiter/candidates/:param",
+      "api": false
+    },
+    {
+      "route": "/recruiter/candidates/verified",
       "api": false
     },
     {
