@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "db:apply": "node ./scripts/apply-hub-migrations.mjs",
     "db:probe": "node ./scripts/probe-supabase-tables.mjs",
-    "test": "tsx --test lib/founder-intelligence/__tests__/*.test.ts"
+    "test": "tsx --test lib/founder-intelligence/__tests__/*.test.ts lib/predictive/*.test.ts"
   },
   "dependencies": {
     "@henryco/ai-gateway": "workspace:^",

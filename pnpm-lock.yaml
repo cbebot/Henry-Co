@@ -2735,6 +2735,12 @@ importers:
       '@henryco/data':
         specifier: workspace:^
         version: link:../data
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../intelligence
       '@henryco/observability':
         specifier: workspace:^
         version: link:../observability

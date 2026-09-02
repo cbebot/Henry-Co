@@ -44,6 +44,7 @@ import {
   handleStaffFinanceOperatorExport,
 } from "../../_actions/exports";
 import { createStaffSupabaseServer } from "@/lib/supabase/server";
+import { getStaffLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,8 @@ export default async function TrackCModulePage({
   }
 
   const supabase = await createStaffSupabaseServer();
+  // V3-41 — operator locale for the predictive panels (apps/staff had no resolver).
+  const locale = await getStaffLocale();
 
   switch (slug) {
     case "staff-overview":
@@ -138,6 +141,7 @@ export default async function TrackCModulePage({
         <StaffLogisticsPageServer
           viewer={viewer}
           supabase={supabase as never}
+          locale={locale}
           bulkActionHandler={handleStaffLogisticsBulkAction}
           exportHandler={handleStaffLogisticsExport}
         />
@@ -147,6 +151,7 @@ export default async function TrackCModulePage({
         <StaffSupportPageServer
           viewer={viewer}
           supabase={supabase as never}
+          locale={locale}
           bulkActionHandler={handleStaffSupportBulkAction}
           exportHandler={handleStaffSupportExport}
         />
@@ -156,6 +161,7 @@ export default async function TrackCModulePage({
         <StaffModerationPageServer
           viewer={viewer}
           supabase={supabase as never}
+          locale={locale}
           bulkActionHandler={handleStaffModerationBulkAction}
           exportHandler={handleStaffModerationExport}
         />
@@ -165,6 +171,7 @@ export default async function TrackCModulePage({
         <StaffFinanceOperatorPageServer
           viewer={viewer}
           supabase={supabase as never}
+          locale={locale}
           bulkActionHandler={handleStaffFinanceOperatorBulkAction}
           exportHandler={handleStaffFinanceOperatorExport}
         />

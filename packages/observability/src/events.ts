@@ -302,6 +302,13 @@ export type HenryEventName =
   // profiled/ai-applied booleans only; never per-item content, never a score,
   // never a provider/model name.
   | "henry.personalization.recommendations.computed"
+  // V3-41 predictive quality & workload (Phase E, Wave E.4). Platform-invoked,
+  // ADVISORY-ONLY operator signals: they recommend a human intervention and can
+  // never auto-act on a customer. Payloads carry queue keys, unit/transaction ids,
+  // bands and counts ONLY — never PII, never a raw score, never a provider/model.
+  | "henry.predictive.workload.computed"
+  | "henry.predictive.quality.at_risk_flagged"
+  | "henry.predictive.dispute.high_likelihood"
   // payments / provider router — V3-13 foundation lock (vendor-agnostic
   // routing). `intent.*` track the money lifecycle of a payment_intent
   // (created → succeeded | failed → refunded); the outcome axis maps

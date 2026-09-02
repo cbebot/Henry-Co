@@ -3,6 +3,7 @@ import { z } from "zod";
 export * from "./analytics";
 export * from "./search";
 export * from "./recommendations";
+export * from "./predictive/index";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -110,6 +111,13 @@ export const HenryEventNames = {
   AI_USAGE_METERED: "henry.ai.usage.metered",
   AI_USAGE_BLOCKED: "henry.ai.usage.blocked",
   AI_PROVIDER_FAILED: "henry.ai.provider.failed",
+  // Predictive quality & workload (V3-41, Phase E Wave E.4). Platform-invoked
+  // batch events ride actorless (division 'system'). Properties carry queue keys,
+  // unit/transaction ids, bands and COUNTS only — never PII, never a raw score,
+  // never a provider/model name. (Four segments: henry.<domain>.<object>.<verb>.)
+  PREDICTIVE_WORKLOAD_COMPUTED: "henry.predictive.workload.computed",
+  PREDICTIVE_QUALITY_AT_RISK_FLAGGED: "henry.predictive.quality.at_risk_flagged",
+  PREDICTIVE_DISPUTE_HIGH_LIKELIHOOD: "henry.predictive.dispute.high_likelihood",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
@@ -322,7 +330,16 @@ export type HenryFeatureFlagName =
   // V3-34 (Phase E) — per-surface kill switch for the personalized home layout.
   // Default OFF: the account home falls back to pure DASH weight ordering instantly.
   // Deterministic + AI-free; gates only the user-preference/signal projection.
-  | "personalization_home";
+  | "personalization_home"
+  // V3-41 (Phase E) — the predictive quality & workload batch. Default OFF: no
+  // batch runs, no rows written, the staff panels render their empty state. The
+  // engines are deterministic + AI-free, and every output is ADVISORY (a
+  // prediction can never act on a customer), so this flag alone affects no user.
+  | "predictive_operations"
+  // V3-41 — the OPTIONAL staff-narrative slice on top of the deterministic
+  // forecast (E-D1-A). Default OFF. Also requires `ai_gateway`; spend is platform
+  // COGS on the unified internal ledger, reserve-before-run, degrade-CLOSED.
+  | "predictive_quality_narrative";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -376,6 +393,16 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
       list.has("personalization_home") ||
       list.has("personalization"),
+    // V3-41 predictive operations batch — default OFF (dark launch).
+    predictive_operations:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_OPERATIONS) ||
+      list.has("predictive_operations") ||
+      list.has("predictive_ops"),
+    // V3-41 staff-narrative AI slice — default OFF; the forecast never needs it.
+    predictive_quality_narrative:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_QUALITY_NARRATIVE) ||
+      list.has("predictive_quality_narrative") ||
+      list.has("predictive_narrative"),
   };
 }
 
