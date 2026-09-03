@@ -453,7 +453,46 @@ async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; i
       variantsByProduct.set(key, existing);
     }
 
-    const products: MarketplaceProduct[] = productRows.map((row: Record<string, unknown>) => ({
+    // V3-OWNER-CONTROL-01 — a listing may only be in the public catalogue if the
+    // seller behind it is still live.
+    //
+    // The vendors query above already filters `status = 'approved'`, but the
+    // products query does not join it, and the map below resolves an unknown
+    // vendor to `vendorSlug: null` and KEEPS the row. So a product whose seller
+    // is suspended (or was rejected, or never got past pending) stayed listed
+    // and buyable, merely detached from its storefront.
+    //
+    // That turned HQ's new "Suspend store" into a half-control: it hides the
+    // storefront and revokes the seller's workspace access, so the seller can no
+    // longer reach the orders screen — while buyers keep placing orders nobody
+    // can fulfil. Suspension has to stop the selling, not just the seller.
+    //
+    // The test is "has a vendor_id that does not resolve", NOT "has no vendor
+    // slug". Platform-owned inventory legitimately carries no vendor
+    // (`inventory_owner_type`), and dropping those would empty the house
+    // catalogue. Only a row that NAMES a seller who is not live is withheld.
+    //
+    // Bounded: every one of the 9 vendor rows on production is `approved`, so
+    // this withholds nothing today — it takes effect exactly when the owner
+    // suspends someone, which is the moment it is supposed to.
+    const withheldForVendor: string[] = [];
+    const listableProductRows = (productRows as Array<Record<string, unknown>>).filter((row) => {
+      const vendorId = row.vendor_id ? String(row.vendor_id) : "";
+      if (!vendorId) return true;
+      if (vendorMap.has(vendorId)) return true;
+      withheldForVendor.push(String(row.id));
+      return false;
+    });
+    if (withheldForVendor.length) {
+      // Logged, not silent: a listing vanishing from the catalogue is a
+      // commercial event, and "the catalogue got smaller and nobody knows why"
+      // is the kind of thing that takes a day to diagnose without this line.
+      console.info(
+        `[marketplace] withheld ${withheldForVendor.length} listing(s) whose seller is not live`,
+      );
+    }
+
+    const products: MarketplaceProduct[] = listableProductRows.map((row: Record<string, unknown>) => ({
       id: String(row.id),
       slug: String(row.slug),
       title: String(row.title),

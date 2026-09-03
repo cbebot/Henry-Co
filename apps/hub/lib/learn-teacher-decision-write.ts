@@ -25,6 +25,19 @@ import { createAdminSupabase } from "@/lib/supabase";
 
 export type LearnTeacherDecision = "approved" | "rejected";
 
+/**
+ * Reported when the application was approved but instructor access was not
+ * granted (or the membership could not be linked back to the application).
+ *
+ * Unlike the marketplace equivalent there is no in-product repair to name here:
+ * Learn's own review workflow is the other writer of this membership, and it is
+ * not reachable from HQ. So the message says what is true and stops — an
+ * operator told "retry" for something that cannot be retried is worse served
+ * than one told plainly that engineering has to look.
+ */
+const GRANT_FAILED_MESSAGE =
+  "The application was approved but instructor access could not be granted, so this teacher cannot open the instructor workspace yet. This needs engineering attention before they are told they are live.";
+
 export type LearnTeacherApplicationState = {
   applicationId: string;
   userId: string | null;
@@ -160,27 +173,72 @@ export async function applyLearnTeacherDecision(input: {
   // the status says "approved" while every instructor surface still refuses
   // them, which is exactly the two-auth-systems split this pass exists to fix.
   if (decision === "approved" && applicantUserId) {
-    const { data: existing } = await admin
+    // Every result below is CHECKED, and the resulting membership id is written
+    // BACK onto the application. Both were missing.
+    //
+    // Unchecked, a failed grant ends with the application reading `approved`
+    // while `/teach` still refuses the applicant — the console reports success
+    // for an approval that did not take effect.
+    //
+    // The id write-back matters just as much and is less obvious. Learn's own
+    // revoke path (apps/learn/lib/learn/workflows.ts:1319) deactivates the
+    // membership named by `learn_teacher_applications.instructor_membership_id`
+    // and has no other handle on it. Leaving that column null means a teacher
+    // approved from HQ can never be un-approved from Learn: the revoke runs,
+    // reports success, and the instructor membership stays active. Granting
+    // access through a door that does not close is worse than not granting it.
+    const { data: existingRows, error: membershipReadError } = await admin
       .from("learn_role_memberships")
       .select("id")
       .eq("user_id", applicantUserId)
       .eq("role", "instructor")
-      .maybeSingle();
+      .limit(1);
+    if (membershipReadError) {
+      console.error(
+        "[learn-teacher-decision-write] membership lookup failed",
+        membershipReadError.message,
+      );
+      return { ok: false, error: GRANT_FAILED_MESSAGE };
+    }
 
-    if (existing) {
-      await admin
-        .from("learn_role_memberships")
-        .update({ is_active: true } as never)
-        .eq("id", (existing as { id: string }).id);
-    } else {
-      await admin.from("learn_role_memberships").insert({
-        user_id: applicantUserId,
-        normalized_email: row.normalized_email ?? null,
-        role: "instructor",
-        scope_type: "platform",
-        scope_id: null,
-        is_active: true,
-      } as never);
+    const existingMembershipId = (existingRows ?? [])[0]?.id;
+    const grant = existingMembershipId
+      ? await admin
+          .from("learn_role_memberships")
+          .update({ is_active: true } as never)
+          .eq("id", existingMembershipId)
+          .select("id")
+      : await admin
+          .from("learn_role_memberships")
+          .insert({
+            user_id: applicantUserId,
+            normalized_email: row.normalized_email ?? null,
+            role: "instructor",
+            scope_type: "platform",
+            scope_id: null,
+            is_active: true,
+          } as never)
+          .select("id");
+
+    if (grant.error || !Array.isArray(grant.data) || grant.data.length !== 1) {
+      console.error(
+        "[learn-teacher-decision-write] instructor role grant failed",
+        grant.error?.message ?? "no row written",
+      );
+      return { ok: false, error: GRANT_FAILED_MESSAGE };
+    }
+
+    const membershipId = String((grant.data[0] as { id: string }).id);
+    const { error: linkError } = await admin
+      .from("learn_teacher_applications")
+      .update({ instructor_membership_id: membershipId, updated_at: now } as never)
+      .eq("id", applicationId);
+    if (linkError) {
+      console.error(
+        "[learn-teacher-decision-write] membership link write failed",
+        linkError.message,
+      );
+      return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
   }
 

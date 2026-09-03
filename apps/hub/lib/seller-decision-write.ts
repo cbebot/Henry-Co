@@ -37,6 +37,22 @@ import { createAdminSupabase } from "@/lib/supabase";
 
 export type SellerDecision = "approved" | "changes_requested" | "rejected";
 
+/**
+ * Reported when the storefront row landed but the vendor role membership did
+ * not. The partial state is stated plainly rather than softened, because the
+ * owner needs to know two different things: the store IS live to buyers, and the
+ * seller CANNOT yet reach their workspace.
+ *
+ * The named recovery is real and in-product. Suspend followed by Reinstate both
+ * route through `owner_set_vendor_active`, which writes the storefront status
+ * and the role membership inside ONE transaction — so the pair repairs exactly
+ * the row that failed here, and does it atomically. Re-running Approve would
+ * not work: the application now reads `approved`, which is not a state the
+ * approve action accepts.
+ */
+const GRANT_FAILED_MESSAGE =
+  "The store was created but workspace access could not be granted, so this seller cannot sign in to sell yet. Use Suspend store then Reinstate store on the sellers panel to repair it.";
+
 export type SellerApplicationState = {
   applicationId: string;
   userId: string | null;
@@ -169,7 +185,7 @@ export async function applySellerDecision(input: {
     }
     const { data: slugHolder, error: slugError } = await admin
       .from("marketplace_vendors")
-      .select("id, owner_user_id")
+      .select("id, owner_user_id, status")
       .eq("slug", proposedSlug)
       .maybeSingle();
     if (slugError) {
@@ -182,6 +198,38 @@ export async function applySellerDecision(input: {
         error: `The store URL "${proposedSlug}" already belongs to another seller. Ask the applicant to choose a different one before approving.`,
       };
     }
+
+    // SUSPENDED-STORE GATE (V3-OWNER-CONTROL-01, round 2).
+    //
+    // The collision gate above deliberately PERMITS the case where the slug
+    // holder is the applicant themselves — that is their own store, and
+    // approving simply updates it. But `vendorPayload` below hardcodes
+    // `status: "approved"` and the block after it reactivates the vendor role
+    // membership. So if that self-held store is SUSPENDED, a one-tap "Approve
+    // seller" quietly reinstates it.
+    //
+    // That is a bypass of this pass's own gate. `marketplace.vendor.reinstate`
+    // requires a fresh password step-up and refuses anything not currently
+    // suspended (the `not_suspended` branch of `owner_set_vendor_active`);
+    // re-submitting an application is free and forces the row back to
+    // `submitted` (apps/marketplace/app/api/seller-applications/route.ts:232),
+    // so a suspended seller could re-apply and have the ungated approve button
+    // undo their suspension. The rail's freshness check could not catch it: it
+    // reads the APPLICATION's status and never looks at the vendor row the
+    // write actually lands on — the same "guard was on the wrong entity" shape
+    // as the slug-takeover above.
+    //
+    // Refuse, and name the control that is allowed to do this. Reinstatement is
+    // a decision the owner should take deliberately about a store, not one that
+    // arrives as a side effect of clearing an application queue.
+    const holderStatus = String((slugHolder as { status?: unknown } | null)?.status ?? "").trim();
+    if (slugHolder && holderStatus === "suspended") {
+      return {
+        ok: false,
+        error: `"${proposedSlug}" is a suspended store. Approving this application would put it back online — use Reinstate store on the sellers panel if that is what you intend.`,
+      };
+    }
+
     existingVendorId = slugHolder?.id ? String(slugHolder.id) : null;
   }
 
@@ -303,33 +351,70 @@ export async function applySellerDecision(input: {
     const vendorId = String((written.data as { id: string }).id);
 
     // Read-then-write rather than upsert. The only unique index on
-    // marketplace_role_memberships is an EXPRESSION index that PostgREST cannot
-    // name in `onConflict`, so an upsert here degrades to a plain insert and a
-    // repeat approval raises a unique violation instead of being a no-op. Learn
-    // teacher grants already do it this way for the same reason.
-    const { data: existingMembership } = await admin
+    // marketplace_role_memberships is an EXPRESSION index —
+    // `(user_id, normalized_email, scope_type, coalesce(scope_id, '000…'), role)`
+    // at marketplace_init.sql:539, confirmed on prod at
+    // supabase/prod-actual/schema.sql:7018 — which PostgREST cannot name in
+    // `onConflict`, so an upsert here degrades to a plain insert and a repeat
+    // approval raises a unique violation instead of being a no-op. Learn teacher
+    // grants already do it this way for the same reason.
+    //
+    // EVERY RESULT BELOW IS CHECKED, which none of them previously were. This is
+    // the step that makes an approved seller able to sell: `/vendor` is gated by
+    // `requireMarketplaceRoles`, which reads `marketplace_role_memberships`
+    // ALONE (apps/marketplace/lib/marketplace/auth.ts:92-106). A silent failure
+    // here therefore ends with the console saying "Done", the application
+    // reading `approved`, the storefront row live — and the seller bounced to
+    // /account when they try to open their workspace. That is materially the
+    // same broken outcome as the incident this whole pass was commissioned to
+    // fix, only harder to diagnose because every surface claims success.
+    //
+    // `.limit(1)` + array rather than `.maybeSingle()`: the expression index
+    // permits near-duplicate rows that the four `.eq()` filters below cannot
+    // distinguish (they do not constrain `normalized_email`), and `maybeSingle`
+    // turns "two matches" into an ERROR. Reading one row and reactivating it is
+    // the correct handling of that case; erroring is not.
+    const { data: existingRows, error: membershipReadError } = await admin
       .from("marketplace_role_memberships")
       .select("id")
       .eq("user_id", application.user_id)
       .eq("scope_type", "vendor")
       .eq("scope_id", vendorId)
       .eq("role", "vendor")
-      .maybeSingle();
+      .limit(1);
+    if (membershipReadError) {
+      console.error(
+        "[seller-decision-write] membership lookup failed",
+        membershipReadError.message,
+      );
+      return { ok: false, error: GRANT_FAILED_MESSAGE };
+    }
 
-    if (existingMembership?.id) {
-      await admin
-        .from("marketplace_role_memberships")
-        .update({ is_active: true } as never)
-        .eq("id", existingMembership.id);
-    } else {
-      await admin.from("marketplace_role_memberships").insert({
-        user_id: application.user_id,
-        normalized_email: application.normalized_email,
-        scope_type: "vendor",
-        scope_id: vendorId,
-        role: "vendor",
-        is_active: true,
-      } as never);
+    const existingMembershipId = (existingRows ?? [])[0]?.id;
+    const grant = existingMembershipId
+      ? await admin
+          .from("marketplace_role_memberships")
+          .update({ is_active: true } as never)
+          .eq("id", existingMembershipId)
+          .select("id")
+      : await admin
+          .from("marketplace_role_memberships")
+          .insert({
+            user_id: application.user_id,
+            normalized_email: application.normalized_email,
+            scope_type: "vendor",
+            scope_id: vendorId,
+            role: "vendor",
+            is_active: true,
+          } as never)
+          .select("id");
+
+    if (grant.error || !Array.isArray(grant.data) || grant.data.length !== 1) {
+      console.error(
+        "[seller-decision-write] vendor role grant failed",
+        grant.error?.message ?? "no row written",
+      );
+      return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
   }
 

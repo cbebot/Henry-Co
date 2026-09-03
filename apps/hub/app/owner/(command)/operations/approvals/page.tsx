@@ -56,7 +56,30 @@ export default async function OwnerApprovalsPage() {
         description={t("Every decision waiting on you, with the controls to make it. Approvals take one tap; suspensions, removals, and rejected listings ask for your password first. Each action is recorded against your name before anything changes.")}
       />
 
-      {control.totalPending === 0 ? (
+      {/*
+        The all-clear is a CLAIM, and it is only allowed to be made when the
+        page can actually stand behind it. `getOwnerControlQueues` is fail-soft
+        per panel: a queue whose read throws comes back empty with
+        `unavailable: true` rather than taking the page down. That is the right
+        behaviour for a console — one broken panel must not hide the other five
+        — but it means `totalPending === 0` has two very different causes, and
+        only one of them is "nothing is waiting". If a read failed, a green
+        "Nothing is waiting on you" is the console telling the owner the exact
+        opposite of what it knows, which is the failure mode that ends with
+        decisions being made in the SQL editor again.
+
+        So `anyUnavailable` outranks the count entirely, and it is computed over
+        every panel including the live-stores one: a lifecycle control the owner
+        has silently lost is worth saying out loud even when no queue is
+        pending.
+      */}
+      {control.anyUnavailable ? (
+        <OwnerNotice
+          tone="critical"
+          title={t("Some queues could not be loaded")}
+          body={t("At least one panel below failed to read and is showing as unavailable, so this page cannot tell you it is all clear. Anything waiting in a panel that did not load is not counted here. Refresh, and if a panel stays unavailable it needs engineering attention.")}
+        />
+      ) : control.totalPending === 0 ? (
         <OwnerNotice
           tone="good"
           title={t("Nothing is waiting on you")}
@@ -65,8 +88,16 @@ export default async function OwnerApprovalsPage() {
       ) : (
         <OwnerNotice
           tone="warning"
-          title={`${control.totalPending} ${t("decisions are waiting on you")}`}
-          body={t("Each one is shown with the evidence needed to decide it. A reason is required for anything other than a straight approval, and it is stored with the decision.")}
+          title={
+            control.anyTruncated
+              ? `${t("At least")} ${control.totalPending} ${t("decisions are waiting on you")}`
+              : `${control.totalPending} ${t("decisions are waiting on you")}`
+          }
+          body={
+            control.anyTruncated
+              ? t("Each one is shown with the evidence needed to decide it. A reason is required for anything other than a straight approval, and it is stored with the decision. One or more queues is showing a full page of rows and has more behind it — clear what is here and reload to see the rest.")
+              : t("Each one is shown with the evidence needed to decide it. A reason is required for anything other than a straight approval, and it is stored with the decision.")
+          }
         />
       )}
 
@@ -74,7 +105,13 @@ export default async function OwnerApprovalsPage() {
         <OwnerApprovalsConsole queues={control.queues} />
       </SensitiveActionProviderBridge>
 
-      {control.openDisputes > 0 ? (
+      {/*
+        `openDisputes` is `null` when the count could not be read, and `null` is
+        not zero — the unavailable banner above has already said so, so this
+        block simply declines to quote a number it does not have rather than
+        rendering a confident "0 open disputes".
+      */}
+      {control.openDisputes !== null && control.openDisputes > 0 ? (
         <OwnerNotice
           tone="warning"
           title={`${control.openDisputes} ${t("open buyer-seller disputes")}`}

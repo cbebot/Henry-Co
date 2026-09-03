@@ -85,7 +85,7 @@ const QUEUE_COPY: Record<string, { title: string; description: string; empty: st
   "live-sellers": {
     title: "Live sellers",
     description:
-      "Every approved and suspended store. Suspending one hides it from buyers and revokes the seller workspace immediately; it moves no money.",
+      "Every approved and suspended store. Suspending one takes the storefront and all of its listings out of the catalogue and revokes the seller's workspace access immediately. It moves no money — anything already owed to them stays where it is.",
     empty: "No stores are live yet.",
   },
 };
@@ -105,7 +105,14 @@ export function OwnerApprovalsConsole({ queues }: { queues: OwnerControlQueue[] 
   const router = useRouter();
 
   const [notes, setNotes] = useState<Record<string, string>>({});
-  const [busyRow, setBusyRow] = useState<string | null>(null);
+  // Identifies the exact button in flight as `${queueId}:${rowId}::${actionKey}`,
+  // not just the row. Keyed by row alone, every button on the row read
+  // "Working…" at once, so a row mid-suspension looked identical to one mid-
+  // reinstatement — the operator could not tell which verdict he had pressed
+  // while it was the only moment that knowledge mattered. Every button on the
+  // row is still DISABLED together (one decision at a time per record); only the
+  // label moves.
+  const [busyAction, setBusyAction] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<Record<string, Feedback>>({});
 
   const setRowFeedback = useCallback((rowKey: string, value: Feedback | null) => {
@@ -136,7 +143,7 @@ export function OwnerApprovalsConsole({ queues }: { queues: OwnerControlQueue[] 
       }
 
       const gestureKey = newGestureKey();
-      setBusyRow(rowKey);
+      setBusyAction(`${rowKey}::${action.key}`);
       setRowFeedback(rowKey, null);
 
       try {
@@ -197,7 +204,7 @@ export function OwnerApprovalsConsole({ queues }: { queues: OwnerControlQueue[] 
           message: t("The connection dropped. Refresh to see whether it went through."),
         });
       } finally {
-        setBusyRow(null);
+        setBusyAction(null);
       }
     },
     [notes, router, setRowFeedback, t],
@@ -234,7 +241,7 @@ export function OwnerApprovalsConsole({ queues }: { queues: OwnerControlQueue[] 
               <ul className="space-y-3">
                 {queue.rows.map((row) => {
                   const rowKey = `${queue.id}:${row.id}`;
-                  const rowBusy = busyRow === rowKey;
+                  const rowBusy = busyAction !== null && busyAction.startsWith(`${rowKey}::`);
                   const rowFeedback = feedback[rowKey];
                   // Only offer verdicts this record is actually eligible for —
                   // a suspended store gets "Reinstate", a live one gets
@@ -306,7 +313,9 @@ export function OwnerApprovalsConsole({ queues }: { queues: OwnerControlQueue[] 
                               }
                               onClick={() => void run(queue.id, row, action.key)}
                             >
-                              {rowBusy ? t("Working…") : t(action.label)}
+                              {busyAction === `${rowKey}::${action.key}`
+                                ? t("Working…")
+                                : t(action.label)}
                             </button>
                           ))}
                           {rowActions.some((action) => action.requiresReauth) ? (
@@ -341,6 +350,20 @@ export function OwnerApprovalsConsole({ queues }: { queues: OwnerControlQueue[] 
                 })}
               </ul>
             )}
+
+            {/*
+              Said HERE as well as in the page banner, and deliberately not only
+              there. The banner is above the fold; a truncated queue is found by
+              someone who has scrolled to the bottom of a long list, and the
+              bottom of a capped list is exactly where it looks complete. The
+              reader caps rows rather than counting the remainder, so this says
+              "more" and not a number it would have to invent.
+            */}
+            {queue.truncated ? (
+              <p className="mt-3 text-xs text-[var(--acct-muted)]">
+                {t("Showing the oldest waiting first, and this queue is full — there are more behind these. Decide some and reload to pull in the rest.")}
+              </p>
+            ) : null}
           </OwnerPanel>
           </div>
         );

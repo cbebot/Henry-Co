@@ -37,6 +37,15 @@
  * whether it may be used.
  */
 
+import {
+  KYC_PENDING,
+  MODERATION_PENDING,
+  PRODUCT_REVIEW_PENDING,
+  SELLER_APPLICATION_PENDING,
+  TEACHER_APPLICATION_PENDING,
+  VENDOR_LIFECYCLE,
+} from "./statuses";
+
 export type OwnerControlActionKey =
   | "marketplace.seller.approve"
   | "marketplace.seller.request_changes"
@@ -98,9 +107,11 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "marketplace",
     requiresReauth: false,
     requiresNote: false,
-    // 'draft' is excluded on purpose: a draft has not been submitted, and
-    // approving one would activate a store its owner never asked to open.
-    fromStates: ["submitted", "pending", "changes_requested"],
+    // See `statuses.ts` for why this set is what it is — 'draft' is excluded
+    // because approving one would open a store its owner never asked for, and
+    // 'under_review' is included because leaving it out hid every application
+    // parked in manual review.
+    fromStates: SELLER_APPLICATION_PENDING,
     toState: "approved",
   },
   "marketplace.seller.request_changes": {
@@ -112,7 +123,20 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "marketplace",
     requiresReauth: false,
     requiresNote: true,
-    fromStates: ["submitted", "pending", "changes_requested"],
+    // 'changes_requested' is excluded, matching the identical exclusion on
+    // `marketplace.product.request_changes` above. Asking again for changes
+    // already requested lands on the same status it started from: the
+    // compare-and-set matches, so the write reports success, and the pass banks
+    // a ledger row, an audit row and a fresh notification to the applicant for a
+    // lifecycle event that did not happen.
+    //
+    // This entry read `SELLER_APPLICATION_PENDING` until the registry invariant
+    // test caught it — the two request-changes actions had drifted apart, one
+    // reasoning carefully about the self-transition and the other inheriting the
+    // whole pending set because that was the convenient constant. The queue
+    // still lists `changes_requested` applications and the owner can still
+    // approve or reject them; only the button that would change nothing is gone.
+    fromStates: SELLER_APPLICATION_PENDING.filter((status) => status !== "changes_requested"),
     toState: "changes_requested",
   },
   "marketplace.seller.reject": {
@@ -124,7 +148,7 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "marketplace",
     requiresReauth: false,
     requiresNote: true,
-    fromStates: ["submitted", "pending", "changes_requested"],
+    fromStates: SELLER_APPLICATION_PENDING,
     toState: "rejected",
   },
 
@@ -163,7 +187,7 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "marketplace",
     requiresReauth: false,
     requiresNote: false,
-    fromStates: ["pending", "changes_requested", "flagged"],
+    fromStates: PRODUCT_REVIEW_PENDING,
     toState: "approved",
   },
   "marketplace.product.request_changes": {
@@ -182,7 +206,10 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     // this unprompted button a way around the password step-up on
     // `marketplace.product.reject`. Taking a live listing down goes through the
     // gated verdict; this action is for listings not yet in the catalogue.
-    fromStates: ["pending", "flagged"],
+    //
+    // 'changes_requested' is excluded as well — asking again for changes already
+    // requested moves nothing and would bank an audit row for a non-event.
+    fromStates: ["submitted", "under_review"],
     toState: "changes_requested",
   },
   "marketplace.product.reject": {
@@ -195,7 +222,10 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     // Rejecting pulls a listing out of the catalogue — removal-class.
     requiresReauth: true,
     requiresNote: true,
-    fromStates: ["pending", "approved", "changes_requested", "flagged"],
+    // 'approved' IS included here, unlike the two actions above: taking a live
+    // listing down is a real thing an owner must be able to do, and this is the
+    // action that demands a password before doing it.
+    fromStates: [...PRODUCT_REVIEW_PENDING, "approved"],
     toState: "rejected",
   },
 
@@ -208,7 +238,7 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "account",
     requiresReauth: false,
     requiresNote: false,
-    fromStates: ["pending", "in_review"],
+    fromStates: KYC_PENDING,
     toState: "approved",
   },
   "account.kyc.reject": {
@@ -220,7 +250,7 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "account",
     requiresReauth: false,
     requiresNote: true,
-    fromStates: ["pending", "in_review"],
+    fromStates: KYC_PENDING,
     toState: "rejected",
   },
 
@@ -233,7 +263,7 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "learn",
     requiresReauth: false,
     requiresNote: false,
-    fromStates: ["submitted", "pending", "in_review", "changes_requested"],
+    fromStates: TEACHER_APPLICATION_PENDING,
     toState: "approved",
   },
   "learn.teacher.reject": {
@@ -245,7 +275,7 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "learn",
     requiresReauth: false,
     requiresNote: true,
-    fromStates: ["submitted", "pending", "in_review", "changes_requested"],
+    fromStates: TEACHER_APPLICATION_PENDING,
     toState: "rejected",
   },
 
@@ -259,7 +289,7 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     // Upholding a report is the deletion-class verdict in this catalogue.
     requiresReauth: true,
     requiresNote: true,
-    fromStates: ["pending", "open", "in_review", "escalated"],
+    fromStates: MODERATION_PENDING,
     toState: "actioned",
   },
   "moderation.item.dismiss": {
@@ -271,7 +301,7 @@ const ACTIONS: Record<OwnerControlActionKey, OwnerControlAction> = {
     division: "hub",
     requiresReauth: false,
     requiresNote: true,
-    fromStates: ["pending", "open", "in_review", "escalated"],
+    fromStates: MODERATION_PENDING,
     toState: "dismissed",
   },
 };
@@ -295,4 +325,105 @@ export function getOwnerControlAction(key: unknown): OwnerControlAction | null {
 /** Every declared action — used by the surface to render controls and by tests. */
 export function listOwnerControlActions(): OwnerControlAction[] {
   return Object.values(ACTIONS);
+}
+
+export type OwnerControlQueueId =
+  | "seller-applications"
+  | "kyc-submissions"
+  | "teacher-applications"
+  | "product-reviews"
+  | "moderation-reports"
+  | "live-sellers";
+
+export type OwnerControlQueueBinding = {
+  id: OwnerControlQueueId;
+  division: string;
+  /** The statuses the queue LISTS — the `.in()` filter, declared once. */
+  listStates: readonly string[];
+  /** The actions offered on each row, in render order. */
+  actions: OwnerControlActionKey[];
+};
+
+/**
+ * Which rows each queue shows, and which verdicts it offers on them — bound
+ * together in ONE declaration.
+ *
+ * These two facts were previously written in two files, and they drifted
+ * immediately. `queues.ts` listed listings whose status was `pending` or
+ * `flagged` while `registry.ts` accepted transitions from `submitted`,
+ * `under_review` and `changes_requested`. The two sets did not intersect at
+ * all, so the queue was permanently empty; had it not been, every row in it
+ * would have rendered with no buttons.
+ *
+ * Binding them here makes that particular drift unrepresentable rather than
+ * merely tested: there is one `listStates` and one `actions`, and the reader and
+ * the console both take them from here.
+ *
+ * The invariant that remains testable — and is tested in
+ * `__tests__/owner-control-registry.test.ts` — is CONTAINMENT: every status a
+ * queue lists must be accepted by at least one of that queue's own actions.
+ * Violating it produces a row the owner can see and cannot act on, which is the
+ * exact experience that sent him to the SQL editor.
+ */
+const QUEUE_BINDINGS: readonly OwnerControlQueueBinding[] = [
+  {
+    id: "seller-applications",
+    division: "marketplace",
+    listStates: SELLER_APPLICATION_PENDING,
+    actions: [
+      "marketplace.seller.approve",
+      "marketplace.seller.request_changes",
+      "marketplace.seller.reject",
+    ],
+  },
+  {
+    id: "kyc-submissions",
+    division: "account",
+    listStates: KYC_PENDING,
+    actions: ["account.kyc.approve", "account.kyc.reject"],
+  },
+  {
+    id: "teacher-applications",
+    division: "learn",
+    listStates: TEACHER_APPLICATION_PENDING,
+    actions: ["learn.teacher.approve", "learn.teacher.reject"],
+  },
+  {
+    id: "product-reviews",
+    division: "marketplace",
+    listStates: PRODUCT_REVIEW_PENDING,
+    actions: [
+      "marketplace.product.approve",
+      "marketplace.product.request_changes",
+      "marketplace.product.reject",
+    ],
+  },
+  {
+    id: "moderation-reports",
+    division: "hub",
+    listStates: MODERATION_PENDING,
+    actions: ["moderation.item.dismiss", "moderation.item.remove"],
+  },
+  {
+    // Not a backlog: these are the live and suspended stores, listed so the
+    // owner has a lifecycle control rather than a queue that drains.
+    id: "live-sellers",
+    division: "marketplace",
+    listStates: VENDOR_LIFECYCLE,
+    actions: ["marketplace.vendor.suspend", "marketplace.vendor.reinstate"],
+  },
+];
+
+export function getOwnerControlQueueBinding(id: OwnerControlQueueId): OwnerControlQueueBinding {
+  const binding = QUEUE_BINDINGS.find((entry) => entry.id === id);
+  // Unreachable through the type system; throwing rather than returning a
+  // default keeps a future typo from silently producing a queue that filters on
+  // nothing and therefore lists everything.
+  if (!binding) throw new Error(`owner-control: no queue binding for "${id}"`);
+  return binding;
+}
+
+/** Every queue binding — used by the invariant test. */
+export function listOwnerControlQueueBindings(): readonly OwnerControlQueueBinding[] {
+  return QUEUE_BINDINGS;
 }

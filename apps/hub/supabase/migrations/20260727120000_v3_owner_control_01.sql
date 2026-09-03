@@ -125,6 +125,15 @@ comment on table public.owner_control_actions is
 -- Bound on user_id ONLY, never email: "email-OR role binding" is a named
 -- ecosystem-wide FIRE finding, and a surface that suspends sellers is the last
 -- place to honour the looser binding.
+-- The role test is byte-exact, deliberately. An earlier draft wrote
+-- `lower(trim(op.role))` here while owner_control_assert_actor() below tested
+-- `op.role` bare, which left this rail carrying TWO definitions of "owner" that
+-- agree only because owner_profiles_role_check pins the vocabulary to exact
+-- lowercase. Two predicates for one question is a bug waiting for whoever
+-- relaxes that CHECK: the looser one decides who sees the buttons, the stricter
+-- one decides who may press them, and the gap between them is a console that
+-- offers actions it then refuses. Both now match each other, and public.is_owner(),
+-- character for character.
 create or replace function public.owner_control_is_owner()
 returns boolean
 language sql
@@ -136,7 +145,7 @@ as $$
     select 1 from public.owner_profiles op
     where op.user_id = (select auth.uid())
       and op.is_active = true
-      and lower(trim(op.role)) in ('owner', 'admin')
+      and op.role in ('owner', 'admin')
   );
 $$;
 
@@ -421,3 +430,204 @@ begin
     add constraint marketplace_vendors_status_check
     check (status in ('pending', 'approved', 'suspended', 'rejected'));
 end $$;
+
+-- ---------------------------------------------------------------------------
+-- 5. customer_notifications_category_check — lock-step re-state
+-- ---------------------------------------------------------------------------
+
+-- The publisher writes `category = eventType` verbatim
+-- (packages/notifications/publish.ts:138), so EVERY event type this pass emits
+-- needs a seat in this CHECK as well as a registration in event-types.ts.
+-- Missing either half is invisible at runtime: the publishers here are
+-- best-effort tails wrapped in try/catch, so a rejected insert is logged and
+-- swallowed while the verdict itself lands. The person the verdict is ABOUT is
+-- simply never told — which is exactly how marketplace.seller.review and
+-- marketplace.product.review spent a whole tranche failing silently before
+-- 20260723130000 noticed.
+--
+-- Two ids are new in this pass:
+--   marketplace.vendor.status  — suspend/reinstate told to the seller
+--   learn.teacher.review       — the teaching verdict told to the applicant
+--
+-- The house pattern is a FULL re-state rather than a surgical add: PostgreSQL
+-- has no "extend this CHECK" and the constraint body is the only place the
+-- vocabulary is written down, so restating it keeps one readable list instead
+-- of a chain of deltas nobody can evaluate. This migration sorts after
+-- 20260723130000, and repeats everything that one allows — dropping first with
+-- `if exists` makes it correct whether or not that migration ever applied.
+alter table public.customer_notifications
+  drop constraint if exists customer_notifications_category_check;
+
+alter table public.customer_notifications
+  add constraint customer_notifications_category_check
+  check (category = any (array[
+    -- Legacy coarse vocabulary (pre-V2-NOT-01).
+    'general','care','marketplace','studio','wallet','security','support','account','promotion',
+    -- Registered EVENT_TYPE ids — packages/notifications/event-types.ts.
+    'auth.signup.welcome','auth.password.changed','auth.security.new_device','system.welcome',
+    'logistics.shipment.update','marketplace.order.update','property.viewing.update',
+    'learn.enrollment.update','studio.project.update','care.booking.update',
+    'support.reply.received','support.thread.created','wallet.transaction.update',
+    'kyc.review.update','system.notification.relay',
+    'account.recovery.reminder',
+    -- F3 tranche-2 seller/product verdicts.
+    'marketplace.seller.review','marketplace.product.review',
+    -- SA-4 Owner-AI operator escalation (urgent — fans out to owner push).
+    'owner.operator.escalation',
+    -- V3-OWNER-CONTROL-01 owner verdicts told to the person they land on.
+    'marketplace.vendor.status','learn.teacher.review'
+  ]::text[]));
+
+comment on constraint customer_notifications_category_check on public.customer_notifications is
+  'Allowed category vocabulary = 9 legacy coarse values UNION the registered '
+  'EVENT_TYPE ids from packages/notifications/event-types.ts. Keep in lock-step '
+  'with event-types.ts. Widened 2026-07-27 (V3-OWNER-CONTROL-01) for '
+  'marketplace.vendor.status and learn.teacher.review.';
+
+-- ---------------------------------------------------------------------------
+-- 6. owner_profiles — close the self-escalation path this rail depends on
+-- ---------------------------------------------------------------------------
+
+-- Everything above trusts one predicate: "is there a live owner_profiles row
+-- for auth.uid() whose role is owner or admin?". So owner_profiles is now the
+-- root of trust for suspending stores and deciding registrations, and it is
+-- worth stating plainly what prod looks like today
+-- (supabase/prod-actual/schema.sql):
+--
+--   :9000  grant ... UPDATE on public.owner_profiles to authenticated;
+--   :8083  owner_profiles_update_own ... for update to authenticated
+--            using (auth.uid() = user_id) with check (auth.uid() = user_id);
+--   :6342  owner_profiles_role_check check (role in ('owner','editor','viewer'))
+--
+-- The WITH CHECK pins only WHICH ROW may be updated, never WHICH COLUMNS. A
+-- holder of a role='viewer' row can therefore UPDATE their own row's `role` to
+-- 'owner' — the CHECK constraint permits that value — and is_owner() starts
+-- returning true for them. A deactivated row can likewise set is_active back to
+-- true. That is HUB-2, and 20260710180000_hub_security_hardening.sql already
+-- carries the fix; but that migration is committed, not confirmed applied, and
+-- the prod snapshot predates it so it cannot answer the question either.
+--
+-- I am re-stating the revoke here rather than assuming, because this pass is
+-- what makes the answer matter. Before it, a self-promoted viewer got read
+-- access to HQ dashboards. After it, the same row can suspend a live store and
+-- decide who is allowed to sell. Widening the blast radius of an open door
+-- without closing the door would be the wrong trade, and the revoke is
+-- idempotent — applying it twice is a no-op, and applying it when the earlier
+-- migration already did is also a no-op.
+--
+-- THE COLUMN-LEVEL REVOKE DOES NOT WORK, AND THAT IS THE WHOLE POINT OF THIS
+-- SECTION. An earlier draft of this migration wrote
+--
+--     revoke update (role, is_active) on public.owner_profiles
+--       from anon, authenticated;
+--
+-- which is also, verbatim, what 20260710180000_hub_security_hardening.sql
+-- carries as its HUB-2 fix. It is a no-op. PostgreSQL's REVOKE documentation
+-- states it plainly: "if a role has been granted privileges on a table, then
+-- revoking the same privileges from individual columns will have no effect."
+-- Prod holds exactly that table-level grant —
+--
+--     :9000  grant DELETE, INSERT, ..., UPDATE on table public.owner_profiles
+--              to authenticated;
+--
+-- so the column-level revoke is discarded and `role` stays writable. Proven,
+-- not reasoned: on PostgreSQL 16, granting table UPDATE then revoking
+-- UPDATE(role, is_active) leaves relacl at `authenticated=rw` and
+-- `update ... set role='owner'` SUCCEEDS. Removing the table-level grant first
+-- and re-granting per column leaves `authenticated=r`, and the same statement
+-- fails with "permission denied for table". Section 7 below pins that as a
+-- permanent regression proof so this cannot silently come back.
+--
+-- The consequence, stated so nobody has to rediscover it: HUB-2 has been open
+-- this whole time. Both migrations that "fixed" it changed nothing. Any holder
+-- of an owner_profiles row — the CHECK admits 'editor' and 'viewer' — can
+-- UPDATE their own row's `role` to 'owner' under owner_profiles_update_own's
+-- column-blind `with check (auth.uid() = user_id)`, and is_owner() then returns
+-- true for them. Before this pass that bought HQ read access. After it, it
+-- buys the ability to suspend a live store and decide who may sell. This pass
+-- is what makes the hole matter, so this pass closes it for real.
+--
+-- Scope: the whole write triad, not just UPDATE. INSERT and DELETE are latent
+-- grants of the same class the money-table lockdown revoked ecosystem-wide —
+-- RLS denies them today (owner_profiles_owner_write gates INSERT/DELETE behind
+-- is_owner()), and a grant that only RLS is holding back is precisely what this
+-- migration's own header calls the latent-grant lesson. SELECT is untouched, so
+-- owner_profiles_select_own and owner_profiles_select_self_or_owner keep
+-- working.
+--
+-- Verified safe against the repo: of 47 owner_profiles call sites, ZERO write —
+-- there is no .insert/.update/.upsert/.delete against this table anywhere in
+-- apps/ or packages/. Nothing loses a capability it was using. The now-orphaned
+-- owner_profiles_update_own policy is left in place deliberately: it grants
+-- nothing without the privilege, and dropping a policy this migration did not
+-- create is a change with a blast radius of its own.
+do $$
+begin
+  if to_regclass('public.owner_profiles') is null then
+    raise notice 'owner_profiles absent — HUB-2 revoke skipped';
+    return;
+  end if;
+  -- Table-level. This is the statement the privilege actually answers to.
+  revoke insert, update, delete on public.owner_profiles from anon, authenticated;
+end $$;
+
+-- ---------------------------------------------------------------------------
+-- 7. Prove section 6 actually took effect
+-- ---------------------------------------------------------------------------
+
+-- Section 6 exists because a revoke that reads correctly can still do nothing.
+-- The only defence against that is to ask the database whether the privilege is
+-- gone, rather than trusting that the statement meant what it looked like.
+--
+-- Both halves are required and they answer different questions:
+--   has_table_privilege      — is there a TABLE-level grant?
+--   has_any_column_privilege — is there a COLUMN-level grant on any column?
+-- The original bug passes the second check and fails the first, so testing only
+-- one would have let it through.
+--
+-- The two lists differ on purpose. PostgreSQL supports column-level privileges
+-- for SELECT, INSERT, UPDATE and REFERENCES only — DELETE is table-wide by
+-- nature, and asking has_any_column_privilege() for it raises
+-- `unrecognized privilege type: "DELETE"`. An earlier draft of this guard passed
+-- all three to both functions; it therefore threw on every database it touched,
+-- INCLUDING one where the revoke had worked perfectly. A guard that fails closed
+-- on correct input is not strictness, it is an outage — and it would have been
+-- read as "the revoke is still broken" while the revoke was fine.
+--
+-- This RAISES rather than notices. A migration whose security clause silently
+-- did nothing is the failure mode being closed here; discovering that at apply
+-- time and refusing to proceed is the correct outcome, and it is safe to be
+-- strict because the revoke immediately above is unconditional.
+do $$
+declare
+  offender text;
+begin
+  if to_regclass('public.owner_profiles') is null then
+    return;
+  end if;
+
+  select string_agg(format('%s:%s', grantee, priv), ', ' order by grantee, priv)
+    into offender
+  from (
+    -- Table-level: all three write privileges.
+    select r.rolname as grantee, p.priv as priv
+    from (values ('anon'), ('authenticated')) as r(rolname)
+    cross join (values ('INSERT'), ('UPDATE'), ('DELETE')) as p(priv)
+    where has_table_privilege(r.rolname, 'public.owner_profiles', p.priv)
+    union
+    -- Column-level: only the privileges PostgreSQL tracks per column.
+    select r.rolname, p.priv || ' (column)'
+    from (values ('anon'), ('authenticated')) as r(rolname)
+    cross join (values ('INSERT'), ('UPDATE')) as p(priv)
+    where has_any_column_privilege(r.rolname, 'public.owner_profiles', p.priv)
+  ) g;
+
+  if offender is not null then
+    raise exception
+      'HUB-2 revoke did not take effect — owner_profiles still writable by [%]. '
+      'A column-level revoke cannot remove a table-level grant; revoke at table level.',
+      offender;
+  end if;
+end $$;
+
+-- end of migration --

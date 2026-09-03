@@ -2,7 +2,12 @@ import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
 import { formatCurrencyAmount } from "@/lib/format";
-import type { OwnerControlActionKey } from "./registry";
+import {
+  getOwnerControlQueueBinding,
+  type OwnerControlActionKey,
+  type OwnerControlQueueId,
+} from "./registry";
+import { DISPUTE_OPEN } from "./statuses";
 
 /**
  * V3-OWNER-CONTROL-01 — the pending-work readers behind the approvals console.
@@ -48,14 +53,42 @@ export type OwnerControlQueue = {
   rows: OwnerControlQueueRow[];
   /** Set when the queue could not be read — surfaced honestly, never hidden. */
   unavailable: boolean;
+  /**
+   * Set when the read came back exactly at its row cap, so there is very likely
+   * more behind it. `totalPending` is then a floor, not a total, and the surface
+   * says so rather than quoting a number it cannot stand behind.
+   */
+  truncated: boolean;
 };
 
 export type OwnerControlQueues = {
   queues: OwnerControlQueue[];
   totalPending: number;
-  /** Open disputes — shown as evidence only; see the note on the surface. */
-  openDisputes: number;
+  /**
+   * True when ANY queue failed to read. `totalPending` counts rows, and a queue
+   * that could not be read contributes zero of them — so without this flag a
+   * console with six broken panels renders a calm green "Nothing is waiting on
+   * you". Silence and zero are not the same answer, and an operator surface that
+   * conflates them is worse than one that admits it does not know.
+   */
+  anyUnavailable: boolean;
+  /** True when any queue hit its row cap — `totalPending` is then a floor. */
+  anyTruncated: boolean;
+  /**
+   * Open disputes — shown as evidence only; see the note on the surface.
+   * `null` when the count could not be read, which the surface must not render
+   * as zero.
+   */
+  openDisputes: number | null;
 };
+
+/**
+ * Row cap per queue. Deliberately generous: the console is a work surface, and
+ * an owner scrolling 50 rows is a better failure than an owner silently shown
+ * 50 of 200 with no indication the rest exist.
+ */
+const QUEUE_LIMIT = 50;
+const VENDOR_LIMIT = 60;
 
 function text(value: unknown, fallback = ""): string {
   const out = value === null || value === undefined ? "" : String(value).trim();
@@ -72,16 +105,21 @@ function isoOrNull(value: unknown): string | null {
  * `unavailable: true` rather than propagating — see the fail-soft note above.
  */
 async function safeQueue(
-  id: string,
-  division: string,
-  actions: OwnerControlActionKey[],
-  read: () => Promise<OwnerControlQueueRow[]>,
+  id: OwnerControlQueueId,
+  read: (listStates: readonly string[]) => Promise<OwnerControlQueueRow[]>,
+  limit: number = QUEUE_LIMIT,
 ): Promise<OwnerControlQueue> {
+  // Division, offered actions, and the status filter all come from the ONE
+  // binding in registry.ts. The reader is handed `listStates` rather than
+  // importing a status set of its own, so the rows a queue lists and the
+  // verdicts it offers on them cannot be edited apart.
+  const { division, actions, listStates } = getOwnerControlQueueBinding(id);
   try {
-    return { id, division, actions, rows: await read(), unavailable: false };
+    const rows = await read(listStates);
+    return { id, division, actions, rows, unavailable: false, truncated: rows.length >= limit };
   } catch (error) {
     console.error(`[owner-control/queues] ${id} unavailable`, error);
-    return { id, division, actions, rows: [], unavailable: true };
+    return { id, division, actions, rows: [], unavailable: true, truncated: false };
   }
 }
 
@@ -89,19 +127,15 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
   const admin = createAdminSupabase();
 
   const [sellers, kyc, teachers, products, moderation, vendors, disputes] = await Promise.all([
-    safeQueue(
-      "seller-applications",
-      "marketplace",
-      ["marketplace.seller.approve", "marketplace.seller.request_changes", "marketplace.seller.reject"],
-      async () => {
+    safeQueue("seller-applications", async (listStates) => {
         const { data, error } = await admin
           .from("marketplace_vendor_applications")
           .select(
             "id, user_id, store_name, proposed_store_slug, legal_name, normalized_email, contact_phone, category_focus, story, status, submitted_at",
           )
-          .in("status", ["submitted", "pending", "changes_requested"])
+          .in("status", [...listStates])
           .order("submitted_at", { ascending: true })
-          .limit(50);
+          .limit(QUEUE_LIMIT);
         if (error) throw new Error(error.message);
 
         const rows = (data ?? []) as Array<Record<string, unknown>>;
@@ -154,16 +188,15 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
             createdAt: isoOrNull(row.submitted_at),
           };
         });
-      },
-    ),
+    }),
 
-    safeQueue("kyc-submissions", "account", ["account.kyc.approve", "account.kyc.reject"], async () => {
+    safeQueue("kyc-submissions", async (listStates) => {
       const { data, error } = await admin
         .from("customer_verification_submissions")
         .select("id, user_id, document_type, status, created_at")
-        .in("status", ["pending", "in_review"])
+        .in("status", [...listStates])
         .order("created_at", { ascending: true })
-        .limit(50);
+        .limit(QUEUE_LIMIT);
       if (error) throw new Error(error.message);
 
       const rows = (data ?? []) as Array<Record<string, unknown>>;
@@ -196,19 +229,15 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
       }));
     }),
 
-    safeQueue(
-      "teacher-applications",
-      "learn",
-      ["learn.teacher.approve", "learn.teacher.reject"],
-      async () => {
+    safeQueue("teacher-applications", async (listStates) => {
         const { data, error } = await admin
           .from("learn_teacher_applications")
           .select(
             "id, full_name, normalized_email, expertise_area, credentials, course_proposal, status, created_at",
           )
-          .in("status", ["submitted", "pending", "in_review", "changes_requested"])
+          .in("status", [...listStates])
           .order("created_at", { ascending: true })
-          .limit(50);
+          .limit(QUEUE_LIMIT);
         if (error) throw new Error(error.message);
         return (data ?? []).map((raw) => {
           const row = raw as Record<string, unknown>;
@@ -225,14 +254,9 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
             createdAt: isoOrNull(row.created_at),
           };
         });
-      },
-    ),
+    }),
 
-    safeQueue(
-      "product-reviews",
-      "marketplace",
-      ["marketplace.product.approve", "marketplace.product.request_changes", "marketplace.product.reject"],
-      async () => {
+    safeQueue("product-reviews", async (listStates) => {
         // `base_price`, not `price_kobo` — and the difference was not cosmetic.
         // `marketplace_products` has no `price_kobo` column, so PostgREST answered
         // 42703, `safeQueue` caught it, and this queue rendered "unavailable" on
@@ -240,12 +264,19 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
         // that is quietly always empty, which is exactly the failure this pass
         // exists to remove. The stored value is whole naira (marketplace's own
         // moderation page formats it the same way), so no kobo conversion here.
+        //
+        // The status filter had the SAME defect a layer up and worse: it read
+        // `["pending", "flagged"]`, and neither value is written by anything —
+        // `flagged` existed nowhere in this repository outside the lines that
+        // invented it. A wrong column name at least errors; wrong status values
+        // return zero rows, so this queue reported "nothing waiting" rather than
+        // "unavailable". See `statuses.ts`.
         const { data, error } = await admin
           .from("marketplace_products")
           .select("id, title, summary, approval_status, base_price, currency, total_stock, vendor_id, moderation_note, created_at")
-          .in("approval_status", ["pending", "flagged"])
+          .in("approval_status", [...listStates])
           .order("created_at", { ascending: true })
-          .limit(50);
+          .limit(QUEUE_LIMIT);
         if (error) throw new Error(error.message);
 
         const rows = (data ?? []) as Array<Record<string, unknown>>;
@@ -289,20 +320,15 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
             createdAt: isoOrNull(row.created_at),
           };
         });
-      },
-    ),
+    }),
 
-    safeQueue(
-      "moderation-reports",
-      "hub",
-      ["moderation.item.dismiss", "moderation.item.remove"],
-      async () => {
+    safeQueue("moderation-reports", async (listStates) => {
         const { data, error } = await admin
           .from("platform_moderation_queue")
           .select("id, division, entity_type, reason, severity, status, content_snapshot, created_at")
-          .in("status", ["pending", "open", "in_review", "escalated"])
+          .in("status", [...listStates])
           .order("created_at", { ascending: true })
-          .limit(50);
+          .limit(QUEUE_LIMIT);
         if (error) throw new Error(error.message);
         return (data ?? []).map((raw) => {
           const row = raw as Record<string, unknown>;
@@ -318,20 +344,15 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
             createdAt: isoOrNull(row.created_at),
           };
         });
-      },
-    ),
+    }),
 
-    safeQueue(
-      "live-sellers",
-      "marketplace",
-      ["marketplace.vendor.suspend", "marketplace.vendor.reinstate"],
-      async () => {
+    safeQueue("live-sellers", async (listStates) => {
         const { data, error } = await admin
           .from("marketplace_vendors")
           .select("id, name, slug, status, trust_score, updated_at")
-          .in("status", ["approved", "suspended"])
+          .in("status", [...listStates])
           .order("status", { ascending: false })
-          .limit(60);
+          .limit(VENDOR_LIMIT);
         if (error) throw new Error(error.message);
         return (data ?? []).map((raw) => {
           const row = raw as Record<string, unknown>;
@@ -347,20 +368,24 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
             createdAt: isoOrNull(row.updated_at),
           };
         });
-      },
-    ),
+    }, VENDOR_LIMIT),
 
-    (async () => {
+    // Disputes are COUNTED, never acted on — resolution moves money and stays in
+    // the guarded marketplace path. `null` means the count could not be read,
+    // which is a different answer from zero and is reported as such: a swallowed
+    // error here previously rendered as "no open disputes", telling the owner
+    // there was nothing to chase at the exact moment the system had lost track.
+    (async (): Promise<number | null> => {
       try {
         const { count, error } = await admin
           .from("marketplace_disputes")
           .select("id", { count: "exact", head: true })
-          .in("status", ["open", "in_progress", "pending"]);
+          .in("status", [...DISPUTE_OPEN]);
         if (error) throw new Error(error.message);
         return count ?? 0;
       } catch (error) {
         console.error("[owner-control/queues] dispute count unavailable", error);
-        return 0;
+        return null;
       }
     })(),
   ]);
@@ -370,9 +395,18 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
   // The live-sellers queue is a lifecycle control, not pending work: counting it
   // as "awaiting a decision" would show a permanent non-zero backlog that never
   // clears, which trains the owner to ignore the number.
-  const totalPending = queues
-    .filter((queue) => queue.id !== "live-sellers")
-    .reduce((sum, queue) => sum + queue.rows.length, 0);
+  const pendingQueues = queues.filter((queue) => queue.id !== "live-sellers");
+  const totalPending = pendingQueues.reduce((sum, queue) => sum + queue.rows.length, 0);
 
-  return { queues, totalPending, openDisputes: disputes };
+  return {
+    queues,
+    totalPending,
+    // Computed over EVERY queue, live-sellers included: a lifecycle panel that
+    // cannot be read is still a control the owner has silently lost. The dispute
+    // count joins it — an unreadable count is exactly as misleading as an
+    // unreadable queue, and the surface's all-clear must clear both.
+    anyUnavailable: queues.some((queue) => queue.unavailable) || disputes === null,
+    anyTruncated: pendingQueues.some((queue) => queue.truncated),
+    openDisputes: disputes,
+  };
 }

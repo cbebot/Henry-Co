@@ -31,6 +31,15 @@ export type EventTypeId =
   // silently failing validation while unlisted (latent since F3 tranche 2).
   | "marketplace.seller.review"
   | "marketplace.product.review"
+  // V3-OWNER-CONTROL-01. The owner can now suspend or reinstate a live store,
+  // and can decide a teaching application, from HQ. Both verdicts are told to
+  // the person they land on, so both need an id here: `validatePublishInput`
+  // rejects an unregistered eventType, and the publishers are best-effort tails
+  // that do not inspect the result — exactly how the two lines above spent a
+  // whole tranche silently failing. Paired category widening ships in
+  // 20260727120000_v3_owner_control_01.sql.
+  | "marketplace.vendor.status"
+  | "learn.teacher.review"
   | "property.viewing.update"
   | "learn.enrollment.update"
   | "studio.project.update"
@@ -103,6 +112,19 @@ export const EVENT_TYPES: Record<EventTypeId, EventTypeSpec> = {
     defaultSeverity: "info",
     deepLinkTemplate: "/vendor",
     allowedPayloadKeys: ["decision", "productTitle", "note"],
+  },
+  // Suspension is the one verdict here a seller must not be able to miss, so
+  // the default severity is 'warning' rather than 'info'. The reinstate call
+  // overrides to 'success' per-publish.
+  "marketplace.vendor.status": {
+    defaultSeverity: "warning",
+    deepLinkTemplate: "/vendor",
+    allowedPayloadKeys: ["intent", "storeName", "note"],
+  },
+  "learn.teacher.review": {
+    defaultSeverity: "info",
+    deepLinkTemplate: "/teach",
+    allowedPayloadKeys: ["decision", "fullName", "note"],
   },
   "property.viewing.update": {
     defaultSeverity: "info",
