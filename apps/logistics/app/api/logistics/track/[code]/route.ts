@@ -21,6 +21,25 @@ import { createAdminSupabase } from "@/lib/supabase";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+// Curated customer-facing status labels — the public endpoint never returns the
+// raw internal lifecycle enum.
+const PUBLIC_STATUS_LABEL: Record<string, string> = {
+  quote_requested: "Quote requested",
+  quoted: "Quoted",
+  awaiting_payment: "Awaiting payment",
+  booked: "Booked",
+  assigned: "Rider assigned",
+  pickup_confirmed: "Pickup confirmed",
+  in_transit: "In transit",
+  delayed: "Delayed",
+  attempted_delivery: "Attempted delivery",
+  delivered: "Delivered",
+  failed_delivery: "Delivery failed",
+  return_initiated: "Return initiated",
+  returned: "Returned",
+  cancelled: "Cancelled",
+};
+
 type RouteContext = {
   params: Promise<{ code: string }>;
 };
@@ -129,7 +148,7 @@ export async function GET(_request: NextRequest, ctx: RouteContext) {
   return NextResponse.json({
     ok: true,
     tracking_code: data.tracking_code,
-    status: data.lifecycle_status,
+    status: PUBLIC_STATUS_LABEL[data.lifecycle_status] ?? "In progress",
     service_type: data.service_type,
     urgency: data.urgency,
     zone_label: data.zone_label,

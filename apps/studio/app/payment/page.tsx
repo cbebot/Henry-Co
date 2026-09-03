@@ -334,8 +334,7 @@ async function renderInvoicePay(
               amountLabel={amountLabel}
             />
             <div className="rounded-2xl border border-dashed border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] px-5 py-4 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-              Card payments are coming soon. For now, bank transfer is the fastest way to confirm and
-              keep your project moving.
+              Bank transfer is the fastest way to confirm this payment and keep your project moving.
             </div>
           </>
         )}

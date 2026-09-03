@@ -97,10 +97,10 @@ export default function NewsletterSignupClient({ groups, copy }: GroupProps) {
         created: Boolean(body.created),
         topics: body.topicKeys ?? Array.from(selectedTopics),
       });
-    } catch (err) {
+    } catch {
       setState({
         status: "error",
-        message: err instanceof Error ? err.message : copy.errorNetwork,
+        message: copy.errorNetwork,
       });
     }
   };

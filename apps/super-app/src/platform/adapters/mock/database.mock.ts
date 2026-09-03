@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { DIVISION_CATALOG } from "@/domain/divisionCatalog";
+import { isLocalMode } from "@/platform/runtime";
 import type {
   ActivityItem,
   ContactPayload,
@@ -34,6 +35,10 @@ export class MockDatabaseAdapter implements DatabaseAdapter {
   }
 
   async listActivity(limit = 8): Promise<DbResult<ActivityItem[]>> {
+    // Sample activity is a local-development convenience only. Any release
+    // build — including the staging fallback used when Supabase keys are not
+    // configured — returns empty rather than fabricated demo rows.
+    if (!isLocalMode()) return { ok: true, data: [] };
     const now = Date.now();
     const items: ActivityItem[] = [
       {

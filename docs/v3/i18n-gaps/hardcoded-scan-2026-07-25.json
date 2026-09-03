@@ -1,18 +1,18 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-07-25T18:55:22.998Z",
+  "generatedAt": "2026-07-25T22:38:03.854Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1578,
-    "entries": 1245,
+    "scannedFiles": 1576,
+    "entries": 1233,
     "counts": {
       "OK": 3,
-      "GAP": 1065,
+      "GAP": 1053,
       "EXEMPT": 125,
       "AMBIGUOUS": 52
     },
-    "durationMs": 18854
+    "durationMs": 4519
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
@@ -5439,16 +5439,6 @@
         "reason": "hardcoded JSX text content"
       }
     ],
-    "apps/marketplace/app/(public)/search/page.tsx": [
-      {
-        "line": 22,
-        "col": 9,
-        "kind": "attr:title",
-        "text": "Find it fast. Trust what you see.",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      }
-    ],
     "apps/marketplace/app/(public)/trust/page.tsx": [
       {
         "line": 79,
@@ -5721,60 +5711,12 @@
     ],
     "apps/marketplace/app/admin/page.tsx": [
       {
-        "line": 52,
+        "line": 17,
         "col": 7,
         "kind": "attr:title",
         "text": "Vendor Applications",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:title)"
-      },
-      {
-        "line": 60,
-        "col": 93,
-        "kind": "jsx_text",
-        "text": "Queue clear",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 61,
-        "col": 67,
-        "kind": "jsx_text",
-        "text": "No pending vendor applications right now.",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 99,
-        "col": 109,
-        "kind": "jsx_text",
-        "text": "Legal name",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 133,
-        "col": 107,
-        "kind": "jsx_text",
-        "text": "Proposed slug",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 156,
-        "col": 23,
-        "kind": "attr:placeholder",
-        "text": "Review note — required when rejecting or requesting changes",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:placeholder)"
-      },
-      {
-        "line": 228,
-        "col": 109,
-        "kind": "attr:placeholder",
-        "text": "Reason for revocation",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:placeholder)"
       }
     ],
     "apps/marketplace/app/finance/page.tsx": [
@@ -5881,7 +5823,7 @@
     ],
     "apps/marketplace/app/owner/page.tsx": [
       {
-        "line": 21,
+        "line": 23,
         "col": 21,
         "kind": "attr:label",
         "text": "Pending applications",
@@ -5889,7 +5831,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 22,
+        "line": 24,
         "col": 21,
         "kind": "attr:label",
         "text": "Open disputes",
@@ -5897,7 +5839,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 23,
+        "line": 25,
         "col": 21,
         "kind": "attr:label",
         "text": "Stalled orders",
@@ -6119,7 +6061,7 @@
     ],
     "apps/marketplace/components/marketplace/checkout-experience.tsx": [
       {
-        "line": 60,
+        "line": 59,
         "col": 37,
         "kind": "jsx_text",
         "text": "string): Array",
@@ -6127,7 +6069,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 1656,
+        "line": 1655,
         "col": 39,
         "kind": "jsx_text",
         "text": "Step 3 of 3",
@@ -6135,7 +6077,7 @@
         "reason": "literal in i18n-wired file — likely missed during the wrap pass"
       },
       {
-        "line": 1824,
+        "line": 1823,
         "col": 35,
         "kind": "jsx_text",
         "text": "Order review",
@@ -6237,80 +6179,6 @@
         "text": "Adding to cart",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:label)"
-      }
-    ],
-    "apps/marketplace/components/marketplace/search-experience.tsx": [
-      {
-        "line": 213,
-        "col": 15,
-        "kind": "attr:placeholder",
-        "text": "Desk lamp, cashmere throw, executive chair",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:placeholder)"
-      },
-      {
-        "line": 256,
-        "col": 27,
-        "kind": "jsx_text",
-        "text": "All categories",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 274,
-        "col": 27,
-        "kind": "jsx_text",
-        "text": "All brands",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 315,
-        "col": 39,
-        "kind": "jsx_text",
-        "text": "Verified sellers only",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 326,
-        "col": 39,
-        "kind": "jsx_text",
-        "text": "Cash on delivery eligible",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 374,
-        "col": 41,
-        "kind": "jsx_text",
-        "text": "Sort: Featured",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 375,
-        "col": 42,
-        "kind": "jsx_text",
-        "text": "Price: Low to high",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 376,
-        "col": 43,
-        "kind": "jsx_text",
-        "text": "Price: High to low",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
-      },
-      {
-        "line": 377,
-        "col": 39,
-        "kind": "jsx_text",
-        "text": "Rating first",
-        "classification": "GAP",
-        "reason": "hardcoded JSX text content"
       }
     ],
     "apps/marketplace/components/marketplace/seller-application-wizard.tsx": [
@@ -6437,7 +6305,7 @@
     ],
     "apps/marketplace/components/marketplace/staff-resource-page.tsx": [
       {
-        "line": 66,
+        "line": 71,
         "col": 23,
         "kind": "attr:title",
         "text": "Seller applications",
@@ -6445,23 +6313,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 82,
-        "col": 107,
-        "kind": "attr:placeholder",
-        "text": "Review note",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:placeholder)"
-      },
-      {
-        "line": 90,
-        "col": 25,
-        "kind": "attr:title",
-        "text": "No seller applications are waiting.",
-        "classification": "GAP",
-        "reason": "hardcoded user-visible attribute (attr:title)"
-      },
-      {
-        "line": 120,
+        "line": 103,
         "col": 107,
         "kind": "attr:placeholder",
         "text": "Moderation note",
@@ -6469,7 +6321,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 128,
+        "line": 111,
         "col": 25,
         "kind": "attr:title",
         "text": "No products are waiting.",
@@ -6477,7 +6329,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 241,
+        "line": 224,
         "col": 25,
         "kind": "attr:title",
         "text": "No notification records yet.",
@@ -6485,7 +6337,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 255,
+        "line": 238,
         "col": 23,
         "kind": "attr:title",
         "text": "Email logs",
@@ -6493,7 +6345,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 275,
+        "line": 258,
         "col": 25,
         "kind": "attr:title",
         "text": "No email records yet.",
@@ -6501,7 +6353,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 289,
+        "line": 272,
         "col": 23,
         "kind": "attr:title",
         "text": "WhatsApp logs",
@@ -6509,7 +6361,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 309,
+        "line": 292,
         "col": 25,
         "kind": "attr:title",
         "text": "No WhatsApp records yet.",
@@ -6517,7 +6369,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 379,
+        "line": 362,
         "col": 109,
         "kind": "attr:placeholder",
         "text": "Verification note",
@@ -6525,7 +6377,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 380,
+        "line": 363,
         "col": 107,
         "kind": "jsx_text",
         "text": "Verify payment",
@@ -6533,7 +6385,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 386,
+        "line": 369,
         "col": 25,
         "kind": "attr:title",
         "text": "No finance items are waiting.",
@@ -6541,7 +6393,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 405,
+        "line": 388,
         "col": 98,
         "kind": "attr:placeholder",
         "text": "Finance note",
@@ -6549,7 +6401,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 430,
+        "line": 413,
         "col": 98,
         "kind": "attr:placeholder",
         "text": "Support note",
@@ -6557,7 +6409,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 432,
+        "line": 415,
         "col": 48,
         "kind": "jsx_text",
         "text": "Manual review",
@@ -6565,7 +6417,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 433,
+        "line": 416,
         "col": 50,
         "kind": "jsx_text",
         "text": "Refund buyer",
@@ -6573,7 +6425,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 434,
+        "line": 417,
         "col": 52,
         "kind": "jsx_text",
         "text": "Release seller payout",
@@ -6581,7 +6433,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 436,
+        "line": 419,
         "col": 121,
         "kind": "attr:placeholder",
         "text": "Refund amount",
@@ -6589,7 +6441,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 458,
+        "line": 441,
         "col": 23,
         "kind": "attr:title",
         "text": "Risk signals",
@@ -6597,7 +6449,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 487,
+        "line": 470,
         "col": 25,
         "kind": "attr:title",
         "text": "No immediate moderation risks.",
@@ -6605,7 +6457,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 507,
+        "line": 490,
         "col": 25,
         "kind": "attr:title",
         "text": "No review records yet.",
@@ -6613,7 +6465,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 528,
+        "line": 511,
         "col": 25,
         "kind": "attr:title",
         "text": "No returns are open.",
@@ -6621,7 +6473,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 537,
+        "line": 520,
         "col": 23,
         "kind": "attr:title",
         "text": "Support threads",
@@ -6629,7 +6481,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 548,
+        "line": 531,
         "col": 25,
         "kind": "attr:title",
         "text": "No support threads are open.",
@@ -6637,7 +6489,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 581,
+        "line": 564,
         "col": 77,
         "kind": "jsx_text",
         "text": "Number(product.total_stock || 0)",
@@ -6645,7 +6497,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 584,
+        "line": 567,
         "col": 23,
         "kind": "attr:title",
         "text": "Low stock",
@@ -6653,7 +6505,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 595,
+        "line": 578,
         "col": 25,
         "kind": "attr:title",
         "text": "No low-stock pressure.",
@@ -6661,7 +6513,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 609,
+        "line": 592,
         "col": 23,
         "kind": "attr:label",
         "text": "Failed notifications",
@@ -6669,7 +6521,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 610,
+        "line": 593,
         "col": 23,
         "kind": "attr:label",
         "text": "Queued notifications",
@@ -6677,7 +6529,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 611,
+        "line": 594,
         "col": 23,
         "kind": "attr:label",
         "text": "Stalled orders",
@@ -6685,7 +6537,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 626,
+        "line": 609,
         "col": 23,
         "kind": "attr:label",
         "text": "Audit entries",
@@ -6693,7 +6545,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 659,
+        "line": 642,
         "col": 25,
         "kind": "attr:title",
         "text": "Audit trail is still empty.",
@@ -6701,7 +6553,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 668,
+        "line": 651,
         "col": 23,
         "kind": "attr:title",
         "text": "Owner settings",
@@ -6709,7 +6561,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 670,
+        "line": 653,
         "col": 23,
         "kind": "attr:label",
         "text": "Pending applications",
@@ -6717,7 +6569,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 671,
+        "line": 654,
         "col": 23,
         "kind": "attr:label",
         "text": "Open disputes",
@@ -6725,7 +6577,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 672,
+        "line": 655,
         "col": 23,
         "kind": "attr:label",
         "text": "Pending payouts",
@@ -6733,7 +6585,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 690,
+        "line": 673,
         "col": 23,
         "kind": "attr:label",
         "text": "Open disputes",
@@ -6741,7 +6593,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 691,
+        "line": 674,
         "col": 23,
         "kind": "attr:label",
         "text": "Pending payouts",
@@ -6749,7 +6601,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 692,
+        "line": 675,
         "col": 23,
         "kind": "attr:label",
         "text": "Stalled orders",
@@ -6783,6 +6635,56 @@
         "text": "Product variant selection",
         "classification": "GAP",
         "reason": "hardcoded user-visible attribute (attr:aria-label)"
+      }
+    ],
+    "apps/marketplace/components/marketplace/vendor-application-queue.tsx": [
+      {
+        "line": 60,
+        "col": 91,
+        "kind": "jsx_text",
+        "text": "Queue clear",
+        "classification": "GAP",
+        "reason": "hardcoded JSX text content"
+      },
+      {
+        "line": 61,
+        "col": 65,
+        "kind": "jsx_text",
+        "text": "No pending vendor applications right now.",
+        "classification": "GAP",
+        "reason": "hardcoded JSX text content"
+      },
+      {
+        "line": 99,
+        "col": 107,
+        "kind": "jsx_text",
+        "text": "Legal name",
+        "classification": "GAP",
+        "reason": "hardcoded JSX text content"
+      },
+      {
+        "line": 133,
+        "col": 105,
+        "kind": "jsx_text",
+        "text": "Proposed slug",
+        "classification": "GAP",
+        "reason": "hardcoded JSX text content"
+      },
+      {
+        "line": 156,
+        "col": 21,
+        "kind": "attr:placeholder",
+        "text": "Review note — required when rejecting or requesting changes",
+        "classification": "GAP",
+        "reason": "hardcoded user-visible attribute (attr:placeholder)"
+      },
+      {
+        "line": 228,
+        "col": 107,
+        "kind": "attr:placeholder",
+        "text": "Reason for revocation",
+        "classification": "GAP",
+        "reason": "hardcoded user-visible attribute (attr:placeholder)"
       }
     ],
     "apps/property/app/(public)/auth/callback/page.tsx": [

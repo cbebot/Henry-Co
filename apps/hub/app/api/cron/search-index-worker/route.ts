@@ -288,7 +288,9 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error ? error.message : "Search worker failed.",
+        // Raw error already captured in the internal event above — the response
+        // body stays generic.
+        error: "Search worker failed.",
       },
       { status: 500 },
     );

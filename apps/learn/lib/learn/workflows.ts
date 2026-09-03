@@ -730,8 +730,10 @@ export async function completeLesson(input: {
       playback,
     });
     if (!verification.ok) {
+      // Do not disclose the exact watch threshold — that hands a learner the
+      // tuning constant of the proof-of-watch anti-forgery gate.
       throw new Error(
-        `Keep watching "${lesson.title}" — you need to view at least 85% of the video before it can be marked complete.`
+        `Keep watching "${lesson.title}" — please finish the video before it can be marked complete.`
       );
     }
     // Trust the heartbeat, not the request body.

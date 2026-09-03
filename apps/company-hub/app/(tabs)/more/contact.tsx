@@ -9,7 +9,7 @@ export default function ContactScreen() {
   const { palette } = useHubAppearance();
   const openMail = () => {
     void Linking.openURL(
-      `mailto:${BRAND_EMAILS.hello}?subject=Henry%20%26%20Co.%20Hub%20inquiry`,
+      `mailto:${BRAND_EMAILS.hello}?subject=Henry%20Onyx%20Hub%20inquiry`,
     );
   };
 

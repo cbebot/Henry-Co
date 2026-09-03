@@ -392,9 +392,11 @@ async function sendEmail(input: {
         : "failed";
   const reason =
     dispatch.status === "sent"
-      ? dispatch.messageId ?? null
+      ? // Don't persist the raw provider messageId into the per-notification
+        // reason (read back into a learner-scoped record) — mark success opaquely.
+        null
       : dispatch.status === "skipped"
-        ? dispatch.skippedReason || "Email provider not configured for this deployment."
+        ? dispatch.skippedReason || "Email delivery is temporarily unavailable."
         : dispatch.safeError || "Email dispatch failed.";
 
   return addLearnNotificationRecord({
@@ -455,7 +457,7 @@ export async function sendAcademyWelcomeNotification(input: {
       eyebrow: "Academy onboarding",
       title: "Your academy workspace is ready.",
       intro:
-        "Henry Onyx Learn now tracks your enrollments, path progress, certificates, notifications, and internal assignments through one calm academy dashboard.",
+        "Your academy workspace keeps your courses, progress, and certificates in one place.",
       bullets: [
         "Browse public courses and premium tracks from one place.",
         "Keep certificates and training assignments tied to one identity.",
@@ -487,7 +489,7 @@ export async function sendEnrollmentConfirmedNotification(input: {
       eyebrow: "Enrollment confirmed",
       title: "Your place in the academy is now recorded.",
       intro:
-        "Henry Onyx Learn has created the enrollment and connected it to your unified academy history so progress, quiz attempts, payments, and certificates stay traceable.",
+        "Your enrollment is confirmed. Your progress and certificates for this course are saved to your account.",
       highlightLabel: "Access state",
       highlightValue: input.statusLabel,
       sections: [
@@ -534,7 +536,7 @@ export async function sendPaymentConfirmedNotification(input: {
       eyebrow: "Payment confirmed",
       title: "Your course payment is now confirmed.",
       intro:
-        "Henry Onyx Learn recorded the payment, activated the course access lane, and synced the billing event into your unified account history.",
+        "Your payment is confirmed and your course access is active. A record is in your account.",
       highlightLabel: "Amount",
       highlightValue: formatCurrency(input.amount, input.currency),
       sections: [
@@ -632,7 +634,7 @@ export async function sendCertificateEarnedNotification(input: {
       eyebrow: "Certificate earned",
       title: "Your certificate is now live.",
       intro:
-        "Henry Onyx Learn issued the completion record, attached public verification, and synced the credential into your unified account history.",
+        "Your certificate has been issued and is publicly verifiable. It is saved to your account.",
       highlightLabel: "Certificate no",
       highlightValue: input.certificateNo,
       sections: [
@@ -677,7 +679,7 @@ export async function sendInternalAssignmentNotification(input: {
       eyebrow: "Internal assignment",
       title: "A Henry Onyx training assignment was added to your queue.",
       intro:
-        "The assignment is now visible in Henry Onyx Learn with progress tracking, due date visibility, and certificate readiness when applicable.",
+        "This training has been added to your account. You can track your progress and see the due date there.",
       sections: [
         { label: "Assigned training", value: input.title },
         ...(input.sponsorName ? [{ label: "Sponsor", value: input.sponsorName }] : []),
@@ -748,7 +750,7 @@ export async function sendTeacherApplicationSubmittedNotification(input: {
       eyebrow: "Teach with Henry Onyx",
       title: "Your teaching application is with the academy team.",
       intro:
-        "Henry Onyx Learn has recorded your application and attached it to your Henry Onyx identity so review, onboarding, and future instructor operations stay connected.",
+        "Your teaching application has been received and is under review.",
       sections: [
         { label: "Applicant", value: input.fullName },
         { label: "Expertise", value: input.expertiseArea },

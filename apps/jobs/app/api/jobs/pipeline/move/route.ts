@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       const ctx = await resolveHiringActingContext();
       if (ctx.kind !== "business") {
         return NextResponse.json(
-          { error: "forbidden", message: "Switch to your business to move applicants." },
+          { error: "forbidden", message: "This action requires a business account." },
           { status: 403 },
         );
       }

@@ -169,13 +169,11 @@ export async function POST(request: NextRequest) {
         evidenceUrls.push(ref);
       }
     } catch (error) {
+      console.error("[care:claims] evidence upload failed", error);
       return NextResponse.json(
         {
           ok: false,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Evidence upload failed. Please try again.",
+          error: "Evidence upload failed. Please try again.",
         },
         { status: 400 },
       );
@@ -201,10 +199,11 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
+    console.error("[care:claims] insert failed", error);
     return NextResponse.json(
       {
         ok: false,
-        error: error.message || "Claim could not be filed.",
+        error: "Claim could not be filed. Please try again.",
       },
       { status: 400 },
     );
@@ -268,8 +267,9 @@ export async function GET(request: NextRequest) {
     .limit(limit);
 
   if (error) {
+    console.error("[care:claims] query failed", error);
     return NextResponse.json(
-      { ok: false, error: error.message || "Claims query failed." },
+      { ok: false, error: "Claims could not be loaded. Please try again." },
       { status: 400 },
     );
   }

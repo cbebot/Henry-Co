@@ -70,7 +70,8 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       ok: true,
-      subscriberId: result.subscriber.id,
+      // The internal subscriber id is not returned — the signed preferenceUrl is
+      // the only handle the visitor needs.
       status: result.subscriber.status,
       topicKeys: result.topicKeys,
       preferenceUrl: result.preferenceUrl,

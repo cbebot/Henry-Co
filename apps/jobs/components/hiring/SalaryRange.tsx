@@ -27,6 +27,14 @@ export type SalaryRangeProps = {
   } | null;
 };
 
+// Source attribution renders only for vetted display values — the DB column
+// is free text, and internal source identifiers must never reach the UI.
+const SAFE_SOURCE_LABELS = new Set([
+  "Government statistics",
+  "Platform survey",
+  "Industry report",
+]);
+
 function formatMoney(value: number | null, currency: string, locale: AppLocale) {
   if (value == null || !Number.isFinite(value) || value <= 0) return null;
   try {
@@ -101,7 +109,7 @@ export function SalaryRange({
         <p className="mt-3 text-xs text-[var(--jobs-muted)]">
           {labels.benchmarkLabel} · {labels.sampleLabel}{" "}
           {benchmark.sampleSize}
-          {benchmark.sourceLabel
+          {benchmark.sourceLabel && SAFE_SOURCE_LABELS.has(benchmark.sourceLabel)
             ? ` · ${labels.sourceLabel}: ${benchmark.sourceLabel}`
             : ""}
         </p>

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { COMPANY } from "@henryco/config";
 import { getJobsCopy } from "@henryco/i18n";
 import { JobsRejectionLetterDocument, renderDocumentToBuffer } from "@henryco/branded-documents";
 import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
@@ -10,8 +9,7 @@ import { getJobsPublicLocale } from "@/lib/locale-server";
  * V3-70 S6 — GET /api/employer/hiring/document?applicationId=&type=rejection
  *
  * Renders the branded rejection / application-update letter as a PDF. Copy is
- * resolved through @henryco/i18n (merge fields filled here) and the legal entity
- * from @henryco/config (COMPANY.group.legalName = "Henry Onyx Limited"). Offers
+ * resolved through @henryco/i18n (merge fields filled here). Offers
  * keep the existing /api/jobs/offers + offer-letter path (not duplicated here).
  * Business-context gated + the application must belong to the acting business.
  */
@@ -24,7 +22,7 @@ export async function GET(request: Request) {
   try {
     const ctx = await resolveHiringActingContext();
     if (ctx.kind !== "business") {
-      return NextResponse.json({ error: "forbidden", message: "Switch to your business to download documents." }, { status: 403 });
+      return NextResponse.json({ error: "forbidden", message: "This action requires a business account." }, { status: 403 });
     }
 
     const url = new URL(request.url);
@@ -34,7 +32,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "missing_fields", message: "applicationId is required." }, { status: 400 });
     }
     if (type !== "rejection") {
-      return NextResponse.json({ error: "unsupported_type", message: "Only the rejection letter renders here." }, { status: 400 });
+      return NextResponse.json({ error: "unsupported_type", message: "This document type is not available." }, { status: 400 });
     }
 
     const appCtx = await getApplicationContext(applicationId);
@@ -47,8 +45,7 @@ export async function GET(request: Request) {
     const businessName = (await getBusinessName(ctx.businessId)) ?? "the company";
     const candidateName = appCtx.candidateName ?? "Candidate";
     const roleTitle = appCtx.jobTitle ?? "the role";
-    const legalEntity = COMPANY.group.legalName;
-    const vars = { candidate: candidateName, role: roleTitle, business: businessName, legalEntity };
+    const vars = { candidate: candidateName, role: roleTitle, business: businessName };
 
     const referenceNo = `REJ-${applicationId.slice(0, 8).toUpperCase()}`;
     const buffer = await renderDocumentToBuffer(
