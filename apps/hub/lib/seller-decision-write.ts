@@ -255,6 +255,79 @@ export async function applySellerDecision(input: {
   }
 
 
+  // THE STATUS FLIP RUNS FIRST, AND ITS FAILURE IS COMPENSATED. Both halves
+  // matter, and the pass tried each one alone before arriving here.
+  //
+  // Flip-first alone was unrecoverable. The application committed `approved`,
+  // then the vendor upsert or role grant failed, and because
+  // SELLER_APPLICATION_PENDING excludes `approved` the route's legality gate
+  // 409'd every retry forever: a record the console broke and could not heal.
+  //
+  // Flip-LAST alone was worse, and in a way that is easy to miss. It removes the
+  // stuck record but opens an orphan: two owners deciding at once — one
+  // approving, one rejecting — would have the approver create the store and
+  // grant the vendor role, and only then lose the compare-and-set to the
+  // rejection. Application `rejected`, storefront live, seller role granted. A
+  // rejected applicant selling is a worse outcome than an approval that needs
+  // retrying.
+  //
+  // So the CAS stays first, where losing it means NOTHING happened, and the
+  // activation failures below restore the prior status instead of leaving the
+  // row stranded. The result is retryable in the common case and orphan-free in
+  // the racing case.
+  //
+  // Compensation can itself fail. That window is far narrower than what it
+  // replaces (one UPDATE by primary key, against a row this request just wrote)
+  // and it is logged loudly rather than swallowed.
+  //
+  // `vendor-status-write.ts` does the strictly correct thing — one guarded RPC
+  // doing SELECT FOR UPDATE and every write in a single transaction — and that
+  // is the right eventual home for this core too. It is not this pass, because
+  // it means moving slug-collision resolution and role-grant logic into plpgsql.
+  let statusUpdate = admin
+    .from("marketplace_vendor_applications")
+    .update({
+      status: decision,
+      review_note: note.trim() || null,
+      reviewed_at: now,
+      reviewed_by: actorId,
+    } as never)
+    .eq("id", applicationId);
+  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
+  const { data: statusUpdated, error: statusError } = await statusUpdate.select("id");
+  if (statusError) {
+    console.error("[seller-decision-write] status update failed", statusError.message);
+    return { ok: false, error: "That application could not be updated." };
+  }
+  if (!Array.isArray(statusUpdated) || statusUpdated.length !== 1) {
+    return {
+      ok: false,
+      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
+    };
+  }
+
+  /**
+   * Put the application back where it was, so a failed activation leaves a row
+   * the owner can decide again rather than one that is terminal and unusable.
+   * Guarded on the status this request itself set, so it can never overwrite a
+   * decision somebody else made in the meantime.
+   */
+  const revertStatusAfterFailedActivation = async (why: string): Promise<void> => {
+    if (!expectedStatus) return;
+    const { error: revertError } = await admin
+      .from("marketplace_vendor_applications")
+      .update({ status: expectedStatus, reviewed_at: null, reviewed_by: null } as never)
+      .eq("id", applicationId)
+      .eq("status", decision);
+    if (revertError) {
+      console.error(
+        "[seller-decision-write] COULD NOT REVERT after failed activation — the application " +
+          "reads approved but the seller was never activated, and the console cannot retry it",
+        { applicationId, why, error: revertError.message },
+      );
+    }
+  };
+
   // On approval, actually activate the seller: upsert the vendor store record
   // and grant the vendor role membership (marketplace route parity).
   if (decision === "approved") {
@@ -315,6 +388,7 @@ export async function applySellerDecision(input: {
           .maybeSingle();
 
     if (written.error || !written.data) {
+      await revertStatusAfterFailedActivation("vendor store write failed");
       return {
         ok: false,
         error: "The store record could not be written, so the seller was not activated.",
@@ -359,6 +433,7 @@ export async function applySellerDecision(input: {
         "[seller-decision-write] membership lookup failed",
         membershipReadError.message,
       );
+      await revertStatusAfterFailedActivation("membership lookup failed");
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
 
@@ -386,61 +461,11 @@ export async function applySellerDecision(input: {
         "[seller-decision-write] vendor role grant failed",
         grant.error?.message ?? "no row written",
       );
+      await revertStatusAfterFailedActivation("vendor role grant failed");
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
   }
 
-  // THE STATUS FLIP IS THE LAST STATE WRITE, and the ordering is the fix.
-  //
-  // It used to run FIRST, before the activation below. That is a two-phase write
-  // with no shared transaction, and its failure mode is unrecoverable rather than
-  // merely untidy: the application commits `approved`, then the vendor upsert or
-  // the role grant fails, and the function returns ok:false. The route settles
-  // the ledger row `failed` — correctly — but the application row is already
-  // terminal. `SELLER_APPLICATION_PENDING` deliberately excludes `approved`, so
-  // step 4 of the route now 409s every retry of the approve action forever, and
-  // the claim's idempotency key is spent. The console cannot heal the record it
-  // just broke, and the applicant is left with a store that was never created.
-  //
-  // Running it last makes every failure retryable and convergent instead:
-  //   vendor upsert fails  -> status still pending, nothing orphaned, retry works
-  //   role grant fails     -> status still pending, retry re-runs an idempotent
-  //                           upsert and completes the grant
-  //   status flip fails    -> store and grant exist, application still pending;
-  //                           retry is idempotent on both and lands the flip
-  // In every branch the queue still shows the row, which is the property that
-  // matters: the owner can always finish what the console started.
-  //
-  // Concurrency is still closed by the compare-and-set below. Two racing
-  // approvals may both perform the idempotent activation, but only one wins the
-  // `.eq("status", expectedStatus)` filter; the loser is told the record moved.
-  //
-  // `vendor-status-write.ts` solves the same problem the stronger way — one
-  // guarded RPC doing SELECT FOR UPDATE + both writes in a single transaction.
-  // That is the better shape and the right target for these cores too; ordering
-  // is the change that removes the unrecoverable state without moving slug
-  // resolution and role-grant logic into plpgsql in this pass.
-  let statusUpdate = admin
-    .from("marketplace_vendor_applications")
-    .update({
-      status: decision,
-      review_note: note.trim() || null,
-      reviewed_at: now,
-      reviewed_by: actorId,
-    } as never)
-    .eq("id", applicationId);
-  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
-  const { data: statusUpdated, error: statusError } = await statusUpdate.select("id");
-  if (statusError) {
-    console.error("[seller-decision-write] status update failed", statusError.message);
-    return { ok: false, error: "That application could not be updated." };
-  }
-  if (!Array.isArray(statusUpdated) || statusUpdated.length !== 1) {
-    return {
-      ok: false,
-      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
-    };
-  }
 
   const reviewerBody =
     decision === "approved"

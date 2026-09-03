@@ -144,6 +144,61 @@ export async function applyLearnTeacherDecision(input: {
   }
 
 
+  // CAS FIRST, WITH COMPENSATION ON A FAILED GRANT — same shape and same
+  // reasoning as seller-decision-write.ts.
+  //
+  // Flip-first alone stranded the row: TEACHER_APPLICATION_PENDING excludes
+  // `approved`, so a failed instructor grant left an application the route would
+  // 409 forever while /teach still refused the applicant. Flip-last would have
+  // removed that at the cost of a worse race — two owners deciding at once could
+  // grant the instructor role and then lose the CAS to a rejection, leaving a
+  // rejected applicant teaching.
+  //
+  // Losing the CAS here means nothing happened; a failed grant restores the
+  // prior status so the owner can decide again.
+  let statusUpdate = admin
+    .from("learn_teacher_applications")
+    .update({
+      status: decision,
+      review_notes: note.trim() || null,
+      reviewed_at: now,
+      reviewed_by_user_id: actorId,
+      updated_at: now,
+    } as never)
+    .eq("id", applicationId);
+  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
+  const { data: updated, error: updateError } = await statusUpdate.select("id");
+  if (updateError) {
+    console.error("[learn-teacher-decision-write] status update failed", updateError.message);
+    return { ok: false, error: "That application could not be updated." };
+  }
+  const changed = Array.isArray(updated) && updated.length === 1;
+  if (!changed) {
+    // CAS lost: somebody else decided this application first. Stop here rather
+    // than granting the teacher role off a decision that never applied.
+    return {
+      ok: false,
+      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
+    };
+  }
+
+  /** Restore the prior status so a failed grant leaves a decidable row. */
+  const revertStatusAfterFailedGrant = async (why: string): Promise<void> => {
+    if (!expectedStatus) return;
+    const { error: revertError } = await admin
+      .from("learn_teacher_applications")
+      .update({ status: expectedStatus, reviewed_at: null, reviewed_by_user_id: null } as never)
+      .eq("id", applicationId)
+      .eq("status", decision);
+    if (revertError) {
+      console.error(
+        "[learn-teacher-decision-write] COULD NOT REVERT after failed grant — the application " +
+          "reads approved but the instructor role was never granted",
+        { applicationId, why, error: revertError.message },
+      );
+    }
+  };
+
   // Approval is what actually makes someone a teacher: without the membership
   // the status says "approved" while every instructor surface still refuses
   // them, which is exactly the two-auth-systems split this pass exists to fix.
@@ -173,6 +228,7 @@ export async function applyLearnTeacherDecision(input: {
         "[learn-teacher-decision-write] membership lookup failed",
         membershipReadError.message,
       );
+      await revertStatusAfterFailedGrant("membership lookup failed");
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
 
@@ -200,6 +256,7 @@ export async function applyLearnTeacherDecision(input: {
         "[learn-teacher-decision-write] instructor role grant failed",
         grant.error?.message ?? "no row written",
       );
+      await revertStatusAfterFailedGrant("instructor role grant failed");
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
 
@@ -213,51 +270,11 @@ export async function applyLearnTeacherDecision(input: {
         "[learn-teacher-decision-write] membership link write failed",
         linkError.message,
       );
+      await revertStatusAfterFailedGrant("membership link write failed");
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
   }
 
-  // THE STATUS FLIP IS THE LAST STATE WRITE — same ordering fix as
-  // seller-decision-write.ts, for the same reason and the same failure.
-  //
-  // Running it first meant the application could commit `approved` and THEN have
-  // the instructor grant or the membership link-back fail, returning ok:false
-  // over a row that is already terminal. `TEACHER_APPLICATION_PENDING` excludes
-  // `approved`, so the route's legality gate would 409 every retry forever while
-  // `/teach` still refused the applicant — an approval that cannot be completed
-  // and cannot be redone.
-  //
-  // Last, every failure leaves the row pending and therefore retryable: the
-  // membership read/grant is idempotent (read-then-write on an expression index
-  // PostgREST cannot name in onConflict), and the link-back simply re-runs.
-  //
-  // The compare-and-set still closes the concurrency case — of two racing
-  // approvals only one matches `.eq("status", expectedStatus)`.
-  let statusUpdate = admin
-    .from("learn_teacher_applications")
-    .update({
-      status: decision,
-      review_notes: note.trim() || null,
-      reviewed_at: now,
-      reviewed_by_user_id: actorId,
-      updated_at: now,
-    } as never)
-    .eq("id", applicationId);
-  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
-  const { data: updated, error: updateError } = await statusUpdate.select("id");
-  if (updateError) {
-    console.error("[learn-teacher-decision-write] status update failed", updateError.message);
-    return { ok: false, error: "That application could not be updated." };
-  }
-  const changed = Array.isArray(updated) && updated.length === 1;
-  if (!changed) {
-    // CAS lost: somebody else decided this application first. Stop here rather
-    // than granting the teacher role off a decision that never applied.
-    return {
-      ok: false,
-      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
-    };
-  }
 
   const body =
     decision === "approved"
