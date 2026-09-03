@@ -216,7 +216,7 @@ export function StudioRequestActivationStep({
                   {formatNaira(review.pricing.depositAmount)}
                 </div>
                 <p className="mt-2 text-xs leading-5 text-[var(--studio-ink-soft)]">
-                  {t("Secures your delivery lane and a senior team.")}
+                  {t("Secures priority delivery and a senior team.")}
                 </p>
               </div>
             </div>

@@ -31,6 +31,14 @@ export function isOwnerDivisionExternalHref(href: string): boolean {
 }
 
 /**
+ * The one live, protected staff route where seller applications can actually
+ * be approved or rejected. Queue items and signals about pending vendor
+ * applications deep-link HERE (not to an HQ info page) so the owner is never
+ * shown a decision without the buttons to make it.
+ */
+export const MARKETPLACE_SELLER_APPLICATIONS_URL = `${getDivisionUrl("marketplace")}/admin/seller-applications`;
+
+/**
  * Approval-center destinations verified against **live** henrycogroup.com (Apr 2026):
  * Subdomain `/owner`, `/moderation`, and similar staff shells currently render `StaffSurfaceRetired`.
  * HQ must not send owners there for real work. We keep one external staff path that still serves
@@ -48,7 +56,7 @@ export const OWNER_APPROVAL_CENTER_LINKS: OwnerDivisionReviewLink[] = [
     label: "Marketplace — seller applications (staff sign-in)",
     description:
       "Protected admin URL on the Marketplace subdomain (sign-in required). Use marketplace staff/owner roles.",
-    href: `${getDivisionUrl("marketplace")}/admin/seller-applications`,
+    href: MARKETPLACE_SELLER_APPLICATIONS_URL,
     division: "marketplace",
   },
   {
@@ -108,7 +116,7 @@ export function getDivisionExternalActions(slug: string): DivisionExternalAction
 
   switch (slug) {
     case "marketplace": {
-      const sellerAdmin = `${getDivisionUrl("marketplace")}/admin/seller-applications`;
+      const sellerAdmin = MARKETPLACE_SELLER_APPLICATIONS_URL;
       return [
         {
           label: "Marketplace division room (HQ)",

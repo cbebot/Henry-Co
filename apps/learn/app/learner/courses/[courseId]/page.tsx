@@ -123,13 +123,13 @@ export default async function LearnerCoursePage({
     !quiz
       ? null
       : !courseAccessActive
-        ? t("Your seat is reserved and the room is waiting for payment activation.")
+        ? t("Your seat is reserved. This opens once your payment is confirmed.")
         : !allLessonsComplete
           ? t("Finish every lesson before the final assessment opens.")
           : quizPassed
             ? t("Assessment passed.")
             : remainingAttempts === 0
-              ? t("The assessment has reached its maximum attempts. Ask the academy team for a review.")
+              ? t("You've used all attempts for this assessment. Contact support to request a review.")
               : null;
   const certificate = workspace.certificates.find((item) => item.courseId === course.id) || null;
   const certificateHref = certificate ? `/certifications/verify/${certificate.verificationCode}` : null;
@@ -348,7 +348,7 @@ export default async function LearnerCoursePage({
                       {t("Assessment state")}
                     </p>
                     <p className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-                      {quizPassed ? t("Assessment complete") : quizLockedReason ? t("Assessment gated") : t("Assessment ready")}
+                      {quizPassed ? t("Assessment complete") : quizLockedReason ? t("Assessment locked") : t("Assessment ready")}
                     </p>
                     <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
                       {quizLockedReason || t("Lessons are complete. Submit the assessment to unlock final completion and certification.")}

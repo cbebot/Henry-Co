@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   try {
     const ctx = await resolveHiringActingContext();
     if (ctx.kind !== "business") {
-      return NextResponse.json({ error: "forbidden", message: "Switch to your business to make hiring decisions." }, { status: 403 });
+      return NextResponse.json({ error: "forbidden", message: "This action requires a business account." }, { status: 403 });
     }
 
     let payload: Record<string, unknown> = {};
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       tone,
     });
     if (!res.ok) {
-      return NextResponse.json({ error: "decision_failed", message: res.error }, { status: 500 });
+      return NextResponse.json({ error: "decision_failed", message: "Couldn't record the decision. Please try again." }, { status: 500 });
     }
 
     const transition = decisionToTransition(type);

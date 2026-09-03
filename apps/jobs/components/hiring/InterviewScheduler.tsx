@@ -77,7 +77,8 @@ export function InterviewScheduler({
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          setError(data.error || copy.networkError);
+          // Show the route's human-readable message, not the machine code.
+          setError(data.message || copy.networkError);
           return;
         }
         setOpen(false);

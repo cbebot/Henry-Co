@@ -167,6 +167,7 @@ export function staffNav(active: string, root: string, locale: AppLocale) {
   const resourceMap: Record<string, Array<{ href: string; label: string }>> = {
     "/owner": [
       { href: "/owner", label: t("Overview") },
+      { href: "/owner/seller-applications", label: t("Seller applications") },
       { href: "/owner/alerts", label: t("Alerts") },
       { href: "/owner/digest", label: t("Digest") },
       { href: "/owner/automation-health", label: t("Automation health") },

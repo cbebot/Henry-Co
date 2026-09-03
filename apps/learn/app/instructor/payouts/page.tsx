@@ -66,7 +66,7 @@ export default async function InstructorPayoutsPage() {
         kicker={t("Payout history")}
         title={t("Settled and pending payouts")}
         body={t(
-          "Payouts are released after the 7-day refund window closes for each enrollment that contributes to the period. Status moves from pending → approved → paid.",
+          "Payouts are released after the 7-day refund window closes for each enrollment in the period. You'll see each payout move from requested, to confirmed, to paid.",
         )}
       />
       <ul className="mt-6 space-y-3">
@@ -78,21 +78,33 @@ export default async function InstructorPayoutsPage() {
           summary.records.map((record) => (
             <li
               key={record.id}
-              className="grid gap-3 rounded-[1.4rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4 sm:grid-cols-[1.4fr,1fr] sm:items-center"
+              className="grid gap-3 rounded-[1.4rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4 sm:grid-cols-[1.4fr_1fr] sm:items-center"
             >
               <div>
                 <p className="text-sm font-semibold text-[var(--learn-ink)]">
                   {record.courseTitle ?? t("Course payout")}
                 </p>
                 <p className="mt-1 text-xs text-[var(--learn-ink-soft)]">
-                  {record.payoutModel} ·{" "}
+                  {record.payoutModel === "fixed_fee"
+                    ? t("Fixed fee")
+                    : record.payoutModel === "stipend"
+                      ? t("Stipend")
+                      : record.payoutModel === "pending"
+                        ? t("To be agreed")
+                        : t("Revenue share")} ·{" "}
                   {formatDate(record.periodStart)} → {formatDate(record.periodEnd)}
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-end gap-2 text-xs">
                 <LearnStatusBadge label={formatMoney(record.netPayout, record.currency)} tone="signal" />
                 <LearnStatusBadge
-                  label={record.status}
+                  label={
+                    record.status === "paid"
+                      ? t("Paid")
+                      : record.status === "approved"
+                        ? t("Confirmed")
+                        : t("Requested")
+                  }
                   tone={record.status === "paid" ? "success" : "neutral"}
                 />
               </div>

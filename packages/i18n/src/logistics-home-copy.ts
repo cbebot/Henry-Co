@@ -217,7 +217,7 @@ const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
       "Yes. Quotes and bookings share the same shipment builder. Quote mode saves the shipment intent, calculates pricing, and stops before payment.",
     trackingQ: "How is tracking secured?",
     trackingA:
-      "Public tracking uses the tracking code plus the sender or recipient phone number. Signed-in customers also see any shipment linked to their user id or normalized email.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "What happens when a rider hits an issue?",
     riderIssueA:
       "Riders can raise structured issues directly from their workflow. Dispatch and support receive the escalation, and every resolution step is logged back onto the shipment timeline.",
@@ -332,7 +332,7 @@ const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
       "Oui. Devis et réservations partagent le même constructeur d’envoi. Le mode devis enregistre l’intention, calcule le prix et s’arrête avant le paiement.",
     trackingQ: "Comment le suivi est-il sécurisé ?",
     trackingA:
-      "Le suivi public utilise le code de suivi plus le numéro de téléphone de l’expéditeur ou du destinataire. Les clients connectés voient aussi tout envoi lié à leur identifiant ou à leur e-mail normalisé.",
+      "Le suivi public utilise le code de suivi plus le numéro de téléphone de l’expéditeur ou du destinataire. Lorsque vous êtes connecté à votre compte Henry Onyx, les envois que vous avez expédiés ou reçus apparaissent aussi automatiquement.",
     riderIssueQ: "Que se passe-t-il quand un coursier rencontre un problème ?",
     riderIssueA:
       "Les coursiers peuvent signaler des incidents structurés directement depuis leur flux. Le dispatch et le support reçoivent l’escalade et chaque étape de résolution est journalisée sur la chronologie de l’envoi.",
@@ -447,7 +447,7 @@ const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
       "Sí. Cotizaciones y reservas comparten el mismo constructor. El modo cotización guarda la intención, calcula el precio y se detiene antes del pago.",
     trackingQ: "¿Cómo se asegura el rastreo?",
     trackingA:
-      "El rastreo público usa el código más el teléfono del remitente o destinatario. Los clientes con sesión también ven envíos ligados a su id o correo normalizado.",
+      "El rastreo público usa el código de rastreo más el teléfono del remitente o destinatario. Cuando inicias sesión en tu cuenta Henry Onyx, los envíos que enviaste o recibiste también aparecen automáticamente.",
     riderIssueQ: "¿Qué ocurre cuando un repartidor tiene un problema?",
     riderIssueA:
       "Los repartidores pueden levantar incidencias estructuradas desde su flujo. Despacho y soporte reciben la escalada y cada paso de resolución queda en la línea del envío.",
@@ -562,7 +562,7 @@ const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
       "Sim. Cotações e reservas compartilham o mesmo construtor. O modo cotação salva a intenção, calcula o preço e para antes do pagamento.",
     trackingQ: "Como o rastreio é protegido?",
     trackingA:
-      "O rastreio público usa o código mais o telefone do remetente ou destinatário. Clientes logados também veem envios ligados ao id ou e-mail normalizado.",
+      "O rastreio público usa o código de rastreio mais o telefone do remetente ou destinatário. Quando você está autenticado na sua conta Henry Onyx, os envios que enviou ou recebeu também aparecem automaticamente.",
     riderIssueQ: "O que acontece quando um entregador encontra um problema?",
     riderIssueA:
       "Os entregadores podem registrar incidentes estruturados direto do fluxo. Despacho e suporte recebem a escalada e cada passo de resolução é logado na linha do envio.",
@@ -677,7 +677,7 @@ const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
       "نعم. تتشارك العروض والحجوزات نفس مُنشئ الشحنة. يحفظ وضع العرض نية الشحنة ويحسب التسعير ويتوقف قبل الدفع.",
     trackingQ: "كيف يُؤمَّن التتبع؟",
     trackingA:
-      "يستخدم التتبع العام كود التتبع مع رقم هاتف المرسل أو المستلم. كما يرى العملاء المسجَّلون أي شحنة مرتبطة بمعرّفهم أو بريدهم الموحَّد.",
+      "يستخدم التتبع العام كود التتبع مع رقم هاتف المرسل أو المستلم. وعند تسجيل دخولك إلى حسابك في Henry Onyx، تظهر أيضًا تلقائيًا الشحنات التي أرسلتها أو استلمتها.",
     riderIssueQ: "ماذا يحدث حين يواجه السائق مشكلة؟",
     riderIssueA:
       "يمكن للسائقين رفع مشكلات مهيكلة من سير عملهم. يتلقى الإرسال والدعم التصعيد، وتُسجَّل كل خطوة حل على الخط الزمني للشحنة.",
@@ -792,7 +792,7 @@ const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
       "Ja. Angebote und Buchungen teilen denselben Sendungs-Builder. Der Angebotsmodus speichert die Absicht, berechnet den Preis und stoppt vor der Zahlung.",
     trackingQ: "Wie wird das Tracking abgesichert?",
     trackingA:
-      "Öffentliches Tracking nutzt den Tracking-Code plus die Telefonnummer von Absender oder Empfänger. Angemeldete Kunden sehen außerdem jede Sendung, die mit ihrer User-ID oder normalisierten E-Mail verknüpft ist.",
+      "Öffentliches Tracking nutzt den Tracking-Code plus die Telefonnummer von Absender oder Empfänger. Wenn Sie in Ihrem Henry Onyx-Konto angemeldet sind, erscheinen außerdem automatisch die Sendungen, die Sie versendet oder empfangen haben.",
     riderIssueQ: "Was passiert, wenn ein Fahrer auf ein Problem stößt?",
     riderIssueA:
       "Fahrer können strukturierte Vorfälle direkt aus ihrem Workflow melden. Disposition und Support erhalten die Eskalation, und jeder Lösungsschritt wird am Sendungsverlauf protokolliert.",
@@ -907,7 +907,7 @@ const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
       "Sì. Preventivi e prenotazioni condividono lo stesso costruttore. La modalità preventivo salva l’intento, calcola il prezzo e si ferma prima del pagamento.",
     trackingQ: "Come è protetto il tracking?",
     trackingA:
-      "Il tracking pubblico usa il codice più il telefono di mittente o destinatario. I clienti loggati vedono anche ogni spedizione collegata al loro id o email normalizzata.",
+      "Il tracking pubblico usa il codice di tracciamento più il telefono di mittente o destinatario. Quando accedi al tuo account Henry Onyx, compaiono automaticamente anche le spedizioni che hai inviato o ricevuto.",
     riderIssueQ: "Cosa succede quando un corriere ha un problema?",
     riderIssueA:
       "I corrieri possono aprire incidenti strutturati dal loro flusso. Dispatch e supporto ricevono l’escalation e ogni passo di risoluzione viene loggato sulla timeline della spedizione.",
@@ -1021,7 +1021,7 @@ const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
       "可以。报价与预订共用同一货件构造器。报价模式保存意向、计算价格,并在付款前停止。",
     trackingQ: "追踪如何受保护?",
     trackingA:
-      "公开追踪使用追踪码加上发件人或收件人电话号码进行安全查询。登录客户还能看到关联到其用户 ID 或归一邮箱的所有货件。",
+      "公开追踪使用追踪码加上发件人或收件人电话号码。当您登录 Henry Onyx 账户后,您寄出或收到的货件也会自动显示。",
     riderIssueQ: "骑手遇到问题时会怎样?",
     riderIssueA:
       "骑手可以直接从工作流提交结构化问题。调度与支持收到升级,所有解决步骤都会记回货件时间轴。",
@@ -1136,7 +1136,7 @@ const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
       "हाँ। कोट और बुकिंग एक ही शिपमेंट बिल्डर साझा करते हैं। कोट मोड शिपमेंट इरादा सेव करता है, मूल्य गणना करता है और भुगतान से पहले रुक जाता है।",
     trackingQ: "ट्रैकिंग कैसे सुरक्षित होती है?",
     trackingA:
-      "पब्लिक ट्रैकिंग ट्रैकिंग कोड के साथ प्रेषक या प्राप्तकर्ता का फ़ोन नंबर इस्तेमाल करती है। साइन-इन ग्राहकों को उनके यूज़र आईडी या नॉर्मलाइज़्ड ईमेल से जुड़ी सभी शिपमेंट भी दिखती हैं।",
+      "पब्लिक ट्रैकिंग ट्रैकिंग कोड के साथ प्रेषक या प्राप्तकर्ता का फ़ोन नंबर इस्तेमाल करती है। जब आप अपने Henry Onyx खाते में साइन-इन होते हैं, तो आपके द्वारा भेजी या प्राप्त की गई शिपमेंट भी अपने आप दिखती हैं।",
     riderIssueQ: "जब राइडर को समस्या आती है तो क्या होता है?",
     riderIssueA:
       "राइडर अपने वर्कफ़्लो से सीधे संरचित समस्या उठा सकते हैं। डिस्पैच और सपोर्ट को एस्केलेशन मिलता है, और हर समाधान चरण शिपमेंट टाइमलाइन पर वापस लॉग होता है।",
@@ -1251,7 +1251,7 @@ const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
       "Ee. Ọnụahịa na ndebanye na-ekekọ otu ihe nwuli mbufe. Ụdị ọnụahịa na-echekwa ebumnobi mbufe, na-agbakọ ọnụahịa, ma kwụsị tupu ịkwụ ụgwọ.",
     trackingQ: "Olee otú e si echekwa nsochi?",
     trackingA:
-      "Nsochi ọha na-eji koodu nsochi yana nọmba ekwentị onye nzipu ma ọ bụ onye nnata. Ndị ahịa banyere kwa na-ahụ mbufe ọ bụla ejikọtara na njirimara ojiji ha ma ọ bụ email achịkwara.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "Gịnị na-eme mgbe onye na-anya ụgbọ nwere nsogbu?",
     riderIssueA:
       "Ndị na-anya ụgbọ pụrụ iwelite nsogbu ahaziri site n’ọrụ ha. Mzipu na nkwado na-anata ịkwalite ahụ, e dekọkwara nzọụkwụ ngwọta ọ bụla n’ihe oge mbufe.",
@@ -1366,7 +1366,7 @@ const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
       "Bẹ́ẹ̀ ni. Ìdíyelé àti ìpèsè pín ọ̀nà ìkọ́ gbígbé kan náà. Ipò ìdíyelé ń fipamọ́ ìfẹ́, ń ṣírò ìnà, ó sì dúró ṣáájú sísanwó.",
     trackingQ: "Báwo ni a ṣe ń dáàbò bo ìtọpa?",
     trackingA:
-      "Ìtọpa ìbúgbáù ń lo koodu ìtọpa pẹ̀lú nọ́mbà fóònù olùráńṣẹ́ tàbí olùgbà. Àwọn oníbàárà tí ó wọlé tún rí gbogbo gbígbé tí ó so mọ́ ID wọn tàbí imeèlì tí a ṣe láàmí.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "Kí ló ń ṣẹlẹ̀ nígbà tí ọmọkùnrin ìgbéjáde bá ní ìṣòro?",
     riderIssueA:
       "Àwọn ọmọkùnrin ìgbéjáde lè gbé ìṣòro tí a ṣe àgbékalẹ̀ sókè látinú iṣẹ́ wọn. Pípín àti àtìlẹ́yìn gba ìgbéga náà, a sì ń kọ gbogbo igbésẹ̀ ìpinnu padà sí ìtàn gbígbé.",
@@ -1481,7 +1481,7 @@ const LOGISTICS_HOME_COPY_HA: DeepPartial<LogisticsHomeCopy> = {
       "Eh. Farashi da rajista suna raba mai gina jigila iri ɗaya. Yanayin farashi yana adana niyya, yana ƙididdige farashi, sai ya tsaya kafin biya.",
     trackingQ: "Yaya ake kare bibiya?",
     trackingA:
-      "Bibiya ta jama'a tana amfani da lambar bibiya tare da lambar wayar mai aikawa ko mai karɓa. Abokan da suka shiga kuma suna ganin kowace jigila da aka haɗa da ID ɗinsu ko email da aka daidaita.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "Me ke faruwa idan ɗan kasuwa ya ci karo da matsala?",
     riderIssueA:
       "‘Yan kasuwa za su iya ɗaga matsaloli masu tsari kai tsaye daga aikinsu. Aikawa da goyon baya suna karɓar haɓakawa, kuma kowane mataki na warwarewa ana yin rajistarsa a kan layin lokacin jigila.",

@@ -68,13 +68,25 @@ export default async function OwnerApprovalsPage() {
                   <DivisionBadge division={item.division} />
                 </div>
                 <div className="mt-3 flex items-center gap-4">
-                  <Link
-                    href={item.href}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--owner-accent)]"
-                  >
-                    {t("Review now")}
-                    <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-                  </Link>
+                  {isOwnerDivisionExternalHref(item.href) ? (
+                    <Link
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--owner-accent)]"
+                    >
+                      {t("Review and decide")}
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                    </Link>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--owner-accent)]"
+                    >
+                      {t("Review now")}
+                      <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                    </Link>
+                  )}
                   <span className="text-[10px] uppercase tracking-wider text-[var(--acct-muted)]">
                     {item.category}
                   </span>

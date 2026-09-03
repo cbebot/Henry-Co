@@ -46,7 +46,7 @@ SQL migrations live in `supabase/migrations`. Apply them to a **staging** Supaba
 ## Deep linking
 
 - Custom scheme: `henryco://`
-- Staging universal links: `https://staging.henrycogroup.com/app/...` (host must be verified before relying on autoVerify)
+- Staging universal links: `https://staging.henryonyx.com/app/...` (host must be verified before relying on autoVerify)
 
 ## Testing focus
 

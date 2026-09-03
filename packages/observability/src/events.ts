@@ -298,6 +298,10 @@ export type HenryEventName =
   | "henry.personalization.module.hidden"
   | "henry.personalization.consent.granted"
   | "henry.personalization.consent.revoked"
+  // V3-36 — cross-division recommendation engine. Payload carries counts + the
+  // profiled/ai-applied booleans only; never per-item content, never a score,
+  // never a provider/model name.
+  | "henry.personalization.recommendations.computed"
   // V3-35 deals & campaigns (Phase E). `campaign.created` fires on authoring;
   // `status.changed` on every lifecycle transition (audit pairs it with the
   // deal.status.changed audit-log row); `offer.impressed` per batched surface

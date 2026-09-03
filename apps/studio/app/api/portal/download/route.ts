@@ -87,7 +87,11 @@ export async function GET(request: NextRequest) {
   }
 
   if (!upstream.ok || !upstream.body) {
-    return NextResponse.json({ error: "upstream_status", status: upstream.status }, { status: 502 });
+    console.error("[studio] portal download upstream failure:", upstream.status);
+    return NextResponse.json(
+      { error: "This file could not be downloaded right now. Please try again from your project workspace." },
+      { status: 502 },
+    );
   }
 
   const filename = sanitiseFilename(filenameParam, validation.url.pathname);

@@ -81,7 +81,7 @@ export function LearnWorkspaceLoading(_props: {
 }) {
   return (
     <div
-      className="mx-auto grid max-w-[92rem] gap-6 px-5 py-8 sm:px-8 xl:grid-cols-[280px,1fr] xl:px-10"
+      className="mx-auto grid max-w-[92rem] gap-6 px-5 py-8 sm:px-8 xl:grid-cols-[280px_1fr] xl:px-10"
       role="status"
       aria-busy="true"
       aria-live="polite"

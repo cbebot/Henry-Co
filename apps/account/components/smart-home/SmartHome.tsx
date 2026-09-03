@@ -25,6 +25,7 @@ import { getAccountAppLocale } from "@/lib/locale-server";
 import { getDealsCopy, type DealsCopy, type AppLocale } from "@henryco/i18n/server";
 import { DealsRail } from "./DealsRail";
 import { rankNextBestActions } from "@/lib/smart-home/recommender";
+import { resolveRecommendedActions } from "@/lib/smart-home/recommendations-adapter";
 import { AttentionPanel } from "./AttentionPanel";
 import { ModuleWidgetGrid } from "./ModuleWidgetGrid";
 import { NextBestActions } from "./NextBestActions";
@@ -130,13 +131,35 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
   // Next-Best Actions ranker for first-run users.
   const emptyTeachings = await collectEmptyTeachings(modules, viewer);
 
-  const nextBestActions = rankNextBestActions({
+  // The deterministic FLOOR — always computed, so the home is never empty.
+  const floorActions = rankNextBestActions({
     viewer,
     lifecycle,
     signals: signalFeed.items,
     emptyTeachings,
     limit: 3,
   });
+
+  // V3-36 — when `intelligence_recommendations` is on, the cross-division
+  // engine SUPERSEDES the floor (consent-gated profiling + optional governed-AI
+  // re-rank, all non-billable). Best-effort + timeout-bounded: a null / slow /
+  // failed result falls straight back to the deterministic floor above.
+  const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
+  let nextBestActions = floorActions;
+  if (isFlagEnabled(flags, "intelligence_recommendations")) {
+    const authClient = (await createSupabaseServer()) as unknown as TypedSupabaseClient;
+    const superseding = await withTimeout(
+      resolveRecommendedActions({
+        viewer,
+        client: authClient,
+        lifecycle,
+        signals: signalFeed.items,
+        limit: 3,
+      }),
+      1500,
+    ).catch(() => null);
+    if (superseding && superseding.length > 0) nextBestActions = superseding;
+  }
 
   const lastActivityIso = computeLastActivityIso(signalFeed.items, lifecycle?.overallLastActiveAt ?? null);
   const firstName = viewer.user.fullName?.split(" ")[0] ?? null;
