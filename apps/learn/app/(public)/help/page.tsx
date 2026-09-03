@@ -34,7 +34,7 @@ export default async function HelpPage({
             (--learn-ink-soft already maps to the ink-70 equivalent). */}
         <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
           {t(
-            "Send a note about certificates, enrollment, assignments, or billing. Include your course name and account email so the academy team can help without back-and-forth.",
+            "Send a note about certificates, enrollment, assignments, or billing. Include your course name and account email so we can help without back-and-forth.",
           )}
         </p>
       </section>
@@ -50,7 +50,7 @@ export default async function HelpPage({
         </section>
       ) : null}
 
-      <section className="mt-12 grid gap-12 lg:grid-cols-[1fr,0.9fr] lg:divide-x lg:divide-[var(--learn-line)]">
+      <section className="mt-12 grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:divide-x lg:divide-[var(--learn-line)]">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Send a message")}

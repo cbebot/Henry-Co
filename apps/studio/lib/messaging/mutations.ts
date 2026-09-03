@@ -66,7 +66,12 @@ export async function sendMessage(
   // sends pass "" which screens to allow.
   const screened = screenMessageBody(body);
   if (screened.action === "block") {
-    return { ok: false, error: "contact_blocked", reason: "contact_blocked" };
+    return {
+      ok: false,
+      error:
+        "That message includes a phone number, email, or off-platform link. To protect you from scams, we keep those out of chat. Please remove it and try again.",
+      reason: "contact_blocked",
+    };
   }
 
   const messageType =
@@ -104,10 +109,8 @@ export async function sendMessage(
     .single();
 
   if (insertResult.error || !insertResult.data) {
-    return {
-      ok: false,
-      error: insertResult.error?.message || "Could not send message.",
-    };
+    console.error("[studio][messaging] send failed", insertResult.error);
+    return { ok: false, error: "We couldn't send that message. Please try again." };
   }
 
   // Mark our own message as read by us so unread counts elsewhere
@@ -257,7 +260,11 @@ export async function editMessage(
   // clean message then edit it to inject a phone/email, bypassing the send screen.
   const screened = screenMessageBody(body);
   if (screened.action === "block") {
-    return { ok: false, error: "contact_blocked" };
+    return {
+      ok: false,
+      error:
+        "That edit includes a phone number, email, or off-platform link. To protect you from scams, we keep those out of chat. Please remove it and try again.",
+    };
   }
 
   const result = await supabase

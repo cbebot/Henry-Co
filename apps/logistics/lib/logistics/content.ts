@@ -70,7 +70,7 @@ export const LOGISTICS_SERVICES: LogisticsServiceCard[] = [
   {
     slug: "dispatch-operations",
     name: "Internal dispatch operations",
-    summary: "Operational dispatch lanes for Henry Onyx teams and partner businesses that need control, not noise.",
+    summary: "Managed dispatch lanes for teams and partners that need controlled routing and a single accountable queue.",
     promise: "Queue ownership, rider workflows, and issue playbooks.",
     badge: "Ops core",
     serviceType: "dispatch",

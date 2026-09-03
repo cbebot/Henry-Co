@@ -111,7 +111,7 @@ export default async function ServiceDetailPage({
         </div>
       </section>
 
-      <section className="mt-16 grid gap-12 lg:grid-cols-[0.85fr,1.15fr]">
+      <section className="mt-16 grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
         <div>
           <p className="studio-kicker">What you get</p>
           <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.85rem]">

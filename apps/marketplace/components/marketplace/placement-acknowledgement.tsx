@@ -146,7 +146,7 @@ export function PlacementAcknowledgement({
       aria-labelledby="placement-ack-heading"
       className="market-paper rounded-[2rem] p-6 sm:p-8"
     >
-      <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-start">
+      <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
         <div>
           <div className="flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-brass)] bg-[rgba(200,163,106,0.12)] text-[var(--market-brass)]">

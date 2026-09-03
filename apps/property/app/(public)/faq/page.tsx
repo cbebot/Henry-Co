@@ -89,7 +89,7 @@ export default async function PropertyFaqPage() {
       </section>
 
       <section className="mt-14 border-t border-[var(--property-line)] pt-10">
-        <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
             <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
               {t("Still have a question?")}

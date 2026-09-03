@@ -27,8 +27,6 @@
         "applinks:learn.henryonyx.com",
         "applinks:logistics.henryonyx.com",
         "applinks:studio.henryonyx.com",
-        "applinks:building.henryonyx.com",
-        "applinks:hotel.henryonyx.com",
         "webcredentials:account.henryonyx.com"
       ]
     },
@@ -52,9 +50,7 @@
             { "scheme": "https", "host": "jobs.henryonyx.com" },
             { "scheme": "https", "host": "learn.henryonyx.com" },
             { "scheme": "https", "host": "logistics.henryonyx.com" },
-            { "scheme": "https", "host": "studio.henryonyx.com" },
-            { "scheme": "https", "host": "building.henryonyx.com" },
-            { "scheme": "https", "host": "hotel.henryonyx.com" }
+            { "scheme": "https", "host": "studio.henryonyx.com" }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }

@@ -298,6 +298,10 @@ export type HenryEventName =
   | "henry.personalization.module.hidden"
   | "henry.personalization.consent.granted"
   | "henry.personalization.consent.revoked"
+  // V3-36 — cross-division recommendation engine. Payload carries counts + the
+  // profiled/ai-applied booleans only; never per-item content, never a score,
+  // never a provider/model name.
+  | "henry.personalization.recommendations.computed"
   // V3-38 local availability (Phase E). `batch.resolved` fires once per
   // /api/availability batch with aggregate counts + the location source;
   // `unavailable.shown` fires when an UnavailableState actually renders

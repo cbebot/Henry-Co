@@ -59,7 +59,7 @@ export default async function VendorProductDetailPage({
           }}
         />
       ) : null}
-      <div className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
+      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         <VendorProductEditor
           form={{
             intent: "vendor_product_upsert",

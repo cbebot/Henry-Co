@@ -297,7 +297,7 @@ export function LearnWorkspaceShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-10 sm:px-8 xl:grid-cols-[260px,1fr] xl:px-10">
+    <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-10 sm:px-8 xl:grid-cols-[260px_1fr] xl:px-10">
       <aside className="xl:sticky xl:top-24 xl:self-start">
         <p className="learn-kicker">{kicker}</p>
         <h1 className="mt-4 text-balance text-[1.65rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.85rem]">

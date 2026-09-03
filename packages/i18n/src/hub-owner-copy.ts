@@ -777,7 +777,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     healthOk:
       "Internal comms storage, memberships, attachments, and presence checks are healthy.",
     healthDegraded:
-      "Provisioning is incomplete. Apply Henry Onyx Hub migrations through 20260408120000 and confirm the health probe passes before relying on this room set.",
+      "This channel set is not fully provisioned yet. Complete provisioning, then reopen this view.",
     newRoomTitlePlaceholder: "New room title",
     roomTypeGroupOption: "Group room",
     roomTypeBroadcastOption: "Broadcast room",
@@ -791,10 +791,10 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     searchChannelsPlaceholder: "Search channels…",
     searchChannelsAriaLabel: "Search channels",
     noChannelsMatch:
-      "No channels match your search. If storage is not provisioned yet, apply Henry Onyx Hub Supabase migrations and wait for the schema cache to refresh.",
+      "No channels match your search. If none appear at all, this workspace may not be fully provisioned yet.",
     threadFallbackTitle: "Internal chat",
     threadDescription:
-      "Owner-protected HQ surface. Use direct chat for 1:1 conversations and governed rooms for owner-wide updates. Messages use Supabase row-level security, private storage, and realtime delivery with safe fallback to REST.",
+      "Owner-protected HQ surface. Use direct chat for 1:1 conversations and governed rooms for owner-wide updates. Messages are access-controlled, privately stored, and delivered in real time with a reliable fallback.",
     realtimeDegraded:
       "Live updates degraded — history stays accurate; refresh if something looks stale.",
     searchThreadPlaceholder: "Search in this thread…",
@@ -826,7 +826,7 @@ const HUB_OWNER_COPY_EN: HubOwnerCopy = {
     pageOwnerAssistant: "Owner assistant",
     pagePanelTitle: "Live thread",
     pagePanelDescription:
-      "Post updates, decisions, and handoffs. If provisioning looks degraded, apply the Henry Onyx Hub internal-comms migrations through 20260408120000_hq_internal_comms_attachments_visibility_rls and confirm the health probe passes.",
+      "Post updates, decisions, and handoffs. If this panel looks degraded, provisioning may be incomplete — complete setup, then reload.",
   },
   ownerDashboardClient: {
     loadingDashboard: "Loading dashboard...",
@@ -1283,7 +1283,7 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Le stockage, les membres, les pièces jointes et les vérifications de présence des communications internes sont sains.",
     healthDegraded:
-      "Le provisionnement est incomplet. Appliquez les migrations Henry Onyx Hub jusqu'au 20260408120000 et confirmez que la sonde de santé passe avant de vous fier à cet ensemble de salles.",
+      "Cet ensemble de salles n'est pas encore entièrement provisionné. Terminez le provisionnement, puis rouvrez cette vue.",
     newRoomTitlePlaceholder: "Titre de la nouvelle salle",
     roomTypeGroupOption: "Salle de groupe",
     roomTypeBroadcastOption: "Salle de diffusion",
@@ -1297,10 +1297,10 @@ const HUB_OWNER_COPY_FR: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Rechercher des canaux…",
     searchChannelsAriaLabel: "Rechercher des canaux",
     noChannelsMatch:
-      "Aucun canal ne correspond à votre recherche. Si le stockage n'est pas encore provisionné, appliquez les migrations Supabase Henry Onyx Hub et attendez que le cache de schéma se rafraîchisse.",
+      "Aucun canal ne correspond à votre recherche. Si aucun n'apparaît, cet espace de travail n'est peut-être pas encore entièrement provisionné.",
     threadFallbackTitle: "Chat interne",
     threadDescription:
-      "Surface QG protégée par le propriétaire. Utilisez le chat direct pour les conversations 1:1 et les salles gouvernées pour les mises à jour à l'échelle du propriétaire.",
+      "Surface QG protégée par le propriétaire. Utilisez le chat direct pour les conversations 1:1 et les salles gouvernées pour les mises à jour à l'échelle du propriétaire. Les messages sont à accès contrôlé, stockés de manière privée et livrés en temps réel avec un repli fiable.",
     realtimeDegraded:
       "Mises à jour en direct dégradées — l'historique reste précis ; rafraîchissez si quelque chose semble obsolète.",
     searchThreadPlaceholder: "Rechercher dans ce fil…",
@@ -1779,7 +1779,7 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "El almacenamiento, los miembros, los archivos adjuntos y las verificaciones de presencia de las comunicaciones internas están saludables.",
     healthDegraded:
-      "El aprovisionamiento está incompleto. Aplica las migraciones de Henry Onyx Hub hasta 20260408120000 y confirma que la sonda de salud pasa antes de confiar en este conjunto de salas.",
+      "Este conjunto de salas aún no está completamente aprovisionado. Completa el aprovisionamiento y luego vuelve a abrir esta vista.",
     newRoomTitlePlaceholder: "Título de la nueva sala",
     roomTypeGroupOption: "Sala de grupo",
     roomTypeBroadcastOption: "Sala de difusión",
@@ -1793,10 +1793,10 @@ const HUB_OWNER_COPY_ES: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Buscar canales…",
     searchChannelsAriaLabel: "Buscar canales",
     noChannelsMatch:
-      "Ningún canal coincide con tu búsqueda. Si el almacenamiento aún no está aprovisionado, aplica las migraciones de Supabase de Henry Onyx Hub y espera a que se actualice la caché del esquema.",
+      "Ningún canal coincide con tu búsqueda. Si no aparece ninguno, este espacio de trabajo puede que aún no esté completamente aprovisionado.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
-      "Superficie HQ protegida por el propietario. Usa el chat directo para conversaciones 1:1 y salas gobernadas para actualizaciones del propietario.",
+      "Superficie HQ protegida por el propietario. Usa el chat directo para conversaciones 1:1 y salas gobernadas para actualizaciones del propietario. Los mensajes tienen acceso controlado, se almacenan de forma privada y se entregan en tiempo real con un respaldo fiable.",
     realtimeDegraded:
       "Actualizaciones en vivo degradadas — el historial permanece preciso; actualiza si algo parece desactualizado.",
     searchThreadPlaceholder: "Buscar en este hilo…",
@@ -2276,7 +2276,7 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "O armazenamento, membros, anexos e verificações de presença das comunicações internas estão saudáveis.",
     healthDegraded:
-      "O aprovisionamento está incompleto. Aplique as migrações do Henry Onyx Hub até 20260408120000 e confirme que a sonda de saúde passa antes de confiar neste conjunto de salas.",
+      "Este conjunto de salas ainda não está totalmente aprovisionado. Conclua o aprovisionamento e reabra esta vista.",
     newRoomTitlePlaceholder: "Título da nova sala",
     roomTypeGroupOption: "Sala de grupo",
     roomTypeBroadcastOption: "Sala de transmissão",
@@ -2290,10 +2290,10 @@ const HUB_OWNER_COPY_PT: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Pesquisar canais…",
     searchChannelsAriaLabel: "Pesquisar canais",
     noChannelsMatch:
-      "Nenhum canal corresponde à sua pesquisa. Se o armazenamento ainda não estiver aprovisionado, aplique as migrações do Supabase do Henry Onyx Hub e aguarde a actualização da cache.",
+      "Nenhum canal corresponde à sua pesquisa. Se nenhum aparecer, este espaço de trabalho pode ainda não estar totalmente aprovisionado.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
-      "Superfície HQ protegida pelo proprietário. Use o chat directo para conversas 1:1 e salas governadas para actualizações do proprietário.",
+      "Superfície HQ protegida pelo proprietário. Use o chat directo para conversas 1:1 e salas governadas para actualizações do proprietário. As mensagens têm acesso controlado, são armazenadas de forma privada e entregues em tempo real com um recurso alternativo fiável.",
     realtimeDegraded:
       "Actualizações em tempo real degradadas — o histórico permanece preciso; actualize se algo parecer desactualizado.",
     searchThreadPlaceholder: "Pesquisar neste tópico…",
@@ -2771,7 +2771,7 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "التخزين والعضويات والمرفقات وعمليات فحص الحضور في الاتصالات الداخلية جميعها سليمة.",
     healthDegraded:
-      "التوفير غير مكتمل. طبّق ترحيلات Henry Onyx Hub حتى 20260408120000 وأكّد اجتياز مجس السلامة قبل الاعتماد على هذه المجموعة من الغرف.",
+      "لم تُوفَّر هذه المجموعة من الغرف بالكامل بعد. أكمِل التوفير ثم أعد فتح هذا العرض.",
     newRoomTitlePlaceholder: "عنوان الغرفة الجديدة",
     roomTypeGroupOption: "غرفة مجموعة",
     roomTypeBroadcastOption: "غرفة بث",
@@ -2785,10 +2785,10 @@ const HUB_OWNER_COPY_AR: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "البحث في القنوات…",
     searchChannelsAriaLabel: "البحث في القنوات",
     noChannelsMatch:
-      "لا توجد قنوات تطابق بحثك. إذا لم يكن التخزين مُوفَّراً بعد، طبّق ترحيلات Supabase لـ Henry Onyx Hub وانتظر تحديث ذاكرة التخزين المؤقت.",
+      "لا توجد قنوات تطابق بحثك. إذا لم يظهر أي منها إطلاقاً، فقد لا تكون مساحة العمل هذه مُوفَّرة بالكامل بعد.",
     threadFallbackTitle: "الدردشة الداخلية",
     threadDescription:
-      "سطح HQ محمي من قِبَل المالك. استخدم الدردشة المباشرة للمحادثات الفردية والغرف المحكومة للتحديثات العامة.",
+      "سطح HQ محمي من قِبَل المالك. استخدم الدردشة المباشرة للمحادثات الفردية والغرف المحكومة للتحديثات العامة. الرسائل خاضعة للتحكم في الوصول، ومخزَّنة بشكل خاص، وتُسلَّم في الوقت الفعلي مع خيار احتياطي موثوق.",
     realtimeDegraded:
       "تدهورت التحديثات الفورية — يبقى السجل دقيقاً؛ أعد التحميل إذا بدا شيء قديماً.",
     searchThreadPlaceholder: "البحث في هذا الخيط…",
@@ -3269,7 +3269,7 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Speicher, Mitgliedschaften, Anhänge und Präsenzprüfungen der internen Kommunikation sind gesund.",
     healthDegraded:
-      "Die Bereitstellung ist unvollständig. Wenden Sie Henry Onyx Hub-Migrationen bis 20260408120000 an und bestätigen Sie, dass die Gesundheitsprüfung besteht.",
+      "Dieser Raumsatz ist noch nicht vollständig bereitgestellt. Schließen Sie die Bereitstellung ab und öffnen Sie diese Ansicht dann erneut.",
     newRoomTitlePlaceholder: "Neuer Raumtitel",
     roomTypeGroupOption: "Gruppenraum",
     roomTypeBroadcastOption: "Broadcastraum",
@@ -3283,10 +3283,10 @@ const HUB_OWNER_COPY_DE: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Kanäle suchen…",
     searchChannelsAriaLabel: "Kanäle suchen",
     noChannelsMatch:
-      "Keine Kanäle entsprechen Ihrer Suche. Wenn der Speicher noch nicht bereitgestellt ist, wenden Sie Supabase-Migrationen von Henry Onyx Hub an.",
+      "Keine Kanäle entsprechen Ihrer Suche. Wenn gar keine erscheinen, ist dieser Arbeitsbereich möglicherweise noch nicht vollständig bereitgestellt.",
     threadFallbackTitle: "Interner Chat",
     threadDescription:
-      "Eigentümer-geschützte HQ-Oberfläche. Verwenden Sie den Direktchat für 1:1-Gespräche und verwaltete Räume für eigentümerweite Updates.",
+      "Eigentümer-geschützte HQ-Oberfläche. Verwenden Sie den Direktchat für 1:1-Gespräche und verwaltete Räume für eigentümerweite Updates. Nachrichten sind zugriffskontrolliert, privat gespeichert und werden in Echtzeit mit einem zuverlässigen Fallback zugestellt.",
     realtimeDegraded:
       "Live-Updates beeinträchtigt — der Verlauf bleibt korrekt; aktualisieren Sie, wenn etwas veraltet erscheint.",
     searchThreadPlaceholder: "In diesem Thread suchen…",
@@ -3765,7 +3765,7 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "Archiviazione, iscrizioni, allegati e verifiche di presenza delle comunicazioni interne sono integri.",
     healthDegraded:
-      "Il provisioning è incompleto. Applica le migrazioni Henry Onyx Hub fino a 20260408120000 e conferma che la sonda di salute supera il test.",
+      "Questo insieme di stanze non è ancora completamente predisposto. Completa il provisioning, poi riapri questa vista.",
     newRoomTitlePlaceholder: "Titolo nuova stanza",
     roomTypeGroupOption: "Stanza di gruppo",
     roomTypeBroadcastOption: "Stanza broadcast",
@@ -3779,10 +3779,10 @@ const HUB_OWNER_COPY_IT: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "Cerca canali…",
     searchChannelsAriaLabel: "Cerca canali",
     noChannelsMatch:
-      "Nessun canale corrisponde alla tua ricerca. Se l'archiviazione non è ancora stata predisposta, applica le migrazioni Supabase di Henry Onyx Hub.",
+      "Nessun canale corrisponde alla tua ricerca. Se non ne appare nessuno, questo spazio di lavoro potrebbe non essere ancora completamente predisposto.",
     threadFallbackTitle: "Chat interno",
     threadDescription:
-      "Superficie HQ protetta dal proprietario. Usa la chat diretta per conversazioni 1:1 e stanze governate per aggiornamenti estesi.",
+      "Superficie HQ protetta dal proprietario. Usa la chat diretta per conversazioni 1:1 e stanze governate per aggiornamenti estesi. I messaggi hanno accesso controllato, sono archiviati privatamente e consegnati in tempo reale con un fallback affidabile.",
     realtimeDegraded:
       "Aggiornamenti in tempo reale degradati — la cronologia rimane accurata; aggiorna se qualcosa sembra obsoleto.",
     searchThreadPlaceholder: "Cerca in questo thread…",
@@ -4247,7 +4247,7 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "内部通讯的存储、成员、附件和状态检查均正常。",
     healthDegraded:
-      "配置不完整。请应用 Henry Onyx Hub 迁移至 20260408120000，并确认健康检查通过后再使用此房间组。",
+      "此房间组尚未完全配置。请先完成配置,然后重新打开此视图。",
     newRoomTitlePlaceholder: "新房间标题",
     roomTypeGroupOption: "群组房间",
     roomTypeBroadcastOption: "广播房间",
@@ -4261,10 +4261,10 @@ const HUB_OWNER_COPY_ZH: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "搜索频道…",
     searchChannelsAriaLabel: "搜索频道",
     noChannelsMatch:
-      "没有频道符合搜索条件。如存储尚未配置，请应用 Henry Onyx Hub Supabase 迁移并等待模式缓存刷新。",
+      "没有频道符合搜索条件。如果完全没有频道显示，此工作区可能尚未完全配置。",
     threadFallbackTitle: "内部聊天",
     threadDescription:
-      "业主保护的总部界面。1:1 对话请使用私信，业主范围的更新请使用受管房间。",
+      "业主保护的总部界面。1:1 对话请使用私信，业主范围的更新请使用受管房间。消息受访问控制、私密存储，并以实时方式送达，并具备可靠的回退机制。",
     realtimeDegraded:
       "实时更新降级 — 历史记录保持准确；如有异常请刷新页面。",
     searchThreadPlaceholder: "在此线程中搜索…",
@@ -4744,7 +4744,7 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
     healthOk:
       "आंतरिक संचार का संग्रहण, सदस्यता, अनुलग्नक और उपस्थिति जाँच सभी स्वस्थ हैं।",
     healthDegraded:
-      "प्रावधान अधूरा है। Henry Onyx Hub माइग्रेशन 20260408120000 तक लागू करें।",
+      "यह कक्ष समूह अभी पूरी तरह प्रावधानित नहीं है। प्रावधान पूरा करें, फिर इस दृश्य को दोबारा खोलें।",
     newRoomTitlePlaceholder: "नए कक्ष का शीर्षक",
     roomTypeGroupOption: "समूह कक्ष",
     roomTypeBroadcastOption: "प्रसारण कक्ष",
@@ -4758,10 +4758,10 @@ const HUB_OWNER_COPY_HI: DeepPartial<HubOwnerCopy> = {
     searchChannelsPlaceholder: "चैनल खोजें…",
     searchChannelsAriaLabel: "चैनल खोजें",
     noChannelsMatch:
-      "कोई चैनल आपकी खोज से मेल नहीं खाता।",
+      "कोई चैनल आपकी खोज से मेल नहीं खाता। यदि एक भी दिखाई न दे, तो यह कार्यक्षेत्र शायद अभी पूरी तरह प्रावधानित नहीं है।",
     threadFallbackTitle: "आंतरिक चैट",
     threadDescription:
-      "स्वामी-संरक्षित HQ सतह। 1:1 बातचीत के लिए सीधी चैट और व्यापक अपडेट के लिए प्रबंधित कक्ष का उपयोग करें।",
+      "स्वामी-संरक्षित HQ सतह। 1:1 बातचीत के लिए सीधी चैट और व्यापक अपडेट के लिए प्रबंधित कक्ष का उपयोग करें। संदेश पहुँच-नियंत्रित, निजी रूप से संग्रहित और विश्वसनीय फ़ॉलबैक के साथ रीयल-टाइम में वितरित होते हैं।",
     realtimeDegraded:
       "लाइव अपडेट खराब — इतिहास सटीक रहता है; यदि कुछ पुराना लगे तो रीफ्रेश करें।",
     searchThreadPlaceholder: "इस थ्रेड में खोजें…",
