@@ -7,12 +7,18 @@
 // manages the case lifecycle. The two layers compose, they do not overlap.
 // ---------------------------------------------------------------------------
 
-/** The four publishable content domains this spine gates. */
+/**
+ * The publishable content domains this spine gates. Kept in lockstep with the
+ * moderation_decisions/moderation_reports content_type CHECKs (`deal` widened
+ * by 20260724120000_v3_35_deals.sql — constraint-drift guard).
+ */
 export type ContentType =
   | "marketplace_listing"
   | "job_post"
   | "studio_brief"
-  | "service_profile";
+  | "service_profile"
+  // V3-35 — deal/campaign offer artifacts flow through the SAME publish gate.
+  | "deal";
 
 /**
  * Publish gate decision.
