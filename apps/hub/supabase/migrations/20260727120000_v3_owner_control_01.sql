@@ -455,10 +455,24 @@ end $$;
 -- of a chain of deltas nobody can evaluate. This migration sorts after
 -- 20260723130000, and repeats everything that one allows — dropping first with
 -- `if exists` makes it correct whether or not that migration ever applied.
-alter table public.customer_notifications
-  drop constraint if exists customer_notifications_category_check;
+-- Guarded on the table's existence, like every other table this migration
+-- touches. It was the one unguarded ALTER here: sections 4, 6 and 7 all test
+-- `to_regclass(...) is null` first and this one did not, which is not a
+-- production risk (customer_notifications is live — prod-actual schema.sql:2838)
+-- but it does make the migration unappliable on any chain that lacks the table.
+-- That includes the vanilla CI chain, which is where the grant invariants for
+-- this pass now run; an unappliable migration cannot be proven by them.
+do $$
+begin
+  if to_regclass('public.customer_notifications') is null then
+    raise notice 'customer_notifications absent — category widening skipped';
+    return;
+  end if;
 
-alter table public.customer_notifications
+  alter table public.customer_notifications
+    drop constraint if exists customer_notifications_category_check;
+
+  alter table public.customer_notifications
   add constraint customer_notifications_category_check
   check (category = any (array[
     -- Legacy coarse vocabulary (pre-V2-NOT-01).
@@ -478,11 +492,14 @@ alter table public.customer_notifications
     'marketplace.vendor.status','learn.teacher.review'
   ]::text[]));
 
-comment on constraint customer_notifications_category_check on public.customer_notifications is
-  'Allowed category vocabulary = 9 legacy coarse values UNION the registered '
-  'EVENT_TYPE ids from packages/notifications/event-types.ts. Keep in lock-step '
-  'with event-types.ts. Widened 2026-07-27 (V3-OWNER-CONTROL-01) for '
-  'marketplace.vendor.status and learn.teacher.review.';
+  -- Inside the guard: a comment on a constraint that was never added would
+  -- itself raise.
+  comment on constraint customer_notifications_category_check on public.customer_notifications is
+    'Allowed category vocabulary = 9 legacy coarse values UNION the registered '
+    'EVENT_TYPE ids from packages/notifications/event-types.ts. Keep in lock-step '
+    'with event-types.ts. Widened 2026-07-27 (V3-OWNER-CONTROL-01) for '
+    'marketplace.vendor.status and learn.teacher.review.';
+end $$;
 
 -- ---------------------------------------------------------------------------
 -- 6. owner_profiles — close the self-escalation path this rail depends on

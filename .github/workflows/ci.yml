@@ -96,6 +96,15 @@ jobs:
       - name: Test (super-app)
         run: pnpm run test:workspace
 
+      # Hub's node:test suites were never invoked by CI — `test:workspace` runs
+      # the super-app alone. That meant the F3 money-governance suite, whose own
+      # header states "If a future catalog entry breaks any of these, this test
+      # fails and the PR is blocked", could not block anything: it had never run
+      # on a pull request. Wiring it in was a V3-OWNER-CONTROL-01 finding, made
+      # while adding that pass's own registry invariants to the same suite.
+      - name: Test (hub — F3 money governance + owner-control registry invariants)
+        run: pnpm --filter @henryco/hub run test
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
 
@@ -382,3 +391,28 @@ jobs:
 
       - name: Prove deals RLS at runtime (drafts/unlisted invisible; no request-role writes; curation rows reconciled)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_rls_behaviour.sql
+
+      # V3-OWNER-CONTROL-01 — the owner action rail. One endpoint approves
+      # sellers, suspends live stores, and removes reported content, so its RPCs
+      # must be server-only and its root of trust (owner_profiles) must not be
+      # self-promotable.
+      #
+      # The fixture reproduces the prod grant hole ON PURPOSE. owner_profiles
+      # carries a TABLE-level write grant to anon and authenticated on live
+      # (prod-actual schema.sql :8999-:9000), and THREE separate attempts to
+      # close HUB-2 all used a COLUMN-level revoke, which PostgreSQL discards
+      # when the role holds the privilege at table level:
+      #   20260710180000_hub_security_hardening.sql
+      #   this migration's own first draft
+      #   docs/v3/security/v3-fire-hub-proposed-migrations/02_..._pin_role.sql
+      # On a vanilla Postgres that broken form looks correct — the same
+      # false-green the money bootstrap above exists to prevent — so the hole is
+      # recreated first and the invariant is asserted against it.
+      - name: Seed owner-control surface (reproduce the prod owner_profiles grant hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/owner_control_min.sql
+
+      - name: Apply V3-OWNER-CONTROL-01 owner action rail migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260727120000_v3_owner_control_01.sql
+
+      - name: Assert owner-control grant invariant (RPCs service-role-only, ledger deny-all, owner_profiles not self-promotable)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/owner_control_grant_invariant.sql
