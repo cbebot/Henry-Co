@@ -381,6 +381,24 @@ jobs:
       - name: Prove personalization RLS at runtime (user B never reads/writes user A's layout or consent — 0 rows)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/personalization_rls_behaviour.sql
 
+      # V3-35 DEALS (Phase E) — offer-artifact model + fairness-impression
+      # ledger + curation reconciliation. Net-new tables, request roles are
+      # read-only (RLS narrows to live/own/staff), impressions append-only
+      # service-role. NO money path. Seed-then-apply-then-assert on the same
+      # fresh DB; the seed also plants curation rows so the in-migration
+      # reconciliation is proven, not assumed.
+      - name: Seed V3-35 prod-standing table ACL + curation fixtures (so the migration revokes + reconciliation are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_min.sql
+
+      - name: Apply V3-35 deals migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_35_deals.sql
+
+      - name: Assert deals grant invariant (request roles read-only; impressions append-only service-role)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_grant_invariant.sql
+
+      - name: Prove deals RLS at runtime (drafts/unlisted invisible; no request-role writes; curation rows reconciled)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_rls_behaviour.sql
+
       # V3-43 WORKFLOW RAIL — applied here for the first time so V3-41 can compose
       # with the REAL unified primitives (workflow_locks + internal_ai_spend_ledger)
       # rather than stubs. The migration is fully self-guarded (its only FK is to

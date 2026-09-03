@@ -1,0 +1,25 @@
+-- F-03 — OWNER-DRIVEN DATA REMEDIATION (commented out; do not run blind).
+-- There are 7 ACTIVE privileged marketplace_role_memberships with user_id = NULL, all
+-- bound to one email on the LEGACY domain henrycogroup.com (owner, admin, finance,
+-- moderation, operations, support, vendor). Because getMarketplaceViewer() binds roles by
+-- normalized_email match, anyone who authenticates that mailbox inherits full money-control.
+--
+-- The CODE fix (lib/marketplace/auth.ts) is primary: do not confer privileged roles by
+-- email match; require a user_id binding for staff roles. This data step complements it.
+--
+-- STEP 1 — INVENTORY (read-only) — run and review who/what these are:
+--   select id, role, scope_type, scope_id, normalized_email, created_at
+--   from public.marketplace_role_memberships
+--   where is_active and user_id is null order by role;
+--
+-- STEP 2 — choose ONE per row, owner-confirmed:
+--
+--   (a) BIND to the real operator's auth user id (preferred for genuine staff):
+--   -- update public.marketplace_role_memberships
+--   --   set user_id = '<REAL_AUTH_UID>', normalized_email = '<owner>@henryonyx.com'
+--   -- where id = '<membership_id>';
+--
+--   (b) DEACTIVATE seeds that should not exist:
+--   -- update public.marketplace_role_memberships set is_active = false where id = '<membership_id>';
+--
+-- Also: verify henrycogroup.com is owned + locked at the registrar (operational, not SQL).

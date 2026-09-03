@@ -15,7 +15,8 @@
     "./abandoned-tasks": "./src/abandoned-tasks.ts",
     "./abandoned-tasks-core": "./src/abandoned-tasks-core.ts",
     "./studio-scope": "./src/studio-scope.ts",
-    "./studio-scope-core": "./src/studio-scope-core.ts"
+    "./studio-scope-core": "./src/studio-scope-core.ts",
+    "./deals": "./src/deals.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
@@ -31,6 +32,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@henryco/config": "workspace:^"
+    "@henryco/config": "workspace:^",
+    "@henryco/intelligence": "workspace:^"
   }
 }

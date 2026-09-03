@@ -114,3 +114,13 @@ export {
   type CaptureAbandonedTaskInput,
   type ClaimAbandonedTasksInput,
 } from "./abandoned-tasks";
+
+export {
+  listLiveDeals,
+  recordDealImpressions,
+  applyDealDecision,
+  type DealRow,
+  type DealDecisionStatus,
+  type ListLiveDealsOptions,
+  type DealImpressionEntry,
+} from "./deals";
