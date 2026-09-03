@@ -16,6 +16,7 @@ import {
   StaffModerationPageServer,
   StaffFinanceOperatorPageServer,
   StaffSettingsPageServer,
+  StaffRiskPageServer,
 } from "@henryco/dashboard-modules-staff";
 
 import { requireTrackCStaffViewer } from "../../_internal/viewer";
@@ -30,6 +31,7 @@ import {
   handleStaffSupportBulkAction,
   handleStaffModerationBulkAction,
   handleStaffFinanceOperatorBulkAction,
+  handleStaffRiskBulkAction,
 } from "../../_actions/bulk-actions";
 import {
   handleStaffCareExport,
@@ -42,8 +44,11 @@ import {
   handleStaffSupportExport,
   handleStaffModerationExport,
   handleStaffFinanceOperatorExport,
+  handleStaffRiskExport,
 } from "../../_actions/exports";
 import { createStaffSupabaseServer } from "@/lib/supabase/server";
+import { RiskLifecycleStrip } from "@/components/risk/RiskLifecycleStrip";
+import { getStaffLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +80,8 @@ export default async function TrackCModulePage({
   }
 
   const supabase = await createStaffSupabaseServer();
+  // V3-41 — operator locale for the predictive panels (apps/staff had no resolver).
+  const locale = await getStaffLocale();
 
   switch (slug) {
     case "staff-overview":
@@ -138,6 +145,7 @@ export default async function TrackCModulePage({
         <StaffLogisticsPageServer
           viewer={viewer}
           supabase={supabase as never}
+          locale={locale}
           bulkActionHandler={handleStaffLogisticsBulkAction}
           exportHandler={handleStaffLogisticsExport}
         />
@@ -147,6 +155,7 @@ export default async function TrackCModulePage({
         <StaffSupportPageServer
           viewer={viewer}
           supabase={supabase as never}
+          locale={locale}
           bulkActionHandler={handleStaffSupportBulkAction}
           exportHandler={handleStaffSupportExport}
         />
@@ -156,6 +165,7 @@ export default async function TrackCModulePage({
         <StaffModerationPageServer
           viewer={viewer}
           supabase={supabase as never}
+          locale={locale}
           bulkActionHandler={handleStaffModerationBulkAction}
           exportHandler={handleStaffModerationExport}
         />
@@ -165,6 +175,7 @@ export default async function TrackCModulePage({
         <StaffFinanceOperatorPageServer
           viewer={viewer}
           supabase={supabase as never}
+          locale={locale}
           bulkActionHandler={handleStaffFinanceOperatorBulkAction}
           exportHandler={handleStaffFinanceOperatorExport}
         />
@@ -174,6 +185,17 @@ export default async function TrackCModulePage({
         <StaffSettingsPageServer
           viewer={viewer}
           accountSettingsUrl={getAccountUrl("/settings")}
+        />
+      );
+    // V3-40 — predictive risk review queue (security staff; RLS is the gate).
+    case "staff-risk":
+      return (
+        <StaffRiskPageServer
+          viewer={viewer}
+          supabase={supabase as never}
+          bulkActionHandler={handleStaffRiskBulkAction}
+          exportHandler={handleStaffRiskExport}
+          lifecycleSlot={<RiskLifecycleStrip hasOwnerAccess={viewer.access.hasOwnerAccess} />}
         />
       );
     default:

@@ -157,6 +157,9 @@ export type MarketplaceProduct = {
   featured: boolean;
   approvalStatus: ProductApprovalStatus;
   trustBadges: string[];
+  /** The durable "Henry Onyx Verified" trust badge — awarded by the paid AI review, buyer-visible.
+   *  Optional: absent/false on a product that has not earned it. */
+  henryOnyxVerified?: boolean;
   gallery: string[];
   specifications: Record<string, string>;
   filterData: Record<string, string | string[] | boolean>;
@@ -205,7 +208,20 @@ export type MarketplaceReview = {
 export type MarketplaceSellerDocumentRecord = {
   kind: "businessRegistration" | "founderIdentity" | "payoutProof" | "other";
   name: string;
+  /**
+   * Canonical persisted reference. For documents uploaded after the media sweep
+   * this is a backend-neutral `media://private/...` ref (RLS-private bucket);
+   * legacy rows carry an absolute URL. This value is what round-trips back to
+   * the server on draft save — NEVER overwrite it with a signed URL.
+   */
   fileUrl: string;
+  /**
+   * Short-lived SIGNED URL safe to render in the browser. Populated server-side
+   * at read time from {@link fileUrl} (a private `media://` ref is not directly
+   * renderable). `null` when there is nothing to display. Display-only — never
+   * persisted (it expires).
+   */
+  previewUrl?: string | null;
   mimeType: string | null;
   size: number | null;
   publicId: string | null;
@@ -234,6 +250,10 @@ export type MarketplaceOrderItem = {
 export type MarketplaceOrderGroup = {
   id: string;
   vendorSlug: string | null;
+  /** Vendor UUID (marketplace_order_groups.vendor_id) — the vendor's id, not
+   * buyer PII. Lets the "Message seller" CTA anchor an Onyx Line thread to a
+   * specific vendor on a multi-vendor order. */
+  vendorId: string | null;
   ownerType: "company" | "vendor";
   fulfillmentStatus: FulfillmentStatus;
   paymentStatus: PaymentStatus;

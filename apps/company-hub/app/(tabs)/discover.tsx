@@ -154,7 +154,7 @@ export default function DiscoverScreen() {
               className="mt-2 text-center text-sm leading-5"
               style={{ color: palette.muted }}
             >
-              Try adjusting your search or filters to discover Henry &amp; Co.
+              Try adjusting your search or filters to discover Henry Onyx
               divisions.
             </Text>
           </View>

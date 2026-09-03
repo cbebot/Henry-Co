@@ -24,19 +24,19 @@ export default async function TalentPage() {
     >
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 lg:px-8">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{t("For candidates")}</p>
               <h1 className="mt-4 jobs-display max-w-3xl text-balance">
                 {t("Build a profile that employers actually trust.")}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
-                {t("HenryCo Jobs uses your profile completeness, uploaded documents, verified skills, and work history to help employers see the real you — not just a name and a CV attachment.")}
+                {t("Henry Onyx Jobs uses your profile completeness, uploaded documents, verified skills, and work history to help employers see the real you — not just a name and a CV attachment.")}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={profileUrl}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                  className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
                 >
                   {viewer.user ? t("Update profile") : t("Start your profile")}
                   <ArrowRight className="h-4 w-4" />
@@ -112,20 +112,20 @@ export default async function TalentPage() {
         </section>
 
         <section className="border-t border-black/10 pt-10 dark:border-white/10">
-          <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{t("Move forward")}</p>
               <h2 className="mt-3 jobs-heading max-w-2xl text-balance">
                 {t("Start your profile, then apply when you’re ready.")}
               </h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--jobs-muted)]">
-                {t("Browsing is free. Saving and applying require one HenryCo account so your shortlist and applications stay attached to the right person.")}
+                {t("Browsing is free. Saving and applying require one Henry Onyx account so your shortlist and applications stay attached to the right person.")}
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href={profileUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
               >
                 {viewer.user ? t("Open candidate hub") : t("Create candidate profile")}
                 <ArrowRight className="h-4 w-4" />

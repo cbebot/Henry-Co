@@ -1,0 +1,3744 @@
+{
+  "generatedAt": "2026-05-22T15:16:46.109Z",
+  "overall": {
+    "total": 150,
+    "withEvent": 3,
+    "withLogger": 0,
+    "withBoth": 0,
+    "withConsole": 36
+  },
+  "perApp": {
+    "account": {
+      "total": 40,
+      "withEvent": 3,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 8,
+      "pctEvent": 7.5,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/account/app/api/addresses/create/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/addresses/route.ts",
+          "mutatingMethods": [
+            "POST",
+            "PATCH",
+            "DELETE"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/addresses/set-default/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/auth/choose/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/auth/email-hook/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/account/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/auth/resend/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/auth/signup/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/account/app/api/cron/notification-email-fallback/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/account/app/api/cron/notification-purge/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/account/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/batch/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/mark-all-read/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/preferences/route.ts",
+          "mutatingMethods": [
+            "PATCH"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/[notificationId]/archive/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/[notificationId]/purge/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/[notificationId]/read/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/[notificationId]/restore/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/[notificationId]/route.ts",
+          "mutatingMethods": [
+            "PATCH",
+            "DELETE"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/notifications/[notificationId]/unread/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/preferences/update/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/profile/avatar/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/profile/update/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/property/saved/[listingId]/route.ts",
+          "mutatingMethods": [
+            "DELETE"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/runtime-error/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/account/app/api/saved-items/route.ts",
+          "mutatingMethods": [
+            "PATCH",
+            "DELETE"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/studio/payments/[id]/wallet/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/support/create/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": true,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/support/mark-read/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/support/mute/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/support/reply/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": true,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/support/report/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": true,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/support/upload/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/verify/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/account/app/api/wallet/fund/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/account/app/api/wallet/funding/[requestId]/proof/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/wallet/payout-methods/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/wallet/withdrawal/pin/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/wallet/withdrawal/request/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/account/app/api/webhooks/account/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        }
+      ]
+    },
+    "care": {
+      "total": 15,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 0,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/care/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/book/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/bookings/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/claims/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/contact/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/payments/receipt/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/pod/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/preferences/garments/route.ts",
+          "mutatingMethods": [
+            "POST",
+            "DELETE"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/recurring/route.ts",
+          "mutatingMethods": [
+            "POST",
+            "DELETE"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/care/reviews/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/owner/care-media/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/owner/whatsapp/health/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/webhooks/resend/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/care/app/api/webhooks/whatsapp/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        }
+      ]
+    },
+    "hub": {
+      "total": 19,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 8,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/hub/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/cron/owner-reporting/monthly/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/hub/app/api/cron/owner-reporting/weekly/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/hub/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/newsletter/preferences/route.ts",
+          "mutatingMethods": [
+            "PATCH"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/newsletter/subscribe/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/newsletter/unsubscribe/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/owner/divisions/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/hub/app/api/owner/internal-comms/attachments/register/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/owner/internal-comms/dm/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/owner/internal-comms/messages/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/hub/app/api/owner/internal-comms/pin/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/owner/internal-comms/read/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/owner/internal-comms/threads/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/owner/pages/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/hub/app/api/owner/people/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/hub/app/api/owner/settings/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/hub/app/api/owner/upload/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/hub/app/api/profile/update/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        }
+      ]
+    },
+    "jobs": {
+      "total": 13,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 7,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/jobs/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/jobs/app/api/candidate/documents/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/jobs/app/api/candidate/profile/draft/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/jobs/app/api/cron/jobs-alerts/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/jobs/app/api/hiring/interviews/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/jobs/app/api/hiring/messages/flag/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/jobs/app/api/hiring/messages/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/jobs/app/api/jobs/interviews/rooms/[roomId]/notes/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/jobs/app/api/jobs/offers/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/jobs/app/api/jobs/pipeline/move/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/jobs/app/api/jobs/verifications/skill/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/jobs/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/jobs/app/api/webhooks/daily/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        }
+      ]
+    },
+    "learn": {
+      "total": 11,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 0,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/learn/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/announcement/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/assignments/grade/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/assignments/submit/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/bookmarks/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/bootstrap/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/discussions/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/instructor/payout-request/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/notes/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/learn/playback/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/learn/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        }
+      ]
+    },
+    "logistics": {
+      "total": 9,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 7,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/logistics/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/logistics/app/api/cron/logistics-automation/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/logistics/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/logistics/app/api/logistics/book/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/logistics/app/api/logistics/claims/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/logistics/app/api/logistics/dispatch/assign/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/logistics/app/api/logistics/pod/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/logistics/app/api/logistics/quote/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/logistics/app/api/webhooks/whatsapp/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        }
+      ]
+    },
+    "marketplace": {
+      "total": 9,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 0,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/marketplace/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/marketplace/app/api/cart/route.ts",
+          "mutatingMethods": [
+            "POST",
+            "PATCH",
+            "DELETE"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/marketplace/app/api/follows/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/marketplace/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/marketplace/app/api/marketplace/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/marketplace/app/api/saved-items/route.ts",
+          "mutatingMethods": [
+            "POST",
+            "PATCH",
+            "DELETE"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/marketplace/app/api/seller-applications/documents/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/marketplace/app/api/seller-applications/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/marketplace/app/api/wishlist/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        }
+      ]
+    },
+    "property": {
+      "total": 4,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 0,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/property/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/property/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/property/app/api/property/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/property/app/api/webhooks/whatsapp/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        }
+      ]
+    },
+    "staff": {
+      "total": 13,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 2,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/staff/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/kyc/review/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/[id]/approve/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/[id]/cancel/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/[id]/request-changes/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/[id]/route.ts",
+          "mutatingMethods": [
+            "PATCH"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/[id]/schedule/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/[id]/send/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/[id]/submit/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/drafts/[id]/test-send/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/newsletter/suppress/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/staff/app/api/support/reply/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        }
+      ]
+    },
+    "studio": {
+      "total": 17,
+      "withEvent": 0,
+      "withLogger": 0,
+      "withBoth": 0,
+      "withConsole": 4,
+      "pctEvent": 0,
+      "pctLogger": 0,
+      "pctBoth": 0,
+      "routes": [
+        {
+          "path": "apps/studio/app/api/auth/logout/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/locale/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/studio/asset-packs/generate/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/studio/app/api/studio/domain-check/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/studio/milestones/route.ts",
+          "mutatingMethods": [
+            "POST",
+            "PATCH"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/studio/app/api/studio/proposals/sign/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/studio/app/api/studio/revisions/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": true
+        },
+        {
+          "path": "apps/studio/app/api/support/create/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/support/mark-read/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/support/mute/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/support/reply/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/support/report/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/support/transfer/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/support/transitions/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/support/upload/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/webhooks/resend/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        },
+        {
+          "path": "apps/studio/app/api/webhooks/whatsapp/route.ts",
+          "mutatingMethods": [
+            "POST"
+          ],
+          "emitsEvent": false,
+          "callsLogger": false,
+          "consoleLog": false
+        }
+      ]
+    }
+  },
+  "missingEmission": [
+    {
+      "app": "account",
+      "path": "apps/account/app/api/addresses/create/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/addresses/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/addresses/set-default/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/choose/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/email-hook/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/resend/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/signup/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/cron/notification-email-fallback/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/cron/notification-purge/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/batch/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/mark-all-read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/preferences/route.ts",
+      "mutatingMethods": [
+        "PATCH"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/archive/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/purge/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/restore/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/route.ts",
+      "mutatingMethods": [
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/unread/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/preferences/update/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/profile/avatar/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/profile/update/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/property/saved/[listingId]/route.ts",
+      "mutatingMethods": [
+        "DELETE"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/runtime-error/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/saved-items/route.ts",
+      "mutatingMethods": [
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/studio/payments/[id]/wallet/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/mark-read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/mute/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/upload/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/verify/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/fund/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/funding/[requestId]/proof/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/payout-methods/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/withdrawal/pin/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/withdrawal/request/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/webhooks/account/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/book/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/bookings/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/claims/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/contact/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/payments/receipt/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/pod/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/preferences/garments/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/recurring/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/reviews/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/owner/care-media/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/owner/whatsapp/health/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/webhooks/resend/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/webhooks/whatsapp/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/cron/owner-reporting/monthly/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/cron/owner-reporting/weekly/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/newsletter/preferences/route.ts",
+      "mutatingMethods": [
+        "PATCH"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/newsletter/subscribe/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/newsletter/unsubscribe/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/divisions/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/attachments/register/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/dm/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/messages/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/pin/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/threads/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/pages/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/people/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/settings/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/upload/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/profile/update/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/candidate/documents/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/candidate/profile/draft/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/cron/jobs-alerts/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/hiring/interviews/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/hiring/messages/flag/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/hiring/messages/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/interviews/rooms/[roomId]/notes/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/offers/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/pipeline/move/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/verifications/skill/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/webhooks/daily/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/announcement/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/assignments/grade/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/assignments/submit/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/bookmarks/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/bootstrap/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/discussions/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/instructor/payout-request/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/notes/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/playback/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/cron/logistics-automation/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/book/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/claims/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/dispatch/assign/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/pod/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/quote/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/webhooks/whatsapp/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/cart/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/follows/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/marketplace/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/saved-items/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/seller-applications/documents/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/seller-applications/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/wishlist/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "property",
+      "path": "apps/property/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "property",
+      "path": "apps/property/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "property",
+      "path": "apps/property/app/api/property/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "property",
+      "path": "apps/property/app/api/webhooks/whatsapp/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/kyc/review/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/approve/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/cancel/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/request-changes/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/route.ts",
+      "mutatingMethods": [
+        "PATCH"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/schedule/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/send/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/submit/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/test-send/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/suppress/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/support/reply/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/asset-packs/generate/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/domain-check/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/milestones/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "PATCH"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/proposals/sign/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/revisions/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/create/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/mark-read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/mute/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/reply/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/report/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/transfer/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/transitions/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/upload/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/webhooks/resend/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/webhooks/whatsapp/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    }
+  ],
+  "missingLogger": [
+    {
+      "app": "account",
+      "path": "apps/account/app/api/addresses/create/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/addresses/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/addresses/set-default/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/choose/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/email-hook/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/resend/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/signup/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/cron/notification-email-fallback/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/cron/notification-purge/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/batch/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/mark-all-read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/preferences/route.ts",
+      "mutatingMethods": [
+        "PATCH"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/archive/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/purge/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/restore/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/route.ts",
+      "mutatingMethods": [
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/notifications/[notificationId]/unread/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/preferences/update/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/profile/avatar/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/profile/update/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/property/saved/[listingId]/route.ts",
+      "mutatingMethods": [
+        "DELETE"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/runtime-error/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/saved-items/route.ts",
+      "mutatingMethods": [
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/studio/payments/[id]/wallet/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/create/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/mark-read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/mute/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/reply/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/report/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/support/upload/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/verify/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/fund/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/funding/[requestId]/proof/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/payout-methods/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/withdrawal/pin/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/withdrawal/request/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/webhooks/account/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/book/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/bookings/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/claims/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/contact/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/payments/receipt/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/pod/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/preferences/garments/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/recurring/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/care/reviews/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/owner/care-media/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/owner/whatsapp/health/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/webhooks/resend/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "care",
+      "path": "apps/care/app/api/webhooks/whatsapp/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/cron/owner-reporting/monthly/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/cron/owner-reporting/weekly/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/newsletter/preferences/route.ts",
+      "mutatingMethods": [
+        "PATCH"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/newsletter/subscribe/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/newsletter/unsubscribe/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/divisions/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/attachments/register/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/dm/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/messages/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/pin/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/threads/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/pages/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/people/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/settings/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/upload/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/profile/update/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/candidate/documents/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/candidate/profile/draft/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/cron/jobs-alerts/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/hiring/interviews/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/hiring/messages/flag/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/hiring/messages/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/interviews/rooms/[roomId]/notes/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/offers/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/pipeline/move/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/verifications/skill/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/webhooks/daily/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/announcement/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/assignments/grade/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/assignments/submit/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/bookmarks/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/bootstrap/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/discussions/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/instructor/payout-request/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/notes/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/learn/playback/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "learn",
+      "path": "apps/learn/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/cron/logistics-automation/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/book/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/claims/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/dispatch/assign/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/pod/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/quote/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/webhooks/whatsapp/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/cart/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/follows/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/marketplace/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/saved-items/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/seller-applications/documents/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/seller-applications/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "marketplace",
+      "path": "apps/marketplace/app/api/wishlist/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "property",
+      "path": "apps/property/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "property",
+      "path": "apps/property/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "property",
+      "path": "apps/property/app/api/property/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "property",
+      "path": "apps/property/app/api/webhooks/whatsapp/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/kyc/review/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/approve/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/cancel/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/request-changes/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/route.ts",
+      "mutatingMethods": [
+        "PATCH"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/schedule/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/send/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/submit/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/drafts/[id]/test-send/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/newsletter/suppress/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/support/reply/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/auth/logout/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/locale/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/asset-packs/generate/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/domain-check/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/milestones/route.ts",
+      "mutatingMethods": [
+        "POST",
+        "PATCH"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/proposals/sign/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/revisions/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/create/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/mark-read/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/mute/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/reply/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/report/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/transfer/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/transitions/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/support/upload/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/webhooks/resend/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/webhooks/whatsapp/route.ts",
+      "mutatingMethods": [
+        "POST"
+      ]
+    }
+  ],
+  "consoleStillPresent": [
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/email-hook/route.ts"
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/auth/signup/route.ts"
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/cron/notification-email-fallback/route.ts"
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/cron/notification-purge/route.ts"
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/runtime-error/route.ts"
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/verify/route.ts"
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/wallet/fund/route.ts"
+    },
+    {
+      "app": "account",
+      "path": "apps/account/app/api/webhooks/account/route.ts"
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/cron/owner-reporting/monthly/route.ts"
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/cron/owner-reporting/weekly/route.ts"
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/divisions/route.ts"
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/internal-comms/messages/route.ts"
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/pages/route.ts"
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/people/route.ts"
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/owner/settings/route.ts"
+    },
+    {
+      "app": "hub",
+      "path": "apps/hub/app/api/profile/update/route.ts"
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/candidate/profile/draft/route.ts"
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/hiring/messages/flag/route.ts"
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/hiring/messages/route.ts"
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/interviews/rooms/[roomId]/notes/route.ts"
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/offers/route.ts"
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/pipeline/move/route.ts"
+    },
+    {
+      "app": "jobs",
+      "path": "apps/jobs/app/api/jobs/verifications/skill/route.ts"
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/cron/logistics-automation/route.ts"
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/book/route.ts"
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/claims/route.ts"
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/dispatch/assign/route.ts"
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/pod/route.ts"
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/logistics/quote/route.ts"
+    },
+    {
+      "app": "logistics",
+      "path": "apps/logistics/app/api/webhooks/whatsapp/route.ts"
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/kyc/review/route.ts"
+    },
+    {
+      "app": "staff",
+      "path": "apps/staff/app/api/support/reply/route.ts"
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/asset-packs/generate/route.ts"
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/milestones/route.ts"
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/proposals/sign/route.ts"
+    },
+    {
+      "app": "studio",
+      "path": "apps/studio/app/api/studio/revisions/route.ts"
+    }
+  ]
+}

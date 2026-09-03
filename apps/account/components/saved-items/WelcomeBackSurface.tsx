@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Bookmark, Clock, ShoppingBag, Sparkles } from "lucide-react";
 import type { SavedItemRecord, SavedItemSnapshotCore, SavedItemDivision } from "@henryco/cart-saved-items";
+import { henryDomain } from "@henryco/config";
 import { formatNaira } from "@/lib/format";
 
 const DIVISION_LABEL: Record<SavedItemDivision, string> = {
@@ -14,14 +15,16 @@ const DIVISION_LABEL: Record<SavedItemDivision, string> = {
   account: "Account",
 };
 
+// V3-07(S2): division home URLs sourced from henryDomain() so the
+// env-aware base domain wins everywhere, including preview deployments.
 const DIVISION_HOME: Record<SavedItemDivision, string> = {
-  marketplace: "https://marketplace.henrycogroup.com",
-  care: "https://care.henrycogroup.com",
-  learn: "https://learn.henrycogroup.com",
-  logistics: "https://logistics.henrycogroup.com",
-  property: "https://property.henrycogroup.com",
-  jobs: "https://jobs.henrycogroup.com",
-  studio: "https://studio.henrycogroup.com",
+  marketplace: henryDomain("marketplace"),
+  care: henryDomain("care"),
+  learn: henryDomain("learn"),
+  logistics: henryDomain("logistics"),
+  property: henryDomain("property"),
+  jobs: henryDomain("jobs"),
+  studio: henryDomain("studio"),
   account: "/",
 };
 

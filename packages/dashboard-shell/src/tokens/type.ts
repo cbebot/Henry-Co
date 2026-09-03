@@ -20,8 +20,14 @@
  * level doesn't require shell changes.
  */
 export const FONT_VARS = {
-  serif: "var(--font-source-serif, ui-serif, Georgia, serif)",
-  sans: "var(--font-inter, ui-sans-serif, system-ui, sans-serif)",
+  // Owned type — route through the shared family tokens so dashboard-shell text
+  // (every typeStyle()/monoStyle() inline style) flips with the owned-type reveal.
+  // The nested var() keeps the prior Source Serif / Inter as a fallback ONLY if a
+  // host fails to import the @henryco/ui seam (which always defines --hc-font-*).
+  // Without this, hosts that don't load --font-inter (e.g. studio) fell straight
+  // to system-ui — the "chat message renders in a system font" bug.
+  serif: "var(--hc-font-serif, var(--font-source-serif, ui-serif, Georgia, serif))",
+  sans: "var(--hc-font-sans, var(--font-inter, ui-sans-serif, system-ui, sans-serif))",
   /** PASS 19 — monospace for amounts, IDs, timestamps. Mirrors the
    *  `--hc-font-mono` declared in `packages/ui/src/styles/globals.css`. */
   mono: "var(--hc-font-mono, ui-monospace, SF Mono, JetBrains Mono, Menlo, Consolas, monospace)",

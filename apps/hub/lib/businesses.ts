@@ -23,7 +23,7 @@ export const BUSINESSES: Business[] = [
   {
     id: "care",
     slug: "care",
-    name: "Henry & Co. Fabric Care",
+    name: "Henry Onyx Fabric Care",
     tagline: "Premium laundry, dry cleaning & pickup/delivery.",
     category: "Fabric Care",
     status: "Live",
@@ -57,7 +57,7 @@ export const BUSINESSES: Business[] = [
   {
     id: "building",
     slug: "building",
-    name: "Henry & Co. Building",
+    name: "Henry Onyx Building",
     tagline: "Construction, renovations & project management.",
     category: "Construction",
     status: "Coming Soon",
@@ -81,7 +81,7 @@ export const BUSINESSES: Business[] = [
   {
     id: "hotel",
     slug: "hotel",
-    name: "Henry & Co. Hotels",
+    name: "Henry Onyx Hotels",
     tagline: "Bookings, stays, and hospitality experiences.",
     category: "Hospitality",
     status: "Coming Soon",

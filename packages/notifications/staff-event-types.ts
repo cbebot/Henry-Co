@@ -18,6 +18,7 @@ export type StaffEventTypeId =
   | "staff.system.health"
   | "staff.support.thread.assigned"
   | "staff.support.reply.received"
+  | "staff.support.handoff.requested"
   | "staff.kyc.review.queued"
   | "staff.security.incident";
 
@@ -48,6 +49,13 @@ export const STAFF_EVENT_TYPES: Record<StaffEventTypeId, StaffEventTypeSpec> = {
     defaultSeverity: "info",
     deepLinkTemplate: "/workspace/support",
     allowedPayloadKeys: [],
+  },
+  // A customer (signed-in or anonymous) asked the AI for a live person — the
+  // owner's bell rings so a human can take the conversation over.
+  "staff.support.handoff.requested": {
+    defaultSeverity: "urgent",
+    deepLinkTemplate: "/owner/support",
+    allowedPayloadKeys: ["conversationId", "threadId", "division"],
   },
   "staff.kyc.review.queued": {
     defaultSeverity: "warning",

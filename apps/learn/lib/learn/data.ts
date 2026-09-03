@@ -22,9 +22,9 @@ import type {
   LearnTeacherApplication,
   LearnViewer,
 } from "@/lib/learn/types";
-import { getLearnSetting, readLearnCollection } from "@/lib/learn/store";
+import { getLearnSetting, hasLearnTable, readLearnCollection } from "@/lib/learn/store";
 import { LEARN_BOOTSTRAP_VERSION, seedLearnBaseline } from "@/lib/learn/seed";
-import { hasSupabaseServiceRole } from "@/lib/supabase";
+import { createAdminSupabase, hasSupabaseServiceRole } from "@/lib/supabase";
 
 let bootstrapPromise: Promise<void> | null = null;
 
@@ -248,6 +248,38 @@ function mapProgress(row: Record<string, unknown>): LearnProgressRecord {
     secondsWatched: asNumber(row.seconds_watched),
     score: row.score == null ? null : asNumber(row.score),
     completedAt: cleanText(row.completed_at) || null,
+  };
+}
+
+export type LearnLessonPlayback = {
+  id: string;
+  enrollmentId: string;
+  userId: string | null;
+  normalizedEmail: string | null;
+  lessonId: string;
+  courseId: string;
+  positionSeconds: number;
+  durationSeconds: number;
+  playbackRate: number;
+  captionLocale: string | null;
+  lastEvent: string | null;
+  updatedAt: string;
+};
+
+function mapLessonPlayback(row: Record<string, unknown>): LearnLessonPlayback {
+  return {
+    id: cleanText(row.id),
+    enrollmentId: cleanText(row.enrollment_id),
+    userId: cleanText(row.user_id) || null,
+    normalizedEmail: cleanText(row.normalized_email) || null,
+    lessonId: cleanText(row.lesson_id),
+    courseId: cleanText(row.course_id),
+    positionSeconds: asNumber(row.position_seconds),
+    durationSeconds: asNumber(row.duration_seconds),
+    playbackRate: asNumber(row.playback_rate, 1),
+    captionLocale: cleanText(row.caption_locale) || null,
+    lastEvent: cleanText(row.last_event) || null,
+    updatedAt: cleanText(row.updated_at),
   };
 }
 
@@ -493,6 +525,23 @@ export function isCourseVisibleToPublic(course: LearnCourse) {
   return course.status === "published" && course.visibility === "public";
 }
 
+/**
+ * V3-58 — Seller Academy track marker. Courses tagged `seller_academy` form the
+ * dedicated seller track: they are EXCLUDED from the general /courses browse and
+ * surfaced only on the /academy/seller track view (or an explicit track query).
+ */
+export const SELLER_ACADEMY_TRACK_TAG = "seller_academy";
+
+export function isSellerAcademyCourse(course: LearnCourse) {
+  return Array.isArray(course.tags) && course.tags.includes(SELLER_ACADEMY_TRACK_TAG);
+}
+
+const SELLER_ACADEMY_DIFFICULTY_ORDER: Record<string, number> = {
+  beginner: 0,
+  intermediate: 1,
+  advanced: 2,
+};
+
 export function canViewerAccessCourse(
   course: LearnCourse,
   viewer: LearnViewer | null | undefined,
@@ -547,11 +596,24 @@ export async function getCourseCatalog(filters?: {
   search?: string;
   category?: string;
   difficulty?: string;
+  /** Pass `seller_academy` to browse the dedicated track; otherwise it is hidden. */
+  track?: string;
 }) {
   const snapshot = await getPublicAcademyData();
   const search = cleanText(filters?.search).toLowerCase();
+  const wantsSellerAcademy = filters?.track === SELLER_ACADEMY_TRACK_TAG;
+  const hasCategoryFilter = Boolean(filters?.category);
 
   return snapshot.courses.filter((course) => {
+    const seller = isSellerAcademyCourse(course);
+    // The seller track is its own surface — keep it out of the general browse,
+    // but honor an explicit track=seller_academy request OR an explicit category
+    // filter (so picking "Seller Academy" in the catalogue dropdown still works).
+    if (wantsSellerAcademy) {
+      if (!seller) return false;
+    } else if (seller && !hasCategoryFilter) {
+      return false;
+    }
     if (filters?.category && course.categoryId !== filters.category) return false;
     if (filters?.difficulty && course.difficulty !== filters.difficulty) return false;
     if (!search) return true;
@@ -560,6 +622,25 @@ export async function getCourseCatalog(filters?: {
       .toLowerCase()
       .includes(search);
   });
+}
+
+/**
+ * V3-58 — the Seller Academy track: the published seller courses in learning
+ * order (foundational → intermediate → advanced) plus the track category. Used by
+ * the /academy/seller view. Honest-state: returns an empty list (not a
+ * placeholder) until the courses are seeded.
+ */
+export async function getSellerAcademyTrack() {
+  const snapshot = await getPublicAcademyData();
+  const courses = snapshot.courses
+    .filter(isSellerAcademyCourse)
+    .sort(
+      (left, right) =>
+        (SELLER_ACADEMY_DIFFICULTY_ORDER[left.difficulty] ?? 99) -
+        (SELLER_ACADEMY_DIFFICULTY_ORDER[right.difficulty] ?? 99),
+    );
+  const category = snapshot.categories.find((item) => item.slug === "seller-academy") ?? null;
+  return { courses, category };
 }
 
 export async function getCourseBySlug(slug: string, viewer?: LearnViewer | null) {
@@ -690,6 +771,37 @@ export async function getCertificateByCode(code: string) {
     course: snapshot.courses.find((item) => item.id === certificate.courseId) ?? null,
     enrollment: snapshot.enrollments.find((item) => item.id === certificate.enrollmentId) ?? null,
   };
+}
+
+/**
+ * LRN-1 — read the playback heartbeat for one (enrollment, lesson). Used by the
+ * proof-of-watch gate in `completeLesson`. Returns null when the player tables
+ * are not yet applied (pre-migration prod) or no heartbeat has been written, so
+ * callers must gate on table presence themselves before treating null as
+ * "no proof of watch".
+ */
+export async function getLessonPlayback(
+  enrollmentId: string,
+  lessonId: string
+): Promise<LearnLessonPlayback | null> {
+  if (!cleanText(enrollmentId) || !cleanText(lessonId)) return null;
+  if (!(await hasLearnTable("learn_lesson_playback"))) return null;
+
+  try {
+    const admin = createAdminSupabase();
+    const { data, error } = await admin
+      .from("learn_lesson_playback")
+      .select("*")
+      .eq("enrollment_id", enrollmentId)
+      .eq("lesson_id", lessonId)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error || !data) return null;
+    return mapLessonPlayback(data as Record<string, unknown>);
+  } catch {
+    return null;
+  }
 }
 
 function matchesViewer(

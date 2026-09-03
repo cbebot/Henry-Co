@@ -8,7 +8,14 @@ export {
   type TypesenseAdminClient,
   type TypesenseEnv,
 } from "./client";
-export { drainOutbox, ensureCollectionsExist, type DrainOutboxResult } from "./outbox";
+export {
+  drainOutbox,
+  ensureCollectionsExist,
+  type DrainOutboxResult,
+  type IndexingFailureClass,
+  type IndexingFailureReport,
+  type IndexingFailureEmitter,
+} from "./outbox";
 export {
   buildFilterClauses,
   resolveUserRoles,
@@ -20,7 +27,20 @@ export {
   toUnifiedFromCatalog,
   toUnifiedFromIndexed,
   dedupeAndRank,
+  applyDiversityCap,
 } from "./ranking";
+export {
+  DEFAULT_TUNING,
+  getCollectionTuning,
+  type CollectionTuning,
+} from "./collection-tuning";
+export {
+  SYNONYMS_BY_DIVISION,
+  buildTypesenseSynonyms,
+  flattenSynonymsForDivision,
+  type SynonymGroup,
+  type TypesenseSynonymPayload,
+} from "./synonyms";
 export { searchAcrossDivisions, type SearchAcrossDivisionsDeps } from "./query";
 export {
   checkSearchRateLimit,

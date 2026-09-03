@@ -21,7 +21,11 @@ import {
   deriveSLABucket,
   DEFAULT_STAFF_QUEUE_FILTERS,
   formatRelative,
+  loadPredictiveSnapshot,
+  PredictiveQueuePanel,
 } from "../shared";
+import { getStaffPredictiveCopy } from "@henryco/i18n";
+import type { AppLocale } from "@henryco/i18n";
 
 export type LogisticsSupabaseClient = {
   from: (table: string) => {
@@ -251,6 +255,8 @@ export const staffLogisticsModule: StaffDashboardModule = {
 };
 
 export type StaffLogisticsPageProps = {
+  /** Operator locale for the V3-41 predictive panel. Defaults to English. */
+  locale?: AppLocale;
   viewer: StaffViewer;
   supabase: LogisticsSupabaseClient;
   bulkActionHandler: (id: string, ids: string[], reason: string | null) => Promise<void>;
@@ -261,13 +267,17 @@ export type StaffLogisticsPageProps = {
   ) => Promise<void>;
 };
 
-export async function StaffLogisticsPageServer({ supabase, bulkActionHandler, exportHandler }: StaffLogisticsPageProps) {
+export async function StaffLogisticsPageServer({ supabase, bulkActionHandler, exportHandler, locale }: StaffLogisticsPageProps) {
   const snapshot = await loadLogisticsQueueSnapshot(supabase);
+  const predictive = await loadPredictiveSnapshot(supabase as never, "staff-logistics");
   return (
     <GenericStaffQueueClient<LogisticsShipmentRow>
       kicker="Logistics · operator"
       title="Dispatch & shipments"
       snapshot={snapshot}
+      forecastPanel={
+        <PredictiveQueuePanel snapshot={predictive} copy={getStaffPredictiveCopy(locale ?? "en")} />
+      }
       filterFields={FILTERS}
       rowAdapter={(r) => ({
         id: r.id,

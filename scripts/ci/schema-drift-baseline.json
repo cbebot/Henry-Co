@@ -1,0 +1,22 @@
+{
+  "_README": "Pre-existing schema-drift backlog (DRIFT-SWEEP-02). Each entry is a code reference to a column absent from the committed schema sources (packages/data/src/database.types.ts + migration DDL). CI fails only on NEW entries. To shrink: fix the query OR add the migration+regenerate database.types.ts, then re-run with --write-baseline. Do NOT add new entries by hand to silence a failure — fix the drift.",
+  "generatedBy": "node scripts/ci/schema-drift-check.mjs --write-baseline",
+  "count": 15,
+  "entries": [
+    "apps/jobs/lib/jobs/posting-eligibility.ts::customer_security_log.risk_level",
+    "apps/learn/lib/email/learn-templates.ts::profiles.email",
+    "apps/learn/lib/learn/people.ts::profiles.email",
+    "apps/learn/lib/learn/shared-account.ts::profiles.email",
+    "apps/logistics/lib/logistics/shared-account.ts::profiles.email",
+    "apps/staff/lib/intelligence-data.ts::customer_security_log.risk_level",
+    "apps/studio/app/api/studio/milestones/route.ts::studio_project_milestones.completed_at",
+    "apps/studio/app/api/studio/proposals/sign/route.ts::studio_proposals.signed_pdf_url",
+    "apps/studio/app/api/studio/revisions/route.ts::studio_revisions.requested_by_user_id",
+    "apps/studio/lib/studio/automation-reminders.ts::studio_project_milestones.reminder_sent_at",
+    "apps/studio/lib/studio/shared-account.ts::profiles.email",
+    "packages/dashboard-modules-staff/src/staff-jobs/index.tsx::jobs_applications.review_due_at",
+    "packages/dashboard-modules-staff/src/staff-learn/index.tsx::learn_courses.review_due_at",
+    "packages/dashboard-modules-staff/src/staff-property/index.tsx::property_listings.rental_price_kobo",
+    "packages/dashboard-modules-staff/src/staff-property/index.tsx::property_listings.review_due_at"
+  ]
+}

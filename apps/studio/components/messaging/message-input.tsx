@@ -133,7 +133,7 @@ export function MessageInput({
   );
 
   return (
-    <div className="flex flex-col gap-2 bg-[#0A0E1A] pb-3 pt-2 sm:border-t sm:border-white/[0.06] sm:px-4">
+    <div className="flex flex-col gap-2 bg-[var(--studio-thread-card)] pb-3 pt-2 sm:border-t sm:border-[var(--studio-thread-line)] sm:px-4">
       {reply ? (
         <div className="px-3 sm:px-0">
           <ReplyComposerPreview

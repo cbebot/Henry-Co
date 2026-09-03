@@ -51,13 +51,13 @@ export default function TermsScreen() {
           className="mt-2 text-sm leading-6"
           style={{ color: palette.muted }}
         >
-          Last updated: April 5, 2026
+          Last updated: July 19, 2026
         </Text>
 
         <Text className="mt-4 text-sm leading-6" style={{ color: palette.textBody }}>
           These Terms of Use (&quot;Terms&quot;) govern your access to and use
-          of the Henry &amp; Co. Hub mobile application (the &quot;App&quot;)
-          operated by Henry &amp; Co. Group (&quot;we&quot;, &quot;us&quot;, or
+          of the Henry Onyx Hub mobile application (the &quot;App&quot;)
+          operated by Henry Onyx Limited (&quot;we&quot;, &quot;us&quot;, or
           &quot;our&quot;). By downloading, installing, or using the App, you
           agree to be bound by these Terms.
         </Text>
@@ -85,7 +85,7 @@ export default function TermsScreen() {
 
         <Section title="3. Division Services">
           <Body>
-            The App serves as a navigation hub for Henry &amp; Co. divisions.
+            The App serves as a navigation hub for Henry Onyx divisions.
             Each division operates independently and may have its own terms of
             service, pricing, and policies. When you access a division&apos;s
             website or service through the App, you are subject to that
@@ -113,7 +113,7 @@ export default function TermsScreen() {
           <Body>
             All content, features, and functionality of the App, including but
             not limited to text, graphics, logos, icons, and software, are the
-            property of Henry &amp; Co. Group or its licensors and are protected
+            property of Henry Onyx Limited or its licensors and are protected
             by applicable intellectual property laws. Nothing in these Terms
             grants you any right, title, or interest in such intellectual
             property except for the limited licence described above.
@@ -132,7 +132,7 @@ export default function TermsScreen() {
 
         <Section title="7. Limitation of Liability">
           <Body>
-            TO THE MAXIMUM EXTENT PERMITTED BY LAW, HENRY &amp; CO. GROUP SHALL
+            TO THE MAXIMUM EXTENT PERMITTED BY LAW, HENRY ONYX LIMITED SHALL
             NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL,
             OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO YOUR USE OF THE
             APP, REGARDLESS OF THE THEORY OF LIABILITY.
@@ -142,8 +142,8 @@ export default function TermsScreen() {
         <Section title="8. Governing Law">
           <Body>
             These Terms shall be governed by and construed in accordance with
-            the laws of the jurisdiction in which Henry &amp; Co. Group is
-            registered, without regard to conflict-of-law principles. Any
+            the laws of the Federal Republic of Nigeria, without regard to
+            conflict-of-law principles. Any
             disputes arising under these Terms shall be resolved in the
             competent courts of that jurisdiction.
           </Body>
@@ -152,7 +152,7 @@ export default function TermsScreen() {
         <Section title="9. Contact">
           <Body>
             For questions regarding these Terms, please contact us at
-            {` ${BRAND_EMAILS.hello} `}or visit henrycogroup.com.
+            {` ${BRAND_EMAILS.hello} `}or visit henryonyx.com.
           </Body>
         </Section>
       </View>

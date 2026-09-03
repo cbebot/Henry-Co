@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAccountUrl } from "@henryco/config";
 import { requireOwner } from "@/lib/owner-auth";
 import { createAdminSupabase } from "@/lib/supabase";
+import { applyStaffStatusToggle } from "@/lib/staff-status-write";
 import { normalizeEmail } from "@/lib/env";
 import type { OwnerFormState } from "@/lib/owner-form-state";
 import { rethrowIfRedirect, toOwnerFacingError } from "@/lib/owner-form-state";
@@ -361,8 +362,7 @@ export async function toggleStaffMemberStatusAction(
   formData: FormData
 ): Promise<OwnerFormState> {
   try {
-    await requireOwner();
-    const admin = createAdminSupabase();
+    const owner = await requireOwner();
     const userId = toText(formData.get("userId"));
     const intent = toText(formData.get("intent")).toLowerCase();
 
@@ -370,16 +370,17 @@ export async function toggleStaffMemberStatusAction(
       return { ok: false, message: "Invalid staff status change request." };
     }
 
-    const result = await admin.auth.admin.updateUserById(userId, {
-      ban_duration: intent === "suspend" ? "876000h" : "none",
+    // F3 (2026-07-10): the write sequence lives in applyStaffStatusToggle —
+    // ONE path shared with the founder action rail. Behavior unchanged.
+    const applied = await applyStaffStatusToggle({
+      userId,
+      intent: intent as "suspend" | "reactivate",
+      actorId: owner.id,
+      actorRole: owner.ownerRole || "owner",
     });
-    if (result.error) throw result.error;
-
-    await writeStaffAudit({
-      action: intent === "suspend" ? "staff.suspend" : "staff.reactivate",
-      entityId: userId,
-      meta: {},
-    });
+    if (!applied.ok) {
+      return { ok: false, message: applied.error };
+    }
 
     await revalidateOwnerSurfaces();
     return {
@@ -405,7 +406,7 @@ export async function saveCompanySettingsAction(
       id: toText(formData.get("id")) || "primary",
       company_name: toNullableText(formData.get("company_name")),
       legal_name: toNullableText(formData.get("legal_name")),
-      brand_title: toText(formData.get("brand_title")) || "Henry & Co.",
+      brand_title: toText(formData.get("brand_title")) || "Henry Onyx",
       brand_subtitle: toNullableText(formData.get("brand_subtitle")),
       brand_description: toNullableText(formData.get("brand_description")),
       footer_blurb: toNullableText(formData.get("footer_blurb")),
@@ -455,7 +456,7 @@ export async function saveCompanySiteSettingsAction(
     const payload = {
       id: toNullableText(formData.get("id")),
       site_key: toText(formData.get("site_key")) || "hub",
-      brand_title: toText(formData.get("brand_title")) || "Henry & Co.",
+      brand_title: toText(formData.get("brand_title")) || "Henry Onyx",
       brand_subtitle: toNullableText(formData.get("brand_subtitle")),
       legal_company_name: toNullableText(formData.get("legal_company_name")),
       support_email: toNullableText(formData.get("support_email")),
@@ -560,7 +561,7 @@ export async function saveCompanyPageAction(
       id: toNullableText(formData.get("id")),
       slug,
       page_key: slug,
-      title: toText(formData.get("title")) || "Henry & Co.",
+      title: toText(formData.get("title")) || "Henry Onyx",
       subtitle: toNullableText(formData.get("subtitle")),
       hero_badge: toNullableText(formData.get("hero_badge")),
       intro: toNullableText(formData.get("intro")),
@@ -570,7 +571,7 @@ export async function saveCompanyPageAction(
       secondary_cta_label: toNullableText(formData.get("secondary_cta_label")),
       secondary_cta_href: toNullableText(formData.get("secondary_cta_href")),
       hero_kicker: toNullableText(formData.get("hero_badge")),
-      hero_title: toText(formData.get("hero_title")) || toText(formData.get("title")) || "Henry & Co.",
+      hero_title: toText(formData.get("hero_title")) || toText(formData.get("title")) || "Henry Onyx",
       hero_body: toNullableText(formData.get("hero_body")) || toNullableText(formData.get("intro")),
       hero_primary_label: toNullableText(formData.get("hero_primary_label")),
       hero_primary_href: toNullableText(formData.get("hero_primary_href")),

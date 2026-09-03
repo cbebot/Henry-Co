@@ -45,6 +45,7 @@ export type MarketplaceTemplateKey =
   | "review_moderation_outcome"
   | "support_reply"
   | "support_escalation"
+  | "marketplace_message"
   | "security_notice"
   | "owner_alert";
 
@@ -88,7 +89,7 @@ export function renderMarketplaceEmailTemplate(input: MarketplaceTemplateInput, 
   const brandFooter = renderHenryCoEmailFooter({
     purpose: "marketplace",
     supportEmail: marketplace.supportEmail,
-    reasonLine: `This is a HenryCo Marketplace transactional message. Support: ${marketplace.supportEmail} · ${marketplace.supportPhone}`,
+    reasonLine: `This is a Henry Onyx Marketplace transactional message. Support: ${marketplace.supportEmail} · ${marketplace.supportPhone}`,
   });
   const isRtl = locale === "ar";
   const dir = isRtl ? "rtl" : "ltr";

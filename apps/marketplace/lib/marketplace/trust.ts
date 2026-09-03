@@ -129,7 +129,7 @@ export function buildVendorTrustPassport(
 
   // HenryCo partner / company seller note
   if (vendor.ownerType === "company") {
-    signals.push("HenryCo inventory");
+    signals.push("Henry Onyx inventory");
   }
 
   const coaching: string[] = [...profile.coaching];

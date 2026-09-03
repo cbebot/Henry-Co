@@ -80,8 +80,11 @@ export async function requireOwner(): Promise<OwnerUser> {
         .maybeSingle(),
     ]);
 
+    // HUB-4: mirror the gate — an email match feeds the displayed ownerRole
+    // only when the auth email is confirmed (the gate already required this to
+    // grant access; this keeps the enrichment consistent).
     const emailOwnerProfileRes =
-      !directOwnerProfileRes.data && auth.user.email
+      !directOwnerProfileRes.data && auth.user.email && auth.emailVerified
         ? await admin
             .from("owner_profiles")
             .select("role")

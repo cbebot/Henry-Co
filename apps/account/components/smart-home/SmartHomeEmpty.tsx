@@ -24,7 +24,7 @@ export function SmartHomeEmpty({ firstName, primaryAction, secondaryAction }: Sm
   return (
     <Panel tone="raised">
       <EmptyState
-        kicker={firstName ? `${firstName}, your dashboard wakes up as you use HenryCo` : "Welcome"}
+        kicker={firstName ? `${firstName}, your dashboard wakes up as you use Henry Onyx` : "Welcome"}
         headline="Live signals will surface here as they land."
         body="Wallet activity, marketplace orders, support replies, lifecycle blockers — they all come into one ranked feed. Start with a small first move; the dashboard fills itself."
         align="start"

@@ -14,7 +14,7 @@ const sections: { id: string; question: string; answer: string }[] = [
     id: "apply",
     question: "How does applying work?",
     answer:
-      "Open any role, read the full description, then sign in with your HenryCo account when you are ready. You will send one application from your candidate profile—cover note, availability, and pay expectations if you choose. After you submit, the role moves into your Applications list with a visible stage (reviewing, shortlisted, interview, and so on). You can always see whether you already applied.",
+      "Open any role, read the full description, then sign in with your Henry Onyx account when you are ready. You will send one application from your candidate profile—cover note, availability, and pay expectations if you choose. After you submit, the role moves into your Applications list with a visible stage (reviewing, shortlisted, interview, and so on). You can always see whether you already applied.",
   },
   {
     id: "shortlist",
@@ -42,15 +42,15 @@ const sections: { id: string; question: string; answer: string }[] = [
   },
   {
     id: "sync",
-    question: "Where do my jobs show up in HenryCo?",
+    question: "Where do my jobs show up in Henry Onyx?",
     answer:
-      "Applications, saved roles, and updates all appear in your HenryCo account. Jobs is the best place to track your hiring activity, and the account dashboard shows your activity across all HenryCo services.",
+      "Applications, saved roles, and updates all appear in your Henry Onyx account. Jobs is the best place to track your hiring activity, and the account dashboard shows your activity across all Henry Onyx services.",
   },
   {
     id: "whatsapp",
     question: "Why might WhatsApp updates not arrive?",
     answer:
-      "Messaging platforms sometimes block business messages without an approved template or an open support window. Email and in-app notifications stay on, and we log delivery issues so support can help.",
+      "Messaging apps sometimes hold or delay messages outside an active conversation window. Email and in-app notifications are always on — contact support if WhatsApp updates are missing.",
   },
 ];
 
@@ -76,7 +76,9 @@ export default async function HelpPage() {
           <h1 className="mt-4 jobs-display max-w-3xl text-balance">
             {t("Straight answers about Jobs.")}
           </h1>
-          <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
+          {/* READING-02: hero body in the editorial serif reading face
+              (--jobs-muted already aliases to the ink-70 equivalent). */}
+          <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
             {t("Candidates and employers use the same platform with different workspaces. If something here does not match what you see on screen, contact")}{" "}
             <a
               className="font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
@@ -106,7 +108,7 @@ export default async function HelpPage() {
               <li
                 key={item.id}
                 id={item.id}
-                className="scroll-mt-28 grid gap-3 py-6 sm:grid-cols-[auto,1fr] sm:gap-8"
+                className="scroll-mt-28 grid gap-3 py-6 sm:grid-cols-[auto_1fr] sm:gap-8"
               >
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
                   {String(i + 1).padStart(2, "0")}
@@ -115,7 +117,9 @@ export default async function HelpPage() {
                   <h2 className="text-base font-semibold tracking-tight text-[var(--jobs-ink)]">
                     {t(item.question)}
                   </h2>
-                  <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--jobs-muted)]">
+                  {/* READING-02: FAQ answers read in the serif face (hub
+                      home-faq precedent); ink stays host-owned. */}
+                  <p className="hc-font-reading text-pretty mt-2 max-w-3xl text-sm leading-7 text-[var(--jobs-muted)]">
                     {t(item.answer)}
                   </p>
                 </div>
@@ -125,20 +129,21 @@ export default async function HelpPage() {
         </section>
 
         <section className="border-t border-[var(--jobs-line)] pt-10">
-          <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div>
-              <p className="jobs-kicker">{t("HenryCo account")}</p>
+              <p className="jobs-kicker">{t("Henry Onyx account")}</p>
               <h2 className="mt-3 jobs-heading max-w-xl text-balance">
                 {t("Jobs activity lives alongside the rest of your account.")}
               </h2>
-              <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--jobs-muted)]">
-                {t("Wallet, documents, and other services may live under the same HenryCo account. The hub gives you the full picture without bouncing between sites.")}
+              {/* READING-02: section intro in the serif reading face. */}
+              <p className="hc-font-reading text-pretty mt-3 max-w-xl text-sm leading-7 text-[var(--jobs-muted)]">
+                {t("Wallet, documents, and other services may live under the same Henry Onyx account. The hub gives you the full picture without bouncing between sites.")}
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href={accountJobsUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
               >
                 {t("Open account hub")}
                 <ExternalLink className="h-4 w-4" />

@@ -6,7 +6,7 @@ import { getLearnPublicLocale } from "@/lib/locale-server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLearnPublicLocale();
-  return { title: `${translateSurfaceLabel(locale, "Sign In")} - HenryCo Learn` };
+  return { title: `${translateSurfaceLabel(locale, "Sign In")} - Henry Onyx Learn` };
 }
 
 export default async function LoginPage({

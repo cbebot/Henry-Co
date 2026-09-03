@@ -1,6 +1,6 @@
 # HenryCo Super App
 
-Premium cross-platform **Expo + React Native + TypeScript** client for the Henry & Co. ecosystem. This package follows **clean architecture** with feature modules, a shared design system, **Supabase** data access, **Cloudinary** media helpers, **Sentry** monitoring hooks, and **staging-first** configuration.
+Premium cross-platform **Expo + React Native + TypeScript** client for the Henry Onyx ecosystem. This package follows **clean architecture** with feature modules, a shared design system, **Supabase** data access, **Cloudinary** media helpers, **Sentry** monitoring hooks, and **staging-first** configuration.
 
 ## Quick start (local-first)
 
@@ -46,7 +46,7 @@ SQL migrations live in `supabase/migrations`. Apply them to a **staging** Supaba
 ## Deep linking
 
 - Custom scheme: `henryco://`
-- Staging universal links: `https://staging.henrycogroup.com/app/...` (host must be verified before relying on autoVerify)
+- Staging universal links: `https://staging.henryonyx.com/app/...` (host must be verified before relying on autoVerify)
 
 ## Testing focus
 

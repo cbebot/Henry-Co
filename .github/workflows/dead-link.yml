@@ -1,0 +1,63 @@
+# V3-06 — Dead-link sweep PR gate.
+#
+# Enforces the owner anti-pattern "no dead links": every internal href in
+# shipped pages must resolve to a real route on a real app. This gate runs the
+# STATIC scan (scripts/v3/dead-link-scan.mjs --check) on every PR and fails only
+# when a NEW DEAD or LEGACY link is introduced relative to the committed
+# baseline (scripts/v3/dead-link-baseline.json). Pre-existing, owner-acknowledged
+# entries are a backlog, not a regression bar.
+#
+# The live HTTP walk (scripts/v3/live-walk.mjs) is intentionally NOT run as a
+# blocking step here: it needs the 10 production/preview origins reachable, which
+# a forked-PR runner cannot guarantee. It runs in --check mode with
+# continue-on-error so the report is still produced as an artefact for the soak /
+# manual deployment-gate review, but a transient network failure never blocks a
+# PR. ANTI-CLONE: the route-table catalog is internal-only — uploaded as a
+# short-retention artefact, never published.
+
+name: dead-link
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: dead-link-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dead-link-gate:
+    name: Static dead-link scan (no new DEAD/LEGACY)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Static dead-link scan (S10 gate)
+        run: pnpm run dead-link:check
+
+      - name: Live walk (S6 — non-blocking; needs reachable origins)
+        run: pnpm run dead-link:walk -- --check
+        continue-on-error: true
+
+      - name: Upload dead-link artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v3-06-dead-link-artefacts
+          path: |
+            scripts/v3/dead-link-report.md
+            scripts/v3/dead-link-classified.json
+            scripts/v3/live-walk-report.tsv
+          if-no-files-found: ignore
+          retention-days: 14

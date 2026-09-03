@@ -92,7 +92,7 @@ export function normalizeCareSettings(input?: SettingsSource): CareSettingsRecor
         : asNullableText(source.about_title_i18n),
     about_body: asText(
       source.about_body,
-      "HenryCo Care is structured to keep booking, dispatch, execution, and support readable from the first request to the final handoff."
+      "Henry Onyx Care is structured to keep booking, dispatch, execution, and support readable from the first request to the final handoff."
     ),
     about_body_i18n:
       source.about_body_i18n && typeof source.about_body_i18n === "object"

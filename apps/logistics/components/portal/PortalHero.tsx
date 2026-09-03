@@ -4,7 +4,7 @@ import { ArrowRight, MapPin } from "lucide-react";
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 
 /**
- * PortalHero — editorial-premium hero for HenryCo Logistics public surfaces.
+ * PortalHero — editorial-premium hero for Henry Onyx Logistics public surfaces.
  *
  * Owner-validated pattern (feedback_no_giant_hero_text.md):
  *  - Hero ≠ giant headline; hero = capability evidence above the fold.
@@ -134,7 +134,14 @@ export function PortalCapabilityStrip({
             }
           >
             <span className="log-pf__metric-label">{metric.label}</span>
-            <span className="log-pf__metric-value">
+            <span
+              className={
+                "log-pf__metric-value" +
+                (typeof metric.value === "string" && /[a-zA-Z]{4}|\s/.test(metric.value)
+                  ? " log-pf__metric-value--text"
+                  : "")
+              }
+            >
               {metric.currencyGlyph ? (
                 <span className="log-pf__metric-value-currency" aria-hidden>
                   {metric.currencyGlyph}

@@ -111,7 +111,7 @@ export function AccountScreen() {
       ) : (
         <>
           <Text variant="subtitle">
-            {mode === "local" ? "Local mock sign-in" : "Sign in with your HenryCo account"}
+            {mode === "local" ? "Local mock sign-in" : "Sign in with your Henry Onyx account"}
           </Text>
           {mode === "local" ? (
             <Text variant="caption" color="textSecondary">
@@ -158,6 +158,10 @@ export function AccountScreen() {
       {actLoading ? (
         <Text variant="caption" color="textSecondary">
           Loading…
+        </Text>
+      ) : activity.length === 0 ? (
+        <Text variant="caption" color="textSecondary">
+          No linked activity yet. Your orders, bookings, and applications appear here.
         </Text>
       ) : (
         <View style={{ gap: spacing.sm }}>

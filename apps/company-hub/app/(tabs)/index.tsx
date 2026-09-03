@@ -96,7 +96,7 @@ export default function HomeScreen() {
           <View className="px-6 pb-10 pt-10">
             <Animated.View entering={FadeInDown.duration(520).springify()}>
               <Text className="text-xs font-bold uppercase tracking-[0.35em] text-[#C9A227]">
-                Henry &amp; Co.
+                Henry Onyx
               </Text>
             </Animated.View>
             <Animated.View entering={FadeInUp.delay(80).duration(560).springify()}>
@@ -109,7 +109,7 @@ export default function HomeScreen() {
                 }}
               >
                 Explore the businesses, services, and operating divisions of
-                Henry &amp; Co.
+                Henry Onyx
               </Text>
             </Animated.View>
             <Animated.View entering={FadeInUp.delay(140).duration(560).springify()}>
@@ -117,14 +117,14 @@ export default function HomeScreen() {
                 className="mt-4 max-w-xl text-base leading-7"
                 style={{ color: heroTextMuted }}
               >
-                Henry &amp; Co. brings together focused businesses under one
+                Henry Onyx brings together focused businesses under one
                 respected group identity.
               </Text>
             </Animated.View>
             <Animated.View entering={FadeInUp.delay(200).duration(480).springify()}>
               <View className="mt-7 h-px w-20 bg-[#C9A227]/70" />
               <Text className="mt-4 text-sm" style={{ color: heroKickerMuted }}>
-                Premium company network — henrycogroup.com
+                Premium company network — henryonyx.com
               </Text>
             </Animated.View>
           </View>
@@ -134,10 +134,9 @@ export default function HomeScreen() {
           <SectionHeader kicker="News & Updates" title="What's happening" />
           <View className="mt-4">
             <NewsCard
-              title="Company-wide platform stabilization"
-              date="April 5, 2026"
-              excerpt="Ongoing MVP stabilization across all Henry & Co. divisions — refining connected experiences, polishing interfaces, and ensuring consistent quality from Care through Logistics and beyond."
-              onPress={() => {}}
+              title="A more connected Henry Onyx"
+              date="July 19, 2026"
+              excerpt="Divisions across Henry Onyx now share one consistent experience — connected navigation, refined interfaces, and dependable quality from Care through Logistics and beyond."
             />
           </View>
         </View>

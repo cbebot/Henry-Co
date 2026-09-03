@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { getDivisionUrl } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
-import { getLearnSnapshot } from "@/lib/learn/data";
+import { getLearnSnapshot, getLessonPlayback } from "@/lib/learn/data";
 import { getAccountLearnUrl, getLearnCourseRoomUrl, getLearnUrl } from "@/lib/learn/links";
 import {
   appendCustomerActivity,
@@ -11,8 +11,10 @@ import {
   ensureCustomerProfile,
   upsertCustomerInvoice,
 } from "@/lib/learn/shared-account";
-import { createId, deleteLearnRecord, nowIso, upsertLearnRecord } from "@/lib/learn/store";
-import { uploadTeacherApplicationFile } from "@/lib/learn/uploads";
+import { createId, deleteLearnRecord, hasLearnTable, nowIso, upsertLearnRecord } from "@/lib/learn/store";
+import { verifyLessonWatch } from "@/lib/learn/watch-verification";
+import { syncLearnCompletionToJobs } from "@/lib/learn/learn-to-earn-bridge";
+import { uploadTeacherApplicationMedia } from "@/lib/learn/media";
 import { createAdminSupabase } from "@/lib/supabase";
 import type {
   LearnCourse,
@@ -47,6 +49,15 @@ type Identity = {
 
 function cleanText(value?: unknown) {
   return String(value ?? "").trim();
+}
+
+/** Path-safe segment for a media storage prefix (mirrors the old folder sanitizer). */
+function sanitizeMediaSegment(value?: string | null) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
 }
 
 function withSnakeCaseKeys(row: Record<string, unknown>) {
@@ -111,13 +122,13 @@ function teacherApplicationStatusLabel(status: LearnTeacherApplication["status"]
 function teacherApplicationStatusDescription(status: LearnTeacherApplication["status"]) {
   switch (status) {
     case "submitted":
-      return "Your teaching application is now with the HenryCo academy team.";
+      return "Your teaching application is now with the Henry Onyx academy team.";
     case "under_review":
       return "Your teaching application is now being reviewed by the academy team.";
     case "changes_requested":
-      return "HenryCo Learn needs a few updates before the application can move forward.";
+      return "Henry Onyx Learn needs a few updates before the application can move forward.";
     case "approved":
-      return "You are approved to move into instructor onboarding with HenryCo Learn.";
+      return "You are approved to move into instructor onboarding with Henry Onyx Learn.";
     case "rejected":
       return "The current teaching application was not approved for onboarding.";
     default:
@@ -276,7 +287,7 @@ export async function enrollInCourse(input: {
   );
 
   if (existing) {
-    return { course, enrollment: existing, payment: existingPayment, firstEnrollment };
+    return { course, enrollment: existing, payment: existingPayment, firstEnrollment, created: false };
   }
 
   const idSeed = identity.userId || identity.normalizedEmail || createId();
@@ -453,7 +464,7 @@ export async function enrollInCourse(input: {
     });
   }
 
-  return { course, enrollment, payment, firstEnrollment };
+  return { course, enrollment, payment, firstEnrollment, created: true };
 }
 
 export async function toggleSavedCourse(input: {
@@ -503,7 +514,7 @@ export async function toggleSavedCourse(input: {
     email: identity.normalizedEmail,
     activityType: "learn_course_saved",
     title: `Saved ${course.title}`,
-    description: "Course bookmarked inside HenryCo Learn.",
+    description: "Course bookmarked inside Henry Onyx Learn.",
     referenceType: "learn_course",
     referenceId: course.id,
     actionUrl: `${getDivisionUrl("learn")}/courses/${course.slug}`,
@@ -583,7 +594,7 @@ async function issueCertificateIfEligible(input: {
     email: input.identity.normalizedEmail,
     activityType: "learn_certificate_issued",
     title: `Earned certificate for ${input.course.title}`,
-    description: "A verified HenryCo Learn certificate is now available.",
+    description: "A verified Henry Onyx Learn certificate is now available.",
     status: "issued",
     referenceType: "learn_certificate",
     referenceId: certificate.id,
@@ -627,6 +638,26 @@ async function issueCertificateIfEligible(input: {
     certificateNo: certificate.certificateNo,
     verificationCode: certificate.verificationCode,
   });
+
+  // V3-56 Learn→Jobs bridge: a real completion becomes a governed Jobs skill
+  // verification. Defensive — the bridge self-guards, but never let a sync
+  // failure undo a learner's earned certificate.
+  try {
+    await syncLearnCompletionToJobs({
+      certificateId: certificate.id,
+      courseId: input.course.id,
+      courseTitle: input.course.title,
+      courseSlug: input.course.slug,
+      userId: certificate.userId,
+      normalizedEmail: certificate.normalizedEmail,
+      issuedAt: certificate.issuedAt,
+      certificateNo: certificate.certificateNo,
+      verificationCode: certificate.verificationCode,
+      verifyUrl,
+    });
+  } catch {
+    // already self-guarded in the bridge; swallow to protect issuance.
+  }
 
   return certificate;
 }
@@ -684,6 +715,31 @@ export async function completeLesson(input: {
     throw new Error(`Complete "${firstIncompleteRequiredLesson.title}" before this lesson.`);
   }
 
+  // LRN-1 — proof-of-watch gate. A client-supplied `secondsWatched` is never
+  // trusted on its own: for video lessons we verify against the server-side
+  // playback heartbeat and persist the heartbeat's position. Strictly gated on
+  // table presence so reading lessons and pre-migration prod are unaffected.
+  const isVideoLesson = lesson.lessonType === "video" || Boolean(lesson.videoUrl);
+  let secondsWatched = Number(input.secondsWatched || lesson.durationMinutes * 60);
+  if (isVideoLesson && (await hasLearnTable("learn_lesson_playback"))) {
+    const playback = await getLessonPlayback(enrollment.id, lesson.id);
+    const verification = verifyLessonWatch({
+      lessonType: lesson.lessonType,
+      videoUrl: lesson.videoUrl,
+      durationMinutes: lesson.durationMinutes,
+      playback,
+    });
+    if (!verification.ok) {
+      // Do not disclose the exact watch threshold — that hands a learner the
+      // tuning constant of the proof-of-watch anti-forgery gate.
+      throw new Error(
+        `Keep watching "${lesson.title}" — please finish the video before it can be marked complete.`
+      );
+    }
+    // Trust the heartbeat, not the request body.
+    secondsWatched = verification.watchedSeconds || secondsWatched;
+  }
+
   const progressId = stableId("progress", `${enrollment.id}:${lesson.id}`);
   const completedAt = nowIso();
   await upsertLearnRecord(
@@ -695,7 +751,7 @@ export async function completeLesson(input: {
       module_id: lesson.moduleId,
       lesson_id: lesson.id,
       status: "completed",
-      seconds_watched: Number(input.secondsWatched || lesson.durationMinutes * 60),
+      seconds_watched: secondsWatched,
       score: null,
       completed_at: completedAt,
     },
@@ -715,7 +771,7 @@ export async function completeLesson(input: {
       moduleId: lesson.moduleId,
       lessonId: lesson.id,
       status: "completed" as const,
-      secondsWatched: Number(input.secondsWatched || lesson.durationMinutes * 60),
+      secondsWatched,
       score: null,
       completedAt,
     },
@@ -787,6 +843,7 @@ export async function completeLesson(input: {
   return {
     enrollment: updatedEnrollment,
     certificate,
+    course,
   };
 }
 
@@ -1071,22 +1128,26 @@ export async function submitTeacherApplication(input: {
     ) || null;
 
   if (existing?.status === "approved") {
-    throw new Error("This HenryCo account already has an approved teaching application.");
+    throw new Error("This Henry Onyx account already has an approved teaching application.");
   }
 
   const uploadedFiles = [...(existing?.supportingFiles || [])];
-  for (const [index, file] of input.supportingFiles.slice(0, 4).entries()) {
+  const supportingFilesPrefix = `applications/${
+    sanitizeMediaSegment(identity.userId || identity.normalizedEmail) || "teacher"
+  }`;
+  for (const file of input.supportingFiles.slice(0, 4)) {
     if (!(file instanceof File) || file.size <= 0) continue;
-    const uploaded = await uploadTeacherApplicationFile(file, {
-      folderSuffix: identity.userId || identity.normalizedEmail || "teacher",
-      publicIdPrefix: `teach-${index + 1}`,
-    });
+    // SENSITIVE proof docs now ride the @henryco/media private bucket: this
+    // returns a backend-neutral `media://private/...` reference (NOT a public
+    // CDN URL) persisted in the same supporting_files[].url field. The ref is
+    // also used as the stable, unique React key in place of the old public_id.
+    const ref = await uploadTeacherApplicationMedia(file, supportingFilesPrefix);
     uploadedFiles.push({
-      name: uploaded.name,
-      url: uploaded.secureUrl,
-      publicId: uploaded.publicId,
-      mimeType: uploaded.mimeType,
-      size: uploaded.size,
+      name: file.name,
+      url: ref,
+      publicId: ref,
+      mimeType: file.type || null,
+      size: file.size || null,
     });
   }
 
@@ -1101,7 +1162,7 @@ export async function submitTeacherApplication(input: {
     id: applicationId,
     userId: identity.userId,
     normalizedEmail: identity.normalizedEmail,
-    fullName: cleanText(input.fullName) || identity.fullName || "HenryCo instructor applicant",
+    fullName: cleanText(input.fullName) || identity.fullName || "Henry Onyx instructor applicant",
     phone: cleanText(input.phone) || null,
     country: cleanText(input.country) || null,
     expertiseArea: cleanText(input.expertiseArea),
@@ -1171,7 +1232,7 @@ export async function submitTeacherApplication(input: {
     email: identity.normalizedEmail,
     activityType: "learn_teacher_application_submitted",
     title: "Teaching application received",
-    description: `Applied to teach ${application.teachingTopics.join(", ") || application.expertiseArea} through HenryCo Learn.`,
+    description: `Applied to teach ${application.teachingTopics.join(", ") || application.expertiseArea} through Henry Onyx Learn.`,
     status: application.status,
     referenceType: "learn_teacher_application",
     referenceId: application.id,
@@ -1187,7 +1248,7 @@ export async function submitTeacherApplication(input: {
     userId: identity.userId,
     email: identity.normalizedEmail,
     title: "Teaching application submitted",
-    body: "HenryCo Learn has recorded your teaching application and the academy team will review it shortly.",
+    body: "Henry Onyx Learn has recorded your teaching application and the academy team will review it shortly.",
     category: "learn",
     actionUrl: getLearnUrl("/teach"),
     actionLabel: "Review application",
@@ -1206,7 +1267,7 @@ export async function submitTeacherApplication(input: {
 
   await sendOwnerAlert({
     title: `Teaching application: ${application.fullName}`,
-    body: `${application.fullName} submitted a HenryCo Learn teaching application in ${application.expertiseArea}.`,
+    body: `${application.fullName} submitted a Henry Onyx Learn teaching application in ${application.expertiseArea}.`,
     entityType: "learn_teacher_application",
     entityId: application.id,
     actionUrl: `${getDivisionUrl("learn")}/owner/instructors`,
@@ -1375,7 +1436,7 @@ export async function reviewTeacherApplication(input: {
 
   await sendOwnerAlert({
     title: `Teaching application ${teacherApplicationStatusLabel(updated.status).toLowerCase()}: ${updated.fullName}`,
-    body: `${updated.fullName}'s HenryCo Learn teaching application is now ${teacherApplicationStatusLabel(updated.status).toLowerCase()}.`,
+    body: `${updated.fullName}'s Henry Onyx Learn teaching application is now ${teacherApplicationStatusLabel(updated.status).toLowerCase()}.`,
     entityType: "learn_teacher_application",
     entityId: updated.id,
     actionUrl: `${getDivisionUrl("learn")}/owner/instructors`,
@@ -1492,7 +1553,7 @@ export async function confirmEnrollmentPayment(input: {
     userId: updatedPayment.userId,
     email: updatedPayment.normalizedEmail,
     title: `${course.title} payment confirmed`,
-    body: "The enrollment is now active in HenryCo Learn.",
+    body: "The enrollment is now active in Henry Onyx Learn.",
     category: "learn",
     actionUrl: getLearnCourseRoomUrl(course.id),
     actionLabel: "Open course",
@@ -1595,7 +1656,7 @@ export async function saveCourseDefinition(input: {
 
   await sendOwnerAlert({
     title: `Course saved: ${input.title}`,
-    body: "A course definition was created or updated inside HenryCo Learn.",
+    body: "A course definition was created or updated inside Henry Onyx Learn.",
     entityType: "course",
     entityId: id,
     actionUrl: `${getDivisionUrl("learn")}/owner/courses`,
@@ -1835,7 +1896,7 @@ export async function assignTraining(input: {
   await appendCustomerNotification({
     email: normalizedEmail,
     title: `${course?.title || path?.title || "Training"} assigned`,
-    body: cleanText(input.note) || "A HenryCo training assignment is waiting in your academy queue.",
+    body: cleanText(input.note) || "A Henry Onyx training assignment is waiting in your academy queue.",
     category: "learn",
     actionUrl: getAccountLearnUrl("assignments"),
     actionLabel: "Open account",
@@ -1930,7 +1991,7 @@ export async function publishAcademyAnnouncement(input: {
 
   await sendOwnerAlert({
     title: `Announcement sent: ${input.title}`,
-    body: `HenryCo Learn sent an academy announcement to ${uniqueTargets.size} learner accounts.`,
+    body: `Henry Onyx Learn sent an academy announcement to ${uniqueTargets.size} learner accounts.`,
     entityType: "announcement",
     entityId: announcementId,
     actionUrl: `${getDivisionUrl("learn")}/owner/settings`,

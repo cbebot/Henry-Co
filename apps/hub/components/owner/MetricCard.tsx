@@ -50,8 +50,8 @@ export default function MetricCard({
             <p
               className={`mt-1 text-xs font-semibold ${
                 trend.positive
-                  ? "text-[var(--acct-green)]"
-                  : "text-[var(--acct-red)]"
+                  ? "text-[var(--acct-green-text)]"
+                  : "text-[var(--acct-red-text)]"
               }`}
             >
               {trend.value}
@@ -60,7 +60,9 @@ export default function MetricCard({
         </div>
         <div
           className="flex h-10 w-10 items-center justify-center rounded-xl"
-          style={{ background: `${color}15` }}
+          // color may be a raw hex OR a var() reference; hex-alpha suffixing
+          // ("#fff" + "15") silently produces invalid CSS for var() values.
+          style={{ background: `color-mix(in srgb, ${color} 12%, transparent)` }}
         >
           <Icon size={20} style={{ color }} />
         </div>

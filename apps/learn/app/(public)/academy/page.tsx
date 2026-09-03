@@ -9,7 +9,7 @@ export async function generateMetadata() {
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  return { title: t("How HenryCo Learn works") };
+  return { title: t("How Henry Onyx Learn works") };
 }
 
 export default async function AcademyPage() {
@@ -56,15 +56,17 @@ export default async function AcademyPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
-              {t("How HenryCo Learn works")}
+              {t("How Henry Onyx Learn works")}
             </p>
             <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {t("From interested to finished, in plain steps.")}
             </h1>
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
+            {/* READING-02: hero body in the editorial serif reading face
+                (--learn-ink-soft already maps to the ink-70 equivalent). */}
+            <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
               {t(
                 "Choose a program, sign in, learn in order, and (where the course includes it) pass a short assessment to unlock your certificate. Assigned training from managers appears in the same place.",
               )}
@@ -131,7 +133,7 @@ export default async function AcademyPage() {
         </ol>
       </section>
 
-      <section className="mt-14 grid gap-12 xl:grid-cols-[1.05fr,0.95fr] xl:divide-x xl:divide-[var(--learn-line)]">
+      <section className="mt-14 grid gap-12 xl:grid-cols-[1.05fr_0.95fr] xl:divide-x xl:divide-[var(--learn-line)]">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Your dashboard")}
@@ -139,9 +141,10 @@ export default async function AcademyPage() {
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.85rem]">
             {t("Keep learning and admin in the right place.")}
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
+          {/* READING-02: section intro in the serif reading face. */}
+          <p className="hc-font-reading text-pretty mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
             {t(
-              "The course room on HenryCo Learn is where you read lessons, submit quizzes, and download certificates. Your HenryCo account shows the big picture — active courses, saved picks, assignments, billing, and teaching status — in one calm overview.",
+              "The course room on Henry Onyx Learn is where you read lessons, submit quizzes, and download certificates. Your Henry Onyx account shows the big picture — active courses, saved picks, assignments, billing, and teaching status — in one calm overview.",
             )}
           </p>
           <a
@@ -160,7 +163,8 @@ export default async function AcademyPage() {
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.85rem]">
             {t("We take instructor applications seriously.")}
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
+          {/* READING-02: section intro in the serif reading face. */}
+          <p className="hc-font-reading text-pretty mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
             {t(
               "Share your background and a concrete course proposal. Our team reviews every submission; we may request changes or decline politely. Commercial terms, including any revenue share, are discussed only after approval.",
             )}

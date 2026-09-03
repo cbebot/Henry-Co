@@ -18,6 +18,7 @@ import {
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn, formatCompactNumber, formatCurrency } from "@/lib/utils";
+import { PROPERTY_PLACEHOLDER_IMAGE, resolvePropertyMediaUrl } from "@/lib/property/media";
 import type {
   PropertyAgent,
   PropertyArea,
@@ -57,7 +58,9 @@ export function PropertySectionIntro({
         <div className="max-w-3xl">
           <p className="property-kicker">{kicker}</p>
           <h1 className="property-heading mt-4 text-balance">{title}</h1>
-          <p className="mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--property-ink-soft)] sm:text-lg">
+          {/* READING-02: hero sub-copy in the editorial serif reading face
+              (--property-ink-soft already aliases the ink-70 equivalent). */}
+          <p className="hc-font-reading mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--property-ink-soft)] sm:text-lg">
             {description}
           </p>
         </div>
@@ -137,11 +140,11 @@ export function PropertyListingCard({
   const target = href || `/property/${listing.slug}`;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40 hover:shadow-[0_22px_60px_rgba(0,0,0,0.18)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40 hover:shadow-[0_30px_80px_-50px_rgb(var(--home-ink-rgb)/0.18)]">
       <Link href={target} className="block">
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
-            src={listing.heroImage}
+            src={resolvePropertyMediaUrl(listing.heroImage) || PROPERTY_PLACEHOLDER_IMAGE}
             alt={listing.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
@@ -266,8 +269,8 @@ export function PropertyAreaCard({
 }) {
   const areaCopy = copy?.areaCard;
   return (
-    <article className="group overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40">
-      <div className="relative bg-[radial-gradient(circle_at_top_left,rgba(232,184,148,0.22),transparent_42%),linear-gradient(135deg,rgba(191,122,71,0.18),rgba(18,13,10,0.04))] px-6 py-9">
+    <article className="group overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40">
+      <div className="relative bg-[radial-gradient(circle_at_top_left,rgba(232,184,148,0.22),transparent_42%),linear-gradient(135deg,rgba(191,122,71,0.18),transparent)] px-6 py-9">
         <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[var(--property-accent-strong)]">
           {area.city}
         </p>
@@ -319,8 +322,8 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
   const locale = useOptionalHenryCoLocale() ?? "en";
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
-    <article className="overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)]">
-      <div className="grid gap-0 sm:grid-cols-[0.5fr,1fr]">
+    <article className="overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)]">
+      <div className="grid gap-0 sm:grid-cols-[0.5fr_1fr]">
         <div className="relative h-72 sm:h-full">
           <Image
             src={agent.photoUrl}
@@ -388,7 +391,7 @@ export function PropertyManagedRecordCard({
   return (
     <article
       className={cn(
-        "rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] p-6",
+        "rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-6",
         compact && "p-5",
       )}
     >
@@ -454,7 +457,7 @@ export function PropertyDifferentiatorCard({
   const locale = useOptionalHenryCoLocale() ?? "en";
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
-    <article className="rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] p-6">
+    <article className="rounded-[1.8rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] p-6">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-[1.2rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[1.35rem]">
           {item.name}
@@ -523,7 +526,7 @@ export function PropertyWorkspaceShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[260px,1fr] lg:px-10">
+    <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[260px_1fr] lg:px-10">
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <p className="property-kicker">{kicker}</p>
         <h1 className="mt-4 text-balance text-[1.65rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
@@ -710,7 +713,7 @@ export function PropertyPortfolioStats({
         </p>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
           {statsCopy?.managedStockBody ??
-            "Listings currently running through HenryCo managed-property rails."}
+            "Listings currently running through Henry Onyx managed-property rails."}
         </p>
       </li>
       <li className="md:pl-8">
@@ -730,7 +733,7 @@ export function PropertyPortfolioStats({
         </p>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
           {statsCopy?.managedValueBody ??
-            "Combined managed-property portfolio value under HenryCo trust operations."}
+            "Combined managed-property portfolio value under Henry Onyx trust operations."}
         </p>
       </li>
     </ol>

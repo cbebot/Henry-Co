@@ -5,7 +5,7 @@ test("homepage, search, product, cart, and help surfaces load", async ({ page })
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(
-    page.getByRole("banner").getByRole("link", { name: /HC HenryCo Marketplace/i }),
+    page.getByRole("banner").getByRole("link", { name: /HC Henry Onyx Marketplace/i }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", {

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/theme/account-tokens.css";
 @import "../../../packages/messaging-thread/src/styles.css";
+@import "../../../packages/chat-thread/src/styles.css";
 @source "../../../packages/ui/src";
 
 /* ─── HenryCo Account Platform Tokens ─── */
@@ -11,83 +13,11 @@
  * as the app-local components.
  */
 :root {
-  --acct-bg: #FAFAF8;
-  --acct-bg-soft: #FFFFFF;
-  --acct-bg-elevated: #FFFFFF;
-  --acct-surface: #F5F3EF;
-  --acct-line: #E8E4DD;
-  --acct-ink: #1A1814;
-  --acct-muted: #6B6560;
-  /* PASS 19 — premium HenryCo gold (brand anchor). */
-  --acct-gold: #C9A227;
-  --acct-gold-strong: #A88718;
-  --acct-gold-text: #8A6F00;
-  --acct-gold-soft: #F7F0D8;
-  --acct-green: #10B981;
-  --acct-green-soft: #D1FAE5;
-  --acct-red: #EF4444;
-  --acct-red-soft: #FEE2E2;
-  --acct-blue: #3B82F6;
-  --acct-blue-soft: #DBEAFE;
-  --acct-purple: #8B5CF6;
-  --acct-purple-soft: #EDE9FE;
-  --acct-orange: #F59E0B;
-  --acct-orange-soft: #FEF3C7;
-  --acct-radius: 1.25rem;
-  --acct-radius-lg: 1.75rem;
-  --acct-radius-sm: 0.75rem;
-  --acct-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
-  --acct-shadow-lg: 0 4px 12px rgba(0,0,0,0.06);
-  --acct-font-display: "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif;
-  --acct-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --acct-sidebar-width: 260px;
-
-  /* ─── V2-NOT-01-B-2: Named motion curves ─── */
-  /* Each curve is named for the lifecycle moment it serves. Together
-     they form HenryCo's notification motion vocabulary. The values are
-     not framer-motion presets; they were tuned for the bell, badge,
-     toast, and popover surfaces specifically. */
-  --henryco-arrive-curve: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --henryco-settle-curve: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --henryco-dismiss-curve: cubic-bezier(0.4, 0, 0.65, 0.4);
-  --henryco-expand-curve: cubic-bezier(0.16, 1, 0.3, 1);
-  --henryco-collapse-curve: cubic-bezier(0.7, 0, 0.84, 0);
-
-  /* ─── V2-NOT-01-B-2: Severity color matrix ─── */
-  /* Five severity tiers shipped by packages/notifications. Each tier
-     has a paired strong/soft pair for icon/border (strong) and tint
-     background (soft). All meet WCAG AA (4.5:1 text, 3:1 icon) against
-     the existing surfaces in light mode. Dark-mode pairs override below. */
-  --acct-sev-info: var(--acct-blue);
-  --acct-sev-info-soft: var(--acct-blue-soft);
-  --acct-sev-success: var(--acct-green);
-  --acct-sev-success-soft: var(--acct-green-soft);
-  --acct-sev-warning: var(--acct-orange);
-  --acct-sev-warning-soft: var(--acct-orange-soft);
-  --acct-sev-urgent: var(--acct-red);
-  --acct-sev-urgent-soft: var(--acct-red-soft);
-  --acct-sev-security: #B27A00;
-  --acct-sev-security-soft: rgba(178,122,0,0.08);
-
-  /* ─── V2-NOT-01-B-2: 12-division accent palette ─── */
-  /* Each division gets a distinct accent used as a 3px left-border on
-     popover cards and inbox rows. Hues coexist with the severity matrix
-     by occupying different saturation/lightness lanes — severities
-     trend bright; division accents trend muted. No hue is reused across
-     two divisions. */
-  --acct-div-hub: #C9A227;        /* HenryCo gold (anchor) */
-  --acct-div-account: #1A1814;    /* Ink — the canonical home */
-  --acct-div-staff: #3B82F6;      /* Cobalt blue */
-  --acct-div-care: #10B981;       /* Living green */
-  --acct-div-marketplace: #D97706;/* Burnished amber */
-  --acct-div-property: #8B5CF6;   /* Plum */
-  --acct-div-logistics: #0891B2;  /* Slate teal */
-  --acct-div-jobs: #BE185D;       /* Garnet */
-  --acct-div-learn: #6366F1;      /* Twilight indigo */
-  --acct-div-studio: #B45309;     /* Bronze */
-  --acct-div-security: #B27A00;   /* Amber (matches severity for visual sync) */
-  --acct-div-system: #6B6560;     /* Stone */
-
+  /* Token consolidation slice B (2026-07-10): every --acct-* definition,
+     motion curve, severity tier, and division accent moved VERBATIM to the
+     canonical packages/ui/src/theme/account-tokens.css (imported above).
+     This block keeps only what is genuinely account-local: the --hc-*
+     remap that points dashboard-shell at the account register. */
   /* ─── PASS 19 — canonical --hc-* mapping ─────────────────────
      Every dashboard-shell primitive reads from --hc-* tokens. We
      remap them here so the shell speaks the account app's brand
@@ -115,57 +45,7 @@
 }
 
 .dark {
-  --acct-bg: #0B0F14;
-  --acct-bg-soft: #141920;
-  --acct-bg-elevated: #1A2028;
-  --acct-surface: #1E252E;
-  --acct-line: #2A3140;
-  --acct-ink: #F0EDE8;
-  --acct-muted: #8E8A84;
-  --acct-gold: #D4AF37;
-  --acct-gold-strong: #E5C870;
-  --acct-gold-text: #E5C870;
-  --acct-gold-soft: rgba(212,175,55,0.16);
-  --acct-green: #34D399;
-  --acct-green-soft: rgba(52,211,153,0.12);
-  --acct-red: #F87171;
-  --acct-red-soft: rgba(248,113,113,0.12);
-  --acct-blue: #60A5FA;
-  --acct-blue-soft: rgba(96,165,250,0.12);
-  --acct-purple: #A78BFA;
-  --acct-purple-soft: rgba(167,139,250,0.12);
-  --acct-orange: #FBBF24;
-  --acct-orange-soft: rgba(251,191,36,0.12);
-  --acct-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  --acct-shadow-lg: 0 4px 12px rgba(0,0,0,0.3);
-
-  /* Dark-mode severity adjustments — strong tones soften slightly for
-     legibility against the dark surfaces; soft tints shift to alpha. */
-  --acct-sev-info: var(--acct-blue);
-  --acct-sev-info-soft: rgba(96,165,250,0.14);
-  --acct-sev-success: var(--acct-green);
-  --acct-sev-success-soft: rgba(52,211,153,0.14);
-  --acct-sev-warning: var(--acct-orange);
-  --acct-sev-warning-soft: rgba(251,191,36,0.14);
-  --acct-sev-urgent: var(--acct-red);
-  --acct-sev-urgent-soft: rgba(248,113,113,0.14);
-  --acct-sev-security: #D4AF37;
-  --acct-sev-security-soft: rgba(212,175,55,0.14);
-
-  /* Dark-mode division accents — slightly desaturated for contrast */
-  --acct-div-hub: #D4AF37;
-  --acct-div-account: #F0EDE8;
-  --acct-div-staff: #60A5FA;
-  --acct-div-care: #34D399;
-  --acct-div-marketplace: #FBBF24;
-  --acct-div-property: #A78BFA;
-  --acct-div-logistics: #22D3EE;
-  --acct-div-jobs: #F472B6;
-  --acct-div-learn: #818CF8;
-  --acct-div-studio: #FB923C;
-  --acct-div-security: #D4AF37;
-  --acct-div-system: #9CA3AF;
-
+  /* Slice B: dark --acct-* values live in the canonical file too. */
   /* ─── PASS 19 — canonical --hc-* mapping (dark) ──────────────
      Mirror the light-mode mapping but using the dark-mode --acct-*
      values, so dashboard-shell adapts cleanly on theme switch. */
@@ -899,6 +779,65 @@ html, body { overflow-x: clip; max-width: 100vw; }
 }
 
 /*
+ * Home-widget click-through (Modules navigator fix).
+ *
+ * A module's home widget may declare `href` — "clicking anywhere on the
+ * widget's chrome navigates here" (the HomeWidget contract). The
+ * smart-home renderers (RankedMetricStrip / ModuleWidgetGrid) and the
+ * /modules/<slug> page wrap each tile in `.hc-widget-linkable` and
+ * stretch a `.hc-widget-open-overlay` anchor across it.
+ *
+ * The overlay (z-index:1) catches taps on the card's empty chrome; the
+ * card's OWN embedded controls (BalanceCard / RecentTransactionsCard
+ * render their ActionButtons as <a>/<button>) are lifted to z-index:2 so
+ * they keep working AND are not nested inside the overlay's <Link>
+ * (nesting interactive elements is invalid HTML → hydration error).
+ */
+.hc-widget-linkable { position: relative; }
+
+.hc-widget-open-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Match the Panel's default corner radius (RADIUS.xl = 1.5rem) so the
+     hover wash + focus ring hug the card instead of squaring off its
+     rounded corners. */
+  border-radius: 1.5rem;
+  /* No fill — the card shows through. A faint gold wash on hover signals
+     the whole surface is tappable; reads acceptably in light + dark. */
+  background-color: transparent;
+  transition: background-color 160ms ease;
+}
+
+.hc-widget-linkable:hover > .hc-widget-open-overlay {
+  background-color: rgba(201, 162, 39, 0.06);
+}
+
+.hc-widget-open-overlay:focus-visible {
+  outline: 2px solid var(--hc-accent, #c9a227);
+  outline-offset: -2px;
+}
+
+.hc-widget-open-overlay__hint {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  opacity: 0.4;
+}
+
+/* The card's own interactive controls sit above the overlay so they
+   remain clickable; taps anywhere else fall through to the overlay. */
+.hc-widget-linkable a:not(.hc-widget-open-overlay),
+.hc-widget-linkable button {
+  position: relative;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-widget-open-overlay { transition: none; }
+}
+
+/*
  * Live chip — the small "Live · 30s refresh" indicator beside the
  * SmartHomeHeader. The dot pulses when [data-state="pulsing"] is set
  * by DASH-6's realtime listener after a `revalidateTag(...)` lands,
@@ -1065,6 +1004,391 @@ html, body { overflow-x: clip; max-width: 100vw; }
 .hc-smart-home-saved-rail:focus-visible {
   outline: 2px solid var(--hc-accent, #C9A227);
   outline-offset: 2px;
+}
+
+/*
+ * Smart Home live-status row — the realtime-health orb sits on its own
+ * thin, right-aligned row directly under the hero. The hero
+ * (SmartHomeHero) now owns the greeting + stat + tiles, so this row no
+ * longer carries the duplicate "{name} · N unread signals · last
+ * activity …" lead the retired SmartHomeHeader rendered alongside it.
+ */
+.hc-smart-home-live-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/*
+ * BottomActionBar focus ring — touch-stick / persistent-box fix.
+ *
+ * The shell's <BottomActionBar> anchors spread `focusVisibleStyle()`
+ * (an inset 2px gold ring) straight into their INLINE style. Inline
+ * styles apply unconditionally, so all four tabs rendered a permanent
+ * gold rectangle — and it "stuck" after a touch. A focus ring must
+ * show only on keyboard focus. We cannot gate an inline style on
+ * :focus-visible, so we override it account-scoped: suppress the
+ * always-on inset ring on the bar's own controls, then re-assert it —
+ * unified across the <a> Home tab and the three <button> tabs — only on
+ * :focus-visible. Scoped to the bar's direct children so the drawers /
+ * sheets it portals elsewhere are untouched, and the shared primitive
+ * is left intact.
+ */
+.hc-bottom-action-bar > a,
+.hc-bottom-action-bar > button {
+  box-shadow: none !important;
+}
+.hc-bottom-action-bar > a:focus-visible,
+.hc-bottom-action-bar > button:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--acct-gold) !important;
+  outline: 2px solid transparent !important;
+  outline-offset: 0 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   AccountRouteLoader — the dedicated, honest account loading moment.
+   Component: components/layout/AccountRouteLoader.tsx
+
+   Honest by construction: rendered only while a real Suspense / route
+   navigation is pending; no timer, no fake percentage, no copy. The
+   calm gold rail shows at once; the breathing H·Onyx mark fades up only
+   after ~420ms so fast loads flash nothing but the hairline (feels
+   instant) and only a genuinely slow load earns the brand moment.
+   Theme-aware via --acct-* (cream→onyx). Reduced-motion → static.
+   ────────────────────────────────────────────────────────────────── */
+.acct-route-loader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: min(68vh, 600px);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* (1) immediate calm signal — an indeterminate gold hairline rail */
+.acct-route-loader__rail {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--acct-gold) 12%, transparent);
+}
+.acct-route-loader__rail-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 36%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--acct-gold) 50%,
+    color-mix(in srgb, var(--acct-gold) 35%, transparent) 100%
+  );
+  animation: acctLoaderRail 1150ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes acctLoaderRail {
+  0%   { transform: translateX(-115%); }
+  100% { transform: translateX(380%); }
+}
+
+/* (2) the brand stage — fades up only after the rail has shown a beat */
+.acct-route-loader__stage {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 9rem;
+  height: 9rem;
+  opacity: 0;
+  animation: acctLoaderStageIn 620ms cubic-bezier(0.2, 0.8, 0.2, 1) 420ms both;
+}
+@keyframes acctLoaderStageIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.acct-route-loader__aurora {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 46%,
+    color-mix(in srgb, var(--acct-gold) 28%, transparent) 0%,
+    transparent 62%
+  );
+  filter: blur(4px);
+  animation: acctLoaderAurora 2800ms ease-in-out infinite;
+}
+@keyframes acctLoaderAurora {
+  0%, 100% { opacity: 0.5; transform: scale(0.95); }
+  50%      { opacity: 0.92; transform: scale(1.05); }
+}
+
+.acct-route-loader__mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 16px;
+  overflow: hidden;
+  /* The monogram draws in currentColor → ink (dark on cream, light on
+     onyx); its accent rule takes --acct-gold. */
+  color: var(--acct-ink);
+  animation: acctLoaderBreathe 2600ms ease-in-out infinite;
+}
+@keyframes acctLoaderBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50%      { transform: scale(1.05); opacity: 1; }
+}
+.acct-route-loader__monogram { display: block; }
+
+/* a single gold glint sweeping diagonally across the mark */
+.acct-route-loader__sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 36%,
+    color-mix(in srgb, var(--acct-gold) 38%, transparent) 50%,
+    transparent 64%
+  );
+  transform: translateX(-130%);
+  animation: acctLoaderSheen 2600ms ease-in-out 900ms infinite;
+}
+@keyframes acctLoaderSheen {
+  0%        { transform: translateX(-130%); }
+  55%, 100% { transform: translateX(130%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-route-loader__rail-fill { animation: none; left: 0; width: 100%; opacity: 0.5; }
+  .acct-route-loader__stage { animation: none; opacity: 1; transform: none; }
+  .acct-route-loader__aurora,
+  .acct-route-loader__mark { animation: none; }
+  .acct-route-loader__sheen { display: none; }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Lifecycle "Continue where you left off" — editorial resume surface.
+   Component: components/lifecycle/LifecycleContinuePanel.tsx
+   Theme-aware (--acct-*, cream→onyx), AA, reduced-motion-aware. Each
+   cohort sets --lc / --lc-soft / --lc-ink; chip + rail + CTA read from
+   them so one row template serves all three tones. --lc-ink mixes the
+   tone toward --acct-ink, so it darkens on cream and lightens on onyx —
+   AA in both themes.
+   ────────────────────────────────────────────────────────────────── */
+.acct-lifecycle {
+  border-radius: var(--acct-radius-lg);
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+  box-shadow: var(--acct-shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.acct-lifecycle__head { display: flex; flex-direction: column; gap: 4px; }
+.acct-lifecycle__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acct-gold-text);
+  margin: 0;
+}
+.acct-lifecycle__kicker::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--acct-gold);
+}
+.acct-lifecycle__title {
+  font-family: var(--acct-font-display);
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--acct-ink);
+  margin: 2px 0 0;
+}
+.acct-lifecycle__sub {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--acct-muted);
+  margin: 0;
+  max-width: 60ch;
+}
+
+.acct-lifecycle__cohorts { display: flex; flex-direction: column; gap: 22px; }
+.acct-lifecycle__cohort { display: flex; flex-direction: column; gap: 12px; }
+.acct-lifecycle__cohort[data-tone="attention"] {
+  --lc: var(--acct-red);
+  --lc-soft: var(--acct-red-soft);
+  --lc-ink: color-mix(in srgb, var(--acct-red) 66%, var(--acct-ink));
+}
+.acct-lifecycle__cohort[data-tone="inflight"] {
+  --lc: var(--acct-blue);
+  --lc-soft: var(--acct-blue-soft);
+  --lc-ink: color-mix(in srgb, var(--acct-blue) 66%, var(--acct-ink));
+}
+.acct-lifecycle__cohort[data-tone="reengage"] {
+  --lc: var(--acct-gold);
+  --lc-soft: var(--acct-gold-soft);
+  --lc-ink: color-mix(in srgb, var(--acct-gold-text) 82%, var(--acct-ink));
+}
+
+.acct-lifecycle__cohort-head { display: flex; align-items: center; gap: 10px; }
+.acct-lifecycle__cohort-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lc-soft);
+  color: var(--lc-ink);
+  flex-shrink: 0;
+}
+.acct-lifecycle__cohort-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--acct-ink);
+}
+.acct-lifecycle__cohort-count {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--lc-ink);
+  background: var(--lc-soft);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.acct-lifecycle__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 720px) {
+  .acct-lifecycle__rows { grid-template-columns: 1fr; }
+}
+
+.acct-lifecycle__row {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 14px 14px 14px 18px;
+  border-radius: 14px;
+  background: var(--acct-bg-soft);
+  border: 1px solid var(--acct-line);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: border-color 160ms ease-out, transform 140ms ease-out, box-shadow 160ms ease-out;
+}
+.acct-lifecycle__row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--lc);
+}
+a.acct-lifecycle__row:hover {
+  border-color: color-mix(in srgb, var(--lc) 42%, var(--acct-line));
+  transform: translateY(-1px);
+  box-shadow: var(--acct-shadow-lg);
+}
+a.acct-lifecycle__row:active { transform: translateY(0) scale(0.995); }
+a.acct-lifecycle__row:focus-visible {
+  outline: 2px solid var(--acct-gold);
+  outline-offset: 2px;
+}
+
+.acct-lifecycle__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.acct-lifecycle__chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.acct-lifecycle__chip {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--lc-soft);
+  color: var(--lc-ink);
+}
+.acct-lifecycle__stage {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acct-muted);
+}
+.acct-lifecycle__action {
+  font-family: var(--acct-font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  color: var(--acct-ink);
+  margin: 2px 0 0;
+}
+.acct-lifecycle__status {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--acct-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.acct-lifecycle__meta {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--acct-muted) 88%, transparent);
+  margin-top: 2px;
+}
+.acct-lifecycle__cta {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lc-ink);
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lc) 12%, transparent);
+  transition: background-color 160ms ease-out, gap 160ms ease-out;
+  white-space: nowrap;
+}
+a.acct-lifecycle__row:hover .acct-lifecycle__cta {
+  background: color-mix(in srgb, var(--lc) 22%, transparent);
+  gap: 7px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-lifecycle__row,
+  a.acct-lifecycle__row:hover,
+  a.acct-lifecycle__row:active { transform: none; transition: border-color 160ms ease-out; }
+  .acct-lifecycle__cta { transition: background-color 160ms ease-out; }
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -1354,6 +1678,31 @@ html, body { overflow-x: clip; max-width: 100vw; }
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   Shared dashboard-shell HeroCard (.acct-hero) — dark-mode parity.
+
+   The shell primitive (packages/dashboard-shell surfaces.css) paints
+   `background: var(--acct-ink)` + `color: var(--acct-bg-soft)`, authored
+   for light mode (ink = warm near-black, bg-soft = white) so the hero
+   reads as a premium dark band on the cream page. BOTH tokens FLIP in
+   dark mode, so the band would otherwise invert to a cream card with
+   dark text — a light island on a dark page (the owner-flagged frozen-
+   cream hero on the home + settings + security shots).
+
+   The legacy rescue block below only matches the bespoke
+   `[class*="__hero"]` BEM heroes; the shared primitive's class is
+   `.acct-hero` (no `__hero` substring), so it slipped through entirely.
+   We restore the intended deep-onyx band by re-binding the hero's two
+   surface tokens for the whole `.acct-hero` subtree in dark mode — one
+   rule fixes every shared-HeroCard surface (home, settings, security,
+   the division landings, …) at once. Gold is the brand anchor and is
+   untouched, so the gradients, rim, eyebrow pill, tiles and CTAs carry
+   through; only the surface polarity is corrected.
+
+   Account-scoped (this stylesheet is apps/account-only). The shared
+   package + its tokens are NOT mutated, so no other consumer's register
+   is relit. */
+
+/* ──────────────────────────────────────────────────────────────────
    Dashboard hero — dark-mode token rebinding.
 
    Every dashboard service component (Care, Logistics, Marketplace,
@@ -1471,4 +1820,232 @@ html, body { overflow-x: clip; max-width: 100vw; }
   color: var(--acct-ink);
   background: color-mix(in srgb, var(--acct-gold) 5%, transparent);
   border-color: color-mix(in srgb, var(--acct-ink) 22%, transparent);
+}
+
+/* ===================================================================
+   HENRY ONYX LIVE — arena surface (V3-GAMING-02 "Learn to Win")
+   Onyx stone = deep onyx; Alabaster stone = pale orchid; arena accent
+   is --acct-div-gaming (magenta). Everything below honours
+   prefers-reduced-motion (animations collapse to instant at the foot).
+   =================================================================== */
+:root {
+  --arena-onyx: #0b0510;
+  --arena-onyx-soft: #2a2333;
+  --arena-alabaster: #e9d5ff;
+  --arena-alabaster-ink: #4a1d63;
+  --arena-accent: var(--acct-div-gaming);
+}
+.dark {
+  --arena-onyx: #0b0510;
+  --arena-alabaster: #efe1ff;
+}
+
+/* --- Goal strip: states the objective and shows it in the player's colour --- */
+.acct-goalstrip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--acct-line);
+  background: color-mix(in srgb, var(--arena-accent) 6%, var(--acct-bg-elevated));
+  color: var(--acct-ink);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.acct-goalstrip__dot {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--arena-accent) 22%, transparent);
+}
+
+/* --- The coach: stepped walkthrough + contextual hint --- */
+.acct-coach {
+  border: 1px solid var(--acct-line);
+  border-radius: 14px;
+  background: var(--acct-bg-elevated);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+.acct-coach__kicker {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--arena-accent);
+  font-weight: 700;
+}
+.acct-coach__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--acct-ink);
+}
+.acct-coach__body {
+  margin: 0;
+  color: var(--acct-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.acct-coach__dots {
+  display: flex;
+  gap: 6px;
+}
+.acct-coach__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acct-line);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.acct-coach__dot--on {
+  background: var(--arena-accent);
+  transform: scale(1.25);
+}
+.acct-coach__row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.acct-coach__hint {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--arena-accent) 9%, var(--acct-surface));
+  border: 1px solid color-mix(in srgb, var(--arena-accent) 24%, transparent);
+  color: var(--acct-ink);
+  font-size: 13px;
+  line-height: 1.45;
+  animation: arenaHintIn 0.3s ease;
+}
+@keyframes arenaHintIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.acct-arena-btn {
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-elevated);
+  color: var(--acct-ink);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.acct-arena-btn:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--arena-accent); }
+.acct-arena-btn:disabled { opacity: 0.5; cursor: default; }
+.acct-arena-btn--accent { background: var(--arena-accent); color: #fff; border-color: transparent; }
+.acct-arena-btn--accent:hover:not(:disabled) { filter: brightness(1.06); }
+
+/* --- Onyx Lines board: a sheared grid of hexagons with glowing goal edges --- */
+.acct-arena-board {
+  position: relative;
+  display: inline-block;
+  padding: 26px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--arena-accent) 4%, var(--acct-bg-elevated));
+  border: 1px solid var(--acct-line);
+}
+.acct-arena-board--mine-active { box-shadow: 0 0 0 1px color-mix(in srgb, var(--arena-accent) 30%, transparent); }
+.acct-arena-rail {
+  position: absolute;
+  border-radius: 6px;
+  opacity: 0.85;
+}
+.acct-arena-rail--h { left: 22px; right: 22px; height: 5px; }
+.acct-arena-rail--v { top: 22px; bottom: 22px; width: 5px; }
+.acct-arena-rail--top { top: 12px; }
+.acct-arena-rail--bottom { bottom: 12px; }
+.acct-arena-rail--left { left: 12px; }
+.acct-arena-rail--right { right: 12px; }
+.acct-arena-rail--onyx { background: linear-gradient(90deg, var(--arena-onyx), var(--arena-onyx-soft)); }
+.acct-arena-rail--alabaster { background: linear-gradient(180deg, var(--arena-alabaster), #c89cf0); }
+.acct-arena-rail--mine { animation: arenaEdgePulse 2.4s ease-in-out infinite; }
+@keyframes arenaEdgePulse {
+  0%, 100% { filter: drop-shadow(0 0 2px transparent); opacity: 0.8; }
+  50% { filter: drop-shadow(0 0 7px var(--arena-accent)); opacity: 1; }
+}
+.acct-arena-row { display: flex; }
+.acct-arena-hex {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: 0;
+  padding: 0;
+  margin: 1.5px;
+  background: var(--acct-surface);
+  transition: transform 0.12s ease, filter 0.2s ease, background 0.2s ease;
+}
+.acct-arena-hex--onyx { background: radial-gradient(circle at 35% 30%, #3a2f47, var(--arena-onyx)); }
+.acct-arena-hex--alabaster { background: radial-gradient(circle at 35% 30%, #ffffff, var(--arena-alabaster)); }
+.acct-arena-hex--blocker {
+  background: repeating-linear-gradient(45deg, var(--acct-muted), var(--acct-muted) 3px, transparent 3px, transparent 6px),
+    var(--acct-surface);
+  opacity: 0.65;
+}
+.acct-arena-hex--clickable { cursor: pointer; }
+.acct-arena-hex--clickable:hover {
+  transform: scale(1.08);
+  background: color-mix(in srgb, var(--arena-ghost, var(--arena-accent)) 50%, var(--acct-surface));
+  z-index: 3;
+}
+.acct-arena-hex--new { animation: arenaStoneIn 0.28s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+@keyframes arenaStoneIn {
+  from { transform: scale(0.3); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.acct-arena-hex--last { filter: drop-shadow(0 0 5px var(--acct-gold)); }
+.acct-arena-hex--win { animation: arenaWinPulse 1s ease-in-out infinite; z-index: 2; }
+@keyframes arenaWinPulse {
+  0%, 100% { filter: drop-shadow(0 0 2px var(--arena-accent)); }
+  50% { filter: drop-shadow(0 0 9px var(--arena-accent)); }
+}
+.acct-arena-hex--fracturable { filter: drop-shadow(0 0 4px var(--acct-gold)); cursor: crosshair; }
+
+.acct-arena-actionbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.acct-arena-thinking { display: inline-flex; align-items: center; gap: 8px; color: var(--acct-muted); font-size: 14px; }
+.acct-arena-thinking__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--arena-accent); animation: arenaThinking 1s ease-in-out infinite; }
+@keyframes arenaThinking { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
+
+/* --- Onyx Cards: prize track + hand + round reveal --- */
+.acct-cards-track { display: flex; gap: 6px; flex-wrap: wrap; }
+.acct-cards-prize {
+  width: 46px; height: 60px; border-radius: 9px;
+  border: 1px solid var(--acct-line); background: var(--acct-bg-elevated);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.acct-cards-prize--current { border-color: var(--arena-accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--arena-accent) 35%, transparent); transform: translateY(-3px); }
+.acct-cards-prize--won { opacity: 0.45; }
+.acct-cards-prize__facet { width: 16px; height: 4px; border-radius: 2px; }
+.acct-cards-hand { display: flex; gap: 8px; flex-wrap: wrap; }
+.acct-cards-card {
+  width: 46px; height: 62px; border-radius: 9px; border: 1px solid var(--acct-line);
+  background: var(--acct-bg-elevated); color: var(--acct-ink); font-weight: 700; font-size: 18px;
+  cursor: pointer; transition: transform 0.12s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+.acct-cards-card:hover:not(:disabled) { transform: translateY(-4px); border-color: var(--arena-accent); }
+.acct-cards-card:disabled { opacity: 0.5; cursor: default; }
+.acct-cards-card--selected { background: var(--arena-accent); color: #fff; border-color: transparent; }
+.acct-cards-reveal { display: flex; gap: 18px; align-items: center; animation: arenaHintIn 0.35s ease; }
+.acct-cards-reveal__card { width: 54px; height: 72px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 22px; animation: arenaStoneIn 0.32s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-arena-hex--new,
+  .acct-arena-hex--win,
+  .acct-arena-rail--mine,
+  .acct-arena-thinking__dot,
+  .acct-coach__hint,
+  .acct-cards-reveal,
+  .acct-cards-reveal__card { animation: none !important; }
+  .acct-arena-hex,
+  .acct-cards-card,
+  .acct-cards-prize,
+  .acct-arena-btn { transition: none !important; }
 }

@@ -62,7 +62,7 @@ export type StudioCaseStudy = {
 
 /**
  * Ready-made studio website. Distinct from packages and services — these are
- * pre-built, production-ready sites HenryCo Studio owns and ships to clients
+ * pre-built, production-ready sites Henry Onyx Studio owns and ships to clients
  * with a customisation pass. Listed on /pick and detailed at /pick/[slug].
  */
 export type StudioTemplate = {
@@ -99,7 +99,7 @@ export type StudioTemplate = {
 };
 
 /**
- * HenryCo Studio leadership profile. Surfaced on /teams alongside the four
+ * Henry Onyx Studio leadership profile. Surfaced on /teams alongside the four
  * delivery pods. Studio purposely does not publish individual operator
  * headshots for the four delivery teams (Orbit / Axis / Nova / Vector) —
  * but the leadership panel is named so prospects know who's accountable.
@@ -150,10 +150,19 @@ export type StudioLeadStatus =
 
 export type StudioProposalStatus =
   | "draft"
+  | "in_review"
   | "sent"
   | "accepted"
   | "rejected"
   | "expired";
+
+/**
+ * SA-1 discriminator — classifies a brief at submit and is load-bearing
+ * downstream: SA-D5 review routing (template auto-sends, agency holds in
+ * `in_review`), SA-2 build-track selection, and the Mode-A envelope
+ * defaults all key off this one persisted field.
+ */
+export type StudioBriefClass = "template" | "agency";
 
 export type StudioProjectStatus =
   | "pending_deposit"
@@ -222,6 +231,8 @@ export type StudioBrief = {
   urgency: string;
   timeline: string;
   packageIntent: "package" | "custom";
+  /** Persisted at submit (SA-1). Null on briefs from before the gate. */
+  briefClass: StudioBriefClass | null;
   techPreferences: string[];
   requiredFeatures: string[];
   referenceFiles: string[];

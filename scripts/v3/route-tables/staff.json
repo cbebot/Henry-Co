@@ -1,0 +1,153 @@
+{
+  "app": "staff",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/kyc/review",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts/:param",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts/:param/approve",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts/:param/cancel",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts/:param/request-changes",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts/:param/schedule",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts/:param/send",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts/:param/submit",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/drafts/:param/test-send",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/suppress",
+      "api": true
+    },
+    {
+      "route": "/api/support/reply",
+      "api": true
+    },
+    {
+      "route": "/care",
+      "api": false
+    },
+    {
+      "route": "/cheatsheet",
+      "api": false
+    },
+    {
+      "route": "/finance",
+      "api": false
+    },
+    {
+      "route": "/jobs",
+      "api": false
+    },
+    {
+      "route": "/kyc",
+      "api": false
+    },
+    {
+      "route": "/learn",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/logistics",
+      "api": false
+    },
+    {
+      "route": "/marketplace",
+      "api": false
+    },
+    {
+      "route": "/modules/:param",
+      "api": false
+    },
+    {
+      "route": "/no-access",
+      "api": false
+    },
+    {
+      "route": "/operations",
+      "api": false
+    },
+    {
+      "route": "/operations/lifecycle",
+      "api": false
+    },
+    {
+      "route": "/operations/newsletter",
+      "api": false
+    },
+    {
+      "route": "/operations/newsletter/:param",
+      "api": false
+    },
+    {
+      "route": "/operations/newsletter/new",
+      "api": false
+    },
+    {
+      "route": "/property",
+      "api": false
+    },
+    {
+      "route": "/search",
+      "api": false
+    },
+    {
+      "route": "/settings",
+      "api": false
+    },
+    {
+      "route": "/studio",
+      "api": false
+    },
+    {
+      "route": "/support",
+      "api": false
+    },
+    {
+      "route": "/workforce",
+      "api": false
+    }
+  ]
+}

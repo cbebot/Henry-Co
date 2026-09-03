@@ -1,3 +1,5 @@
+import type { ComposerLabels } from "@henryco/chat-composer";
+
 /**
  * Audience-agnostic message shape consumed by the thread renderer.
  * Hosts map their per-division row shape (studio_project_messages,
@@ -36,6 +38,29 @@ export type ThreadMessage = {
   readAt?: string | null;
   /** True when the viewer is the sender — drives "Sent" indicator + alignment. */
   isOwnMessage?: boolean;
+  /**
+   * V3-03 — WhatsApp-style delivery state machine state, mapped from
+   * the persistence layer (`support_messages.delivery_state`). When
+   * present on a viewer-owned message, the engine renders the
+   * `DeliveryStatePip` glyph. When absent, the engine falls back to
+   * the legacy `readAt`/`deliveredAt` text status label so older
+   * hosts keep working without a code change.
+   *
+   * State machine:
+   *   sent      — server accepted insert
+   *   delivered — recipient's realtime push acknowledged
+   *   seen      — recipient has read the message
+   *   failed    — delivery failed (terminal)
+   */
+  deliveryState?: "sent" | "delivered" | "seen" | "failed" | null;
+  /**
+   * V3-03 — true when this is an inbound message the viewer has not
+   * read yet. Used to render the "New" divider above the first
+   * unread message + to drive IntersectionObserver mark-read.
+   * Defaults to false; adapters opt-in by joining
+   * `support_messages.is_read=false AND sender_id != viewerId`.
+   */
+  isUnreadForViewer?: boolean;
 };
 
 export type ThreadAttachment = {
@@ -110,6 +135,19 @@ export type MessageThreadAdapter = {
    * read by the viewer. Engine fires it once on mount + after each
    * incoming message. Defaults to no-op. */
   markReadAction?: (formData: FormData) => Promise<void>;
+
+  /**
+   * V3-03 — server action that marks a single message as read by the
+   * viewer. The engine's IntersectionObserver calls this when an
+   * inbound message scrolls into view (debounced 250ms). The
+   * FormData carries `messageId` (string) + `threadId` (string).
+   * Hosts implement this to: (a) flip support_messages.is_read=true,
+   * (b) bump support_messages.delivery_state to 'seen', (c) update
+   * support_threads.last_read_message_id. Defaults to no-op (the
+   * thread engine still renders the pip — host just won't persist
+   * the state).
+   */
+  markMessageReadAction?: (formData: FormData) => Promise<void>;
 
   /** Optional server action that uploads an attachment. Receives a
    * FormData with `file`. */
@@ -243,4 +281,76 @@ export type MessageThreadProps = {
    * the engine doesn't steal focus from the surrounding page.
    */
   autoFocusComposer?: boolean;
+  /**
+   * V3-03 — labels for the WhatsApp-style delivery pip. Pass strings
+   * via `translateSurfaceLabel(locale, "Sent")` etc from `@henryco/i18n`
+   * in the `surface:notification-message` namespace. Omitted labels
+   * fall back to English defaults inside the pip component.
+   */
+  deliveryPipLabels?: {
+    sent?: string;
+    delivered?: string;
+    seen?: string;
+    failed?: string;
+  };
+  /**
+   * V3-03 — Label rendered above the first unread message in the
+   * thread (eg. "New"). The engine inserts the divider only when at
+   * least one `ThreadMessage.isUnreadForViewer === true` exists, and
+   * scrolls to it on first mount when `scrollToFirstUnread` is true.
+   * Omit to suppress the divider.
+   */
+  unreadDividerLabel?: string;
+  /**
+   * V3-03 — Scroll the first unread message into view on initial
+   * mount. Defaults to true when `unreadDividerLabel` is set so the
+   * "New" indicator is visible immediately. Hosts can pass false to
+   * keep the engine's default scroll-to-bottom behavior.
+   */
+  scrollToFirstUnread?: boolean;
+  /**
+   * WS-6 F8 — localized composer chrome forwarded verbatim to the
+   * embedded `<ChatComposer labels={composerLabels} />`. The engine
+   * stays i18n-agnostic: divisions build these strings with their own
+   * translator (eg. `@henryco/i18n` `buildMessagingChromeLabels`) and
+   * pass them in. Omitted keys fall back to English inside the composer.
+   */
+  composerLabels?: ComposerLabels;
+  /**
+   * WS-6 F8 — thread-chrome copy. Every prop below has an English
+   * default so existing callers (and the markdown-safety test) are
+   * unchanged; pass a localized string to override.
+   */
+  /** Realtime "live" pill label. Default "Live". */
+  liveLabel?: string;
+  /** Aria-label on the realtime "live" pill. Default "Realtime updates are live". */
+  realtimeAriaLabel?: string;
+  /** Banner shown while the realtime channel reconnects. Default "Reconnecting…". */
+  reconnectingLabel?: string;
+  /**
+   * Error thrown when `sendAction` reports failure (drives the composer's
+   * shake + inline error). Default "We couldn't send the message. Try again.".
+   */
+  failedSendLabel?: string;
+  /** Suffix on edited message bubbles. Default "(edited)". */
+  editedLabel?: string;
+  /** Name shown on the viewer's own bubbles. Default "You". */
+  ownNameLabel?: string;
+  /**
+   * Legacy per-bubble status labels (used when the adapter does not map
+   * `deliveryState`). Each key defaults to its English literal:
+   * "Sending…" / "Sent" / "Delivered" / "Read".
+   */
+  statusLabels?: {
+    sending?: string;
+    sent?: string;
+    delivered?: string;
+    read?: string;
+  };
+  /**
+   * Typing-indicator labeller. Receives the active typers' display names
+   * (in order). Default reproduces the English "X is typing" /
+   * "X and Y are typing" / "X and N others are typing" forms.
+   */
+  typingLabel?: (names: string[]) => string;
 };

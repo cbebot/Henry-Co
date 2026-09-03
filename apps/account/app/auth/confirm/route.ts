@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies, headers } from "next/headers";
 import type { EmailOtpType } from "@supabase/supabase-js";
@@ -10,12 +10,21 @@ import {
   normalizePhone,
   normalizeTrustedRedirect,
   resolveRequestCookieDomain,
+  resolveRequestOrigin,
 } from "@henryco/config";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { scheduleLinkedCareBookingsSync } from "@/lib/care-sync";
 import { DASHBOARD_PREFERENCE_COOKIE, resolveUserDashboard } from "@/lib/post-auth-routing";
 import { recordReferralConversion } from "@/lib/referral-data";
 import { detectSecurityRequestContext, logSecurityEvent } from "@/lib/security-events";
+import {
+  HC_DEVICE_COOKIE,
+  HC_DEVICE_COOKIE_MAX_AGE,
+  generateDeviceId,
+  signDeviceId,
+  verifyDeviceCookie,
+} from "@/lib/security/device-cookie";
+import { recordSignInAndMaybeAlert } from "@/lib/security/sign-in-alert";
 
 const REFERRAL_COOKIE_NAME = "hc_ref";
 
@@ -29,7 +38,11 @@ const ALLOWED_TYPES: ReadonlySet<EmailOtpType> = new Set<EmailOtpType>([
 ]);
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams, origin: rawOrigin } = new URL(request.url);
+  const headerStore = await headers();
+  // Real public origin from proxy headers (not the internal Vercel host)
+  // so the verified session lands on account.<baseDomain> with its cookie.
+  const origin = resolveRequestOrigin((name) => headerStore.get(name), rawOrigin);
   const tokenHash = searchParams.get("token_hash");
   const rawType = searchParams.get("type");
   const next = searchParams.get("next") ?? "/";
@@ -43,7 +56,6 @@ export async function GET(request: Request) {
 
   if (tokenHash && type) {
     const cookieStore = await cookies();
-    const headerStore = await headers();
     const cookieDomain =
       resolveRequestCookieDomain((name) => headerStore.get(name)) ||
       getSharedCookieDomain(new URL(origin).hostname);
@@ -100,6 +112,44 @@ export async function GET(request: Request) {
             otp_type: type,
           },
         });
+
+        // V3-AUTH-SEC — new device/location detection for genuine sign-in OTPs
+        // (a magic link is a real sign-in). Recovery + email-change are
+        // deliberate flows the user initiated, so they are not alerted.
+        const isSignInOtp =
+          type === "magiclink" || type === "email" || type === "signup" || type === "invite";
+        if (isSignInOtp) {
+          let deviceId = verifyDeviceCookie(cookieStore.get(HC_DEVICE_COOKIE)?.value);
+          if (!deviceId) {
+            deviceId = generateDeviceId();
+            try {
+              cookieStore.set(HC_DEVICE_COOKIE, signDeviceId(deviceId), {
+                path: "/",
+                domain: cookieDomain,
+                httpOnly: true,
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+                maxAge: HC_DEVICE_COOKIE_MAX_AGE,
+              });
+            } catch {
+              // Signing needs SUPABASE_JWT_SECRET; without it we skip device memory.
+            }
+          }
+          const signInDeviceId = deviceId;
+          after(() =>
+            recordSignInAndMaybeAlert({
+              userId: user.id,
+              email: user.email ?? null,
+              deviceId: signInDeviceId,
+              userAgent: context.userAgent,
+              country: context.country,
+              locationSummary: context.locationSummary,
+              ipAddress: context.ipAddress,
+              origin,
+              justConfirmed,
+            }),
+          );
+        }
 
         const referralCode =
           searchParams.get("ref") || cookieStore.get(REFERRAL_COOKIE_NAME)?.value || null;

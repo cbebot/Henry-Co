@@ -1,5 +1,6 @@
 import "server-only";
 
+import { henryDomainHost } from "@henryco/config";
 import type { AppLocale } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -235,7 +236,7 @@ export async function getDivisionNotifications(
             return (
               referenceType.startsWith("property_") ||
               actionUrl.includes("/property") ||
-              actionUrl.includes("property.henrycogroup.com") ||
+              actionUrl.includes(henryDomainHost("property")) ||
               title.includes("property")
             );
           })

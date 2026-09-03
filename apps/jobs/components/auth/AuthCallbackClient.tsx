@@ -11,7 +11,7 @@ type CallbackState = {
 };
 
 const initialState: CallbackState = {
-  title: "Securing your HenryCo Jobs session",
+  title: "Securing your Henry Onyx Jobs session",
   body: "We are validating your sign-in and restoring the Jobs module.",
   error: false,
 };

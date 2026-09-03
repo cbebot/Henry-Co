@@ -8,6 +8,11 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  # Manual re-run lever: GitHub occasionally drops webhook-driven events for a
+  # while (observed 2026-06-11: pull_request opened/synchronize/reopened all
+  # produced no runs). Dispatching against the PR branch reports check runs on
+  # the same head sha, so the PR's required check still lights up.
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -20,7 +25,7 @@ env:
   NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
   NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ci-placeholder-signature
   SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.ci-placeholder-signature
-  NEXT_PUBLIC_BASE_DOMAIN: henrycogroup.com
+  NEXT_PUBLIC_BASE_DOMAIN: henryonyx.com
 
 jobs:
   lint-typecheck-test-build:
@@ -46,8 +51,420 @@ jobs:
       - name: Typecheck (all apps)
         run: pnpm run typecheck:all
 
+      # V3-18: render real receipt/invoice PDFs and assert the LEGAL/PRESENTATION layer
+      # the SQL invariants don't cover — issuer = "Henry Onyx Limited" + RC + TIN +
+      # registered office (config-sourced, no literals), the VAT line present iff the
+      # breakdown carries it, static labels localized across locales, and NO processor /
+      # retired-brand string in any rendered byte. A regression in buildDocumentIssuer,
+      # the i18n copy, or the @react-pdf templates now fails CI instead of shipping green.
+      - name: Prove receipt/invoice render (issuer · VAT · locales · no-processor)
+        run: pnpm --filter @henryco/account run prove:receipts
+
+      # DRIFT-SWEEP-02: fail CI when code references a Supabase column that does
+      # not exist in the committed schema (database.types.ts ∪ migration DDL).
+      # This is the 4th incident of "code ships a query for a column prod lacks"
+      # (profiles.user_id, customer_profiles.kyc_completed_at, henry_events.outcome,
+      # studio_settings.id) — TypeScript can't catch string-built queries on
+      # loosely-typed admin clients. Baseline-gated: fails only on NEW drift.
+      - name: Schema-drift guard (code ↔ schema column references)
+        run: pnpm run schema-drift:check
+
+      # SEC-HARDEN-05: fail CI if a raw Care money write (a care_payments
+      # insert/update/delete, or a care_payment_requests status='paid' flip) is
+      # reintroduced in app code. All care payment recording must flow through the
+      # guarded care_record_manual_payment RPC (validated · idempotent · balanced
+      # double-entry). The DB grant invariant below is the hard guarantee; this is the
+      # fast static tripwire that catches a regression before it reaches the database.
+      - name: Care money-write guard (no raw care_payments / status=paid writes)
+        run: pnpm run care-money:check
+
+      - name: i18n hardcoded-text gate (V3-07 S8 — strict)
+        run: pnpm run i18n:check:strict
+
+      - name: Company-voice tone gate (TONE-01 — voice.ts is law)
+        run: pnpm run tone:check
+
+      - name: Owned-type font guard (strict once the reveal flag is live)
+        run: pnpm run font:check ${{ env.NEXT_PUBLIC_ONYX_TYPE_LIVE == '1' && '-- --strict' || '' }}
+
+      - name: Owned-type coverage gate (strict once the reveal flag is live)
+        run: pnpm run font:coverage ${{ env.NEXT_PUBLIC_ONYX_TYPE_LIVE == '1' && '-- --strict' || '' }}
+
+      - name: Owned-type token integrity (undefined --hc-font-* references)
+        run: pnpm run font:tokens
+
       - name: Test (super-app)
         run: pnpm run test:workspace
 
+      # V3-41 — the predictive engines ship their proofs as package tests
+      # (back-tests, no-auto-punishment, reserve-before-run/concurrency, opacity).
+      # CI ran NO packages/* suite before this, so these would have gated nothing.
+      # Also covers the existing V3-36 recommendation-engine tests.
+      - name: Test (@henryco/intelligence — predictive back-tests + invariants)
+        run: pnpm --filter @henryco/intelligence run test
+
+      # The zero-wallet-debit proof for the platform-invoked predictive surface
+      # lives here (exploding billing port). 201 gateway tests, previously ungated.
+      - name: Test (@henryco/ai-gateway — surface policy + no-wallet-debit proof)
+        run: pnpm --filter @henryco/ai-gateway run test
+
+      # V3-41 hub adapter: budget key/ceiling + the structural money-token guard.
+      - name: Test (@henryco/hub — predictive adapter guards)
+        run: pnpm --filter @henryco/hub run test
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
+
+  payments-grant-invariant:
+    # FL1 backstop (V3-15-FIX-01): assert the money RPCs are NOT executable by
+    # anon/authenticated on a freshly-migrated DB. RED if a money writer ever
+    # becomes self-callable again (self-confirm-without-paying). See
+    # docs/v3/v3-15-fl2-payments-schema-isolation-hardening.md.
+    name: Payments money-RPC grant invariant
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reproduce Supabase roles + default privileges (makes the test meaningful)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/_bootstrap_supabase_env.sql
+
+      - name: Apply payment_intents migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260529120000_payment_intents.sql
+
+      - name: Assert money-RPC grant invariant (anon/authenticated=false; writers service_role=true)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payments_grant_invariant.sql
+
+      # V3-17: continue to the post-isolation END STATE — move the writers into the
+      # non-exposed payments_private schema, add the double-entry ledger, and assert
+      # the grant invariant covers the ledger functions too (anon/authenticated zero reach).
+      - name: Apply payments_private isolation migration
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260605123000_payments_private_isolation.sql
+
+      - name: Apply double-entry ledger migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260607120000_double_entry_ledger.sql
+
+      - name: Prove ledger invariants (balance · immutable · idempotent · reconcile)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ledger_invariants.sql
+
+      - name: Assert ledger money-RPC grant invariant (payments_private end state)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ledger_grant_invariant.sql
+
+      # V3-18: persisted, ledger-tied receipts & invoices. Apply the document
+      # migration on the same fresh DB and prove its invariants (HO- numbering,
+      # idempotent generation, the receipt-total↔ledger reconciliation tie, RLS,
+      # and the document-writer grant invariant).
+      - name: Apply payment-documents migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260607130000_v3_18_payment_documents.sql
+
+      - name: Prove payment-document invariants (number · idempotent · ledger-reconcile · RLS · grants)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payment_documents_invariants.sql
+
+      # V3-VAT-01: make VAT strong — output VAT on sales + input/fee VAT on the absorbed
+      # processor fee. Apply the VAT migration on the same fresh DB, then prove the
+      # settlement fee-split (debit total still = gross), output-VAT recognition, the
+      # exact net-VAT reconciliation, refund-readiness — and that the money-RPC grant
+      # lockdown still holds for the new/changed (fee-aware) signatures.
+      - name: Apply V3-VAT-01 settlement+VAT migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260607140000_v3_vat_01_settlement_vat.sql
+
+      - name: Prove VAT invariants (fee-split · output VAT · reconciliation · balance · refund-ready)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/vat_invariants.sql
+
+      - name: Assert VAT money-RPC grant invariant (fee-aware end state)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/vat_grant_invariant.sql
+
+      # V3-19: the full refund lifecycle — provider-confirmed only, over-refund
+      # impossible by construction (DB trigger), proportional output-VAT reversal,
+      # unfakeable credit-note binding, wallet hold/release with never-negative +
+      # reconciliation invariants. Apply the refunds migration on the same fresh
+      # DB and prove all of it, then assert the grant lockdown covers the new
+      # refund/credit-note writers.
+      - name: Apply V3-19 refunds migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260611130000_v3_19_refunds.sql
+
+      - name: Prove refund invariants (full · partial-VAT · over-refund · dedup · failed-revert · credit-note · wallet)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/refunds_invariants.sql
+
+      - name: Assert refunds money-RPC grant invariant (V3-19 end state)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/refunds_grant_invariant.sql
+
+      # V3-AI-01: the governed AI gateway's metered wallet/ledger billing. Seed the
+      # minimal rate-card prerequisite, apply the V3-AI-01 migration on the same fresh DB,
+      # then assert the AI money-RPC grant lockdown + RLS end state (the same revoke
+      # discipline the payments/ledger/refund RPCs carry, applied to reserve/settle/release).
+      - name: Seed AI billing prerequisites (pricing_rule_books + tx.division)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ai_billing_min.sql
+
+      - name: Apply V3-AI-01 metered-billing migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260627120000_v3_ai_01_metered_billing.sql
+
+      - name: Assert V3-AI-01 money-RPC grant invariant (service-role-only; RLS; no PUBLIC)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/ai_money_rpc_grant_invariant.sql
+
+      # V3-MONEY-MC: the multi-currency, in-currency ledger. Apply the widening migration on the
+      # same fresh DB (the NGN entries from the earlier proofs remain), then prove a valid ISO-4217
+      # currency posts + settles IN-CURRENCY, a malformed currency is still rejected, a foreign fee
+      # gets NO fabricated Nigerian VAT split (while NGN keeps its statutory split), and
+      # ledger_reconciliation is per-currency — each currency balancing to zero independently.
+      - name: Apply V3-MONEY-MC multi-currency ledger migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260706120000_v3_money_mc_multicurrency_ledger.sql
+
+      - name: Prove multi-currency ledger invariants (post · reject-bad · settle-usd · no-NG-VAT · NGN-split · per-currency)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/multicurrency_ledger_invariants.sql
+
+      # V3-MONEY-PAYOUT: the automatic withdrawal (payout) rail. Seed the minimal wallet tables the
+      # RPCs touch, apply the rail migration on the same fresh DB, then prove reserve/settle/release
+      # end to end: single-winner hold (no double-spend), idempotent, no overdraw, cash only on the
+      # confirmed transfer, failed transfer restores the balance, and the wallet reconciles to the
+      # ledger liability throughout.
+      - name: Seed payout-rail prerequisites (minimal customer_wallets + withdrawal_requests)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payout_rail_min.sql
+
+      - name: Apply V3-MONEY-PAYOUT rail migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260706130000_v3_money_payout_rail.sql
+
+      - name: Prove payout-rail invariants (reserve · idempotent · settle+fee · no-overdraw · release · reconcile)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/payout_ledger_invariants.sql
+
+      # SEC-HARDEN-01: lock down the SECURITY DEFINER audit writers (same revoke
+      # discipline as the money RPCs). The two writers + is_staff_in_any live on
+      # prod out-of-band (not created by any FL2 migration), so create faithful
+      # stubs with the real signatures AFTER the Supabase-like default privileges
+      # are in effect — each stub is then auto-granted EXECUTE to anon +
+      # authenticated DIRECTLY, reproducing the exact production hole. Apply the
+      # lockdown migration and assert the end-state: add_audit_log is
+      # service-role-only (anon + authenticated dead — the unguarded forge hole);
+      # add_audit_log_v2 keeps the guarded authenticated-staff path but anon is
+      # dead. The bucket drop in the migration self-skips here (no Storage schema
+      # on the vanilla chain — proven on the prod-actual surface instead).
+      - name: Seed audit-writer stubs (reproduce the prod grant hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/audit_fns_min.sql
+
+      - name: Apply SEC-HARDEN-01 audit-grant lockdown migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260612120000_sec_harden_01_audit_grants_and_bucket.sql
+
+      - name: Assert audit-writer grant invariant (v1 service-role-only; v2 staff-scoped; anon dead on both)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/audit_grant_invariant.sql
+
+      # SEC-HARDEN-02: close the world-writable role-membership privilege
+      # escalation. The five *_role_memberships tables + their staff-gate functions
+      # + the "Service role full access"(true) world-writable policies live on prod
+      # out-of-band (division feature migrations + dashboard edits), not in any FL2
+      # migration — so reproduce the exact pre-fix surface (tables, the standing
+      # anon/authenticated write grant, the world-writable policy, the
+      # authenticated staff-write policies) with the membership fixture, apply the
+      # lockdown migration, and assert the end-state: NO request role holds a
+      # membership write (grant + policy), service_role keeps the admin path, a
+      # SELECT self-read survives, and an authenticated INSERT is rejected. The
+      # company_pages drop in the migration self-skips here (no company_pages table
+      # on the vanilla chain — proven on the prod-actual surface instead).
+      - name: Seed role-membership surface (reproduce the prod self-escalation hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/membership_min.sql
+
+      - name: Apply SEC-HARDEN-02 role-membership lockdown migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260612140000_sec_harden_02_role_membership_lockdown.sql
+
+      - name: Assert role-membership write-lockdown invariant (writes service-role-only; authenticated INSERT rejected)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/membership_grant_invariant.sql
+
+      # SEC-HARDEN-03: close the world-writable DATA-table class. The same
+      # "Service role full access" FOR ALL TO public USING(true) policy that
+      # SEC-HARDEN-02 removed from the membership tables also sits on ~40
+      # non-membership data tables (jobs/logistics/referral/trust/platform/studio +
+      # hub_homepage_content) out-of-band — a data-integrity/confidentiality hole,
+      # not escalation. Reproduce a representative slice (one+ table per disposition:
+      # service-role-only, public-reference-read, legitimate-authenticated-writer,
+      # and the deferred money-adjacent studio_payments), apply the lockdown
+      # migration, and assert the end-state: locked tables are service-role-write
+      # only, Cat-2 keeps a public read, Cat-3 keeps its scoped writer, no new
+      # world-writable table appears outside the documented deferral allowlist, an
+      # authenticated INSERT is rejected, and the academy seed is reconciled.
+      - name: Seed world-writable data surface (reproduce the prod data-integrity hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_03_min.sql
+
+      - name: Apply SEC-HARDEN-03 world-writable lockdown migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260614120000_sec_harden_03_world_writable_lockdown.sql
+
+      - name: Assert world-writable data-table lockdown invariant (writes service-role-only; class-drift guarded; authenticated INSERT rejected)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_03_grant_invariant.sql
+
+      # SEC-HARDEN-04: close the SEC-HARDEN-03 deferral remainder + fix the learn
+      # trigger. Part A (profiles anon-insert hole + the broken
+      # learn_role_memberships updated_at trigger) is non-money and applies on a normal
+      # owner go. Part B (studio_payments) is MONEY-INPUT — its amount sizes a real
+      # customer_wallets debit — so its PROD apply is owner-money-gated; CI still proves
+      # the lock is correct and reversible-safe. Seed the remaining pre-fix surface,
+      # apply part A and assert (profiles closed, learn UPDATE succeeds, allowlist now
+      # {studio_payments, audit_logs}), then apply part B and assert (studio_payments
+      # writes service-role-only, scoped SELECT kept, final allowlist {audit_logs}).
+      - name: Seed SEC-HARDEN-04 pre-fix surface (profiles anon hole; broken learn trigger; studio_payments scoped policies)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_04_min.sql
+
+      - name: Apply SEC-HARDEN-04A migration — profiles anon-insert + learn trigger (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260614160000_sec_harden_04_profiles_anon_and_learn_trigger.sql
+
+      - name: Assert SEC-HARDEN-04A invariant (profiles anon-insert closed; learn UPDATE succeeds; allowlist {studio_payments, audit_logs})
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_04_grant_invariant.sql
+
+      - name: Apply SEC-HARDEN-04B migration — studio_payments money-safe lockdown (fresh; owner-money-gated for prod)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260614161000_sec_harden_04_studio_payments_money_safe_lockdown.sql
+
+      - name: Assert SEC-HARDEN-04B studio_payments invariant (writes service-role-only; scoped SELECT kept; final allowlist {audit_logs})
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/sec_harden_04b_studio_payments_invariant.sql
+
+      # SEC-HARDEN-05: close Care's manual-payment free-mark-paid hole. The care money
+      # tables + their payment triggers live on prod out-of-band (early care_init, no
+      # migration the vanilla chain applies), so reproduce the pre-fix surface (4 money
+      # tables + the payment ledger/recalc triggers + the standing WIDE request-role
+      # write grants + 2 historical fixture payments), apply the guard migration, and
+      # prove the end state: the guarded RPC records a payment + posts a balanced
+      # double-entry + flips the request 'paid' atomically; the historical backfill
+      # reconciles (cash = payments = cash-journal); a raw care_payments INSERT and a
+      # raw status='paid' flip are REJECTED; the care ledger is balanced + immutable;
+      # and the grant/structural end-state holds (writes revoked for every role,
+      # care_private unreachable by anon/authenticated, status-guard + ledger triggers
+      # present). Mirrors the V3-17 ledger invariant discipline for care money.
+      - name: Seed care money surface (reproduce the prod free-mark-paid hole)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/care_payment_min.sql
+
+      - name: Apply SEC-HARDEN-05 care payment-guard migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/care/supabase/migrations/20260615120000_sec_harden_05_care_payment_guard.sql
+
+      - name: Prove care payment invariants (guarded · idempotent · backfill-reconcile · no-raw-write · balanced · immutable)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/care_payment_invariants.sql
+
+      - name: Assert care guarded-payment grant + structural invariant (writes revoked; care_private unreachable; triggers present)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/care_payment_guard_invariant.sql
+
+      # V3-GAMING-01 — free-play arena: default-deny RLS + grant-locked gaming RPCs.
+      # NO money path (no payments_private contact). The migration creates its own
+      # tables, so apply-then-assert on the same fresh DB (no _min.sql seed needed).
+      - name: Apply V3-GAMING-01 free-play arena migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260621120001_v3_gaming_01_free_play.sql
+
+      - name: Assert gaming-RPC grant invariant (writers anon/authenticated=false; service_role=true; leaderboard public)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/gaming_grant_invariant.sql
+
+      - name: Prove gaming RLS at runtime (authenticated cannot forge moves/insert matches/read non-participant data)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/gaming_rls_behaviour.sql
+
+      # V3-34 PERSONALIZATION (Phase E) — per-user home layout + NDPR consent
+      # ledger. Net-new tables, default-deny RLS, NO money path. The migration
+      # creates its own tables (customer_preferences ALTER is table-guarded, so it
+      # skips on the fresh DB), so apply-then-assert on the same fresh DB.
+      - name: Seed V3-34 prod-standing table ACL (so the migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/personalization_min.sql
+
+      - name: Apply V3-34 personalization-home migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260718120000_v3_34_personalization_home.sql
+
+      - name: Assert personalization grant invariant (layout owner-only, no admin reads; consent ledger append-only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/personalization_grant_invariant.sql
+
+      - name: Prove personalization RLS at runtime (user B never reads/writes user A's layout or consent — 0 rows)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/personalization_rls_behaviour.sql
+
+      # V3-35 DEALS (Phase E) — offer-artifact model + fairness-impression
+      # ledger + curation reconciliation. Net-new tables, request roles are
+      # read-only (RLS narrows to live/own/staff), impressions append-only
+      # service-role. NO money path. Seed-then-apply-then-assert on the same
+      # fresh DB; the seed also plants curation rows so the in-migration
+      # reconciliation is proven, not assumed.
+      - name: Seed V3-35 prod-standing table ACL + curation fixtures (so the migration revokes + reconciliation are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_min.sql
+
+      - name: Apply V3-35 deals migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_35_deals.sql
+
+      - name: Assert deals grant invariant (request roles read-only; impressions append-only service-role)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_grant_invariant.sql
+
+      - name: Prove deals RLS at runtime (drafts/unlisted invisible; no request-role writes; curation rows reconciled)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_rls_behaviour.sql
+      # V3-38 LOCAL AVAILABILITY (Phase E) — public location-keyed coverage +
+      # aggregate coverage-gap counters. Location-keyed, never user-keyed; NO
+      # money path. min.sql pre-creates the tables with the prod standing ACL
+      # so the migration's revokes are load-bearing, then apply-then-assert.
+      - name: Seed V3-38 prod-standing table ACL (so the migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_min.sql
+
+      - name: Apply V3-38 service-area-coverage migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_38_service_area_coverage.sql
+
+      - name: Assert availability grant invariant (coverage public-read/service-curated; gap counters fn-only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_grant_invariant.sql
+
+      - name: Prove availability RLS at runtime (anon reads coverage; request roles never write; gap fn service-only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_rls_behaviour.sql
+      # V3-39 NEXT ACTION (Phase E) — per-prompt dismissals + opt-out control.
+      # Net-new owner-only table (NO service_role path), default-deny RLS, NO
+      # money path. The customer_preferences ALTER is table-guarded (skips on
+      # the fresh DB), so seed-apply-assert on the same fresh DB.
+      - name: Seed V3-39 prod-standing table ACL (so the migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_min.sql
+
+      - name: Apply V3-39 next-action migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_39_next_action_prompts.sql
+
+      - name: Assert next-action grant invariant (dismissals owner-only; service_role has NO path)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_grant_invariant.sql
+
+      - name: Prove next-action RLS at runtime (user B never reads/writes user A's dismissals — 0 rows)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_rls_behaviour.sql
+      # V3-40 PREDICTIVE FRAUD & RISK (Phase E, Wave E.3) — versioned scores +
+      # governed models + enforcement log. Staff-only visibility, service-role
+      # writes, and the NO-AUTO-PUNISHMENT CHECK proven at the database layer.
+      - name: Seed V3-40 prod-standing default table ACL (so the risk migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_min.sql
+
+      - name: Apply V3-40 risk scores + models migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260725120000_v3_40_risk_scores_and_models.sql
+
+      - name: Assert risk grant invariant (staff-only reads, service-role writes, doctrine CHECKs present)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_grant_invariant.sql
+
+      - name: Prove risk RLS + doctrine at runtime (scored party sees nothing; DB rejects system-actor hold/freeze)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_rls_behaviour.sql
+
+      - name: Prove risk model lifecycle RPCs (transactional promote/rollback, shadow window, single-live, set-based release)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_lifecycle_rpc.sql
+
+      # V3-43 WORKFLOW RAIL — applied here for the first time so V3-41 can compose
+      # with the REAL unified primitives (workflow_locks + internal_ai_spend_ledger)
+      # rather than stubs. The migration is fully self-guarded (its only FK is to
+      # its own workflow_jobs; both fold-ins are to_regclass-guarded), so it applies
+      # cleanly on the vanilla chain.
+      - name: Apply V3-43 workflow rail migration (fresh — the unified lock + spend primitives)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_43_workflow_rail.sql
+
+      # V3-41 PREDICTIVE QUALITY & WORKLOAD (Phase E, Wave E.4) — forecasts,
+      # at-risk flags, dispute watch-list. Staff-only reads, service-role writes,
+      # and the NO-AUTO-PUNISHMENT CHECK proven at the database layer.
+      - name: Seed V3-41 prod-standing table ACL (so the predictive grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/predictive_min.sql
+
+      - name: Apply V3-41 predictive quality + workload migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260902120000_v3_41_predictive_quality_workload.sql
+
+      - name: Assert predictive grant invariant (staff-only reads, service-role writes, doctrine CHECKs, no second spend ledger)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/predictive_grant_invariant.sql
+
+      - name: Prove predictive RLS + no-auto-punishment at runtime (assessed party sees nothing; DB rejects every enforcement verb)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/predictive_rls_behaviour.sql

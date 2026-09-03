@@ -35,7 +35,8 @@ export async function PATCH(request: Request, { params }: Props) {
       .eq("id", notificationId);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error("[notifications/:id] update failed:", error);
+      return NextResponse.json({ error: "Unable to update notification." }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

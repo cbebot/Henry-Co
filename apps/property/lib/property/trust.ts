@@ -237,10 +237,10 @@ export async function getPropertyListingContactReviewMap(
       const notes: string[] = [];
 
       if (emailMatches > 0) {
-        notes.push("Owner email is shared across multiple HenryCo accounts.");
+        notes.push("Owner email is shared across multiple Henry Onyx accounts.");
       }
       if (phoneMatches > 0) {
-        notes.push("Owner phone is shared across multiple HenryCo accounts.");
+        notes.push("Owner phone is shared across multiple Henry Onyx accounts.");
       }
 
       return [

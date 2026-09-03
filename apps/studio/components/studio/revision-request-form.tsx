@@ -136,7 +136,7 @@ export function RevisionRequestForm({
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
         disabled={disabled}
-        className="hc-input w-full resize-y rounded-lg border border-[color:var(--hc-line)] bg-[color:var(--hc-paper)] p-3 font-sans text-sm text-[color:var(--hc-ink)]"
+        className="hc-input w-full resize-y rounded-lg border border-[color:var(--hc-line)] bg-[color:var(--hc-paper)] p-3 hc-font-body text-sm text-[color:var(--hc-ink)]"
       />
 
       {attachmentOptions.length > 0 ? (

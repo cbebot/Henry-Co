@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { getAccountUrl, getDivisionConfig, henryDomain } from "@henryco/config";
 import {
   renderHenryCoEmail,
   renderHenryCoEmailText,
@@ -123,8 +123,9 @@ async function localizeStudioLayout(layout: EmailLayout, locale: string): Promis
 }
 
 function baseUrl() {
-  const domain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com";
-  return process.env.NODE_ENV === "production" ? `https://studio.${domain}` : "http://localhost:3000";
+  // V3-07(S2): henryDomain() resolves via COMPANY.group.baseDomain so
+  // preview/staging studio emails route through the matching base domain.
+  return process.env.NODE_ENV === "production" ? henryDomain("studio") : "http://localhost:3000";
 }
 
 async function getPaymentSettings() {
@@ -164,6 +165,21 @@ async function renderLocalizedEmail(layout: EmailLayout, locale: string): Promis
     text: renderHenryCoEmailText(shared),
     layout: localized,
   };
+}
+
+// Exported (additive, no behavior change) so the SA-2 agency email module can
+// reuse the exact owner-resolution + render + base-url path.
+export { baseUrl as studioEmailBaseUrl };
+export async function getStudioOwnerRecipients() {
+  return getOwnerRecipients();
+}
+export async function renderAndSendStudioEmail(input: {
+  to: string | null | undefined;
+  entityId?: string | null;
+  templateKey: string;
+  layout: EmailLayout;
+}) {
+  return renderAndSendEmail(input);
 }
 
 async function getOwnerRecipients() {
@@ -330,14 +346,14 @@ export async function sendInquiryNotifications(input: {
   const layout: EmailLayout = {
     subject: `${tw("Inquiry received")} • ${input.lead.customerName}`,
     eyebrow: "Inquiry received",
-    title: "Your studio brief is now inside HenryCo Studio.",
+    title: "Your studio brief is now inside Henry Onyx Studio.",
     intro:
-      "We captured the project requirements, generated the first proposal frame, and routed the brief into the right delivery lane.",
-    highlightLabel: "Readiness score",
-    highlightValue: `${input.lead.readinessScore}/100`,
+      "We've received your project brief and prepared your first proposal. Our team is reviewing the details now.",
+    highlightLabel: "Next step",
+    highlightValue: "Review your proposal",
     sections: [
       { label: "Service", value: input.lead.serviceKind.replaceAll("_", " ") },
-      { label: "Budget lane", value: input.lead.budgetBand },
+      { label: "Budget range", value: input.lead.budgetBand },
       { label: "Urgency", value: input.lead.urgency },
     ],
     bullets: [
@@ -385,7 +401,7 @@ export async function sendInquiryNotifications(input: {
     subject: "Studio inquiry acknowledgement",
     locale: recipientLocale,
     body: [
-      `HenryCo Studio • ${input.lead.customerName}`,
+      `Henry Onyx Studio • ${input.lead.customerName}`,
       tw("Your project brief has been received."),
       `${tw("Proposal value")}: ${formatCurrency(input.proposal.investment, input.proposal.currency)}`,
       `${tw("Review here")}: ${proposalUrl}`,
@@ -409,7 +425,7 @@ export async function sendProposalNotifications(input: {
       eyebrow: "Proposal ready",
       title: "Your scope, pricing, and milestone structure are ready.",
       intro:
-        "HenryCo Studio generated the first proposal so you can review investment, team fit, and milestone logic without waiting for a shallow follow-up thread.",
+        "Henry Onyx Studio generated the first proposal so you can review investment, team fit, and milestone logic without waiting for a shallow follow-up thread.",
       highlightLabel: "Investment",
       highlightValue: formatCurrency(input.proposal.investment, input.proposal.currency),
       sections: [
@@ -438,7 +454,7 @@ export async function sendProjectStartedNotifications(input: {
     layout: {
       subject: `Project activated • ${input.project.title}`,
       eyebrow: "Project activated",
-      title: "Your HenryCo Studio workspace is now live.",
+      title: "Your Henry Onyx Studio workspace is now live.",
       intro:
         "The project has moved into an active delivery state. The workspace now tracks milestones, payments, files, revisions, and messages in one place.",
       highlightLabel: "Deposit checkpoint",
@@ -467,15 +483,15 @@ export async function sendPaymentInstructionsNotifications(input: {
     { label: "Transfer amount", value: formatCurrency(input.payment.amount, input.payment.currency) },
     {
       label: "Bank",
-      value: platform.paymentBankName || "Finance configuration pending",
+      value: platform.paymentBankName || "Details will be sent shortly",
     },
     {
       label: "Account name",
-      value: platform.paymentAccountName || "Finance configuration pending",
+      value: platform.paymentAccountName || "Details will be sent shortly",
     },
     {
       label: "Account number",
-      value: platform.paymentAccountNumber || "Finance configuration pending",
+      value: platform.paymentAccountNumber || "Details will be sent shortly",
     },
     {
       label: "Due date",
@@ -497,9 +513,9 @@ export async function sendPaymentInstructionsNotifications(input: {
     layout: {
       subject: `Payment instructions • ${input.project.title}`,
       eyebrow: "Payment instructions",
-      title: "Your deposit rail is ready for transfer.",
+      title: "Your deposit is ready for payment.",
       intro:
-        "Use the exact account details below, then upload proof inside the Studio workspace so finance can confirm the transfer and move the project into onboarding.",
+        "Use the exact account details below, then upload proof inside the Studio workspace so we can confirm your transfer and move the project into onboarding.",
       highlightLabel: "Amount due",
       highlightValue: formatCurrency(input.payment.amount, input.payment.currency),
       sections,
@@ -507,7 +523,7 @@ export async function sendPaymentInstructionsNotifications(input: {
         platform.paymentInstructions,
         "Copy the account number and amount exactly as shown.",
         "Upload proof in the payment section immediately after transfer.",
-        "HenryCo finance confirms the payment before delivery moves into the next milestone.",
+        "Your payment is confirmed before your project moves to the next milestone.",
       ],
       actionLabel: "Open payment workspace",
       actionHref: projectUrl,
@@ -521,7 +537,7 @@ export async function sendPaymentInstructionsNotifications(input: {
     subject: "Payment instructions",
     locale: recipientLocale,
     body: [
-      `HenryCo Studio • ${input.project.title}`,
+      `Henry Onyx Studio • ${input.project.title}`,
       `${tw("Amount")}: ${formatCurrency(input.payment.amount, input.payment.currency)}`,
       `${tw("Bank")}: ${platform.paymentBankName || tw("Pending")}`,
       `${tw("Account")}: ${platform.paymentAccountName || tw("Pending")}`,
@@ -550,8 +566,8 @@ export async function sendProposalDecisionNotifications(input: {
         ? "The proposal has been accepted and is ready to move into delivery."
         : "The proposal was marked as not moving forward right now.",
       intro: accepted
-        ? "HenryCo Studio has recorded acceptance against this proposal. The next step is activating or reviewing the project workspace and deposit lane."
-        : "HenryCo Studio has recorded this proposal as rejected so the commercial record stays accurate. The proposal history remains available if the scope needs to reopen later.",
+        ? "Henry Onyx Studio has recorded acceptance against this proposal. The next step is activating or reviewing the project workspace and deposit lane."
+        : "We've noted that this proposal isn't moving forward for now. Your proposal history stays available if you'd like to revisit the scope later.",
       highlightLabel: "Proposal status",
       highlightValue: input.proposal.status.replaceAll("_", " "),
       sections: [
@@ -582,12 +598,44 @@ export async function sendDepositReceivedNotifications(input: {
       eyebrow: "Deposit received",
       title: "Your deposit has been recorded.",
       intro:
-        "HenryCo Studio has recorded the payment against the active project lane and updated the execution state accordingly.",
+        "We've received your deposit. Your project is now active and work will begin — you can track everything in your workspace.",
       highlightLabel: "Amount received",
       highlightValue: formatCurrency(input.payment.amount, input.payment.currency),
       sections: [
         { label: "Project", value: input.project.title },
         { label: "Workspace status", value: input.project.status.replaceAll("_", " ") },
+      ],
+      actionLabel: "Open project workspace",
+      actionHref: `${baseUrl()}/project/${input.project.id}?access=${input.project.accessKey}`,
+    },
+  });
+}
+
+/**
+ * EMAIL-TPL-02 — the generic payment receipt for NON-deposit payments
+ * (milestone / balance / card-rail settlements). The deposit has its own
+ * richer email above; before this, a client paying a milestone heard nothing.
+ */
+export async function sendPaymentReceivedNotifications(input: {
+  lead: StudioLead;
+  project: StudioProject;
+  payment: StudioPayment;
+}) {
+  await renderAndSendEmail({
+    to: input.lead.normalizedEmail,
+    entityId: input.payment.id,
+    templateKey: "payment_received",
+    layout: {
+      subject: `Payment received • ${input.project.title}`,
+      eyebrow: "Payment received",
+      title: "Your payment has been recorded.",
+      intro:
+        "Henry Onyx Studio has confirmed this payment against your project and updated the payment record.",
+      highlightLabel: "Amount received",
+      highlightValue: formatCurrency(input.payment.amount, input.payment.currency),
+      sections: [
+        { label: "Project", value: input.project.title },
+        { label: "Payment", value: input.payment.label },
       ],
       actionLabel: "Open project workspace",
       actionHref: `${baseUrl()}/project/${input.project.id}?access=${input.project.accessKey}`,
@@ -632,7 +680,7 @@ export async function sendMilestoneReadyNotifications(input: {
     subject: "Milestone update",
     locale: recipientLocale,
     body: [
-      `HenryCo Studio • ${input.milestone.name}`,
+      `Henry Onyx Studio • ${input.milestone.name}`,
       tw("A project milestone is ready for your review."),
       `${tw("Open workspace")}: ${projectUrl}`,
     ].join("\n"),
@@ -654,7 +702,7 @@ export async function sendRevisionRequestedNotifications(input: {
       eyebrow: "Revision logged",
       title: "The requested revision is now being tracked.",
       intro:
-        "HenryCo Studio logged the revision as a formal delivery item so it stays visible to the team and to you.",
+        "Henry Onyx Studio logged the revision as a formal delivery item so it stays visible to the team and to you.",
       sections: [
         { label: "Requested by", value: input.revision.requestedBy },
         { label: "Summary", value: input.revision.summary },
@@ -707,7 +755,7 @@ export async function sendFinalDeliveryNotifications(input: {
       eyebrow: "Final delivery",
       title: "Your project is ready for final approval.",
       intro:
-        "HenryCo Studio has moved the project into final delivery. The last review rail, files, and approval state are now visible in the workspace.",
+        "Henry Onyx Studio has moved the project into final delivery. The last review rail, files, and approval state are now visible in the workspace.",
       highlightLabel: "Final checkpoint",
       highlightValue: input.milestone.name,
       actionLabel: "Open final delivery",
@@ -724,7 +772,7 @@ export async function sendFinalDeliveryNotifications(input: {
     subject: "Final delivery ready",
     locale: recipientLocale,
     body: [
-      `HenryCo Studio • ${input.project.title}`,
+      `Henry Onyx Studio • ${input.project.title}`,
       tw("Final delivery is ready for your review."),
       `${tw("Open workspace")}: ${projectUrl}`,
     ].join("\n"),
@@ -746,7 +794,7 @@ export async function sendProjectUpdateNotifications(input: {
       eyebrow: "Project update",
       title: input.update.title,
       intro:
-        "HenryCo Studio recorded a project update against your workspace so the latest movement, handoff, or review context stays visible and timestamped.",
+        "Henry Onyx Studio recorded a project update against your workspace so the latest movement, handoff, or review context stays visible and timestamped.",
       sections: [
         { label: "Project", value: input.project.title },
         { label: "Update type", value: input.update.kind.replaceAll("_", " ") },
@@ -766,7 +814,7 @@ export async function sendProjectUpdateNotifications(input: {
     subject: "Project update",
     locale: recipientLocale,
     body: [
-      `HenryCo Studio • ${input.project.title}`,
+      `Henry Onyx Studio • ${input.project.title}`,
       input.update.title,
       input.update.summary,
       `${tw("Workspace")}: ${projectUrl}`,
@@ -796,9 +844,9 @@ export async function sendPaymentReminderNotification(input: {
       sections: [
         { label: "Payment label", value: input.payment.label },
         { label: "Due date", value: input.payment.dueDate ? new Date(input.payment.dueDate).toLocaleDateString("en-NG") : "Pending" },
-        { label: "Bank", value: platform.paymentBankName || "Finance configuration pending" },
-        { label: "Account name", value: platform.paymentAccountName || "Finance configuration pending" },
-        { label: "Account number", value: platform.paymentAccountNumber || "Finance configuration pending" },
+        { label: "Bank", value: platform.paymentBankName || "Details will be sent shortly" },
+        { label: "Account name", value: platform.paymentAccountName || "Details will be sent shortly" },
+        { label: "Account number", value: platform.paymentAccountNumber || "Details will be sent shortly" },
       ],
       bullets: [
         platform.paymentInstructions,
@@ -819,7 +867,7 @@ export async function sendPaymentReminderNotification(input: {
     subject: "Payment reminder",
     locale: recipientLocale,
     body: [
-      `HenryCo Studio • ${input.payment.label}`,
+      `Henry Onyx Studio • ${input.payment.label}`,
       `${tw("Amount due")}: ${formatCurrency(input.payment.amount, input.payment.currency)}`,
       `${tw("Bank")}: ${platform.paymentBankName || tw("Pending")}`,
       `${tw("Account number")}: ${platform.paymentAccountNumber || tw("Pending")}`,
@@ -844,9 +892,9 @@ export async function sendSupportReplyNotification(input: {
     layout: {
       subject: `Support reply • ${input.subject}`,
       eyebrow: "Support reply",
-      title: "HenryCo Studio replied to your support request.",
+      title: "Henry Onyx Studio replied to your support request.",
       intro:
-        "Your support conversation has a new reply. The thread remains attached to your HenryCo support history so payment, delivery, and project clarification stay in one place.",
+        "Your support conversation has a new reply. The thread remains attached to your Henry Onyx support history so payment, delivery, and project clarification stay in one place.",
       sections: [
         { label: "Subject", value: input.subject },
         { label: "Reply", value: input.body },
@@ -865,7 +913,7 @@ export async function sendSupportReplyNotification(input: {
     subject: "Support reply",
     locale: recipientLocale,
     body: [
-      tw("HenryCo Studio support replied to your thread."),
+      tw("Henry Onyx Studio support replied to your thread."),
       input.subject,
       input.body,
       `${tw("Open thread")}: ${supportUrl}`,

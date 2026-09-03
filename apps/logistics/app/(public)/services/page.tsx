@@ -1,0 +1,117 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
+import {
+  getLogisticsServicesCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
+import { getPublicLogisticsSnapshot } from "@/lib/logistics/data";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
+import { autoTranslate, autoTranslateMany } from "@/lib/i18n/auto-translate";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLogisticsPublicLocale();
+  const copy = getLogisticsServicesCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
+
+export const dynamic = "force-dynamic";
+
+export default async function ServicesPage() {
+  const [{ services, settings }, locale] = await Promise.all([
+    getPublicLogisticsSnapshot(),
+    getLogisticsPublicLocale(),
+  ]);
+  const copy = getLogisticsServicesCopy(locale);
+
+  // Localize the static LOGISTICS_SERVICES catalogue at render time —
+  // each card's name/summary/promise/badge/highlights goes through the
+  // cached DeepL runtime for supported locales, EN passthrough for
+  // hi/ig/yo/ha (until human translators are wired).
+  const localizedServices = await Promise.all(
+    services.map(async (s) => ({
+      ...s,
+      name: await autoTranslate(s.name, locale),
+      summary: await autoTranslate(s.summary, locale),
+      promise: await autoTranslate(s.promise, locale),
+      badge: await autoTranslate(s.badge, locale),
+      highlights: await autoTranslateMany(s.highlights, locale),
+    })),
+  );
+
+  // `settings.pickupHours` is Supabase-merged: wrap it.
+  const pickupHoursLocalized = await resolveLocalizedDynamicField({
+    record: settings as unknown as Record<string, unknown>,
+    field: "pickupHours",
+    locale,
+    fallback: settings.pickupHours,
+    machineTranslate: locale !== "en",
+  });
+
+  return (
+    <main id="henryco-main" tabIndex={-1} className="px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[88rem] space-y-12">
+        <header>
+          <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
+            {copy.hero.eyebrow}
+          </p>
+          <h1 className="mt-4 max-w-3xl text-balance text-[2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[color:var(--home-ink)] sm:text-[2.6rem] md:text-[3rem]">
+            {copy.hero.title}
+          </h1>
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--logistics-muted)] sm:text-lg">
+            {copy.hero.body} {pickupHoursLocalized}
+          </p>
+        </header>
+
+        <ol className="divide-y divide-[var(--logistics-line)] border-y border-[var(--logistics-line)]">
+          {localizedServices.map((s, i) => (
+            <li key={s.slug} className="grid gap-6 py-8 md:grid-cols-[0.32fr_0.68fr]">
+              <div>
+                <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)]">
+                  {copy.serviceRow.label} {String(i + 1).padStart(2, "0")} &middot; {s.badge}
+                </p>
+                <h2 className="mt-3 text-[1.4rem] font-semibold leading-tight tracking-tight text-[color:var(--home-ink)] sm:text-[1.6rem]">
+                  {s.name}
+                </h2>
+              </div>
+              <div>
+                <p className="text-[15px] leading-7 text-[var(--logistics-muted)]">{s.summary}</p>
+                <p className="mt-3 text-[15px] font-semibold leading-7 text-[color:var(--home-ink)]">{s.promise}</p>
+                <ul className="mt-5 grid gap-2 sm:grid-cols-3">
+                  {s.highlights.map((h) => (
+                    <li
+                      key={h}
+                      className="flex items-baseline gap-2 border-l border-[var(--logistics-line)] pl-3 text-xs leading-relaxed text-[var(--logistics-muted)]"
+                    >
+                      <span className="text-[var(--logistics-accent-soft)]">·</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/book"
+            className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-6 py-3.5 text-sm font-semibold text-[color:var(--home-accent-ink)] shadow-[0_18px_44px_rgba(215,117,57,0.22)] transition hover:bg-[color:var(--home-accent-strong)] hover:-translate-y-0.5"
+          >
+            {copy.cta.book}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            href="/quote"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-[color:var(--home-surface-04)] px-6 py-3.5 text-sm font-semibold text-[color:var(--home-ink)] transition hover:bg-[color:var(--home-surface-07)]"
+          >
+            {copy.cta.quote}
+          </Link>
+        </div>
+      </div>
+    </main>
+  );
+}

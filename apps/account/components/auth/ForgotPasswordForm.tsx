@@ -1,12 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { Mail } from "lucide-react";
 import { getAuthCopy, getSurfaceCopy, formatSurfaceTemplate } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
-import { ButtonPendingContent } from "@henryco/ui";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { mapAccountAuthMessage } from "@/lib/auth-copy";
+import AuthField from "./AuthField";
+import AuthSubmit from "./AuthSubmit";
+import AuthErrorNotice from "./AuthErrorNotice";
 
+/**
+ * ForgotPasswordForm — request a password-reset link.
+ *
+ * Presentation runs through the shared auth primitives; the security spine is
+ * verbatim from the prior form: client resetPasswordForEmail with the reset-page
+ * redirectTo, then a "check your email" success panel. Errors go through the
+ * stable mapAccountAuthMessage vocabulary (never the raw provider string).
+ */
 export default function ForgotPasswordForm() {
   const locale = useHenryCoLocale();
   const authCopy = getAuthCopy(locale);
@@ -42,44 +53,44 @@ export default function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <div className="acct-card p-6 text-center sm:p-8">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--acct-green-soft)]">
-          <svg className="h-6 w-6 text-[var(--acct-green)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
+      <div className="auth-success" role="status">
+        <span className="auth-success-icon">
+          <Mail size={22} aria-hidden />
+        </span>
+        <div>
+          <h2 className="text-lg font-semibold">{surfaceCopy.accountForms.checkEmailTitle}</h2>
+          <p className="mt-1.5 text-sm">
+            {formatSurfaceTemplate(surfaceCopy.accountForms.resetSent, { email })}
+          </p>
         </div>
-        <h2 className="text-lg font-semibold">{surfaceCopy.accountForms.checkEmailTitle}</h2>
-        <p className="mt-2 text-sm text-[var(--acct-muted)]">
-          {formatSurfaceTemplate(surfaceCopy.accountForms.resetSent, { email })}
-        </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="acct-card p-6 sm:p-8">
-      {error && (
-        <div className="mb-4 rounded-xl bg-[var(--acct-red-soft)] px-4 py-3 text-sm text-[var(--acct-red)]">
-          {error}
-        </div>
-      )}
-      <div>
-        <label className="mb-1.5 block text-sm font-medium">{authCopy.reset.emailLabel}</label>
-        <input
+    <form onSubmit={handleSubmit} className="auth-stagger" noValidate>
+      <AuthErrorNotice message={error} />
+
+      <div className="auth-fieldset">
+        <AuthField
+          label={authCopy.reset.emailLabel}
+          name="email"
           type="email"
+          inputMode="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="acct-input"
           placeholder={surfaceCopy.accountForms.emailPlaceholder}
-          required
           autoComplete="email"
+          required
+          invalid={Boolean(error)}
         />
       </div>
-      <button type="submit" disabled={loading} className="acct-button-primary mt-4 w-full rounded-xl py-3">
-        <ButtonPendingContent pending={loading} pendingLabel={surfaceCopy.accountForms.resetBusy} spinnerLabel={authCopy.reset.submitButton}>
-          {authCopy.reset.submitButton}
-        </ButtonPendingContent>
-      </button>
+
+      <AuthSubmit
+        label={authCopy.reset.submitButton}
+        pendingLabel={surfaceCopy.accountForms.resetBusy}
+        pending={loading}
+      />
     </form>
   );
 }

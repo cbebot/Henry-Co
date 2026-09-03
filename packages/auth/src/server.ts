@@ -1,8 +1,11 @@
 import "server-only";
 
 import {
-  COMPANY,
   getAccountUrl,
+  getCanonicalAccountHosts,
+  getCanonicalHqHosts,
+  getCanonicalStaffHqHosts,
+  getCanonicalWorkspaceHosts,
   getHqUrl,
   getStaffHqUrl,
   isAbsoluteHttpUrl,
@@ -35,42 +38,37 @@ const ACCOUNT_AUTH_PATHS = new Set([
   "/auth/choose",
 ]);
 
-function getHenryCoHosts() {
-  const baseDomain = COMPANY.group.baseDomain;
-  return {
-    accountHost: `account.${baseDomain}`,
-    hqHost: `hq.${baseDomain}`,
-    staffHost: `staff.${baseDomain}`,
-    workspaceHost: `workspace.${baseDomain}`,
-  };
-}
-
 function toTargetUrl(target: string, origin: string): URL {
   return new URL(target.startsWith("/") ? target : target, origin);
 }
 
+function hostMatchesAny(hostname: string, candidates: string[]): boolean {
+  const normalized = hostname.toLowerCase();
+  return candidates.some((candidate) => candidate.toLowerCase() === normalized);
+}
+
 function isOwnerTarget(targetUrl: URL): boolean {
-  const { hqHost } = getHenryCoHosts();
   return (
-    targetUrl.hostname === hqHost ||
+    hostMatchesAny(targetUrl.hostname, getCanonicalHqHosts()) ||
     targetUrl.pathname === "/owner" ||
     targetUrl.pathname.startsWith("/owner/")
   );
 }
 
 function isStaffTarget(targetUrl: URL): boolean {
-  const { staffHost, workspaceHost } = getHenryCoHosts();
   return (
-    targetUrl.hostname === staffHost ||
-    targetUrl.hostname === workspaceHost ||
+    hostMatchesAny(targetUrl.hostname, getCanonicalStaffHqHosts()) ||
+    hostMatchesAny(targetUrl.hostname, getCanonicalWorkspaceHosts()) ||
     targetUrl.pathname === "/workspace" ||
     targetUrl.pathname.startsWith("/workspace/")
   );
 }
 
 function isAccountAuthTarget(targetUrl: URL): boolean {
-  const { accountHost } = getHenryCoHosts();
-  return targetUrl.hostname === accountHost && ACCOUNT_AUTH_PATHS.has(targetUrl.pathname);
+  return (
+    hostMatchesAny(targetUrl.hostname, getCanonicalAccountHosts()) &&
+    ACCOUNT_AUTH_PATHS.has(targetUrl.pathname)
+  );
 }
 
 function toOwnerDestination(target: string, origin: string): string {
@@ -114,7 +112,7 @@ function buildDashboardOptions(access: AccessSnapshot): DashboardOption[] {
       role: "super_admin",
       title: "Owner Console",
       description:
-        "Executive command, finance, workforce, and brand controls across every Henry & Co. division.",
+        "Executive command, finance, workforce, and brand controls across every Henry Onyx division.",
       href: getHqUrl("/owner"),
     });
   }
@@ -131,7 +129,7 @@ function buildDashboardOptions(access: AccessSnapshot): DashboardOption[] {
       description:
         staffRole === "division_operator"
           ? "Your division operations workspace — queues, approvals, and customer support."
-          : "Cross-division staff hub — operations, support, and approvals across HenryCo.",
+          : "Cross-division staff hub — operations, support, and approvals across Henry Onyx.",
       href: getStaffHqUrl("/"),
     });
   }
@@ -141,7 +139,7 @@ function buildDashboardOptions(access: AccessSnapshot): DashboardOption[] {
     role: "customer",
     title: "Customer Dashboard",
     description:
-      "Your personal Henry & Co. account — bookings, orders, wallet, and preferences.",
+      "Your personal Henry Onyx account — bookings, orders, wallet, and preferences.",
     href: getAccountUrl("/"),
   });
 
@@ -327,7 +325,12 @@ export async function loadDashboardOptions(user: AuthenticatedUser): Promise<Das
 }
 
 // Re-export viewer helpers for one-import server consumption.
-export { requireUnifiedViewer, buildUnifiedViewer, getViewerRoles } from "./viewer";
+export {
+  requireUnifiedViewer,
+  buildUnifiedViewer,
+  getViewerRoles,
+  readAccessSnapshot,
+} from "./viewer";
 
 // Track C (DASH-9) staff helpers. Re-exported here so single-import
 // callers (apps/staff/app/(track-c)/layout.tsx) can pick up everything

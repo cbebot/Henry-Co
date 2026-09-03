@@ -4,7 +4,7 @@ import { CARE_ACCENT } from "@/lib/care-theme";
 const careDivision = getDivisionConfig("care");
 
 export const BRAND = {
-  name: "Henry & Co. Fabric Care",
+  name: "Henry Onyx Fabric Care",
   sub: "Garment care, home cleaning, and workplace upkeep",
   shortName: "Fabric Care",
   accent: CARE_ACCENT,

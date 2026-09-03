@@ -36,6 +36,17 @@ export {
   type EmitEventParams,
 } from "./events";
 
+export { persistEvent, type PersistEventInput } from "./persist-event";
+
+export {
+  deepLinkSourceFromUtm,
+  recordDeepLinkArrived,
+  recordDeepLinkDeadLink,
+  type DeepLinkTelemetrySource,
+  type RecordDeepLinkArrivedInput,
+  type RecordDeepLinkDeadLinkInput,
+} from "./deeplink-telemetry";
+
 export {
   buildServerSentryConfig,
   buildEdgeSentryConfig,

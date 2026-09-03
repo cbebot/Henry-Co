@@ -110,10 +110,11 @@ export async function POST(req: Request) {
       receiptStatus: result.receiptStatus,
     });
   } catch (error) {
+    console.error("[care:contact] request failed", error);
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error ? error.message : "The contact message could not be saved.",
+        error: "The contact message could not be saved. Please try again.",
       },
       { status: 500 }
     );

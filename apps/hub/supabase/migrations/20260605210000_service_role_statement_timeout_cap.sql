@@ -1,0 +1,21 @@
+-- V3-INCIDENT-DB-01 prevention backstop — cap service_role statement_timeout.
+--
+-- Public / SSR reads run as `service_role` (the service key, via PostgREST
+-- `SET ROLE service_role`). That role had NO statement_timeout override and so
+-- inherited the 120s global default, while the other web roles are already
+-- tuned (anon=3s, authenticated/authenticator=8s). During the 2026-06-05
+-- saturation those service-role reads stacked for up to two minutes instead of
+-- shedding, compounding the CPU starvation.
+--
+-- Cap at a conservative 30s — ~10x the observed normal max (~3s in
+-- pg_stat_statements), so healthy work (incl. heavier admin/recompute reads) is
+-- never affected, but the pathological 120s pile-up is bounded.
+--
+-- This is a BACKSTOP. Primary protection: the app-layer SSR cache + fetch-abort
+-- (PRs #226/#227) and a compute upsize (Micro -> Small/Medium). Once heavier
+-- service-role job durations are confirmed, this can be tightened toward ~10s.
+--
+-- Reversible:  ALTER ROLE service_role RESET statement_timeout;
+-- Applied to prod 2026-06-05 (rzkbgwuznmdxnnhmjazy). Idempotent.
+
+ALTER ROLE service_role SET statement_timeout = '30s';

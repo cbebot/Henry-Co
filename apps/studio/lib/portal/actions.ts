@@ -7,6 +7,7 @@ import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
 import { getClientPortalViewer } from "@/lib/portal/auth";
 import { clean, koboFromAmount } from "@/lib/portal/helpers";
 import { writeStudioLog } from "@/lib/studio/store";
+import { screenMessageBody } from "@/lib/messaging/screen-message";
 
 const ALLOWED_PROOF_MIME = new Set([
   "image/png",
@@ -233,7 +234,7 @@ export async function submitPaymentProofAction(formData: FormData): Promise<Paym
 
 export type SendMessageResult =
   | { ok: true; messageId: string }
-  | { ok: false; reason: "missing_body" | "unauthorised" | "server_error" };
+  | { ok: false; reason: "missing_body" | "unauthorised" | "server_error" | "contact_blocked" };
 
 export async function sendProjectMessageAction(formData: FormData): Promise<SendMessageResult> {
   const projectId = clean(formData.get("projectId"));
@@ -258,6 +259,13 @@ export async function sendProjectMessageAction(formData: FormData): Promise<Send
     clean(project.client_user_id) === viewer.userId ||
     (!!viewer.normalizedEmail && clean(project.normalized_email) === viewer.normalizedEmail);
   if (!owns) return { ok: false, reason: "unauthorised" };
+
+  // Server-side contact-safety (defense-in-depth; the client is bypassable).
+  // High/critical off-platform contact is blocked and never persisted; medium is masked.
+  const screened = screenMessageBody(body);
+  if (screened.action === "block") {
+    return { ok: false, reason: "contact_blocked" };
+  }
 
   let attachments: Array<{ url: string; name: string; type: string; size: number }> = [];
   if (attachmentsRaw) {
@@ -287,7 +295,7 @@ export async function sendProjectMessageAction(formData: FormData): Promise<Send
     sender_id: viewer.userId,
     sender: viewer.fullName || viewer.email || "Studio client",
     sender_role: "client",
-    body,
+    body: screened.body,
     attachments,
     read_by: [viewer.userId],
     is_internal: false,

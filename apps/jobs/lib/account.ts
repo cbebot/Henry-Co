@@ -1,4 +1,4 @@
-import { getDivisionUrl } from "@henryco/config";
+import { getDivisionUrl, henrySubdomain } from "@henryco/config";
 import { cleanEnv } from "@/lib/env";
 
 const DEFAULT_ACCOUNT_SUBDOMAIN = "account";
@@ -14,8 +14,10 @@ export function getSharedAccountOrigin() {
     return explicit.replace(/\/+$/, "");
   }
 
-  const baseDomain = cleanEnv(process.env.NEXT_PUBLIC_BASE_DOMAIN) || "henrycogroup.com";
-  return `https://${DEFAULT_ACCOUNT_SUBDOMAIN}.${baseDomain}`;
+  // V3-07(S2): drop the inline `${process.env.NEXT_PUBLIC_BASE_DOMAIN ||
+  // "henrycogroup.com"}` template and use henrySubdomain() so the COMPANY
+  // registry stays the only source of truth for the base domain.
+  return henrySubdomain(DEFAULT_ACCOUNT_SUBDOMAIN);
 }
 
 export function normalizeJobsPath(pathname?: string | null, fallback = DEFAULT_JOBS_PATH) {

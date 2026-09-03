@@ -21,7 +21,7 @@ const ACCENT = CARE_ACCENT;
 export const metadata: Metadata = {
   title: `Staff Access | ${care.name}`,
   description:
-    "Secure internal access for HenryCo Care owner, manager, rider, support, and staff dashboards.",
+    "Secure internal access for Henry Onyx Care owner, manager, rider, support, and staff dashboards.",
 };
 
 function decodeText(value?: string | null) {

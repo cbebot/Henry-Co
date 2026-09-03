@@ -21,7 +21,14 @@ export function HenryCoThemeBlocking() {
       function applyResolved(resolved) {
         root.dataset.theme = resolved;
         root.style.colorScheme = resolved;
+        // THEME-01: manage BOTH light and dark classes so apps that
+        // declare a .light selector override (dark-first apps like
+        // staff HQ, property, learn, studio) get the correct pre-paint
+        // values before next-themes hydrates. next-themes runs with
+        // attribute=[class,data-theme] post-mount; this script mirrors
+        // that contract pre-paint so there is no FOUC either way.
         root.classList.toggle("dark", resolved === "dark");
+        root.classList.toggle("light", resolved === "light");
       }
       var saved = readSaved();
       applyResolved(computeResolved(saved));
@@ -49,7 +56,12 @@ export function HenryCoThemeBlocking() {
       --site-header-bg: rgba(5,8,22,0.82);
       --site-footer-bg: rgba(0,0,0,0.20);
       --site-card-shadow: 0 24px 100px rgba(0,0,0,0.24);
-      --site-accent: #b2863b;
+      /* Slice C (2026-07-16): value-aligned to the canonical brand gold
+         (--acct-gold / --hc-accent dark ramp). The legacy #b2863b painted an
+         off-brand gold pre-paint wherever a --site-accent consumer rendered
+         under this blocking style — same-value alignment means the pre-paint
+         and hydrated accents are now identical (no flash, no drift). */
+      --site-accent: #D4AF37;
       --site-radius-sm: 0.5rem;
       --site-radius-md: 0.75rem;
       --site-radius-lg: 1rem;
@@ -68,7 +80,8 @@ export function HenryCoThemeBlocking() {
       --site-header-bg: rgba(246,248,252,0.82);
       --site-footer-bg: rgba(255,255,255,0.70);
       --site-card-shadow: 0 24px 80px rgba(15,23,42,0.08);
-      --site-accent: #9a6f2e;
+      /* Slice C: canonical light-theme brand gold (--acct-gold light ramp). */
+      --site-accent: #C9A227;
       color-scheme: light;
     }
 
@@ -77,8 +90,8 @@ export function HenryCoThemeBlocking() {
     }
 
     @keyframes hc-dropdown-in {
-      from { opacity: 0; transform: scale(0.96) translateY(-4px); }
-      to   { opacity: 1; transform: scale(1)    translateY(0);    }
+      from { opacity: 0; transform: scale(0.94) translateY(-6px); filter: blur(2px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0);   }
     }
   `;
 

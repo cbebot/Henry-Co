@@ -21,7 +21,11 @@ import {
   deriveSLABucket,
   DEFAULT_STAFF_QUEUE_FILTERS,
   formatRelative,
+  loadPredictiveSnapshot,
+  PredictiveQueuePanel,
 } from "../shared";
+import { getStaffPredictiveCopy } from "@henryco/i18n";
+import type { AppLocale } from "@henryco/i18n";
 
 export type SupportSupabaseClient = {
   from: (table: string) => {
@@ -251,6 +255,8 @@ export const staffSupportModule: StaffDashboardModule = {
 };
 
 export type StaffSupportPageProps = {
+  /** Operator locale for the V3-41 predictive panel. Defaults to English. */
+  locale?: AppLocale;
   viewer: StaffViewer;
   supabase: SupportSupabaseClient;
   bulkActionHandler: (id: string, ids: string[], reason: string | null) => Promise<void>;
@@ -261,13 +267,17 @@ export type StaffSupportPageProps = {
   ) => Promise<void>;
 };
 
-export async function StaffSupportPageServer({ supabase, bulkActionHandler, exportHandler }: StaffSupportPageProps) {
+export async function StaffSupportPageServer({ supabase, bulkActionHandler, exportHandler, locale }: StaffSupportPageProps) {
   const snapshot = await loadSupportQueueSnapshot(supabase);
+  const predictive = await loadPredictiveSnapshot(supabase as never, "staff-support");
   return (
     <GenericStaffQueueClient<SupportThreadRow>
       kicker="Support · operator"
       title="Cross-division support inbox"
       snapshot={snapshot}
+      forecastPanel={
+        <PredictiveQueuePanel snapshot={predictive} copy={getStaffPredictiveCopy(locale ?? "en")} />
+      }
       filterFields={FILTERS}
       rowAdapter={(r) => ({
         id: r.id,

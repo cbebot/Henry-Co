@@ -14,7 +14,7 @@ import { deepMergeMessages, type DeepPartial } from "./merge-messages";
  */
 export type LearnCategoriesCopy = {
   meta: {
-    /** Template: `{category} courses - HenryCo Learn` */
+    /** Template: `{category} courses - Henry Onyx Learn` */
     titleTemplate: string;
     /** Template: `Browse every course in the {category} category.` */
     descriptionTemplate: string;
@@ -45,7 +45,7 @@ export type LearnCategoriesCopy = {
 
 const LEARN_CATEGORIES_COPY_EN: LearnCategoriesCopy = {
   meta: {
-    titleTemplate: "{category} courses - HenryCo Learn",
+    titleTemplate: "{category} courses - Henry Onyx Learn",
     descriptionTemplate: "Browse every course in the {category} category.",
   },
   breadcrumb: {
@@ -59,7 +59,7 @@ const LEARN_CATEGORIES_COPY_EN: LearnCategoriesCopy = {
   stats: {
     activeCoursesLabel: "Active courses",
     enrollmentLabel: "Enrollment",
-    enrollmentValue: "One HenryCo account",
+    enrollmentValue: "One Henry Onyx account",
     recordsLabel: "Records",
     recordsValue: "Server-side, verifiable",
   },
@@ -71,7 +71,7 @@ const LEARN_CATEGORIES_COPY_EN: LearnCategoriesCopy = {
 
 const LEARN_CATEGORIES_COPY_FR: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "Cours {category} — HenryCo Learn",
+    titleTemplate: "Cours {category} — Henry Onyx Learn",
     descriptionTemplate: "Parcourez tous les cours de la catégorie {category}.",
   },
   breadcrumb: {
@@ -85,7 +85,7 @@ const LEARN_CATEGORIES_COPY_FR: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Cours actifs",
     enrollmentLabel: "Inscription",
-    enrollmentValue: "Un seul compte HenryCo",
+    enrollmentValue: "Un seul compte Henry Onyx",
     recordsLabel: "Dossiers",
     recordsValue: "Côté serveur, vérifiables",
   },
@@ -97,7 +97,7 @@ const LEARN_CATEGORIES_COPY_FR: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_ES: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "Cursos de {category} — HenryCo Learn",
+    titleTemplate: "Cursos de {category} — Henry Onyx Learn",
     descriptionTemplate: "Explora todos los cursos de la categoría {category}.",
   },
   breadcrumb: {
@@ -111,7 +111,7 @@ const LEARN_CATEGORIES_COPY_ES: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Cursos activos",
     enrollmentLabel: "Inscripción",
-    enrollmentValue: "Una sola cuenta HenryCo",
+    enrollmentValue: "Una sola cuenta Henry Onyx",
     recordsLabel: "Registros",
     recordsValue: "En el servidor, verificables",
   },
@@ -123,7 +123,7 @@ const LEARN_CATEGORIES_COPY_ES: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_PT: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "Cursos de {category} — HenryCo Learn",
+    titleTemplate: "Cursos de {category} — Henry Onyx Learn",
     descriptionTemplate: "Explore todos os cursos da categoria {category}.",
   },
   breadcrumb: {
@@ -137,7 +137,7 @@ const LEARN_CATEGORIES_COPY_PT: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Cursos ativos",
     enrollmentLabel: "Inscrição",
-    enrollmentValue: "Uma única conta HenryCo",
+    enrollmentValue: "Uma única conta Henry Onyx",
     recordsLabel: "Registos",
     recordsValue: "No servidor, verificáveis",
   },
@@ -149,7 +149,7 @@ const LEARN_CATEGORIES_COPY_PT: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_AR: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "دورات {category} — HenryCo Learn",
+    titleTemplate: "دورات {category} — Henry Onyx Learn",
     descriptionTemplate: "تصفّح كل الدورات في فئة {category}.",
   },
   breadcrumb: {
@@ -163,7 +163,7 @@ const LEARN_CATEGORIES_COPY_AR: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "الدورات النشطة",
     enrollmentLabel: "التسجيل",
-    enrollmentValue: "حساب HenryCo واحد",
+    enrollmentValue: "حساب Henry Onyx واحد",
     recordsLabel: "السجلّات",
     recordsValue: "على الخادم، قابلة للتحقُّق",
   },
@@ -175,7 +175,7 @@ const LEARN_CATEGORIES_COPY_AR: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_DE: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "{category}-Kurse — HenryCo Learn",
+    titleTemplate: "{category}-Kurse — Henry Onyx Learn",
     descriptionTemplate: "Durchsuchen Sie alle Kurse in der Kategorie {category}.",
   },
   breadcrumb: {
@@ -189,7 +189,7 @@ const LEARN_CATEGORIES_COPY_DE: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Aktive Kurse",
     enrollmentLabel: "Anmeldung",
-    enrollmentValue: "Ein HenryCo-Konto",
+    enrollmentValue: "Ein Henry Onyx-Konto",
     recordsLabel: "Nachweise",
     recordsValue: "Serverseitig, prüfbar",
   },
@@ -201,7 +201,7 @@ const LEARN_CATEGORIES_COPY_DE: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_IT: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "Corsi di {category} — HenryCo Learn",
+    titleTemplate: "Corsi di {category} — Henry Onyx Learn",
     descriptionTemplate: "Esplora tutti i corsi della categoria {category}.",
   },
   breadcrumb: {
@@ -215,7 +215,7 @@ const LEARN_CATEGORIES_COPY_IT: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Corsi attivi",
     enrollmentLabel: "Iscrizione",
-    enrollmentValue: "Un solo account HenryCo",
+    enrollmentValue: "Un solo account Henry Onyx",
     recordsLabel: "Registri",
     recordsValue: "Lato server, verificabili",
   },
@@ -227,7 +227,7 @@ const LEARN_CATEGORIES_COPY_IT: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_ZH: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "{category} 课程 — HenryCo Learn",
+    titleTemplate: "{category} 课程 — Henry Onyx Learn",
     descriptionTemplate: "浏览 {category} 分类中的全部课程。",
   },
   breadcrumb: {
@@ -241,7 +241,7 @@ const LEARN_CATEGORIES_COPY_ZH: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "在售课程",
     enrollmentLabel: "报名方式",
-    enrollmentValue: "一个 HenryCo 账户",
+    enrollmentValue: "一个 Henry Onyx 账户",
     recordsLabel: "记录",
     recordsValue: "服务器端,可核验",
   },
@@ -253,7 +253,7 @@ const LEARN_CATEGORIES_COPY_ZH: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_HI: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "{category} कोर्स — HenryCo Learn",
+    titleTemplate: "{category} कोर्स — Henry Onyx Learn",
     descriptionTemplate: "{category} श्रेणी के सभी कोर्स देखें।",
   },
   breadcrumb: {
@@ -267,7 +267,7 @@ const LEARN_CATEGORIES_COPY_HI: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "सक्रिय कोर्स",
     enrollmentLabel: "नामांकन",
-    enrollmentValue: "एक HenryCo खाता",
+    enrollmentValue: "एक Henry Onyx खाता",
     recordsLabel: "रिकॉर्ड",
     recordsValue: "सर्वर पर, सत्यापन योग्य",
   },
@@ -279,7 +279,7 @@ const LEARN_CATEGORIES_COPY_HI: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_IG: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "Nkuzi {category} — HenryCo Learn",
+    titleTemplate: "Nkuzi {category} — Henry Onyx Learn",
     descriptionTemplate: "Nyochaa nkuzi niile dị n’ụdị {category}.",
   },
   breadcrumb: {
@@ -293,7 +293,7 @@ const LEARN_CATEGORIES_COPY_IG: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Nkuzi na-arụ ọrụ",
     enrollmentLabel: "Ndebanye aha",
-    enrollmentValue: "Otu akaụntụ HenryCo",
+    enrollmentValue: "Otu akaụntụ Henry Onyx",
     recordsLabel: "Akwụkwọ ndekọ",
     recordsValue: "Na sava, enwere ike inyocha ya",
   },
@@ -305,7 +305,7 @@ const LEARN_CATEGORIES_COPY_IG: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_YO: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "Àwọn ẹ̀kọ́ {category} — HenryCo Learn",
+    titleTemplate: "Àwọn ẹ̀kọ́ {category} — Henry Onyx Learn",
     descriptionTemplate: "Wo gbogbo ẹ̀kọ́ tó wà nínú ìpín {category}.",
   },
   breadcrumb: {
@@ -319,7 +319,7 @@ const LEARN_CATEGORIES_COPY_YO: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Àwọn ẹ̀kọ́ tó ń lọ lọ́wọ́",
     enrollmentLabel: "Ìforúkọsílẹ̀",
-    enrollmentValue: "Àkáǹtì HenryCo kan",
+    enrollmentValue: "Àkáǹtì Henry Onyx kan",
     recordsLabel: "Àkọsílẹ̀",
     recordsValue: "Ní sáfà, ó ṣeé yẹ̀wò",
   },
@@ -331,7 +331,7 @@ const LEARN_CATEGORIES_COPY_YO: DeepPartial<LearnCategoriesCopy> = {
 
 const LEARN_CATEGORIES_COPY_HA: DeepPartial<LearnCategoriesCopy> = {
   meta: {
-    titleTemplate: "Kwasa-kwasai na {category} — HenryCo Learn",
+    titleTemplate: "Kwasa-kwasai na {category} — Henry Onyx Learn",
     descriptionTemplate: "Duba dukkan kwasa-kwasai a cikin rukunin {category}.",
   },
   breadcrumb: {
@@ -345,7 +345,7 @@ const LEARN_CATEGORIES_COPY_HA: DeepPartial<LearnCategoriesCopy> = {
   stats: {
     activeCoursesLabel: "Kwasa-kwasai masu aiki",
     enrollmentLabel: "Rajista",
-    enrollmentValue: "Asusun HenryCo guda ɗaya",
+    enrollmentValue: "Asusun Henry Onyx guda ɗaya",
     recordsLabel: "Bayanai",
     recordsValue: "A kan sabar, za a iya tabbatarwa",
   },

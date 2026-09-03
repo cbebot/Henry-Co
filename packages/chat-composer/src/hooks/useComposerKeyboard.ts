@@ -8,10 +8,22 @@ export type ComposerKeyboardOptions = {
   onEscape?: () => void;
   multilineWithShift?: boolean;
   disabled?: boolean;
+  /**
+   * When true, plain Enter (no modifier) submits and Shift+Enter inserts a
+   * newline — chat-app parity. Default false preserves the historical
+   * contract (plain Enter = newline, Cmd/Ctrl+Enter = send).
+   */
+  enterSends?: boolean;
 };
 
 export function useComposerKeyboard(options: ComposerKeyboardOptions) {
-  const { onSubmit, onEscape, multilineWithShift = true, disabled } = options;
+  const {
+    onSubmit,
+    onEscape,
+    multilineWithShift = true,
+    disabled,
+    enterSends = false,
+  } = options;
 
   const handler = useCallback(
     (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -32,8 +44,12 @@ export function useComposerKeyboard(options: ComposerKeyboardOptions) {
         // allow newline
         return;
       }
+      if (enterSends && !event.shiftKey) {
+        event.preventDefault();
+        onSubmit();
+      }
     },
-    [onSubmit, onEscape, multilineWithShift, disabled]
+    [onSubmit, onEscape, multilineWithShift, disabled, enterSends]
   );
 
   return handler;

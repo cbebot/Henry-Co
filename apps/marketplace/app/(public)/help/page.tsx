@@ -47,7 +47,8 @@ export default async function HelpPage({
         <h1 className="mt-4 text-balance text-[2rem] font-semibold leading-[1.08] tracking-[-0.02em] text-[var(--market-ink)] sm:text-[2.4rem] md:text-[2.8rem]">
           {copy.help.hero.title}
         </h1>
-        <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
+        {/* READING-02: hero body in the editorial serif reading face. */}
+        <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
           {copy.help.hero.body}
         </p>
       </section>
@@ -70,7 +71,7 @@ export default async function HelpPage({
           <div className="flex flex-wrap gap-3 lg:justify-end">
             <Link
               href={supportHref}
-              className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d] active:translate-y-[0.5px]"
+              className="market-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--home-canvas)] active:translate-y-[0.5px]"
             >
               <MessageSquare className="h-4 w-4" />
               {copy.help.stillNeedHelp.ctaLabel}

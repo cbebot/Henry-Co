@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { toBrandName } from "@henryco/config";
 
 // V2-NOT-01-C: Notifications preferences form.
 //
@@ -72,16 +73,16 @@ type DivisionConfig = {
 const DIVISIONS: ReadonlyArray<DivisionConfig> = [
   { key: "account", label: "Account", description: "Wallet, payments, and profile updates", icon: Users },
   { key: "care", label: "Care", description: "Bookings, tracking, and service alerts", icon: Sparkles },
-  { key: "hub", label: "HenryCo Hub", description: "Cross-division program updates", icon: Wifi },
+  { key: "hub", label: "Henry Onyx Hub", description: "Cross-division program updates", icon: Wifi },
   { key: "jobs", label: "Jobs", description: "Application movement and recruiter messages", icon: Building2 },
   { key: "learn", label: "Learn", description: "Course activity and certification updates", icon: GraduationCap },
   { key: "logistics", label: "Logistics", description: "Shipment progress and delivery alerts", icon: Truck },
   { key: "marketplace", label: "Marketplace", description: "Orders, seller updates, and disputes", icon: ShoppingBag },
   { key: "property", label: "Property", description: "Inquiries, viewings, and listing progress", icon: Building2 },
   { key: "security", label: "Security", description: "Account and device security alerts", icon: ShieldCheck },
-  { key: "staff", label: "Staff", description: "Operator-channel updates if you have access", icon: Users },
+  { key: "staff", label: "Staff", description: "Team updates for accounts with staff access", icon: Users },
   { key: "studio", label: "Studio", description: "Proposals, project rooms, and payment steps", icon: Palette },
-  { key: "system", label: "System", description: "HenryCo-internal alerts and platform notices", icon: Bell },
+  { key: "system", label: "System", description: toBrandName("Important service messages and platform announcements"), icon: Bell },
 ];
 
 type EventTypeOption = {
@@ -97,7 +98,7 @@ const EVENT_TYPES: ReadonlyArray<EventTypeOption> = [
   { value: "auth.signup.welcome", label: "Welcome / signup confirmations", division: "account" },
   { value: "auth.password.changed", label: "Password change confirmations", division: "security" },
   { value: "auth.security.new_device", label: "New device sign-in alerts", division: "security" },
-  { value: "system.welcome", label: "System welcome messages", division: "system" },
+  { value: "system.welcome", label: "Welcome & getting-started messages", division: "system" },
   { value: "logistics.shipment.update", label: "Shipment movement updates", division: "logistics" },
   { value: "marketplace.order.update", label: "Order status updates", division: "marketplace" },
   { value: "property.viewing.update", label: "Property viewing changes", division: "property" },
@@ -108,7 +109,7 @@ const EVENT_TYPES: ReadonlyArray<EventTypeOption> = [
   { value: "support.thread.created", label: "New support threads", division: "account" },
   { value: "wallet.transaction.update", label: "Wallet transaction updates", division: "account" },
   { value: "kyc.review.update", label: "KYC verification updates", division: "security" },
-  { value: "system.notification.relay", label: "Cross-division relays", division: "system" },
+  { value: "system.notification.relay", label: "General platform updates", division: "system" },
 ];
 
 type Preferences = {
@@ -671,7 +672,7 @@ export default function NotificationPreferencesForm({
           </div>
           <p className="mt-3 text-xs text-[var(--acct-muted)]">
             {prefs.email_fallback_enabled
-              ? t("Unread notifications older than {n} hours trigger a fallback email from your division’s sender.").replace(
+              ? t("We’ll email you a reminder if a notification stays unread for more than {n} hours.").replace(
                   "{n}",
                   String(prefs.email_fallback_delay_hours),
                 )
@@ -705,7 +706,7 @@ export default function NotificationPreferencesForm({
         />
         <Toggle
           label={t("Push notifications")}
-          description={t("Device push alerts when the HenryCo app is available.")}
+          description={t(toBrandName("Device push alerts when the Henry Onyx app is available."))}
           checked={prefs.push_enabled}
           onChange={(v) => updateBoolean("push_enabled", v)}
           isPending={pendingFields.has("push_enabled")}
@@ -823,7 +824,6 @@ export default function NotificationPreferencesForm({
                       >
                         <span className="flex flex-col">
                           <span className="font-medium text-[var(--acct-ink)]">{t(evt.label)}</span>
-                          <span className="text-[0.7rem] text-[var(--acct-muted)]">{evt.value}</span>
                         </span>
                         <span
                           className={`shrink-0 rounded-full px-2.5 py-0.5 text-[0.7rem] font-semibold uppercase tracking-wide ${
@@ -846,7 +846,7 @@ export default function NotificationPreferencesForm({
 
       {errorFields.size > 0 ? (
         <p className="rounded-xl bg-[var(--acct-red-soft)] px-4 py-3 text-xs text-[var(--acct-red)]">
-          {t("Some changes were rejected by the server and rolled back. Please retry.")}
+          {t("Some changes couldn’t be saved and were undone. Please try again.")}
         </p>
       ) : null}
     </div>

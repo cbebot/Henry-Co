@@ -164,7 +164,9 @@ export async function createJobPostAction(formData: FormData) {
   revalidatePath("/employer/jobs");
   revalidatePath(`/employer/jobs/${result.slug}`);
   revalidatePath("/jobs");
-  redirect(`/employer/jobs/${result.slug}?created=1&mode=${encodeURIComponent(result.moderationStatus)}`);
+  // The destination page reads moderation status from the job record —
+  // no need to carry the raw enum through the URL/browser history.
+  redirect(`/employer/jobs/${result.slug}?created=1`);
 }
 
 export async function advanceApplicationStageAction(formData: FormData) {

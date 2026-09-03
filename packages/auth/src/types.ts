@@ -74,6 +74,13 @@ export type UnifiedViewer = {
     avatarUrl: string | null;
     appMetadata: Record<string, unknown>;
     userMetadata: Record<string, unknown>;
+    /**
+     * Whether the viewer's email is verified (Supabase `email_confirmed_at`).
+     * Gates email-only role-membership grants — an unclaimed seed is claimable
+     * only by a viewer who provably controls that mailbox. Optional for
+     * back-compat; absent is treated as unverified (deny).
+     */
+    emailVerified?: boolean;
   };
   access: AccessSnapshot;
   /**
@@ -161,3 +168,51 @@ export const DASHBOARD_PREFERENCE_COOKIE = "hc_dash_pref";
 export const DASHBOARD_PREFERENCE_VALUES = ["customer", "staff", "owner"] as const;
 
 export type DashboardPreference = (typeof DASHBOARD_PREFERENCE_VALUES)[number];
+
+/**
+ * Cookie name for `hc_session_state` — V3-01 transport-layer signal of
+ * the viewer's session lifecycle. Written by the refresh middleware on
+ * every request; read by SSR + the client-side `subscribeSessionState`
+ * helper for cross-tab soft signals.
+ *
+ * NOT a security boundary. Supabase's httpOnly session cookie remains
+ * the only thing trusted for authentication. This cookie exists so
+ * server components can branch on signed-in-ness without round-
+ * tripping to Supabase, and the client can react softly to lifecycle
+ * changes without a hard refresh.
+ *
+ * `signed-in`         — access token valid (refreshed if needed).
+ * `signed-in-stale`   — auth still valid but profile/role data may be
+ *                       stale (e.g., role granted in another tab, this
+ *                       tab hasn't re-fetched yet).
+ * `signed-out`        — no session present.
+ * `reauth-required`   — refresh failed; user must re-authenticate.
+ */
+export const HC_SESSION_STATE_COOKIE = "hc_session_state";
+
+export const SESSION_STATE_VALUES = [
+  "signed-in",
+  "signed-in-stale",
+  "signed-out",
+  "reauth-required",
+] as const;
+
+export type SessionState = (typeof SESSION_STATE_VALUES)[number];
+
+/**
+ * V3-57 — acting-context: which identity a member is acting as.
+ *
+ * Pure type (no runtime, no server-only) so client components can import it for
+ * props. The authority behind a `business` context is resolved + re-verified
+ * server-side in `@henryco/auth/server/acting-context`; this type carries the
+ * already-verified shape only. The cookie never stores `role` — it is always
+ * re-derived from `business_members`.
+ */
+export type ActingContext =
+  | { kind: "personal"; userId: string }
+  | {
+      kind: "business";
+      userId: string;
+      businessId: string;
+      role: "owner" | "admin" | "member";
+    };

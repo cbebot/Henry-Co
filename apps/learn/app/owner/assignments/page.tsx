@@ -37,7 +37,7 @@ export default async function OwnerAssignmentsPage() {
               <option key={path.id} value={path.id}>{path.title}</option>
             ))}
           </select>
-          <input name="sponsorName" placeholder={t("HenryCo Operations")} className="learn-input rounded-2xl px-4 py-3" />
+          <input name="sponsorName" placeholder={t("Henry Onyx Operations")} className="learn-input rounded-2xl px-4 py-3" />
           <input name="dueAt" type="datetime-local" className="learn-input rounded-2xl px-4 py-3" />
           <textarea name="note" placeholder={t("Required before dispatch coverage begins...")} className="learn-textarea rounded-2xl px-4 py-3 md:col-span-2" rows={4} />
           <div className="md:col-span-2">

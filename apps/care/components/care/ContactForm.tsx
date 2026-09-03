@@ -167,7 +167,7 @@ export default function ContactForm() {
     <div className="care-card rounded-[2.4rem] p-7 sm:p-8">
       <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent)]/18 bg-[color:var(--accent)]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] care-accent-text">
         <ShieldCheck className="h-4 w-4" />
-        {t("Contact HenryCo Care")}
+        {t("Contact Henry Onyx Care")}
       </div>
 
       <h2 className="mt-5 text-3xl font-bold tracking-[-0.04em] text-zinc-950 dark:text-white">
@@ -319,7 +319,7 @@ export default function ContactForm() {
           ) : (
             <ArrowRight className="h-4 w-4" />
           )}
-          {submitting ? t("Sending message...") : t("Send to HenryCo Care")}
+          {submitting ? t("Sending message...") : t("Send to Henry Onyx Care")}
         </button>
       </form>
 

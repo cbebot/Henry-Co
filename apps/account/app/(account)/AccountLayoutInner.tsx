@@ -25,7 +25,16 @@ import { AccountStudioToastRoot } from "@/components/studio/AccountStudioToastRo
  *   - AccountStudioToastRoot (studio cross-toast)
  *   - The main content area
  */
-export default async function AccountLayoutInner({ children }: { children: React.ReactNode }) {
+export default async function AccountLayoutInner({
+  children,
+  rail,
+}: {
+  children: React.ReactNode;
+  /** The @rail parallel-route slot (WorkspaceRail) — seated as a sticky
+   *  side column at >=768px; below that the BottomActionBar owns module
+   *  navigation (the rail's own CSS hides it under 768px anyway). */
+  rail?: React.ReactNode;
+}) {
   const [user, locale] = await Promise.all([requireAccountUser(), getAccountAppLocale()]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
@@ -44,7 +53,21 @@ export default async function AccountLayoutInner({ children }: { children: React
       <AccountStudioToastRoot />
       <Sidebar user={userInfo} />
       <main id="hc-main" className="hc-shell-main lg:pl-[var(--acct-sidebar-width)]">
-        <div className="hc-shell-content mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
+        <div className="hc-shell-content mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          {/* CHROME-OPENER FIX (redesign 2026-07-08): the module rail sits
+              in its intended sticky side column instead of stacking above
+              the page — every inner page regains ~573px of first paint. */}
+          {/* 256px = the WorkspaceRail's intrinsic width — a narrower column
+              gave the rail a horizontal scrollbar (caught live). */}
+          <div className="md:grid md:grid-cols-[256px_minmax(0,1fr)] md:items-start md:gap-8 lg:gap-10">
+            {rail ? (
+              <div className="hidden md:block md:sticky md:top-6 md:max-h-[calc(100vh-3rem)] md:overflow-y-auto">
+                {rail}
+              </div>
+            ) : null}
+            <div className="min-w-0">{children}</div>
+          </div>
+        </div>
       </main>
     </div>
   );

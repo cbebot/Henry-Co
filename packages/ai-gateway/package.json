@@ -1,0 +1,29 @@
+{
+  "name": "@henryco/ai-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./server": "./src/server/index.ts",
+    "./testing": "./src/testing/in-memory-billing.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "tsx --test src/__tests__/*.test.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.92.0",
+    "@henryco/config": "workspace:^",
+    "@henryco/intelligence": "workspace:^",
+    "@henryco/observability": "workspace:^",
+    "@henryco/pricing": "workspace:^",
+    "server-only": "^0.0.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

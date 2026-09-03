@@ -456,7 +456,7 @@ async function sendOwnerOperationalAlerts(now: Date) {
       const whatsapp = await sendWhatsAppText({
         phone: ownerWhatsApp,
         body: [
-          "HenryCo Care owner alert",
+          "Henry Onyx Care owner alert",
           signal.title,
           signal.summary,
           `Area: ${signal.group}`,
@@ -604,7 +604,7 @@ async function sendPaymentReminders(
         accountName:
           cleanText(settings.payment_account_name) ||
           cleanText(settings.company_account_name) ||
-          "HenryCo Care",
+          "Henry Onyx Care",
         accountNumber:
           cleanText(settings.payment_account_number) ||
           cleanText(settings.company_account_number) ||
@@ -628,12 +628,12 @@ async function sendPaymentReminders(
       const whatsapp = await sendWhatsAppText({
         phone: booking.phone,
         body: [
-          "HenryCo Care payment reminder",
+          "Henry Onyx Care payment reminder",
           `Tracking code: ${trackingCode}`,
           `Amount due: ${formatMoney(balanceDue)}`,
           dueLabel,
           "",
-          `Bank: ${cleanText(settings.payment_bank_name) || cleanText(settings.company_bank_name) || "HenryCo Care"}`,
+          `Bank: ${cleanText(settings.payment_bank_name) || cleanText(settings.company_bank_name) || "Henry Onyx Care"}`,
           `Account number: ${cleanText(settings.payment_account_number) || cleanText(settings.company_account_number) || "Not provided yet"}`,
           "Please send payment confirmation once the transfer is complete.",
         ].join("\n"),
@@ -824,7 +824,7 @@ async function sendMarketingNurture(
         body:
           campaign === "service_reminder"
             ? [
-                "HenryCo Care reminder",
+                "Henry Onyx Care reminder",
                 `Hello ${customerName},`,
                 "",
                 `It may be a good time to schedule the next ${serviceFamily.toLowerCase()} visit.`,
@@ -834,7 +834,7 @@ async function sendMarketingNurture(
                 "Reply STOP by email if you want outreach paused.",
               ].join("\n")
             : [
-                "HenryCo Care check-in",
+                "Henry Onyx Care check-in",
                 `Hello ${customerName},`,
                 "",
                 "This is a light follow-up in case you want another pickup or service slot.",

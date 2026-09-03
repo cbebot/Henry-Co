@@ -236,19 +236,19 @@ export async function getEmployerPostingEligibility(input: {
     {
       id: "email",
       label: "Verified account email",
-      detail: "HenryCo Jobs requires a verified email before an employer can submit a live role.",
+      detail: "Henry Onyx Jobs requires a verified email before an employer can submit a live role.",
       complete: emailVerified,
     },
     {
       id: "identity",
       label: "Identity verification",
-      detail: "Employer posting is blocked until the account owner passes shared HenryCo identity verification.",
+      detail: "Verify your identity to post live roles.",
       complete: verificationStatus === "verified",
     },
     {
       id: "trust",
-      label: "Shared account trust tier",
-      detail: "Jobs posting now requires at least the shared HenryCo Verified trust lane.",
+      label: "Account verification",
+      detail: "Complete identity verification to unlock posting.",
       complete: verificationControlledTrust.tier !== "basic",
     },
     {

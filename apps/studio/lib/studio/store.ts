@@ -1,8 +1,14 @@
 import "server-only";
 
 import { createHash, createHmac, randomBytes, randomUUID } from "node:crypto";
-import { formatCurrency, getOptionalEnv, normalizeEmail, normalizePhone } from "@/lib/env";
+import { formatCurrency, getRequiredEnv, normalizeEmail, normalizePhone } from "@/lib/env";
 import { createAdminSupabase, hasAdminSupabaseEnv } from "@/lib/supabase";
+import {
+  STUDIO_DOCUMENT_BUCKET,
+  STUDIO_REFERENCE_RULE,
+  signStudioMediaUrl,
+  uploadStudioDocument,
+} from "@/lib/studio/media";
 import {
   appendCustomerActivity,
   appendCustomerDocument,
@@ -49,18 +55,28 @@ type StudioUpsertEvent =
   | "studio_review_upsert"
   | "studio_notification_append";
 
-const FALLBACK_SECRET = "henryco-studio-secret";
 const STUDIO_STORE_ROUTE = "/studio/store";
 
 const tablePresenceCache = new Map<string, boolean>();
 const tableColumnSupportCache = new Map<string, boolean>();
 
+/**
+ * STU-c — the HMAC key behind every deterministic portal access key
+ * (`createAccessKey(seed)` for proposal/project share links).
+ *
+ * This MUST be a dedicated, high-entropy secret. It previously chained
+ * silently to CRON_SECRET, then the service-role key, then an in-repo
+ * literal ("henryco-studio-secret") — which made the access key (an HMAC
+ * of a low-entropy, publicly-known id) forgeable by anyone who read the
+ * source. We now require STUDIO_PORTAL_SECRET and THROW when it's absent:
+ * fail closed rather than mint forgeable tokens. Set it in every deploy
+ * target to the current effective secret value BEFORE shipping, or portal
+ * link issuance/verification 500s and existing share links break.
+ */
 function stableSecret() {
-  return (
-    getOptionalEnv("STUDIO_PORTAL_SECRET") ||
-    getOptionalEnv("CRON_SECRET") ||
-    getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY") ||
-    FALLBACK_SECRET
+  return getRequiredEnv(
+    "STUDIO_PORTAL_SECRET",
+    "STUDIO_PORTAL_SECRET is required to sign studio portal access keys. Refusing to fall back to a shared or in-repo secret (forgeable tokens).",
   );
 }
 
@@ -140,6 +156,36 @@ export async function uploadStudioFile(
     return null;
   }
 
+  // Brief reference files are SENSITIVE intake (client-supplied docs/screens)
+  // and must NOT live on a public CDN. They now ride the RLS-private
+  // studio-documents bucket via @henryco/media and persist a backend-neutral
+  // `media://private/...` reference (signed on read). The proof + deliverable
+  // kinds are intentionally left on the existing path below — proof is the
+  // FROZEN money flow, and the deliverable flow is handled separately.
+  if (kind === "reference") {
+    try {
+      const ref = await uploadStudioDocument(entityId, file, {
+        folder: "reference",
+        rule: STUDIO_REFERENCE_RULE,
+      });
+      return {
+        id: createId(),
+        projectId: entityId,
+        leadId: entityId,
+        briefId: null,
+        createdAt: new Date().toISOString(),
+        kind,
+        label: cleanText(file.name),
+        path: ref,
+        bucket: STUDIO_DOCUMENT_BUCKET,
+        size: file.size,
+        mimeType: file.type || null,
+      };
+    } catch {
+      return null;
+    }
+  }
+
   const cloudName = String(process.env.CLOUDINARY_CLOUD_NAME || "").trim();
   const apiKey = String(process.env.CLOUDINARY_API_KEY || "").trim();
   const apiSecret = String(process.env.CLOUDINARY_API_SECRET || "").trim();
@@ -186,7 +232,9 @@ export async function uploadStudioFile(
     return {
       id: createId(),
       projectId: entityId,
-      leadId: kind === "reference" ? entityId : null,
+      // `reference` is handled + returned earlier (private @henryco/media path),
+      // so here `kind` is narrowed to "proof" | "deliverable" — never a lead file.
+      leadId: null,
       briefId: null,
       createdAt: new Date().toISOString(),
       kind,
@@ -313,7 +361,13 @@ async function hasStudioTable(table: string) {
 
   try {
     const admin = createAdminSupabase();
-    const { error } = await admin.from(table).select("id").limit(1);
+    // Probe table existence WITHOUT naming a specific column. Most studio
+    // tables are keyed by `id`, but some (e.g. studio_settings) are keyed
+    // by `key` and have no `id` — a `.select("id")` probe throws
+    // "column ... does not exist" and logs a spurious ERROR on every cold
+    // start. A head request selects no row body and fails only when the
+    // table itself is missing, which is exactly what this check wants.
+    const { error } = await admin.from(table).select("*", { head: true }).limit(1);
     const exists = !error || !cleanText(error.message).includes("Could not find the table");
     tablePresenceCache.set(table, exists);
     return exists;
@@ -528,6 +582,12 @@ function mapBrief(row: Record<string, unknown>): StudioBrief {
     urgency: cleanText(row.urgency),
     timeline: cleanText(row.timeline),
     packageIntent: cleanText(row.package_intent) === "package" ? "package" : "custom",
+    briefClass:
+      cleanText(row.brief_class) === "template"
+        ? "template"
+        : cleanText(row.brief_class) === "agency"
+          ? "agency"
+          : null,
     techPreferences: arrayOfText(row.tech_preferences),
     requiredFeatures: arrayOfText(row.required_features),
     referenceFiles: [],
@@ -876,6 +936,9 @@ async function upsertBrief(brief: StudioBrief, meta?: UpsertMeta) {
       urgency: brief.urgency,
       timeline: brief.timeline,
       package_intent: brief.packageIntent,
+      // SA-1 discriminator. Deploy-order safe: writeWithSchemaRetry strips
+      // this column until the 20260718120000 migration is applied.
+      brief_class: brief.briefClass,
       tech_preferences: brief.techPreferences,
       required_features: brief.requiredFeatures,
       reference_links: brief.referenceLinks,
@@ -1589,7 +1652,18 @@ export async function getStudioSnapshot(): Promise<StudioSnapshot> {
     selectRows<Record<string, unknown>>("support_messages", "*", "created_at"),
   ]);
 
-  const files = fileRows.map(mapFile);
+  // Reference files now persist a `media://private/...` ref (RLS-private
+  // studio-documents bucket). Sign them server-side so every read surface
+  // (the file vault, the delivery asset list, brief.referenceFiles) receives
+  // a usable signed URL — never the raw private ref. Legacy Cloudinary rows
+  // and the proof/deliverable kinds pass through unchanged.
+  const files = await Promise.all(
+    fileRows.map(mapFile).map(async (file) =>
+      file.kind === "reference"
+        ? { ...file, path: await signStudioMediaUrl(file.path) }
+        : file,
+    ),
+  );
   const briefs = briefRows.map(mapBrief).map((brief) => ({
     ...brief,
     referenceFiles: files

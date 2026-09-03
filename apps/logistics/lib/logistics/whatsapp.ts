@@ -57,7 +57,7 @@ async function sendViaTwilio(to: string, body: string): Promise<LogisticsWhatsAp
     return {
       ok: false,
       status: "failed",
-      reason: json?.message || `Twilio rejected the message with status ${response.status}.`,
+      reason: `WhatsApp delivery was rejected upstream (status ${response.status}).`,
       messageId: null,
       provider: "twilio",
     };
@@ -102,8 +102,7 @@ async function sendViaMeta(to: string, body: string): Promise<LogisticsWhatsAppR
     return {
       ok: false,
       status: "failed",
-      reason:
-        json?.error?.message || `Meta WhatsApp API rejected the message with status ${response.status}.`,
+      reason: `WhatsApp delivery was rejected upstream (status ${response.status}).`,
       messageId: null,
       provider: "meta",
     };

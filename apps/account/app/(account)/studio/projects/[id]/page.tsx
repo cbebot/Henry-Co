@@ -1,20 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowLeft,
   CheckCircle2,
   FolderOpen,
   LifeBuoy,
   MessageSquare,
   ReceiptText,
-  Sparkles,
 } from "lucide-react";
 import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { formatCurrencyAmount, formatDate, formatDateTime, timeAgo } from "@/lib/format";
 import { getStudioProjectRoom } from "@/lib/studio-module";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -44,22 +42,18 @@ export default async function StudioProjectRoomPage({
 
   return (
     <div className="space-y-6 acct-fade-in">
-      <PageHeader
-        title={room.project.title}
-        description={t("A synced Studio room with milestones, updates, deliverables, revisions, proof state, and the cleanest next move.")}
-        icon={Sparkles}
-        actions={
-          <div className="flex flex-wrap gap-3">
-            <Link href="/studio" className="acct-button-secondary rounded-xl">
-              <ArrowLeft size={14} /> {t("Back to Studio")}
-            </Link>
-            {room.supportThread ? (
-              <Link href={`/support/${room.supportThread.id}`} className="acct-button-primary rounded-xl">
-                {t("Open support room")}
-              </Link>
-            ) : null}
-          </div>
+      <HeroCard
+        variant="compact"
+        tone="active"
+        eyebrow={`${t("Studio")} · ${t("Project room")}`}
+        headline={room.project.title}
+        blurb={t("A synced Studio room with milestones, updates, deliverables, revisions, proof state, and the cleanest next move.")}
+        ctaPrimary={
+          room.supportThread
+            ? { label: t("Open support room"), href: `/support/${room.supportThread.id}` }
+            : undefined
         }
+        ctaSecondary={{ label: t("Back to Studio"), href: "/studio" }}
       />
 
       <section className="acct-card overflow-hidden">

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { readPropertyRuntimeSnapshot } from "@/lib/property/store";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { isPropertyListingReviewQueueStatus } from "@/lib/property/governance";
@@ -9,7 +10,7 @@ export async function getPropertySnapshot() {
   return readPropertyRuntimeSnapshot();
 }
 
-export async function getPropertyHomeData() {
+async function computePropertyHomeData() {
   const snapshot = await getPropertySnapshot();
   const isLive = (status: string) => status === "published" || status === "approved";
   return {
@@ -18,6 +19,21 @@ export async function getPropertyHomeData() {
     promotedListings: snapshot.listings.filter((listing) => isLive(listing.status) && listing.promoted),
   };
 }
+
+/**
+ * Public property homepage data, cached in Next's data cache for 60s and
+ * shared across serverless instances. The underlying snapshot is an O(files)
+ * fan-out of Supabase Storage downloads, so re-running it on every cold public
+ * request made the home take ~15s to first paint. This data is public and
+ * non-personalized (the signed-in "continue your activity" rail is resolved
+ * separately via getPropertyViewer), so a short cross-instance revalidate is
+ * safe; writes can bust it via revalidateTag("property-snapshot").
+ */
+export const getPropertyHomeData = unstable_cache(
+  computePropertyHomeData,
+  ["property-home-data"],
+  { revalidate: 60, tags: ["property-snapshot"] }
+);
 
 export async function searchProperties(
   query: URLSearchParams | Record<string, string | string[] | undefined>

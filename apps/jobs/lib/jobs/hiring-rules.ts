@@ -86,10 +86,17 @@ export function alreadyAppliedReason(): string {
 /** Friendly conflict-of-interest reason. Intentionally neutral — we
  * don't want to imply wrongdoing. */
 export function conflictOfInterestReason(): string {
-  return "This role belongs to a team you're a member of. Internal moves go through your HenryCo account, not the public application flow.";
+  return "This role belongs to a team you're a member of. Internal moves go through your Henry Onyx account, not the public application flow.";
 }
 
 /** Friendly daily-cap reason. */
 export function dailyCapReason(): string {
   return `Applications are limited to ${DAILY_APPLICATION_CAP} per day to keep delivery quality high. Your remaining slots reset at midnight.`;
+}
+
+/** V3-56 — friendly course-gate reason. The rich "take this course" CTA renders
+ * on the job page; this is the server-side backstop message. */
+export function courseGateReason(courseLabel?: string | null): string {
+  const course = courseLabel?.trim() || "a required Henry Onyx Learn course";
+  return `This role requires a verified completion of ${course}. Complete the course on Henry Onyx Learn, then apply.`;
 }

@@ -9,12 +9,12 @@ export default function ContactScreen() {
   const { palette } = useHubAppearance();
   const openMail = () => {
     void Linking.openURL(
-      `mailto:${BRAND_EMAILS.hello}?subject=Henry%20%26%20Co.%20Hub%20inquiry`,
+      `mailto:${BRAND_EMAILS.hello}?subject=Henry%20Onyx%20Hub%20inquiry`,
     );
   };
 
   const openWeb = () => {
-    void Linking.openURL("https://www.henrycogroup.com");
+    void Linking.openURL("https://www.henryonyx.com");
   };
 
   return (
@@ -26,7 +26,7 @@ export default function ContactScreen() {
     >
       <View className="px-4 pt-4">
         <Text className="text-base leading-7" style={{ color: palette.textBody }}>
-          For general inquiries about Henry &amp; Co. and the divisions listed in
+          For general inquiries about Henry Onyx and the divisions listed in
           this app, reach us through the channels below. Division-specific
           requests are best routed through each division&apos;s site (use Visit
           Division from any card).
@@ -71,7 +71,7 @@ export default function ContactScreen() {
             borderColor: palette.line,
             backgroundColor: palette.surface,
           }}
-          accessibilityLabel="Open henrycogroup.com"
+          accessibilityLabel="Open henryonyx.com"
           accessibilityRole="button"
         >
           <View className="flex-row items-center gap-3">
@@ -90,7 +90,7 @@ export default function ContactScreen() {
                 className="mt-1 text-lg font-semibold"
                 style={{ color: palette.textPrimary }}
               >
-                henrycogroup.com
+                henryonyx.com
               </Text>
             </View>
           </View>

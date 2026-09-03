@@ -58,6 +58,41 @@ async function fetchProjectsForViewer(
   }, []);
 }
 
+// V3-73 — projects whose client is a V3-57 business the viewer belongs to.
+// Independently guarded: if the viewer has no memberships, or the
+// client_business_id column / businesses tables are not yet applied, this
+// returns [] without affecting the viewer's own (by user/email) projects.
+async function fetchBusinessProjectsForViewer(
+  supabase: SupabaseClient,
+  viewer: ClientPortalViewer
+): Promise<ClientProject[]> {
+  const businessIds = await tryFetch(async () => {
+    const { data, error } = await supabase
+      .from("business_members")
+      .select("business_id")
+      .eq("user_id", viewer.userId);
+    if (error) throw error;
+    return ((data ?? []) as Array<{ business_id: string }>)
+      .map((row) => row.business_id)
+      .filter(Boolean);
+  }, [] as string[]);
+
+  if (businessIds.length === 0) return [];
+
+  return tryFetch(async () => {
+    const { data, error } = await supabase
+      .from("studio_projects")
+      .select(
+        "id,title,brief,summary,next_action,project_type,status,start_date,estimated_completion,actual_completion,client_user_id,team_lead_id,access_token_hint,created_at,updated_at"
+      )
+      .in("client_business_id", businessIds)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return ((data ?? []) as Array<Record<string, unknown>>).map(mapProjectRow);
+  }, []);
+}
+
 async function fetchMilestonesForProjects(
   supabase: SupabaseClient,
   projectIds: string[],
@@ -203,7 +238,18 @@ export type ClientPortalSnapshot = {
 export const getClientPortalSnapshot = cache(
   async (viewer: ClientPortalViewer): Promise<ClientPortalSnapshot> => {
     const supabase = await createSupabaseServer();
-    const projects = await fetchProjectsForViewer(supabase, viewer);
+    const [ownProjects, businessProjects] = await Promise.all([
+      fetchProjectsForViewer(supabase, viewer),
+      fetchBusinessProjectsForViewer(supabase, viewer),
+    ]);
+    // Merge own + V3-57 business-member projects, de-duplicating by id.
+    const seenProjectIds = new Set<string>();
+    const projects: ClientProject[] = [];
+    for (const project of [...ownProjects, ...businessProjects]) {
+      if (seenProjectIds.has(project.id)) continue;
+      seenProjectIds.add(project.id);
+      projects.push(project);
+    }
     const projectIds = projects.map((project) => project.id);
 
     const [milestones, deliverables, invoices, messages, updates, payments] = await Promise.all([
@@ -388,6 +434,38 @@ export async function getInvoiceByToken(token: string): Promise<InvoiceLookupRes
     }
 
     return { invoice, project };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Newest payment submission attached to an invoice — read-only display
+ * support for the shared payment surface (real proof-on-file details while
+ * finance verifies). Uses the admin client because the token pay flow has no
+ * session; call it only AFTER the invoice was resolved through an authorised
+ * lookup (getInvoiceByToken / getInvoiceByIdForViewer). Never writes.
+ */
+export async function getLatestPaymentSubmissionForInvoice(
+  invoiceId: string
+): Promise<StudioPaymentSubmission | null> {
+  const safeId = clean(invoiceId);
+  if (!safeId) return null;
+  if (!hasAdminSupabaseEnv()) return null;
+  const admin = createAdminSupabase();
+
+  try {
+    const { data, error } = await admin
+      .from("studio_payments")
+      .select(
+        "id,invoice_id,project_id,client_user_id,amount,amount_kobo,currency,payment_reference,reference,proof_url,proof_public_id,proof_name,submitted_at,verified_at,verified_by,status,rejection_reason,notes,created_at"
+      )
+      .eq("invoice_id", safeId)
+      .order("submitted_at", { ascending: false, nullsFirst: false })
+      .limit(1);
+
+    if (error || !data || data.length === 0) return null;
+    return mapPaymentRow(data[0] as Record<string, unknown>);
   } catch {
     return null;
   }

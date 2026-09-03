@@ -2,6 +2,7 @@ import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { reviewTeacherApplicationAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
+import { signLearnMediaUrl } from "@/lib/learn/media";
 import { ownerNav } from "@/lib/learn/navigation";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
@@ -23,6 +24,19 @@ export default async function OwnerInstructorsPage({
   const activeApplications = applications.filter((item) =>
     ["submitted", "under_review", "changes_requested"].includes(item.status)
   );
+  // Supporting files are sensitive private media refs; resolve each to a
+  // short-lived signed URL server-side (keyed by the per-file unique id) before
+  // the staff review surface renders them. Legacy absolute URLs pass through.
+  const supportingFileUrls = new Map<string, string>(
+    await Promise.all(
+      applications
+        .flatMap((application) => application.supportingFiles)
+        .map(
+          async (file) =>
+            [file.publicId, await signLearnMediaUrl(file.url)] as const,
+        ),
+    ),
+  );
 
   return (
     <LearnWorkspaceShell
@@ -40,7 +54,7 @@ export default async function OwnerInstructorsPage({
       ) : null}
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <LearnMetricCard label={t("Applications")} value={String(applications.length)} hint={t("All instructor applications currently stored in HenryCo Learn.")} />
+        <LearnMetricCard label={t("Applications")} value={String(applications.length)} hint={t("All instructor applications currently stored in Henry Onyx Learn.")} />
         <LearnMetricCard label={t("Open review")} value={String(activeApplications.length)} hint={t("Applications still moving through review or changes.")} />
         <LearnMetricCard label={t("Approved")} value={String(applications.filter((item) => item.status === "approved").length)} hint={t("Approved instructors ready for onboarding or content work.")} />
         <LearnMetricCard label={t("Public profiles")} value={String(snapshot.instructors.length)} hint={t("Published instructor spotlights already visible in the academy.")} />
@@ -49,7 +63,7 @@ export default async function OwnerInstructorsPage({
       {applications.length === 0 ? (
         <LearnEmptyState
           title={t("No instructor applications yet")}
-          body={t("Public teaching applications will appear here once candidates apply through Teach with HenryCo.")}
+          body={t("Public teaching applications will appear here once candidates apply through Teach with Henry Onyx.")}
         />
       ) : (
         <div className="space-y-5">
@@ -91,7 +105,7 @@ export default async function OwnerInstructorsPage({
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-4 xl:grid-cols-[1fr,0.95fr]">
+              <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_0.95fr]">
                 <div className="space-y-4">
                   <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
@@ -143,18 +157,22 @@ export default async function OwnerInstructorsPage({
                         {t("Supporting files")}
                       </p>
                       <div className="mt-3 space-y-2">
-                        {application.supportingFiles.map((file) => (
-                          <a
-                            key={file.publicId}
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-between rounded-[1.2rem] border border-[var(--learn-line)] px-4 py-3 text-sm text-[var(--learn-ink)]"
-                          >
-                            <span>{file.name}</span>
-                            <span className="text-[var(--learn-ink-soft)]">{t("Open")}</span>
-                          </a>
-                        ))}
+                        {application.supportingFiles.map((file) => {
+                          const signedUrl = supportingFileUrls.get(file.publicId) || "";
+                          if (!signedUrl) return null;
+                          return (
+                            <a
+                              key={file.publicId}
+                              href={signedUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-between rounded-[1.2rem] border border-[var(--learn-line)] px-4 py-3 text-sm text-[var(--learn-ink)]"
+                            >
+                              <span>{file.name}</span>
+                              <span className="text-[var(--learn-ink-soft)]">{t("Open")}</span>
+                            </a>
+                          );
+                        })}
                       </div>
                     </div>
                   ) : null}

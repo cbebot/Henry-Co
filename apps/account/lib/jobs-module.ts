@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDivisionUrl } from "@henryco/config";
+import { getDivisionUrl, henryDomainHost } from "@henryco/config";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -124,7 +124,7 @@ function notificationBelongsToJobs(row: Record<string, unknown>) {
     division === JOBS_DIVISION ||
     category === JOBS_DIVISION ||
     referenceType.startsWith("jobs_") ||
-    actionUrl.includes("jobs.henrycogroup.com") ||
+    actionUrl.includes(henryDomainHost("jobs")) ||
     actionUrl.includes("/candidate/") ||
     actionUrl.includes("/jobs/") ||
     title.includes("application") ||
@@ -240,7 +240,7 @@ function buildJobPreview(row: Record<string, unknown>) {
   return {
     slug,
     title: asText(metadata.title, "Role"),
-    employerName: asText(metadata.employerName, "HenryCo Jobs"),
+    employerName: asText(metadata.employerName, "Henry Onyx Jobs"),
     employerSlug: asText(metadata.employerSlug),
     location: asText(metadata.location, "Remote"),
     workMode: asText(metadata.workMode, "remote"),
@@ -430,7 +430,7 @@ export async function getJobsModuleData(userId: string) {
     {
       id: "verification",
       label: "Identity verification",
-      detail: "Jobs trust stays capped until your HenryCo account has cleared identity review.",
+      detail: "Jobs trust stays capped until your Henry Onyx account has cleared identity review.",
       complete: verificationStatus === "verified",
       href: "/verification",
     },
@@ -479,7 +479,7 @@ export async function getJobsModuleData(userId: string) {
       const role = linkedRole ?? {
         slug: jobSlug,
         title: asText(metadata.jobTitle, "Role"),
-        employerName: asText(metadata.employerName, "HenryCo Jobs"),
+        employerName: asText(metadata.employerName, "Henry Onyx Jobs"),
         employerSlug: asText(metadata.employerSlug),
         location: "Remote",
         workMode: "remote",
@@ -500,7 +500,7 @@ export async function getJobsModuleData(userId: string) {
         id: applicationId,
         jobSlug,
         jobTitle: asText(metadata.jobTitle, "Role"),
-        employerName: asText(metadata.employerName, "HenryCo Jobs"),
+        employerName: asText(metadata.employerName, "Henry Onyx Jobs"),
         stage,
         stageLabel: humanizeStage(stage),
         tone: stageTone(stage),
@@ -579,7 +579,7 @@ export async function getJobsModuleData(userId: string) {
       const role = jobsBySlug.get(asText(metadata.jobSlug)) ?? {
         slug: asText(metadata.jobSlug),
         title: asText(metadata.jobTitle, "Saved role"),
-        employerName: asText(metadata.employerName, "HenryCo Jobs"),
+        employerName: asText(metadata.employerName, "Henry Onyx Jobs"),
         employerSlug: asText(metadata.employerSlug),
         location: asText(metadata.location, "Remote"),
         workMode: asText(metadata.workMode, "remote"),

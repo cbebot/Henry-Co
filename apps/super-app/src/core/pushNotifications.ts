@@ -3,6 +3,9 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
+import { getEnv } from "@/core/env";
+import { getSupabaseClient } from "@/core/supabase";
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -59,4 +62,46 @@ export async function registerForPushNotificationsAsync(): Promise<PushRegistrat
     const message = e instanceof Error ? e.message : "Unknown error";
     return { status: "unavailable", reason: message };
   }
+}
+
+/**
+ * Register the Expo push token with the Henry Onyx backend so security alerts
+ * (and other urgent notifications) reach this device. Authenticates with the
+ * signed-in user's Supabase access token. Best-effort — returns false rather
+ * than throwing when not signed in or offline.
+ */
+export async function syncExpoPushToken(expoPushToken: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return false;
+
+  const { data } = await supabase.auth.getSession();
+  const accessToken = data.session?.access_token;
+  if (!accessToken) return false;
+
+  try {
+    const res = await fetch(`${getEnv().ACCOUNT_ORIGIN}/api/push/subscribe`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ channel: "expo", expoToken: expoPushToken }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * One call to do both: request permission + obtain the Expo token, then
+ * register it with the backend. This is the entry point app code should use
+ * once the user is signed in.
+ */
+export async function registerAndSyncPushToken(): Promise<PushRegistration> {
+  const registration = await registerForPushNotificationsAsync();
+  if (registration.status === "granted") {
+    await syncExpoPushToken(registration.expoPushToken);
+  }
+  return registration;
 }

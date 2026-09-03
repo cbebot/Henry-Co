@@ -1,11 +1,18 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, normalizeStateInput } from "@henryco/config";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import { normalizeEmail } from "@/lib/env";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
+import {
+  cartItemOwnerMatches,
+  isMarketplaceOrderOwner,
+  resolveVendorProductUpsert,
+} from "@/lib/marketplace/authorization";
 import { getMarketplaceHomeData } from "@/lib/marketplace/data";
+import { parseProductImageRefs, buildProductMediaRows } from "@/lib/marketplace/product-images";
 import {
   buildOrderSettlementSnapshot,
   computePayoutBalance,
@@ -23,8 +30,26 @@ import {
   uploadMarketplacePaymentProof,
 } from "@/lib/marketplace/payment";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
+import { moderateListing } from "@/lib/marketplace/moderation";
 import { createAdminSupabase } from "@/lib/supabase";
 import { computeMarketplaceCheckoutBreakdown } from "@henryco/pricing";
+import { resolveOrderOutputVat } from "@/lib/checkout/order-vat";
+import { cartQualifiesForFreeDelivery, isFreeDeliveryProduct } from "@/lib/checkout/free-delivery";
+import { clampCoveredStatesToTier, resolveCoveredStates, type ReachKind } from "@/lib/checkout/delivery-reach";
+import { isDeliveryPromisesEnabled } from "@/lib/marketplace/delivery-promises";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
+import { sendMessage as sendOnyxMessage } from "@henryco/messaging/server";
+import { clipBody, screenMessageBody } from "@/lib/messaging/screen-message";
+import { createMarketplaceMessagingAdapter } from "@/lib/messaging/adapter";
+import {
+  bumpConversation,
+  findOrCreateConversation,
+  getConversationForViewer,
+  markConversationRead,
+  resolveCounterpart,
+  viewerVendorScopeIds,
+} from "@/lib/messaging/conversations";
 
 export const runtime = "nodejs";
 
@@ -236,7 +261,14 @@ async function syncOrderLifecycle(admin: ReturnType<typeof createAdminSupabase>,
 }
 
 function redirectTo(request: Request, target: string) {
-  return NextResponse.redirect(new URL(target, request.url));
+  // 303 See Other = POST-Redirect-GET. NextResponse.redirect() defaults to 307
+  // (method-PRESERVING), so after a native <form method="POST"> submission the
+  // browser RE-POSTs to `target`. Every target here is a page navigation (e.g.
+  // /track/[orderNo], /cart, /checkout?error=…) — and a POST to a GET-only RSC
+  // page makes Next throw "Failed to find Server Action" → a 500 on the
+  // destination (e.g. the post-checkout /track page). 303 tells the browser to
+  // switch to GET, the correct, universal status for these flows.
+  return NextResponse.redirect(new URL(target, request.url), 303);
 }
 
 function redirectToSharedAccountLogin(request: Request, nextPath: string) {
@@ -248,6 +280,51 @@ function wantsJson(request: Request, formData: FormData) {
     text(formData, "response_mode") === "json" ||
     (request.headers.get("accept") || "").includes("application/json")
   );
+}
+
+/**
+ * V3-ACTIONS-01 — dual-mode responders for customer/vendor intents: async
+ * submissions (fetch + Accept: application/json) get JSON so the page can
+ * acknowledge in place; native posts keep the legacy 303 redirect.
+ */
+function respondSuccess(
+  json: boolean,
+  request: Request,
+  redirectTarget: string,
+  payload: Record<string, unknown>
+) {
+  if (json) return NextResponse.json({ ok: true, ...payload });
+  return redirectTo(request, redirectTarget);
+}
+
+function respondError(
+  json: boolean,
+  request: Request,
+  redirectTarget: string,
+  input: { message: string; code: string; status?: number }
+) {
+  if (json) {
+    return NextResponse.json(
+      { ok: false, error: input.message, code: input.code },
+      { status: input.status ?? 400 }
+    );
+  }
+  return redirectTo(request, redirectTarget);
+}
+
+function respondAuthRequired(json: boolean, request: Request, nextPath: string) {
+  if (json) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Sign in to continue.",
+        code: "auth_required",
+        loginUrl: buildSharedAccountLoginUrl(nextPath, new URL(request.url).origin),
+      },
+      { status: 401 }
+    );
+  }
+  return redirectToSharedAccountLogin(request, nextPath);
 }
 
 function mapAddressRow(row: Record<string, unknown>) {
@@ -393,6 +470,32 @@ export async function POST(request: Request) {
         const itemId = text(formData, "item_id");
         const quantity = Math.max(0, numberValue(formData, "quantity", 1));
         if (!itemId) return redirectTo(request, "/cart?error=missing-item");
+
+        // F-05: scope the mutation to the caller's OWN cart. This case
+        // previously updated/deleted any cart item by id with no auth at all.
+        // Mirror /api/cart's verifyCartItemOwnership — identity comes from the
+        // session (user_id) or the guest cart cookie, never a caller-supplied
+        // cart id.
+        const cookieStore = await cookies();
+        // Cookie-only, exactly like /api/cart's verifyCartItemOwnership — the
+        // guest credential must never come from a caller-supplied form field.
+        const sessionToken = cookieStore.get("marketplace_cart_token")?.value || null;
+        const { data: cartItem } = await admin
+          .from("marketplace_cart_items")
+          .select("id, cart_id")
+          .eq("id", itemId)
+          .maybeSingle();
+        const { data: cart } = cartItem?.cart_id
+          ? await admin
+              .from("marketplace_carts")
+              .select("id, user_id, session_token")
+              .eq("id", cartItem.cart_id)
+              .maybeSingle()
+          : { data: null };
+        if (!cartItem?.id || !cartItemOwnerMatches(cart, viewer, sessionToken)) {
+          return redirectTo(request, "/cart?error=missing-item");
+        }
+
         if (quantity <= 0) {
           await admin.from("marketplace_cart_items").delete().eq("id", itemId);
         } else {
@@ -442,18 +545,38 @@ export async function POST(request: Request) {
         }
 
         const orderNo = makeRef("MKT-ORD");
-        const rawPaymentMethod = text(formData, "payment_method") || "bank_transfer";
-        const paymentMethod = ["wallet_balance", "bank_transfer", "cod"].includes(rawPaymentMethod)
-          ? rawPaymentMethod
-          : "bank_transfer";
+        // V3-DIVISION-CHECKOUT-01 + V3-RETIRE-BANKTRANSFER (marketplace): once the real
+        // card rail is live, the manual transfer+proof rail is RETIRED — `card` is
+        // accepted and `bank_transfer` is dropped from BOTH the allowlist and the
+        // default. While card is off, bank transfer stays as the fallback so a stray or
+        // unsupported value can never create an order with no rail to pay it (never
+        // strand). The card-ready fallback is `wallet_balance`: the buyer's OWN cleared
+        // funds, debited atomically, failing cleanly when there is no balance — never a
+        // proof-based "fake" payment.
+        const cardReady = isMarketplaceCardCheckoutReady();
+        const allowedMethods = cardReady
+          ? ["wallet_balance", "cod", "card"]
+          : ["wallet_balance", "bank_transfer", "cod"];
+        const fallbackMethod = cardReady ? "wallet_balance" : "bank_transfer";
+        const rawPaymentMethod = text(formData, "payment_method");
+        // A PRESENT but disallowed method (e.g. a stale `bank_transfer` post after the
+        // card rail goes live) must NOT be silently re-pointed at a different rail —
+        // that could auto-debit a buyer who chose another method. Reject it explicitly;
+        // the client resets a retired draft method before submit, so this only catches
+        // stale drafts that bypass JS / crafted posts. An EMPTY method → safe fallback.
+        if (rawPaymentMethod && !allowedMethods.includes(rawPaymentMethod)) {
+          return redirectTo(request, "/checkout?error=method-unavailable");
+        }
+        const paymentMethod = allowedMethods.includes(rawPaymentMethod) ? rawPaymentMethod : fallbackMethod;
         const isWalletPayment = paymentMethod === "wallet_balance";
         const isBankTransfer = paymentMethod === "bank_transfer";
+        const isCardPayment = paymentMethod === "card";
         const paymentReference = text(formData, "payment_reference") || makeMarketplacePaymentReference();
         const bankReference = text(formData, "bank_reference");
         const proofFile = formData.get("proof");
         const shippingCity = text(formData, "shipping_city");
         const shippingRegion = text(formData, "shipping_region");
-        const buyerName = text(formData, "buyer_name") || viewer.user.fullName || "HenryCo Buyer";
+        const buyerName = text(formData, "buyer_name") || viewer.user.fullName || "Henry Onyx Buyer";
         const buyerPhone = text(formData, "buyer_phone");
 
         const subtotal = cartItems.reduce(
@@ -461,14 +584,118 @@ export async function POST(request: Request) {
             sum + Number(item.price || 0) * Number(item.quantity || 0),
           0
         );
+        // V3-VAT-WIRING-01 + free-shipping — ONE direct, uncached product read drives
+        // BOTH (a) per-line VAT classification by CATEGORY (ownership is NOT a tax
+        // marker) and (b) the free-shipping decision. Delivery is waived ONLY when
+        // EVERY cart line is a product explicitly flagged `filter_data.free_delivery`
+        // (a real product attribute) — so a normal cart always pays normal delivery.
+        const cartProductIds = Array.from(
+          new Set((cartItems as Array<Record<string, unknown>>).map((i) => String(i.product_id)).filter(Boolean)),
+        );
+        const vatCategoryByProduct = new Map<string, string | null>();
+        const freeDeliveryProductIds = new Set<string>();
+        const vendorByProduct = new Map<string, string | null>();
+        if (cartProductIds.length) {
+          const { data: productRows, error: productReadError } = await admin
+            .from("marketplace_products")
+            .select("id, vendor_id, filter_data, marketplace_categories(slug)")
+            .in("id", cartProductIds);
+          if (productReadError) {
+            // Money-correctness: NEVER settle a sale on an unclassified cart. A failed
+            // read must not masquerade as "everything standard" (an over-remit on exempt
+            // goods) NOR silently grant free shipping — reject so the buyer retries; no
+            // wrong VAT figure or delivery waiver is ever stamped or posted.
+            return redirectTo(request, "/checkout?error=vat-classification-unavailable");
+          }
+          for (const row of (productRows ?? []) as Array<Record<string, unknown>>) {
+            const cat = row.marketplace_categories as { slug?: string } | Array<{ slug?: string }> | null;
+            const slug = Array.isArray(cat) ? cat[0]?.slug : cat?.slug;
+            vatCategoryByProduct.set(String(row.id), typeof slug === "string" ? slug : null);
+            vendorByProduct.set(String(row.id), row.vendor_id ? String(row.vendor_id) : null);
+            if (isFreeDeliveryProduct(row.filter_data)) {
+              freeDeliveryProductIds.add(String(row.id));
+            }
+          }
+        }
+        // V3-FREESHIP-02 — seller Delivery Promises (location-aware). Load each cart
+        // vendor's ACTIVE promise and RE-CLAMP its covered states to the vendor's CURRENT
+        // tier (a downgrade must never keep honoring an over-reach promise). DORMANT-SAFE:
+        // if the promises table/feature is absent the read errors → no promises → normal
+        // delivery (the manual `filter_data.free_delivery` override still applies).
+        const activePromiseByVendor = new Map<string, { coveredStates: string[]; minOrderMinor: number | null }>();
+        const cartVendorIds = Array.from(
+          new Set(Array.from(vendorByProduct.values()).filter((v): v is string => Boolean(v))),
+        );
+        if (cartVendorIds.length) {
+          // The reach tier is the KYC `verification_level` (gold/silver/bronze) — the
+          // seller's VERIFIED standing — not `seller_tier` (launch/growth/scale/partner,
+          // which is listing caps/commission). Bronze→own state, Silver→zone, Gold→nationwide.
+          const { data: promiseRows, error: promiseReadError } = await admin
+            .from("marketplace_delivery_promises")
+            .select("vendor_id, covered_states, min_order_minor, origin_state, marketplace_vendors(verification_level)")
+            .in("vendor_id", cartVendorIds)
+            .eq("is_active", true);
+          if (!promiseReadError) {
+            for (const row of (promiseRows ?? []) as Array<Record<string, unknown>>) {
+              const vendorId = String(row.vendor_id);
+              const stored = Array.isArray(row.covered_states) ? (row.covered_states as unknown[]).map(String) : [];
+              const origin = typeof row.origin_state === "string" ? row.origin_state : "";
+              const v = row.marketplace_vendors as { verification_level?: string } | Array<{ verification_level?: string }> | null;
+              const currentTier = (Array.isArray(v) ? v[0]?.verification_level : v?.verification_level) ?? null;
+              activePromiseByVendor.set(vendorId, {
+                coveredStates: clampCoveredStatesToTier(stored, origin, currentTier),
+                minOrderMinor: row.min_order_minor == null ? null : Number(row.min_order_minor),
+              });
+            }
+          }
+          // promiseReadError (e.g. table not yet applied) → dormant: no promises loaded.
+        }
+        const buyerState = normalizeStateInput(shippingRegion);
+        const goodsSubtotalMinor = Math.max(0, Math.round(Number(subtotal) * 100));
+        const allItemsFreeShipping = cartQualifiesForFreeDelivery({
+          cartProductIds,
+          buyerState,
+          vendorByProduct,
+          activePromiseByVendor,
+          manualFreeProductIds: freeDeliveryProductIds,
+          goodsSubtotalMinor,
+        });
+
         const breakdown = computeMarketplaceCheckoutBreakdown({
           itemsSubtotalAmount: subtotal,
+          deliveryAmount: allItemsFreeShipping ? 0 : undefined,
         });
         const shippingTotal = breakdown.lines.find((line) => line.code === "delivery")?.amount.amount ?? 0;
         const platformFeeTotal =
           breakdown.lines.find((line) => line.code === "platform_fee")?.amount.amount ?? 0;
         const grandTotal = breakdown.totals.customerTotal.amount;
         const amountKobo = Math.max(0, Math.round(grandTotal * 100));
+
+        // V3-VAT-WIRING-01 — carve the KOBO-EXACT output VAT from the kobo gross and
+        // stamp it onto the breakdown for the settlement reconcile to post verbatim (no
+        // naira×100 — the V3-21 ~100× trap). customerTotal / amountKobo are UNCHANGED
+        // (VAT is inclusive). A standard-rated good computes real output VAT; food/pharma/
+        // baby exempt, books zero-rated. The category map was built by the read above.
+        const orderVat = resolveOrderOutputVat({
+          items: (cartItems as Array<Record<string, unknown>>).map((item) => ({
+            categoryKey: vatCategoryByProduct.get(String(item.product_id)) ?? null,
+            // A per-row `tax_treatment` column (the engine's `itemTreatment`) is the future
+            // override seam for marking a specific product exempt without a code change.
+            itemTreatment: null,
+            lineNaira: Number(item.price || 0) * Number(item.quantity || 0),
+          })),
+          shippingNaira: Number(shippingTotal) || 0,
+          platformFeeNaira: Number(platformFeeTotal) || 0,
+          grossMinor: amountKobo,
+        });
+        breakdown.meta.vat = {
+          outputVatMinor: orderVat.outputVatMinor,
+          standardBaseMinor: orderVat.standardBaseMinor,
+          rateVersion: orderVat.rateVersion,
+          jurisdiction: orderVat.jurisdiction,
+          reviewStatus: orderVat.reviewStatus,
+        };
+
         let walletSnapshot: Awaited<ReturnType<typeof getMarketplaceWalletSnapshot>> | null = null;
         let proofUpload: Awaited<ReturnType<typeof uploadMarketplacePaymentProof>> | null = null;
 
@@ -486,14 +713,39 @@ export async function POST(request: Request) {
           if (!bankReference) {
             return redirectTo(request, "/checkout?error=missing-bank-reference");
           }
-          if (!(proofFile instanceof File) || proofFile.size <= 0) {
-            return redirectTo(request, "/checkout?error=missing-payment-proof");
+          // RELIABILITY-01 — the canonical client flow uploads the
+          // proof to Cloudinary BEFORE this submit via
+          // /api/checkout/payment-proof, then forwards the resulting
+          // {url, public_id, name} as hidden form fields. When those
+          // are present, we trust them and skip the inline Cloudinary
+          // round-trip entirely — the pre-upload route already enforced
+          // auth + size + MIME validation server-side.
+          //
+          // The legacy native-submit fallback (browsers with JS off,
+          // or older clients that still post the raw File field) is
+          // preserved below so existing carts in flight don't break.
+          const preUploadedUrl = text(formData, "proof_url");
+          const preUploadedPublicId = text(formData, "proof_public_id");
+          const preUploadedName = text(formData, "proof_name");
+          if (preUploadedUrl && preUploadedPublicId) {
+            proofUpload = {
+              secureUrl: preUploadedUrl,
+              publicId: preUploadedPublicId,
+            };
+          } else {
+            if (!(proofFile instanceof File) || proofFile.size <= 0) {
+              return redirectTo(request, "/checkout?error=missing-payment-proof");
+            }
+            try {
+              proofUpload = await uploadMarketplacePaymentProof(proofFile, viewer.user.id, orderNo);
+            } catch {
+              return redirectTo(request, "/checkout?error=payment-proof-upload-failed");
+            }
           }
-          try {
-            proofUpload = await uploadMarketplacePaymentProof(proofFile, viewer.user.id, orderNo);
-          } catch {
-            return redirectTo(request, "/checkout?error=payment-proof-upload-failed");
-          }
+          // The pre-uploaded path leaves `proofFile` unset; downstream
+          // metadata writes read `preUploadedName` directly so the
+          // proof_name on `marketplace_payment_records` stays populated.
+          void preUploadedName;
         }
 
         const { count: priorOrderCount } = await admin
@@ -532,11 +784,13 @@ export async function POST(request: Request) {
             timeline: [
               "Order placed",
               isWalletPayment
-                ? "Paid from HenryCo wallet balance"
-                : paymentMethod === "cod"
-                  ? "Awaiting vendor acceptance"
-                  : "Payment proof submitted for finance verification",
-              "HenryCo will hold seller funds in escrow until fulfillment and trust checks are complete.",
+                ? "Paid from Henry Onyx wallet balance"
+                : isCardPayment
+                  ? "Awaiting secure card payment"
+                  : paymentMethod === "cod"
+                    ? "Awaiting vendor acceptance"
+                    : "Payment proof submitted - we're confirming your payment.",
+              "Your payment is protected until your order is delivered and confirmed.",
             ],
           } as never)
           .select("id")
@@ -713,6 +967,17 @@ export async function POST(request: Request) {
           walletTransactionId = String(debitRow.id);
         }
 
+        // RELIABILITY-01 — accept the pre-uploaded proof name when the
+        // client pushed it via the hidden `proof_name` field. The
+        // inline-File path keeps `proofFile.name` as before.
+        const resolvedProofName =
+          proofFile instanceof File && proofFile.size > 0
+            ? proofFile.name
+            : text(formData, "proof_name") || null;
+
+        // Card orders get their payment record from the card-start (one row per
+        // charge attempt, anchored to the intent) — checkout only places the order.
+        if (!isCardPayment) {
         await admin.from("marketplace_payment_records").insert({
           order_id: orderId,
           order_no: orderNo,
@@ -724,13 +989,13 @@ export async function POST(request: Request) {
           bank_reference: bankReference || null,
           proof_url: proofUpload?.secureUrl ?? null,
           proof_public_id: proofUpload?.publicId ?? null,
-          proof_name: proofFile instanceof File && proofFile.size > 0 ? proofFile.name : null,
+          proof_name: resolvedProofName,
           proof_uploaded_at: proofUpload ? new Date().toISOString() : null,
           submitted_at: isBankTransfer || isWalletPayment ? new Date().toISOString() : null,
           verified_at: isWalletPayment ? new Date().toISOString() : null,
           wallet_transaction_id: walletTransactionId,
           evidence_note: isWalletPayment
-            ? `Paid from HenryCo wallet balance with reference ${paymentReference}.`
+            ? `Paid from Henry Onyx wallet balance with reference ${paymentReference}.`
             : isBankTransfer
               ? `Bank reference: ${bankReference}. Proof uploaded at checkout.`
               : null,
@@ -738,9 +1003,10 @@ export async function POST(request: Request) {
             checkout_source: "marketplace_checkout",
             payment_reference: paymentReference,
             bank_reference: bankReference || null,
-            proof_name: proofFile instanceof File && proofFile.size > 0 ? proofFile.name : null,
+            proof_name: resolvedProofName,
           },
         } as never);
+        }
 
         await writeMarketplaceEvent(admin, {
           eventType: "order_checkout_submitted",
@@ -785,9 +1051,11 @@ export async function POST(request: Request) {
             statusLabel:
               isWalletPayment
                 ? "paid from wallet and held in escrow"
-                : paymentMethod === "cod"
-                  ? "awaiting vendor acceptance"
-                  : "payment proof submitted for verification",
+                : isCardPayment
+                  ? "awaiting secure card payment"
+                  : paymentMethod === "cod"
+                    ? "awaiting vendor acceptance"
+                    : "payment proof submitted for verification",
           },
         });
 
@@ -804,12 +1072,17 @@ export async function POST(request: Request) {
             entityId: orderId,
             payload: {
               orderNo,
-              statusLabel: "payment proof submitted for finance review",
+              statusLabel: "payment proof received — confirming now",
             },
           });
         }
 
-        const response = redirectTo(request, `/track/${orderNo}?placed=1`);
+        // Card orders hand off to the card-start route (charge on the proven rail);
+        // every other method lands on order tracking.
+        const response = redirectTo(
+          request,
+          isCardPayment ? `/pay/${orderNo}/card` : `/track/${orderNo}?placed=1`,
+        );
         if (cartToken) {
           response.cookies.delete("marketplace_cart_token");
         }
@@ -889,12 +1162,17 @@ export async function POST(request: Request) {
       }
 
       case "wishlist_toggle": {
-        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/wishlist");
+        if (!viewer.user) return respondAuthRequired(json, request, "/account/wishlist");
 
         const productSlug = text(formData, "product_slug");
         const product = snapshot.products.find((item) => item.slug === productSlug);
         if (!product) {
-          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-product`);
+          return respondError(
+            json,
+            request,
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-product`,
+            { message: "This product is no longer available.", code: "missing-product", status: 404 }
+          );
         }
 
         const { data: existing } = await admin
@@ -925,19 +1203,26 @@ export async function POST(request: Request) {
 
         revalidatePath("/account/wishlist");
         revalidatePath(`/product/${product.slug}`);
-        return redirectTo(
+        return respondSuccess(
+          json,
           request,
-          `${returnTo}${returnTo.includes("?") ? "&" : "?"}${existing?.id ? "removed=1" : "saved=1"}`
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}${existing?.id ? "removed=1" : "saved=1"}`,
+          { saved: !existing?.id, productSlug: product.slug }
         );
       }
 
       case "vendor_follow_toggle": {
-        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/following");
+        if (!viewer.user) return respondAuthRequired(json, request, "/account/following");
 
         const vendorSlug = text(formData, "vendor_slug");
         const vendor = snapshot.vendors.find((item) => item.slug === vendorSlug);
         if (!vendor) {
-          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`);
+          return respondError(
+            json,
+            request,
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`,
+            { message: "This store is no longer available.", code: "missing-vendor", status: 404 }
+          );
         }
 
         const { data: existing } = await admin
@@ -976,9 +1261,11 @@ export async function POST(request: Request) {
 
         revalidatePath("/account/following");
         revalidatePath(`/store/${vendor.slug}`);
-        return redirectTo(
+        return respondSuccess(
+          json,
           request,
-          `${returnTo}${returnTo.includes("?") ? "&" : "?"}${existing?.id ? "unfollowed=1" : "followed=1"}`
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}${existing?.id ? "unfollowed=1" : "followed=1"}`,
+          { following: !existing?.id, vendorSlug: vendor.slug }
         );
       }
 
@@ -1024,9 +1311,10 @@ export async function POST(request: Request) {
 
         const { data: address, error: addressError } = await mutation;
         if (addressError || !address) {
+          console.error("[marketplace] address save failed:", addressError);
           if (json) {
             return NextResponse.json(
-              { error: addressError?.message || "Address save failed." },
+              { error: "Address save failed. Please check the details and try again." },
               { status: 400 }
             );
           }
@@ -1102,9 +1390,10 @@ export async function POST(request: Request) {
           .maybeSingle();
 
         if (addressError || !address) {
+          console.error("[marketplace] default address update failed:", addressError);
           if (json) {
             return NextResponse.json(
-              { error: addressError?.message || "Default address update failed." },
+              { error: "Address save failed. Please check the details and try again." },
               { status: 400 }
             );
           }
@@ -1207,7 +1496,7 @@ export async function POST(request: Request) {
           product_id: product.id,
           vendor_id: vendorId,
           user_id: viewer.user.id,
-          buyer_name: viewer.user.fullName || "HenryCo Buyer",
+          buyer_name: viewer.user.fullName || "Henry Onyx Buyer",
           rating,
           title: reviewTitle,
           body: reviewBody,
@@ -1222,9 +1511,10 @@ export async function POST(request: Request) {
           .maybeSingle();
 
         if (reviewError || !createdReview) {
+          console.error("[marketplace] review submission failed:", reviewError);
           if (json) {
             return NextResponse.json(
-              { error: reviewError?.message || "Review submission failed." },
+              { error: "Review submission failed. Please check the details and try again." },
               { status: 400 }
             );
           }
@@ -1279,7 +1569,7 @@ export async function POST(request: Request) {
               createdReview as Record<string, unknown>,
               product.slug,
               product.vendorSlug,
-              viewer.user.fullName || "HenryCo Buyer"
+              viewer.user.fullName || "Henry Onyx Buyer"
             ),
             mode: reviewStatus,
           });
@@ -1343,18 +1633,33 @@ export async function POST(request: Request) {
           },
         });
 
-        return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}thread=1`);
+        return respondSuccess(
+          json,
+          request,
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}thread=1`,
+          { threadId: thread?.id ? String(thread.id) : null }
+        );
       }
 
       case "vendor_product_upsert": {
         if (!viewer.user || !viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
-          return redirectToSharedAccountLogin(request, "/vendor/products/new");
+          return respondAuthRequired(json, request, "/vendor/products/new");
         }
 
+        // F-04: a `vendor` is always scoped to THEIR own membership's vendor —
+        // they can never target another vendor via a client-supplied
+        // `vendor_slug`. Only staff (owner/admin), who hold no vendor membership,
+        // may act on behalf of a named vendor. The previous
+        // `?? snapshot.vendors[1]?.id` arbitrary fallback is removed: an
+        // unresolved scope is rejected below rather than silently attributing the
+        // product to some other store.
+        const vendorMembershipScope =
+          viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ?? null;
         const vendorScopeId =
-          viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ??
-          snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id ??
-          snapshot.vendors[1]?.id;
+          vendorMembershipScope ??
+          (viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin"])
+            ? snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id ?? null
+            : null);
         const vendorRecord = snapshot.vendors.find((item) => item.id === vendorScopeId) ?? null;
         const categoryId =
           snapshot.categories.find((item) => item.slug === text(formData, "category_slug"))?.id ??
@@ -1362,8 +1667,38 @@ export async function POST(request: Request) {
         const brandId =
           snapshot.brands.find((item) => item.slug === text(formData, "brand_slug"))?.id ?? null;
         const slug = text(formData, "slug") || slugify(text(formData, "title"));
+
+        // F-04: `marketplace_products.slug` is GLOBALLY unique, so the
+        // `onConflict:"slug"` upsert below would let a colliding slug overwrite
+        // another vendor's product and reassign its `vendor_id` to the caller.
+        // Resolve who currently owns this slug and refuse any unscoped or
+        // cross-vendor upsert before touching the row.
+        const { data: slugOwner } = await admin
+          .from("marketplace_products")
+          .select("id, vendor_id")
+          .eq("slug", slug)
+          .maybeSingle();
+        const upsertDecision = resolveVendorProductUpsert({ vendorScopeId, existing: slugOwner });
+        if (!upsertDecision.ok) {
+          return respondError(
+            json,
+            request,
+            `/vendor/products/new?error=${upsertDecision.code}`,
+            {
+              message:
+                upsertDecision.code === "listing-conflict"
+                  ? "That product handle already belongs to another store. Choose a different handle."
+                  : "We couldn't determine your store. Re-open the vendor workspace and try again.",
+              code: upsertDecision.code,
+            },
+          );
+        }
+
         const decision = text(formData, "submission_mode") || "draft";
-        const imageUrl = text(formData, "image_url");
+        // Ordered product images (first = cover). New multi-image field posts a JSON array in
+        // `image_urls`; the legacy single `image_url` is honoured as a one-element fallback.
+        const imageRefs = parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url"));
+        const coverImage = imageRefs[0] ?? "";
         const requestFeaturedPlacement = text(formData, "feature_requested") === "on";
         const [{ count: productCount }, { count: openDisputeCount }, { data: duplicateMedia }] = await Promise.all([
           admin.from("marketplace_products").select("id", { count: "exact", head: true }).eq("vendor_id", vendorScopeId),
@@ -1372,11 +1707,11 @@ export async function POST(request: Request) {
             .select("id", { count: "exact", head: true })
             .eq("vendor_id", vendorScopeId)
             .in("status", ["open", "investigating"]),
-          imageUrl
+          coverImage
             ? admin
                 .from("marketplace_product_media")
                 .select("id, product_id")
-                .eq("url", imageUrl)
+                .eq("url", coverImage)
                 .limit(3)
             : Promise.resolve({ data: [] }),
         ]);
@@ -1391,7 +1726,7 @@ export async function POST(request: Request) {
           summary: text(formData, "summary"),
           description: text(formData, "description"),
           categorySlug: text(formData, "category_slug"),
-          imageUrl,
+          imageUrl: coverImage,
           sku: text(formData, "sku"),
           leadTime: text(formData, "lead_time"),
           deliveryNote: text(formData, "delivery_note"),
@@ -1407,8 +1742,47 @@ export async function POST(request: Request) {
             queue: "listing_blocked",
             note: assessment.moderationReasons.join(" | "),
           });
-          return redirectTo(request, `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent(assessment.moderationReasons.join(", "))}`);
+          return respondError(
+            json,
+            request,
+            `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent(assessment.moderationReasons.join(", "))}`,
+            {
+              message: `This listing cannot be published yet: ${assessment.moderationReasons.join(", ")}`,
+              code: "listing-blocked",
+            }
+          );
         }
+
+        // V3-25 unified moderation gate (DORMANT unless MODERATION_ENFORCED).
+        // An unambiguous reject blocks the listing outright; a hold forces it
+        // into staff review (it can never reach "approved"/live). When the flag
+        // is off this is a no-op and the path behaves exactly as before.
+        const moderationOutcome = await moderateListing(admin, {
+          slug,
+          title: text(formData, "title"),
+          summary: text(formData, "summary"),
+          description: text(formData, "description"),
+          actorId: viewer.user.id,
+        });
+        if (moderationOutcome?.decision === "reject") {
+          await createModerationCase(admin, {
+            subjectType: "product_submission",
+            subjectId: slug,
+            queue: "listing_blocked",
+            note: `content_policy: ${moderationOutcome.reasons.join(", ")}`,
+          });
+          return respondError(
+            json,
+            request,
+            `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent("content policy")}`,
+            {
+              message:
+                "This listing can't be published because it doesn't meet our content policy.",
+              code: "listing-blocked",
+            }
+          );
+        }
+        const moderationHold = moderationOutcome?.decision === "hold";
 
         const payload = {
           slug,
@@ -1425,7 +1799,7 @@ export async function POST(request: Request) {
           sku: text(formData, "sku"),
           approval_status:
             decision === "submit"
-              ? assessment.requiresManualReview
+              ? assessment.requiresManualReview || moderationHold
                 ? "under_review"
                 : "submitted"
               : "draft",
@@ -1460,14 +1834,15 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (error) throw error;
 
-        if (imageUrl && product?.id) {
-          await admin.from("marketplace_product_media").upsert({
-            product_id: product.id,
-            url: imageUrl,
-            kind: "image",
-            is_primary: true,
-            sort_order: 0,
-          } as never);
+        // Replace the product's gallery with the posted ordered set (first = cover). We
+        // delete-then-insert so re-saving never accumulates duplicate rows and the order the
+        // vendor chose is the order buyers see. An empty set leaves existing photos untouched
+        // (a draft save that didn't change images).
+        if (imageRefs.length > 0 && product?.id) {
+          await admin.from("marketplace_product_media").delete().eq("product_id", product.id).eq("kind", "image");
+          await admin
+            .from("marketplace_product_media")
+            .insert(buildProductMediaRows(String(product.id), imageRefs) as never);
         }
 
         if (decision === "submit" || assessment.requiresManualReview) {
@@ -1509,7 +1884,12 @@ export async function POST(request: Request) {
 
         revalidatePath("/vendor/products");
         revalidatePath("/search");
-        return redirectTo(request, `/vendor/products?${decision === "submit" ? "submitted=1" : "saved=1"}`);
+        return respondSuccess(
+          json,
+          request,
+          `/vendor/products?${decision === "submit" ? "submitted=1" : "saved=1"}`,
+          { decision, productId: product?.id ? String(product.id) : null }
+        );
       }
 
       case "admin_vendor_application_decision": {
@@ -1674,7 +2054,10 @@ export async function POST(request: Request) {
       }
 
       case "payment_verify": {
-        if (!viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin", "finance", "support"])) {
+        // F-10: marking a payment "verified" moves the order into escrow — a
+        // finance action. `support` must not flip payment state (it can still
+        // triage via the support queue). Restricted to finance/owner/admin.
+        if (!viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin", "finance"])) {
           return redirectTo(request, "/account");
         }
 
@@ -1705,8 +2088,8 @@ export async function POST(request: Request) {
           .eq("order_no", orderNo);
 
         await appendOrderTimeline(admin, orderNo, [
-          "Payment verified by HenryCo finance.",
-          "Seller funds are now held in escrow pending fulfillment, delivery proof, and trust review.",
+          "Payment confirmed.",
+          "Your payment is protected and held until your order is delivered and confirmed.",
         ]);
 
         const { data: order } = await admin
@@ -1792,8 +2175,8 @@ export async function POST(request: Request) {
           .in("payout_status", ["awaiting_auto_release", "paid_held"]);
 
         await appendOrderTimeline(admin, orderNo, [
-          "Buyer confirmed completion.",
-          "HenryCo marked eligible seller funds as releasable.",
+          "Order confirmed complete.",
+          "Thanks — your order is now complete.",
         ]);
 
         await writeMarketplaceEvent(admin, {
@@ -1831,6 +2214,19 @@ export async function POST(request: Request) {
           .eq("order_no", orderNo)
           .maybeSingle();
 
+        // F-02: freezing a seller's payout + flipping the order to "disputed" is
+        // a money-flow action, so it must be gated on order ownership — mirror
+        // the sibling `order_confirm_completion` check. Without this, any signed-
+        // in user could brute-force order_no (F-01) and freeze every vendor's
+        // payouts. Ownership derives from the session (auth.uid via viewer),
+        // never a caller-supplied id.
+        if (!order?.id || !isMarketplaceOrderOwner(order, viewer)) {
+          return redirectTo(
+            request,
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=forbidden`,
+          );
+        }
+
         const { data: dispute } = await admin
           .from("marketplace_disputes")
           .insert({
@@ -1861,7 +2257,7 @@ export async function POST(request: Request) {
 
         await appendOrderTimeline(admin, orderNo, [
           `Dispute opened: ${titleCaseMarketplaceValue(reason || "issue reported")}.`,
-          "HenryCo froze seller payout release while support and moderation review evidence.",
+          "We've paused this order's payment release while our team reviews your case.",
         ]);
 
         await createModerationCase(admin, {
@@ -1957,8 +2353,8 @@ export async function POST(request: Request) {
           await appendOrderTimeline(admin, dispute.order_no, [
             `Dispute ${dispute.dispute_no} resolved.`,
             resolutionType === "refund_to_buyer"
-              ? "HenryCo marked the affected payout segment as refunded."
-              : "HenryCo returned the payout segment to controlled release monitoring.",
+              ? "Your dispute is resolved — a refund has been issued."
+              : "Your dispute is resolved. This order's payout has resumed normal processing.",
           ]);
 
           // Sync vendor trust score on dispute resolution — dispute rate changes
@@ -2126,7 +2522,11 @@ export async function POST(request: Request) {
 
       case "vendor_order_update": {
         if (!viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin", "operations"])) {
-          return redirectTo(request, "/account");
+          return respondError(json, request, "/account", {
+            message: "This action needs a seller workspace role.",
+            code: "forbidden",
+            status: 403,
+          });
         }
 
         const orderGroupId = text(formData, "order_group_id");
@@ -2139,14 +2539,24 @@ export async function POST(request: Request) {
           .select("*")
           .eq("id", orderGroupId)
           .maybeSingle();
-        if (!group) return redirectTo(request, "/vendor/orders?error=missing-group");
+        if (!group) {
+          return respondError(json, request, "/vendor/orders?error=missing-group", {
+            message: "This order group could not be found.",
+            code: "missing-group",
+            status: 404,
+          });
+        }
 
         const vendorScopeId = viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId;
         const isVendorOnly =
           viewerHasRole(viewer, ["vendor"]) &&
           !viewerHasRole(viewer, ["marketplace_owner", "marketplace_admin", "operations"]);
         if (isVendorOnly && vendorScopeId !== String(group.vendor_id || "")) {
-          return redirectTo(request, "/vendor/orders?error=forbidden");
+          return respondError(json, request, "/vendor/orders?error=forbidden", {
+            message: "This order belongs to another store.",
+            code: "forbidden",
+            status: 403,
+          });
         }
 
         const vendor = snapshot.vendors.find((item) => item.id === String(group.vendor_id || "")) ?? null;
@@ -2224,7 +2634,7 @@ export async function POST(request: Request) {
             fulfillmentStatus === "shipped"
               ? `Shipment dispatched with ${shipmentCarrier || "assigned carrier"}.`
               : fulfillmentStatus === "delivered"
-                ? `Delivery verified. HenryCo will auto-release seller funds after ${sellerProfile.autoReleaseDays} day(s) unless a dispute or risk hold is triggered.`
+                ? `Delivered. You have ${sellerProfile.autoReleaseDays} day(s) to confirm or raise an issue before this order completes automatically.`
                 : `Order updated to ${titleCaseMarketplaceValue(fulfillmentStatus)}.`,
           ]);
 
@@ -2276,21 +2686,30 @@ export async function POST(request: Request) {
 
         revalidatePath("/vendor/orders");
         revalidatePath(`/track/${group.order_no}`);
-        return redirectTo(request, "/vendor/orders?updated=1");
+        return respondSuccess(json, request, "/vendor/orders?updated=1", {
+          orderNo: group.order_no,
+          fulfillmentStatus,
+        });
       }
 
       case "vendor_store_update": {
         if (!viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
-          return redirectTo(request, "/account");
+          return respondError(json, request, "/account", {
+            message: "This action needs a seller workspace role.",
+            code: "forbidden",
+            status: 403,
+          });
         }
 
         const vendorId =
           viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ??
           snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id;
         if (!vendorId) {
-          return redirectTo(
+          return respondError(
+            json,
             request,
-            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`,
+            { message: "Your store record could not be found.", code: "missing-vendor", status: 404 }
           );
         }
 
@@ -2303,12 +2722,111 @@ export async function POST(request: Request) {
             support_phone: text(formData, "support_phone") || undefined,
             response_sla_hours: numberValue(formData, "response_sla_hours", 0) || undefined,
             accent: text(formData, "accent") || undefined,
+            // Store hero upload (Stage B): a `media://` ref from ImageUploadField.
+            // Empty means "unchanged" — same convention as every field above.
+            hero_image_url: text(formData, "hero_image_url") || undefined,
           } as never)
           .eq("id", vendorId);
 
         revalidatePath("/vendor/store");
         revalidatePath("/vendor/settings");
-        return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}saved=1`);
+        return respondSuccess(
+          json,
+          request,
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}saved=1`,
+          { vendorId: String(vendorId) }
+        );
+      }
+
+      case "vendor_delivery_promise_upsert": {
+        // V3-DELIVERY-COMPLETE-01 (T5) — seller writes their Delivery Promise.
+        // Money-adjacent: a promise only WAIVES delivery (deliveryAmount 0) at checkout;
+        // this handler writes NO money function. DORMANT: gated by the same flag as the
+        // seller card; the migration is committed-NOT-applied.
+        if (!isDeliveryPromisesEnabled()) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=delivery-promises-off`, {
+            message: "Delivery promises are not enabled yet.",
+            code: "feature-off",
+            status: 409,
+          });
+        }
+        if (!viewerHasRole(viewer, ["vendor", "marketplace_owner", "marketplace_admin"])) {
+          return respondError(json, request, "/account", {
+            message: "This action needs a seller workspace role.",
+            code: "forbidden",
+            status: 403,
+          });
+        }
+        const vendorId =
+          viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ??
+          snapshot.vendors.find((item) => item.slug === text(formData, "vendor_slug"))?.id;
+        if (!vendorId) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`, {
+            message: "Your store record could not be found.",
+            code: "missing-vendor",
+            status: 404,
+          });
+        }
+
+        // The buyer-facing reach is EARNED. Read the vendor's CURRENT verification_level
+        // and recompute the covered states server-side from (reach + origin + tier) — the
+        // client never submits coverage, so it cannot forge an over-reach.
+        const { data: vendorRow } = await admin
+          .from("marketplace_vendors")
+          .select("verification_level")
+          .eq("id", vendorId)
+          .maybeSingle();
+        const tier = (vendorRow as { verification_level?: string } | null)?.verification_level ?? null;
+
+        const reachKind = text(formData, "reach_kind") as ReachKind;
+        if (!["own_state", "own_zone", "states", "nationwide"].includes(reachKind)) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=bad-reach`, {
+            message: "Pick a valid delivery reach.",
+            code: "bad-reach",
+            status: 400,
+          });
+        }
+        const originState = normalizeStateInput(text(formData, "origin_state"));
+        if (!originState) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=bad-origin`, {
+            message: "Select your dispatch state.",
+            code: "bad-origin",
+            status: 400,
+          });
+        }
+        const { coveredStates } = resolveCoveredStates({ reachKind, originState, tier });
+        const minNaira = numberValue(formData, "min_order_naira", 0);
+        const minOrderMinor = minNaira > 0 ? Math.round(minNaira * 100) : null;
+        const isActive = truthyValue(formData, "is_active");
+
+        // Call the ownership-checked RPC with the CALLER's session (auth.uid()) — the DB
+        // independently proves the seller owns this vendor (defence in depth over the
+        // in-app role/membership check above). Service-role would null out auth.uid().
+        const userClient = await createSupabaseServer();
+        const { error: rpcError } = await userClient.rpc("upsert_delivery_promise", {
+          p_vendor_id: vendorId,
+          p_reach_kind: reachKind,
+          p_covered_states: coveredStates,
+          p_min_order_minor: minOrderMinor,
+          p_origin_state: originState,
+          p_is_active: isActive,
+        } as never);
+        if (rpcError) {
+          return respondError(json, request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=promise-save-failed`, {
+            message: "Your delivery promise could not be saved.",
+            code: "promise-save-failed",
+            status: 400,
+          });
+        }
+
+        revalidatePath("/vendor/settings");
+        revalidatePath(`/store/${snapshot.vendors.find((v) => v.id === String(vendorId))?.slug ?? ""}`);
+        return respondSuccess(
+          json,
+          request,
+          `${returnTo}${returnTo.includes("?") ? "&" : "?"}saved=1`,
+          { vendorId: String(vendorId) }
+        );
       }
 
       case "payout_decision": {
@@ -2399,9 +2917,289 @@ export async function POST(request: Request) {
         revalidatePath("/vendor/payouts");
         return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}decision=${decision}`);
       }
+
+      // -----------------------------------------------------------------------
+      // The Onyx Line (WS-4) — contact-safe buyer<->seller messaging.
+      // Dark behind MARKETPLACE_MESSAGING_ENABLED. Every body is screened BEFORE
+      // persist in BOTH directions (block high/critical, mask medium); all
+      // writes are service-role; counterparts are notified by stable user id
+      // only (never email/phone); no buyer contact PII enters these threads.
+      // -----------------------------------------------------------------------
+      case "mkt_conversation_start": {
+        if (process.env.MARKETPLACE_MESSAGING_ENABLED !== "1") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "messaging_disabled" }, { status: 404 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=messaging-disabled`);
+        }
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/messages");
+
+        const anchorTypeRaw = text(formData, "anchor_type");
+        const anchorType =
+          anchorTypeRaw === "order" ? "order" : anchorTypeRaw === "listing" ? "listing" : null;
+        const anchorId = text(formData, "anchor_id");
+        const body = clipBody(text(formData, "body"));
+        if (!anchorType || !anchorId || !body) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "invalid_request" }, { status: 400 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=invalid-message`);
+        }
+
+        const counterpart = await resolveCounterpart(admin, anchorType, anchorId);
+        if (!counterpart) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "anchor_not_found" }, { status: 404 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-anchor`);
+        }
+
+        const viewerVendorScopes = viewerVendorScopeIds(viewer);
+        let buyerUserId: string | null = null;
+        let vendorId: string | null = null;
+
+        if (counterpart.kind === "listing") {
+          // Buyer-initiated only: a vendor has no buyer counterpart for a bare
+          // listing, so a vendor member cannot open a listing thread.
+          if (viewerVendorScopes.has(counterpart.vendorId)) {
+            return json
+              ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+              : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+          }
+          buyerUserId = viewer.user.id;
+          vendorId = counterpart.vendorId;
+        } else {
+          const requestedVendorId = text(formData, "vendor_id");
+          if (counterpart.buyerUserId && counterpart.buyerUserId === viewer.user.id) {
+            // Buyer-initiated against one of the order's vendors.
+            buyerUserId = viewer.user.id;
+            if (requestedVendorId && counterpart.vendorIds.includes(requestedVendorId)) {
+              vendorId = requestedVendorId;
+            } else if (counterpart.vendorIds.length === 1) {
+              vendorId = counterpart.vendorIds[0];
+            } else {
+              return json
+                ? NextResponse.json({ ok: false, reason: "vendor_required" }, { status: 400 })
+                : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=select-vendor`);
+            }
+          } else {
+            // Vendor-initiated: the viewer must be a member of a vendor on the order.
+            const actingVendorId = counterpart.vendorIds.find((id) => viewerVendorScopes.has(id)) || null;
+            if (!actingVendorId) {
+              return json
+                ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+                : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+            }
+            buyerUserId = counterpart.buyerUserId;
+            vendorId = actingVendorId;
+          }
+        }
+
+        if (!buyerUserId || !vendorId) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+        }
+
+        // Screen BEFORE any write so a blocked first message never creates an
+        // empty conversation; high/critical is rejected, medium is masked.
+        const screened = screenMessageBody(body);
+        if (screened.action === "block") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+        }
+
+        const senderKind = viewer.user.id === buyerUserId ? "buyer" : "vendor";
+
+        // Screen the subject on the same block-before-persist contract as the
+        // body — a phone/email typed into the Subject box must never persist in
+        // plaintext. Block reuses the body's contact_blocked response; otherwise
+        // the masked-or-clean subject is what we store (clip stays downstream).
+        const rawSubject = text(formData, "subject");
+        let subject: string | null = null;
+        if (rawSubject) {
+          const screenedSubject = screenMessageBody(rawSubject);
+          if (screenedSubject.action === "block") {
+            return json
+              ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+              : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+          }
+          subject = screenedSubject.body;
+        }
+
+        const conversation = await findOrCreateConversation(admin, {
+          buyerUserId,
+          vendorId,
+          anchorType,
+          anchorId,
+          subject,
+        });
+
+        const startAdapter = createMarketplaceMessagingAdapter(admin);
+        const startResult = await sendOnyxMessage(
+          { conversationId: conversation.id, senderId: viewer.user.id, senderRole: senderKind, body },
+          {
+            adapter: startAdapter,
+            notify: async ({ recipientUserId, conversationId }) => {
+              // Stable user id only — never email/phone, and no body (which could
+              // carry a masked contact) in the notification.
+              const senderRole = senderKind;
+              const recipientRole = senderRole === "buyer" ? "vendor" : "buyer";
+              const actionUrl =
+                recipientRole === "vendor"
+                  ? `/vendor/messages/${conversationId}`
+                  : `/account/messages/${conversationId}`;
+              await sendMarketplaceEvent({
+                event: "marketplace_message",
+                userId: recipientUserId,
+                entityType: "marketplace_conversation",
+                entityId: conversationId,
+                actionUrl,
+                payload: { note: "You have a new marketplace message.", conversationId, recipientRole },
+              });
+            },
+          },
+        );
+
+        if (!startResult.ok) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+        }
+
+        await bumpConversation(admin, conversation.id, startResult.message.body);
+
+        if (json)
+          return NextResponse.json({
+            ok: true,
+            conversationId: conversation.id,
+            messageId: startResult.message.id,
+          });
+        return redirectTo(
+          request,
+          `${senderKind === "buyer" ? "/account/messages" : "/vendor/messages"}/${conversation.id}?started=1`,
+        );
+      }
+
+      case "mkt_conversation_reply": {
+        if (process.env.MARKETPLACE_MESSAGING_ENABLED !== "1") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "messaging_disabled" }, { status: 404 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=messaging-disabled`);
+        }
+        if (!viewer.user) return redirectToSharedAccountLogin(request, "/account/messages");
+
+        const conversationId = text(formData, "conversation_id");
+        const body = clipBody(text(formData, "body"));
+        if (!conversationId || !body) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "invalid_request" }, { status: 400 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=invalid-message`);
+        }
+
+        // Authz: viewer must be the buyer or a member of the conversation vendor.
+        const thread = await getConversationForViewer(conversationId, viewer);
+        if (!thread) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+        }
+
+        const screened = screenMessageBody(body);
+        if (screened.action === "block") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+        }
+
+        const replyAdapter = createMarketplaceMessagingAdapter(admin);
+        const replyResult = await sendOnyxMessage(
+          { conversationId, senderId: viewer.user.id, senderRole: thread.viewerParty, body },
+          {
+            adapter: replyAdapter,
+            notify: async ({ recipientUserId, conversationId: notifyConversationId }) => {
+              const senderRole = thread.viewerParty;
+              const recipientRole = senderRole === "buyer" ? "vendor" : "buyer";
+              const actionUrl =
+                recipientRole === "vendor"
+                  ? `/vendor/messages/${notifyConversationId}`
+                  : `/account/messages/${notifyConversationId}`;
+              await sendMarketplaceEvent({
+                event: "marketplace_message",
+                userId: recipientUserId,
+                entityType: "marketplace_conversation",
+                entityId: notifyConversationId,
+                actionUrl,
+                payload: { note: "You have a new marketplace message.", conversationId: notifyConversationId, recipientRole },
+              });
+            },
+          },
+        );
+
+        if (!replyResult.ok) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "contact_blocked" }, { status: 422 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=contact_blocked`);
+        }
+
+        await bumpConversation(admin, conversationId, replyResult.message.body);
+
+        if (json)
+          return NextResponse.json({
+            ok: true,
+            conversationId,
+            messageId: replyResult.message.id,
+          });
+        return redirectTo(
+          request,
+          `${thread.viewerParty === "buyer" ? "/account/messages" : "/vendor/messages"}/${conversationId}?replied=1`,
+        );
+      }
+
+      case "mkt_conversation_mark_read": {
+        if (process.env.MARKETPLACE_MESSAGING_ENABLED !== "1") {
+          return json
+            ? NextResponse.json({ ok: false, reason: "messaging_disabled" }, { status: 404 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=messaging-disabled`);
+        }
+        if (!viewer.user) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "not_authenticated" }, { status: 401 })
+            : redirectToSharedAccountLogin(request, "/account/messages");
+        }
+
+        const conversationId = text(formData, "conversation_id");
+        if (!conversationId) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "invalid_request" }, { status: 400 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=invalid-message`);
+        }
+
+        // Authz before writing read-state (admin bypasses RLS), so a non-party
+        // can never seed a participant row on an arbitrary conversation.
+        const thread = await getConversationForViewer(conversationId, viewer);
+        if (!thread) {
+          return json
+            ? NextResponse.json({ ok: false, reason: "not_authorized" }, { status: 403 })
+            : redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=not-authorized`);
+        }
+
+        await markConversationRead(admin, {
+          conversationId,
+          userId: viewer.user.id,
+          partyKind: thread.viewerParty,
+          vendorId: thread.viewerParty === "vendor" ? thread.conversation.vendorId : null,
+        });
+
+        if (json) return NextResponse.json({ ok: true });
+        return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}read=1`);
+      }
     }
 
-    return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=unknown-intent`);
+    return respondError(
+      json,
+      request,
+      `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=unknown-intent`,
+      { message: "This action is not recognised.", code: "unknown-intent" }
+    );
   } catch (error) {
     await logMarketplaceAction({
       eventType: "marketplace_mutation_failed",
@@ -2412,6 +3210,16 @@ export async function POST(request: Request) {
         error: error instanceof Error ? error.message : "Unknown error",
       },
     });
-    return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=mutation-failed`);
+    console.error("[marketplace] mutation failed:", error);
+    return respondError(
+      json,
+      request,
+      `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=mutation-failed`,
+      {
+        message: "We couldn't complete that action. Please try again.",
+        code: "mutation-failed",
+        status: 500,
+      }
+    );
   }
 }

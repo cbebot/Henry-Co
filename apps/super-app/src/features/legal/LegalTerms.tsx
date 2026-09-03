@@ -7,7 +7,7 @@ export function LegalTerms() {
   return (
     <View style={{ gap: spacing.md }}>
       <Text variant="body" color="textSecondary">
-        By using Henry &amp; Co. public pages you agree to use them lawfully and in line with these
+        By using Henry Onyx public pages you agree to use them lawfully and in line with these
         terms. Division destinations may introduce additional requirements.
       </Text>
       <Text variant="subtitle">Informational use</Text>
@@ -17,7 +17,7 @@ export function LegalTerms() {
       </Text>
       <Text variant="subtitle">Brand and IP</Text>
       <Text variant="body" color="textSecondary">
-        Henry &amp; Co. branding, design, and materials may not be reused without appropriate
+        Henry Onyx branding, design, and materials may not be reused without appropriate
         authorization.
       </Text>
     </View>

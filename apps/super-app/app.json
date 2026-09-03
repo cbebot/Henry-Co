@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "HenryCo",
+    "name": "Henry Onyx",
     "slug": "henryco-super-app",
     "version": "1.0.1",
     "orientation": "portrait",
@@ -17,7 +17,18 @@
       "supportsTablet": true,
       "buildNumber": "2",
       "bundleIdentifier": "com.henryco.superapp.staging",
-      "associatedDomains": ["applinks:staging.henrycogroup.com"]
+      "associatedDomains": [
+        "applinks:staging.henryonyx.com",
+        "applinks:account.henryonyx.com",
+        "applinks:care.henryonyx.com",
+        "applinks:marketplace.henryonyx.com",
+        "applinks:property.henryonyx.com",
+        "applinks:jobs.henryonyx.com",
+        "applinks:learn.henryonyx.com",
+        "applinks:logistics.henryonyx.com",
+        "applinks:studio.henryonyx.com",
+        "webcredentials:account.henryonyx.com"
+      ]
     },
     "android": {
       "versionCode": 2,
@@ -31,11 +42,15 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            {
-              "scheme": "https",
-              "host": "staging.henrycogroup.com",
-              "pathPrefix": "/app"
-            }
+            { "scheme": "https", "host": "staging.henryonyx.com", "pathPrefix": "/app" },
+            { "scheme": "https", "host": "account.henryonyx.com" },
+            { "scheme": "https", "host": "care.henryonyx.com" },
+            { "scheme": "https", "host": "marketplace.henryonyx.com" },
+            { "scheme": "https", "host": "property.henryonyx.com" },
+            { "scheme": "https", "host": "jobs.henryonyx.com" },
+            { "scheme": "https", "host": "learn.henryonyx.com" },
+            { "scheme": "https", "host": "logistics.henryonyx.com" },
+            { "scheme": "https", "host": "studio.henryonyx.com" }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }

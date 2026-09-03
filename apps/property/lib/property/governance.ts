@@ -33,7 +33,7 @@ export function getPropertyListingStatusSummary(status: PropertyListingStatus) {
     case "awaiting_eligibility":
       return "Identity, authority, or trust prerequisites are still incomplete.";
     case "inspection_requested":
-      return "HenryCo needs an inspection workflow before publication can continue.";
+      return "Henry Onyx needs an inspection workflow before publication can continue.";
     case "inspection_scheduled":
       return "An inspection is already booked or being locked in.";
     case "under_review":
@@ -48,7 +48,7 @@ export function getPropertyListingStatusSummary(status: PropertyListingStatus) {
     case "approved":
       return "The listing is approved for trusted publication.";
     case "published":
-      return "The listing is live on the public HenryCo Property surface.";
+      return "The listing is live on the public Henry Onyx Property surface.";
     case "rejected":
       return "The listing was rejected and will not move forward without a new submission path.";
     case "verified":

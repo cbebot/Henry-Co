@@ -5,58 +5,44 @@ import { PODCapture } from "@/components/operator/PODCapture";
 /**
  * V3 PASS 21 — client wrapper that supplies the uploadPhoto handler.
  *
- * For now we POST the file as `multipart/form-data` to the Cloudinary
- * direct-upload endpoint via a signed payload from
- * /api/cloudinary/sign — that endpoint is part of the shared
- * cloudinary integration. If the endpoint is missing (preview env or
- * misconfigured), we fall back to a data-URL upload which the POD
- * route still records as evidence; not ideal but safer than blocking
- * the rider's flow.
+ * The captured POD image is POSTed as `multipart/form-data` to the server
+ * route /api/logistics/pod/upload, which writes it to an RLS-private storage
+ * bucket (signed-read only) and returns a backend-neutral `media://` reference.
+ * The binary never touches a public CDN — sensitive proof-of-delivery media is
+ * no longer dereferenceable by raw URL. The returned reference is persisted by
+ * the POD route in the same `photo_url` slot the public URL previously used.
+ *
+ * The `{ secure_url, public_id }` shape is preserved so the <PODCapture/>
+ * contract is unchanged; `secure_url` now carries the `media://` reference and
+ * `public_id` is unused.
  */
 
-async function uploadPhoto(
-  file: Blob,
-): Promise<{ secure_url: string; public_id: string } | null> {
-  try {
-    const form = new FormData();
-    form.append("file", file);
-    form.append("upload_preset", "logistics-pod");
-    const signResponse = await fetch("/api/cloudinary/sign?preset=logistics-pod", {
-      method: "POST",
-    });
-    if (!signResponse.ok) {
-      console.warn(
-        "[pod-capture] sign endpoint missing — falling back to data URL",
-      );
+function makeUploadPhoto(shipmentId: string) {
+  return async function uploadPhoto(
+    file: Blob,
+  ): Promise<{ secure_url: string; public_id: string } | null> {
+    try {
+      const form = new FormData();
+      const named =
+        file instanceof File ? file : new File([file], "pod.jpg", { type: file.type || "image/jpeg" });
+      form.append("file", named);
+      form.append("shipment_id", shipmentId);
+      const response = await fetch("/api/logistics/pod/upload", {
+        method: "POST",
+        body: form,
+      });
+      if (!response.ok) {
+        console.warn("[pod-capture] upload route returned", response.status);
+        return null;
+      }
+      const data = (await response.json()) as { ok?: boolean; ref?: string };
+      if (!data.ok || !data.ref) return null;
+      return { secure_url: data.ref, public_id: "" };
+    } catch (err) {
+      console.warn("[pod-capture] upload failed", err);
       return null;
     }
-    const signed = (await signResponse.json()) as {
-      signature?: string;
-      timestamp?: string;
-      api_key?: string;
-      cloud_name?: string;
-    };
-    if (!signed.signature || !signed.api_key || !signed.cloud_name) {
-      return null;
-    }
-    form.append("signature", signed.signature);
-    form.append("timestamp", signed.timestamp ?? "");
-    form.append("api_key", signed.api_key);
-    const uploadResponse = await fetch(
-      `https://api.cloudinary.com/v1_1/${signed.cloud_name}/image/upload`,
-      { method: "POST", body: form },
-    );
-    if (!uploadResponse.ok) return null;
-    const data = (await uploadResponse.json()) as {
-      secure_url?: string;
-      public_id?: string;
-    };
-    if (!data.secure_url || !data.public_id) return null;
-    return { secure_url: data.secure_url, public_id: data.public_id };
-  } catch (err) {
-    console.warn("[pod-capture] upload failed", err);
-    return null;
-  }
+  };
 }
 
 export type PODCaptureClientProps = {
@@ -65,5 +51,11 @@ export type PODCaptureClientProps = {
 };
 
 export function PODCaptureClient({ shipmentId, legId }: PODCaptureClientProps) {
-  return <PODCapture shipmentId={shipmentId} legId={legId} uploadPhoto={uploadPhoto} />;
+  return (
+    <PODCapture
+      shipmentId={shipmentId}
+      legId={legId}
+      uploadPhoto={makeUploadPhoto(shipmentId)}
+    />
+  );
 }

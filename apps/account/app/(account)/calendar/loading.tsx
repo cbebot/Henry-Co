@@ -1,11 +1,11 @@
 import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
 /**
- * V3 Wave A1 D4 — calendar route-segment loader.
- *
- * PERF-01 canonical thin progress bar (memory:
- * project_henryco_perf01_loading.md).
+ * Account calendar route-segment loader — the calm hairline progress rail only
+ * (variant="rail"). The account hub is flow mode: the Onyx brand moment is
+ * reserved for public/discovery surfaces; here we keep the minimal PERF-01
+ * signal so high-frequency nav never feels laggy.
  */
 export default function CalendarLoading() {
-  return <PublicRouteLoader />;
+  return <PublicRouteLoader variant="rail" />;
 }

@@ -100,6 +100,12 @@ export function scoreIndexedHit(input: {
   const promo = doc.ranking_signals?.promotion;
   if (promo) score += promo * 0.2;
 
+  // V3-49 — popularity layer. Lets catalog entities (e.g. hc_services, where
+  // featured/most-booked services carry a popularity signal) surface higher.
+  // Applies to any document that sets the signal; 0..1 → up to +0.2.
+  const popularity = doc.ranking_signals?.popularity;
+  if (popularity) score += popularity * 0.2;
+
   return score;
 }
 
@@ -171,4 +177,60 @@ export function dedupeAndRank(hits: UnifiedSearchResult[]): UnifiedSearchResult[
   return Array.from(byKey.values()).sort(
     (left, right) => right.score - left.score || right.priority - left.priority,
   );
+}
+
+/**
+ * SEARCH-01 — diversity cap.
+ *
+ * When a query is generic and lands hundreds of marketplace product
+ * matches, the result list flooded with one type leaves no oxygen
+ * for the rest of HenryCo's divisions. We cap each division's
+ * contribution to `perDivisionCap` items in the top-N slice, then
+ * fold the overflow back into the tail (above the optional
+ * `overflowFloor` score so we don't surface noise).
+ *
+ * The anchor division (caller-provided `primary_division`) is
+ * exempt from the cap so a user whose primary lane is `marketplace`
+ * still sees marketplace dominate when relevant — diversity is for
+ * the GENERIC case, not the personalised one.
+ *
+ * Algorithm: stable two-pass:
+ *   1. Walk the input in rank order. Items from the anchor division
+ *      always pass through. Items from any other division increment
+ *      a per-division counter; once over the cap they're parked.
+ *   2. Append parked items at the end, preserving their relative
+ *      order, filtered by `overflowFloor`.
+ *
+ * The function is pure / deterministic given the same input.
+ */
+export function applyDiversityCap(
+  hits: UnifiedSearchResult[],
+  options: {
+    perDivisionCap: number;
+    overflowFloor: number;
+    anchorDivision?: UnifiedSearchResult["division"];
+  },
+): UnifiedSearchResult[] {
+  const { perDivisionCap, overflowFloor, anchorDivision } = options;
+  if (perDivisionCap <= 0) return hits;
+
+  const counts = new Map<string, number>();
+  const main: UnifiedSearchResult[] = [];
+  const overflow: UnifiedSearchResult[] = [];
+
+  for (const hit of hits) {
+    if (hit.division === anchorDivision) {
+      main.push(hit);
+      continue;
+    }
+    const c = counts.get(hit.division) ?? 0;
+    if (c < perDivisionCap) {
+      counts.set(hit.division, c + 1);
+      main.push(hit);
+    } else if (hit.score >= overflowFloor) {
+      overflow.push(hit);
+    }
+  }
+
+  return main.concat(overflow);
 }

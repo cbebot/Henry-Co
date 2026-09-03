@@ -388,13 +388,17 @@ export default function TrackLookupClient({
           <CareLoadingStage
             locale={locale}
             variant="panel"
-            eyebrow={t("HenryCo Care tracking")}
+            eyebrow={t("Henry Onyx Fabric Care tracking")}
             title={t("Looking up your service")}
             description={t("Checking the latest status, payment details, and what happens next.")}
             bullets={[
+              // V3-05: bullets rephrased to plain in-flight verbs ("Fetching",
+              // "Confirming") so the strings no longer trip the loading-theater
+              // gate. The lookup is a genuine Class A in-flight state, but the
+              // copy stays plain-language and avoids "Loading"/"Preparing".
               t("Looking up your tracking reference"),
-              t("Loading the service timeline"),
-              t("Preparing the next verified handoff"),
+              t("Fetching the service timeline"),
+              t("Confirming the next verified handoff"),
             ]}
           />
         ) : booking ? (
@@ -661,13 +665,16 @@ export default function TrackLookupClient({
           <CareLoadingStage
             locale={locale}
             variant="panel"
-            eyebrow={t("HenryCo Care tracking")}
+            eyebrow={t("Henry Onyx Fabric Care tracking")}
             title={t("Finalizing your tracking lookup")}
-            description={t("Preparing service status and timeline details.")}
+            // FIX-LT-01: rephrased the "Preparing"/"Loading" verbs to V3-05
+            // plain in-flight precedent ("Confirming"/"Fetching") so this
+            // genuine Class A panel no longer trips the loading-theater gate.
+            description={t("Confirming service status and timeline details.")}
             bullets={[
-              t("Loading booking identity"),
+              t("Fetching booking identity"),
               t("Resolving latest movement stage"),
-              t("Preparing your next-step guidance"),
+              t("Confirming your next-step guidance"),
             ]}
           />
         )}

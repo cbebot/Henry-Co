@@ -17,6 +17,24 @@ export async function GET(request: Request) {
     route: "/api/care/preferences/unsubscribe",
   });
 
+  // V3-ACTIONS-01 — dual-mode: the email unsubscribe link stays a document
+  // navigation (redirect), while the in-page "Undo" action fetches with
+  // `x-henryco-async: 1` and acknowledges in place.
+  const wantsJson =
+    request.headers.get("x-henryco-async") === "1" ||
+    (request.headers.get("accept") || "").includes("application/json");
+  if (wantsJson) {
+    return NextResponse.json(
+      {
+        ok: result.ok,
+        mode,
+        email: result.email || null,
+        phone: result.phone || null,
+      },
+      { status: result.ok ? 200 : 400 }
+    );
+  }
+
   const destination = new URL("/unsubscribe", url.origin);
   destination.searchParams.set("mode", mode);
   destination.searchParams.set("status", result.ok ? "success" : "error");

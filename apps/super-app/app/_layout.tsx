@@ -7,6 +7,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
+import { brandFontAssets } from "@henryco/rn-type";
 import { AppProviders } from "@/providers/AppProviders";
 
 SplashScreen.preventAutoHideAsync();
@@ -15,6 +16,8 @@ function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
+    // Owned type — the brand faces (interim ttf; swap to bespoke at reveal).
+    ...brandFontAssets,
   });
 
   useEffect(() => {

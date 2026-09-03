@@ -34,14 +34,14 @@ export const getSharedPaymentRail = cache(async (): Promise<SharedPaymentRail> =
     accountName:
       asNullableText(data?.payment_account_name) ??
       asNullableText(data?.company_account_name) ??
-      "Henry & Co.",
+      "Henry Onyx",
     accountNumber:
       asNullableText(data?.payment_account_number) ??
       asNullableText(data?.company_account_number),
     currency: asText(data?.payment_currency) || "NGN",
     instructions:
       asText(data?.payment_instructions) ||
-      "Transfer the exact amount shown, keep the reference intact, and upload proof immediately so the HenryCo team can confirm the funding request.",
+      "Transfer the exact amount shown and keep the reference on your transfer so we can confirm your payment.",
     supportEmail:
       asNullableText(data?.payment_support_email) ?? asNullableText(data?.support_email),
     supportWhatsApp:

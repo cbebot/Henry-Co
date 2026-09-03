@@ -17,7 +17,7 @@ function formatDateLabel(locale: string, value?: string | null, fallback = "Not 
   }).format(new Date(value));
 }
 
-function displayName(value?: string | null, fallback = "HenryCo learner") {
+function displayName(value?: string | null, fallback = "Henry Onyx learner") {
   const text = String(value || "").trim();
   return text || fallback;
 }
@@ -32,28 +32,21 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
     return { title: t("Certificate verification"), robots: { index: false, follow: false } };
   }
 
-  const profileDirectory = await lookupLearnProfiles([
-    {
-      userId: data.enrollment?.userId || data.certificate.userId,
-      normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
-    },
-  ]);
-  const learnerProfile = resolveLearnProfile(profileDirectory, {
-    userId: data.enrollment?.userId || data.certificate.userId,
-    normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
-  });
-  const learnerName = (learnerProfile?.fullName || t("HenryCo learner")).trim();
+  // The certificate holder's name is shown on the page body for a verifier who
+  // has the code — but it is deliberately kept OUT of the machine metadata, and
+  // the page is not indexed, so issued certificates never become a crawlable,
+  // bulk-harvestable directory of who-completed-what.
   const courseTitle = data.course
     ? await resolveLocalizedDynamicField({
         record: data.course as unknown as Record<string, unknown>,
         field: "title",
         locale,
-        fallback: data.course.title ?? t("HenryCo Learn programme"),
+        fallback: data.course.title ?? t("Henry Onyx Learn programme"),
         machineTranslate: locale !== "en",
       })
-    : t("HenryCo Learn programme");
-  const title = `${learnerName} · ${courseTitle} — HenryCo Learn certificate`;
-  const description = `Verified HenryCo Learn certificate ${data.certificate.certificateNo}. ${t("This page is the live, public verification surface — no login required.")}`;
+    : t("Henry Onyx Learn programme");
+  const title = `${courseTitle} — Henry Onyx Learn certificate`;
+  const description = t("This page is the live, public verification surface — no login required.");
 
   return {
     title,
@@ -63,14 +56,14 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
       title,
       description,
       type: "article",
-      siteName: "HenryCo Learn",
+      siteName: "Henry Onyx Learn",
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
     },
-    robots: { index: true, follow: true },
+    robots: { index: false, follow: false },
   };
 }
 
@@ -95,7 +88,7 @@ export default async function CertificateVerifyPage({
     userId: data.enrollment?.userId || data.certificate.userId,
     normalizedEmail: data.enrollment?.normalizedEmail || data.certificate.normalizedEmail,
   });
-  const learnerName = displayName(learnerProfile?.fullName, t("HenryCo learner"));
+  const learnerName = displayName(learnerProfile?.fullName, t("Henry Onyx learner"));
 
   // WAVE A — translate Supabase-row-driven text via the cached DeepL pipeline.
   const machineTranslate = locale !== "en";
@@ -121,20 +114,27 @@ export default async function CertificateVerifyPage({
       : Promise.resolve(""),
   ]);
 
+  // Never render the raw DB status enum, and never hardcode a "valid" colour —
+  // a revoked certificate must read as revoked on the public check.
+  const statusMeta =
+    data.certificate.status === "revoked"
+      ? { label: t("Revoked"), tone: "warning" as const }
+      : { label: t("Valid"), tone: "success" as const };
+
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <LearnSectionIntro
         kicker={t("Certificate verification")}
-        title={t("Confirm this HenryCo Learn certificate is genuine.")}
+        title={t("Confirm this Henry Onyx Learn certificate is genuine.")}
         body={t("Enter or follow a verification code to see the official record: learner name, course, issue date, and status. This is the same check employers and partners use—no login required.")}
       />
 
-      <section className="mt-8 grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+      <section className="mt-8 grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <LearnPanel className="learn-print-sheet rounded-[2.4rem] p-0">
           <div className="rounded-[2.4rem] border border-[var(--learn-line)] bg-[linear-gradient(160deg,rgba(227,188,126,0.16),rgba(95,197,171,0.1))] p-8 sm:p-10">
             <div className="learn-print-hidden flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
-                <LearnStatusBadge label={data.certificate.status} tone="success" />
+                <LearnStatusBadge label={statusMeta.label} tone={statusMeta.tone} />
                 <LearnStatusBadge label={t("Verification live")} tone="signal" />
               </div>
               <div className="flex flex-wrap gap-3">
@@ -153,9 +153,9 @@ export default async function CertificateVerifyPage({
               </div>
             </div>
 
-            <div className="mt-8 rounded-[2rem] border border-[var(--learn-line)] bg-white/5 p-8 sm:p-10">
+            <div className="mt-8 rounded-[2rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-8 sm:p-10">
               <p className="text-center text-xs font-semibold uppercase tracking-[0.28em] text-[var(--learn-ink-soft)]">
-                {t("HenryCo Learn Certificate")}
+                {t("Henry Onyx Learn Certificate")}
               </p>
               <h1 className="mt-6 text-center text-[2.7rem] font-semibold tracking-[-0.06em] text-[var(--learn-ink)] sm:text-[3.8rem]">
                 {learnerName}
@@ -164,11 +164,11 @@ export default async function CertificateVerifyPage({
                 {t("has satisfied the learning and assessment requirements for")}
               </p>
               <p className="mt-4 text-center text-2xl font-semibold tracking-[-0.04em] text-[var(--learn-ink)]">
-                {courseTitle || data.course?.title || t("HenryCo Learn program")}
+                {courseTitle || data.course?.title || t("Henry Onyx Learn program")}
               </p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-black/10 p-4">
+                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Certificate no")}
                   </p>
@@ -176,7 +176,7 @@ export default async function CertificateVerifyPage({
                     {data.certificate.certificateNo}
                   </p>
                 </div>
-                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-black/10 p-4">
+                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Verification code")}
                   </p>
@@ -184,7 +184,7 @@ export default async function CertificateVerifyPage({
                     {data.certificate.verificationCode}
                   </p>
                 </div>
-                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-black/10 p-4">
+                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Issued")}
                   </p>
@@ -192,12 +192,12 @@ export default async function CertificateVerifyPage({
                     {formatDateLabel(locale, data.certificate.issuedAt, t("Not yet"))}
                   </p>
                 </div>
-                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-black/10 p-4">
+                <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                    {t("Score")}
+                    {t("Result")}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">
-                    {data.certificate.score ?? t("Completed")}
+                    {data.certificate.status === "revoked" ? t("Revoked") : t("Passed")}
                   </p>
                 </div>
               </div>
@@ -213,16 +213,16 @@ export default async function CertificateVerifyPage({
             </div>
             <div className="mt-5 space-y-3">
               {[
-                t("The certificate number is unique inside HenryCo Learn."),
-                t("The verification code resolves to the academy record, not a placeholder file."),
+                t("The certificate number is unique inside Henry Onyx Learn."),
+                t("The verification code matches an active certificate issued by Henry Onyx Learn."),
                 t("Completion and assessment status are tied to the course enrollment path."),
               ].map((item) => (
                 <div
                   key={item}
-                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4"
+                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4"
                 >
                   <div className="flex items-start gap-3">
-                    <CircleCheckBig className="mt-0.5 h-5 w-5 text-emerald-200" />
+                    <CircleCheckBig className="mt-0.5 h-5 w-5 text-emerald-600 dark:text-emerald-300" />
                     <p className="text-sm leading-7 text-[var(--learn-ink-soft)]">{item}</p>
                   </div>
                 </div>
@@ -240,7 +240,7 @@ export default async function CertificateVerifyPage({
                 t("This certificate was issued after the course completion rules and assessment requirements were satisfied.")}
             </p>
             <div className="mt-5 grid gap-3">
-              <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                 <div className="flex items-center gap-3">
                   <FileCheck2 className="h-5 w-5 text-[var(--learn-copper)]" />
                   <p className="text-sm font-semibold text-[var(--learn-ink)]">{t("Completion state")}</p>
@@ -251,7 +251,7 @@ export default async function CertificateVerifyPage({
                     : t("The certificate remains linked to the underlying enrollment record.")}
                 </p>
               </div>
-              <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4">
+              <div className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-4">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-5 w-5 text-[var(--learn-mint-soft)]" />
                   <p className="text-sm font-semibold text-[var(--learn-ink)]">{t("Public readiness")}</p>

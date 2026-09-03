@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { Copy, Check, Link as LinkIcon } from "lucide-react";
+import { henrySubdomain } from "@henryco/config";
 
 type CopyReferralCodeCopy = {
   eyebrow: string;
@@ -20,7 +21,8 @@ type CopyReferralCodeProps = {
 export default function CopyReferralCode({ code, copy }: CopyReferralCodeProps) {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const shareLink = `https://account.henrycogroup.com/signup?ref=${code}`;
+  // V3-07(S2): account is a non-division subdomain — use henrySubdomain().
+  const shareLink = `${henrySubdomain("account", "/signup")}?ref=${code}`;
 
   const copyToClipboard = useCallback(
     async (text: string, type: "code" | "link") => {

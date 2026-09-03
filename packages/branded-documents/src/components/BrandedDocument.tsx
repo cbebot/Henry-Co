@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Document, Page, View, StyleSheet } from "@react-pdf/renderer";
+import { COMPANY } from "@henryco/config";
 import { AccentStripe, DocumentHeader, type DocumentHeaderProps } from "./DocumentHeader";
 import { DocumentFooter, type DocumentFooterProps } from "./DocumentFooter";
 import { BrandedMonogram } from "./BrandMarks";
@@ -57,11 +58,11 @@ export function BrandedDocument({
   return (
     <Document
       title={metadata.title}
-      author={metadata.author ?? "Henry & Co."}
+      author={metadata.author ?? COMPANY.group.legalName}
       subject={metadata.subject ?? metadata.title}
       keywords={(metadata.keywords ?? []).join(", ")}
-      creator={metadata.creator ?? "HenryCo Branded Documents"}
-      producer={metadata.producer ?? "HenryCo Branded Documents"}
+      creator={metadata.creator ?? `${COMPANY.group.name} Documents`}
+      producer={metadata.producer ?? `${COMPANY.group.name} Documents`}
       language={metadata.language ?? "en-NG"}
       pdfVersion="1.7"
     >

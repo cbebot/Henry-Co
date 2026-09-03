@@ -3,9 +3,13 @@ import {
   ArrowLeft,
   ArrowRight,
   CalendarClock,
+  CreditCard,
+  Lock,
   Receipt,
   Shield,
+  Wallet,
 } from "lucide-react";
+import { COMPANY } from "@henryco/config";
 import { cn } from "@henryco/ui/cn";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
 import { PaymentGuide } from "./payment-guide";
@@ -15,18 +19,19 @@ import { PaymentReceipt } from "./payment-receipt";
 import {
   formatPaymentAmount,
   formatPaymentDueDate,
+  formatPaymentReference,
   friendlyPaymentStatus,
 } from "./format";
 import type { PaymentSurfaceContext } from "./types";
 
 const DEFAULT_BODY: Record<string, string> = {
   pending:
-    "Send your payment using the verified company details below, then attach your proof so finance can confirm and unlock the next step.",
+    "Send your payment using the verified company details below, then attach your proof so we can confirm and unlock the next step.",
   processing:
     "Payment proof received. Finance is verifying — you can track confirmation here.",
   paid: "Payment confirmed. Thank you — your record stays moving.",
   failed:
-    "We could not match this transfer. Please re-upload your proof or contact finance support below.",
+    "We could not match this transfer. Please re-upload your proof or contact support below.",
   refunded: "Refund issued. The transfer was returned to the source account.",
   cancelled: "This payment was cancelled. No further action is needed.",
 };
@@ -59,7 +64,8 @@ export interface PaymentSurfaceProps {
 }
 
 export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
-  const { payment, record, platform, upload, copy, theme } = ctx;
+  const { payment, record, platform, upload, copy, theme, cardCta, walletCta, cardOnly } = ctx;
+  const reference = formatPaymentReference(payment.id, payment.reference);
   const statusLabel = friendlyPaymentStatus(payment.status, payment.statusLabel ?? null);
   const dueLabel = formatPaymentDueDate(payment.dueDate);
   const bodyByStatus = { ...DEFAULT_BODY, ...(copy?.bodyByStatus ?? {}) } as Record<string, string>;
@@ -68,10 +74,22 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
   const isProcessing = payment.status === "processing";
   const isCancelled = payment.status === "cancelled" || payment.status === "refunded";
   const proofOnFile = Boolean(payment.proofName || payment.proofUrl);
-  const showGuide = !isPaid && !proofOnFile && !isCancelled;
+  // cardOnly: the division has retired bank transfer — the card CTA is the ONLY open-payment
+  // action; the bank guide and proof upload never render (a proof already on file from the
+  // transfer era still shows its processing state until finance resolves it).
+  const showGuide = !cardOnly && !isPaid && !proofOnFile && !isCancelled;
   const showProcessing = proofOnFile && !isPaid && !isCancelled;
-  const showUpload = !isPaid && !proofOnFile && !isCancelled && Boolean(upload);
+  const showUpload = !cardOnly && !isPaid && !proofOnFile && !isCancelled && Boolean(upload);
   const showReceipt = isPaid;
+  // Card CTA shows only while the payment is genuinely open: not settled, not
+  // closed, not already in a verification/processing flow, and no proof on file
+  // (a transfer already in motion). This keeps the card path from competing
+  // with a payment the customer has already started.
+  // The open-payment window: the card + wallet actions show only while the payment is
+  // genuinely open (not settled/closed, no verification flow, no transfer proof in motion).
+  const showPayActions = !isPaid && !isProcessing && !isCancelled && !proofOnFile;
+  const showCardCta = Boolean(cardCta) && showPayActions;
+  const showWalletCta = Boolean(walletCta) && showPayActions;
   const heroEyebrow =
     copy?.eyebrow ??
     (payment.rank ? `Payment · ${payment.rank.index} of ${payment.rank.total}` : statusLabel);
@@ -154,6 +172,76 @@ export function PaymentSurface({ ctx }: PaymentSurfaceProps) {
           }
         />
       </div>
+
+      {/* Trust anchor — persistent across states: who you're paying, that it is
+          secured, and the transaction reference. Makes the surface read as a
+          real, tracked, secure payment rather than a generic form. */}
+      <div
+        className={cn(
+          "mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-2xl border px-4 py-3 text-[12px]",
+          "border-[color:var(--payment-line,rgba(255,255,255,0.18))]",
+          "text-[color:var(--payment-soft,rgba(255,255,255,0.65))]",
+        )}
+      >
+        <span className="inline-flex items-center gap-1.5 font-semibold text-[color:var(--payment-ink,white)]">
+          <Lock className="h-3.5 w-3.5 text-[color:var(--payment-accent,#97f4f3)]" aria-hidden />
+          Secured payment
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="opacity-70">to</span>
+          <span className="font-semibold text-[color:var(--payment-ink,white)]">{COMPANY.group.legalName}</span>
+        </span>
+        <span className="ml-auto inline-flex items-center gap-1.5 tabular-nums">
+          <span className="opacity-70">Ref</span>
+          <span className="font-semibold text-[color:var(--payment-ink,white)]">{reference}</span>
+        </span>
+      </div>
+
+      {showCardCta || showWalletCta ? (
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+          {showCardCta && cardCta ? (
+            <Link
+              href={cardCta.href}
+              data-testid="payment-card-cta"
+              className={cn(
+                "group inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold sm:w-auto",
+                "bg-[color:var(--payment-accent,#97f4f3)] text-black/90",
+                "transition outline-none",
+                "focus-visible:ring-2 focus-visible:ring-[color:var(--payment-accent,#97f4f3)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40",
+                "[@media(hover:hover)]:hover:brightness-110",
+              )}
+            >
+              <CreditCard className="h-4 w-4" />
+              {cardCta.label}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          ) : null}
+          {showWalletCta && walletCta ? (
+            <div className="flex flex-col gap-1">
+              <Link
+                href={walletCta.href}
+                data-testid="payment-wallet-cta"
+                className={cn(
+                  "group inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-5 py-3.5 text-sm font-semibold sm:w-auto",
+                  "border-[color:var(--payment-accent,#97f4f3)]/45 text-[color:var(--payment-accent,#97f4f3)]",
+                  "transition outline-none",
+                  "focus-visible:ring-2 focus-visible:ring-[color:var(--payment-accent,#97f4f3)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40",
+                  "[@media(hover:hover)]:hover:brightness-110",
+                )}
+              >
+                <Wallet className="h-4 w-4" />
+                {walletCta.label}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              {walletCta.note ? (
+                <span className="text-xs text-[color:var(--payment-muted,rgba(255,255,255,0.6))]">
+                  {walletCta.note}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {showGuide ? (
         <div className="mt-6">

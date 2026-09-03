@@ -119,7 +119,7 @@ export function ReadingMode({ lessonId, html, labels }: ReadingModeProps) {
   };
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[0.85fr,1.15fr] xl:grid-cols-[0.7fr,1.3fr]">
+    <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] xl:grid-cols-[0.7fr_1.3fr]">
       {/* TOC sidebar */}
       <aside className="order-2 self-start lg:sticky lg:top-24 lg:order-1">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
@@ -156,7 +156,7 @@ export function ReadingMode({ lessonId, html, labels }: ReadingModeProps) {
       {/* Body — markdown is pre-sanitised at the data layer (LearnMarkdown). */}
       <article
         ref={containerRef}
-        className="order-1 max-w-[68ch] font-serif text-[17px] leading-[1.7] text-[var(--learn-ink)] lg:order-2"
+        className="order-1 max-w-[68ch] hc-font-reading text-[17px] leading-[1.7] text-[var(--learn-ink)] lg:order-2"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

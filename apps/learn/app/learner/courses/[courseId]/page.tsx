@@ -52,7 +52,7 @@ function formatRelativeTime(value: string | null | undefined, t: LearnTranslator
 
 function displayName(value: string | null | undefined, t: LearnTranslator) {
   const text = String(value || "").trim();
-  if (!text) return t("HenryCo learner");
+  if (!text) return t("Henry Onyx learner");
   return text.split(/\s+/).slice(0, 2).join(" ");
 }
 
@@ -123,13 +123,13 @@ export default async function LearnerCoursePage({
     !quiz
       ? null
       : !courseAccessActive
-        ? t("Your seat is reserved and the room is waiting for payment activation.")
+        ? t("Your seat is reserved. This opens once your payment is confirmed.")
         : !allLessonsComplete
           ? t("Finish every lesson before the final assessment opens.")
           : quizPassed
             ? t("Assessment passed.")
             : remainingAttempts === 0
-              ? t("The assessment has reached its maximum attempts. Ask the academy team for a review.")
+              ? t("You've used all attempts for this assessment. Contact support to request a review.")
               : null;
   const certificate = workspace.certificates.find((item) => item.courseId === course.id) || null;
   const certificateHref = certificate ? `/certifications/verify/${certificate.verificationCode}` : null;
@@ -241,7 +241,7 @@ export default async function LearnerCoursePage({
       return {
         id: item.id,
         fullName:
-          profile?.fullName || (item.userId === viewer.user?.id ? viewer.user?.fullName : null) || t("HenryCo learner"),
+          profile?.fullName || (item.userId === viewer.user?.id ? viewer.user?.fullName : null) || t("Henry Onyx learner"),
         avatarUrl: profile?.avatarUrl || null,
         status: item.status,
         percentComplete: item.percentComplete,
@@ -270,7 +270,7 @@ export default async function LearnerCoursePage({
       kicker={t("Learning room")}
       title={courseTitle || course.title}
       description={t(
-        "Work through lessons in order, take the final assessment when it unlocks, and download your certificate here when you’ve earned it. Enrollments, billing, and saved courses also appear in your HenryCo account under Learn.",
+        "Work through lessons in order, take the final assessment when it unlocks, and download your certificate here when you’ve earned it. Enrollments, billing, and saved courses also appear in your Henry Onyx account under Learn.",
       )}
       nav={courseRoomNav(`/learner/courses/${course.id}`, t)}
       actions={
@@ -279,7 +279,7 @@ export default async function LearnerCoursePage({
             href={getAccountLearnUrl()}
             className="learn-button-secondary rounded-full px-4 py-2.5 text-sm font-semibold"
           >
-            {t("HenryCo account")}
+            {t("Henry Onyx account")}
           </a>
           {certificate ? (
             <CertificateDownloadButton
@@ -343,18 +343,18 @@ export default async function LearnerCoursePage({
 
               <div className="mt-6 space-y-5">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-4">
+                  <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                       {t("Assessment state")}
                     </p>
                     <p className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[var(--learn-ink)]">
-                      {quizPassed ? t("Assessment complete") : quizLockedReason ? t("Assessment gated") : t("Assessment ready")}
+                      {quizPassed ? t("Assessment complete") : quizLockedReason ? t("Assessment locked") : t("Assessment ready")}
                     </p>
                     <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
                       {quizLockedReason || t("Lessons are complete. Submit the assessment to unlock final completion and certification.")}
                     </p>
                   </div>
-                  <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-4">
+                  <div className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                       {t("Attempt history")}
                     </p>
@@ -363,7 +363,7 @@ export default async function LearnerCoursePage({
                         attempts.slice(0, 3).map((attempt) => (
                           <div
                             key={attempt.id}
-                            className="rounded-[1.2rem] border border-[var(--learn-line)] bg-black/10 p-3"
+                            className="rounded-[1.2rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-3"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <p className="text-sm font-semibold text-[var(--learn-ink)]">{attempt.score}%</p>
@@ -409,7 +409,7 @@ export default async function LearnerCoursePage({
                     {questionsLocalized.map((question, index) => (
                       <div
                         key={question.id}
-                        className="rounded-[1.5rem] border border-[var(--learn-line)] bg-white/5 p-5"
+                        className="rounded-[1.5rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-5"
                       >
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                           {t("Question")} {index + 1}
@@ -455,7 +455,7 @@ export default async function LearnerCoursePage({
                 )}
 
                 {reviewQuestions.length > 0 ? (
-                  <div className="rounded-[1.6rem] border border-[var(--learn-line)] bg-black/10 p-5">
+                  <div className="rounded-[1.6rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-5">
                     <div className="flex items-center gap-3 text-[var(--learn-copper)]">
                       <Layers3 className="h-5 w-5" />
                       <p className="text-sm font-semibold">{t("Review before your next attempt")}</p>
@@ -464,7 +464,7 @@ export default async function LearnerCoursePage({
                       {reviewQuestions.map((question) => (
                         <div
                           key={question.id}
-                          className="rounded-[1.2rem] border border-[var(--learn-line)] bg-white/5 p-4"
+                          className="rounded-[1.2rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4"
                         >
                           <p className="text-sm font-semibold text-[var(--learn-ink)]">{question.prompt}</p>
                           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
@@ -491,7 +491,7 @@ export default async function LearnerCoursePage({
               {requirementItems.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-4"
+                  className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4"
                 >
                   <div className="flex items-start gap-3">
                     {item.done ? (
@@ -542,7 +542,7 @@ export default async function LearnerCoursePage({
 
       {certificate ? (
         <LearnPanel className="learn-print-sheet rounded-[2.1rem] p-0">
-          <div className="rounded-[2.1rem] border border-[var(--learn-line)] bg-[linear-gradient(160deg,rgba(227,188,126,0.16),rgba(95,197,171,0.1))] p-8 sm:p-10">
+          <div className="rounded-[2.1rem] border border-[var(--learn-line)] bg-[var(--learn-accent-soft)] p-8 sm:p-10">
             <div className="learn-print-hidden flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
@@ -560,9 +560,9 @@ export default async function LearnerCoursePage({
               />
             </div>
 
-            <div className="mt-8 rounded-[1.9rem] border border-[var(--learn-line)] bg-white/5 p-8 sm:p-10">
+            <div className="mt-8 rounded-[1.9rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-8 sm:p-10">
               <p className="text-center text-xs font-semibold uppercase tracking-[0.26em] text-[var(--learn-ink-soft)]">
-                {t("HenryCo Learn Certificate")}
+                {t("Henry Onyx Learn Certificate")}
               </p>
               <h3 className="mt-6 text-center text-[2.5rem] font-semibold tracking-[-0.05em] text-[var(--learn-ink)] sm:text-[3.4rem]">
                 {displayName(viewer.user?.fullName, t)}
@@ -574,19 +574,19 @@ export default async function LearnerCoursePage({
                 {courseTitle || course.title}
               </p>
               <div className="mt-8 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
+                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Certificate no")}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{certificate.certificateNo}</p>
                 </div>
-                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
+                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Verification code")}
                   </p>
                   <p className="mt-2 text-lg font-semibold text-[var(--learn-ink)]">{certificate.verificationCode}</p>
                 </div>
-                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-black/10 p-4 text-center">
+                <div className="rounded-[1.3rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
                     {t("Issued")}
                   </p>

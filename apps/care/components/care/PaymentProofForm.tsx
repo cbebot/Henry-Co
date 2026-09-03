@@ -88,7 +88,7 @@ export default function PaymentProofForm({
         title: payload.duplicate ? t("Receipt already captured") : t("Receipt submitted"),
         description: payload.duplicate
           ? t("The team already has this receipt on file.")
-          : t("The HenryCo Care team will review the payment and update your booking shortly."),
+          : t("The Henry Onyx Care team will review the payment and update your booking shortly."),
       });
 
       await onSubmitted?.();

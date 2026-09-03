@@ -5,6 +5,7 @@ import {
   type DivisionConfig,
   type DivisionKey,
 } from "./company";
+import { getSurfaceConfig, getSurfaceUrl, type SurfaceKey } from "./surfaces";
 
 export type HenryCoSitemapFrequency =
   | "always"
@@ -25,6 +26,8 @@ export type HenryCoSitemapEntry = {
 type HenryCoSocialImage = {
   url: string;
   alt?: string;
+  width?: number;
+  height?: number;
 };
 
 type HenryCoDivisionMetadataOptions = {
@@ -201,37 +204,99 @@ export function createDivisionMetadata(
         .map((l) => SEO_OPEN_GRAPH_LOCALE[l] || SEO_OPEN_GRAPH_LOCALE.en)
     : undefined;
 
-  return {
+  return buildSocialMetadata({
     title,
     description,
+    openGraphTitle,
+    openGraphDescription,
+    siteName: options.siteName || division.name,
+    type: options.type || "website",
     metadataBase,
-    alternates: canonical
+    canonicalUrl: canonical,
+    images: options.images,
+    languagesMap,
+    openGraphLocale: openGraphLocaleValue,
+    openGraphAlternateLocale: openGraphAlternateLocaleValue,
+    icon,
+    noIndex: options.noIndex,
+  });
+}
+
+/**
+ * OG-SOCIAL-METADATA — the single assembly point for Open Graph + Twitter Card
+ * metadata, shared by every customer-facing surface (divisions AND non-division
+ * surfaces like `account`). Both `createDivisionMetadata` and
+ * `createSurfaceMetadata` resolve their brand/URL/locale inputs and then hand
+ * off here so the head-bound tag set is built in exactly one place.
+ *
+ * Guarantees, regardless of caller:
+ *  - og:title / og:description / og:url / og:type / og:site_name
+ *  - twitter:card = `summary_large_image` ALWAYS. Every Henry Onyx surface
+ *    ships a 1200x630 image (the file-convention `opengraph-image` route, or an
+ *    explicit per-page override), so the large card is always correct. A
+ *    missing image option must NEVER silently downgrade it to `summary`.
+ *
+ * og:image is intentionally NOT inlined for the default site-level case — the
+ * file-convention `opengraph-image` / `twitter-image` routes emit the single
+ * og:image / twitter:image (Next resolves them to ABSOLUTE urls via
+ * `metadataBase`). Inlining here as well would emit a duplicate tag. Per-page
+ * callers that pass `images` opt into an explicit inline image instead.
+ */
+type BuildSocialMetadataInput = {
+  title: string;
+  description?: string;
+  openGraphTitle: string;
+  openGraphDescription?: string;
+  siteName: string;
+  type: "website" | "article";
+  metadataBase?: URL;
+  canonicalUrl?: string;
+  images?: HenryCoSocialImage[];
+  languagesMap?: Record<string, string>;
+  openGraphLocale?: string;
+  openGraphAlternateLocale?: string[];
+  icon?: string;
+  noIndex?: boolean;
+};
+
+function buildSocialMetadata(input: BuildSocialMetadataInput) {
+  const hasImages = Boolean(input.images?.length);
+  return {
+    title: input.title,
+    description: input.description,
+    metadataBase: input.metadataBase,
+    alternates: input.canonicalUrl
       ? {
-          canonical,
-          ...(languagesMap ? { languages: languagesMap } : {}),
+          canonical: input.canonicalUrl,
+          ...(input.languagesMap ? { languages: input.languagesMap } : {}),
         }
       : undefined,
     openGraph: {
-      title: openGraphTitle,
-      description: openGraphDescription,
-      siteName: options.siteName || division.name,
-      type: options.type || "website",
-      url: canonical,
-      images: options.images?.length ? options.images : undefined,
-      ...(openGraphLocaleValue ? { locale: openGraphLocaleValue } : {}),
-      ...(openGraphAlternateLocaleValue ? { alternateLocale: openGraphAlternateLocaleValue } : {}),
+      title: input.openGraphTitle,
+      description: input.openGraphDescription,
+      siteName: input.siteName,
+      type: input.type,
+      url: input.canonicalUrl,
+      ...(hasImages ? { images: input.images } : {}),
+      ...(input.openGraphLocale ? { locale: input.openGraphLocale } : {}),
+      ...(input.openGraphAlternateLocale
+        ? { alternateLocale: input.openGraphAlternateLocale }
+        : {}),
     },
     twitter: {
-      card: options.images?.length ? "summary_large_image" : "summary",
-      title: openGraphTitle,
-      description: openGraphDescription,
-      images: options.images?.map((image) => image.url),
+      // ALWAYS the large card — see the contract note above. `as const` keeps
+      // the literal type so this stays assignable to Next's `twitter.card`
+      // union when spread into `Metadata` by every consuming app.
+      card: "summary_large_image" as const,
+      title: input.openGraphTitle,
+      description: input.openGraphDescription,
+      ...(hasImages ? { images: input.images!.map((image) => image.url) } : {}),
     },
-    icons: icon
+    icons: input.icon
       ? {
-          icon: [{ url: icon }],
-          shortcut: [{ url: icon }],
-          apple: [{ url: icon }],
+          icon: [{ url: input.icon }],
+          shortcut: [{ url: input.icon }],
+          apple: [{ url: input.icon }],
         }
       : {
           // iOS Safari Add-to-Home-Screen does not read PNG entries from the
@@ -247,13 +312,92 @@ export function createDivisionMetadata(
             },
           ],
         },
-    robots: options.noIndex
+    robots: input.noIndex
       ? {
           index: false,
           follow: false,
         }
       : undefined,
   };
+}
+
+type HenryCoSurfaceMetadataOptions = {
+  title?: string;
+  description?: string | null;
+  openGraphTitle?: string;
+  openGraphDescription?: string | null;
+  siteName?: string;
+  path?: string;
+  type?: "website" | "article";
+  images?: HenryCoSocialImage[];
+  icon?: string | null;
+  /** Defaults to the surface's own `noIndex` flag (account is noindex). */
+  noIndex?: boolean;
+  locale?: string | null;
+};
+
+/**
+ * Sibling of `createDivisionMetadata` for non-division, customer-facing
+ * surfaces (e.g. `account`). Resolves brand + canonical URL from the SURFACES
+ * registry and emits the same complete OG + Twitter set via the shared core.
+ *
+ * Unlike divisions (always served from their production origin), a surface's
+ * `metadataBase` follows the runtime: the production https origin in prod, and
+ * `http://localhost:<devPort>` in development — preserving the prior
+ * hand-rolled account behaviour while unifying the tag assembly.
+ */
+export function createSurfaceMetadata(
+  key: SurfaceKey,
+  options: HenryCoSurfaceMetadataOptions = {}
+) {
+  const surface = getSurfaceConfig(key);
+  const isProduction = process.env.NODE_ENV === "production";
+  const origin = isProduction
+    ? getSurfaceUrl(key)
+    : `http://localhost:${surface.devPort}`;
+  const metadataBase = createMetadataBase(origin);
+  const description = toSeoDescription(options.description, surface.description);
+  const openGraphDescription = toSeoDescription(
+    options.openGraphDescription,
+    options.description || surface.tagline || surface.description
+  );
+  const title = options.title || surface.name;
+  const openGraphTitle = options.openGraphTitle || title;
+  const canonical = options.path
+    ? new URL(normalizePath(options.path), origin).toString()
+    : undefined;
+  const icon = options.icon?.trim() || undefined;
+
+  const activeLocale = normalizeSeoLocale(options.locale);
+  const includeLocaleAlternates = Boolean(options.locale && canonical);
+  const languagesMap = includeLocaleAlternates
+    ? buildLocaleAlternates(canonical!)
+    : undefined;
+  const openGraphLocaleValue = options.locale
+    ? SEO_OPEN_GRAPH_LOCALE[activeLocale] || SEO_OPEN_GRAPH_LOCALE.en
+    : undefined;
+  const openGraphAlternateLocaleValue = includeLocaleAlternates
+    ? SEO_PUBLIC_LOCALES.filter((l) => l !== activeLocale).map(
+        (l) => SEO_OPEN_GRAPH_LOCALE[l] || SEO_OPEN_GRAPH_LOCALE.en
+      )
+    : undefined;
+
+  return buildSocialMetadata({
+    title,
+    description,
+    openGraphTitle,
+    openGraphDescription,
+    siteName: options.siteName || surface.name,
+    type: options.type || "website",
+    metadataBase,
+    canonicalUrl: canonical,
+    images: options.images,
+    languagesMap,
+    openGraphLocale: openGraphLocaleValue,
+    openGraphAlternateLocale: openGraphAlternateLocaleValue,
+    icon,
+    noIndex: options.noIndex ?? surface.noIndex,
+  });
 }
 
 export function createPublicRobots(key: DivisionKey, disallow: string[] = []) {

@@ -2,6 +2,7 @@ import "server-only";
 
 import { createAdminSupabase } from "@/lib/supabase";
 import type { OwnerReconcileTrace } from "@henryco/dashboard-shell/owner-register";
+import { loadFinanceLedgerTrace } from "@/lib/finance-ledger";
 
 /**
  * Track B / DASH-8 G8 + V15 — reconcile-trace resolver.
@@ -32,6 +33,13 @@ import type { OwnerReconcileTrace } from "@henryco/dashboard-shell/owner-registe
 export async function loadOwnerReconcileTrace(
   traceId: string,
 ): Promise<OwnerReconcileTrace | null> {
+  // V3-22 — finance/ledger traces read the money spine over the dedicated
+  // read-only direct-pg path (payments_private is not PostgREST-exposed), so they
+  // are resolved before the admin (PostgREST) client is even constructed.
+  if (traceId.startsWith("finance.")) {
+    return loadFinanceLedgerTrace(traceId);
+  }
+
   const admin = createAdminSupabase();
   const executedAt = new Date().toISOString();
 
@@ -59,18 +67,21 @@ export async function loadOwnerReconcileTrace(
       };
     }
     case "overview.recognized-revenue": {
-      // Source: care_bookings + marketplace_orders (paid) + shared invoices.
+      // Source: care_bookings + marketplace_orders (paid) + customer invoices.
+      // Columns are the prod-actual ones: marketplace_orders.grand_total,
+      // care_bookings.amount_paid, customer_invoices.total_kobo (there is no
+      // *_naira column family and no bare `invoices` table).
       const { data: marketplacePaid, error: marketplaceErr } = await admin
         .from("marketplace_orders")
-        .select("total_naira", { count: "exact", head: false })
+        .select("grand_total", { count: "exact", head: false })
         .eq("status", "paid");
       void marketplacePaid;
       const sql =
-        "SELECT SUM(total_naira) FROM marketplace_orders WHERE status = 'paid' " +
+        "SELECT SUM(grand_total) FROM marketplace_orders WHERE status = 'paid' " +
         "UNION ALL " +
-        "SELECT SUM(price_naira) FROM care_bookings WHERE payment_status = 'paid' " +
+        "SELECT SUM(amount_paid) FROM care_bookings WHERE payment_status = 'paid' " +
         "UNION ALL " +
-        "SELECT SUM(amount_naira) FROM invoices WHERE status = 'paid';";
+        "SELECT SUM(total_kobo) FROM customer_invoices WHERE status = 'paid';";
       return {
         id: traceId,
         label: "Recognized revenue",

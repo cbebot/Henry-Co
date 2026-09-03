@@ -17,7 +17,7 @@ import { updateRiderStatusAction } from "../../owner/actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Rider Pickups | Henry & Co. Fabric Care",
+  title: "Rider Pickups | Henry Onyx Fabric Care",
   description: "Pickup queue for garment collections grouped by urgency and scheduled timing.",
 };
 

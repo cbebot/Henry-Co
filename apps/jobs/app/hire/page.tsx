@@ -9,7 +9,9 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import { JOBS_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
 import { getJobsCopy } from "@henryco/i18n";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { BRAND_EMAILS } from "@henryco/config";
 import { PublicShell } from "@/components/public-shell";
 import { getSharedAccountLoginUrl, getSharedAccountSignupUrl } from "@/lib/account";
@@ -33,10 +35,23 @@ export default async function HirePage() {
     getJobsPublicLocale(),
   ]);
   const copy = getJobsCopy(locale).hirePage;
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  const startUrl = viewer.user
-    ? "/employer/company"
-    : getSharedAccountSignupUrl("/employer/company");
+  // AWARE-SP1: "signed in" is not "is an employer". An EXISTING employer goes
+  // to their workspace (/employer), not back through company onboarding; a
+  // signed-in candidate starts onboarding; a visitor signs up first.
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    JOBS_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("jobs", standing);
+  const isEmployer = standing.kind === "operator";
+  const startUrl = isEmployer
+    ? plan.recruit.href
+    : viewer.user
+      ? "/employer/company"
+      : getSharedAccountSignupUrl("/employer/company");
+  const startLabel = isEmployer ? t(plan.recruit.label) : null;
   const loginUrl = getSharedAccountLoginUrl("/employer/company");
 
   const flow = [
@@ -81,14 +96,14 @@ export default async function HirePage() {
   return (
     <PublicShell
       primaryCta={{
-        label: viewer.user ? "Open employer workspace" : "Create employer account",
+        label: startLabel ?? (viewer.user ? t("Set up your employer profile") : t("Create employer account")),
         href: startUrl,
       }}
       secondaryCta={{ label: copy.ctaBrowseCandidates, href: "/talent" }}
     >
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 lg:px-8">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{copy.eyebrow}</p>
               <h1 className="mt-4 jobs-display max-w-3xl text-balance">
@@ -97,22 +112,22 @@ export default async function HirePage() {
               <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
                 {copy.heroBody}
               </p>
-              <p className="mt-4 inline-flex max-w-2xl items-start gap-2 rounded-2xl border border-black/10 bg-white/60 px-4 py-3 text-[13.5px] leading-7 text-[var(--jobs-muted)] dark:border-white/10 dark:bg-white/[0.03]">
+              <p className="mt-4 inline-flex max-w-2xl items-start gap-2 rounded-2xl border border-[color:var(--jobs-line)] bg-[color:var(--jobs-paper-soft)] px-4 py-3 text-[13.5px] leading-7 text-[var(--jobs-muted)]">
                 <Shield className="mt-0.5 h-4 w-4 shrink-0 text-[var(--jobs-accent)]" aria-hidden />
                 <span>{copy.shieldNotice}</span>
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={startUrl}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                  className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
                 >
-                  {viewer.user ? copy.ctaSignedIn : copy.ctaSignedOut}
+                  {startLabel ?? (viewer.user ? copy.ctaSignedIn : copy.ctaSignedOut)}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 {!viewer.user ? (
                   <Link
                     href={loginUrl}
-                    className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:border-[var(--jobs-accent)]/40 dark:border-white/15 dark:bg-white/[0.04] dark:text-white"
+                    className="jobs-button-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition"
                   >
                     {copy.ctaLogin}
                   </Link>
@@ -146,7 +161,7 @@ export default async function HirePage() {
               return (
                 <li
                   key={item.step}
-                  className="grid gap-3 py-6 sm:grid-cols-[auto,1fr,auto] sm:items-start sm:gap-8"
+                  className="grid gap-3 py-6 sm:grid-cols-[auto_1fr_auto] sm:items-start sm:gap-8"
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
                     {copy.stepPrefix} {item.step}
@@ -188,7 +203,7 @@ export default async function HirePage() {
         </section>
 
         <section className="border-t border-black/10 pt-10 dark:border-white/10">
-          <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{copy.qualityKicker}</p>
               <h2 className="mt-3 jobs-heading max-w-2xl text-balance">
@@ -201,9 +216,9 @@ export default async function HirePage() {
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href={startUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
               >
-                {viewer.user ? copy.ctaWorkspace : copy.ctaGetStarted}
+                {startLabel ?? (viewer.user ? copy.ctaWorkspace : copy.ctaGetStarted)}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link

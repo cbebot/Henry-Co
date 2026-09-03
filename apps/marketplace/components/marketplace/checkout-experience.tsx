@@ -1,31 +1,60 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DivisionImage, ActionButton } from "@henryco/dashboard-shell/components";
 import Link from "next/link";
 import {
   AlertCircle,
-  Banknote,
   Bookmark,
   Check,
   ChevronLeft,
   ChevronRight,
   Copy,
+  CreditCard,
+  Loader2,
   Lock,
+  RefreshCw,
   Truck,
   UploadCloud,
   Wallet,
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { NG_STATES } from "@henryco/config";
+import { useFormDraft } from "@henryco/lifecycle/drafts";
+import { useKeyboardAvoidance } from "@henryco/ui/mobile";
 import type { UserAddressRecord } from "@henryco/address-selector";
 import { useMarketplaceCart } from "@/components/marketplace/runtime-provider";
 import { formatCurrency } from "@/lib/utils";
 
 type CheckoutStep = "delivery" | "payment" | "confirm";
 
-const STEP_IDS: CheckoutStep[] = ["delivery", "payment", "confirm"];
+
+/**
+ * Persisted user-input shape for the checkout draft.
+ *
+ * Captures only what the user explicitly typed or selected — the cart
+ * contents, addresses book, payment-rail config, wallet snapshot, and
+ * `buyer` identity are all server-fetched runtime data and stay out of
+ * the draft. The `proofName` (display-only filename for the upload
+ * field) is also excluded because the underlying `File` object is lost
+ * on reload — restoring just the name would mislead the user into
+ * thinking proof was still attached. Card-sensitive data NEVER enters
+ * the DOM in this flow (bank transfer + wallet + COD only), so
+ * `paymentMethod` here is a method id, never card data.
+ *
+ * Schema versioned at 1; bump if shape changes.
+ */
+type CheckoutDraft = {
+  step: CheckoutStep;
+  selectedAddressId: string | null;
+  oneShot: { fullName: string; phone: string; city: string; region: string; line1: string };
+  usingOneShot: boolean;
+  phoneOverride: string;
+  paymentMethod: PaymentMethodId;
+  bankReference: string;
+};
 
 function buildSteps(t: (s: string) => string): Array<{ id: CheckoutStep; label: string; description: string }> {
   return [
@@ -47,31 +76,75 @@ function buildSteps(t: (s: string) => string): Array<{ id: CheckoutStep; label: 
   ];
 }
 
-type PaymentMethodId = "wallet_balance" | "bank_transfer" | "cod";
+type PaymentMethodId = "wallet_balance" | "bank_transfer" | "cod" | "card";
 
-function buildPaymentMethods(t: (s: string) => string): Array<{
+/**
+ * RELIABILITY-01 — payment-proof upload state machine.
+ *
+ * - `idle`: no file picked yet
+ * - `validating`: client-side size/MIME check in flight (sync, mostly
+ *   instantaneous, but expressed as a state to keep the UI honest)
+ * - `uploading`: fetch to /api/checkout/payment-proof is open
+ * - `uploaded`: server returned `{ ok, url, public_id, name }` —
+ *   `paymentReady` is satisfied for bank_transfer once we hit this
+ * - `error`: server returned a structured envelope (or fetch threw);
+ *   `code` distinguishes user-action failures from transient
+ *   Cloudinary outages so the UI can offer a retry hint
+ */
+export type ProofUploaded = { url: string; publicId: string; name: string };
+export type ProofStatus =
+  | { status: "idle" }
+  | { status: "validating" }
+  | { status: "uploading" }
+  | { status: "uploaded"; data: ProofUploaded }
+  | {
+      status: "error";
+      message: string;
+      code:
+        | "missing_file"
+        | "invalid_type"
+        | "too_large"
+        | "cloudinary_unavailable"
+        | "internal_error"
+        | "network";
+    };
+
+function buildPaymentMethods(
+  t: (s: string) => string,
+  cardEnabled = false,
+): Array<{
   id: PaymentMethodId;
   label: string;
   description: string;
   icon: typeof Wallet;
 }> {
   return [
+    // V3-DIVISION-CHECKOUT-01 — the instant card rail leads when it is enabled
+    // (test-mode flag). Confirmed the moment payment clears; no proof to upload.
+    ...(cardEnabled
+      ? [
+          {
+            id: "card" as const,
+            label: t("Card"),
+            description: t(
+              "Pay securely by card. Your order is confirmed the moment payment clears — nothing to upload.",
+            ),
+            icon: CreditCard,
+          },
+        ]
+      : []),
     {
       id: "wallet_balance",
-      label: t("HenryCo balance"),
+      label: t("Henry Onyx balance"),
       description: t(
-        "Use cleared HenryCo wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
+        "Use cleared Henry Onyx wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
       ),
       icon: Wallet,
     },
-    {
-      id: "bank_transfer",
-      label: t("Bank transfer"),
-      description: t(
-        "Pay by transfer, upload proof, and the payment team verifies. The order timeline updates in real time.",
-      ),
-      icon: Banknote,
-    },
+    // Bank transfer is RETIRED — no more manual transfer + proof. The buyer pays by the live
+    // card rail (confirmed the moment it clears) or with cleared wallet funds. Cash on
+    // delivery is kept for eligible orders. The persisted-draft guard below pulls any retired
+    // method back to a valid one, so bank_transfer can never be submitted.
     {
       id: "cod",
       label: t("Cash on delivery"),
@@ -132,6 +205,7 @@ export function CheckoutExperience({
   paymentReference,
   walletTopUpHref,
   buyer,
+  cardEnabled = false,
 }: {
   cart: CartShape;
   cartToken: string | null;
@@ -141,114 +215,358 @@ export function CheckoutExperience({
   paymentReference: string;
   walletTopUpHref: string;
   buyer: { fullName: string | null; email: string | null };
+  /** V3-DIVISION-CHECKOUT-01 test-mode flag — offers the instant card method. */
+  cardEnabled?: boolean;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const { moveCartItemToSaved, pendingSavedItemIds } = useMarketplaceCart();
-  const [step, setStep] = useState<CheckoutStep>("delivery");
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    addresses.find((a) => a.is_default)?.id ?? addresses[0]?.id ?? null
-  );
-  const [oneShot, setOneShot] = useState<{
-    fullName: string;
-    phone: string;
-    city: string;
-    region: string;
-    line1: string;
-  }>({
-    fullName: buyer.fullName ?? "",
-    phone: "",
-    city: "",
-    region: "",
-    line1: "",
-  });
-  const [usingOneShot, setUsingOneShot] = useState<boolean>(addresses.length === 0);
-  const [phoneOverride, setPhoneOverride] = useState<string>("");
+  // V3-09(S2) — Keyboard avoidance for the mobile checkout flow.
+  // Telemetry surface label is shared across all three steps so the
+  // event cardinality stays one label per checkout (not three).
+  useKeyboardAvoidance({ surface: "marketplace_checkout" });
   const subtotal = cart.subtotal;
   const shipping = subtotal > 350000 ? 0 : 18000;
   const total = subtotal + shipping;
   const currency = cart.items[0]?.currency || "NGN";
   const totalKobo = Math.max(0, Math.round(total * 100));
   const walletCanPay = wallet.isActive && Boolean(wallet.walletId) && wallet.availableKobo >= totalKobo;
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>(
-    walletCanPay ? "wallet_balance" : "bank_transfer"
+
+  // V3-01 form-draft envelope — survives refresh + reauth round-trip.
+  // Initial values mirror the prior useState defaults (so first-paint
+  // behaviour is identical when no draft exists). On mount, the hook
+  // restores the persisted envelope if one is found.
+  const initialDraft = useMemo<CheckoutDraft>(
+    () => ({
+      step: "delivery",
+      selectedAddressId: addresses.find((a) => a.is_default)?.id ?? addresses[0]?.id ?? null,
+      oneShot: {
+        fullName: buyer.fullName ?? "",
+        phone: "",
+        city: "",
+        region: "",
+        line1: "",
+      },
+      usingOneShot: addresses.length === 0,
+      phoneOverride: "",
+      // Card-ready leads with the real card rail; otherwise wallet (if funded) and
+      // the retired bank-transfer rail is the last fallback only while card is off.
+      paymentMethod: cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "cod",
+      bankReference: "",
+    }),
+    // Initial value is captured once on mount; subsequent prop changes
+    // (cart total flipping walletCanPay, addresses arriving) are
+    // handled by the live useEffect below — they should NOT re-seed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
-  const [bankReference, setBankReference] = useState("");
+
+  const draft = useFormDraft<CheckoutDraft>("marketplace-checkout", initialDraft);
+  const {
+    step,
+    selectedAddressId,
+    oneShot,
+    usingOneShot,
+    phoneOverride,
+    paymentMethod,
+    bankReference,
+  } = draft.value;
+
+  // Per-field setters that update the single draft envelope. Each
+  // matches the signature the existing child-component props expect
+  // (no functional setters needed — DeliveryStep's `setUsingOneShot`
+  // is the one exception and gets the React.Dispatch shape below).
+  const setStep = useCallback(
+    (next: CheckoutStep) =>
+      draft.setValue((prev) => (prev.step === next ? prev : { ...prev, step: next })),
+    [draft],
+  );
+  const setSelectedAddressId = useCallback(
+    (next: string | null) =>
+      draft.setValue((prev) =>
+        prev.selectedAddressId === next ? prev : { ...prev, selectedAddressId: next },
+      ),
+    [draft],
+  );
+  const setOneShot = useCallback(
+    (next: CheckoutDraft["oneShot"]) =>
+      draft.setValue((prev) => ({ ...prev, oneShot: next })),
+    [draft],
+  );
+  const setUsingOneShot = useCallback<React.Dispatch<React.SetStateAction<boolean>>>(
+    (next) =>
+      draft.setValue((prev) => {
+        const resolved = typeof next === "function" ? next(prev.usingOneShot) : next;
+        return prev.usingOneShot === resolved ? prev : { ...prev, usingOneShot: resolved };
+      }),
+    [draft],
+  );
+  const setPhoneOverride = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.phoneOverride === next ? prev : { ...prev, phoneOverride: next },
+      ),
+    [draft],
+  );
+  const setPaymentMethod = useCallback(
+    (next: PaymentMethodId) =>
+      draft.setValue((prev) =>
+        prev.paymentMethod === next ? prev : { ...prev, paymentMethod: next },
+      ),
+    [draft],
+  );
+  const setBankReference = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.bankReference === next ? prev : { ...prev, bankReference: next },
+      ),
+    [draft],
+  );
+
+  // `proofName` is the display name of the bank-transfer proof upload.
+  // We deliberately KEEP this out of the persisted draft — the
+  // underlying File object is lost on reload, so restoring just the
+  // name would mislead the user into thinking proof was still
+  // attached. Plain useState here.
   const [proofName, setProofName] = useState("");
+
+  // RELIABILITY-01 — proof upload state machine. Until the upload
+  // settles to `uploaded`, the payment step is NOT considered ready;
+  // this prevents the prior bug where the user submitted with only a
+  // filename (no File) reaching the server. The `uploaded` payload
+  // mirrors the JSON the new /api/checkout/payment-proof route returns
+  // and is forwarded into the order-submit form as hidden fields, so
+  // the marketplace route can persist the Cloudinary URL directly
+  // without re-uploading. ProofStatus / ProofUploaded are declared at
+  // module scope so the PaymentStep child can reference them too.
+  const [proofState, setProofState] = useState<ProofStatus>({ status: "idle" });
+
+  // Stable ref so the upload helper can be cancelled if the user picks
+  // a new file mid-flight. AbortController is created per attempt and
+  // the previous one is aborted before a new upload starts.
+  const proofAbortRef = useRef<AbortController | null>(null);
+
+  // UI lock during submit; not user-input — plain useState.
   const [submitting, setSubmitting] = useState(false);
+  // Marketplace policy consent; reset each session, not persisted —
+  // matches the prior behaviour (the previous manual draft also did
+  // not store this field).
   const [agreed, setAgreed] = useState(true);
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Persist progress (auto-save) — survives reload mid-checkout.
+  // When the wallet/payment-rail availability changes (e.g. cart total
+  // moves the user across the wallet-can-pay threshold), nudge the
+  // selected method into a valid choice. Preserved verbatim from the
+  // pre-draft version of this component.
   useEffect(() => {
-    try {
-      const draft = localStorage.getItem("henryco:mp:checkoutDraft");
-      if (draft) {
-        const parsed = JSON.parse(draft) as {
-          step?: CheckoutStep;
-          paymentMethod?: PaymentMethodId;
-          bankReference?: string;
-          phoneOverride?: string;
-          oneShot?: typeof oneShot;
-          usingOneShot?: boolean;
-          selectedAddressId?: string | null;
-        };
-        if (parsed.step) setStep(parsed.step);
-        if (parsed.paymentMethod) setPaymentMethod(parsed.paymentMethod);
-        if (typeof parsed.bankReference === "string") setBankReference(parsed.bankReference);
-        if (typeof parsed.phoneOverride === "string") setPhoneOverride(parsed.phoneOverride);
-        if (parsed.oneShot) setOneShot(parsed.oneShot);
-        if (typeof parsed.usingOneShot === "boolean") setUsingOneShot(parsed.usingOneShot);
-        if (parsed.selectedAddressId !== undefined && addresses.some((a) => a.id === parsed.selectedAddressId)) {
-          setSelectedAddressId(parsed.selectedAddressId ?? null);
-        }
-      }
-    } catch {
-      // ignore
+    // A PERSISTED checkout draft can restore a method that is no longer offered — e.g.
+    // a `bank_transfer` draft selected before the card rail went live. Pull any method
+    // that isn't a currently-VISIBLE option back to a valid one FIRST, so a hidden /
+    // retired method can never be submitted (the route would otherwise re-point it at
+    // the wallet and silently auto-debit the buyer). Sourced from buildPaymentMethods
+    // so it can never drift from what's actually shown. (V3-RETIRE-BANKTRANSFER.)
+    // Source the visible ids from buildPaymentMethods (identity translator — we only
+    // read `.id`, never the labels, so no unstable `t` enters the deps) so this can
+    // NEVER drift from what's actually rendered.
+    const visibleMethodIds = new Set(buildPaymentMethods((s) => s, cardEnabled).map((m) => m.id));
+    if (!visibleMethodIds.has(paymentMethod)) {
+      setPaymentMethod(cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "cod");
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        "henryco:mp:checkoutDraft",
-        JSON.stringify({
-          step,
-          paymentMethod,
-          bankReference,
-          phoneOverride,
-          oneShot,
-          usingOneShot,
-          selectedAddressId,
-        })
-      );
-    } catch {
-      // ignore quota
-    }
-  }, [step, paymentMethod, bankReference, phoneOverride, oneShot, usingOneShot, selectedAddressId]);
-
-  useEffect(() => {
     if (paymentMethod === "wallet_balance" && !walletCanPay) {
-      setPaymentMethod("bank_transfer");
+      // Card-ready: lead with the live card rail; otherwise fall back to cash on delivery
+      // (bank transfer is retired).
+      setPaymentMethod(cardEnabled ? "card" : "cod");
     }
     if (paymentMethod === "bank_transfer" && !paymentRail.ready && walletCanPay) {
       setPaymentMethod("wallet_balance");
     }
-  }, [paymentMethod, paymentRail.ready, walletCanPay]);
+  }, [paymentMethod, paymentRail.ready, walletCanPay, cardEnabled, setPaymentMethod]);
+
+  // If the saved address from a restored draft is no longer in the
+  // user's address book (deleted on another device, list refreshed
+  // from server), drop the stale id. Preserves the prior guard that
+  // only restored a known address.
+  useEffect(() => {
+    if (
+      selectedAddressId !== null &&
+      !addresses.some((a) => a.id === selectedAddressId)
+    ) {
+      setSelectedAddressId(null);
+    }
+  }, [addresses, selectedAddressId, setSelectedAddressId]);
 
   const selectedAddress = useMemo(
     () => addresses.find((a) => a.id === selectedAddressId) ?? null,
     [addresses, selectedAddressId]
   );
 
+  const proofUploaded = proofState.status === "uploaded" ? proofState.data : null;
+  const proofUploading =
+    proofState.status === "uploading" || proofState.status === "validating";
+
   const paymentReady =
     paymentMethod === "wallet_balance"
       ? walletCanPay
       : paymentMethod === "bank_transfer"
-      ? paymentRail.ready && Boolean(bankReference.trim()) && Boolean(proofName)
+      ? paymentRail.ready && Boolean(bankReference.trim()) && Boolean(proofUploaded)
       : true;
+
+  // RELIABILITY-01 — client-side proof upload. Triggered the moment the
+  // user picks a file: validates size + MIME inline, then POSTs the
+  // file to /api/checkout/payment-proof which uploads to Cloudinary and
+  // returns `{ ok, url, public_id, name }`. The result is held in
+  // `proofState` until the user clicks "Place order", at which point
+  // the URL is forwarded to /api/marketplace via hidden form fields
+  // (proof_url / proof_public_id / proof_name) — the server skips its
+  // own Cloudinary round-trip when those are present.
+  //
+  // Failure path: surface the structured error (with retriable hint
+  // when the route returned the `degraded: ['cloudinary_unavailable']`
+  // envelope) so the user can decide whether to retry or pick a
+  // different file. Never silently swallow — every failure flips
+  // `proofState` into the `error` branch with a visible message.
+  // `t` is recreated every render but closes over the stable `locale`,
+  // so depending on `locale` here gives us identical semantics with a
+  // stable callback identity (one re-bind per locale switch, not per
+  // render). See note on the existing `initialDraft` useMemo above —
+  // same pattern is used elsewhere in this file.
+  const uploadProof = useCallback(async (file: File) => {
+    // Inline client-side validation — kept identical to the server
+    // contract so the user can fix violations without a round-trip.
+    const ALLOWED = new Set([
+      "application/pdf",
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+    ]);
+    const MAX = 10 * 1024 * 1024;
+
+    setProofState({ status: "validating" });
+    setProofName(file.name);
+
+    if (!ALLOWED.has((file.type || "").toLowerCase())) {
+      setProofState({
+        status: "error",
+        code: "invalid_type",
+        message: "Upload a PNG, JPG, WebP, or PDF file.",
+      });
+      return;
+    }
+    if (file.size > MAX) {
+      setProofState({
+        status: "error",
+        code: "too_large",
+        message: "File is larger than 10 MB.",
+      });
+      return;
+    }
+
+    // Abort any prior in-flight upload before starting a new one — the
+    // user picked a different file, so the old upload's result is no
+    // longer interesting.
+    proofAbortRef.current?.abort();
+    const controller = new AbortController();
+    proofAbortRef.current = controller;
+
+    setProofState({ status: "uploading" });
+
+    const body = new FormData();
+    body.set("proof", file, file.name);
+
+    try {
+      const response = await fetch("/api/checkout/payment-proof", {
+        method: "POST",
+        body,
+        signal: controller.signal,
+        credentials: "include",
+      });
+
+      const json: unknown = await response.json().catch(() => null);
+
+      if (!response.ok || !json || typeof json !== "object") {
+        const errPayload = (json ?? {}) as {
+          error?: string;
+          code?:
+            | "missing_file"
+            | "invalid_type"
+            | "too_large"
+            | "cloudinary_unavailable"
+            | "internal_error";
+        };
+        setProofState({
+          status: "error",
+          code: errPayload.code ?? "internal_error",
+          message:
+            errPayload.error ??
+            (response.status === 503
+              ? t("Proof upload is temporarily unavailable. Please retry.")
+              : t("Could not upload proof. Please try again.")),
+        });
+        return;
+      }
+
+      const ok = json as {
+        ok?: boolean;
+        url?: string;
+        public_id?: string;
+        name?: string;
+        error?: string;
+        code?:
+          | "missing_file"
+          | "invalid_type"
+          | "too_large"
+          | "cloudinary_unavailable"
+          | "internal_error";
+      };
+
+      if (!ok.ok || !ok.url || !ok.public_id) {
+        setProofState({
+          status: "error",
+          code: ok.code ?? "internal_error",
+          message: ok.error ?? t("Proof upload did not complete. Please retry."),
+        });
+        return;
+      }
+
+      setProofState({
+        status: "uploaded",
+        data: { url: ok.url, publicId: ok.public_id, name: ok.name ?? file.name },
+      });
+    } catch (err) {
+      // AbortError is a signal that a NEW upload is in flight — the
+      // newer upload will set its own state; do nothing here so we
+      // don't clobber an in-flight "uploading" state.
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      setProofState({
+        status: "error",
+        code: "network",
+        message: t("Could not reach proof upload. Check your connection and retry."),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale]);
+
+  // If the user changes payment method away from bank_transfer, clear
+  // the proof state so a stale upload doesn't leak into a subsequent
+  // bank-transfer attempt with a different cart total.
+  useEffect(() => {
+    if (paymentMethod !== "bank_transfer" && proofState.status !== "idle") {
+      proofAbortRef.current?.abort();
+      setProofState({ status: "idle" });
+      setProofName("");
+    }
+  }, [paymentMethod, proofState.status]);
+
+  // Cleanup on unmount — abort any in-flight upload so the fetch
+  // doesn't resolve into a setState on a torn-down component.
+  useEffect(() => {
+    return () => {
+      proofAbortRef.current?.abort();
+    };
+  }, []);
 
   const deliveryReady = useMemo(() => {
     if (usingOneShot) {
@@ -266,18 +584,14 @@ export function CheckoutExperience({
   function next() {
     if (step === "delivery" && !deliveryReady) return;
     if (step === "payment" && !paymentReady) return;
-    setStep((current) =>
-      current === "delivery" ? "payment" : current === "payment" ? "confirm" : current
-    );
+    setStep(step === "delivery" ? "payment" : step === "payment" ? "confirm" : step);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
   function back() {
-    setStep((current) =>
-      current === "confirm" ? "payment" : current === "payment" ? "delivery" : current
-    );
+    setStep(step === "confirm" ? "payment" : step === "payment" ? "delivery" : step);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -286,6 +600,15 @@ export function CheckoutExperience({
   async function placeOrder() {
     if (submitting) return;
     if (!agreed) return;
+    // RELIABILITY-01 — bank transfer requires a SUCCESSFUL proof upload
+    // (status === "uploaded"), not merely a selected file. The
+    // `paymentReady` check already gates on this, but we keep the
+    // method-specific guard explicit so a future refactor doesn't
+    // accidentally drop the precondition.
+    if (paymentMethod === "bank_transfer" && proofState.status !== "uploaded") {
+      setStep("payment");
+      return;
+    }
     if (!paymentReady) {
       setStep("payment");
       return;
@@ -293,6 +616,9 @@ export function CheckoutExperience({
     setSubmitting(true);
     // The form posts traditionally so we keep the existing api/marketplace
     // server contract — submitting=true just locks the UI for the duration.
+    // For bank_transfer, the proof_url / proof_public_id / proof_name
+    // hidden fields below carry the pre-uploaded result so the
+    // marketplace route doesn't have to re-upload.
     formRef.current?.requestSubmit();
   }
 
@@ -303,7 +629,7 @@ export function CheckoutExperience({
   const shippingLine1 = usingOneShot ? oneShot.line1 : selectedAddress?.street || "";
 
   return (
-    <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
+    <div className="mx-auto max-w-[1180px] space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="market-kicker">{t("Checkout")}</p>
@@ -316,24 +642,37 @@ export function CheckoutExperience({
         </div>
         <Link
           href="/cart"
-          className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] hover:text-[var(--market-paper-white)] sm:self-auto"
+          className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] hover:text-[var(--market-paper-white)] sm:self-auto"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
           {t("Edit cart")}
         </Link>
       </header>
 
-      {/* Stepper — bespoke HenryCo brass-on-noir, motion-aware */}
+      {/* Stepper — bespoke Henry Onyx brass-on-noir, motion-aware */}
       <CheckoutStepper currentStep={step} />
 
-      <section className="grid gap-6 xl:grid-cols-[1fr,420px]">
+      <section className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <form
           ref={formRef}
           action="/api/marketplace"
           method="POST"
           encType="multipart/form-data"
           className="space-y-5"
-          onSubmit={() => setSubmitting(true)}
+          onSubmit={() => {
+            setSubmitting(true);
+            // V3-01: the form posts natively to /api/marketplace which
+            // either redirects to /track/{orderNo}?placed=1 on success
+            // or back to /checkout?error=… on server-side rejection.
+            // We have no JS-level success callback, so we synchronously
+            // clear the draft at submit time — the localStorage write
+            // completes before the navigation begins. The trade-off:
+            // on a server-rejection round-trip the user lands back at
+            // /checkout without the saved selections, which mirrors
+            // the existing failure UX where the form re-renders
+            // server-side anyway.
+            draft.clear();
+          }}
         >
           <input type="hidden" name="intent" value="checkout_submit" />
           <input type="hidden" name="return_to" value="/checkout" />
@@ -347,6 +686,23 @@ export function CheckoutExperience({
           <input type="hidden" name="shipping_line1" value={shippingLine1} />
           {selectedAddress?.id ? (
             <input type="hidden" name="shipping_address_id" value={selectedAddress.id} />
+          ) : null}
+          {/*
+            RELIABILITY-01 — pre-uploaded payment proof. When the user
+            selected bank_transfer and the proof was uploaded ahead of
+            submit via /api/checkout/payment-proof, these hidden fields
+            carry the Cloudinary URL + public_id directly to the
+            marketplace route, which persists them on
+            `marketplace_payment_records` without performing its own
+            upload. This is the load-bearing fix for the "file
+            disappears at submit" failure mode.
+          */}
+          {proofUploaded ? (
+            <>
+              <input type="hidden" name="proof_url" value={proofUploaded.url} />
+              <input type="hidden" name="proof_public_id" value={proofUploaded.publicId} />
+              <input type="hidden" name="proof_name" value={proofUploaded.name} />
+            </>
           ) : null}
 
           {step === "delivery" ? (
@@ -372,6 +728,7 @@ export function CheckoutExperience({
             <PaymentStep
               method={paymentMethod}
               onSelect={setPaymentMethod}
+              cardEnabled={cardEnabled}
               cart={cart}
               shipping={shipping}
               total={total}
@@ -385,7 +742,13 @@ export function CheckoutExperience({
               bankReference={bankReference}
               setBankReference={setBankReference}
               proofName={proofName}
-              setProofName={setProofName}
+              proofState={proofState}
+              onSelectProofFile={uploadProof}
+              onResetProof={() => {
+                proofAbortRef.current?.abort();
+                setProofState({ status: "idle" });
+                setProofName("");
+              }}
             />
           </div>
 
@@ -416,7 +779,7 @@ export function CheckoutExperience({
               <button
                 type="button"
                 onClick={back}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.07)]"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[var(--market-fill-soft)]"
               >
                 <ChevronLeft className="h-4 w-4" />
                 {t("Back")}
@@ -427,11 +790,15 @@ export function CheckoutExperience({
               <ActionButton
                 tone="primary"
                 onClick={next}
-                disabled={(step === "delivery" && !deliveryReady) || (step === "payment" && !paymentReady)}
+                disabled={
+                  (step === "delivery" && !deliveryReady) ||
+                  (step === "payment" && (!paymentReady || proofUploading))
+                }
+                spinner={step === "payment" && proofUploading}
                 icon={<ChevronRight className="h-4 w-4" />}
                 iconPosition="trailing"
               >
-                {t("Continue")}
+                {step === "payment" && proofUploading ? t("Uploading proof...") : t("Continue")}
               </ActionButton>
             ) : null}
 
@@ -458,7 +825,9 @@ export function CheckoutExperience({
               {paymentMethod === "wallet_balance"
                 ? t("On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches.")
                 : paymentMethod === "bank_transfer"
-                ? t("On confirm, your transfer proof routes to finance. Verification typically completes within a few business hours and the timeline updates the moment it does.")
+                ? t("On confirm, your payment proof is submitted for review. Verification usually completes within a few business hours and the timeline updates automatically the moment it does.")
+                : paymentMethod === "card"
+                ? t("On confirm, you continue to a secure page to complete card payment. Your order is confirmed automatically the moment payment clears.")
                 : t("On confirm, the order opens for vendor acceptance. The rider collects payment when the order arrives.")}
             </p>
           ) : null}
@@ -519,7 +888,7 @@ function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
                       ? "border-transparent bg-gradient-to-br from-[#f7edd9] via-[var(--market-brass)] to-[var(--market-aurora)] text-[#101114] shadow-[0_8px_22px_rgba(200,163,106,0.35)]"
                       : status === "active"
                       ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.16)] text-[var(--market-brass-soft)] shadow-[0_8px_22px_rgba(200,163,106,0.18)]"
-                      : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] text-[var(--market-muted)]"
+                      : "border-[var(--market-line)] bg-[var(--market-fill-faint)] text-[var(--market-muted)]"
                   }`}
                 >
                   {status === "done" ? <Check className="h-4 w-4" /> : index + 1}
@@ -605,7 +974,7 @@ function DeliveryStep({
                   className={`group relative flex cursor-pointer flex-col gap-2 rounded-[1.5rem] border p-4 transition ${
                     active
                       ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.08)] shadow-[0_18px_50px_rgba(200,163,106,0.18)]"
-                      : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] hover:border-[var(--market-line-strong)]"
+                      : "border-[var(--market-line)] bg-[var(--market-fill-faint)] hover:border-[var(--market-line-strong)]"
                   }`}
                 >
                   <input
@@ -678,7 +1047,7 @@ function DeliveryStep({
           </button>
         </div>
       ) : (
-        <p className="mt-5 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-sm leading-6 text-[var(--market-muted)]">
+        <p className="mt-5 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-4 py-3 text-sm leading-6 text-[var(--market-muted)]">
           {t("You don't have any saved addresses yet. Enter delivery details below — we'll offer to save it to your address book after the order is placed.")}
         </p>
       )}
@@ -713,12 +1082,22 @@ function DeliveryStep({
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
               {t("Region / state")}
             </span>
-            <input
+            {/* V3-DELIVERY-COMPLETE-01 (T6) — a clean state picker writing a canonical
+                code to shipping_region (the server's normalizeStateInput agrees), so a
+                seller Delivery Promise can match the buyer's state exactly. */}
+            <select
               className="market-input rounded-[1.2rem] px-4 py-3"
               value={oneShot.region}
               onChange={(event) => setOneShot({ ...oneShot, region: event.target.value })}
               required
-            />
+            >
+              <option value="">{t("Select your state")}</option>
+              {NG_STATES.map((s) => (
+                <option key={s.code} value={s.code}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="space-y-2 sm:col-span-2">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
@@ -751,6 +1130,7 @@ function DeliveryStep({
 function PaymentStep({
   method,
   onSelect,
+  cardEnabled,
   cart,
   total,
   currency,
@@ -763,10 +1143,13 @@ function PaymentStep({
   bankReference,
   setBankReference,
   proofName,
-  setProofName,
+  proofState,
+  onSelectProofFile,
+  onResetProof,
 }: {
   method: PaymentMethodId;
   onSelect: (id: PaymentMethodId) => void;
+  cardEnabled: boolean;
   cart: CartShape;
   shipping: number;
   total: number;
@@ -780,7 +1163,12 @@ function PaymentStep({
   bankReference: string;
   setBankReference: (value: string) => void;
   proofName: string;
-  setProofName: (value: string) => void;
+  /** RELIABILITY-01 — drives the file input state + UI feedback. */
+  proofState: ProofStatus;
+  /** Triggered when the user picks a file in the upload field. */
+  onSelectProofFile: (file: File) => void;
+  /** Lets the user clear a failed/uploaded proof and re-pick. */
+  onResetProof: () => void;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -823,12 +1211,12 @@ function PaymentStep({
 
       <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
         {t(
-          "Use cleared HenryCo balance first when it covers the total, or transfer the exact amount and upload proof before the order enters finance review.",
+          "Use your cleared Henry Onyx balance first when it covers the total, or transfer the exact amount and upload proof so we can confirm your payment.",
         )}
       </p>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-3">
-        {buildPaymentMethods(t).map((option) => {
+        {buildPaymentMethods(t, cardEnabled).map((option) => {
           const Icon = option.icon;
           const active = method === option.id;
           const disabled =
@@ -846,6 +1234,8 @@ function PaymentStep({
               ? paymentRail.ready
                 ? `${paymentRail.bankName} ${t("ready")}`
                 : t("Payment rail unavailable")
+              : option.id === "card"
+              ? t("Secured payment · instant confirmation")
               : t("Seller acceptance still applies");
           return (
             <label
@@ -855,7 +1245,7 @@ function PaymentStep({
                   ? "cursor-not-allowed border-dashed border-[var(--market-line)] opacity-50"
                   : active
                   ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.08)] shadow-[0_18px_50px_rgba(200,163,106,0.18)]"
-                  : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] hover:border-[var(--market-line-strong)]"
+                  : "border-[var(--market-line)] bg-[var(--market-fill-faint)] hover:border-[var(--market-line-strong)]"
               }`}
             >
               <input
@@ -866,7 +1256,7 @@ function PaymentStep({
                 disabled={disabled}
               />
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-[var(--market-brass)]">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[var(--market-fill-soft)] text-[var(--market-brass)]">
                   <Icon className="h-4 w-4" />
                 </span>
                 <span className="text-base font-semibold text-[var(--market-paper-white)]">
@@ -890,7 +1280,7 @@ function PaymentStep({
       </div>
 
       {method === "wallet_balance" ? (
-        <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <div className="grid gap-3 text-sm sm:grid-cols-3">
             <Metric label={t("Available balance")} value={formatCurrency(available, wallet.currency)} />
             <Metric label={t("Order total")} value={formatCurrency(total, currency)} />
@@ -903,7 +1293,7 @@ function PaymentStep({
             <p className="mt-4 flex items-start gap-2 text-sm leading-7 text-[var(--market-muted)]">
               <Check className="mt-1 h-4 w-4 text-[var(--market-brass)]" />
               {t(
-                "Balance payment will debit your wallet and create the order as paid-held for fulfillment and escrow controls.",
+                "Your wallet is debited and the payment is held securely in escrow until the seller fulfils your order.",
               )}
             </p>
           ) : (
@@ -926,7 +1316,7 @@ function PaymentStep({
       ) : null}
 
       {method === "bank_transfer" ? (
-        <section className="mt-5 space-y-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="mt-5 space-y-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
@@ -964,7 +1354,7 @@ function PaymentStep({
               {bankDetails.map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4"
+                  className="rounded-[1.15rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4"
                 >
                   <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
                     {label}
@@ -1001,44 +1391,30 @@ function PaymentStep({
                 value={bankReference}
                 onChange={(event) => setBankReference(event.target.value)}
                 className="market-input rounded-[1.2rem] px-4 py-3"
-                placeholder="Enter the bank receipt/reference number"
+                placeholder={t("Enter the bank receipt/reference number")}
                 required={method === "bank_transfer"}
               />
             </label>
 
-            <label className="group flex cursor-pointer items-center gap-3 rounded-[1.2rem] border border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-brass)]">
-                <UploadCloud className="h-5 w-5" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
-                  Upload proof
-                </span>
-                <span className="mt-1 block truncate text-sm font-semibold text-[var(--market-paper-white)]">
-                  {proofName || "PNG, JPG, WebP, or PDF under 10 MB"}
-                </span>
-              </span>
-              <input
-                type="file"
-                name="proof"
-                accept="image/png,image/jpeg,image/jpg,image/webp,application/pdf"
-                className="sr-only"
-                required={method === "bank_transfer"}
-                onChange={(event) => setProofName(event.currentTarget.files?.[0]?.name ?? "")}
-              />
-            </label>
+            <ProofUploadField
+              proofName={proofName}
+              proofState={proofState}
+              required={method === "bank_transfer"}
+              onSelectFile={onSelectProofFile}
+              onReset={onResetProof}
+            />
           </div>
         </section>
       ) : null}
 
       {method === "cod" ? (
-        <aside className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4 text-sm leading-7 text-[var(--market-muted)]">
+        <aside className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm leading-7 text-[var(--market-muted)]">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Cash on delivery
           </p>
           <p className="mt-2">
-            COD keeps payment pending for this {cart.count}-item order until delivery collection is
-            reconciled. Wallet or transfer remains faster when available.
+            With cash on delivery, payment stays pending for this {cart.count}-item order until the
+            rider collects it on delivery. Wallet or transfer is faster when available.
           </p>
         </aside>
       ) : null}
@@ -1046,9 +1422,182 @@ function PaymentStep({
   );
 }
 
+/**
+ * RELIABILITY-01 — payment-proof upload control.
+ *
+ * Renders the file picker plus the status row beneath it. The status
+ * row mirrors the four non-idle branches of `ProofStatus`:
+ *
+ *   - validating / uploading -> spinner + "Uploading proof..."
+ *   - uploaded                -> green check + filename
+ *   - error                   -> red text with the structured message
+ *                                and a retry button (the retry triggers
+ *                                a fresh file-picker open)
+ *
+ * The underlying `<input type="file">` is kept in the DOM (visually
+ * hidden) so the label-click still opens the OS picker. We DO NOT bind
+ * a controlled `value` — file inputs are uncontrolled by spec, so
+ * `<input value={...}>` is forbidden. Resetting the input after a
+ * failure uses the `key` prop to remount the input cleanly.
+ */
+function ProofUploadField({
+  proofName,
+  proofState,
+  required,
+  onSelectFile,
+  onReset,
+}: {
+  proofName: string;
+  proofState: ProofStatus;
+  required: boolean;
+  onSelectFile: (file: File) => void;
+  onReset: () => void;
+}) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  // We bump this counter on `onReset` so the file input remounts with
+  // an empty value — otherwise the browser keeps the previously
+  // selected file name attached to the input element, which would let
+  // the user re-submit the same File without re-triggering onChange.
+  const [inputKey, setInputKey] = useState(0);
+
+  const isBusy =
+    proofState.status === "uploading" || proofState.status === "validating";
+  const isUploaded = proofState.status === "uploaded";
+  const isError = proofState.status === "error";
+
+  return (
+    <div className="space-y-2">
+      <label
+        className={`group flex cursor-pointer items-center gap-3 rounded-[1.2rem] border p-4 transition ${
+          isUploaded
+            ? "border-[var(--market-aurora)]/60 bg-[rgba(154,174,164,0.10)]"
+            : isError
+            ? "border-red-400/40 bg-red-400/5"
+            : isBusy
+            ? "border-[var(--market-brass)]/60 bg-[rgba(200,163,106,0.06)]"
+            : "border-dashed border-[var(--market-line)] bg-[var(--market-fill-faint)]"
+        }`}
+      >
+        <span
+          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border text-[var(--market-brass)] ${
+            isUploaded
+              ? "border-[var(--market-aurora)] bg-[rgba(154,174,164,0.18)] text-[var(--market-aurora)]"
+              : "border-[var(--market-line)]"
+          }`}
+        >
+          {isBusy ? (
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+          ) : isUploaded ? (
+            <Check className="h-5 w-5" aria-hidden="true" />
+          ) : (
+            <UploadCloud className="h-5 w-5" aria-hidden="true" />
+          )}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
+            {isUploaded ? t("Proof uploaded") : t("Upload proof")}
+          </span>
+          <span className="mt-1 block truncate text-sm font-semibold text-[var(--market-paper-white)]">
+            {proofName || t("PNG, JPG, WebP, or PDF under 10 MB")}
+          </span>
+        </span>
+        <input
+          key={`proof-input-${inputKey}`}
+          type="file"
+          name="proof_local"
+          accept="image/png,image/jpeg,image/jpg,image/webp,application/pdf"
+          className="sr-only"
+          disabled={isBusy}
+          aria-invalid={isError}
+          // `required` is dropped when we already have an uploaded
+          // proof — otherwise the browser's native validation would
+          // demand a fresh File pick at submit, even though the URL
+          // is already attached via the hidden fields above.
+          required={required && !isUploaded}
+          onChange={(event) => {
+            const file = event.currentTarget.files?.[0];
+            if (file) onSelectFile(file);
+          }}
+        />
+      </label>
+
+      {isBusy ? (
+        <p
+          role="status"
+          aria-live="polite"
+          className="flex items-center gap-2 px-2 text-xs text-[var(--market-brass)]"
+        >
+          <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+          {proofState.status === "validating"
+            ? t("Checking file...")
+            : t("Uploading proof...")}
+        </p>
+      ) : null}
+
+      {isUploaded ? (
+        <p
+          role="status"
+          aria-live="polite"
+          className="flex items-center justify-between gap-2 px-2 text-xs"
+        >
+          <span className="flex items-center gap-2 text-[var(--market-aurora)]">
+            <Check className="h-3 w-3" aria-hidden="true" />
+            {t("Proof received. We'll verify it after you submit.")}
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setInputKey((n) => n + 1);
+              onReset();
+            }}
+            className="inline-flex items-center gap-1 text-[var(--market-muted)] hover:text-[var(--market-paper-white)]"
+          >
+            <RefreshCw className="h-3 w-3" aria-hidden="true" />
+            {t("Replace")}
+          </button>
+        </p>
+      ) : null}
+
+      {isError ? (
+        <div
+          role="alert"
+          className="space-y-2 rounded-[0.9rem] border border-red-400/30 bg-red-400/10 px-3 py-2"
+        >
+          <p className="flex items-start gap-2 text-xs leading-5 text-red-100">
+            <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>
+              {proofState.message}
+              {proofState.code === "cloudinary_unavailable" ? (
+                <>
+                  {" "}
+                  <span className="opacity-80">
+                    {t("(temporary — retry usually works)")}
+                  </span>
+                </>
+              ) : null}
+            </span>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setInputKey((n) => n + 1);
+              onReset();
+            }}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--market-paper-white)] hover:text-[var(--market-brass)]"
+          >
+            <RefreshCw className="h-3 w-3" aria-hidden="true" />
+            {t("Try again")}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4">
+    <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4">
       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
         {label}
       </p>
@@ -1111,7 +1660,7 @@ function ConfirmStep({
       </header>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Delivers to
           </p>
@@ -1146,7 +1695,7 @@ function ConfirmStep({
           ) : null}
         </section>
 
-        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Payment method
           </p>
@@ -1165,7 +1714,7 @@ function ConfirmStep({
         </section>
       </div>
 
-      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Items ({cart.count})
@@ -1177,7 +1726,7 @@ function ConfirmStep({
             return (
               <li
                 key={item.id}
-                className="grid grid-cols-[64px,1fr,auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-3"
+                className="grid grid-cols-[64px_1fr_auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-3"
               >
                 <div className="relative h-14 w-14 overflow-hidden rounded-[0.9rem] bg-[var(--market-soft-wash)]">
                   {item.image ? (
@@ -1214,7 +1763,7 @@ function ConfirmStep({
         </ul>
       </section>
 
-      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5 text-sm">
+      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5 text-sm">
         <div className="flex items-center justify-between text-[var(--market-muted)]">
           <span>Subtotal</span>
           <span className="font-semibold text-[var(--market-paper-white)]">{formatCurrency(subtotal, currency)}</span>
@@ -1233,7 +1782,7 @@ function ConfirmStep({
         </div>
       </section>
 
-      <label className="mt-5 flex items-start gap-3 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4 text-sm leading-7 text-[var(--market-muted)]">
+      <label className="mt-5 flex items-start gap-3 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm leading-7 text-[var(--market-muted)]">
         <input
           type="checkbox"
           checked={agreed}
@@ -1242,8 +1791,8 @@ function ConfirmStep({
         />
         <span>
           I agree to the{" "}
-          <Link href="/policies" className="font-semibold text-[var(--market-brass)]">
-            HenryCo marketplace policies
+          <Link href="/policies/buyer-protection" className="font-semibold text-[var(--market-brass)]">
+            Henry Onyx marketplace policies
           </Link>{" "}
           and confirm the delivery address and payment method are correct.
         </span>
@@ -1280,7 +1829,7 @@ function OrderSummaryRail({
         {cart.items.slice(0, 4).map((item) => {
           const moving = pendingSavedItemIds.includes(item.id);
           return (
-            <div key={item.id} className="grid grid-cols-[40px,1fr,auto] items-center gap-3 text-sm">
+            <div key={item.id} className="grid grid-cols-[40px_1fr_auto] items-center gap-3 text-sm">
               <div className="relative h-10 w-10 overflow-hidden rounded-md bg-[var(--market-soft-wash)]">
                 {item.image ? (
                   <DivisionImage src={item.image} alt={item.title} fill sizes="40px" className="object-cover" radius="0" />
@@ -1333,7 +1882,7 @@ function OrderSummaryRail({
         </div>
       </div>
 
-      <div className="mt-6 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-xs leading-7 text-[var(--market-muted)]">
+      <div className="mt-6 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-xs leading-7 text-[var(--market-muted)]">
         <p className="font-semibold text-[var(--market-paper-white)]">
           Your basket waits for you
         </p>
@@ -1347,5 +1896,5 @@ function OrderSummaryRail({
 }
 
 function countVendors(cart: CartShape) {
-  return new Set(cart.items.map((item) => item.vendorName || "HenryCo")).size;
+  return new Set(cart.items.map((item) => item.vendorName || "Henry Onyx")).size;
 }

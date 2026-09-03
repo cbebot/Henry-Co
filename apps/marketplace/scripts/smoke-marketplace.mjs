@@ -242,7 +242,7 @@ const [{ data: category }, { data: product }, { data: vendor }, { data: order }]
     .maybeSingle(),
 ]);
 
-await checkRoute("/", "HenryCo Marketplace", "homepage");
+await checkRoute("/", "Henry Onyx Marketplace", "homepage");
 await checkRoute("/search", "Reactive discovery", "search");
 await checkRoute("/sell", "A selective marketplace for sellers", "sell page");
 await checkRoute("/help", "Support flows designed to resolve edge cases", "help page");

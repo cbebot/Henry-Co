@@ -161,7 +161,7 @@ export function normalizeCompanyPage(
   return {
     id: row?.id ? String(row.id) : undefined,
     slug: toText(row?.slug ?? row?.page_key, slugFallback),
-    title: toText(row?.title, "Henry & Co."),
+    title: toText(row?.title, "Henry Onyx"),
     subtitle: toNullableText(row?.subtitle),
     hero_badge: toNullableText(row?.hero_badge) ?? toNullableText(row?.hero_kicker),
     intro:
@@ -202,7 +202,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
 
   const base: CompanyPageRecord = {
     slug: pageSlug,
-    title: "Henry & Co.",
+    title: "Henry Onyx",
     subtitle: "Corporate platform",
     hero_badge: "Company page",
     intro:
@@ -250,13 +250,15 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "Identity",
             title: `${COMPANY.group.name} is a Nigerian operating group`,
             body:
-              `Registered in Nigeria as ${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}). Headquartered in ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}. Founded in ${LEGAL.entity.yearFounded} by ${LEGAL.entity.founder}. We operate seven divisions on one platform, one auth surface, one audit log, one settlement currency at checkout \u2014 Nigeria first, with cross-border commerce supported through multi-currency display and named processor regions.`,
+              `Registered in Nigeria as ${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}). Headquartered in ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}. Founded in ${LEGAL.entity.yearFounded} by ${LEGAL.entity.founder}. We operate seven divisions on one platform, one auth surface, one audit log, one settlement currency at checkout \u2014 Nigeria first, with cross-border commerce supported through multi-currency display and trusted, region-appropriate payment infrastructure.`,
             layout: "default",
             items: [
               { id: "about-identity-trading", label: "Trading name", value: LEGAL.entity.tradingName },
               { id: "about-identity-legal", label: "Registered name", value: LEGAL.entity.name },
               { id: "about-identity-rc", label: "CAC RC number", value: LEGAL.entity.rcNumber },
-              { id: "about-identity-tin", label: "FIRS TIN", value: LEGAL.entity.tin },
+              // The FIRS TIN is a sensitive financial identifier and is deliberately
+              // NOT published on the unauthenticated public /about page — the CAC RC
+              // number + registered name/office already provide public identity proof.
               { id: "about-identity-office", label: "Registered office", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country}` },
               { id: "about-identity-founded", label: "Year founded", value: LEGAL.entity.yearFounded },
             ],
@@ -266,7 +268,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "What the divisions do",
             title: "Seven divisions, one operating standard",
             body:
-              "Each division has a defined market and a defined contract \u2014 not a bundle. Sourced directly from packages/config/company.ts so this page cannot drift from the platform.",
+              "Each division has a defined market and a defined contract \u2014 not a bundle. The list here mirrors the divisions we actually operate, so it stays accurate.",
             layout: "cards",
             items: [
               { id: "about-div-logistics", title: COMPANY.divisions.logistics.name, body: COMPANY.divisions.logistics.description, href: "/#divisions" },
@@ -293,13 +295,13 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               },
               {
                 id: "about-standard-audit",
-                title: "Every mutation written to audit_log",
-                body: "Owner, staff, and operator actions across the platform write to a structured audit_log retained for 7 years. Sentry breadcrumbs and structured logger entries accompany every server action.",
+                title: "Every mutation written to the audit trail",
+                body: "Owner, staff, and operator actions across the platform write to a structured, tamper-evident audit trail retained for 7 years, so every action can be traced after the fact.",
               },
               {
                 id: "about-standard-support",
                 title: "Support response target: 24h",
-                body: "First-response target for non-emergency support is 24 hours during operating days. Time-critical disputes (delivery failure, refund window) route through Freshdesk with explicit priority queues.",
+                body: "First-response target for non-emergency support is 24 hours during operating days. Time-critical disputes (delivery failure, refund window) route through a dedicated support desk with explicit priority queues.",
               },
               {
                 id: "about-standard-currency",
@@ -308,13 +310,13 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               },
               {
                 id: "about-standard-trust",
-                title: "FingerprintJS + trust_flags for fraud",
-                body: "Device-risk signals from FingerprintJS combine with platform trust_flags to suppress abusive sign-ups and flag suspicious order patterns. Trust signals reduce but do not eliminate risk.",
+                title: "Device-risk signals for fraud",
+                body: "Device-risk signals combine with platform trust flags to suppress abusive sign-ups and flag suspicious order patterns. Trust signals reduce but do not eliminate risk.",
               },
               {
                 id: "about-standard-i18n",
-                title: "11 supported locales via @henryco/i18n",
-                body: "Customer-facing surfaces flow through @henryco/i18n with DeepL-primed translation cache. English is the canonical version in case of conflict.",
+                title: "11 supported locales",
+                body: "Customer-facing surfaces are available in 11 locales. English is the canonical version in case of conflict.",
               },
             ],
           },
@@ -354,17 +356,17 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               {
                 id: "about-not-payments",
                 title: "We are not a bank",
-                body: "We process payments through Stripe and route payouts to verified bank accounts. We do not hold deposits, issue credit, or run regulated financial products.",
+                body: "We process payments through a PCI-compliant payment processor and route payouts to verified bank accounts. We do not hold deposits, issue credit, or run regulated financial products.",
               },
               {
                 id: "about-not-tenancy",
                 title: "Property: agent, not party to tenancy",
-                body: "HenryCo Property coordinates discovery, viewings, and (where engaged) managed-property operations. The tenancy contract is between landlord and tenant unless explicitly signed by HenryCo Property in a managed-property capacity.",
+                body: "Henry Onyx Property coordinates discovery, viewings, and (where engaged) managed-property operations. The tenancy contract is between landlord and tenant unless explicitly signed by Henry Onyx Property in a managed-property capacity.",
               },
               {
                 id: "about-not-employer",
                 title: "Jobs: platform, not employer",
-                body: "HenryCo Jobs hosts listings and verifies candidate profiles. The employment contract is between employer and candidate; HenryCo is not party to the employment relationship.",
+                body: "Henry Onyx Jobs hosts listings and verifies candidate profiles. The employment contract is between employer and candidate; Henry Onyx is not party to the employment relationship.",
               },
               {
                 id: "about-not-instant",
@@ -385,7 +387,6 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
               { id: "about-reach-legal", label: "Legal correspondence", value: LEGAL.contacts.legal },
               { id: "about-reach-privacy", label: "Privacy and data-subject rights", value: LEGAL.contacts.privacy },
               { id: "about-reach-dpo", label: "Data Protection Officer", value: LEGAL.contacts.dpo },
-              { id: "about-reach-phone", label: "Phone", value: LEGAL.contacts.supportPhone },
             ],
           },
         ],
@@ -394,7 +395,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
     case "contact":
       return {
         ...base,
-        title: "Contact Henry & Co.",
+        title: "Contact Henry Onyx",
         subtitle: "Reach the company",
         hero_badge: "Business enquiries",
         intro:
@@ -451,7 +452,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "1. Controller identity",
             title: "Who is responsible for this data",
             body:
-              `${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}), trading as ${LEGAL.entity.tradingName}, with registered office at ${LEGAL.entity.registeredOffice.street}, ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country} ${LEGAL.entity.registeredOffice.postalCode}, is the data controller for personal data processed across henrycogroup.com and every division surface. NDPC registration: ${LEGAL.entity.ndpcRegistration}. Data Protection Officer: ${LEGAL.entity.dpo}.\n\n— In plain English: One Nigerian company runs all the Henry & Co. divisions, and it is the entity legally answerable for how your data is handled.`,
+              `${LEGAL.entity.name} (RC ${LEGAL.entity.rcNumber}), trading as ${LEGAL.entity.tradingName}, with registered office at ${LEGAL.entity.registeredOffice.street}, ${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state}, ${LEGAL.entity.registeredOffice.country} ${LEGAL.entity.registeredOffice.postalCode}, is the data controller for personal data processed across henryonyx.com and every division surface. NDPC registration: ${LEGAL.entity.ndpcRegistration}. Data Protection Officer: ${LEGAL.entity.dpo}.\n\n— In plain English: One Nigerian company runs all the Henry Onyx divisions, and it is the entity legally answerable for how your data is handled.`,
             layout: "default",
             items: [
               { id: "privacy-controller-name", label: "Controller", value: LEGAL.entity.name },
@@ -578,7 +579,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "10. How to exercise rights",
             title: "Submit a request",
             body:
-              `Send a written request to ${LEGAL.contacts.privacy}. The controller acknowledges receipt within 5 working days and responds substantively within 30 days under the Nigeria Data Protection Act 2023. Identity is verified before a request is actioned. Where a request is manifestly unfounded or excessive, a fee may be charged or the request refused with reasons.\n\n— In plain English: Email privacy@henrycogroup.com. We acknowledge in 5 working days and answer in 30 days. We verify it is really you before sending data.`,
+              `Send a written request to ${LEGAL.contacts.privacy}. The controller acknowledges receipt within 5 working days and responds substantively within 30 days under the Nigeria Data Protection Act 2023. Identity is verified before a request is actioned. Where a request is manifestly unfounded or excessive, a fee may be charged or the request refused with reasons.\n\n— In plain English: Email privacy@henryonyx.com. We acknowledge in 5 working days and answer in 30 days. We verify it is really you before sending data.`,
             layout: "default",
             items: [
               { id: "privacy-exercise-email", label: "Email", value: LEGAL.contacts.privacy },
@@ -619,12 +620,12 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "13. Breach notification",
             title: "What happens if a breach occurs",
             body:
-              "A personal-data breach with a risk to the rights and freedoms of data subjects is reported to the Nigeria Data Protection Commission within 72 hours of becoming aware, under the Nigeria Data Protection Act 2023. Affected data subjects are notified without undue delay where the breach is likely to result in high risk. The structured logger plus the audit_log retained for 7 years allow forensic reconstruction.\n\n— In plain English: If something goes wrong, we tell the regulator within 72 hours and tell affected users without delay.",
+              "A personal-data breach with a risk to the rights and freedoms of data subjects is reported to the Nigeria Data Protection Commission within 72 hours of becoming aware, under the Nigeria Data Protection Act 2023. Affected data subjects are notified without undue delay where the breach is likely to result in high risk. Structured logging plus a tamper-evident audit trail retained for 7 years allow forensic reconstruction.\n\n— In plain English: If something goes wrong, we tell the regulator within 72 hours and tell affected users without delay.",
             layout: "default",
             items: [
               { id: "privacy-breach-regulator", label: "Regulator notification", value: "Within 72 hours of becoming aware" },
               { id: "privacy-breach-user", label: "Affected-user notification", value: "Without undue delay where high risk" },
-              { id: "privacy-breach-forensic", label: "Forensic support", value: "audit_log 7y + structured logger + Sentry breadcrumbs" },
+              { id: "privacy-breach-forensic", label: "Forensic support", value: "7-year audit trail + structured logging + error-tracing breadcrumbs" },
             ],
           },
           {
@@ -637,7 +638,6 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             items: [
               { id: "privacy-dpo-named", label: "Named DPO", value: LEGAL.entity.dpo },
               { id: "privacy-dpo-email", label: "DPO email", value: LEGAL.contacts.dpo },
-              { id: "privacy-dpo-phone", label: "Group support phone", value: LEGAL.contacts.supportPhone },
             ],
           },
           {
@@ -657,7 +657,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "16. Languages",
             title: "Canonical language and translations",
             body:
-              `This policy is published in English (canonical) and translated into ${LEGAL.policy.supportedLocales} additional locales through the @henryco/i18n translation pipeline. In case of conflict between language versions, the English text controls.\n\n— In plain English: English wins if a translation says something different.`,
+              `This policy is published in English (canonical) and translated into ${LEGAL.policy.supportedLocales} additional locales. In case of conflict between language versions, the English text controls.\n\n— In plain English: English wins if a translation says something different.`,
             layout: "default",
             items: [
               { id: "privacy-lang-canonical", label: "Canonical", value: LEGAL.policy.canonicalLanguage },
@@ -716,7 +716,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "2. The platform",
             title: "What the divisions provide",
             body:
-              `${LEGAL.entity.tradingName} operates seven divisions on one platform. Each division has a defined market and a defined contract. Use of a division is bound by both these group-level terms and any division-specific service contract presented at checkout or onboarding.\n\n— In plain English: Henry & Co. is a group with seven divisions. These terms cover the group; each division can add its own service terms on top.`,
+              `${LEGAL.entity.tradingName} operates seven divisions on one platform. Each division has a defined market and a defined contract. Use of a division is bound by both these group-level terms and any division-specific service contract presented at checkout or onboarding.\n\n— In plain English: Henry Onyx is a group with seven divisions. These terms cover the group; each division can add its own service terms on top.`,
             layout: "cards",
             items: [
               { id: "terms-platform-logistics", title: COMPANY.divisions.logistics.name, body: COMPANY.divisions.logistics.description },
@@ -738,7 +738,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             items: [
               { id: "terms-account-one", label: "Account model", value: "One account per person or entity, all divisions" },
               { id: "terms-account-credentials", label: "Credentials", value: "User responsibility" },
-              { id: "terms-account-security", label: "Report incidents", value: "security@henrycogroup.com" },
+              { id: "terms-account-security", label: "Report incidents", value: "security@henryonyx.com" },
             ],
           },
           {
@@ -777,11 +777,11 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "6. Intellectual property",
             title: "Ownership of content and brand",
             body:
-              `Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants ${LEGAL.entity.tradingName} a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. ${LEGAL.entity.tradingName} retains all rights in its trade marks, logos, code, and product designs.\n\nTakedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on ${LEGAL.contacts.legal}. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route.\n\n— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry & Co. owns the brand. Copyright takedowns go to legal@henrycogroup.com.`,
+              `Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants ${LEGAL.entity.tradingName} a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. ${LEGAL.entity.tradingName} retains all rights in its trade marks, logos, code, and product designs.\n\nTakedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on ${LEGAL.contacts.legal}. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route.\n\n— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry Onyx owns the brand. Copyright takedowns go to legal@henryonyx.com.`,
             layout: "default",
             items: [
-              { id: "terms-ip-user", label: "User content", value: "User retains ownership; HenryCo licence for service delivery" },
-              { id: "terms-ip-brand", label: "Brand IP", value: "Retained by HenryCo" },
+              { id: "terms-ip-user", label: "User content", value: "User retains ownership; Henry Onyx licence for service delivery" },
+              { id: "terms-ip-brand", label: "Brand IP", value: "Retained by Henry Onyx" },
               { id: "terms-ip-takedown", label: "Takedown route", value: LEGAL.contacts.legal },
               { id: "terms-ip-statute", label: "Statute", value: "Copyright Act 2022 (Nigeria) §43" },
             ],
@@ -807,7 +807,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "8. Trust signals",
             title: "What trust badges mean and do not mean",
             body:
-              "Trust badges (Verified, KYC complete, Active in good standing) are operational signals based on verifiable inputs (identity verification, transaction history, dispute outcome). They reduce risk; they are not a financial guarantee, an insurance product, or a warranty by HenryCo of any specific outcome.\n\n— In plain English: Verified means we checked something specific. It is a useful signal, not a money-back promise.",
+              "Trust badges (Verified, KYC complete, Active in good standing) are operational signals based on verifiable inputs (identity verification, transaction history, dispute outcome). They reduce risk; they are not a financial guarantee, an insurance product, or a warranty by Henry Onyx of any specific outcome.\n\n— In plain English: Verified means we checked something specific. It is a useful signal, not a money-back promise.",
             layout: "default",
             items: [
               { id: "terms-trust-1", label: "What badges signal", value: "Verifiable inputs (KYC, history, dispute record)" },
@@ -832,7 +832,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "10. Limitation of liability",
             title: "What the platform is liable for",
             body:
-              "Consumer rights under the Federal Competition and Consumer Protection Act 2018 §128 are non-derogable and apply in full; nothing in this clause limits a right that cannot be limited under Nigerian law. Outside that non-derogable floor, total aggregate liability under or in connection with these terms is limited to the fees the customer paid to the relevant HenryCo division in the 12 months preceding the event giving rise to the claim. Indirect, consequential, and punitive damages are excluded.\n\n— In plain English: Your consumer rights under Nigerian law cannot be reduced. Beyond that, our maximum liability is what you paid us in the last 12 months.",
+              "Consumer rights under the Federal Competition and Consumer Protection Act 2018 §128 are non-derogable and apply in full; nothing in this clause limits a right that cannot be limited under Nigerian law. Outside that non-derogable floor, total aggregate liability under or in connection with these terms is limited to the fees the customer paid to the relevant Henry Onyx division in the 12 months preceding the event giving rise to the claim. Indirect, consequential, and punitive damages are excluded.\n\n— In plain English: Your consumer rights under Nigerian law cannot be reduced. Beyond that, our maximum liability is what you paid us in the last 12 months.",
             layout: "default",
             items: [
               { id: "terms-liability-floor", label: "Non-derogable floor", value: "FCCPA 2018 §128 consumer rights" },
@@ -975,11 +975,11 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "21. International notice",
             title: "Service of process across borders",
             body:
-              `Notices to ${LEGAL.entity.tradingName} are served by email to ${LEGAL.contacts.legal} and (for formal service of process) by registered courier to the registered office. Notices to a user are served to the email and phone number on the account. International service of process is supplemented by the Hague Service Convention where applicable.\n\n— In plain English: Send formal notices to legal@henrycogroup.com and the registered office. We send formal notices to your account contact details.`,
+              `Notices to ${LEGAL.entity.tradingName} are served by email to ${LEGAL.contacts.legal} and (for formal service of process) by registered courier to the registered office. Notices to a user are served to the email and phone number on the account. International service of process is supplemented by the Hague Service Convention where applicable.\n\n— In plain English: Send formal notices to legal@henryonyx.com and the registered office. We send formal notices to your account contact details.`,
             layout: "default",
             items: [
-              { id: "terms-notice-email", label: "Notice to HenryCo (email)", value: LEGAL.contacts.legal },
-              { id: "terms-notice-courier", label: "Notice to HenryCo (courier)", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state} (registered office)` },
+              { id: "terms-notice-email", label: "Notice to Henry Onyx (email)", value: LEGAL.contacts.legal },
+              { id: "terms-notice-courier", label: "Notice to Henry Onyx (courier)", value: `${LEGAL.entity.registeredOffice.city}, ${LEGAL.entity.registeredOffice.state} (registered office)` },
               { id: "terms-notice-user", label: "Notice to user", value: "Account email and phone" },
               { id: "terms-notice-hague", label: "Cross-border supplement", value: "Hague Service Convention where applicable" },
             ],
@@ -989,12 +989,12 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "22. Miscellaneous",
             title: "Severability, entire agreement, assignment, force majeure",
             body:
-              "If a clause is held unenforceable, the rest of these terms continues in force. These terms (with the Privacy Policy, division-specific terms, and any signed addendum) are the entire agreement between the parties on this subject. The user may not assign without consent; HenryCo may assign to a successor in a merger or acquisition. Performance is excused for events beyond reasonable control (force majeure: natural disaster, war, civil unrest, lawful government action, ISP outage, sustained DDoS).\n\n— In plain English: One bad clause does not kill the rest. These pages are the full agreement. You cannot transfer your account without our okay; we can transfer if the company is sold. Acts of God do not break the contract.",
+              "If a clause is held unenforceable, the rest of these terms continues in force. These terms (with the Privacy Policy, division-specific terms, and any signed addendum) are the entire agreement between the parties on this subject. The user may not assign without consent; Henry Onyx may assign to a successor in a merger or acquisition. Performance is excused for events beyond reasonable control (force majeure: natural disaster, war, civil unrest, lawful government action, ISP outage, sustained DDoS).\n\n— In plain English: One bad clause does not kill the rest. These pages are the full agreement. You cannot transfer your account without our okay; we can transfer if the company is sold. Acts of God do not break the contract.",
             layout: "default",
             items: [
               { id: "terms-misc-sever", label: "Severability", value: "Unenforceable clause excised; rest continues" },
               { id: "terms-misc-entire", label: "Entire agreement", value: "These terms + Privacy + division terms + signed addenda" },
-              { id: "terms-misc-assign", label: "Assignment", value: "User: with consent; HenryCo: to successor on merger or acquisition" },
+              { id: "terms-misc-assign", label: "Assignment", value: "User: with consent; Henry Onyx: to successor on merger or acquisition" },
               { id: "terms-misc-fm", label: "Force majeure", value: "Performance excused for events beyond reasonable control" },
             ],
           },
@@ -1003,7 +1003,7 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "23. Notices",
             title: "Routine notices and announcements",
             body:
-              "Routine product notices (release notes, scheduled maintenance, status incidents) are posted on the platform and emailed where material. Status incidents are also posted to status.henrycogroup.com where the user can subscribe to email or RSS updates.\n\n— In plain English: Day-to-day announcements appear in-product and by email; status pages give live updates you can subscribe to.",
+              "Routine product notices (release notes, scheduled maintenance, status incidents) are posted on the platform and emailed where material. Status incidents are also posted to status.henryonyx.com where the user can subscribe to email or RSS updates.\n\n— In plain English: Day-to-day announcements appear in-product and by email; status pages give live updates you can subscribe to.",
             layout: "default",
             items: [
               { id: "terms-notices-product", label: "Product notices", value: "In-product banner + email" },
@@ -1015,13 +1015,12 @@ export function createFallbackCompanyPage(slug: string): CompanyPageRecord {
             eyebrow: "24. Contact",
             title: "How to reach the company",
             body:
-              `For terms-related correspondence, use the legal inbox. For privacy questions, use the privacy inbox. For general support, use the division support inbox (faster), or the group hello inbox.\n\n— In plain English: Legal questions to legal@henrycogroup.com. Privacy questions to privacy@henrycogroup.com. Service questions to your division.`,
+              `For terms-related correspondence, use the legal inbox. For privacy questions, use the privacy inbox. For general support, use the division support inbox (faster), or the group hello inbox.\n\n— In plain English: Legal questions to legal@henryonyx.com. Privacy questions to privacy@henryonyx.com. Service questions to your division.`,
             layout: "default",
             items: [
               { id: "terms-contact-legal", label: "Legal", value: LEGAL.contacts.legal },
               { id: "terms-contact-privacy", label: "Privacy", value: LEGAL.contacts.privacy },
               { id: "terms-contact-hello", label: "General", value: LEGAL.contacts.hello },
-              { id: "terms-contact-phone", label: "Phone", value: LEGAL.contacts.supportPhone },
             ],
           },
           {

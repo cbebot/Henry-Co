@@ -1,0 +1,29 @@
+{
+  "name": "@henryco/gaming-arena",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --import tsx --test \"src/__tests__/*.test.ts\""
+  },
+  "dependencies": {
+    "@henryco/observability": "workspace:^"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.98.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.98.0",
+    "@types/node": "^20.0.0",
+    "server-only": "^0.0.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

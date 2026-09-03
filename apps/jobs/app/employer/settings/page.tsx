@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Bell, Building2, MessageSquare, ShieldCheck, Wallet } from "lucide-react";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, henryDomainHost } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
@@ -65,7 +65,7 @@ export default async function EmployerSettingsPage() {
               </p>
               <p className="mt-0.5 text-xs leading-5 text-[var(--jobs-muted)]">
                 {employer?.slug
-                  ? `henrycogroup.com/employer/${employer.slug}`
+                  ? `${henryDomainHost("hub")}/employer/${employer.slug}`
                   : t("No public slug yet — set one in the company profile.")}
               </p>
             </div>
@@ -87,7 +87,7 @@ export default async function EmployerSettingsPage() {
 
       <SectionCard
         title={t("Conversations & alerts")}
-        body={t("Inbound applicant messages, interview reminders and hiring nudges all route through the unified HenryCo notification rail. Manage channels in your account preferences.")}
+        body={t("Applicant messages, interview reminders, and hiring alerts are all managed from your account preferences.")}
         actions={
           <Link
             href={getAccountUrl("/settings/notifications")}
@@ -103,7 +103,7 @@ export default async function EmployerSettingsPage() {
               <MessageSquare size={14} aria-hidden /> {t("Applicant messages")}
             </div>
             <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
-              {t("Every applicant thread surfaces in your candidate inbox and in the unified /messages view across HenryCo.")}
+              {t("Every applicant thread appears in your conversations inbox and in your unified messages view across Henry Onyx.")}
             </p>
           </div>
           <div className="jobs-soft-panel rounded-[1.5rem] p-4">
@@ -119,7 +119,7 @@ export default async function EmployerSettingsPage() {
 
       <SectionCard
         title={t("Plan & billing")}
-        body={t("Posting credits, featured-listing add-ons and team-seat billing are part of the unified HenryCo wallet — same balance, same payout history, same KYC tier.")}
+        body={t("Posting credits, featured-listing add-ons and team-seat billing are part of the unified Henry Onyx wallet — same balance, same payout history, same KYC tier.")}
         actions={
           <Link
             href={getAccountUrl("/wallet")}
@@ -134,14 +134,14 @@ export default async function EmployerSettingsPage() {
             <Wallet size={14} aria-hidden /> {t("Posting credits")}
           </div>
           <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
-            {t("Free credits and featured-listing fees draw from the same balance you use across Marketplace, Studio and Property. Team-seat invoicing is owner-flagged — contact support if your headcount needs a seat plan.")}
+            {t("Posting credits and listing fees draw from your Henry Onyx wallet. For team billing, contact support.")}
           </p>
         </div>
       </SectionCard>
 
       <SectionCard
         title={t("Identity & access")}
-        body={t("Account-level identity, password, session security and the unified HenryCo trust score sit at the account-hub level — every division (Jobs, Care, Studio, Marketplace, Learn, Property, Logistics) reads from the same record.")}
+        body={t("Your identity, password, and session security apply across every Henry Onyx service you use — manage them from your account.")}
         actions={
           <Link
             href={getAccountUrl("/security")}
@@ -153,10 +153,10 @@ export default async function EmployerSettingsPage() {
       >
         <div className="jobs-soft-panel rounded-[1.5rem] p-4">
           <div className="jobs-kicker flex items-center gap-2">
-            <ShieldCheck size={14} aria-hidden /> {t("Single identity across HenryCo")}
+            <ShieldCheck size={14} aria-hidden /> {t("Single identity across Henry Onyx")}
           </div>
           <p className="mt-2 text-sm leading-6 text-[var(--jobs-muted)]">
-            {t("Sign in once at HenryCo and access Jobs as employer, Care as a customer, Studio as a buyer — all from the same identity. Security settings (password, MFA, signed-out sessions) live at the account hub.")}
+            {t("Sign in once at Henry Onyx and access Jobs as employer, Care as a customer, Studio as a buyer — all from the same identity. Security settings (password, MFA, signed-out sessions) live at the account hub.")}
           </p>
         </div>
       </SectionCard>

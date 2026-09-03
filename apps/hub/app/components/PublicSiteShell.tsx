@@ -1,19 +1,18 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { useMemo, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { useMemo } from "react";
 import { usePathname } from "next/navigation";
-import { Mail, Phone } from "lucide-react";
-import { getAccountUrl } from "@henryco/config";
+import { getAccountUrl, type PublicDivisionLink } from "@henryco/config";
+import { PublicSiteFooter } from "@henryco/ui/public-design";
 import type { HubPublicCopy } from "@henryco/i18n";
+import type { HubFooterInputs } from "../lib/site-footer";
 import {
   type PublicAccountUser,
-  HenryCoSearchBreadcrumb,
+  type PublicChromeAccount,
   HenryCoPublicAccountPresets,
   PublicAccountChip,
-  PublicHeader,
+  PublicChrome,
   PublicShellLayout,
   getSiteNavigationConfig,
 } from "@henryco/ui/public-shell";
@@ -24,65 +23,27 @@ import {
 } from "../lib/company-settings-shared";
 import PaletteHost from "./PaletteHost";
 
-function BrandLogo({
-  src,
-  alt,
-  accent,
-  wrapperClassName,
-  imageClassName,
-}: {
-  src?: string | null;
-  alt: string;
-  accent: string;
-  wrapperClassName?: string;
-  imageClassName?: string;
-}) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const cleanSrc = typeof src === "string" && src.trim() ? src.trim() : null;
-  const isFailed = Boolean(cleanSrc && failedSrc === cleanSrc);
+// The brand mark is always the code-rendered monogram from @henryco/ui/brand —
+// never a CMS PNG. The CMS logo_url belongs in <meta> tags only.
 
-  return (
-    <div
-      className={[
-        "grid place-items-center overflow-hidden rounded-2xl border border-white/12 bg-white/5",
-        wrapperClassName,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      {cleanSrc && !isFailed ? (
-        <Image
-          src={cleanSrc}
-          alt={alt}
-          width={64}
-          height={64}
-          priority
-          unoptimized
-          className={[
-            "h-full w-full object-contain",
-            imageClassName,
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          onLoad={() => setFailedSrc(null)}
-          onError={() => {
-            if (cleanSrc) {
-              setFailedSrc(cleanSrc);
-            }
-          }}
-        />
-      ) : (
-        <HenryCoMonogram size={28} accent={accent} />
-      )}
-    </div>
-  );
-}
-
+/**
+ * PublicSiteShell — the hub's public chrome.
+ *
+ * The homepage (`/`) renders its own bespoke header/footer, so the shell renders its
+ * children alone there. Every OTHER public route renders inside this shell's header +
+ * footer. V3-PUBLIC-DESIGN-01 moved that chrome from a permanently-dark `--site-*`
+ * treatment onto the theme-aware `--home-*` public design system (warm paper ⇄
+ * near-black) and enabled the theme toggle, so the non-home routes now match the
+ * homepage and follow system/light/dark instead of being locked dark. Hub-local — the
+ * other 9 division shells are untouched (they migrate in Phase 2).
+ */
 export default function PublicSiteShell({
   initialSettings,
   accountChip,
   children,
   copy,
+  footer,
+  footerDivisions,
 }: {
   initialSettings:
     | Partial<CompanySettingsRecord>
@@ -98,6 +59,11 @@ export default function PublicSiteShell({
   };
   children: ReactNode;
   copy: HubPublicCopy["publicSiteShell"];
+  /** Pre-assembled shared-footer inputs (see lib/site-footer.ts). */
+  footer: HubFooterInputs;
+  /** Live division list (owner-paused divisions removed) from the server layout —
+   *  this shell is a client component, so the registry read happens upstream. */
+  footerDivisions?: PublicDivisionLink[];
 }) {
   const pathname = usePathname();
   const settings = useMemo(
@@ -107,233 +73,101 @@ export default function PublicSiteShell({
   const isHomepage = pathname === "/";
   const hubNav = useMemo(() => getSiteNavigationConfig("hub"), []);
 
+  // The built-in search pill (and its in-drawer link) cover search, so drop the
+  // redundant "Search" primary-nav entry that existed only to surface search in
+  // the old mobile drawer.
+  const navItems = useMemo(
+    () => hubNav.primaryNav.filter((item) => item.href !== "/search"),
+    [hubNav.primaryNav]
+  );
+
+  // Re-establish hub's accent inside the portaled mobile drawer (BottomSheet
+  // mounts at <body>, outside the .home-accent-scope wrapper below).
+  const accentStyle = {
+    ["--accent" as string]: settings.brand_accent,
+  } as CSSProperties;
+
+  const account: PublicChromeAccount | undefined = accountChip
+    ? {
+        user: accountChip.user,
+        loginHref: accountChip.loginHref,
+        signupHref: accountChip.signupHref,
+        accountHref: accountChip.accountHref,
+      }
+    : undefined;
+
+  // Signed-IN slot: the existing PublicAccountChip (account dropdown + sign-out)
+  // is preserved verbatim. Signed-out, PublicChrome renders its own theme-aware
+  // Sign in cluster (the hub's "Explore divisions" primaryCta supplies the
+  // signup-side intent), so we pass the chip only when there's a user.
+  const accountMenu = accountChip?.user ? (
+    <PublicAccountChip
+      {...HenryCoPublicAccountPresets.standard}
+      user={accountChip.user}
+      loginHref={accountChip.loginHref}
+      signupHref={accountChip.signupHref}
+      accountHref={accountChip.accountHref}
+      preferencesHref={getAccountUrl("/settings")}
+      settingsHref={getAccountUrl("/security")}
+      showSignOut
+      menuItems={[
+        { label: copy.menuDivisionsDirectory, href: "/#divisions" },
+        { label: copy.menuAbout, href: "/about" },
+        { label: copy.menuContact, href: "/contact" },
+      ]}
+    />
+  ) : null;
+
   return (
-    <PublicShellLayout className="bg-[var(--site-bg,#050816)] text-[var(--site-text,#ffffff)]">
+    <PublicShellLayout className="bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]">
+      {/* home-accent-scope only on inner routes — the certified homepage owns
+          its own bespoke chrome and tokens and must not be re-scoped. */}
       <div
-        style={{ ["--accent" as string]: settings.brand_accent } as CSSProperties}
+        className={isHomepage ? undefined : "home-accent-scope"}
+        style={accentStyle}
       >
-      <PaletteHost />
-      {isHomepage ? (
-        children
-      ) : (
-        <>
-      <PublicHeader
-        variant={hubNav.headerVariant ?? "default"}
-        groupIdentityActions={false}
-        brand={{
-          href: "/",
-          name: settings.brand_title || copy.brandFallback,
-          sub: settings.brand_subtitle ?? undefined,
-          mark: (
-            <BrandLogo
-              src={settings.logo_url}
-              alt={settings.brand_title || copy.brandFallback}
-              accent={settings.brand_accent || "#C9A227"}
-              wrapperClassName="h-11 w-11"
-              imageClassName="max-h-8 max-w-8 p-1"
+        <PaletteHost />
+        {isHomepage ? (
+          children
+        ) : (
+          <>
+            <PublicChrome
+              maxWidth="max-w-7xl"
+              accentStyle={accentStyle}
+              brand={{
+                href: "/",
+                // Hub IS the company — the brand is "Henry Onyx" itself, no
+                // division eyebrow (every division reads "<DIVISION> / Henry
+                // Onyx"; the company hub is just the name).
+                name: settings.brand_title || copy.brandFallback,
+                mark: (
+                  <HenryCoMonogram
+                    size={26}
+                    accent={settings.brand_accent || "#C9A227"}
+                    aria-label={settings.brand_title || copy.brandFallback}
+                  />
+                ),
+              }}
+              items={navItems}
+              search={{ href: "/search" }}
+              account={account}
+              accountMenu={accountMenu}
+              auxLink={hubNav.defaultCtas?.aux}
+              primaryCta={hubNav.defaultCtas?.primary}
             />
-          ),
-        }}
-        items={hubNav.primaryNav}
-        auxLink={hubNav.defaultCtas?.aux}
-        primaryCta={hubNav.defaultCtas?.primary}
-        actions={
-          <HenryCoSearchBreadcrumb
-            href="/search"
-            className="hidden lg:inline-flex border-white/12 bg-white/5 text-[var(--site-text-soft,rgba(255,255,255,0.92))] hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
-          />
-        }
-        accountMenu={
-          accountChip ? (
-            <PublicAccountChip
-              {...HenryCoPublicAccountPresets.onDarkMarketing}
-              user={accountChip.user}
-              loginHref={accountChip.loginHref}
-              signupHref={accountChip.signupHref}
-              accountHref={accountChip.accountHref}
-              preferencesHref={getAccountUrl("/settings")}
-              settingsHref={getAccountUrl("/security")}
-              showSignOut
-              menuItems={[
-                { label: copy.menuDivisionsDirectory, href: "/#divisions" },
-                { label: copy.menuAbout, href: "/about" },
-                { label: copy.menuContact, href: "/contact" },
-              ]}
+
+            <main id="henryco-main" tabIndex={-1}>
+              {children}
+            </main>
+
+            <PublicSiteFooter
+              copy={footer.copy}
+              columns={footer.columns}
+              support={footer.support}
+              divisions={footerDivisions}
             />
-          ) : null
-        }
-        accountMenuFirst
-        showThemeToggle={false}
-        headerClassName="z-40 border-white/10 bg-[var(--site-header-bg,rgba(5,8,22,0.84))] text-[var(--site-text,#ffffff)] backdrop-blur-2xl"
-        maxWidth="max-w-7xl"
-        toolbarClassName="px-4 py-4 sm:px-6 lg:px-8"
-        mobileMenuContainerClassName="px-4 py-4 sm:px-6 lg:px-8"
-        menuButtonClassName="border-white/12 bg-white/5 text-white hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
-        mobileDrawerClassName="border-white/10 bg-black/20"
-        getNavItemClassName={(_item, active, placement) =>
-          placement === "bar"
-            ? [
-                "text-sm font-medium text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-white",
-                active ? "text-white" : "",
-              ]
-                .filter(Boolean)
-                .join(" ")
-            : "rounded-2xl border border-white/12 bg-white/5 px-4 py-3 text-sm font-medium text-[var(--site-text-soft,rgba(255,255,255,0.92))]"
-        }
-        auxLinkClassName="rounded-xl border border-white/12 bg-white/5 px-3.5 py-2 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.92))] hover:bg-white/10 dark:border-white/12 dark:bg-white/5"
-        primaryCtaClassName="inline-flex items-center gap-2 rounded-xl border-0 bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-black hover:opacity-90"
-        navClassName="hidden shrink-0 items-center gap-6 lg:flex"
-      />
-
-      <main id="henryco-main" tabIndex={-1}>{children}</main>
-
-      <footer className="mt-20 border-t border-white/10 bg-[var(--site-footer-bg,rgba(0,0,0,0.22))]">
-        <div
-          aria-hidden
-          className="pointer-events-none mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-[color:var(--accent,#C9A227)]/40 to-transparent"
-        />
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:px-8">
-          <div className="space-y-5">
-            <div className="flex items-center gap-3">
-              <BrandLogo
-                src={settings.logo_url}
-                alt={settings.brand_title || copy.brandFallback}
-                accent={settings.brand_accent || "#C9A227"}
-                wrapperClassName="h-10 w-10"
-                imageClassName="max-h-7 max-w-7 p-1"
-              />
-              <div>
-                <div className="text-sm font-semibold tracking-[0.18em] text-[var(--site-text,#ffffff)]">
-                  {settings.brand_title}
-                </div>
-                <div className="text-[11px] uppercase tracking-[0.28em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-                  {settings.brand_subtitle}
-                </div>
-              </div>
-            </div>
-
-            <p className="max-w-md text-sm leading-7 text-[var(--site-text-soft,rgba(255,255,255,0.72))]">
-              {settings.footer_blurb || settings.brand_description}
-            </p>
-
-            <div className="space-y-1.5 text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))]">
-              {settings.support_email ? (
-                <a
-                  href={`mailto:${settings.support_email}`}
-                  className="inline-flex items-center gap-2 font-medium text-[var(--site-text,#ffffff)] transition hover:text-white"
-                >
-                  <Mail className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                  {settings.support_email}
-                </a>
-              ) : null}
-              {settings.support_phone ? (
-                <a
-                  href={`tel:${settings.support_phone}`}
-                  className="inline-flex items-center gap-2 transition hover:text-white"
-                >
-                  <Phone className="h-3.5 w-3.5 text-[color:var(--accent)]" />
-                  {settings.support_phone}
-                </a>
-              ) : null}
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              {copy.colCompany}
-            </div>
-            <div className="mt-4 grid gap-3">
-              <Link
-                href="/"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkHome}
-              </Link>
-              <Link
-                href="/about"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkAbout}
-              </Link>
-              <Link
-                href="/contact"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkContact}
-              </Link>
-              <Link
-                href="/search"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkSearch}
-              </Link>
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              {copy.colHenryCo}
-            </div>
-            <div className="mt-4 grid gap-3">
-              <Link
-                href={getAccountUrl("/")}
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkHenryCoAccount}
-              </Link>
-              <Link
-                href={getAccountUrl("/settings")}
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkLanguagePrefs}
-              </Link>
-              <Link
-                href="/preferences"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkEmailPrefs}
-              </Link>
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              {copy.colLegal}
-            </div>
-            <div className="mt-4 grid gap-3">
-              <Link
-                href="/privacy"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkPrivacy}
-              </Link>
-              <Link
-                href="/terms"
-                className="text-sm text-[var(--site-text-soft,rgba(255,255,255,0.72))] transition hover:text-[var(--site-text,#ffffff)]"
-              >
-                {copy.linkTerms}
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-white/8 px-4 py-5 text-xs text-[var(--site-text-muted,rgba(255,255,255,0.55))] sm:px-6 lg:px-8">
-          <div className="mx-auto flex max-w-7xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              © {new Date().getFullYear()} {settings.copyright_label || settings.brand_title}. {copy.allRightsReserved}
-            </div>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--site-text-muted,rgba(255,255,255,0.55))]">
-              <span
-                aria-hidden
-                className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--accent,#C9A227)]/85"
-              />
-              {copy.builtBy}
-            </span>
-          </div>
-        </div>
-      </footer>
-        </>
-      )}
+          </>
+        )}
       </div>
     </PublicShellLayout>
   );

@@ -24,7 +24,7 @@ function JobsLoadingCard() {
 }
 
 export function JobsPageLoading({
-  kicker = "HenryCo Jobs",
+  kicker = "Henry Onyx Jobs",
   title = "Gathering this page for you",
   body = "We’re loading the latest jobs and updates. You can keep this tab open—nothing is wrong on your side.",
 }: {

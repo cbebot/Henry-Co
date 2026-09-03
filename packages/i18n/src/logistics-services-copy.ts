@@ -45,7 +45,7 @@ export type LogisticsServicesCopy = {
 
 const LOGISTICS_SERVICES_COPY_EN: LogisticsServicesCopy = {
   metadata: {
-    title: "Services | HenryCo Logistics",
+    title: "Services | Henry Onyx Logistics",
     description:
       "Same-day, scheduled, dispatch, and inter-city logistics services with governed pricing.",
   },
@@ -65,7 +65,7 @@ const LOGISTICS_SERVICES_COPY_EN: LogisticsServicesCopy = {
 
 const LOGISTICS_SERVICES_COPY_FR: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "Services | HenryCo Logistics",
+    title: "Services | Henry Onyx Logistics",
     description:
       "Services logistiques le jour même, programmés, en coursier et inter-villes avec une tarification encadrée.",
   },
@@ -85,7 +85,7 @@ const LOGISTICS_SERVICES_COPY_FR: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_ES: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "Servicios | HenryCo Logistics",
+    title: "Servicios | Henry Onyx Logistics",
     description:
       "Servicios logísticos en el día, programados, de mensajería e interurbanos con precios regulados.",
   },
@@ -105,7 +105,7 @@ const LOGISTICS_SERVICES_COPY_ES: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_PT: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "Serviços | HenryCo Logistics",
+    title: "Serviços | Henry Onyx Logistics",
     description:
       "Serviços de logística no próprio dia, agendados, de despacho e inter-cidades com preços regulamentados.",
   },
@@ -125,7 +125,7 @@ const LOGISTICS_SERVICES_COPY_PT: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_AR: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "الخدمات | HenryCo Logistics",
+    title: "الخدمات | Henry Onyx Logistics",
     description:
       "خدمات لوجستية في اليوم نفسه ومجدولة وللإرسال السريع وبين المدن بتسعير منضبط.",
   },
@@ -145,7 +145,7 @@ const LOGISTICS_SERVICES_COPY_AR: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_DE: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "Services | HenryCo Logistics",
+    title: "Services | Henry Onyx Logistics",
     description:
       "Logistik am selben Tag, geplant, als Kurier und interurban — mit geregelten Preisen.",
   },
@@ -165,7 +165,7 @@ const LOGISTICS_SERVICES_COPY_DE: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_IT: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "Servizi | HenryCo Logistics",
+    title: "Servizi | Henry Onyx Logistics",
     description:
       "Servizi logistici in giornata, programmati, di corriere e interurbani con tariffe regolate.",
   },
@@ -185,7 +185,7 @@ const LOGISTICS_SERVICES_COPY_IT: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_ZH: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "服务 | HenryCo Logistics",
+    title: "服务 | Henry Onyx Logistics",
     description: "当日达、预约、急送与城际物流服务,均采用规范定价。",
   },
   hero: {
@@ -204,7 +204,7 @@ const LOGISTICS_SERVICES_COPY_ZH: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_HI: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "सेवाएँ | HenryCo Logistics",
+    title: "सेवाएँ | Henry Onyx Logistics",
     description:
       "एक ही दिन की, निर्धारित, डिस्पैच और अंतर-शहर लॉजिस्टिक्स सेवाएँ — नियंत्रित मूल्य निर्धारण के साथ।",
   },
@@ -224,7 +224,7 @@ const LOGISTICS_SERVICES_COPY_HI: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_IG: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "Ọrụ | HenryCo Logistics",
+    title: "Ọrụ | Henry Onyx Logistics",
     description:
       "Ọrụ logistics nke otu ụbọchị, nke ahaziri ahazi, nke ezigara ozugbo, na nke ọtụtụ obodo — yana ọnụahịa achịkwara achịkwa.",
   },
@@ -244,7 +244,7 @@ const LOGISTICS_SERVICES_COPY_IG: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_YO: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "Awọn iṣẹ́ | HenryCo Logistics",
+    title: "Awọn iṣẹ́ | Henry Onyx Logistics",
     description:
       "Awọn iṣẹ́ logistics ti ọjọ́ kan náà, ti a ṣètò, ìṣíkiri, àti àárín-ìlú — pẹ̀lú ìṣètò owó tó tọ́.",
   },
@@ -264,7 +264,7 @@ const LOGISTICS_SERVICES_COPY_YO: DeepPartial<LogisticsServicesCopy> = {
 
 const LOGISTICS_SERVICES_COPY_HA: DeepPartial<LogisticsServicesCopy> = {
   metadata: {
-    title: "Sabis | HenryCo Logistics",
+    title: "Sabis | Henry Onyx Logistics",
     description:
       "Sabis na logistics na rana ɗaya, na tsari, na aikawa cikin sauri, da na tsakanin birane — tare da farashi mai tsari.",
   },

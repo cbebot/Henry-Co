@@ -35,7 +35,7 @@ import {
   isReviewEligibleStatus,
   toStoredBookingStatus,
 } from "@/lib/care-tracking";
-import { uploadCareImage } from "@/lib/cloudinary";
+import { uploadCareExpenseReceipt } from "@/lib/care-media-store";
 
 const ALLOWED_STAFF_ROLES = ["owner", "manager", "rider", "support", "staff"] as const;
 
@@ -1259,7 +1259,7 @@ async function sendBookingStatusEmail(input: { bookingId: string }) {
       const whatsappResult = await sendWhatsAppText({
         phone: booking.phone,
         body: [
-          `HenryCo Care update • ${booking.tracking_code}`,
+          `Henry Onyx Care update • ${booking.tracking_code}`,
           normalizeDisplayName(booking.customer_name, "Customer"),
           "",
           `${statusLabel}`,
@@ -1387,7 +1387,7 @@ async function queuePickedUpPaymentRequest(input: {
     const amountText = `NGN ${amountDue.toLocaleString()}`;
     const instructions =
       settings.payment_instructions ||
-      "Please send payment confirmation to the Henry & Co. Care team.";
+      "Please send payment confirmation to the Henry Onyx Care team.";
     const templateBody =
       settings.picked_up_email_body ||
       [
@@ -1405,14 +1405,14 @@ async function queuePickedUpPaymentRequest(input: {
         "{payment_instructions}",
         "",
         "Thank you,",
-        "Henry & Co. Fabric Care",
+        "Henry Onyx Fabric Care",
       ].join("\n");
 
     const templateVariables = {
       customer_name: String((bookingState as any).customer_name || "Customer"),
       tracking_code: String((bookingState as any).tracking_code || ""),
       amount_due: amountText,
-      account_name: settings.payment_account_name || settings.company_account_name || "Henry & Co. Care",
+      account_name: settings.payment_account_name || settings.company_account_name || "Henry Onyx Care",
       account_number:
         settings.payment_account_number || settings.company_account_number || "Not provided yet",
       bank_name: settings.payment_bank_name || settings.company_bank_name || "Not provided yet",
@@ -1972,63 +1972,44 @@ export async function recordPaymentAction(formData: FormData) {
 
   let error: { message?: string } | null = null;
 
-  const extendedAttempt = await supabase
-    .from("care_payments")
-    .insert({
-      booking_id: bookingId,
-      amount,
-      payment_method,
-      reference,
-      notes,
-      received_by: auth.profile.id,
-      status: "confirmed",
-    } as any)
-    .select("id, booking_id, amount, payment_method, reference")
-    .maybeSingle();
+  // SEC-HARDEN-05: record the payment through the guarded, balanced-ledger RPC. It
+  // validates + is idempotent, inserts care_payments as the table owner (so the
+  // care_append_payment_ledger + recalc triggers fire), posts the balanced
+  // double-entry, and flips the booking's open request(s) to 'paid' — atomically.
+  // No raw care_payments / care_finance_ledger / status='paid' write happens here.
+  const { data: rpcResult, error: rpcError } = await supabase.rpc(
+    "care_record_manual_payment",
+    {
+      p_idempotency_key: `care_owner:${randomUUID()}`,
+      p_booking_id: bookingId,
+      p_amount: amount,
+      p_payment_method: payment_method,
+      p_reference: reference,
+      p_notes: notes,
+      p_received_by: auth.profile.id,
+      p_request_id: null,
+      p_request_payload_patch: null,
+    } as never
+  );
 
-  if (extendedAttempt.error) {
-    const fallbackAttempt = await supabase
-      .from("care_payments")
-      .insert({
-        booking_id: bookingId,
-        amount,
-        payment_method,
-        reference,
-        notes,
-        received_by: auth.profile.id,
-      })
-      .select("id, booking_id, amount, payment_method, reference")
-      .maybeSingle();
-
-    payment = fallbackAttempt.data;
-    error = fallbackAttempt.error;
+  if (rpcError) {
+    error = rpcError;
   } else {
-    payment = extendedAttempt.data;
-    error = null;
+    const result = rpcResult as
+      | { payment_id?: string; amount?: number; payment_method?: string }
+      | null;
+    payment = result?.payment_id
+      ? {
+          id: result.payment_id,
+          booking_id: bookingId,
+          amount: Number(result.amount ?? amount),
+          payment_method: result.payment_method ?? payment_method,
+          reference,
+        }
+      : null;
   }
 
   if (!error && payment?.id) {
-    await ensureLedgerEntry({
-      entry_type: "payment",
-      source_table: "care_payments",
-      source_id: payment.id,
-      booking_id: payment.booking_id,
-      direction: "inflow",
-      amount: Number(payment.amount ?? 0),
-      narration: `Payment received via ${payment.payment_method}${payment.reference ? ` • ${payment.reference}` : ""}`,
-    });
-
-    await supabase
-      .from("care_payment_requests")
-      .update({
-        status: "paid",
-        paid_at: new Date().toISOString(),
-      } as any)
-      .eq("booking_id", bookingId)
-      .neq("status", "paid");
-
-    await recalculateBookingTotals(bookingId);
-
     const { data: booking } = await supabase
       .from("care_bookings")
       .select("id, tracking_code, customer_name, email, phone, balance_due")
@@ -2102,26 +2083,24 @@ export async function createExpenseAction(formData: FormData) {
     finish(route, "error", "Expense category, description, and amount are required.");
   }
 
-  let uploadedReceipt:
-    | {
-        secureUrl: string;
-        publicId: string;
-      }
-    | null = null;
+  let uploadedReceiptRef: string | null = null;
 
   if (receiptFile instanceof File && receiptFile.size > 0) {
     try {
-      uploadedReceipt = await uploadCareImage(receiptFile, {
-        folderSuffix: "expenses",
-        publicIdPrefix: `${category || "expense"}-${booking_lookup || auth.profile.id}`,
-      });
+      // SENSITIVE staff/owner expense receipt → RLS-private care-documents
+      // bucket (signed on read). Persists a media://private/... ref, never a
+      // publicly-dereferenceable CDN URL. (V3-MEDIA-SWEEP-01)
+      uploadedReceiptRef = await uploadCareExpenseReceipt(
+        receiptFile,
+        `${category || "expense"}-${booking_lookup || auth.profile.id}`,
+      );
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Image upload failed.";
+      const message = error instanceof Error ? error.message : "Receipt upload failed.";
       finish(route, "error", message);
     }
   }
 
-  const receipt_url = uploadedReceipt?.secureUrl || manualReceiptUrl;
+  const receipt_url = uploadedReceiptRef || manualReceiptUrl;
   const autoApproved = auth.profile.role === "owner";
 
   const basePayload = {
@@ -2208,7 +2187,9 @@ export async function createExpenseAction(formData: FormData) {
       amount,
       payment_method,
       receipt_url,
-      receipt_public_id: uploadedReceipt?.publicId || null,
+      // No Cloudinary public_id under @henryco/media — the media:// ref in
+      // receipt_url encodes the storage key. (V3-MEDIA-SWEEP-01)
+      receipt_public_id: null,
       auto_approved: autoApproved,
       error: error?.message || null,
     },

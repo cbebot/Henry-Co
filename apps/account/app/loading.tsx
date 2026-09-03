@@ -1,5 +1,5 @@
-import AccountRouteLoading from "@/components/layout/AccountRouteLoading";
+import AccountRouteLoader from "@/components/layout/AccountRouteLoader";
 
 export default function AccountRootLoading() {
-  return <AccountRouteLoading />;
+  return <AccountRouteLoader />;
 }

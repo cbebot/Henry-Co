@@ -1,12 +1,13 @@
 import { Wallet } from "lucide-react";
-import type {
-  DashboardModule,
-  HomeWidget,
-  PaletteEntry,
-  NotificationCategory,
-  RoleDecision,
-  RouteEntry,
-  EmptyTeaching,
+import {
+  viewerCanUseCustomerSurface,
+  type DashboardModule,
+  type HomeWidget,
+  type PaletteEntry,
+  type NotificationCategory,
+  type RoleDecision,
+  type RouteEntry,
+  type EmptyTeaching,
 } from "@henryco/dashboard-shell";
 
 import {
@@ -14,18 +15,27 @@ import {
   PendingFundingCard,
   RecentTransactionsCard,
   PayoutMethodsCard,
+  VerificationNudgeCard,
 } from "./widgets";
-import { loadWalletSnapshot } from "./data";
+import { loadWalletSnapshot, loadNeedsVerificationNudge } from "./data";
 
 /**
  * The wallet module — slug `wallet`. Audit anchor §B.account-8.
  *
- * Customer-only — every customer viewer sees the wallet module on the
- * rail. The module's home view at `/modules/wallet` surfaces a calm
- * 4-widget summary (balance + pending funding + recent transactions +
- * payout methods); deep clicks route to the existing top-level
- * `/wallet`, `/wallet/funding`, `/wallet/withdrawals` surfaces which
- * remain the canonical detail views.
+ * Available to every authenticated viewer using the customer surface
+ * (`apps/account`) — including owners and staff who use the customer
+ * surface, since every human has a wallet. The module's home view at
+ * `/modules/wallet` surfaces a calm 4-widget summary (balance +
+ * pending funding + recent transactions + payout methods); deep
+ * clicks route to the existing top-level `/wallet`, `/wallet/funding`,
+ * `/wallet/withdrawals` surfaces which remain the canonical detail
+ * views.
+ *
+ * MODULES-01 (2026-05-23) widened the gate from `viewer.kind ===
+ * "customer"` to `viewerCanUseCustomerSurface(viewer)`. Data-layer
+ * gate in `data.ts` remains `kind === "customer"` because the
+ * customer_wallet_transactions / customer_wallet_balance tables are
+ * user-scoped customer-context tables.
  *
  * The module owns the three scoped wallet notification categories
  * (`wallet.funding`, `wallet.withdrawal`, `wallet.transaction`) — these
@@ -42,23 +52,46 @@ export const walletModule: DashboardModule = {
   description: "Balance, funding, transactions, payout methods.",
   icon: () => <Wallet size={18} aria-hidden />,
   railSlot: "primary",
+  // The wallet's real surface is the top-level `/wallet` (the same
+  // route the desktop sidebar links to). Sending the rail / mobile
+  // Modules drawer / Cmd-jump straight there means tapping "Wallet"
+  // opens the wallet in one tap instead of the `/modules/wallet`
+  // summary, which fixes the reported "wallet never opens from the
+  // mobile Modules navigator" bug.
+  homeHref: "/wallet",
 
   getEligibleViewer(viewer) {
-    return viewer.kind === "customer" ? "allowed" : "hidden";
+    return viewerCanUseCustomerSurface(viewer) ? "allowed" : "hidden";
   },
 
   getRoleGate(viewer): RoleDecision | null {
-    if (viewer.kind !== "customer") return null;
+    if (!viewerCanUseCustomerSurface(viewer)) return null;
     return { kind: "allow", role: viewer.role };
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadWalletSnapshot(viewer);
+    const [snapshot, needsVerification] = await Promise.all([
+      loadWalletSnapshot(viewer),
+      loadNeedsVerificationNudge(viewer),
+    ]);
     if (!snapshot) return [];
 
     const userId = viewer.user.id;
 
     return [
+      // SMART (2026-07-10): trust-aware nudge — only for unverified viewers,
+      // stating the exact step that unlocks withdrawals. Real state, no theater.
+      ...(needsVerification
+        ? [{
+            id: "wallet.verification-nudge",
+            source: "wallet" as const,
+            title: "Enable withdrawals",
+            size: "sm" as const,
+            weight: 78,
+            href: "/security",
+            render: async () => <VerificationNudgeCard />,
+          }]
+        : []),
       {
         id: "wallet.balance",
         source: "wallet",
@@ -192,7 +225,7 @@ export const walletModule: DashboardModule = {
       return {
         kicker: "Money that moves with you",
         headline: "Fund your wallet to start.",
-        body: "Use one wallet to pay across Care, Marketplace, Studio, and the rest of HenryCo.",
+        body: "Use one wallet to pay across Care, Marketplace, Studio, and the rest of Henry Onyx.",
         action: { label: "Fund wallet", href: "/wallet/funding" },
       };
     }
@@ -204,7 +237,7 @@ export const walletModule: DashboardModule = {
       return {
         kicker: "Money that moves with you",
         headline: "Fund your wallet to start.",
-        body: "Add money once and pay everywhere across HenryCo without re-entering card details.",
+        body: "Add money once and pay everywhere across Henry Onyx without re-entering card details.",
         action: { label: "Fund wallet", href: "/wallet/funding" },
       };
     }

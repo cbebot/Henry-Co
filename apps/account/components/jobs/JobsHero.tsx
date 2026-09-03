@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { henryDomainHost } from "@henryco/config";
 
 type Props = {
   applicationCount: number;
@@ -37,8 +38,8 @@ export function JobsHero({
         : `${savedCount} role${savedCount === 1 ? "" : "s"} on your shortlist.`;
   const blurb =
     applicationCount === 0 && savedCount === 0
-      ? "Browse live roles on jobs.henrycogroup.com, save shortlists, and apply with one tap. Recruiter updates land in your account in real time."
-      : "Applications, saved roles, recruiter updates, and profile signal — all mirrored from HenryCo Jobs into your account.";
+      ? `Browse live roles on ${henryDomainHost("jobs")}, save shortlists, and apply with one tap. Recruiter updates land in your account in real time.`
+      : "Applications, saved roles, recruiter updates, and profile signal — all mirrored from Henry Onyx Jobs into your account.";
   return (
     <section className="acct-job__hero" aria-label="Jobs overview">
       <div className="acct-job__hero-inner">

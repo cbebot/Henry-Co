@@ -1,85 +1,115 @@
 "use client";
 
-import { useEffect } from "react";
-import Link from "next/link";
-import { getAccountCopy, useHenryCoLocale } from "@henryco/i18n";
-import { AlertTriangle } from "lucide-react";
+/**
+ * apps/account/app/(account)/error.tsx — V3-10 canonical inner-shell
+ * error boundary.
+ *
+ * DIAG-IOS-01 root-cause fix. The previous implementation called
+ * `useHenryCoLocale()` (the THROWING hook), which would itself throw
+ * when this boundary fired ABOVE the `<LocaleProvider>` mount — most
+ * commonly when an iOS-Safari hydration mismatch interrupted the
+ * provider tree mid-render. The inner throw would bubble UP to the
+ * outer `apps/account/app/error.tsx`, surfacing the user-facing V3-10
+ * fallback ("Something didn't load") on every authenticated page.
+ *
+ * The class of bug:
+ *
+ *   inner-layout server fetch rejects
+ *     → React error boundary at `(account)/error.tsx` fires
+ *       → `useHenryCoLocale()` throws (no LocaleProvider ancestor)
+ *         → root `app/error.tsx` catches the SECOND throw
+ *           → V3-10 fallback paints
+ *
+ * Two architectural shifts close it for good:
+ *
+ *   1. Use `useOptionalHenryCoLocale()` (returns `null`, never throws)
+ *      with an explicit `DEFAULT_LOCALE` fallback.
+ *
+ *   2. Render via `<HenryCoErrorFallback>` from `@henryco/ui/public-shell`
+ *      — the same canonical primitive `apps/account/app/error.tsx` uses,
+ *      with `getErrorFallbackCopy(locale)`. The two boundaries now share
+ *      one branded UI surface so the visual handoff is invisible to the
+ *      user if a double-throw ever recurs.
+ *
+ *   3. `onErrorReport` mirrors the V3-10 pattern: structured log via
+ *      `@henryco/observability/logger` + Sentry capture, with the
+ *      `division` tag set to `account.inner` so support can distinguish
+ *      inner-shell catches from root catches in the dashboard. Both
+ *      reporter calls are wrapped in try/catch so a logger outage cannot
+ *      crash the boundary itself.
+ */
+import * as Sentry from "@sentry/nextjs";
+import { logger } from "@henryco/observability/logger";
+import {
+  getErrorFallbackCopy,
+  useOptionalHenryCoLocale,
+  DEFAULT_LOCALE,
+} from "@henryco/i18n";
+import { HenryCoErrorFallback } from "@henryco/ui/public-shell";
 
-export default function AccountError({
+const DIVISION = "account.inner";
+
+export default function AccountInnerError({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const locale = useHenryCoLocale();
-  const copy = getAccountCopy(locale);
-
-  useEffect(() => {
-    console.error("HenryCo account route error", {
-      message: error.message,
-      digest: error.digest,
-    });
-    // PASS 22 issue #4 — persist the digest server-side so support can
-    // trace a ref id back to the underlying error message + stack. The
-    // browser-only console.error path was an observability dead-end (the
-    // user's "ref 3280500486" report had no server-side trail).
-    try {
-      void fetch("/api/runtime-error", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        keepalive: true,
-        body: JSON.stringify({
-          surface: "account",
-          digest: error.digest ?? null,
-          message: error.message ?? null,
-          stack: error.stack ?? null,
-          path: typeof window !== "undefined" ? window.location.pathname : null,
-          userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-          at: new Date().toISOString(),
-        }),
-      }).catch(() => {
-        // best-effort — never let logging swallow a second error.
-      });
-    } catch {
-      // noop
-    }
-  }, [error]);
+  const locale = useOptionalHenryCoLocale() ?? DEFAULT_LOCALE;
+  const copy = getErrorFallbackCopy(locale);
 
   return (
-    <div className="acct-card mx-auto max-w-2xl p-6 acct-fade-in">
-      <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--acct-red-soft)] text-[var(--acct-red)]">
-          <AlertTriangle size={20} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="acct-kicker">{copy.errorBoundary.kicker}</p>
-          <h1 className="mt-2 text-xl font-semibold text-[var(--acct-ink)]">
-            {copy.errorBoundary.title}
-          </h1>
-          <p className="mt-3 text-sm leading-7 text-[var(--acct-muted)]">
-            {copy.errorBoundary.description}
-          </p>
-          {error.digest ? (
-            <p className="mt-3 text-[11px] font-mono tracking-tight text-[var(--acct-muted)]">
-              <span aria-hidden>↳ </span>
-              ref&nbsp;
-              <code className="rounded bg-[var(--acct-surface)] px-1.5 py-0.5 text-[var(--acct-ink)]">
-                {error.digest}
-              </code>
-              <span className="ml-2 opacity-70">(share with support)</span>
-            </p>
-          ) : null}
-          <div className="mt-5 flex flex-wrap gap-3">
-            <button onClick={reset} className="acct-button-primary rounded-2xl">
-              {copy.errorBoundary.reload}
-            </button>
-            <Link href="/support" className="acct-button-secondary rounded-2xl">
-              {copy.errorBoundary.contactSupport}
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+    <HenryCoErrorFallback
+      error={error}
+      reset={reset}
+      division={DIVISION}
+      copy={copy}
+      onErrorReport={({ error: e, division }) => {
+        try {
+          logger
+            .child({ module: `${division}.error-boundary` })
+            .error("error_boundary_caught", {
+              division,
+              digest: e.digest,
+              name: e.name,
+              message: e.message,
+            });
+        } catch {
+          // Logger failure must not crash the boundary.
+        }
+        try {
+          Sentry.captureException(e, {
+            tags: { division, source: "app/(account)/error.tsx" },
+            extra: { digest: e.digest },
+          });
+        } catch {
+          // Sentry not initialised — silent.
+        }
+        // Best-effort POST to /api/runtime-error so the digest is grep-able
+        // in Vercel runtime logs even if Sentry DSN is misconfigured. Wrapped
+        // in try/catch + .catch() — a failed POST must not throw.
+        try {
+          void fetch("/api/runtime-error", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            keepalive: true,
+            body: JSON.stringify({
+              surface: division,
+              digest: e.digest ?? null,
+              message: e.message ?? null,
+              stack: e.stack ?? null,
+              path: typeof window !== "undefined" ? window.location.pathname : null,
+              userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+              at: new Date().toISOString(),
+            }),
+          }).catch(() => {
+            // Network failure inside a boundary must never re-throw.
+          });
+        } catch {
+          // Even synthesizing the payload must not throw.
+        }
+      }}
+    />
   );
 }

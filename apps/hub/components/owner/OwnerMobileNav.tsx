@@ -8,8 +8,10 @@ import { ButtonPendingContent } from "@henryco/ui";
 import { getAccountUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
+import { logoutEverywhere } from "@henryco/auth/client";
 import { Menu, X, LogOut, ArrowLeft } from "lucide-react";
 import { getOwnerNavSections } from "@/lib/owner-navigation";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import Logo from "@/components/brand/Logo";
 
@@ -41,15 +43,14 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
     setSignOutError(null);
     setSigningOut(true);
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: { Accept: "application/json" },
+      const supabase = createSupabaseBrowser();
+      const result = await logoutEverywhere({
+        supabase,
+        redirectTo: "/owner/login",
       });
-      if (!response.ok) {
-        throw new Error(`Owner logout failed with status ${response.status}`);
+      if (!result.ok && result.serverLogoutStatus && result.serverLogoutStatus >= 500) {
+        throw new Error(`Owner logout failed with status ${result.serverLogoutStatus}`);
       }
-      window.location.assign("/owner/login");
     } catch (error) {
       console.error(error);
       setSignOutError(t("We could not sign you out. Try again."));
@@ -64,7 +65,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
         <div className="flex items-center gap-2.5">
           <Logo size={28} />
           <div>
-            <span className="text-sm font-semibold">Henry & Co.</span>
+            <span className="text-sm font-semibold">Henry Onyx</span>
             <span className="ml-1.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--owner-accent)]">
               {t("CMD")}
             </span>
@@ -119,7 +120,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
               className="mx-3 mt-3 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-[var(--acct-muted)] hover:bg-[var(--acct-surface)]"
             >
               <ArrowLeft size={14} />
-              {t("Back to HenryCo Account")}
+              {t("Back to Henry Onyx Account")}
             </Link>
 
             {/* Nav sections */}
@@ -181,7 +182,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
                   void handleSignOut();
                 }}
                 disabled={signingOut}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[var(--acct-red)] hover:bg-[var(--acct-red-soft)]"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[var(--acct-red-text)] hover:bg-[var(--acct-red-soft)]"
               >
                 <ButtonPendingContent
                   pending={signingOut}
@@ -195,7 +196,7 @@ export default function OwnerMobileNav({ user }: OwnerMobileNavProps) {
                 </ButtonPendingContent>
               </button>
               {signOutError ? (
-                <p className="mt-2 px-3 text-xs font-medium text-[var(--acct-red)]" role="status">
+                <p className="mt-2 px-3 text-xs font-medium text-[var(--acct-red-text)]" role="status">
                   {signOutError}
                 </p>
               ) : null}

@@ -19,7 +19,7 @@ import { saveSettingsAction } from "../actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Owner Settings | Henry & Co. Fabric Care",
+  title: "Owner Settings | Henry Onyx Fabric Care",
   description:
     "Owner settings for public presentation, domains, payment details, media, and customer messaging.",
 };
@@ -345,7 +345,7 @@ After payment, kindly send proof to our company email or WhatsApp.
 {payment_instructions}
 
 Thank you,
-Henry & Co. Fabric Care`
+Henry Onyx Fabric Care`
               }
               rows={10}
               className={textareaCls}

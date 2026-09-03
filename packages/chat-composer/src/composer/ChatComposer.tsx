@@ -47,11 +47,15 @@ const TONE_ACCENT: Record<string, { base: string; deep: string }> = {
   studio: { base: "#d4b14e", deep: "#a98835" },
 };
 
-function toneStyle(tone: string): React.CSSProperties {
-  const accent = TONE_ACCENT[tone] || TONE_ACCENT.neutral;
+function toneStyle(tone: string, accent?: string): React.CSSProperties {
+  const preset = TONE_ACCENT[tone] || TONE_ACCENT.neutral;
+  // A raw accent override wins over the tone map (so an arbitrary division colour matches its
+  // host). The deep shade is derived so a single colour is enough to pass in.
+  const base = accent || preset.base;
+  const deep = accent ? `color-mix(in srgb, ${accent} 78%, #000)` : preset.deep;
   return {
-    ["--composer-accent" as keyof React.CSSProperties]: accent.base,
-    ["--composer-accent-deep" as keyof React.CSSProperties]: accent.deep,
+    ["--composer-accent" as keyof React.CSSProperties]: base,
+    ["--composer-accent-deep" as keyof React.CSSProperties]: deep,
     ["--composer-muted" as keyof React.CSSProperties]: "rgba(15,23,42,0.5)",
   } as React.CSSProperties;
 }
@@ -64,6 +68,7 @@ export function ChatComposer(props: ComposerProps) {
     onSend,
     placeholder,
     tone = "neutral",
+    accent,
     disabled,
     busy: externalBusy,
     maxAttachments = DEFAULT_MAX_ATTACHMENTS,
@@ -83,9 +88,12 @@ export function ChatComposer(props: ComposerProps) {
     belowInputSlot,
     initialText,
     ariaLabel,
+    textareaName,
     composerExtras,
     autoFocus = false,
     edgeToEdgeMobile = false,
+    enterKeyBehavior = "newline",
+    maxRows = 6,
   } = props;
 
   useEffect(() => {
@@ -149,11 +157,17 @@ export function ChatComposer(props: ComposerProps) {
     setDraftHydrated(true);
   }, [draft.hydrated, draft.initialDraft, draftHydrated, initialText]);
 
+  // Depend on the STABLE persist callback, never the hook's result object —
+  // a fresh `draft` identity every render + persist()'s own state cycle
+  // (dirty → saving → saved → idle each re-renders) re-fired this effect
+  // forever: the draft pill pulsed endlessly and its "Saving…"/"Draft saved"
+  // width swaps jittered the whole actions row (Send + Discard "blinking").
+  const persistDraft = draft.persist;
   useEffect(() => {
     if (!draftHydrated) return;
-    draft.persist(text);
+    persistDraft(text);
     if (text) onTyping?.();
-  }, [text, draftHydrated, draft, onTyping]);
+  }, [text, draftHydrated, persistDraft, onTyping]);
 
   useEffect(() => {
     if (!validationMessage) return;
@@ -162,7 +176,9 @@ export function ChatComposer(props: ComposerProps) {
   }, [validationMessage]);
 
   const macLike = useMemo(() => isMacLike(), []);
-  const shortcutHint = labels?.shortcutHint || shortcutHintText(macLike);
+  const shortcutHint =
+    labels?.shortcutHint ||
+    (enterKeyBehavior === "send" ? "Enter to send" : shortcutHintText(macLike));
 
   const trimmed = text.trim();
   const hasText = trimmed.length > 0;
@@ -226,6 +242,7 @@ export function ChatComposer(props: ComposerProps) {
     onSubmit: handleSubmit,
     onEscape: isFullScreen ? () => setIsFullScreen(false) : undefined,
     disabled,
+    enterSends: enterKeyBehavior === "send",
   });
 
   const handleDiscardDraft = useCallback(async () => {
@@ -290,7 +307,7 @@ export function ChatComposer(props: ComposerProps) {
         "dark:shadow-[0_24px_64px_rgba(0,0,0,0.5)]",
         className
       )}
-      style={toneStyle(tone)}
+      style={toneStyle(tone, accent)}
       data-drag-over={isDragOver ? "true" : undefined}
       data-has-text={text.length > 0 || hasAttachments ? "true" : "false"}
       data-hc-edge-to-edge={edgeToEdgeMobile ? "true" : undefined}
@@ -308,7 +325,7 @@ export function ChatComposer(props: ComposerProps) {
       onDrop={handleDrop}
       data-composer-root="inline"
       role="group"
-      aria-label={ariaLabel || "Message composer"}
+      aria-label={ariaLabel || labels?.composerAriaLabel || "Message composer"}
     >
       {isDragOver && enableAttachments ? (
         <div
@@ -320,7 +337,7 @@ export function ChatComposer(props: ComposerProps) {
           aria-hidden
         >
           <span className="rounded-full bg-white/95 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--composer-accent)] shadow-[0_4px_14px_rgba(15,23,42,0.08)] dark:bg-zinc-900/85">
-            Drop to attach
+            {labels?.dropToAttachLabel || "Drop to attach"}
           </span>
         </div>
       ) : null}
@@ -332,10 +349,11 @@ export function ChatComposer(props: ComposerProps) {
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder={placeholder || labels?.placeholder || "Write a message…"}
+          name={textareaName}
           minRows={1}
-          maxRows={6}
+          maxRows={maxRows}
           disabled={disabled}
-          aria-label={ariaLabel || "Message body"}
+          aria-label={ariaLabel || labels?.bodyAriaLabel || "Message body"}
           aria-describedby={liveRegionId}
           data-hc-no-zoom
           className="henryco-composer-input flex-1 px-2 py-2 text-[15px] leading-6 text-zinc-900 caret-[color:var(--composer-accent)] dark:text-white sm:text-[15.5px]"
@@ -361,6 +379,9 @@ export function ChatComposer(props: ComposerProps) {
           variant="inline"
           removeLabel={labels?.removeAttachmentLabel}
           retryLabel={labels?.retryUploadLabel}
+          uploadingLabel={labels?.uploadingLabel}
+          attachmentFailedLabel={labels?.attachmentFailedLabel}
+          attachmentListLabel={labels?.attachmentListLabel}
         />
       ) : null}
 
@@ -397,6 +418,7 @@ export function ChatComposer(props: ComposerProps) {
             hasContent={hasText || hasAttachments}
             onDiscard={handleDiscardDraft}
             savedLabel={labels?.draftSavedLabel}
+            savingLabel={labels?.savingLabel}
             discardLabel={labels?.discardDraftLabel}
             reduceMotion={reduceMotion}
           />
@@ -424,7 +446,9 @@ export function ChatComposer(props: ComposerProps) {
 
       <span id={liveRegionId} className="sr-only" aria-live="polite">
         {validationMessage ||
-          (sendStatus === "sending" ? "Sending message" : "")}
+          (sendStatus === "sending"
+            ? labels?.srSendingLabel || "Sending message"
+            : "")}
       </span>
 
       {validationMessage ? (
@@ -466,6 +490,7 @@ export function ChatComposer(props: ComposerProps) {
           enableDraft={enableDraft}
           validationMessage={validationMessage}
           ariaLabel={ariaLabel}
+          textareaName={textareaName}
         />
       </>
     );

@@ -24,6 +24,7 @@ import { getProjectWorkspace } from "@/lib/studio/data";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { buildPaymentOverview, buildProposalPricingBreakdown } from "@/lib/studio/pricing";
 import { StudioSubmitButton } from "@/components/studio/submit-button";
+import { StudioSupportRequestForm } from "@/components/studio/support/StudioSupportRequestForm";
 
 function truncateFileLabel(label: string, max = 36) {
   if (label.length <= max) return label;
@@ -56,6 +57,23 @@ export default async function ProjectDetailPage({
       redirect(getStudioLoginUrl(`/project/${projectId}`));
     }
     notFound();
+  }
+
+  const isStaff = viewerHasRole(viewer, [
+    "studio_owner",
+    "sales_consultation",
+    "project_manager",
+    "developer_designer",
+    "client_success",
+    "finance",
+  ]);
+
+  // Authed owners belong on the canonical /client portal — the single
+  // client-facing project surface. Access-key visitors (no-login post-payment
+  // and shared email deep-links) and staff fall through and render the
+  // workspace here, so the no-login money path is untouched.
+  if (viewer.user && !isStaff && workspace.viewerOwnsViaAuth) {
+    redirect(`/client/projects/${projectId}`);
   }
 
   const {
@@ -228,14 +246,6 @@ export default async function ProjectDetailPage({
     ),
   ]);
   const redirectPath = `/project/${project.id}?access=${project.accessKey}`;
-  const isStaff = viewerHasRole(viewer, [
-    "studio_owner",
-    "sales_consultation",
-    "project_manager",
-    "developer_designer",
-    "client_success",
-    "finance",
-  ]);
   const isPm = viewerHasRole(viewer, ["studio_owner", "project_manager"]);
   const isDelivery = viewerHasRole(viewer, ["studio_owner", "developer_designer"]);
   const unpaidPayments = payments.filter((payment) => payment.status !== "paid");
@@ -331,7 +341,7 @@ export default async function ProjectDetailPage({
               </div>
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-[rgba(151,244,243,0.2)] bg-black/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--studio-signal)]">
+              <span className="rounded-full border border-[var(--studio-accent-soft)] bg-[var(--studio-fill-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--studio-signal)]">
                 {friendlyMilestoneStatus(milestone.status)}
               </span>
               {isPm ? (
@@ -352,7 +362,7 @@ export default async function ProjectDetailPage({
                   />
                   <button
                     type="submit"
-                    className="rounded-full border border-[var(--studio-line)] px-4 py-1.5 text-xs font-semibold text-[var(--studio-ink)] transition hover:border-[rgba(151,244,243,0.28)]"
+                    className="rounded-full border border-[var(--studio-line)] px-4 py-1.5 text-xs font-semibold text-[var(--studio-ink)] transition hover:border-[var(--studio-accent)]"
                   >
                     {t("Advance milestone")}
                   </button>
@@ -378,14 +388,14 @@ export default async function ProjectDetailPage({
           [t("Pages and interfaces"), customRequest.pageRequirements.join(", ") || t("Refined during scope review")],
           [t("Add-ons"), customRequest.addonServices.join(", ") || t("None selected")],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
+          <div key={label} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-4">
             <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{label}</div>
             <div className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{value}</div>
           </div>
         ))}
       </div>
       {customRequest.inspirationSummary ? (
-        <div className="mt-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
+        <div className="mt-4 rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-4">
           <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{t("References and direction")}</div>
           <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedCustomInspiration}</p>
         </div>
@@ -403,7 +413,7 @@ export default async function ProjectDetailPage({
           nextAction: localizedProjectNextAction,
         }}
         serviceName={service?.name || project.serviceId}
-        teamLine={team?.name || project.teamId || "HenryCo Studio"}
+        teamLine={team?.name || project.teamId || "Henry Onyx Studio"}
         proposalCurrency={proposalCurrency}
         paymentOverview={{
           outstanding: paymentOverview.outstanding,
@@ -443,7 +453,7 @@ export default async function ProjectDetailPage({
             />
           ) : null}
 
-          <section className="overflow-hidden rounded-[1.85rem] border border-[rgba(151,244,243,0.12)] bg-[color-mix(in_srgb,var(--studio-surface)_92%,transparent)]">
+          <section className="overflow-hidden rounded-[1.85rem] border border-[var(--studio-accent-soft)] bg-[color-mix(in_srgb,var(--studio-surface)_92%,transparent)]">
             <div className="border-b border-[var(--studio-line)] px-6 py-7 sm:px-8">
               <div className="studio-kicker">{t("Progress")}</div>
               <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--studio-ink)] sm:text-[1.65rem]">
@@ -489,7 +499,7 @@ export default async function ProjectDetailPage({
                   </div>
                 ))
               ) : (
-                <div className="rounded-[1.4rem] border border-dashed border-[var(--studio-line)] bg-black/5 px-6 py-10 text-center">
+                <div className="rounded-[1.4rem] border border-dashed border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-6 py-10 text-center">
                   <p className="text-sm font-medium text-[var(--studio-ink)]">{t("No messages yet")}</p>
                   <p className="mt-1 text-sm text-[var(--studio-ink-soft)]">{t("Send a message to start the conversation with your project team.")}</p>
                 </div>
@@ -570,7 +580,7 @@ export default async function ProjectDetailPage({
               <div className="mt-5 space-y-4">
                 {localizedRevisions.length > 0 ? (
                   localizedRevisions.map((revision) => (
-                    <div key={revision.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
+                    <div key={revision.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-4">
                       <div className="flex items-center justify-between gap-4">
                         <div className="font-semibold text-[var(--studio-ink)]">{revision.summary}</div>
                         <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">{friendlyRevisionStatus(revision.status)}</div>
@@ -590,7 +600,7 @@ export default async function ProjectDetailPage({
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-[1.4rem] border border-dashed border-[var(--studio-line)] bg-black/5 p-6 text-center">
+                  <div className="rounded-[1.4rem] border border-dashed border-[var(--studio-line)] bg-[var(--studio-fill-faint)] p-6 text-center">
                     <p className="text-sm font-medium text-[var(--studio-ink)]">{t("No revisions requested")}</p>
                     <p className="mt-1 text-sm text-[var(--studio-ink-soft)]">{t("If you need something changed, describe it below.")}</p>
                   </div>
@@ -637,7 +647,7 @@ export default async function ProjectDetailPage({
               </div>
               <div className="mt-6 space-y-4">
                 {localizedDeliverables.map((deliverable) => (
-                  <div key={deliverable.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-4">
+                  <div key={deliverable.id} className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-4">
                     <div className="font-semibold text-[var(--studio-ink)]">{deliverable.label}</div>
                     <p className="mt-2 text-sm leading-7 text-[var(--studio-ink-soft)]">{deliverable.summary}</p>
                   </div>
@@ -685,33 +695,22 @@ export default async function ProjectDetailPage({
                     required
                     rows={4}
                     className="studio-textarea min-h-28 w-full rounded-[1.5rem] px-4 py-4"
-                    placeholder={t("How was the experience working with HenryCo Studio?")}
+                    placeholder={t("How was the experience working with Henry Onyx Studio?")}
                   />
                   <StudioSubmitButton label={t("Publish review")} pendingLabel={t("Publishing…")} />
                 </form>
               ) : null}
               {unpaidPayments.length > 0 && !isStaff && viewer.user ? (
-                <form action="/api/support/create" method="post" className="mt-6 space-y-3">
-                  <input type="hidden" name="redirectTo" value={redirectPath} />
-                  <input type="hidden" name="subject" value={`Support request for ${project.title}`} />
-                  <input type="hidden" name="category" value="project" />
-                  <input type="hidden" name="priority" value="normal" />
-                  <input type="hidden" name="referenceType" value="studio_project" />
-                  <input type="hidden" name="referenceId" value={project.id} />
-                  <textarea
-                    name="body"
-                    required
-                    rows={3}
-                    className="studio-textarea min-h-24 w-full rounded-[1.5rem] px-4 py-4"
-                    placeholder={t("Describe your question or concern — we'll respond in your account.")}
-                  />
-                  <StudioSubmitButton label={t("Open support thread")} pendingLabel={t("Opening…")} />
-                </form>
+                <StudioSupportRequestForm
+                  projectId={project.id}
+                  projectTitle={project.title}
+                  redirectPath={redirectPath}
+                />
               ) : unpaidPayments.length > 0 && !isStaff ? (
-                <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+                <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                   <div className="text-sm font-semibold text-[var(--studio-ink)]">{t("Need help with your payment?")}</div>
                   <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">
-                    {t("Contact our finance team directly, or sign in to your HenryCo account for full support.")}
+                    {t("Contact our finance team directly, or sign in to your Henry Onyx account for full support.")}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-3">
                     {platform.paymentSupportEmail ? (
@@ -720,7 +719,7 @@ export default async function ProjectDetailPage({
                       </a>
                     ) : null}
                     <Link href={platform.accountDashboardUrl} className="studio-button-primary inline-flex rounded-full px-4 py-3 text-sm font-semibold">
-                      {t("Open HenryCo account")}
+                      {t("Open Henry Onyx account")}
                     </Link>
                   </div>
                 </div>

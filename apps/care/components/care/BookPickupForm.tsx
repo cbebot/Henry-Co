@@ -1502,7 +1502,7 @@ export default function BookPickupForm({
                     {SUPPLIES_OPTIONS.map((item) => (
                       <option key={item} value={item}>
                         {item === "included"
-                          ? t("HenryCo supplies the visit")
+                          ? t("Henry Onyx supplies the visit")
                           : t("Supplies already on site")}
                       </option>
                     ))}
@@ -1806,7 +1806,7 @@ export default function BookPickupForm({
               </div>
               <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
                 {t(
-                  "Best when you already know you want the slot locked in fast and want instant payment guidance by email, with support visibility from the start.",
+                  "Best when you already know you want the slot confirmed and payment guidance sent by email, with support visibility from the start.",
                 )}
               </p>
             </button>
@@ -1830,8 +1830,8 @@ export default function BookPickupForm({
 
               <div className="grid gap-3 rounded-[1.4rem] border border-black/10 bg-white/82 p-4 dark:border-white/10 dark:bg-white/[0.05]">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <DetailPill label={t("Account name")} copyValue={paymentSettings.accountName || "HenryCo Care"}>
-                    {paymentSettings.accountName || "HenryCo Care"}
+                  <DetailPill label={t("Account name")} copyValue={paymentSettings.accountName || "Henry Onyx Care"}>
+                    {paymentSettings.accountName || "Henry Onyx Care"}
                   </DetailPill>
                   <DetailPill label={t("Bank name")} copyValue={paymentSettings.bankName || undefined}>
                     {paymentSettings.bankName || t("Configured after save")}
@@ -1891,7 +1891,7 @@ export default function BookPickupForm({
               disabled={mode === "garment" ? selectedItems.length === 0 : !serviceQuote}
               label={
                 paymentPlan === "pay_now"
-                  ? t("Submit booking and unlock payment path")
+                  ? t("Submit booking and continue to payment")
                   : mode === "garment"
                     ? t("Submit garment request")
                     : quoteLabel(selectedServiceType)

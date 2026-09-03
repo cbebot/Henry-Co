@@ -341,7 +341,7 @@ export default function ReplyComposer({
                     {previewMessage.trim()}
                   </div>
                   <div className="mt-3 text-xs text-zinc-400 dark:text-white/35">
-                    Ref: {threadRef} | Henry &amp; Co. Fabric Care
+                    Ref: {threadRef} | Henry Onyx Fabric Care
                   </div>
                 </div>
               )}

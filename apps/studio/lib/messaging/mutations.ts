@@ -6,6 +6,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { resolveViewerContext } from "./queries";
 import { isReactionEmoji } from "./constants";
 import { classifyAttachment } from "./utils";
+import { screenMessageBody } from "./screen-message";
 import type {
   EditMessageInput,
   MarkReadInput,
@@ -59,6 +60,20 @@ export async function sendMessage(
     return { ok: false, error: "Write a message or attach a file." };
   }
 
+  // Server-side contact-safety (defense-in-depth; the client is bypassable).
+  // High/critical off-platform contact is blocked and never persisted; medium is
+  // masked. Screen the body server-side (the client is bypassable). Attachment-only
+  // sends pass "" which screens to allow.
+  const screened = screenMessageBody(body);
+  if (screened.action === "block") {
+    return {
+      ok: false,
+      error:
+        "That message includes a phone number, email, or off-platform link. To protect you from scams, we keep those out of chat. Please remove it and try again.",
+      reason: "contact_blocked",
+    };
+  }
+
   const messageType =
     input.messageType ||
     (body.length === 0 && attachments.length > 0 ? "file" : "text");
@@ -83,7 +98,7 @@ export async function sendMessage(
       sender: senderName,
       sender_id: viewer.userId,
       sender_role: senderRole,
-      body,
+      body: screened.body,
       is_internal: false,
       message_type: messageType,
       metadata: input.metadata || {},
@@ -94,10 +109,8 @@ export async function sendMessage(
     .single();
 
   if (insertResult.error || !insertResult.data) {
-    return {
-      ok: false,
-      error: insertResult.error?.message || "Could not send message.",
-    };
+    console.error("[studio][messaging] send failed", insertResult.error);
+    return { ok: false, error: "We couldn't send that message. Please try again." };
   }
 
   // Mark our own message as read by us so unread counts elsewhere
@@ -243,10 +256,21 @@ export async function editMessage(
     return { ok: false, error: "Message cannot be empty." };
   }
 
+  // Server-side contact-safety on EDIT too — without this a user could send a
+  // clean message then edit it to inject a phone/email, bypassing the send screen.
+  const screened = screenMessageBody(body);
+  if (screened.action === "block") {
+    return {
+      ok: false,
+      error:
+        "That edit includes a phone number, email, or off-platform link. To protect you from scams, we keep those out of chat. Please remove it and try again.",
+    };
+  }
+
   const result = await supabase
     .from("studio_project_messages")
     .update({
-      body,
+      body: screened.body,
       edited_at: new Date().toISOString(),
     })
     .eq("id", input.messageId)

@@ -3,6 +3,7 @@ import "server-only";
 import React from "react";
 import { getHqUrl } from "@henryco/config";
 import { sendTransactionalEmail } from "@henryco/email";
+import { composeMorningBriefNarrative } from "@/lib/founder-intelligence/morning-brief-narrative";
 import {
   OwnerReportDocument,
   renderDocumentToBuffer,
@@ -10,6 +11,7 @@ import {
   type OwnerReportProps,
 } from "@henryco/branded-documents";
 import { getFinanceCenterData, getMessagingCenterData, getOperationsCenterData, getOwnerOverviewData } from "@/lib/owner-data";
+import { getAgencyBriefSnapshot, type AgencyBriefSnapshot } from "@/lib/studio-agency-read";
 import { divisionLabel, formatCurrencyAmount } from "@/lib/format";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -20,7 +22,7 @@ const OWNER_REPORT_ENTITY_TYPE = "owner_report";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LAGOS_OFFSET_MS = 60 * 60 * 1000;
 
-export type OwnerReportKind = "weekly" | "monthly";
+export type OwnerReportKind = "daily" | "weekly" | "monthly";
 
 type OwnerRecipient = {
   email: string;
@@ -124,7 +126,18 @@ function buildMonthlyPeriod(now: Date) {
   };
 }
 
+function buildDailyPeriod(now: Date) {
+  const lagosNow = toLagosDate(now);
+  return {
+    key: formatDateKey(lagosNow),
+    label: formatShortDate(lagosNow),
+  };
+}
+
 function shouldRunReport(kind: OwnerReportKind, now: Date) {
+  // Daily = the morning brief: the cron fires once a day and the per-recipient
+  // audit dedupe (kind:periodKey:email) makes retries idempotent.
+  if (kind === "daily") return true;
   const lagosNow = toLagosDate(now);
   if (kind === "weekly") {
     return lagosNow.getUTCDay() === 1;
@@ -254,7 +267,7 @@ async function sendOwnerReportEmail(input: {
   const dispatch = await sendTransactionalEmail({
     to: input.to,
     purpose: "security",
-    fromName: "HenryCo HQ",
+    fromName: "Henry Onyx HQ",
     subject: input.subject,
     html: input.html,
     text: input.text,
@@ -271,7 +284,7 @@ async function sendOwnerReportEmail(input: {
   if (dispatch.status === "skipped") {
     return {
       status: "failed" as const,
-      reason: dispatch.skippedReason || "Email provider not configured for HenryCo HQ.",
+      reason: dispatch.skippedReason || "Email provider not configured for Henry Onyx HQ.",
       messageId: null,
     };
   }
@@ -310,15 +323,23 @@ function renderOwnerReportEmail(input: {
   finance: Awaited<ReturnType<typeof getFinanceCenterData>>;
   operations: Awaited<ReturnType<typeof getOperationsCenterData>>;
   messaging: Awaited<ReturnType<typeof getMessagingCenterData>>;
+  /** F2b: the AI-composed executive opening (daily brief, flag-gated) — null ships the deterministic brief. */
+  narrative?: string | null;
+  /** SA-4: the studio-agency snapshot (deterministic; null while the agency is dark or has nothing). */
+  agency?: AgencyBriefSnapshot | null;
 }) {
   const title =
     input.kind === "monthly"
-      ? `HenryCo owner monthly report • ${input.periodLabel}`
-      : `HenryCo owner weekly report • ${input.periodLabel}`;
+      ? `Henry Onyx owner monthly report • ${input.periodLabel}`
+      : input.kind === "weekly"
+        ? `Henry Onyx owner weekly report • ${input.periodLabel}`
+        : `Henry Onyx morning brief • ${input.periodLabel}`;
   const intro =
     input.kind === "monthly"
       ? "This report is the richer monthly owner snapshot: money movement, pressure points, delivery health, and the next sensible executive actions."
-      : "This weekly owner report keeps the most important operational and financial truths visible without making you parse raw tables.";
+      : input.kind === "weekly"
+        ? "This weekly owner report keeps the most important operational and financial truths visible without making you parse raw tables."
+        : "Where the company stands this morning — the numbers that matter, what changed overnight, and what needs your attention first.";
   const topSignals = input.overview.signals.slice(0, 5).map((signal) => `${signal.title}: ${signal.body}`);
   const divisionPressure = [...input.overview.divisions]
     .sort((left, right) => left.healthScore - right.healthScore)
@@ -344,6 +365,24 @@ function renderOwnerReportEmail(input: {
   const recommendations = input.overview.helperInsights
     .slice(0, 4)
     .map((insight) => `${insight.title}: ${insight.body}`);
+  // SA-4 — the agency section: jobs moved, decisions waiting, money accrued.
+  // Deterministic (no AI, no flag dependency beyond the snapshot itself being
+  // empty while STUDIO_AGENCY_LIVE is dark).
+  const agencyLines = input.agency
+    ? [
+        `${input.agency.activeJobs} build job(s) active — ${input.agency.awaitingOwner} waiting on your approval, ${input.agency.stalled} stalled.`,
+        `${input.agency.proposalsInReview} agency proposal(s) held at the review gate.`,
+        `${input.agency.studioDecisionsPending} orchestrator decision(s) pending in the studio inbox.`,
+        `Provider cost accrued on jobs created today: ${formatCurrencyAmount(Math.floor(input.agency.accruedTodayKobo / 100))}.`,
+      ]
+    : [];
+  const agencyHasSubstance = Boolean(
+    input.agency &&
+      (input.agency.activeJobs > 0 ||
+        input.agency.proposalsInReview > 0 ||
+        input.agency.studioDecisionsPending > 0 ||
+        input.agency.stalled > 0),
+  );
   const movementRows = input.finance.recentPayments
     .slice(0, input.kind === "monthly" ? 8 : 5)
     .map(
@@ -362,7 +401,7 @@ function renderOwnerReportEmail(input: {
     <div style="background:#f3efe8;padding:32px;font-family:Manrope,Segoe UI,Arial,sans-serif;color:#17120f;">
       <div style="max-width:760px;margin:0 auto;background:#fffdfa;border:1px solid rgba(23,18,15,0.08);border-radius:32px;overflow:hidden;box-shadow:0 32px 90px rgba(15,15,15,0.12);">
         <div style="padding:30px 34px;background:linear-gradient(135deg,#17120f 0%,#4f4232 55%,#c9a227 100%);color:#fffaf2;">
-          <div style="font-size:11px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;opacity:0.78;">HenryCo HQ</div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;opacity:0.78;">Henry Onyx HQ</div>
           <h1 style="margin:14px 0 8px;font-family:Newsreader,Georgia,serif;font-size:40px;line-height:1;font-weight:600;">${escapeHtml(title)}</h1>
           <p style="margin:0;font-size:15px;line-height:1.7;max-width:620px;color:rgba(255,250,242,0.9);">${escapeHtml(intro)}</p>
         </div>
@@ -370,6 +409,18 @@ function renderOwnerReportEmail(input: {
         <div style="padding:28px 34px;">
           <p style="margin:0 0 18px;font-size:15px;line-height:1.75;color:#5d5b55;">Hello ${escapeHtml(input.recipientName || "Owner")},</p>
           <p style="margin:0 0 22px;font-size:15px;line-height:1.85;color:#5d5b55;">${escapeHtml(input.overview.executiveDigest)}</p>
+
+          ${
+            input.narrative
+              ? `
+          <div style="margin:0 0 24px;padding:20px 22px;border:1px solid rgba(201,162,39,0.35);border-radius:18px;background:#fbf7ec;">
+            <p style="margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#8a6f00;">This morning, in brief</p>
+            <p style="margin:0;font-size:15px;line-height:1.85;color:#17120f;">${escapeHtml(input.narrative)}</p>
+            <p style="margin:10px 0 0;font-size:12px;color:#867f74;">Composed by Henry Onyx Intelligence from the same live records as the numbers below.</p>
+          </div>
+          `
+              : ""
+          }
 
           <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:24px;">
             ${renderMetricCard(
@@ -415,6 +466,17 @@ function renderOwnerReportEmail(input: {
           </section>
 
           ${
+            agencyHasSubstance
+              ? `
+          <section style="margin-top:24px;">
+            <h2 style="margin:0 0 10px;font-size:18px;font-weight:700;color:#17120f;">Studio agency</h2>
+            ${renderList(agencyLines)}
+          </section>
+          `
+              : ""
+          }
+
+          ${
             recommendations.length
               ? `
           <section style="margin-top:24px;">
@@ -449,7 +511,7 @@ function renderOwnerReportEmail(input: {
           </div>
 
           <p style="margin:24px 0 0;font-size:13px;line-height:1.7;color:#867f74;">
-            Generated from live HenryCo HQ data surfaces. If a number looks stale, refresh the relevant division after the next workflow update lands.
+            Generated from live Henry Onyx HQ data surfaces. If a number looks stale, refresh the relevant division after the next workflow update lands.
           </p>
         </div>
       </div>
@@ -461,6 +523,7 @@ function renderOwnerReportEmail(input: {
     "",
     intro,
     "",
+    ...(input.narrative ? ["This morning, in brief:", input.narrative, ""] : []),
     `Recognized revenue: ${formatCurrencyAmount(input.finance.moneyMovement.recognizedRevenueNaira)}`,
     `Recorded outflow: ${formatCurrencyAmount(input.finance.moneyMovement.recordedOutflowNaira)}`,
     `Critical signals: ${input.overview.metrics.criticalSignals}`,
@@ -477,6 +540,7 @@ function renderOwnerReportEmail(input: {
     "",
     "Division pressure:",
     ...divisionPressure.map((line) => `- ${line}`),
+    ...(agencyHasSubstance ? ["", "Studio agency:", ...agencyLines.map((line) => `- ${line}`)] : []),
     ...(recommendations.length
       ? ["", "Practical next actions:", ...recommendations.map((line) => `- ${line}`)]
       : []),
@@ -496,7 +560,9 @@ function renderOwnerReportEmail(input: {
  * canonical overview/finance/operations/messaging snapshot.
  */
 function buildOwnerReportProps(input: {
-  kind: OwnerReportKind;
+  // The branded-documents PDF template exists for weekly|monthly only; the
+  // daily morning brief never builds a PDF.
+  kind: Exclude<OwnerReportKind, "daily">;
   periodKey: string;
   periodLabel: string;
   recipientName: string;
@@ -654,7 +720,8 @@ export async function runOwnerReport(
   }
 ) {
   const now = options?.now ?? new Date();
-  const period = kind === "monthly" ? buildMonthlyPeriod(now) : buildWeeklyPeriod(now);
+  const period =
+    kind === "monthly" ? buildMonthlyPeriod(now) : kind === "weekly" ? buildWeeklyPeriod(now) : buildDailyPeriod(now);
 
   if (!options?.force && !shouldRunReport(kind, now)) {
     return {
@@ -672,12 +739,15 @@ export async function runOwnerReport(
     };
   }
 
-  const [overview, finance, operations, messaging, recipients] = await Promise.all([
+  const [overview, finance, operations, messaging, recipients, agency] = await Promise.all([
     getOwnerOverviewData(),
     getFinanceCenterData(),
     getOperationsCenterData(),
     getMessagingCenterData(),
     listOwnerRecipients(),
+    // SA-4: deterministic studio-agency snapshot — degrades to zeros while the
+    // agency tables are absent/dark, in which case the section simply doesn't render.
+    getAgencyBriefSnapshot(now).catch(() => null),
   ]);
 
   if (!recipients.length) {
@@ -690,6 +760,10 @@ export async function runOwnerReport(
       deliveries: [] as DispatchResult[],
     };
   }
+
+  // F2b: the AI opening for the DAILY brief — composed once per run (not per
+  // recipient), flag-gated + best-effort inside.
+  const narrative = kind === "daily" ? await composeMorningBriefNarrative() : null;
 
   const deliveries: DispatchResult[] = [];
   const sentAction = `owner_report_${kind}_sent`;
@@ -709,21 +783,26 @@ export async function runOwnerReport(
       continue;
     }
 
-    const pdfProps = buildOwnerReportProps({
-      kind,
-      periodKey: period.key,
-      periodLabel: period.label,
-      recipientName: recipient.fullName,
-      overview,
-      finance,
-      operations,
-      messaging,
-      generatedAt: now,
-    });
-
     // V3 PASS 21 / H6 — render the premium PDF and upload to storage.
-    // Falls back gracefully if the bucket is missing or fonts fail.
-    const pdfUpload = await uploadOwnerReportPdf(pdfProps);
+    // Falls back gracefully if the bucket is missing or fonts fail. The daily
+    // morning brief is deliberately lean (email only, no PDF), and the
+    // branded-documents template only knows weekly|monthly.
+    const pdfUpload =
+      kind === "daily"
+        ? null
+        : await uploadOwnerReportPdf(
+            buildOwnerReportProps({
+              kind,
+              periodKey: period.key,
+              periodLabel: period.label,
+              recipientName: recipient.fullName,
+              overview,
+              finance,
+              operations,
+              messaging,
+              generatedAt: now,
+            }),
+          );
 
     const emailTemplate = renderOwnerReportEmail({
       kind,
@@ -733,6 +812,8 @@ export async function runOwnerReport(
       finance,
       operations,
       messaging,
+      narrative,
+      agency,
     });
     const pdfHtml = pdfUpload?.signedUrl
       ? `\n<div style="margin-top:24px;padding:18px;border:1px solid rgba(23,18,15,0.08);border-radius:18px;background:#fffdfa;">

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Bell, BellOff } from "lucide-react";
+import { BellOff } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { henryDomain } from "@henryco/config";
 import { PropertyEmptyState, PropertyListingCard, PropertySearchBar, PropertySectionIntro } from "@/components/property/ui";
 import { PropertyMapView } from "@/components/property/property-map-view";
-import { PropertyPendingButton } from "@/components/property/form-status";
+import { SaveSearchButton } from "@/components/property/actions/SaveSearchButton";
 import { getPropertyViewer } from "@/lib/property/auth";
 import { getPropertySnapshot, searchProperties } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
@@ -15,9 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getPropertyPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
-    title: t("Search property listings | HenryCo Property"),
+    title: t("Search property listings | Henry Onyx Property"),
     description: t(
-      "Search HenryCo Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
+      "Search Henry Onyx Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
     ),
   };
 }
@@ -140,32 +141,25 @@ export default async function PropertySearchPage({
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-l-2 border-[var(--property-line)] pl-4">
           <p className="max-w-md text-[13px] leading-6 text-[var(--property-ink-soft)]">
             {t(
-              "Save this search and HenryCo Property will notify you when a new listing matches. Cadence is daily by default — change it later in your account.",
+              "Save this search and Henry Onyx Property will notify you when a new listing matches. Cadence is daily by default — change it later in your account.",
             )}
           </p>
           {viewer.user ? (
-            <form action="/api/property" method="POST" className="flex flex-wrap items-center gap-3">
-              <input type="hidden" name="intent" value="saved_search_create" />
-              <input type="hidden" name="return_to" value={`/search?${new URLSearchParams(Object.entries(params).filter(([, v]) => Boolean(v)) as Array<[string, string]>).toString()}`} />
-              <input type="hidden" name="q" value={params.q || ""} />
-              <input type="hidden" name="kind" value={params.kind || ""} />
-              <input type="hidden" name="area" value={params.area || ""} />
-              <input type="hidden" name="managed" value={params.managed || ""} />
-              <input type="hidden" name="furnished" value={params.furnished || ""} />
-              <input type="hidden" name="alert_cadence" value="daily" />
-              <PropertyPendingButton
-                idleLabel={t("Save this search")}
-                pendingLabel={t("Saving search")}
-                variant="secondary"
-                idleIcon={<Bell className="h-4 w-4" />}
-                className="px-4 py-2 text-[12.5px]"
-              />
-            </form>
+            <SaveSearchButton
+              criteria={{
+                q: params.q,
+                kind: params.kind,
+                area: params.area,
+                managed: params.managed,
+                furnished: params.furnished,
+              }}
+              returnTo={`/search?${new URLSearchParams(Object.entries(params).filter(([, v]) => Boolean(v)) as Array<[string, string]>).toString()}`}
+            />
           ) : (
             <Link
               href={getSharedAccountLoginUrl({
                 nextPath: "/search",
-                propertyOrigin: process.env.NEXT_PUBLIC_PROPERTY_ORIGIN || "https://property.henrycogroup.com",
+                propertyOrigin: process.env.NEXT_PUBLIC_PROPERTY_ORIGIN || henryDomain("property"),
               })}
               className="property-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-[12.5px] font-semibold"
             >
@@ -200,7 +194,7 @@ export default async function PropertySearchPage({
               href={buildViewHref(params, "list")}
               className={`rounded-full px-3 py-1.5 transition ${
                 view === "list"
-                  ? "bg-[var(--property-accent-strong)] text-white"
+                  ? "bg-[var(--home-accent)] text-[var(--home-accent-ink)]"
                   : "text-[var(--property-ink-soft)] hover:text-[var(--property-ink)]"
               }`}
             >
@@ -212,7 +206,7 @@ export default async function PropertySearchPage({
               href={buildViewHref(params, "map")}
               className={`rounded-full px-3 py-1.5 transition ${
                 view === "map"
-                  ? "bg-[var(--property-accent-strong)] text-white"
+                  ? "bg-[var(--home-accent)] text-[var(--home-accent-ink)]"
                   : "text-[var(--property-ink-soft)] hover:text-[var(--property-ink)]"
               }`}
             >
@@ -316,7 +310,7 @@ export default async function PropertySearchPage({
           <PropertyEmptyState
             title={t("No listings match this combination yet.")}
             body={t(
-              "Try broadening the area, removing one filter at a time, or switching from a precise phrase to the property type you want HenryCo to surface.",
+              "Try broadening the area, removing one filter at a time, or switching from a precise phrase to the property type you want Henry Onyx to surface.",
             )}
             action={
               <Link

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   forwardRef,
   useCallback,
@@ -187,6 +188,7 @@ function ActionMenu({
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [muted, setMuted] = useState(initialMuted);
   const [busyKey, setBusyKey] = useState<string | null>(null);
+  const router = useRouter();
   const [feedback, setFeedback] = useState<string | null>(null);
   const [transferPanelOpen, setTransferPanelOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -295,14 +297,14 @@ function ActionMenu({
           action === "resolve" ? "Thread marked resolved" : "Thread re-opened",
         );
         // Allow the system message to commit before reloading the page.
-        setTimeout(() => window.location.reload(), 600);
+        setTimeout(() => router.refresh(), 600);
       } catch {
         announce("Couldn't update status. Try again.");
       } finally {
         setBusyKey(null);
       }
     },
-    [threadId, announce],
+    [threadId, announce, router],
   );
 
   const submitTransfer = useCallback(
@@ -316,7 +318,7 @@ function ActionMenu({
         });
         if (!response.ok) throw new Error("transfer_failed");
         announce(`Transferred to ${division}`);
-        setTimeout(() => window.location.reload(), 600);
+        setTimeout(() => router.refresh(), 600);
       } catch {
         announce("Couldn't transfer. Try again.");
       } finally {
@@ -324,7 +326,7 @@ function ActionMenu({
         setTransferPanelOpen(false);
       }
     },
-    [threadId, announce],
+    [threadId, announce, router],
   );
 
   const reportThread = useCallback(async () => {

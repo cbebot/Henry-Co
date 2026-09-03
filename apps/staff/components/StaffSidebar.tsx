@@ -4,9 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ButtonPendingContent } from "@henryco/ui";
 import { getHqUrl } from "@henryco/config";
+import { logoutEverywhere } from "@henryco/auth/client";
 import { LogOut, ChevronDown, ChevronRight, ExternalLink, Search } from "lucide-react";
 import { createElement, useState } from "react";
 import { resolveIcon } from "@/components/StaffPrimitives";
+import { createStaffSupabaseBrowser } from "@/lib/supabase/browser";
 import { initials } from "@/lib/format";
 import type { WorkspaceNavItem } from "@/lib/types";
 
@@ -117,15 +119,14 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
     setSignOutError(null);
     setSigningOut(true);
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: { Accept: "application/json" },
+      const supabase = createStaffSupabaseBrowser();
+      const result = await logoutEverywhere({
+        supabase,
+        redirectTo: "/login",
       });
-      if (!response.ok) {
-        throw new Error(`Staff logout failed with status ${response.status}`);
+      if (!result.ok && result.serverLogoutStatus && result.serverLogoutStatus >= 500) {
+        throw new Error(`Staff logout failed with status ${result.serverLogoutStatus}`);
       }
-      window.location.assign("/login");
     } catch (error) {
       console.error(error);
       setSignOutError("We could not sign you out. Try again.");
@@ -141,7 +142,7 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-[var(--staff-ink)]">
-            Henry & Co.
+            Henry Onyx
           </p>
           <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-[var(--staff-gold)]">
             Staff HQ
@@ -149,7 +150,7 @@ export default function StaffSidebar({ viewer, sections, divisionSet }: StaffSid
         </div>
         <Link
           href="/search"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-[var(--staff-muted)] transition-colors hover:bg-[var(--staff-surface)] hover:text-[var(--staff-ink)]"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--staff-muted)] transition-colors hover:bg-[var(--staff-surface)] hover:text-[var(--staff-ink)]"
           aria-label="Search Staff HQ"
           title="Search Staff HQ"
         >

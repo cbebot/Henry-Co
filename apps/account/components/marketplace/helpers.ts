@@ -224,7 +224,7 @@ export function buildHeroCopy(
   const t = (text: string) => (locale ? translateSurfaceLabel(locale, text) : text);
   if (state === "empty") {
     return {
-      headline: t("Start shopping on HenryCo Marketplace."),
+      headline: t("Start shopping on Henry Onyx Marketplace."),
       blurb: t("Orders, disputes, seller activity, and payouts mirror into this room as soon as you transact. Browse the marketplace to get the first one rolling."),
       ctaPrimary: { label: t("Open marketplace"), href: marketplaceOrigin },
       ctaSecondary: { label: t("Apply to sell"), href: `${marketplaceOrigin}/sell` },
@@ -250,7 +250,7 @@ export function buildHeroCopy(
     }
     return {
       headline: `${stats.inFlight} ${stats.inFlight === 1 ? t("order") : t("orders")} ${t("in motion.")}`,
-      blurb: t("Live order status, payment state, and seller follow-up mirror into this room from HenryCo Marketplace in real time."),
+      blurb: t("Live order status, payment state, and seller follow-up mirror into this room from Henry Onyx Marketplace in real time."),
       ctaPrimary: { label: t("Open marketplace"), href: marketplaceOrigin },
       ctaSecondary: { label: t("Apply to sell"), href: `${marketplaceOrigin}/sell` },
     };

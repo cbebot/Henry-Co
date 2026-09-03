@@ -54,12 +54,12 @@ export function MessageComposer({
       setError(null);
       const detected = checkOffPlatform(text);
       if (detected.length > 0) {
+        // Never enumerate the matched detection categories — telling users
+        // exactly what the screen looks for is a map for bypassing it.
         setWarning(
-          `Detected ${detected.join(
-            ", "
-          )}. To keep the hiring process secure and auditable, please share contact details through the platform once both parties are ready.`
+          "This message contains contact details that can't be sent. Keep communication on Henry Onyx to stay protected, and try again without them."
         );
-        throw new Error("Off-platform contact detected. Adjust and retry.");
+        throw new Error("Message not sent. Remove any contact details and try again.");
       }
       setWarning(null);
 
@@ -76,8 +76,10 @@ export function MessageComposer({
       if (!res.ok) {
         const data = (await res.json().catch(() => ({}))) as {
           error?: string;
+          message?: string;
         };
-        throw new Error(data.error || "Failed to send message.");
+        // Surface the route's human-readable message — never the machine code.
+        throw new Error(data.message || "Message could not be sent. Please try again.");
       }
       router.refresh();
     },

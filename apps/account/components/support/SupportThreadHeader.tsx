@@ -217,6 +217,9 @@ export default function SupportThreadHeader({
  *   - Report thread (flag for human review)
  *   - Copy thread link
  *   - Copy thread ID
+ *
+ * Exported (as ThreadActionMenu below) so the ChatThread-based
+ * SupportChatScreen reuses the identical action set in its compact header.
  */
 function ActionMenu({
   threadId,
@@ -438,6 +441,8 @@ function ActionMenu({
     </div>
   );
 }
+
+export { ActionMenu as ThreadActionMenu };
 
 type ActionItemProps = {
   icon: ReactNode;

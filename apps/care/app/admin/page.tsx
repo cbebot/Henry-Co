@@ -38,7 +38,7 @@ const cards = [
     id: "divisions",
     icon: Building2,
     title: "Division Management",
-    text: "Grow Henry & Co. by adding more business divisions to the ecosystem over time.",
+    text: "Grow Henry Onyx by adding more business divisions to the ecosystem over time.",
   },
 ];
 

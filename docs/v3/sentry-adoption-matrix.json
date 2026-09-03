@@ -1,0 +1,131 @@
+{
+  "generatedAt": "2026-05-22T14:55:41.602Z",
+  "apps": [
+    {
+      "app": "account",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "care",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "hub",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "jobs",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "learn",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "logistics",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "marketplace",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "property",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "staff",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    },
+    {
+      "app": "studio",
+      "instrumentation": {
+        "present": true,
+        "serverInit": true,
+        "edgeInit": true
+      },
+      "client": {
+        "present": true,
+        "clientInit": true
+      }
+    }
+  ],
+  "counts": {
+    "total": 10,
+    "fullyAdopted": 10,
+    "missingInstrumentation": 0,
+    "missingClient": 0
+  }
+}

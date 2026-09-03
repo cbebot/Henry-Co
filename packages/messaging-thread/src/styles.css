@@ -1010,3 +1010,47 @@
   color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
   padding: 0 0.2rem;
 }
+
+/* V3-03 — "New" divider rendered above the first unread inbound
+   message. Host can re-skin via the same --mt-* tokens used by the
+   thread package. */
+.mt-unread-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem 0 0.6rem;
+  padding: 0 0.4rem;
+}
+
+.mt-unread-divider::before,
+.mt-unread-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--mt-link, #2563eb);
+  opacity: 0.55;
+}
+
+.mt-unread-divider > span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mt-link, #2563eb);
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mt-link, #2563eb) 12%, transparent);
+}
+
+/* V3-03 — Delivery pip visual rhythm. The pip swaps in for the
+   text status label; we tighten the row's status slot so the pip
+   doesn't visually crowd the timestamp. */
+.mt-bubble-status [data-delivery-state] {
+  margin-left: 0.05rem;
+}
+.mt-bubble-status [data-delivery-state="seen"] {
+  /* Slight emphasis when the message lands as "read" so the user
+     notices the state change without animation. */
+  filter: saturate(1.1);
+}
+

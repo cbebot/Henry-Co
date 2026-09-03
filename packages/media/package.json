@@ -1,0 +1,25 @@
+{
+  "name": "@henryco/media",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --import tsx --test \"__tests__/*.test.mjs\""
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.98.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.98.0",
+    "server-only": "^0.0.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

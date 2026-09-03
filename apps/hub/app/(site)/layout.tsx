@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { Fraunces, Manrope } from "next/font/google";
 import { headers } from "next/headers";
 import { LocaleProvider } from "@henryco/i18n/react";
 import {
@@ -8,13 +9,67 @@ import {
   resolveLocalizedDynamicField,
 } from "@henryco/i18n/server";
 import { EcosystemPreferences } from "@henryco/ui/public";
+import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { getAccountUrl } from "@henryco/config";
+import { getLivePublicDivisions } from "@henryco/config/live-divisions";
+import { onyxTypeAttr } from "@henryco/ui/fonts";
 import PublicSiteShell from "../components/PublicSiteShell";
 import { HubPublicProviders } from "../components/HubPublicProviders";
 import { getCompanySettings } from "../lib/company-settings";
+import { normalizeCompanySettings } from "../lib/company-settings-shared";
+import { buildHubFooter } from "../lib/site-footer";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
 import { getHubPublicChipUser } from "@/lib/hub-public-viewer";
+
+/**
+ * Fraunces — the editorial serif display face of the HenryCo public design system
+ * (V3-PUBLIC-DESIGN-01). next/font self-hosts + subsets it (latin + latin-ext — the
+ * Latin-script locales), sets font-display:swap, preloads it, and via
+ * adjustFontFallback generates size-adjust/ascent-override metrics for the serif
+ * fallback so the swap holds CLS ~ 0 even on a slow-3G phone. Body stays system-sans
+ * (no web-font cost — mobile-first). Declared HERE (the public (site) layout) so the
+ * font loads ONLY on public routes, never on the owner/workspace dashboards. Exposed
+ * as --font-fraunces, which --home-font-display consumes (public-design.css).
+ */
+const fraunces = Fraunces({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  variable: "--font-fraunces",
+  fallback: [
+    "Iowan Old Style",
+    "Palatino Linotype",
+    "Baskerville",
+    "Times New Roman",
+    "Times",
+    "serif",
+  ],
+  adjustFontFallback: true,
+});
+
+/**
+ * Manrope — the calm humanist body grotesque paired with Fraunces. Self-hosted +
+ * subset (latin) via next/font with display:swap + adjustFontFallback (size-adjusted
+ * system fallback → CLS ~ 0 on slow networks). Loaded ONLY on public routes, exposed
+ * as --font-manrope, which --home-font-sans consumes on the public subtree — so body
+ * copy reads as a crafted sans while Fraunces carries the editorial display + reading.
+ */
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope",
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    "Arial",
+    "sans-serif",
+  ],
+  adjustFontFallback: true,
+});
 
 function toMetadataUrl(domain?: string | null) {
   const clean = String(domain || "").trim().replace(/^https?:\/\//i, "").replace(/\/+$/, "");
@@ -71,7 +126,7 @@ export async function generateMetadata(): Promise<Metadata> {
       record: settingsRecord,
       field: titleField,
       locale,
-      fallback: settings.default_meta_title || settings.brand_title || "Henry & Co.",
+      fallback: settings.default_meta_title || settings.brand_title || "Henry Onyx",
       machineTranslate,
     }),
     resolveLocalizedDynamicField({
@@ -81,7 +136,7 @@ export async function generateMetadata(): Promise<Metadata> {
       fallback:
         settings.default_meta_description ||
         settings.brand_description ||
-        "Explore the businesses, services, and operating divisions of Henry & Co.",
+        "Explore the businesses, services, and operating divisions of Henry Onyx",
       machineTranslate,
     }),
   ]);
@@ -150,7 +205,20 @@ export default async function SiteLayout({
   const chipUser = chipResult.status === "fulfilled" ? chipResult.value : null;
   const { settings } = company;
   const consentCopy = getConsentCopy(locale);
-  const shellCopy = getHubPublicCopy(locale).publicSiteShell;
+  const hubCopy = getHubPublicCopy(locale);
+  const shellCopy = hubCopy.publicSiteShell;
+  const footerSettings = normalizeCompanySettings(
+    settings as Parameters<typeof normalizeCompanySettings>[0],
+  );
+  const footer = buildHubFooter(hubCopy, {
+    statement: footerSettings.footer_blurb || footerSettings.brand_description,
+    // NUMBER-PURGE (2026-07-10): email only — support_phone (a DB-defaulted
+    // number) must not reach the footer object; it serializes into the RSC/HTML
+    // payload and Google indexes it even though nothing prints it.
+    support: {
+      email: footerSettings.support_email,
+    },
+  });
   const returnPath = headerReader.get("x-hub-return-path") || "/";
   const accountChip = {
     user: chipUser,
@@ -158,15 +226,65 @@ export default async function SiteLayout({
     signupHref: getHubSharedSignupUrl(returnPath),
     accountHref: getAccountUrl("/"),
   };
+  // Owned type — when the flag is live at build, the public marketing subtree routes
+  // through the shared brand family tokens instead of interim Fraunces/Manrope. The
+  // --acct-font-* + --hc-font-reading aliases below reference --home-font-*, so they
+  // flip automatically. Pre-reveal keeps the interim faces (identical to before).
+  const live = onyxTypeAttr() === "live";
 
   return (
-    <HubPublicProviders>
+    // Scope the editorial serif (Fraunces) to the public subtree. --font-fraunces is
+    // set here by next/font's `.variable` class, so we (re)declare --home-font-display
+    // HERE too — on the same element — so its var(--font-fraunces) actually resolves
+    // (declaring it at :root would freeze it invalid before the font var exists). We
+    // also alias the homepage's existing display-font var to the system one, so the
+    // certified homepage adopts Fraunces with no component churn (refine, not redo).
+    <div
+      className={`${fraunces.variable} ${manrope.variable}`}
+      style={
+        {
+          // Public body copy reads in the loaded Manrope (declared HERE so
+          // var(--font-manrope) resolves on the same element next/font set it).
+          fontFamily: "var(--home-font-sans)",
+          ["--home-font-display" as string]: live
+            ? "var(--hc-font-serif)"
+            : 'var(--font-fraunces), "Iowan Old Style", "Palatino Linotype", "Baskerville", "Times New Roman", Times, serif',
+          ["--acct-font-display" as string]: "var(--home-font-display)",
+          // READING-01: point the long-form reading serif (.hc-prose) at the
+          // already-loaded Fraunces, so editorial body copy reads like the
+          // reference. We override --hc-font-reading itself (not the inner
+          // --font-reading) because the token resolves at :root and would
+          // otherwise freeze to the system-serif fallback.
+          ["--hc-font-reading" as string]: "var(--home-font-display)",
+          // READING-01 (premium sans): pair Fraunces with the loaded Manrope for
+          // public body/UI copy — a crafted sans where the serif isn't carrying
+          // the reading. --acct-font-sans aliases it so the body rule adopts it.
+          ["--home-font-sans" as string]: live
+            ? "var(--hc-font-sans)"
+            : 'var(--font-manrope), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          ["--acct-font-sans" as string]: "var(--home-font-sans)",
+        } as CSSProperties
+      }
+    >
+      <HubPublicProviders>
         <LocaleProvider locale={locale}>
-          <PublicSiteShell initialSettings={settings} accountChip={accountChip} copy={shellCopy}>
+          <PublicSiteShell
+            initialSettings={settings}
+            accountChip={accountChip}
+            copy={shellCopy}
+            footer={footer}
+            footerDivisions={await getLivePublicDivisions()}
+          >
             {children}
           </PublicSiteShell>
           <EcosystemPreferences copy={consentCopy} initialLocale={locale} />
+          {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+            <IntelligenceLauncher division="hub" endpoint={getAccountUrl("/api/intelligence/chat")} />
+          ) : (
+            <SupportAssist division="hub" />
+          )}
         </LocaleProvider>
       </HubPublicProviders>
+    </div>
   );
 }

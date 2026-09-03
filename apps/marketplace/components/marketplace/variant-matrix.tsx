@@ -160,8 +160,8 @@ export function VariantMatrix({ product, variants, onSelect }: VariantMatrixProp
           </dt>
           <dd className="mt-1 text-sm font-semibold text-[var(--market-paper-white)]">
             {resolvedVariant
-              ? "Exact variant resolved"
-              : "Pick a value for each axis"}
+              ? "This exact option is available"
+              : "Choose one of each option to see availability"}
           </dd>
         </div>
       </dl>

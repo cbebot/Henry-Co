@@ -4,6 +4,7 @@ import { Bot } from "lucide-react";
 import { buildUnifiedViewer } from "@henryco/auth/server";
 import type { ModuleJumpEntry } from "@henryco/search-ui";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { ThemeToggle } from "@henryco/ui";
 import { requireOwner } from "@/lib/owner-auth";
 import { getOwnerRailEntries } from "@/lib/owner-rail-from-registry";
 import OwnerSidebar from "@/components/owner/OwnerSidebar";
@@ -13,6 +14,7 @@ import OwnerPaletteHost from "@/components/owner/OwnerPaletteHost";
 import OwnerNotificationsLauncher from "@/components/owner/OwnerNotificationsLauncher";
 import OwnerNotificationsToastViewport from "@/components/owner/OwnerNotificationsToastViewport";
 import OwnerSearchButton from "@/components/owner/OwnerSearchButton";
+import FounderIntelligenceMount from "@/components/owner/FounderIntelligenceMount";
 import { getHubPublicLocale } from "@/lib/locale-server";
 
 export default async function OwnerCommandLayout({ children }: { children: ReactNode }) {
@@ -56,7 +58,7 @@ export default async function OwnerCommandLayout({ children }: { children: React
           <OwnerMobileNav user={user} />
           <OwnerSidebar user={user} ownerRailEntries={ownerRailEntries} />
           <main className="min-h-screen pt-14 transition-[padding] duration-200 lg:pt-0 lg:pl-[var(--owner-sidebar-width)]">
-            <div className="owner-command-backdrop pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(201,162,39,0.14),transparent_55%),radial-gradient(ellipse_80%_50%_at_100%_0%,rgba(59,130,246,0.06),transparent_45%)]" />
+            <div className="owner-command-backdrop pointer-events-none fixed inset-0 -z-10" />
             {/*
               V3 PASS 21 — owner top bar.
               Density-first (anti-pattern #19): a slim, sub-44px chrome
@@ -64,7 +66,7 @@ export default async function OwnerCommandLayout({ children }: { children: React
               notifications bell (staff audience). Keyboard-driven, never
               consumer "marketing" hero.
             */}
-            <div className="sticky top-0 z-30 hidden lg:flex items-center gap-3 border-b border-[var(--acct-line)] bg-[var(--acct-bg)]/85 px-6 py-2 backdrop-blur">
+            <div className="sticky top-0 z-30 hidden lg:flex items-center gap-3 border-b border-[var(--acct-line)] bg-[var(--hc-shell-topbar-bg)] px-6 py-2 backdrop-blur-md">
               <div className="flex-1 max-w-md">
                 <OwnerSearchButton variant="sidebar" />
               </div>
@@ -80,11 +82,15 @@ export default async function OwnerCommandLayout({ children }: { children: React
               >
                 {t("Audit log")}
               </Link>
+              {/* THEME-01 Phase 3 — Light/Dark/System cycle, persists per-device via henryco-public-theme localStorage key */}
+              <ThemeToggle className="h-9 px-2.5 py-1 text-xs" />
               <OwnerNotificationsLauncher />
             </div>
-            {/* Mobile top bar — search + notifications next to OwnerMobileNav */}
+            {/* Mobile top bar — search + theme toggle + notifications next to OwnerMobileNav */}
             <div className="fixed right-3 top-2 z-40 flex items-center gap-2 lg:hidden">
               <OwnerSearchButton variant="mobile" />
+              {/* THEME-01 Phase 3 — toggle visible on mobile too (discoverable, not garish) */}
+              <ThemeToggle className="h-10 w-10 justify-center px-0 py-0" />
               <OwnerNotificationsLauncher />
             </div>
             <div className="relative mx-auto max-w-[1680px] px-4 py-6 sm:px-6 lg:px-10 lg:py-7">
@@ -102,14 +108,28 @@ export default async function OwnerCommandLayout({ children }: { children: React
               {children}
             </div>
           </main>
+          {/* Founder Intelligence F2/OCC-2: when the flag is live, the founder gets
+              the full-screen command portal (arc-reactor HUD + live briefing +
+              restored conversation + F3 governed-action cards + text/voice modes,
+              Ctrl+Shift+A) — one responsive shell, no breakpoint split. Dark, the
+              honest F1 signals-briefing link remains. */}
+          {process.env.NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE === "1" ? (
+            <FounderIntelligenceMount />
+          ) : (
+          <>
+          {/* F1 truth pass: this button is a LINK to the signals briefing, not an
+              assistant — it stops claiming to be one. The REAL founder assistant
+              (F2) replaces this with a live chat launcher behind its own flag. */}
           <Link
             href="/owner/ai"
-            className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--acct-gold)] text-[var(--acct-ink)] shadow-[0_12px_40px_rgba(201,162,39,0.45)] ring-2 ring-white/30 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acct-gold)] lg:bottom-8 lg:right-8"
-            aria-label={t("Open owner assistant")}
-            title={t("Owner assistant — summaries, signals, and safe guidance")}
+            className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--acct-gold)] text-[var(--hc-ink-on-accent,#1A1814)] shadow-[0_12px_40px_rgba(201,162,39,0.45)] ring-2 ring-black/10 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acct-gold)] lg:bottom-8 lg:right-8 dark:ring-white/30"
+            aria-label={t("Open signals and insights")}
+            title={t("Signals and insights — evidence-based briefings from live company data")}
           >
             <Bot className="h-6 w-6" aria-hidden />
           </Link>
+          </>
+          )}
           <OwnerNotificationsToastViewport />
         </div>
       </OwnerPaletteHost>

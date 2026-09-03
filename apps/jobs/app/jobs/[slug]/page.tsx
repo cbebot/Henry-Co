@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bell, CheckCircle2, CircleAlert, Clock3, ShieldCheck } from "lucide-react";
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { henryDomain } from "@henryco/config";
+import { translateSurfaceLabel, getLearnToEarnCopy } from "@henryco/i18n/server";
 import { EmptyState, InlineNotice } from "@/components/feedback";
 import { JobCard } from "@/components/job-card";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
@@ -11,6 +12,8 @@ import { StatusPill } from "@/components/workspace-shell";
 import { getSharedAccountLoginUrl, getSharedAccountSignupUrl } from "@/lib/account";
 import { getJobsViewer } from "@/lib/auth";
 import { getCandidateDashboardData, getJobPostBySlug, getJobPosts } from "@/lib/jobs/data";
+import { getCourseGatesForJob, getVerifiedLearnCourseIds } from "@/lib/jobs/learn-to-earn-data";
+import { createAdminSupabase } from "@/lib/supabase";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { submitApplicationAction, toggleSavedJobAction } from "@/app/actions";
 
@@ -54,6 +57,32 @@ export default async function JobDetailPage({
   }
 
   const candidateData = viewer.user ? await getCandidateDashboardData(viewer.user.id, locale) : null;
+
+  // V3-56 S3b — resolve Learn course gates for this posting against the viewer's
+  // verified completions. A required-but-unmet gate shows a calm "take the
+  // course" CTA; a preferred-but-unmet gate is informational. Nothing renders
+  // when there are no gates or every gate is satisfied.
+  const learnCopy = getLearnToEarnCopy(locale);
+  const courseGates = await getCourseGatesForJob(createAdminSupabase(), job.slug);
+  const verifiedCourseIds = viewer.user
+    ? await getVerifiedLearnCourseIds(createAdminSupabase(), viewer.user.id)
+    : new Set<string>();
+  const unmetRequiredGate =
+    courseGates.find((gate) => gate.required && !verifiedCourseIds.has(gate.course_id)) ?? null;
+  const unmetPreferredGate =
+    courseGates.find((gate) => !gate.required && !verifiedCourseIds.has(gate.course_id)) ?? null;
+  const gateNotice = unmetRequiredGate
+    ? ({ kind: "required", gate: unmetRequiredGate } as const)
+    : unmetPreferredGate
+      ? ({ kind: "preferred", gate: unmetPreferredGate } as const)
+      : null;
+  const gateCourseLabel = gateNotice
+    ? gateNotice.gate.course_label || gateNotice.gate.course_slug || gateNotice.gate.course_id
+    : "";
+  const gateCourseHref = gateNotice?.gate.course_slug
+    ? henryDomain("learn", `/courses/${gateNotice.gate.course_slug}`)
+    : henryDomain("learn", "/courses");
+
   const existingJourney =
     candidateData?.applicationJourneys.find((journey) => journey.application.jobSlug === job.slug) ?? null;
   const related = jobs.filter((item) => item.categorySlug === job.categorySlug && item.slug !== job.slug).slice(0, 3);
@@ -101,7 +130,7 @@ export default async function JobDetailPage({
             {job.employerResponseSlaHours ? (
               <span className="jobs-chip">~{job.employerResponseSlaHours}{t("h typical reply")}</span>
             ) : null}
-            {job.internal ? <span className="jobs-chip">{t("Internal HenryCo")}</span> : null}
+            {job.internal ? <span className="jobs-chip">{t("Internal Henry Onyx")}</span> : null}
           </div>
 
           <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:items-end">
@@ -134,7 +163,7 @@ export default async function JobDetailPage({
                       : "text-[var(--jobs-ink)]"
                   }`}
                 >
-                  {job.employerVerification === "verified" ? t("Verified") : t("Pending review")}
+                  {job.employerVerification === "verified" ? t("Verified") : t("Not yet verified")}
                 </span>
               </li>
               <li className="flex items-baseline gap-3 border-b border-[var(--jobs-line)] py-3">
@@ -240,7 +269,17 @@ export default async function JobDetailPage({
                 {t("Benefits & what they want you to know")}
               </p>
               <ul className="mt-5 divide-y divide-[var(--jobs-line)] border-y border-[var(--jobs-line)]">
-                {[...job.benefits, ...job.trustHighlights].map((item) => (
+                {[...job.benefits, ...job.trustHighlights]
+                  .filter(
+                    // Legacy stored highlights may carry internal tier/queue
+                    // labels — never render those on the public listing.
+                    (item) =>
+                      !item.startsWith("Shared trust") &&
+                      item !== "Awaiting moderation review" &&
+                      item !== "Moderated posting" &&
+                      item !== "High employer trust score",
+                  )
+                  .map((item) => (
                   <li
                     key={item}
                     className="py-4 text-sm leading-7 text-[var(--jobs-muted)]"
@@ -326,7 +365,7 @@ export default async function JobDetailPage({
               </p>
               <div className="mt-5 grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:divide-x lg:divide-[var(--jobs-line)]">
                 <p className="max-w-2xl text-sm leading-8 text-[var(--jobs-muted)]">
-                  {`${job.employerName} ${t("lists this role on HenryCo so candidates get a clear process — not just a PDF and a prayer. You will see verification status, how many people have applied, and (when shared) how quickly they try to reply.")}`}
+                  {`${job.employerName} ${t("lists this role on Henry Onyx so candidates get a clear process — not just a PDF and a prayer. You will see verification status, how many people have applied, and (when shared) how quickly they try to reply.")}`}
                 </p>
                 <div className="lg:pl-12">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-muted)]">
@@ -334,7 +373,7 @@ export default async function JobDetailPage({
                   </p>
                   <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
                     {job.internal
-                      ? t("This is an internal HenryCo opening — you go through the same stages as external roles, with our own team on the other side.")
+                      ? t("This is an internal Henry Onyx opening — you go through the same stages as external roles, with our own team on the other side.")
                       : `${job.employerName} ${t("is growing the")} ${job.team} ${t("team and is looking for someone with")} ${job.seniority.toLowerCase()} ${t("experience.")}`}
                   </p>
                 </div>
@@ -354,7 +393,7 @@ export default async function JobDetailPage({
                 {job.pipelineStages.map((stage, index) => (
                   <li
                     key={stage}
-                    className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                    className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
                   >
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
                       {t("Step")} {String(index + 1).padStart(2, "0")}
@@ -377,7 +416,7 @@ export default async function JobDetailPage({
                   >
                     {t("Applications")}
                   </Link>{" "}
-                  {t("and in your HenryCo account activity when we send notifications.")}
+                  {t("and in your Henry Onyx account activity when we send notifications.")}
                 </p>
               </div>
             </section>
@@ -390,7 +429,7 @@ export default async function JobDetailPage({
                 {job.pipelineStages.map((stage, index) => (
                   <li
                     key={stage}
-                    className="grid gap-3 py-5 sm:grid-cols-[auto,1fr,auto] sm:items-start sm:gap-6"
+                    className="grid gap-3 py-5 sm:grid-cols-[auto_1fr_auto] sm:items-start sm:gap-6"
                   >
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
                       {t("Stage")} {String(index + 1).padStart(2, "0")}
@@ -424,9 +463,38 @@ export default async function JobDetailPage({
               </h2>
               <p className="mt-3 text-sm leading-7 text-[var(--jobs-muted)]">
                 {t(
-                  "Saving is private — employers are not notified. Applying sends this role, your profile, and your note to the hiring team. Either action uses your HenryCo account so nothing gets lost between devices.",
+                  "Saving is private — employers are not notified. Applying sends this role, your profile, and your note to the hiring team. Either action uses your Henry Onyx account so nothing gets lost between devices.",
                 )}
               </p>
+
+              {gateNotice ? (
+                <div className="mt-5 rounded-2xl border border-[var(--jobs-line)] bg-[var(--jobs-paper-soft)] p-4">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--jobs-accent)]">
+                    {gateNotice.kind === "required"
+                      ? learnCopy.gate.requiredEyebrow
+                      : learnCopy.gate.manageEyebrow}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-[var(--jobs-ink)]">
+                    {gateNotice.kind === "required"
+                      ? learnCopy.gate.requiredTitle
+                      : learnCopy.gate.preferredTitle}
+                  </p>
+                  <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
+                    {(gateNotice.kind === "required"
+                      ? learnCopy.gate.requiredBody
+                      : learnCopy.gate.preferredBody
+                    ).replace("{course}", gateCourseLabel)}
+                  </p>
+                  <a
+                    href={gateCourseHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[var(--jobs-accent)] underline-offset-4 hover:underline"
+                  >
+                    {learnCopy.gate.takeCourseCta}
+                  </a>
+                </div>
+              ) : null}
 
               <div className="mt-5 space-y-3">
                 {saved ? (
@@ -551,7 +619,7 @@ export default async function JobDetailPage({
                     >
                       {t("Sign in")}
                     </a>{" "}
-                    {t("to save or apply — we bring you back to this role after your HenryCo login.")}
+                    {t("to save or apply — we bring you back to this role after your Henry Onyx login.")}
                   </p>
                   <p className="text-[var(--jobs-muted)]">
                     {t("New here?")}{" "}
@@ -607,7 +675,7 @@ export default async function JobDetailPage({
                     {t("Status")}
                   </span>
                   <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--jobs-ink)]">
-                    {job.employerVerification === "verified" ? t("Verified") : t("Under review")}
+                    {job.employerVerification === "verified" ? t("Verified") : t("Not yet verified")}
                   </span>
                 </li>
                 <li className="flex items-baseline gap-3 py-3">

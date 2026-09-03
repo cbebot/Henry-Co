@@ -11,6 +11,18 @@
     {
       "path": "/api/cron/search-index-worker",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/operator-tick",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/risk-score",
+      "schedule": "23 3 * * *"
+    },
+    {
+      "path": "/api/cron/predictive-tick",
+      "schedule": "47 2 * * *"
     }
   ],
   "rewrites": [
@@ -19,17 +31,17 @@
       "has": [
         {
           "type": "host",
-          "value": "hq.henrycogroup.com"
+          "value": "hq.henryonyx.com"
         }
       ],
       "destination": "/owner"
     },
     {
-      "source": "/:path((?!(?:owner|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
+      "source": "/:path((?!(?:owner|api|privacy|terms|OneSignalSDKWorker.js|push-sw.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
-          "value": "hq.henrycogroup.com"
+          "value": "hq.henryonyx.com"
         }
       ],
       "destination": "/owner/:path*"
@@ -39,7 +51,7 @@
       "has": [
         {
           "type": "host",
-          "value": "workspace.henrycogroup.com"
+          "value": "workspace.henryonyx.com"
         }
       ],
       "destination": "/workspace"
@@ -49,27 +61,27 @@
       "has": [
         {
           "type": "host",
-          "value": "staff.henrycogroup.com"
+          "value": "staff.henryonyx.com"
         }
       ],
       "destination": "/workspace"
     },
     {
-      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js|push-sw.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
-          "value": "workspace.henrycogroup.com"
+          "value": "workspace.henryonyx.com"
         }
       ],
       "destination": "/workspace/:path*"
     },
     {
-      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js)(?:/|$)).*)",
+      "source": "/:path((?!(?:workspace|api|privacy|terms|OneSignalSDKWorker.js|push-sw.js)(?:/|$)).*)",
       "has": [
         {
           "type": "host",
-          "value": "staff.henrycogroup.com"
+          "value": "staff.henryonyx.com"
         }
       ],
       "destination": "/workspace/:path*"

@@ -2,29 +2,39 @@ import "server-only";
 
 import { countActiveSavedItems } from "@henryco/cart-saved-items/server";
 import { getEligibleModules } from "@henryco/dashboard-shell";
-import type { SignalFeedCursor, SignalFeedItem } from "@henryco/data";
-import { getAccountCopy } from "@henryco/i18n/server";
+import type { SignalFeedCursor, SignalFeedItem, TypedSupabaseClient } from "@henryco/data";
 import { logger } from "@henryco/observability";
+import { parseHenryFeatureFlags, isFlagEnabled } from "@henryco/intelligence";
 import { getCachedSignalFeed } from "@/lib/smart-home/signal-feed-cache";
 import type { UnifiedViewer } from "@henryco/auth";
-import { getAccountAppLocale } from "@/lib/locale-server";
 import {
   collectAndPersistLifecycleSnapshot,
 } from "@/lib/lifecycle/collector";
 import { createAdminSupabase } from "@/lib/supabase";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { withTimeout } from "@/lib/with-timeout";
 import {
   collectHomeWidgets,
   pickRankedMetrics,
   pickRemainingWidgets,
 } from "@/lib/smart-home/widgets";
+import { resolvePersonalizedHome } from "@/lib/personalization/home";
+import { detectDevice } from "@/lib/personalization/device";
+import { resolveDealsRail } from "@/lib/deals/offers";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { getDealsCopy, type DealsCopy, type AppLocale } from "@henryco/i18n/server";
+import { DealsRail } from "./DealsRail";
 import { rankNextBestActions } from "@/lib/smart-home/recommender";
+import { resolveRecommendedActions } from "@/lib/smart-home/recommendations-adapter";
 import { AttentionPanel } from "./AttentionPanel";
 import { ModuleWidgetGrid } from "./ModuleWidgetGrid";
 import { NextBestActions } from "./NextBestActions";
 import { RankedMetricStrip } from "./RankedMetricStrip";
+import { EmptyStateCtaTracker } from "./EmptyStateCtaTracker";
 import { SignalFeed } from "./SignalFeed";
 import { SmartHomeEmpty } from "./SmartHomeEmpty";
-import { SmartHomeHeader } from "./SmartHomeHeader";
+import { RealtimeStatusOrb } from "./RealtimeStatusOrb";
+import { SmartHomeHero } from "./SmartHomeHero";
 
 const smartHomeLogger = logger.child({ namespace: "smart-home" });
 
@@ -32,13 +42,14 @@ const smartHomeLogger = logger.child({ namespace: "smart-home" });
  * SmartHome — the WorkspaceSlot's default landing.
  *
  * Composes (in render order):
- *   1. SmartHomeHeader       — content-first lead (no patronizing copy)
- *   2. AttentionPanel        — security/urgent signals + lifecycle inline
- *   3. NextBestActions       — server-deterministic ranker, up to 3 CTAs
- *   4. RankedMetricStrip     — top-bucket sm/md widgets across modules
- *   5. SignalFeed            — N=50 cursor-paginated, 30s cached, email-dim
- *   6. ModuleWidgetGrid      — remaining widgets packed by size + weight
- *   7. SmartHomeEmpty        — typographic empty state if all of the above are dry
+ *   1. SmartHomeHero         — editorial hero band (greeting + stat + tiles)
+ *   2. live-status row       — realtime-health orb under the hero
+ *   3. AttentionPanel        — security/urgent signals + lifecycle inline
+ *   4. NextBestActions       — server-deterministic ranker, up to 3 CTAs
+ *   5. RankedMetricStrip     — top-bucket sm/md widgets across modules
+ *   6. SignalFeed            — N=50 cursor-paginated, 30s cached, email-dim
+ *   7. ModuleWidgetGrid      — remaining widgets packed by size + weight
+ *   8. SmartHomeEmpty        — typographic empty state if all of the above are dry
  *
  * Anti-patterns closed:
  *   #4  decorative tiles  — every block renders real data; if absent, fallthrough.
@@ -65,14 +76,12 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
   // collector persists its snapshot, the home-widget walk is fault-
   // tolerant per module. The saved-items count is a head-only `select
   // exact` — no rows transferred.
-  const [signalFeed, lifecycle, widgets, savedItemsCount, locale] = await Promise.all([
+  const [signalFeed, lifecycle, widgets, savedItemsCount] = await Promise.all([
     getCachedSignalFeed(viewer, cursor ? { cursor, limit: 50 } : { limit: 50 }),
     collectAndPersistLifecycleSnapshot(viewer.user.id).catch(() => null),
     collectHomeWidgets(modules, viewer),
     countActiveSavedItems(createAdminSupabase(), viewer.user.id).catch(() => 0),
-    getAccountAppLocale(),
   ]);
-  const copy = getAccountCopy(locale).overview;
 
   const attentionSignals = signalFeed.items.filter(
     (s) => s.priority === "security" || s.priority === "urgent",
@@ -81,21 +90,76 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
     (s) => s.priority !== "security" && s.priority !== "urgent",
   );
 
-  const rankedMetrics = pickRankedMetrics(widgets, 6);
-  const restWidgets = pickRemainingWidgets(widgets, rankedMetrics);
+  // Default (kill-switch) ordering: pure DASH weight. When the
+  // `personalization_home` flag is ON, the deterministic per-user projection
+  // (pin/hide/reorder + own-signal ranking, consent-gated) supersedes it. Every
+  // read inside is best-effort + timeout-bounded, so a slow/failed layout read
+  // falls straight back to this default — the home is never broken or stalled.
+  let rankedMetrics = pickRankedMetrics(widgets, 6);
+  let restWidgets = pickRemainingWidgets(widgets, rankedMetrics);
+
+  if (
+    isFlagEnabled(
+      parseHenryFeatureFlags(process.env as Record<string, string | undefined>),
+      "personalization_home",
+    )
+  ) {
+    const device = await detectDevice();
+    const authClient =
+      (await createSupabaseServer()) as unknown as TypedSupabaseClient;
+    const personalized = await withTimeout(
+      resolvePersonalizedHome({
+        viewer,
+        client: authClient,
+        modules,
+        widgets,
+        signals: signalFeed.items,
+        lifecycle,
+        device,
+        now: new Date().toISOString(),
+      }),
+      1500,
+    ).catch(() => null);
+    if (personalized) {
+      rankedMetrics = personalized.rankedMetrics;
+      restWidgets = personalized.restWidgets;
+    }
+  }
 
   // Empty teachings — modules that have NO content to render expose
   // a teaching action via `getEmptyTeaching(viewer)`. These feed the
   // Next-Best Actions ranker for first-run users.
   const emptyTeachings = await collectEmptyTeachings(modules, viewer);
 
-  const nextBestActions = rankNextBestActions({
+  // The deterministic FLOOR — always computed, so the home is never empty.
+  const floorActions = rankNextBestActions({
     viewer,
     lifecycle,
     signals: signalFeed.items,
     emptyTeachings,
     limit: 3,
   });
+
+  // V3-36 — when `intelligence_recommendations` is on, the cross-division
+  // engine SUPERSEDES the floor (consent-gated profiling + optional governed-AI
+  // re-rank, all non-billable). Best-effort + timeout-bounded: a null / slow /
+  // failed result falls straight back to the deterministic floor above.
+  const flags = parseHenryFeatureFlags(process.env as Record<string, string | undefined>);
+  let nextBestActions = floorActions;
+  if (isFlagEnabled(flags, "intelligence_recommendations")) {
+    const authClient = (await createSupabaseServer()) as unknown as TypedSupabaseClient;
+    const superseding = await withTimeout(
+      resolveRecommendedActions({
+        viewer,
+        client: authClient,
+        lifecycle,
+        signals: signalFeed.items,
+        limit: 3,
+      }),
+      1500,
+    ).catch(() => null);
+    if (superseding && superseding.length > 0) nextBestActions = superseding;
+  }
 
   const lastActivityIso = computeLastActivityIso(signalFeed.items, lifecycle?.overallLastActiveAt ?? null);
   const firstName = viewer.user.fullName?.split(" ")[0] ?? null;
@@ -145,38 +209,98 @@ export async function SmartHome({ viewer, cursor, prevHref }: SmartHomeProps) {
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        <SmartHomeHeader
+        {/* ACCOUNT-PREMIUM-01: editorial hero band above the empty
+            composition so the first-run state still gets the premium
+            visual signature (calm gradient + serif headline + tiles
+            populated with zero-state copy from the overview slice). */}
+        <SmartHomeHero
           firstName={firstName}
           unreadCount={0}
           attentionCount={0}
           lastActivityIso={null}
           savedItemsCount={0}
-          fallbackBody={copy.smartHomeEmptyFallback}
         />
-        <SmartHomeEmpty
-          firstName={firstName}
-          primaryAction={primary}
-          secondaryAction={secondary}
-        />
+        <div className="hc-smart-home-live-row">
+          <RealtimeStatusOrb />
+        </div>
+        <EmptyStateCtaTracker moduleId="smart-home">
+          <SmartHomeEmpty
+            firstName={firstName}
+            primaryAction={primary}
+            secondaryAction={secondary}
+          />
+        </EmptyStateCtaTracker>
       </div>
     );
   }
 
+  // V3-35 — the deals offers rail (flag-dark behind `personalization_deals`).
+  // Resolved AFTER the empty-state early return so impressions are recorded
+  // only for offers that actually render. Best-effort + timeout-bounded; any
+  // failure (including the deals tables being absent on prod pre-apply)
+  // renders the home without the rail — never broken, never stalled.
+  let dealsRail: Awaited<ReturnType<typeof resolveDealsRail>> = null;
+  let dealsCopy: DealsCopy | null = null;
+  let dealsLocale: AppLocale = "en";
+  if (
+    isFlagEnabled(
+      parseHenryFeatureFlags(process.env as Record<string, string | undefined>),
+      "personalization_deals",
+    )
+  ) {
+    const dealsClient =
+      (await createSupabaseServer()) as unknown as TypedSupabaseClient;
+    const [rail, locale] = await Promise.all([
+      withTimeout(
+        resolveDealsRail({
+          viewer,
+          client: dealsClient,
+          signals: signalFeed.items,
+          limit: 4,
+        }),
+        1500,
+      ).catch(() => null),
+      getAccountAppLocale().catch(() => "en" as AppLocale),
+    ]);
+    if (rail) {
+      dealsRail = rail;
+      dealsLocale = locale;
+      dealsCopy = getDealsCopy(locale);
+    }
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-      <SmartHomeHeader
+      {/* ACCOUNT-PREMIUM-01: the editorial hero band sits above the
+          existing SmartHome composition. It answers "what's happening
+          with my stuff?" (eyebrow + headline + greeting/stat + tiles).
+          The thin row below carries only the realtime-status orb, near
+          the live data it describes — the old SmartHomeHeader that
+          re-rendered the same greeting/stat here has been retired. */}
+      <SmartHomeHero
         firstName={firstName}
         unreadCount={unreadCount}
         attentionCount={attentionCount}
         lastActivityIso={lastActivityIso}
         savedItemsCount={savedItemsCount}
       />
+      <div className="hc-smart-home-live-row">
+        <RealtimeStatusOrb />
+      </div>
 
       <AttentionPanel attentionSignals={attentionSignals} lifecycle={lifecycle} />
 
       <NextBestActions actions={nextBestActions} />
 
       <RankedMetricStrip widgets={rankedMetrics} />
+
+      {dealsRail && dealsCopy ? (
+        <DealsRail
+          offers={dealsRail.offers}
+          copy={dealsCopy}
+          locale={dealsLocale}
+        />
+      ) : null}
 
       <SignalFeed
         items={restSignals}
