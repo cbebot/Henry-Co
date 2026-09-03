@@ -335,7 +335,7 @@ export type HenryFeatureFlagName =
   // V3-35 (Phase E) — kill switch for the deals & campaigns surfaces. Default
   // OFF: the deal pages/actions do not activate; the legacy marketplace
   // curation fallback keeps serving its widget. Deterministic + AI-free.
-  | "personalization_deals";
+  | "personalization_deals"
   // V3-38 (Phase E) — local-availability badges/states. Default OFF: catalog
   // surfaces render exactly as before (no badge, no fetch). Stays dark until
   // `service_area_coverage` seeding is verified on prod (the soak note: a flood
