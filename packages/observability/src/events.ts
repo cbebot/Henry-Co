@@ -315,6 +315,16 @@ export type HenryEventName =
   | "henry.deal.offer.impressed"
   | "henry.deal.offer.claimed"
   | "henry.deal.fairness.alerted"
+  // V3-38 local availability (Phase E). `batch.resolved` fires once per
+  // /api/availability batch with aggregate counts + the location source;
+  // `unavailable.shown` fires when an UnavailableState actually renders
+  // (coarse area codes only — the coverage-gap signal the owner soaks on);
+  // `find_similar.clicked` tracks the graceful-unavailable CTA. Payloads are
+  // location-keyed, never user-keyed: no user ids, no coordinates, no
+  // per-offering provider counts.
+  | "henry.availability.batch.resolved"
+  | "henry.availability.unavailable.shown"
+  | "henry.availability.find_similar.clicked"
   // V3-39 smart next action (Phase E). `surfaced` fires when the resolver
   // yields a floating chip for the page (system_state → completed); `clicked`
   // (user_action → completed) and `dismissed` (user_action → removed) track

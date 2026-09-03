@@ -35,6 +35,10 @@ export {
 } from "./personalization-copy";
 export { getDealsCopy, formatDealsTemplate, type DealsCopy } from "./deals-copy";
 export {
+  getAvailabilityCopy,
+  formatAvailabilityTemplate,
+  type AvailabilityCopy,
+} from "./availability-copy";
   getNextActionCopy,
   type NextActionCopy,
   type NextActionEntryCopy,

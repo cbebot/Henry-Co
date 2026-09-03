@@ -382,6 +382,21 @@ jobs:
 
       - name: Prove deals RLS at runtime (drafts/unlisted invisible; no request-role writes; curation rows reconciled)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_rls_behaviour.sql
+      # V3-38 LOCAL AVAILABILITY (Phase E) — public location-keyed coverage +
+      # aggregate coverage-gap counters. Location-keyed, never user-keyed; NO
+      # money path. min.sql pre-creates the tables with the prod standing ACL
+      # so the migration's revokes are load-bearing, then apply-then-assert.
+      - name: Seed V3-38 prod-standing table ACL (so the migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_min.sql
+
+      - name: Apply V3-38 service-area-coverage migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_38_service_area_coverage.sql
+
+      - name: Assert availability grant invariant (coverage public-read/service-curated; gap counters fn-only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_grant_invariant.sql
+
+      - name: Prove availability RLS at runtime (anon reads coverage; request roles never write; gap fn service-only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_rls_behaviour.sql
       # V3-39 NEXT ACTION (Phase E) — per-prompt dismissals + opt-out control.
       # Net-new owner-only table (NO service_role path), default-deny RLS, NO
       # money path. The customer_preferences ALTER is table-guarded (skips on
