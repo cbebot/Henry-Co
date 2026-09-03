@@ -328,16 +328,21 @@ export async function applySellerDecision(input: {
    * decision somebody else made in the meantime.
    */
   const revertStatusAfterFailedActivation = async (why: string): Promise<void> => {
-    const { error: revertError } = await admin
+    const { data: reverted, error: revertError } = await admin
       .from("marketplace_vendor_applications")
       .update({ status: expectedStatus, reviewed_at: null, reviewed_by: null } as never)
       .eq("id", applicationId)
-      .eq("status", decision);
-    if (revertError) {
+      .eq("status", decision)
+      .select("id");
+    if (revertError || !Array.isArray(reverted) || reverted.length !== 1) {
       console.error(
         "[seller-decision-write] COULD NOT REVERT after failed activation — the application " +
           "reads approved but the seller was never activated, and the console cannot retry it",
-        { applicationId, why, error: revertError.message },
+        {
+          applicationId,
+          why,
+          error: revertError?.message ?? "no row matched (status was not the one this call set)",
+        },
       );
     }
   };
@@ -410,6 +415,13 @@ export async function applySellerDecision(input: {
           .from("marketplace_vendors")
           .update(vendorPayload as never)
           .eq("id", existingVendorId)
+          // Never resurrect a suspended store. The slug-collision gate above
+          // already refuses a suspended holder, but that check and this write
+          // are separate round trips — a suspension landing in between would
+          // otherwise be silently clobbered back to 'approved' by an approval
+          // that was decided before it. A zero-row result is handled below as a
+          // failed activation.
+          .neq("status", "suspended")
           .select("id")
           .maybeSingle()
       : await admin
@@ -433,20 +445,32 @@ export async function applySellerDecision(input: {
      * catalogue will not list it, and it is not `suspended`, which would falsely
      * imply the owner took action against a live seller.
      */
-    const revertVendorAfterFailedGrant = async (why: string): Promise<void> => {
+    const revertVendorAfterFailedGrant = async (why: string): Promise<boolean> => {
       const restoreTo = priorVendorStatus ?? "pending";
-      const { error: vendorRevertError } = await admin
+      // `.select()` is load-bearing, not decoration. Without it a guard that
+      // matches NO row comes back `error: null` — PostgREST reports success for
+      // an update that changed nothing — so a silent no-op would read as a
+      // completed rollback. The row count is the only way to tell them apart.
+      const { data: reverted, error: vendorRevertError } = await admin
         .from("marketplace_vendors")
         .update({ status: restoreTo } as never)
         .eq("id", vendorId)
-        .eq("status", "approved");
-      if (vendorRevertError) {
+        .eq("status", "approved")
+        .select("id");
+      const ok = !vendorRevertError && Array.isArray(reverted) && reverted.length === 1;
+      if (!ok) {
         console.error(
           "[seller-decision-write] COULD NOT REVERT the storefront after a failed grant — " +
-            "a store is live for an application that is not approved",
-          { vendorId, restoreTo, why, error: vendorRevertError.message },
+            "a store may be live; the application is deliberately LEFT approved so the two agree",
+          {
+            vendorId,
+            restoreTo,
+            why,
+            error: vendorRevertError?.message ?? "no row matched (status was not 'approved')",
+          },
         );
       }
+      return ok;
     };
 
     // Read-then-write rather than upsert. The only unique index on
@@ -486,8 +510,16 @@ export async function applySellerDecision(input: {
         "[seller-decision-write] membership lookup failed",
         membershipReadError.message,
       );
-      await revertVendorAfterFailedGrant("membership lookup failed");
-      await revertStatusAfterFailedActivation("membership lookup failed");
+      // ORDER AND DEPENDENCY BOTH MATTER. Unsticking the application while the
+      // storefront is still live is the worst available end state: the owner is
+      // shown a row that is "safe to re-decide" while a store for it is publicly
+      // catalogued. If the storefront could not be put back, the application is
+      // deliberately LEFT approved so the two records agree with each other —
+      // an approval missing its role grant, which the log names, rather than a
+      // live store nobody can see the reason for.
+      if (await revertVendorAfterFailedGrant("membership lookup failed")) {
+        await revertStatusAfterFailedActivation("membership lookup failed");
+      }
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
 
@@ -515,8 +547,9 @@ export async function applySellerDecision(input: {
         "[seller-decision-write] vendor role grant failed",
         grant.error?.message ?? "no row written",
       );
-      await revertVendorAfterFailedGrant("vendor role grant failed");
-      await revertStatusAfterFailedActivation("vendor role grant failed");
+      if (await revertVendorAfterFailedGrant("vendor role grant failed")) {
+        await revertStatusAfterFailedActivation("vendor role grant failed");
+      }
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
   }

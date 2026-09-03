@@ -186,16 +186,21 @@ export async function applyLearnTeacherDecision(input: {
 
   /** Restore the prior status so a failed grant leaves a decidable row. */
   const revertStatusAfterFailedGrant = async (why: string): Promise<void> => {
-    const { error: revertError } = await admin
+    const { data: reverted, error: revertError } = await admin
       .from("learn_teacher_applications")
       .update({ status: expectedStatus, reviewed_at: null, reviewed_by_user_id: null } as never)
       .eq("id", applicationId)
-      .eq("status", decision);
-    if (revertError) {
+      .eq("status", decision)
+      .select("id");
+    if (revertError || !Array.isArray(reverted) || reverted.length !== 1) {
       console.error(
         "[learn-teacher-decision-write] COULD NOT REVERT after failed grant — the application " +
           "reads approved but the instructor role was never granted",
-        { applicationId, why, error: revertError.message },
+        {
+          applicationId,
+          why,
+          error: revertError?.message ?? "no row matched (status was not the one this call set)",
+        },
       );
     }
   };
@@ -290,19 +295,34 @@ export async function applyLearnTeacherDecision(input: {
      * therefore left a LIVE instructor role that no in-product path could ever
      * revoke, because the handle Learn revokes by was never written.
      */
-    const revertMembershipAfterFailedLink = async (why: string): Promise<void> => {
-      if (membershipWasAlreadyActive) return;
-      const { error: membershipRevertError } = await admin
+    const revertMembershipAfterFailedLink = async (why: string): Promise<boolean> => {
+      // Already-active memberships are not ours to touch: the applicant held the
+      // instructor role independently of this decision. Nothing to undo, so the
+      // status revert below is free to proceed.
+      if (membershipWasAlreadyActive) return true;
+      // `.select()` for the same reason as the seller core — an update matching
+      // no row returns `error: null`, so only the row count distinguishes a
+      // completed rollback from a silent miss.
+      const { data: reverted, error: membershipRevertError } = await admin
         .from("learn_role_memberships")
         .update({ is_active: false } as never)
-        .eq("id", membershipId);
-      if (membershipRevertError) {
+        .eq("id", membershipId)
+        .select("id");
+      const ok =
+        !membershipRevertError && Array.isArray(reverted) && reverted.length === 1;
+      if (!ok) {
         console.error(
           "[learn-teacher-decision-write] COULD NOT REVERT the instructor grant — the role is " +
-            "live and Learn cannot revoke it (instructor_membership_id was never written)",
-          { membershipId, why, error: membershipRevertError.message },
+            "live and Learn cannot revoke it (instructor_membership_id was never written). " +
+            "The application is deliberately LEFT approved so the two records agree",
+          {
+            membershipId,
+            why,
+            error: membershipRevertError?.message ?? "no row matched",
+          },
         );
       }
+      return ok;
     };
     const { error: linkError } = await admin
       .from("learn_teacher_applications")
@@ -313,8 +333,13 @@ export async function applyLearnTeacherDecision(input: {
         "[learn-teacher-decision-write] membership link write failed",
         linkError.message,
       );
-      await revertMembershipAfterFailedLink("membership link write failed");
-      await revertStatusAfterFailedGrant("membership link write failed");
+      // Dependent, exactly as in the seller core: unsticking the application
+      // while a live instructor role remains is the worse end state, because
+      // that role cannot be revoked from Learn without the link this write
+      // failed to make.
+      if (await revertMembershipAfterFailedLink("membership link write failed")) {
+        await revertStatusAfterFailedGrant("membership link write failed");
+      }
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
   }
