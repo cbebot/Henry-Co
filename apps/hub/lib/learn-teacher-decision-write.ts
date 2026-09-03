@@ -35,8 +35,14 @@ export type LearnTeacherDecision = "approved" | "rejected";
  * operator told "retry" for something that cannot be retried is worse served
  * than one told plainly that engineering has to look.
  */
-const GRANT_FAILED_MESSAGE =
-  "The application was approved but instructor access could not be granted, so this teacher cannot open the instructor workspace yet. This needs engineering attention before they are told they are live.";
+// Two outcomes, two messages — see the note in seller-decision-write.ts. The
+// message this replaced said the application "was approved", which after a
+// successful rollback is no longer true.
+const GRANT_ROLLED_BACK_MESSAGE =
+  "Instructor access could not be granted, so nothing was changed. The application is back in your queue — try approving it again.";
+
+const GRANT_FAILED_DIRTY_MESSAGE =
+  "Instructor access could not be fully granted, and the change could not be undone. This application still reads approved and the instructor role may be live without a way to revoke it from the academy. Engineering has to reconcile it before you decide it again.";
 
 export type LearnTeacherApplicationState = {
   applicationId: string;
@@ -235,7 +241,9 @@ export async function applyLearnTeacherDecision(input: {
         membershipReadError.message,
       );
       await revertStatusAfterFailedGrant("membership lookup failed");
-      return { ok: false, error: GRANT_FAILED_MESSAGE };
+      // No membership was written on this path, so a rollback of the status is
+      // the whole compensation.
+      return { ok: false, error: GRANT_ROLLED_BACK_MESSAGE };
     }
 
     const existingMembershipId = (existingRows ?? [])[0]?.id;
@@ -278,7 +286,7 @@ export async function applyLearnTeacherDecision(input: {
         grant.error?.message ?? "no row written",
       );
       await revertStatusAfterFailedGrant("instructor role grant failed");
-      return { ok: false, error: GRANT_FAILED_MESSAGE };
+      return { ok: false, error: GRANT_ROLLED_BACK_MESSAGE };
     }
 
     const membershipId = String((grant.data[0] as { id: string }).id);
@@ -337,10 +345,12 @@ export async function applyLearnTeacherDecision(input: {
       // while a live instructor role remains is the worse end state, because
       // that role cannot be revoked from Learn without the link this write
       // failed to make.
-      if (await revertMembershipAfterFailedLink("membership link write failed")) {
-        await revertStatusAfterFailedGrant("membership link write failed");
-      }
-      return { ok: false, error: GRANT_FAILED_MESSAGE };
+      const rolledBack = await revertMembershipAfterFailedLink("membership link write failed");
+      if (rolledBack) await revertStatusAfterFailedGrant("membership link write failed");
+      return {
+        ok: false,
+        error: rolledBack ? GRANT_ROLLED_BACK_MESSAGE : GRANT_FAILED_DIRTY_MESSAGE,
+      };
     }
   }
 

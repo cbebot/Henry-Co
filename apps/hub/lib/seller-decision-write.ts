@@ -50,8 +50,17 @@ export type SellerDecision = "approved" | "changes_requested" | "rejected";
  * not work: the application now reads `approved`, which is not a state the
  * approve action accepts.
  */
-const GRANT_FAILED_MESSAGE =
-  "The store was created but workspace access could not be granted, so this seller cannot sign in to sell yet. Use Suspend store then Reinstate store on the sellers panel to repair it.";
+// TWO OUTCOMES, TWO MESSAGES. The single message this replaced described the
+// world before compensation existed — "the store was created ... use Suspend
+// then Reinstate to repair it" — which is now false on the common path, because
+// a successful rollback means no store was left behind and there is nothing to
+// repair. Telling an operator to go fix something that is already fine is the
+// same class of defect as the dead deep link that started this pass.
+const GRANT_ROLLED_BACK_MESSAGE =
+  "Workspace access could not be granted, so nothing was changed. The store was not activated and the application is back in your queue — try approving it again.";
+
+const GRANT_FAILED_DIRTY_MESSAGE =
+  "Workspace access could not be granted, and the store record could not be put back. This application still reads approved and its storefront may be live while the seller cannot sign in. Engineering has to reconcile it before you decide it again.";
 
 export type SellerApplicationState = {
   applicationId: string;
@@ -432,9 +441,17 @@ export async function applySellerDecision(input: {
 
     if (written.error || !written.data) {
       await revertStatusAfterFailedActivation("vendor store write failed");
+      // Name the likely cause rather than reporting a generic write failure. An
+      // UPDATE that returns no row and no error is the `.neq("status",
+      // "suspended")` guard doing its job — somebody suspended this store
+      // between the collision check and this write — and "could not be written"
+      // would send the owner looking for a database fault that does not exist.
+      const blockedBySuspension = Boolean(existingVendorId) && !written.error && !written.data;
       return {
         ok: false,
-        error: "The store record could not be written, so the seller was not activated.",
+        error: blockedBySuspension
+          ? "That store was suspended while you were deciding this application, so it was not reactivated. Nothing was changed — use Reinstate store on the sellers panel if bringing it back online is what you intend."
+          : "The store record could not be written, so the seller was not activated and the application is back in your queue.",
       };
     }
     const vendorId = String((written.data as { id: string }).id);
@@ -517,10 +534,14 @@ export async function applySellerDecision(input: {
       // deliberately LEFT approved so the two records agree with each other —
       // an approval missing its role grant, which the log names, rather than a
       // live store nobody can see the reason for.
-      if (await revertVendorAfterFailedGrant("membership lookup failed")) {
-        await revertStatusAfterFailedActivation("membership lookup failed");
-      }
-      return { ok: false, error: GRANT_FAILED_MESSAGE };
+      const rolledBack = await revertVendorAfterFailedGrant("membership lookup failed");
+      if (rolledBack) await revertStatusAfterFailedActivation("membership lookup failed");
+      // The message the operator sees, and the reason recorded on the ledger,
+      // both distinguish "nothing happened" from "records are inconsistent".
+      return {
+        ok: false,
+        error: rolledBack ? GRANT_ROLLED_BACK_MESSAGE : GRANT_FAILED_DIRTY_MESSAGE,
+      };
     }
 
     const existingMembershipId = (existingRows ?? [])[0]?.id;
@@ -547,10 +568,12 @@ export async function applySellerDecision(input: {
         "[seller-decision-write] vendor role grant failed",
         grant.error?.message ?? "no row written",
       );
-      if (await revertVendorAfterFailedGrant("vendor role grant failed")) {
-        await revertStatusAfterFailedActivation("vendor role grant failed");
-      }
-      return { ok: false, error: GRANT_FAILED_MESSAGE };
+      const rolledBack = await revertVendorAfterFailedGrant("vendor role grant failed");
+      if (rolledBack) await revertStatusAfterFailedActivation("vendor role grant failed");
+      return {
+        ok: false,
+        error: rolledBack ? GRANT_ROLLED_BACK_MESSAGE : GRANT_FAILED_DIRTY_MESSAGE,
+      };
     }
   }
 
