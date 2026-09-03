@@ -21,7 +21,11 @@ import {
   deriveSLABucket,
   DEFAULT_STAFF_QUEUE_FILTERS,
   formatRelative,
+  loadPredictiveSnapshot,
+  PredictiveQueuePanel,
 } from "../shared";
+import { getStaffPredictiveCopy } from "@henryco/i18n";
+import type { AppLocale } from "@henryco/i18n";
 
 /**
  * staff-finance-operator — LIMITED finance surface for operators.
@@ -248,6 +252,8 @@ export const staffFinanceOperatorModule: StaffDashboardModule = {
 };
 
 export type StaffFinanceOperatorPageProps = {
+  /** Operator locale for the V3-41 predictive panel. Defaults to English. */
+  locale?: AppLocale;
   viewer: StaffViewer;
   supabase: FinanceSupabaseClient;
   bulkActionHandler: (id: string, ids: string[], reason: string | null) => Promise<void>;
@@ -262,14 +268,22 @@ export async function StaffFinanceOperatorPageServer({
   supabase,
   bulkActionHandler,
   exportHandler,
+  locale,
 }: StaffFinanceOperatorPageProps) {
   const snapshot = await loadFinanceQueueSnapshot(supabase);
+  // Finance is the operations surface, so it also carries the dispute watch-list.
+  const predictive = await loadPredictiveSnapshot(supabase as never, "staff-finance-operator", {
+    includeDisputes: true,
+  });
   return (
     <GenericStaffQueueClient<PayoutRequestRow>
       kicker="Finance · operator"
       title="Payouts & refunds"
       description={`${snapshot.pendingCount} pending review · ${snapshot.slaBreachCount} breach · ${snapshot.slaWarningCount} warning`}
       snapshot={snapshot}
+      forecastPanel={
+        <PredictiveQueuePanel snapshot={predictive} copy={getStaffPredictiveCopy(locale ?? "en")} />
+      }
       filterFields={FILTERS}
       rowAdapter={(r) => {
         const targetAt = r.createdAt

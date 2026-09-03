@@ -48,7 +48,16 @@ export type AiSurfaceKey =
   // ledger (reserve-before-run, degrade-CLOSED). Output is a clamped score
   // adjustment only — a freeze can never rest on it (engine rule). Fast tier,
   // tiny output, audit ON. Dark behind `predictive_risk_assist` + `ai_gateway`.
-  | "risk.entity.assist";
+  | "risk.entity.assist"
+  // V3-41 (Phase E) — the staff-facing NARRATIVE for a predictive forecast.
+  // PLATFORM-INVOKED: nobody asked for it, so billable:false and it runs through
+  // noBillingPort — no wallet is touched, ever. It writes PROSE ABOUT an already-
+  // computed deterministic forecast; it cannot produce, alter or veto a number,
+  // so a dead gateway costs the operator a sentence, never a forecast. Spend is
+  // company COGS reserved BEFORE the call against the unified internal daily
+  // ledger (reserve-before-run, degrade-CLOSED). Fast tier, small output, audit
+  // ON. Dark behind `predictive_quality_narrative` + `ai_gateway`.
+  | "predictive.narrative";
 
 export interface AiSurfacePolicy {
   surface: AiSurfaceKey;
@@ -282,6 +291,22 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     maxOutputTokens: 120,
     maxCalls: 1,
     freeAllowancePerDay: 40,
+  },
+  // V3-41 — the predictive staff narrative. Never a wallet. Two bounds, and they
+  // are NOT equivalent: `freeAllowancePerDay` is enforced by the gateway's
+  // default IN-MEMORY rate limiter (server/index.ts), so it resets on a cold
+  // start and is only a per-process backstop. The DURABLE ceiling is the
+  // caller's reserve-before-run against `internal_ai_spend_ledger`
+  // (cross-process, cross-restart), plus a hard per-run call cap and the
+  // batch's single-flight lock.
+  "predictive.narrative": {
+    surface: "predictive.narrative",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 220,
+    maxCalls: 1,
+    freeAllowancePerDay: 30,
   },
 };
 

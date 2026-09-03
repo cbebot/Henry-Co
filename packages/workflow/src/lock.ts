@@ -53,6 +53,10 @@ export async function releaseWorkflowLock(
 export const LOCK_KEYS = {
   studioAgencyTick: "studio.agency.tick",
   hubOperatorTick: "hub.operator.tick",
+  // V3-41 — the predictive quality & workload batch. Seeded by
+  // 20260902120000_v3_41_predictive_quality_workload.sql (the CAS is an UPDATE,
+  // so an unseeded key is a lock nobody can ever win).
+  hubPredictiveTick: "hub.predictive.tick",
 } as const;
 
 /** In-memory single-row-per-key CAS — identical semantics to the DB table. */

@@ -96,6 +96,22 @@ jobs:
       - name: Test (super-app)
         run: pnpm run test:workspace
 
+      # V3-41 — the predictive engines ship their proofs as package tests
+      # (back-tests, no-auto-punishment, reserve-before-run/concurrency, opacity).
+      # CI ran NO packages/* suite before this, so these would have gated nothing.
+      # Also covers the existing V3-36 recommendation-engine tests.
+      - name: Test (@henryco/intelligence — predictive back-tests + invariants)
+        run: pnpm --filter @henryco/intelligence run test
+
+      # The zero-wallet-debit proof for the platform-invoked predictive surface
+      # lives here (exploding billing port). 201 gateway tests, previously ungated.
+      - name: Test (@henryco/ai-gateway — surface policy + no-wallet-debit proof)
+        run: pnpm --filter @henryco/ai-gateway run test
+
+      # V3-41 hub adapter: budget key/ceiling + the structural money-token guard.
+      - name: Test (@henryco/hub — predictive adapter guards)
+        run: pnpm --filter @henryco/hub run test
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
 
@@ -429,3 +445,26 @@ jobs:
 
       - name: Prove risk model lifecycle RPCs (transactional promote/rollback, shadow window, single-live, set-based release)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_lifecycle_rpc.sql
+
+      # V3-43 WORKFLOW RAIL — applied here for the first time so V3-41 can compose
+      # with the REAL unified primitives (workflow_locks + internal_ai_spend_ledger)
+      # rather than stubs. The migration is fully self-guarded (its only FK is to
+      # its own workflow_jobs; both fold-ins are to_regclass-guarded), so it applies
+      # cleanly on the vanilla chain.
+      - name: Apply V3-43 workflow rail migration (fresh — the unified lock + spend primitives)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_43_workflow_rail.sql
+
+      # V3-41 PREDICTIVE QUALITY & WORKLOAD (Phase E, Wave E.4) — forecasts,
+      # at-risk flags, dispute watch-list. Staff-only reads, service-role writes,
+      # and the NO-AUTO-PUNISHMENT CHECK proven at the database layer.
+      - name: Seed V3-41 prod-standing table ACL (so the predictive grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/predictive_min.sql
+
+      - name: Apply V3-41 predictive quality + workload migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260902120000_v3_41_predictive_quality_workload.sql
+
+      - name: Assert predictive grant invariant (staff-only reads, service-role writes, doctrine CHECKs, no second spend ledger)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/predictive_grant_invariant.sql
+
+      - name: Prove predictive RLS + no-auto-punishment at runtime (assessed party sees nothing; DB rejects every enforcement verb)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/predictive_rls_behaviour.sql

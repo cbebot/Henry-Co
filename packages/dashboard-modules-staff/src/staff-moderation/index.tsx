@@ -21,7 +21,11 @@ import {
   deriveSLABucket,
   DEFAULT_STAFF_QUEUE_FILTERS,
   formatRelative,
+  loadPredictiveSnapshot,
+  PredictiveQueuePanel,
 } from "../shared";
+import { getStaffPredictiveCopy } from "@henryco/i18n";
+import type { AppLocale } from "@henryco/i18n";
 
 export type ModerationSupabaseClient = {
   from: (table: string) => {
@@ -295,6 +299,8 @@ export const staffModerationModule: StaffDashboardModule = {
 };
 
 export type StaffModerationPageProps = {
+  /** Operator locale for the V3-41 predictive panel. Defaults to English. */
+  locale?: AppLocale;
   viewer: StaffViewer;
   supabase: ModerationSupabaseClient;
   bulkActionHandler: (id: string, ids: string[], reason: string | null) => Promise<void>;
@@ -305,13 +311,17 @@ export type StaffModerationPageProps = {
   ) => Promise<void>;
 };
 
-export async function StaffModerationPageServer({ supabase, bulkActionHandler, exportHandler }: StaffModerationPageProps) {
+export async function StaffModerationPageServer({ supabase, bulkActionHandler, exportHandler, locale }: StaffModerationPageProps) {
   const snapshot = await loadModerationQueueSnapshot(supabase);
+  const predictive = await loadPredictiveSnapshot(supabase as never, "staff-moderation");
   return (
     <GenericStaffQueueClient<ModerationCaseRow>
       kicker="Moderation · cross-division"
       title="Content moderation & ToS"
       snapshot={snapshot}
+      forecastPanel={
+        <PredictiveQueuePanel snapshot={predictive} copy={getStaffPredictiveCopy(locale ?? "en")} />
+      }
       filterFields={FILTERS}
       rowAdapter={(r) => {
         const slaMinutes = r.severity === "high" ? 30 : r.severity === "low" ? 60 * 24 : 240;

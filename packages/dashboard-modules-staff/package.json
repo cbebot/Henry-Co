@@ -35,6 +35,8 @@
     "@henryco/config": "workspace:^",
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/data": "workspace:^",
+    "@henryco/i18n": "workspace:^",
+    "@henryco/intelligence": "workspace:^",
     "@henryco/observability": "workspace:^",
     "@types/node": "^20",
     "@types/react": "^19.2.14",

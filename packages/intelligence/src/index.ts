@@ -7,6 +7,7 @@ export * from "./deals";
 export * from "./availability";
 export * from "./next-action";
 export * from "./risk/index";
+export * from "./predictive/index";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -133,6 +134,13 @@ export const HenryEventNames = {
   RISK_STAFF_OVERRIDE: "henry.risk.staff.overrode",
   RISK_MODEL_PROMOTED: "henry.risk.model.promoted",
   RISK_MODEL_ROLLED_BACK: "henry.risk.model.rolled_back",
+  // Predictive quality & workload (V3-41, Phase E Wave E.4). Platform-invoked
+  // batch events ride actorless (division 'system'). Properties carry queue keys,
+  // unit/transaction ids, bands and COUNTS only — never PII, never a raw score,
+  // never a provider/model name. (Four segments: henry.<domain>.<object>.<verb>.)
+  PREDICTIVE_WORKLOAD_COMPUTED: "henry.predictive.workload.computed",
+  PREDICTIVE_QUALITY_AT_RISK_FLAGGED: "henry.predictive.quality.at_risk_flagged",
+  PREDICTIVE_DISPUTE_HIGH_LIKELIHOOD: "henry.predictive.dispute.high_likelihood",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
@@ -368,7 +376,16 @@ export type HenryFeatureFlagName =
   // V3-40 — the OPTIONAL LLM-advisory slice on top of the deterministic risk floor
   // (E-D1-A). Default OFF. Also requires `ai_gateway` + `predictive_shadow`; spend is
   // platform COGS under the internal daily ledger, reserve-before-run, degrade-CLOSED.
-  | "predictive_risk_assist";
+  | "predictive_risk_assist"
+  // V3-41 (Phase E) — the predictive quality & workload batch. Default OFF: no
+  // batch runs, no rows written, the staff panels render their empty state. The
+  // engines are deterministic + AI-free, and every output is ADVISORY (a
+  // prediction can never act on a customer), so this flag alone affects no user.
+  | "predictive_operations"
+  // V3-41 — the OPTIONAL staff-narrative slice on top of the deterministic
+  // forecast (E-D1-A). Default OFF. Also requires `ai_gateway`; spend is platform
+  // COGS on the unified internal ledger, reserve-before-run, degrade-CLOSED.
+  | "predictive_quality_narrative";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -448,6 +465,16 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_RISK_ASSIST) ||
       list.has("predictive_risk_assist") ||
       list.has("risk_assist"),
+    // V3-41 predictive operations batch — default OFF (dark launch).
+    predictive_operations:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_OPERATIONS) ||
+      list.has("predictive_operations") ||
+      list.has("predictive_ops"),
+    // V3-41 staff-narrative AI slice — default OFF; the forecast never needs it.
+    predictive_quality_narrative:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_QUALITY_NARRATIVE) ||
+      list.has("predictive_quality_narrative") ||
+      list.has("predictive_narrative"),
   };
 }
 
