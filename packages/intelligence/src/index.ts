@@ -3,6 +3,7 @@ import { z } from "zod";
 export * from "./analytics";
 export * from "./search";
 export * from "./recommendations";
+export * from "./deals";
 export * from "./availability";
 
 export const henryDivisionSchema = z.enum([
@@ -331,6 +332,10 @@ export type HenryFeatureFlagName =
   // Default OFF: the account home falls back to pure DASH weight ordering instantly.
   // Deterministic + AI-free; gates only the user-preference/signal projection.
   | "personalization_home"
+  // V3-35 (Phase E) — kill switch for the deals & campaigns surfaces. Default
+  // OFF: the deal pages/actions do not activate; the legacy marketplace
+  // curation fallback keeps serving its widget. Deterministic + AI-free.
+  | "personalization_deals";
   // V3-38 (Phase E) — local-availability badges/states. Default OFF: catalog
   // surfaces render exactly as before (no badge, no fetch). Stays dark until
   // `service_area_coverage` seeding is verified on prod (the soak note: a flood
@@ -389,6 +394,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
       list.has("personalization_home") ||
       list.has("personalization"),
+    // V3-35 deals & campaigns kill switch — default OFF (dark launch).
+    personalization_deals:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_DEALS) ||
+      list.has("personalization_deals") ||
+      list.has("deals"),
     // V3-38 local-availability kill switch — default OFF (dark until seeded).
     personalization_availability:
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_AVAILABILITY) ||

@@ -33,6 +33,7 @@ export {
   formatPersonalizationTemplate,
   type PersonalizationCopy,
 } from "./personalization-copy";
+export { getDealsCopy, formatDealsTemplate, type DealsCopy } from "./deals-copy";
 export {
   getAvailabilityCopy,
   formatAvailabilityTemplate,
