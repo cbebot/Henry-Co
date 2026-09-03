@@ -133,7 +133,20 @@ export async function applySellerDecision(input: {
    * itself the check, so the second decision matches nothing instead of
    * silently overwriting the first and re-running the activation below.
    */
-  expectedStatus?: string;
+  /**
+   * REQUIRED, and it must stay required. It was optional, and
+   * founder-intelligence/action-catalog.ts simply did not pass it — which
+   * silently disabled BOTH safety properties at once for that caller: the
+   * compare-and-set degraded to an unconditional update by id, and the
+   * compensating revert below short-circuits on a falsy value, so a failed
+   * activation left the application permanently `approved` with no store. That
+   * is exactly the unrecoverable state this core was rewritten to remove,
+   * reopened by an omitted argument.
+   *
+   * Making it non-optional moves that from "remember to pass it" to a compile
+   * error.
+   */
+  expectedStatus: string;
 }): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
   const { applicationId, decision, note, actorId, actorRole, expectedStatus } = input;
 
@@ -293,7 +306,9 @@ export async function applySellerDecision(input: {
       reviewed_by: actorId,
     } as never)
     .eq("id", applicationId);
-  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
+  // Unconditional: expectedStatus is required, so there is no caller for whom
+  // this degrades to a blind update.
+  statusUpdate = statusUpdate.eq("status", expectedStatus);
   const { data: statusUpdated, error: statusError } = await statusUpdate.select("id");
   if (statusError) {
     console.error("[seller-decision-write] status update failed", statusError.message);
@@ -313,7 +328,6 @@ export async function applySellerDecision(input: {
    * decision somebody else made in the meantime.
    */
   const revertStatusAfterFailedActivation = async (why: string): Promise<void> => {
-    if (!expectedStatus) return;
     const { error: revertError } = await admin
       .from("marketplace_vendor_applications")
       .update({ status: expectedStatus, reviewed_at: null, reviewed_by: null } as never)
@@ -374,6 +388,23 @@ export async function applySellerDecision(input: {
       support_phone: application.contact_phone,
     };
 
+    // Captured BEFORE the write so compensation can put this row back exactly
+    // as it found it. Without this the revert restored the application row and
+    // left `marketplace_vendors.status = 'approved'` behind — and that row is
+    // precisely what the public catalogue reads
+    // (apps/marketplace/lib/marketplace/data.ts:294 filters .eq("status",
+    // "approved")). The result was a live, publicly browsable storefront for an
+    // application that is no longer approved.
+    let priorVendorStatus: string | null = null;
+    if (existingVendorId) {
+      const { data: priorVendor } = await admin
+        .from("marketplace_vendors")
+        .select("status")
+        .eq("id", existingVendorId)
+        .maybeSingle();
+      priorVendorStatus = String((priorVendor as { status?: unknown } | null)?.status ?? "") || null;
+    }
+
     const written = existingVendorId
       ? await admin
           .from("marketplace_vendors")
@@ -395,6 +426,28 @@ export async function applySellerDecision(input: {
       };
     }
     const vendorId = String((written.data as { id: string }).id);
+
+    /**
+     * Undo the storefront write this call just made. `pending` is the resting
+     * state for a store that was never approved — it is not `approved`, so the
+     * catalogue will not list it, and it is not `suspended`, which would falsely
+     * imply the owner took action against a live seller.
+     */
+    const revertVendorAfterFailedGrant = async (why: string): Promise<void> => {
+      const restoreTo = priorVendorStatus ?? "pending";
+      const { error: vendorRevertError } = await admin
+        .from("marketplace_vendors")
+        .update({ status: restoreTo } as never)
+        .eq("id", vendorId)
+        .eq("status", "approved");
+      if (vendorRevertError) {
+        console.error(
+          "[seller-decision-write] COULD NOT REVERT the storefront after a failed grant — " +
+            "a store is live for an application that is not approved",
+          { vendorId, restoreTo, why, error: vendorRevertError.message },
+        );
+      }
+    };
 
     // Read-then-write rather than upsert. The only unique index on
     // marketplace_role_memberships is an EXPRESSION index —
@@ -433,6 +486,7 @@ export async function applySellerDecision(input: {
         "[seller-decision-write] membership lookup failed",
         membershipReadError.message,
       );
+      await revertVendorAfterFailedGrant("membership lookup failed");
       await revertStatusAfterFailedActivation("membership lookup failed");
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
@@ -461,6 +515,7 @@ export async function applySellerDecision(input: {
         "[seller-decision-write] vendor role grant failed",
         grant.error?.message ?? "no row written",
       );
+      await revertVendorAfterFailedGrant("vendor role grant failed");
       await revertStatusAfterFailedActivation("vendor role grant failed");
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }

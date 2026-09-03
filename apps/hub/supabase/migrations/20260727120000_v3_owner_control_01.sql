@@ -613,7 +613,16 @@ begin
     return;
   end if;
   -- Table-level. This is the statement the privilege actually answers to.
-  revoke insert, update, delete on public.owner_profiles from anon, authenticated;
+  --
+  -- TRUNCATE is in the list because prod grants it (prod-actual :8999-:9000) and
+  -- because RLS does not gate TRUNCATE AT ALL — there is no row filter to fall
+  -- back on, so a reachable TRUNCATE empties owner_profiles and locks every
+  -- owner out of HQ permanently. No client surface exposes it today (PostgREST
+  -- has no TRUNCATE verb and no dynamic-SQL RPC proxies one), so this is closing
+  -- a dormant grant rather than a live hole. Section 8 below already revoked
+  -- truncate on its table; leaving it off the root-of-trust table while
+  -- including it elsewhere was an inconsistency, not a decision.
+  revoke insert, update, delete, truncate on public.owner_profiles from anon, authenticated;
 end $$;
 
 -- ---------------------------------------------------------------------------
@@ -657,7 +666,7 @@ begin
     -- Table-level: all three write privileges.
     select r.rolname as grantee, p.priv as priv
     from (values ('anon'), ('authenticated')) as r(rolname)
-    cross join (values ('INSERT'), ('UPDATE'), ('DELETE')) as p(priv)
+    cross join (values ('INSERT'), ('UPDATE'), ('DELETE'), ('TRUNCATE')) as p(priv)
     where has_table_privilege(r.rolname, 'public.owner_profiles', p.priv)
     union
     -- Column-level: only the privileges PostgreSQL tracks per column.

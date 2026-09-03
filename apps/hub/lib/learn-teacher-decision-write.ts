@@ -90,7 +90,9 @@ export async function applyLearnTeacherDecision(input: {
    * makes the UPDATE itself the check, so the second decision matches nothing
    * instead of silently overwriting the first.
    */
-  expectedStatus?: string;
+  /** REQUIRED — see the note in seller-decision-write.ts. An omitted value
+   *  silently disables both the compare-and-set and the compensating revert. */
+  expectedStatus: string;
 }): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
   const { applicationId, decision, note, actorId, actorRole, expectedStatus } = input;
 
@@ -166,7 +168,7 @@ export async function applyLearnTeacherDecision(input: {
       updated_at: now,
     } as never)
     .eq("id", applicationId);
-  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
+  statusUpdate = statusUpdate.eq("status", expectedStatus);
   const { data: updated, error: updateError } = await statusUpdate.select("id");
   if (updateError) {
     console.error("[learn-teacher-decision-write] status update failed", updateError.message);
@@ -184,7 +186,6 @@ export async function applyLearnTeacherDecision(input: {
 
   /** Restore the prior status so a failed grant leaves a decidable row. */
   const revertStatusAfterFailedGrant = async (why: string): Promise<void> => {
-    if (!expectedStatus) return;
     const { error: revertError } = await admin
       .from("learn_teacher_applications")
       .update({ status: expectedStatus, reviewed_at: null, reviewed_by_user_id: null } as never)
@@ -233,6 +234,21 @@ export async function applyLearnTeacherDecision(input: {
     }
 
     const existingMembershipId = (existingRows ?? [])[0]?.id;
+
+    // Whether this membership was already active BEFORE this call. It decides
+    // what compensation restores: a membership we merely reactivated goes back
+    // to inactive, one that was already live stays live (the applicant held the
+    // instructor role independently of this decision and must not lose it).
+    let membershipWasAlreadyActive = false;
+    if (existingMembershipId) {
+      const { data: priorRow } = await admin
+        .from("learn_role_memberships")
+        .select("is_active")
+        .eq("id", existingMembershipId)
+        .maybeSingle();
+      membershipWasAlreadyActive =
+        (priorRow as { is_active?: unknown } | null)?.is_active === true;
+    }
     const grant = existingMembershipId
       ? await admin
           .from("learn_role_memberships")
@@ -261,6 +277,33 @@ export async function applyLearnTeacherDecision(input: {
     }
 
     const membershipId = String((grant.data[0] as { id: string }).id);
+
+    /**
+     * Undo the instructor grant this call just made.
+     *
+     * This is the most consequential compensation in the pass. getLearnViewer
+     * (apps/learn/lib/learn/auth.ts:162) grants the instructor role straight from
+     * learn_role_memberships, independent of application status — so the moment
+     * the grant lands the applicant can teach. And Learn's own revoke path keys
+     * off `learn_teacher_applications.instructor_membership_id`, which the failing
+     * write below is precisely what sets. Reverting only the application row
+     * therefore left a LIVE instructor role that no in-product path could ever
+     * revoke, because the handle Learn revokes by was never written.
+     */
+    const revertMembershipAfterFailedLink = async (why: string): Promise<void> => {
+      if (membershipWasAlreadyActive) return;
+      const { error: membershipRevertError } = await admin
+        .from("learn_role_memberships")
+        .update({ is_active: false } as never)
+        .eq("id", membershipId);
+      if (membershipRevertError) {
+        console.error(
+          "[learn-teacher-decision-write] COULD NOT REVERT the instructor grant — the role is " +
+            "live and Learn cannot revoke it (instructor_membership_id was never written)",
+          { membershipId, why, error: membershipRevertError.message },
+        );
+      }
+    };
     const { error: linkError } = await admin
       .from("learn_teacher_applications")
       .update({ instructor_membership_id: membershipId, updated_at: now } as never)
@@ -270,6 +313,7 @@ export async function applyLearnTeacherDecision(input: {
         "[learn-teacher-decision-write] membership link write failed",
         linkError.message,
       );
+      await revertMembershipAfterFailedLink("membership link write failed");
       await revertStatusAfterFailedGrant("membership link write failed");
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }

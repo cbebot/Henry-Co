@@ -170,7 +170,7 @@ begin
   from (
     select r.rolname as grantee, p.priv as priv
     from (values ('anon'), ('authenticated')) as r(rolname)
-    cross join (values ('INSERT'), ('UPDATE'), ('DELETE')) as p(priv)
+    cross join (values ('INSERT'), ('UPDATE'), ('DELETE'), ('TRUNCATE')) as p(priv)
     where has_table_privilege(r.rolname, 'public.owner_profiles', p.priv)
     union
     select r.rolname, p.priv || ' (column)'
