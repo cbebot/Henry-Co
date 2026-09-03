@@ -298,6 +298,9 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../../packages/intelligence
       '@henryco/media':
         specifier: workspace:^
         version: link:../../packages/media
@@ -710,6 +713,9 @@ importers:
       '@henryco/seo':
         specifier: workspace:^
         version: link:../../packages/seo
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../../packages/trust
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
