@@ -23,7 +23,7 @@
     "./identity": "./src/public/account-identity.ts",
     "./brand": "./src/brand/index.ts",
     "./share": "./src/share/index.ts",
-    "./availability": "./src/availability/index.ts"
+    "./availability": "./src/availability/index.ts",
     "./next-action": "./src/next-action/index.ts"
   },
   "scripts": {
