@@ -84,9 +84,25 @@ const PRINT_JSON = ARGS.has("--json");
 // ─── The 10 web apps (Expo apps use universal links, audited per V3-04). ──────
 // `account`, `hub`, `staff` host more than one logical surface but each is a
 // single Next app with a single route tree, so one table per app dir is right.
+// Every Next.js app that gets a route table. An app MISSING from this list is
+// still walked for hrefs by S1 — so its internal links are classified against a
+// route table that was never built, and every one of them comes back DEAD.
+//
+// `cms` was missing, and that is exactly what happened: /login, /no-access and
+// /dashboard were all reported DEAD while apps/cms/app/login/page.tsx,
+// apps/cms/app/no-access/page.tsx and apps/cms/app/(app)/dashboard/page.tsx have
+// existed the whole time. Four false positives, and worse than merely noisy —
+// because cms links were unconditionally DEAD, a REAL broken cms link was
+// indistinguishable from the permanent noise, and baselining the noise (which is
+// what --check does with them) silently baselined the blind spot too.
+//
+// The rule this encodes: a directory under apps/ is either route-tabled here, or
+// Expo (EXPO_APPS below), or it must not be walked at all. Anything else
+// produces a scanner that reports live links as dead.
 const WEB_APPS = [
   "account",
   "care",
+  "cms",
   "hub",
   "jobs",
   "learn",

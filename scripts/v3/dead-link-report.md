@@ -1,20 +1,20 @@
 # V3-06 — Dead-Link Static Scan Report
 
-Generated: 2026-07-27T11:30:48.145Z
+Generated: 2026-09-03T02:34:41.445Z
 Generator: scripts/v3/dead-link-scan.mjs
 
 ANTI-CLONE: internal route-table catalog — do not publish.
 
 ## Totals
 
-- Apps scanned: 10
-- Routes catalogued: 790
+- Apps scanned: 11
+- Routes catalogued: 797
 - Href/redirect sites found: 904
 
 | Classification | Count |
 |---|---|
-| OK | 593 |
-| DEAD | 4 |
+| OK | 597 |
+| DEAD | 0 |
 | LEGACY | 0 |
 | DYNAMIC-MAYBE | 252 |
 | HELPER | 3 |
@@ -26,10 +26,7 @@ Anchor findings (same-page unresolved): 3
 
 ## DEAD (must fix or remove)
 
-- `apps/cms/app/(app)/_components/AppShell.tsx:44` — `/login`  _(no matching route in host app (cms) or division tables)_
-- `apps/cms/app/auth/confirm/route.ts:52` — `/no-access`  _(no matching route in host app (cms) or division tables)_
-- `apps/cms/app/no-access/page.tsx:25` — `/login`  _(no matching route in host app (cms) or division tables)_
-- `apps/cms/app/page.tsx:7` — `/dashboard`  _(no matching route in host app (cms) or division tables)_
+_None._
 
 ## LEGACY (must update to current pattern)
 

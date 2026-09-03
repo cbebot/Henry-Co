@@ -1,0 +1,33 @@
+{
+  "app": "cms",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/api/auth/otp",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/auth/confirm",
+      "api": true
+    },
+    {
+      "route": "/dashboard",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/no-access",
+      "api": false
+    }
+  ]
+}
