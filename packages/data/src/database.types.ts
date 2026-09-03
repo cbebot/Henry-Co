@@ -3564,6 +3564,116 @@ export type Database = {
           },
         ]
       }
+      deal_impressions: {
+        Row: {
+          deal_id: string
+          id: string
+          shown_at: string
+          surface: string
+          user_id: string | null
+        }
+        Insert: {
+          deal_id: string
+          id?: string
+          shown_at?: string
+          surface: string
+          user_id?: string | null
+        }
+        Update: {
+          deal_id?: string
+          id?: string
+          shown_at?: string
+          surface?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_impressions_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deals: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          audience_signals: Json
+          created_at: string
+          created_by: string | null
+          creator_partner_id: string | null
+          deal_type: string
+          description: string | null
+          discount_currency: string | null
+          discount_minor: number | null
+          discount_percent: number | null
+          ends_at: string
+          id: string
+          legacy_curation_id: string | null
+          scope_categories: string[]
+          scope_division: string | null
+          source: string
+          starts_at: string
+          status: string
+          target_ref: string | null
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          audience_signals?: Json
+          created_at?: string
+          created_by?: string | null
+          creator_partner_id?: string | null
+          deal_type: string
+          description?: string | null
+          discount_currency?: string | null
+          discount_minor?: number | null
+          discount_percent?: number | null
+          ends_at: string
+          id?: string
+          legacy_curation_id?: string | null
+          scope_categories?: string[]
+          scope_division?: string | null
+          source?: string
+          starts_at: string
+          status?: string
+          target_ref?: string | null
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          audience_signals?: Json
+          created_at?: string
+          created_by?: string | null
+          creator_partner_id?: string | null
+          deal_type?: string
+          description?: string | null
+          discount_currency?: string | null
+          discount_minor?: number | null
+          discount_percent?: number | null
+          ends_at?: string
+          id?: string
+          legacy_curation_id?: string | null
+          scope_categories?: string[]
+          scope_division?: string | null
+          source?: string
+          starts_at?: string
+          status?: string
+          target_ref?: string | null
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
       delivery_proofs: {
         Row: {
           created_at: string
