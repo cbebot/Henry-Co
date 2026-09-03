@@ -82,7 +82,19 @@ export async function applyProductReview(input: {
    * The `current.status === decision` check above is a read, and a read cannot
    * stop a second verdict landing between it and the write below.
    */
-  expectedStatus?: string;
+  /**
+   * REQUIRED. It was optional, and founder-intelligence/action-catalog.ts
+   * omitted it — so on that path the compare-and-set below degraded to an
+   * unconditional update by id, and this file's own docstring promise that a
+   * second reviewer cannot overwrite the first verdict was not honoured by its
+   * only other caller. seller-decision-write.ts had the identical defect and was
+   * fixed; these two were missed in that sweep.
+   *
+   * Non-optional makes omitting it a compile error rather than a silent
+   * downgrade. (vendor-status-write.ts keeps an optional one safely, because
+   * owner_set_vendor_active performs the real CAS inside a transaction.)
+   */
+  expectedStatus: string;
 }): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
   if (!DECISIONS.includes(input.decision)) {
     return { ok: false, error: "That decision isn't recognised." };
@@ -95,6 +107,15 @@ export async function applyProductReview(input: {
   }
   if (current.status === input.decision) {
     return { ok: false, error: `The product is already ${input.decision.replace("_", " ")}.` };
+  }
+
+  if (!input.expectedStatus.trim()) {
+    // Fail closed. Required-by-type stops an OMITTED argument; it does not stop
+    // an empty one, and `String(trueState.status ?? "")` upstream yields "" if a
+    // reader ever returns a row without a status. An empty value in the
+    // compare-and-set filter matches no row, so the write would report a lost
+    // race instead of applying — a silent nothing dressed as a conflict.
+    return { ok: false, error: "That record could not be read cleanly. Refresh and try again." };
   }
 
   const admin = createAdminSupabase();
@@ -127,7 +148,7 @@ export async function applyProductReview(input: {
       reviewed_by: input.actorId,
     } as never)
     .eq("id", current.productId);
-  if (input.expectedStatus) write = write.eq("approval_status", input.expectedStatus);
+  write = write.eq("approval_status", input.expectedStatus);
   const { data: written, error: writeError } = await write.select("id");
   if (writeError) {
     return { ok: false, error: "The verdict could not be saved." };

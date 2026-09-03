@@ -101,6 +101,15 @@ export async function applyLearnTeacherDecision(input: {
   expectedStatus: string;
 }): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
   const { applicationId, decision, note, actorId, actorRole, expectedStatus } = input;
+  if (!expectedStatus.trim()) {
+    // Fail closed. Required-by-type stops an OMITTED argument; it does not stop
+    // an empty one, and `String(trueState.status ?? "")` upstream yields "" if a
+    // reader ever returns a row without a status. An empty value in the
+    // compare-and-set filter matches no row, so the write would report a lost
+    // race instead of applying — a silent nothing dressed as a conflict.
+    return { ok: false, error: "That record could not be read cleanly. Refresh and try again." };
+  }
+
 
   if (decision !== "approved" && decision !== "rejected") {
     return { ok: false, error: "Choose a valid teacher review decision." };

@@ -253,6 +253,11 @@ const kycReview: FounderActionEntry = {
       note: String(trueState.note ?? ""),
       actorId: ownerId,
       actorRole: ownerRole,
+      // The status this proposal was re-read against at confirm time, so the
+      // write is a compare-and-set. Omitting it made the update unconditional
+      // and could silently reinstate a rejected verification as approved —
+      // which cascades into customer_profiles.verification_status.
+      expectedStatus: String(trueState.status ?? ""),
     });
     if (!applied.ok) return { ok: false, error: applied.error };
     return { ok: true, executionRef: applied.executionRef };
@@ -569,6 +574,7 @@ const productReview: FounderActionEntry = {
       note: String(trueState.note ?? ""),
       actorId: ownerId,
       actorRole: ownerRole,
+      expectedStatus: String(trueState.status ?? ""),
     });
     if (!applied.ok) return { ok: false, error: applied.error };
     return { ok: true, executionRef: applied.executionRef };

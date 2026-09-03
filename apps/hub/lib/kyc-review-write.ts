@@ -74,11 +74,32 @@ export async function applyKycReview(input: {
    * a second reviewer cannot overwrite the first verdict and re-derive the
    * applicant's profile status from it.
    */
-  expectedStatus?: string;
+  /**
+   * REQUIRED. It was optional, and founder-intelligence/action-catalog.ts
+   * omitted it — so on that path the compare-and-set below degraded to an
+   * unconditional update by id, and this file's own docstring promise that a
+   * second reviewer cannot overwrite the first verdict was not honoured by its
+   * only other caller. seller-decision-write.ts had the identical defect and was
+   * fixed; these two were missed in that sweep.
+   *
+   * Non-optional makes omitting it a compile error rather than a silent
+   * downgrade. (vendor-status-write.ts keeps an optional one safely, because
+   * owner_set_vendor_active performs the real CAS inside a transaction.)
+   */
+  expectedStatus: string;
 }): Promise<
   { ok: true; executionRef: string; profileStatus: string; changed: boolean } | { ok: false; error: string }
 > {
   const { submissionId, decision, note, actorId, actorRole, expectedStatus } = input;
+  if (!expectedStatus.trim()) {
+    // Fail closed. Required-by-type stops an OMITTED argument; it does not stop
+    // an empty one, and `String(trueState.status ?? "")` upstream yields "" if a
+    // reader ever returns a row without a status. An empty value in the
+    // compare-and-set filter matches no row, so the write would report a lost
+    // race instead of applying — a silent nothing dressed as a conflict.
+    return { ok: false, error: "That record could not be read cleanly. Refresh and try again." };
+  }
+
 
   if (decision !== "approved" && decision !== "rejected") {
     return { ok: false, error: "Choose a valid review decision." };
@@ -132,7 +153,7 @@ export async function applyKycReview(input: {
       reviewed_at: now,
     })
     .eq("id", submissionId);
-  if (expectedStatus) submissionUpdate = submissionUpdate.eq("status", expectedStatus);
+  submissionUpdate = submissionUpdate.eq("status", expectedStatus);
   const { data: submissionUpdated, error: submissionError } = await submissionUpdate.select("id");
   if (submissionError) {
     console.error("[kyc-review-write] submission update failed", submissionError.message);
