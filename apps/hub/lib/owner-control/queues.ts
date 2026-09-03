@@ -148,10 +148,24 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
         const slugs = Array.from(new Set(rows.map((r) => text(r.proposed_store_slug)).filter(Boolean)));
         const slugOwners = new Map<string, string>();
         if (slugs.length) {
-          const { data: taken } = await admin
+          // The error is READ, not swallowed. This lookup is what produces the
+          // slug-collision warning on the card; if it fails quietly the warning
+          // simply is not there, and the queue looks normal while the owner
+          // decides with less than it appears to show. The server-side
+          // collision gate still refuses a real takeover, so this degrades the
+          // evidence rather than the safety — but degraded evidence that nobody
+          // is told about is exactly the "console that lies quietly" failure
+          // this pass keeps finding.
+          const { data: taken, error: takenError } = await admin
             .from("marketplace_vendors")
             .select("slug, owner_user_id")
             .in("slug", slugs);
+          if (takenError) {
+            console.error(
+              "[owner-control] slug-collision lookup failed; cards will render without the takeover warning",
+              takenError.message,
+            );
+          }
           for (const raw of taken ?? []) {
             const vendor = raw as Record<string, unknown>;
             slugOwners.set(text(vendor.slug), text(vendor.owner_user_id));
@@ -204,10 +218,16 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
       const userIds = Array.from(new Set(rows.map((r) => text(r.user_id)).filter(Boolean)));
       const names = new Map<string, string>();
       if (userIds.length) {
-        const { data: profiles } = await admin
+        const { data: profiles, error: profilesError } = await admin
           .from("customer_profiles")
           .select("id, full_name")
           .in("id", userIds);
+        if (profilesError) {
+          console.error(
+            "[owner-control] applicant name lookup failed; identity checks will render without a name",
+            profilesError.message,
+          );
+        }
         for (const raw of profiles ?? []) {
           const profile = raw as Record<string, unknown>;
           names.set(text(profile.id), text(profile.full_name));
@@ -285,10 +305,16 @@ export async function getOwnerControlQueues(): Promise<OwnerControlQueues> {
         const vendorIds = Array.from(new Set(rows.map((r) => text(r.vendor_id)).filter(Boolean)));
         const vendorNames = new Map<string, string>();
         if (vendorIds.length) {
-          const { data: vendors } = await admin
+          const { data: vendors, error: vendorsError } = await admin
             .from("marketplace_vendors")
             .select("id, name")
             .in("id", vendorIds);
+          if (vendorsError) {
+            console.error(
+              "[owner-control] vendor-name lookup failed; listings will render without their seller",
+              vendorsError.message,
+            );
+          }
           for (const raw of vendors ?? []) {
             const vendor = raw as Record<string, unknown>;
             vendorNames.set(text(vendor.id), text(vendor.name));
