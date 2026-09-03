@@ -44,8 +44,24 @@ import { createAdminSupabase } from "@/lib/supabase";
  * alone they must be given a user_id before they can act, which is the correct
  * outcome rather than a silent widening.
  *
- * `owner_control_assert_actor()` in the migration applies the SAME user_id-only
- * rule inside every RPC, so the posture holds even if this module is bypassed.
+ * WHAT `owner_control_assert_actor()` DOES AND DOES NOT DO. An earlier draft of
+ * this comment said it "applies the SAME user_id-only rule inside every RPC, so
+ * the posture holds even if this module is bypassed". That overstated it, and
+ * the overstatement is the dangerous kind — it invites a future caller to skip
+ * this module believing the database will still catch them.
+ *
+ * The RPCs run through the SERVICE-ROLE client, where `auth.uid()` is NULL. No
+ * function invoked that way can verify that the CALLER is the actor it was
+ * handed; that binding is structurally unavailable. What assert_actor does is
+ * check that the uuid it was given names a live owner_profiles row with role
+ * owner or admin — an EXISTENCE check, fail-closed on NULL and on no-match.
+ *
+ * So it defends against a trusted server path passing a wrong or non-owner id
+ * (a bug, a future careless caller, a compromised code path), not against a
+ * forged caller. The caller→actor binding happens HERE and only here, in gate 2,
+ * which runs under the caller's own JWT where `auth.uid()` is real. That is why
+ * this module is not optional, and why the RPCs are additionally revoked from
+ * anon and authenticated so no browser session can reach them directly.
  *
  * FAIL-CLOSED: an RPC transport error is treated as "not an owner". A database
  * that cannot answer must never resolve to permission granted.

@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { emitEvent } from "@henryco/observability";
 import { writeAuditLog } from "@henryco/observability/audit-log";
 import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
-import { clearReauthCookieOnJar } from "@henryco/auth/server/reauth-cookie";
+import { clearReauthCookieOnJar, readVerifiedReauth } from "@henryco/auth/server/reauth-cookie";
 import { createAdminSupabase } from "@/lib/supabase";
 import { authorizeOwnerControl } from "@/lib/owner-control/authorize";
 import { getOwnerControlAction } from "@/lib/owner-control/registry";
@@ -152,6 +152,14 @@ export async function POST(request: NextRequest) {
   // 4. LEGALITY — compare case-insensitively; these statuses are written by
   //    several apps over several years and casing is not guaranteed.
   const currentStatus = state.status.trim().toLowerCase();
+
+  // The division this verdict is FILED under. Entities that carry their own
+  // division (the cross-division moderation queue) win over the action's
+  // registered one, so a marketplace report resolved from the hub console is
+  // recorded against marketplace — where anyone reconstructing the incident
+  // would actually look — rather than against hub, where the button happened
+  // to live.
+  const filedDivision = state.division?.trim() || action.division;
   if (!action.fromStates.includes(currentStatus)) {
     emitEvent({
       name: "henry.owner.control.action",
@@ -171,6 +179,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Hoisted above the reauth block: the single-use spend below is a
+  // service-role RPC, so the admin client is needed before step 6 now.
+  const admin = createAdminSupabase();
+
   // 5. REAUTH — before the claim, on purpose (see the spine note above).
   if (action.requiresReauth) {
     const guard = await requireSensitiveAction(request, {
@@ -182,12 +194,61 @@ export async function POST(request: NextRequest) {
     });
     if (!guard.ok) return guard.response;
 
-    // ONE PASSWORD, ONE CONSEQUENTIAL ACTION. `hc_last_reauth` is a 5-minute
-    // window, so by default one step-up authorises every consequential action
-    // taken in those five minutes. Spending it here narrows that to the single
-    // action it was typed for: whoever holds a borrowed session gets at most
-    // the one verdict the owner had already decided to make, not a free hand
-    // over suspensions and removals until the window lapses.
+    // ONE PASSWORD, ONE CONSEQUENTIAL ACTION — enforced on the SERVER, which it
+    // was not until this was added.
+    //
+    // `hc_last_reauth` is a 5-minute window, so by default one step-up
+    // authorises every consequential action taken in those five minutes.
+    // Clearing the cookie below narrows that to one action — but only with the
+    // browser's cooperation, and only if the requests are sequential. The check
+    // itself (`readVerifiedReauth`) is stateless: HMAC, subject, age, and no
+    // record anywhere that a step-up was already used. N requests dispatched
+    // before the first response returns each read a still-valid cookie, each
+    // verify independently, and each proceed — one password, N verdicts.
+    //
+    // So the spend is made atomic in the database first. The `ts` inside the
+    // signed payload identifies the issuance and is tamper-proof (it is inside
+    // the HMAC); recording (actor, ts) under a primary key means the first
+    // request wins and every concurrent sibling takes a unique violation.
+    //
+    // FAIL CLOSED on every branch: no readable payload, a transport error, or
+    // an already-spent issuance all refuse. A step-up we cannot prove is
+    // unspent is one we must not honour.
+    const reauth = await readVerifiedReauth(actor.id);
+    if (!reauth) return refuse();
+
+    let spent = false;
+    try {
+      const { data, error } = await admin.rpc("owner_control_spend_reauth", {
+        p_actor: actor.id,
+        p_reauth_ts: reauth.ts,
+        p_action_key: action.key,
+      });
+      if (error) {
+        console.error("[owner/control] reauth spend failed", error.message);
+        return refuse();
+      }
+      spent = data === true;
+    } catch (error) {
+      console.error("[owner/control] reauth spend threw", error);
+      return refuse();
+    }
+    if (!spent) {
+      // Someone already used this step-up. Challenge again rather than refuse
+      // outright: the owner's own second action in one window lands here, and
+      // the honest answer is "prove it again", not "no".
+      return NextResponse.json(
+        { error: "That confirmation was already used. Please confirm again." },
+        {
+          status: 401,
+          headers: { "WWW-Authenticate": "SensitiveActionReauth" },
+        },
+      );
+    }
+
+    // Belt and braces: tell the browser to forget the cookie too. The database
+    // is now the authority, but a cleared cookie means the NEXT consequential
+    // action challenges immediately instead of making a doomed round trip.
     //
     // Burning it BEFORE the claim (rather than after a successful execute) is
     // deliberate — an attempt that fails downstream has still spent the
@@ -204,8 +265,6 @@ export async function POST(request: NextRequest) {
     await clearReauthCookieOnJar();
   }
 
-  const admin = createAdminSupabase();
-
   // 6. CLAIM
   let claimId: string;
   try {
@@ -215,7 +274,7 @@ export async function POST(request: NextRequest) {
       p_action_key: action.key,
       p_entity_type: action.entityType,
       p_entity_id: entityId,
-      p_division: action.division,
+      p_division: filedDivision,
       p_from_state: state.status,
       p_to_state: action.toState,
       p_note: note || null,
@@ -292,7 +351,7 @@ export async function POST(request: NextRequest) {
     oldValues: { status: state.status },
     newValues: { status: action.toState, executionRef: execution.executionRef, changed: execution.changed },
     reason: note || "owner_control",
-    division: action.division,
+    division: filedDivision,
     correlationId: claimId,
   });
   if (!auditId) {
@@ -327,7 +386,7 @@ export async function POST(request: NextRequest) {
       actionKey: action.key,
       entityType: action.entityType,
       entityId,
-      division: action.division,
+      division: filedDivision,
       fromState: state.status,
       toState: action.toState,
       reauthRequired: action.requiresReauth,

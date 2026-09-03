@@ -90,4 +90,35 @@ create table if not exists public.customer_notifications (
   created_at timestamptz not null default now()
 );
 
-select 'owner-control fixture ready (prod grant hole reproduced)' as status;
+-- ── platform_moderation_queue — the second reproduced hole ──────────────────
+-- Live carries a policy whose NAME says service role and whose BODY says
+-- `to public using (true)`, plus the full write triad to both request roles
+-- (prod-actual schema.sql:8085, :9007-:9008). Section 8 of the migration closes
+-- it; without recreating it here that section would revoke privileges nobody
+-- granted and drop a policy nobody created — passing for the wrong reason.
+create table if not exists public.platform_moderation_queue (
+  id uuid primary key default gen_random_uuid(),
+  division text,
+  entity_type text,
+  entity_id uuid,
+  reason text,
+  severity text,
+  content_snapshot text,
+  status text not null default 'pending',
+  created_at timestamptz not null default now()
+);
+
+alter table public.platform_moderation_queue enable row level security;
+
+drop policy if exists "Service role full access" on public.platform_moderation_queue;
+create policy "Service role full access" on public.platform_moderation_queue
+  as permissive for all to public using (true) with check (true);
+
+grant delete, insert, references, select, trigger, truncate, update
+  on table public.platform_moderation_queue to anon;
+grant delete, insert, references, select, trigger, truncate, update
+  on table public.platform_moderation_queue to authenticated;
+grant delete, insert, references, select, trigger, truncate, update
+  on table public.platform_moderation_queue to service_role;
+
+select 'owner-control fixture ready (2 prod grant holes reproduced)' as status;

@@ -33,6 +33,19 @@ export type OwnerControlEntityState = {
   subject: string;
   /** The affected end user, when the entity has one. */
   subjectUserId: string | null;
+  /**
+   * The division the ENTITY actually belongs to, when the entity carries one of
+   * its own. Null means "use the action's division", which is right for every
+   * single-division table (a marketplace product is always marketplace).
+   *
+   * It exists for the moderation queue, which is cross-division by design: a row
+   * there may be a marketplace listing or a jobs post, while the action that
+   * resolves it is registered under "hub" because that is where the console
+   * lives. Recording the action's division on the ledger would file every
+   * moderation verdict under hub — so anyone reconstructing an incident in
+   * marketplace would search marketplace and find nothing.
+   */
+  division?: string | null;
 };
 
 export type OwnerControlExecution =
@@ -87,6 +100,9 @@ export async function readOwnerControlState(
             status: state.status,
             subject: `${state.division} · ${state.entityType}`,
             subjectUserId: null,
+            // The report's OWN division, so the ledger and the audit row file
+            // this verdict where the incident actually happened.
+            division: state.division,
           }
         : null;
     }

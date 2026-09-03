@@ -165,6 +165,38 @@ begin
     violations := violations + 1;
   end if;
 
+  -- ── 5. the moderation queue is not world-writable ─────────────────────────
+  -- The one table the rail both reads and writes. Live carries a policy named
+  -- "Service role full access" whose body is `to public using (true)`, plus the
+  -- write triad to both request roles. An attacker able to INSERT here puts
+  -- fabricated evidence in front of the owner, who can then destroy real content
+  -- through a rail that audits the whole thing faithfully.
+  select string_agg(format('%s:%s', r.rolname, p.priv), ', ' order by r.rolname, p.priv)
+    into offender
+  from (values ('anon'), ('authenticated')) as r(rolname)
+  cross join (values ('INSERT'), ('UPDATE'), ('DELETE')) as p(priv)
+  where has_table_privilege(r.rolname, 'public.platform_moderation_queue', p.priv);
+
+  raise notice 'platform_moderation_queue writes reachable by request roles: %',
+    coalesce(offender, '(none)');
+
+  if offender is not null then
+    raise warning 'VIOLATION: platform_moderation_queue writable by [%] — forged reports reach the owner console', offender;
+    violations := violations + 1;
+  end if;
+
+  select count(*) into policy_count
+  from pg_policies
+  where schemaname = 'public'
+    and tablename = 'platform_moderation_queue'
+    and 'public' = any (roles)
+    and coalesce(qual, 'true') = 'true';
+
+  if policy_count > 0 then
+    raise warning 'VIOLATION: platform_moderation_queue keeps % unrestricted public policy/policies', policy_count;
+    violations := violations + 1;
+  end if;
+
   if violations > 0 then
     raise exception 'owner-control grant invariant FAILED with % violation(s)', violations;
   end if;

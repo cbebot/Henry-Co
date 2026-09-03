@@ -647,4 +647,188 @@ begin
   end if;
 end $$;
 
+-- ---------------------------------------------------------------------------
+-- 8. platform_moderation_queue — close the table this rail now acts on
+-- ---------------------------------------------------------------------------
+
+-- The moderation queue is the one table in this pass that the rail both READS
+-- (queues.ts, the moderation-reports queue) and WRITES (moderation-resolve-
+-- write.ts, uphold-and-remove / dismiss). On the last captured production
+-- surface it is world-readable and world-writable:
+--
+--   prod-actual schema.sql:8085
+--     create policy "Service role full access" on public.platform_moderation_queue
+--       as permissive for all to public using (true) with check (true);
+--   prod-actual schema.sql:9007-9008
+--     grant DELETE, INSERT, ..., UPDATE on table public.platform_moderation_queue
+--       to anon;  -- and to authenticated
+--
+-- The policy's NAME says service role. Its BODY says `to public using (true)`,
+-- which is every role including anon, with no restriction. Together with the
+-- grants, any unauthenticated PostgREST caller could read every reported
+-- content_snapshot across all divisions, and insert, edit or delete rows.
+--
+-- 20260614120000_sec_harden_03_world_writable_lockdown.sql already fixes this —
+-- platform_moderation_queue is in its cat1 array (line 77) — and the treatment
+-- below is that migration's treatment, restated for this one table. Whether it
+-- has been applied is genuinely UNKNOWN and could not be determined here: the
+-- prod snapshot is from 2026-06-13, one day BEFORE that migration was authored,
+-- so it cannot answer the question, and both Supabase projects are currently
+-- INACTIVE (paused) so no live probe was possible.
+--
+-- Restating it is the same trade section 6 makes for owner_profiles. Before this
+-- pass, a forged moderation row sat in a table nothing in HQ read. After it, the
+-- owner's console lists those rows as real reports and offers a one-tap dismiss
+-- and a password-gated remove on them — so an attacker who can INSERT here can
+-- put fabricated evidence in front of the owner and get real content destroyed
+-- through a rail that will faithfully audit the whole thing. Widening the blast
+-- radius of an open door without closing the door is the wrong trade.
+--
+-- Fully idempotent: `drop policy if exists` and a revoke of privileges that may
+-- already be gone are both no-ops if SEC-HARDEN-03 has landed. SELECT is left
+-- granted, exactly as SEC-HARDEN-03 leaves it — with the broad policy dropped
+-- and no other policy on the table, RLS denies reads to every request role
+-- anyway, and service_role bypasses RLS so the console keeps working.
+do $$
+begin
+  if to_regclass('public.platform_moderation_queue') is null then
+    raise notice 'platform_moderation_queue absent — moderation lockdown skipped';
+    return;
+  end if;
+
+  drop policy if exists "Service role full access" on public.platform_moderation_queue;
+  revoke insert, update, delete, truncate
+    on table public.platform_moderation_queue
+    from anon, authenticated, public;
+end $$;
+
+-- Prove it, for the same reason section 7 exists: a revoke that reads correctly
+-- can still leave the door open. Writes must be gone for both request roles, and
+-- no policy may remain that lets a request role back in.
+do $$
+declare
+  offender text;
+  broad_policies int;
+begin
+  if to_regclass('public.platform_moderation_queue') is null then
+    return;
+  end if;
+
+  select string_agg(format('%s:%s', r.rolname, p.priv), ', ' order by r.rolname, p.priv)
+    into offender
+  from (values ('anon'), ('authenticated')) as r(rolname)
+  cross join (values ('INSERT'), ('UPDATE'), ('DELETE')) as p(priv)
+  where has_table_privilege(r.rolname, 'public.platform_moderation_queue', p.priv);
+
+  if offender is not null then
+    raise exception
+      'platform_moderation_queue still writable by request roles [%] — a forged '
+      'moderation report would reach the owner console as real evidence.', offender;
+  end if;
+
+  -- `permissive ... using (true)` to public is the specific shape that made the
+  -- table world-readable despite RLS being enabled.
+  select count(*) into broad_policies
+  from pg_policies
+  where schemaname = 'public'
+    and tablename = 'platform_moderation_queue'
+    and 'public' = any (roles)
+    and coalesce(qual, 'true') = 'true';
+
+  if broad_policies > 0 then
+    raise exception
+      'platform_moderation_queue still carries % unrestricted public policy/policies', broad_policies;
+  end if;
+end $$;
+
+-- ---------------------------------------------------------------------------
+-- 9. Make "one password, one consequential action" actually true
+-- ---------------------------------------------------------------------------
+
+-- The route says single-use, and until this section it was single-use only by
+-- the browser's cooperation. `readVerifiedReauth` is stateless — HMAC, subject,
+-- age — and nothing anywhere records that a step-up has been spent. The
+-- "single-use" property came entirely from `clearReauthCookieOnJar()` asking the
+-- BROWSER to forget the cookie.
+--
+-- That clear does work (verified against the installed Next 16.1.6: the route
+-- module merges the mutable cookie jar onto whatever Response the handler
+-- returns, so the Set-Cookie really is sent). The gap is not a broken clear, it
+-- is that clearing is not atomic with checking. N requests dispatched before the
+-- first response comes back each read a still-valid cookie, each verify it
+-- independently, and each proceed. One password then authorises N consequential
+-- verdicts — suspensions, listing takedowns, content removals — against the
+-- route's own stated guarantee. The rate limiter caps the blast radius, it does
+-- not restore the invariant.
+--
+-- The precondition is same-origin script execution on hub, which is severe on
+-- its own. That is not a reason to leave the weaker guarantee in place: this
+-- rail's whole purpose is that consequential actions are individually
+-- authorised, and a guarantee that holds only while nobody is attacking is a
+-- comment, not a control.
+--
+-- FIX: a step-up is identified by the `ts` in its signed payload — the issuance
+-- moment, tamper-proof because it is inside the HMAC. Recording (actor, ts) under
+-- a PRIMARY KEY makes spending it a single atomic INSERT: the first request to
+-- arrive wins, every concurrent sibling takes a unique_violation and is refused.
+-- Postgres does the serialisation; no lock, no read-then-write, no window.
+--
+-- This deliberately does NOT change @henryco/auth's cookie contract. That module
+-- is shared by every division's sensitive actions, and re-shaping the payload to
+-- bind an action would be an ecosystem-wide change made from inside one feature.
+-- The enforcement lives here, where the consequential actions are.
+create table if not exists public.owner_control_reauth_spends (
+  actor_id uuid not null,
+  -- Epoch millis from the signed cookie payload; identifies ONE step-up.
+  reauth_ts bigint not null,
+  action_key text not null,
+  spent_at timestamptz not null default now(),
+  primary key (actor_id, reauth_ts)
+);
+
+alter table public.owner_control_reauth_spends enable row level security;
+revoke all on public.owner_control_reauth_spends from anon, authenticated;
+
+comment on table public.owner_control_reauth_spends is
+  'One row per SPENT password step-up on the owner-control rail. The primary key '
+  'is the enforcement: concurrent requests carrying the same reauth issuance '
+  'collide and only one proceeds. Pruned by owner_control_spend_reauth.';
+
+create or replace function public.owner_control_spend_reauth(
+  p_actor uuid,
+  p_reauth_ts bigint,
+  p_action_key text
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = public, pg_catalog
+as $$
+begin
+  -- Same actor assertion every other RPC on this rail opens with.
+  perform public.owner_control_assert_actor(p_actor);
+
+  -- Bounded growth: a step-up older than an hour can never satisfy the 5-minute
+  -- window again, so its row proves nothing. Pruning here keeps the table at
+  -- roughly "step-ups in the last hour" without a scheduled job.
+  delete from public.owner_control_reauth_spends
+   where spent_at < now() - interval '1 hour';
+
+  insert into public.owner_control_reauth_spends (actor_id, reauth_ts, action_key)
+  values (p_actor, p_reauth_ts, p_action_key);
+
+  return true;
+exception
+  when unique_violation then
+    -- Already spent. Not an error: the honest answer to "may I use this
+    -- step-up?" is no, and the caller turns that into a fresh challenge.
+    return false;
+end;
+$$;
+
+revoke all on function public.owner_control_spend_reauth(uuid, bigint, text)
+  from public, anon, authenticated;
+grant execute on function public.owner_control_spend_reauth(uuid, bigint, text)
+  to service_role;
+
 -- end of migration --
