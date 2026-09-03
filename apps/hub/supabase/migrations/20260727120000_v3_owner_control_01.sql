@@ -760,8 +760,23 @@ begin
   from pg_policies
   where schemaname = 'public'
     and tablename = 'platform_moderation_queue'
-    and 'public' = any (roles)
-    and coalesce(qual, 'true') = 'true';
+    -- Any request role, not just `public`. The policy being closed here happens
+    -- to be `to public`, but `to authenticated using (true)` grants every signed
+    -- in user the same unrestricted reach, and a check that only looked for
+    -- `public` would wave it through — catching the exact policy already found
+    -- while staying blind to its nearest neighbour.
+    and (roles && array['public', 'anon', 'authenticated']::name[])
+    -- EITHER clause being trivially true is enough to flag, because they gate
+    -- different things: `qual` decides which rows are visible, `with_check`
+    -- which rows may be written. A policy with `using (true) with check
+    -- (user_id = auth.uid())` constrains writes and still hands every row to
+    -- every reader — requiring BOTH would let exactly that through.
+    -- A NULL is "clause not present" (INSERT-only policies have no qual), not
+    -- "unrestricted", so it must not match.
+    and (
+         coalesce(btrim(qual), '') in ('true', '(true)')
+      or coalesce(btrim(with_check), '') in ('true', '(true)')
+    );
 
   if broad_policies > 0 then
     raise exception

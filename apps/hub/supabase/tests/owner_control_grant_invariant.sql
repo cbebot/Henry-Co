@@ -215,12 +215,18 @@ begin
     violations := violations + 1;
   end if;
 
+  -- Mirrors the migration's own section-8 assertion: any request role, and
+  -- EITHER clause trivially true (qual gates visibility, with_check gates
+  -- writes; a policy can leak every row while constraining writes).
   select count(*) into policy_count
   from pg_policies
   where schemaname = 'public'
     and tablename = 'platform_moderation_queue'
-    and 'public' = any (roles)
-    and coalesce(qual, 'true') = 'true';
+    and (roles && array['public', 'anon', 'authenticated']::name[])
+    and (
+         coalesce(btrim(qual), '') in ('true', '(true)')
+      or coalesce(btrim(with_check), '') in ('true', '(true)')
+    );
 
   if policy_count > 0 then
     raise warning 'VIOLATION: platform_moderation_queue keeps % unrestricted public policy/policies', policy_count;
