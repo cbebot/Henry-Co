@@ -325,6 +325,18 @@ export type HenryEventName =
   | "henry.availability.batch.resolved"
   | "henry.availability.unavailable.shown"
   | "henry.availability.find_similar.clicked"
+  // V3-39 smart next action (Phase E). `surfaced` fires when the resolver
+  // yields a floating chip for the page (system_state → completed); `clicked`
+  // (user_action → completed) and `dismissed` (user_action → removed) track
+  // the chip interactions; `stitched` fires ONLY when the surfaced action
+  // bridges INTO a sibling division from a completed action — distinct from a
+  // same-division surface so cross-division lift is measurable (BUILD-PLAN
+  // V3-39 delta). Payloads carry { context_kind, division, action_id,
+  // sensitive, placement, stitched } — ids and enums only, never PII.
+  | "henry.next_action.surfaced"
+  | "henry.next_action.clicked"
+  | "henry.next_action.dismissed"
+  | "henry.next_action.stitched"
   // V3-40 predictive fraud & risk (Phase E, Wave E.3). Platform-invoked batch
   // events ride actorless (system); staff actions carry the acting staff id.
   // Payloads are entity ids + tiers + counts ONLY — never PII, never a raw

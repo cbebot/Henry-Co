@@ -397,6 +397,21 @@ jobs:
 
       - name: Prove availability RLS at runtime (anon reads coverage; request roles never write; gap fn service-only)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_rls_behaviour.sql
+      # V3-39 NEXT ACTION (Phase E) — per-prompt dismissals + opt-out control.
+      # Net-new owner-only table (NO service_role path), default-deny RLS, NO
+      # money path. The customer_preferences ALTER is table-guarded (skips on
+      # the fresh DB), so seed-apply-assert on the same fresh DB.
+      - name: Seed V3-39 prod-standing table ACL (so the migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_min.sql
+
+      - name: Apply V3-39 next-action migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_39_next_action_prompts.sql
+
+      - name: Assert next-action grant invariant (dismissals owner-only; service_role has NO path)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_grant_invariant.sql
+
+      - name: Prove next-action RLS at runtime (user B never reads/writes user A's dismissals — 0 rows)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_rls_behaviour.sql
       # V3-40 PREDICTIVE FRAUD & RISK (Phase E, Wave E.3) — versioned scores +
       # governed models + enforcement log. Staff-only visibility, service-role
       # writes, and the NO-AUTO-PUNISHMENT CHECK proven at the database layer.
