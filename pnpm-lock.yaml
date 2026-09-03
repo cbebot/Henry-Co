@@ -713,6 +713,9 @@ importers:
       '@henryco/seo':
         specifier: workspace:^
         version: link:../../packages/seo
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../../packages/trust
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -2741,6 +2744,9 @@ importers:
       '@henryco/data':
         specifier: workspace:^
         version: link:../data
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
       '@henryco/observability':
         specifier: workspace:^
         version: link:../observability

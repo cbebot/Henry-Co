@@ -16,6 +16,7 @@ import {
   StaffModerationPageServer,
   StaffFinanceOperatorPageServer,
   StaffSettingsPageServer,
+  StaffRiskPageServer,
 } from "@henryco/dashboard-modules-staff";
 
 import { requireTrackCStaffViewer } from "../../_internal/viewer";
@@ -30,6 +31,7 @@ import {
   handleStaffSupportBulkAction,
   handleStaffModerationBulkAction,
   handleStaffFinanceOperatorBulkAction,
+  handleStaffRiskBulkAction,
 } from "../../_actions/bulk-actions";
 import {
   handleStaffCareExport,
@@ -42,8 +44,10 @@ import {
   handleStaffSupportExport,
   handleStaffModerationExport,
   handleStaffFinanceOperatorExport,
+  handleStaffRiskExport,
 } from "../../_actions/exports";
 import { createStaffSupabaseServer } from "@/lib/supabase/server";
+import { RiskLifecycleStrip } from "@/components/risk/RiskLifecycleStrip";
 
 export const dynamic = "force-dynamic";
 
@@ -174,6 +178,17 @@ export default async function TrackCModulePage({
         <StaffSettingsPageServer
           viewer={viewer}
           accountSettingsUrl={getAccountUrl("/settings")}
+        />
+      );
+    // V3-40 — predictive risk review queue (security staff; RLS is the gate).
+    case "staff-risk":
+      return (
+        <StaffRiskPageServer
+          viewer={viewer}
+          supabase={supabase as never}
+          bulkActionHandler={handleStaffRiskBulkAction}
+          exportHandler={handleStaffRiskExport}
+          lifecycleSlot={<RiskLifecycleStrip hasOwnerAccess={viewer.access.hasOwnerAccess} />}
         />
       );
     default:

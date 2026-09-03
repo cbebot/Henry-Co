@@ -412,3 +412,20 @@ jobs:
 
       - name: Prove next-action RLS at runtime (user B never reads/writes user A's dismissals — 0 rows)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_rls_behaviour.sql
+      # V3-40 PREDICTIVE FRAUD & RISK (Phase E, Wave E.3) — versioned scores +
+      # governed models + enforcement log. Staff-only visibility, service-role
+      # writes, and the NO-AUTO-PUNISHMENT CHECK proven at the database layer.
+      - name: Seed V3-40 prod-standing default table ACL (so the risk migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_min.sql
+
+      - name: Apply V3-40 risk scores + models migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260725120000_v3_40_risk_scores_and_models.sql
+
+      - name: Assert risk grant invariant (staff-only reads, service-role writes, doctrine CHECKs present)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_grant_invariant.sql
+
+      - name: Prove risk RLS + doctrine at runtime (scored party sees nothing; DB rejects system-actor hold/freeze)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_rls_behaviour.sql
+
+      - name: Prove risk model lifecycle RPCs (transactional promote/rollback, shadow window, single-live, set-based release)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_lifecycle_rpc.sql

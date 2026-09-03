@@ -3,6 +3,7 @@ import { normalizeAppLocaleSafe } from "@henryco/email";
 import { publishNotification } from "@henryco/notifications";
 import { evaluateWithdrawal, DEFAULT_WITHDRAWAL_LIMITS } from "@henryco/payment-router";
 import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
+import { buildAccountRiskGate } from "@/lib/risk/gate";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendAccountEmail } from "@/lib/email/send";
 import { withdrawalRequestedEmail } from "@/lib/email/templates";
@@ -78,6 +79,9 @@ export async function POST(request: Request) {
       entityType: "wallet_withdrawal",
       resolveUser: async () => user,
       userId: (u) => u.id,
+      // V3-40: a STAFF-applied risk hold/freeze (live model only) pauses funds
+      // movement with neutral copy. Fail-open; dark unless `predictive_shadow`.
+      riskGate: buildAccountRiskGate(),
     });
     if (!guard.ok) return guard.response;
 

@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-    "test": "tsx --test src/__tests__/*.test.ts src/recommendations/__tests__/*.test.ts src/deals/__tests__/*.test.ts src/availability/__tests__/availability.test.ts"
+    "test": "tsx --test src/recommendations/__tests__/*.test.ts src/risk/__tests__/*.test.ts src/deals/__tests__/*.test.ts src/availability/__tests__/availability.test.ts src/__tests__/*.test.ts"
   },
   "dependencies": {
     "@henryco/config": "workspace:^",
