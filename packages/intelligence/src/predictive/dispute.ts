@@ -156,19 +156,50 @@ function round4(value: number): number {
  * `topFactors`, so a staff member can always see WHY a transaction is on the
  * watch-list — an unexplainable score is not usable evidence.
  */
+/**
+ * Clamp every model numeric to a finite, sane value.
+ *
+ * Found by adversarial fuzzing: a non-finite `intercept` or coefficient made the
+ * logit NaN, and `logistic(NaN)` is NaN — so the engine could emit a NaN
+ * likelihood, which would be persisted and banded arbitrarily. A garbage model
+ * config must degrade to the default, never produce a garbage score.
+ */
+function sanitizeDisputeConfig(config: DisputeModelConfig): DisputeModelConfig {
+  const d = DEFAULT_DISPUTE_MODEL;
+  const finite = (value: number, fallback: number, min: number, max: number): number =>
+    Number.isFinite(value) && value >= min && value <= max ? value : fallback;
+  const coefficients = {} as Record<DisputeFactor, number>;
+  for (const factor of DISPUTE_FACTORS) {
+    coefficients[factor] = finite(config.coefficients?.[factor], d.coefficients[factor], -50, 50);
+  }
+  const watchAt = finite(config.watchAt, d.watchAt, 0, 1);
+  const highAt = finite(config.highAt, d.highAt, 0, 1);
+  return {
+    intercept: finite(config.intercept, d.intercept, -50, 50),
+    coefficients,
+    watchAt,
+    // A `highAt` below `watchAt` would make the bands nonsensical.
+    highAt: highAt >= watchAt ? highAt : d.highAt,
+    windowDays: finite(config.windowDays, d.windowDays, 1, 3650),
+    highValueReferenceKobo: finite(config.highValueReferenceKobo, d.highValueReferenceKobo, 1, 1e15),
+    deliveryGapSaturationDays: finite(config.deliveryGapSaturationDays, d.deliveryGapSaturationDays, 1, 3650),
+  };
+}
+
 export function scoreDisputeLikelihood(input: ScoreDisputeLikelihoodInput): DisputeLikelihood {
-  const config: DisputeModelConfig = {
+  const config = sanitizeDisputeConfig({
     ...DEFAULT_DISPUTE_MODEL,
     ...(input.config ?? {}),
     coefficients: { ...DEFAULT_DISPUTE_MODEL.coefficients, ...(input.config?.coefficients ?? {}) },
-  };
+  });
   const f = input.features ?? {};
   const contributions: DisputeFactorContribution[] = [];
   let logit = config.intercept;
   let featuresPresent = 0;
 
   const add = (factor: DisputeFactor, normalized: number) => {
-    const weight = config.coefficients[factor] * normalized;
+    const product = config.coefficients[factor] * normalized;
+    const weight = Number.isFinite(product) ? product : 0;
     logit += weight;
     if (weight !== 0) contributions.push({ factor, weight: round4(weight) });
   };
@@ -222,7 +253,10 @@ export function scoreDisputeLikelihood(input: ScoreDisputeLikelihoodInput): Disp
     add("settlement_age", Math.min(1, age / Math.max(1, config.windowDays)));
   }
 
-  const likelihood = round4(logistic(logit));
+  // Belt: even with a sane config, guard the emitted probability. A NaN here
+  // would be stored and banded arbitrarily.
+  const raw = logistic(logit);
+  const likelihood = round4(Number.isFinite(raw) ? Math.max(0, Math.min(1, raw)) : 0);
   const band: DisputeBand =
     likelihood >= config.highAt ? "high" : likelihood >= config.watchAt ? "watch" : "low";
 

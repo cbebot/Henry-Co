@@ -173,8 +173,19 @@ function isoHour(ms: number): string {
   return new Date(Math.floor(ms / MS_PER_HOUR) * MS_PER_HOUR).toISOString();
 }
 
+/**
+ * The largest volume this forecaster will ever emit. A queue receiving a billion
+ * items in one hour is not a forecast, it is a bug — and clamping here keeps
+ * every emitted number both finite and JSON-safe.
+ */
+const MAX_FORECAST_VALUE = 1e9;
+
 function round2(value: number): number {
-  return Math.round(value * 100) / 100;
+  if (!Number.isFinite(value)) return 0;
+  // `Math.round(1e308 * 100) / 100` is Infinity — the multiply overflows before
+  // the divide can bring it back. Clamp BEFORE scaling (found by fuzzing).
+  const clamped = Math.max(-MAX_FORECAST_VALUE, Math.min(MAX_FORECAST_VALUE, value));
+  return Math.round(clamped * 100) / 100;
 }
 
 function emptyForecast(queue: QueueKey, horizonHours: number, originMs: number): WorkloadForecast {
@@ -207,9 +218,41 @@ function emptyForecast(queue: QueueKey, horizonHours: number, originMs: number):
  *   - trendPerHour   — damped least-squares slope of DAILY totals, spread per hour
  *   - CI             — +/- z * sigma where sigma is the in-sample one-step residual RMSE
  */
+/**
+ * Clamp every config numeric to a finite, sane value.
+ *
+ * Found by adversarial fuzzing: a non-finite `z` (or an absurd observed count)
+ * propagated straight into `upperCI`, so the engine could emit `Infinity` — which
+ * would be persisted into JSONB and rendered to an operator as "Infinity". A
+ * forecast must ALWAYS be a finite number: garbage config degrades to the
+ * default, it never produces a garbage forecast.
+ */
+function sanitizeConfig(config: WorkloadConfig): WorkloadConfig {
+  const finite = (value: number, fallback: number, min: number, max: number): number =>
+    Number.isFinite(value) && value >= min && value <= max ? value : fallback;
+  const d = DEFAULT_WORKLOAD_CONFIG;
+  return {
+    throughputPerAgentPerDay: finite(config.throughputPerAgentPerDay, d.throughputPerAgentPerDay, 1, 1e6),
+    maxAgents: finite(config.maxAgents, d.maxAgents, 0, 10_000),
+    minAgents: finite(config.minAgents, d.minAgents, 0, 10_000),
+    alpha: finite(config.alpha, d.alpha, Number.EPSILON, 1),
+    z: finite(config.z, d.z, 0, 10),
+    sparseBelowObservations: finite(config.sparseBelowObservations, d.sparseBelowObservations, 0, 1e6),
+  };
+}
+
+/** Belt on every emitted number: finite, non-negative and within the clamp. */
+function safeOut(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(MAX_FORECAST_VALUE, value));
+}
+
 export function forecastWorkload(input: ForecastWorkloadInput): WorkloadForecast {
-  const config: WorkloadConfig = { ...DEFAULT_WORKLOAD_CONFIG, ...(input.config ?? {}) };
-  const horizonHours = input.horizonHours ?? HOURS_PER_WEEK;
+  const config = sanitizeConfig({ ...DEFAULT_WORKLOAD_CONFIG, ...(input.config ?? {}) });
+  const rawHorizon = input.horizonHours ?? HOURS_PER_WEEK;
+  // Bound the horizon too: a hostile value must not allocate an enormous array.
+  const horizonHours =
+    Number.isFinite(rawHorizon) && rawHorizon > 0 ? Math.min(Math.floor(rawHorizon), 744) : HOURS_PER_WEEK;
 
   const observations = (input.history ?? [])
     .map((o) => ({ ms: Date.parse(o.at), count: safeCount(o.count) }))
@@ -239,9 +282,15 @@ export function forecastWorkload(input: ForecastWorkloadInput): WorkloadForecast
     slotCounts[slot] += 1;
   }
   const seasonalIndex = new Array<number>(HOURS_PER_WEEK).fill(1);
-  if (overallMean > 0) {
+  // `overallMean > 0` is not enough: a denormal mean (1e-300) makes the ratio
+  // Infinity, which then propagates through the whole horizon. Require a mean
+  // large enough to divide by, and clamp each index to a sane multiplier.
+  if (Number.isFinite(overallMean) && overallMean > 1e-9) {
     for (let s = 0; s < HOURS_PER_WEEK; s += 1) {
-      if (slotCounts[s] > 0) seasonalIndex[s] = slotTotals[s] / slotCounts[s] / overallMean;
+      if (slotCounts[s] > 0) {
+        const index = slotTotals[s] / slotCounts[s] / overallMean;
+        seasonalIndex[s] = Number.isFinite(index) ? Math.max(0, Math.min(1000, index)) : 1;
+      }
     }
   }
 
@@ -258,6 +307,7 @@ export function forecastWorkload(input: ForecastWorkloadInput): WorkloadForecast
   for (let i = 1; i < deseasonalized.length; i += 1) {
     level = config.alpha * deseasonalized[i] + (1 - config.alpha) * level;
   }
+  if (!Number.isFinite(level)) level = 0;
 
   // --- trend: damped slope of daily totals ----------------------------------
   const dailyTotals = new Map<string, number>();
@@ -294,11 +344,13 @@ export function forecastWorkload(input: ForecastWorkloadInput): WorkloadForecast
     const atMs = originMs + h * MS_PER_HOUR;
     const drift = Math.max(-maxDrift, Math.min(maxDrift, trendPerHour * h));
     const predicted = Math.max(0, (level + drift) * seasonalIndex[hourOfWeek(atMs)]);
+    const halfWidth = safeOut(config.z * sigma);
+    const safePredicted = safeOut(predicted);
     perHour.push({
       at: isoHour(atMs),
-      predicted: round2(predicted),
-      lowerCI: round2(Math.max(0, predicted - config.z * sigma)),
-      upperCI: round2(predicted + config.z * sigma),
+      predicted: round2(safePredicted),
+      lowerCI: round2(safeOut(safePredicted - halfWidth)),
+      upperCI: round2(safeOut(safePredicted + halfWidth)),
     });
   }
 
@@ -314,7 +366,15 @@ export function forecastWorkload(input: ForecastWorkloadInput): WorkloadForecast
     const dayTotal = hours.reduce((sum, v) => sum + v, 0);
     const peak = Math.max(...hours);
     const needed = Math.ceil(dayTotal / Math.max(1, config.throughputPerAgentPerDay));
-    const bounded = Math.min(config.maxAgents, Math.max(dayTotal > 0 ? config.minAgents : 0, needed));
+    // A recommendation is a HEADCOUNT: always a whole, non-negative number. The
+    // config bounds are rounded here too, so a fractional `minAgents` can never
+    // surface as "recommend 0.3 people" on an operator screen (found by fuzzing).
+    const bounded = Math.max(
+      0,
+      Math.round(
+        Math.min(config.maxAgents, Math.max(dayTotal > 0 ? config.minAgents : 0, needed)),
+      ),
+    );
     const rationale: StaffingRationaleCode = sparse
       ? "insufficient_history"
       : needed > config.maxAgents
