@@ -302,6 +302,19 @@ export type HenryEventName =
   // profiled/ai-applied booleans only; never per-item content, never a score,
   // never a provider/model name.
   | "henry.personalization.recommendations.computed"
+  // V3-35 deals & campaigns (Phase E). `campaign.created` fires on authoring;
+  // `status.changed` on every lifecycle transition (audit pairs it with the
+  // deal.status.changed audit-log row); `offer.impressed` per batched surface
+  // render (counts only — the durable per-deal rows live in deal_impressions);
+  // `offer.claimed` on claim-through; `fairness.alerted` when the impression
+  // audit finds a creator above the governed share cap. Outcome axis:
+  // created→started, status→completed, impressed→completed, claimed→completed,
+  // fairness→flagged.
+  | "henry.deal.campaign.created"
+  | "henry.deal.status.changed"
+  | "henry.deal.offer.impressed"
+  | "henry.deal.offer.claimed"
+  | "henry.deal.fairness.alerted"
   // V3-39 smart next action (Phase E). `surfaced` fires when the resolver
   // yields a floating chip for the page (system_state → completed); `clicked`
   // (user_action → completed) and `dismissed` (user_action → removed) track

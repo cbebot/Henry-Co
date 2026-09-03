@@ -3,6 +3,7 @@ import { z } from "zod";
 export * from "./analytics";
 export * from "./search";
 export * from "./recommendations";
+export * from "./deals";
 export * from "./next-action";
 
 export const henryDivisionSchema = z.enum([
@@ -324,6 +325,10 @@ export type HenryFeatureFlagName =
   // Default OFF: the account home falls back to pure DASH weight ordering instantly.
   // Deterministic + AI-free; gates only the user-preference/signal projection.
   | "personalization_home"
+  // V3-35 (Phase E) — kill switch for the deals & campaigns surfaces. Default
+  // OFF: the deal pages/actions do not activate; the legacy marketplace
+  // curation fallback keeps serving its widget. Deterministic + AI-free.
+  | "personalization_deals"
   // V3-39 (Phase E) — kill switch for the per-page "do this next" chip + resolver.
   // Default OFF (dark launch): with the flag unset nothing mounts, nothing reads,
   // nothing emits. Deterministic + AI-free; the stitch inside is additionally
@@ -382,6 +387,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
       list.has("personalization_home") ||
       list.has("personalization"),
+    // V3-35 deals & campaigns kill switch — default OFF (dark launch).
+    personalization_deals:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_DEALS) ||
+      list.has("personalization_deals") ||
+      list.has("deals"),
     // V3-39 next-action kill switch — default OFF (dark launch). Deliberately
     // NOT covered by the broad "personalization" alias: the chip is a new
     // chrome affordance and turns on only by its own explicit name.
