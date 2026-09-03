@@ -353,7 +353,7 @@ export type HenryFeatureFlagName =
   // surfaces render exactly as before (no badge, no fetch). Stays dark until
   // `service_area_coverage` seeding is verified on prod (the soak note: a flood
   // of unavailable_shown means missing rows, not a broken resolver).
-  | "personalization_availability";
+  | "personalization_availability"
   // V3-40 (Phase E) — the predictive risk batch scorer, shadow-first. Default OFF:
   // no batch runs, no rows written, the staff risk queue renders its empty state.
   // Deterministic + AI-free; enforcement additionally requires a LIVE model version
