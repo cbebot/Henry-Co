@@ -16,12 +16,17 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@henryco/ai-gateway": "workspace:^",
     "@henryco/auth": "workspace:^",
+    "@henryco/aware": "workspace:^",
     "@henryco/config": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
+    "@henryco/lifecycle": "workspace:^",
+    "@henryco/media": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/observability": "workspace:^",
+    "@henryco/payments-db": "workspace:^",
     "@henryco/payment-surface": "workspace:^",
     "@henryco/pricing": "workspace:^",
     "@henryco/seo": "workspace:^",

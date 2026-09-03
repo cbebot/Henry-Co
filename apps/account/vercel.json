@@ -19,6 +19,14 @@
     {
       "path": "/api/cron/notification-redelivery",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/recovery-sweep",
+      "schedule": "37 */6 * * *"
+    },
+    {
+      "path": "/api/cron/kyc-retention",
+      "schedule": "41 4 * * *"
     }
   ]
 }

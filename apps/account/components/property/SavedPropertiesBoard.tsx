@@ -6,6 +6,7 @@ import { Building2, Clock3, ExternalLink, HeartOff, MapPin, MessageCircleMore, S
 import { useRouter } from "next/navigation";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { toBrandName } from "@henryco/config";
 import type { SavedPropertyCard } from "@/lib/property-module";
 import EmptyState from "@/components/layout/EmptyState";
 
@@ -113,7 +114,7 @@ export default function SavedPropertiesBoard({
       <EmptyState
         icon={Building2}
         title={t("No saved properties yet")}
-        description={t("Start exploring HenryCo Property and the best listings you save will appear here with compare, inquiry, and follow-up actions.")}
+        description={t("Start exploring Henry Onyx Property and the best listings you save will appear here with compare, inquiry, and follow-up actions.")}
         action={
           <a
             href={propertyOrigin}
@@ -157,12 +158,12 @@ export default function SavedPropertiesBoard({
                     unoptimized
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,#e8ecf4_0%,#f9f2e1_100%)]">
+                  <div className="flex h-full items-center justify-center bg-[var(--acct-surface)]">
                     <Building2 size={36} className="text-[var(--acct-muted)]" />
                   </div>
                 )}
                 <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-[rgba(255,255,255,0.94)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-ink)]">
+                  <span className="rounded-full bg-[color-mix(in_srgb,var(--acct-bg-elevated)_90%,transparent)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-ink)]">
                     {prettifyStatus(property.status)}
                   </span>
                   <span className="rounded-full bg-[rgba(10,18,32,0.72)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white">
@@ -170,7 +171,7 @@ export default function SavedPropertiesBoard({
                   </span>
                   {property.managedByHenryCo ? (
                     <span className="rounded-full bg-[var(--acct-green-soft)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-green)]">
-                      {t("Managed by HenryCo")}
+                      {t(toBrandName("Managed by Henry Onyx"))}
                     </span>
                   ) : null}
                 </div>
@@ -275,7 +276,7 @@ export default function SavedPropertiesBoard({
       </div>
 
       {compareItems.length > 0 ? (
-        <section className="sticky bottom-4 z-20 rounded-[1.8rem] border border-[var(--acct-line)] bg-[rgba(255,255,255,0.96)] p-5 shadow-[0_18px_48px_rgba(15,23,42,0.14)] backdrop-blur">
+        <section className="sticky bottom-4 z-20 rounded-[1.8rem] border border-[var(--acct-line)] bg-[var(--acct-bg-elevated)] p-5 shadow-[0_18px_48px_rgba(15,23,42,0.14)] backdrop-blur">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="acct-kicker">{t("Compare tray")}</p>

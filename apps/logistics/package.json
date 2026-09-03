@@ -21,6 +21,7 @@
     "@henryco/dashboard-shell": "workspace:^",
     "@henryco/email": "workspace:^",
     "@henryco/i18n": "workspace:^",
+    "@henryco/media": "workspace:^",
     "@henryco/notifications": "workspace:^",
     "@henryco/notifications-ui": "workspace:^",
     "@henryco/observability": "workspace:^",

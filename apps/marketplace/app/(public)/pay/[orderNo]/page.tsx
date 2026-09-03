@@ -11,10 +11,14 @@ import type {
   PaymentSurfaceContext,
   PaymentSurfaceTheme,
 } from "@henryco/payment-surface";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
-import { getOrderByNumber } from "@/lib/marketplace/data";
+import { getOrderForViewer } from "@/lib/marketplace/data";
 import { getMarketplacePaymentRail } from "@/lib/marketplace/payment";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
+import { reconcileMarketplaceOrder } from "@/lib/checkout/sale-reconcile-port";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -22,19 +26,19 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Marketplace · Payment workspace",
   description:
-    "Track and verify the bank-transfer payment for your HenryCo Marketplace order.",
+    "Track and verify the bank-transfer payment for your Henry Onyx Marketplace order.",
   robots: { index: false, follow: false },
 };
 
 const MARKETPLACE_THEME: PaymentSurfaceTheme = {
-  accentVar: "var(--market-brass, #c8a36a)",
+  accentVar: "var(--market-brass, var(--home-accent))",
   heroTone: "spotlight",
   rootStyle: {
-    ["--payment-accent" as never]: "var(--market-brass, #c8a36a)",
-    ["--payment-ink" as never]: "var(--market-ink, #f7f2ea)",
-    ["--payment-soft" as never]: "var(--market-muted, rgba(224,216,204,0.74))",
-    ["--payment-line" as never]: "var(--market-line-strong, rgba(196,171,130,0.22))",
-    ["--payment-surface" as never]: "rgba(255,255,255,0.04)",
+    ["--payment-accent" as never]: "var(--market-brass, var(--home-accent))",
+    ["--payment-ink" as never]: "var(--market-ink, var(--home-ink))",
+    ["--payment-soft" as never]: "var(--market-muted, var(--home-ink-70))",
+    ["--payment-line" as never]: "var(--market-line-strong, var(--home-line-15))",
+    ["--payment-surface" as never]: "var(--home-surface-04)",
   } as CSSProperties,
 };
 
@@ -56,24 +60,39 @@ export default async function MarketplacePaymentWorkspace({
   params: Promise<{ orderNo: string }>;
 }) {
   const { orderNo } = await params;
-  const [order, viewer, rail] = await Promise.all([
-    getOrderByNumber(orderNo),
+
+  // Reconcile-on-read: complete any confirmed card payment for this order before we
+  // render its status (the webhook recorded money truth; this allocates revenue +
+  // marks the order paid, idempotently). Gated to the card rail; a no-op otherwise.
+  if (isMarketplaceCardCheckoutReady()) {
+    await reconcileMarketplaceOrder(orderNo).catch(() => null);
+  }
+
+  const [viewer, rail, locale] = await Promise.all([
     getMarketplaceViewer(),
     getMarketplacePaymentRail(),
+    getMarketplacePublicLocale(),
   ]);
+  // Owner-scoped fetch (same vetted gate as /track): a non-owner or signed-out
+  // viewer gets null -> notFound(), never the order's payment record or proof.
+  const order = await getOrderForViewer(orderNo, viewer);
   if (!order) notFound();
-
-  const isOwner =
-    viewer.user?.email && order.buyerEmail
-      ? viewer.user.email.toLowerCase() === order.buyerEmail.toLowerCase()
-      : false;
-  if (!isOwner) {
-    notFound();
-  }
 
   const proof = order.paymentRecord;
   const paymentLabel = `Order ${order.orderNo}`;
   const trackHref = `/track/${order.orderNo}`;
+
+  // V3-DIVISION-CHECKOUT-01 — the live card rail. Gated on MARKETPLACE_CARD_CHECKOUT
+  // (test-mode flag) so production, where it is unset, stays bank-transfer-only and
+  // ships no card CTA. Shown only while the order is genuinely awaiting payment; the
+  // /card route starts the charge on the proven rail. Per-division LIVE activation is
+  // a separate owner-gated step. This is the reference wire care/studio copy next.
+  const cardCta =
+    isMarketplaceCardCheckoutReady() &&
+    order.status === "awaiting_payment" &&
+    order.paymentStatus !== "verified"
+      ? { label: translateSurfaceLabel(locale, "Pay with card"), href: `/pay/${order.orderNo}/card` }
+      : null;
 
   const ctx: PaymentSurfaceContext = buildPaymentSurfaceContext({
     payment: buildPaymentRecordView({
@@ -86,6 +105,7 @@ export default async function MarketplacePaymentWorkspace({
       proofName: proof?.proofName ?? null,
       proofUrl: proof?.proofUrl ?? null,
       updatedAt: proof?.verifiedAt ?? proof?.submittedAt ?? order.placedAt,
+      reference: order.orderNo,
     }),
     record: {
       title: paymentLabel,
@@ -105,19 +125,20 @@ export default async function MarketplacePaymentWorkspace({
       bodyByStatus: {
         paid: "Payment confirmed. Your order is in escrow until fulfillment lands.",
         processing:
-          "Payment proof is in review. Finance verifies bank transfers within one business day — this page updates automatically.",
+          "We're confirming your payment — usually within one business day. This page updates automatically.",
         pending:
           "Send the order total to the verified company account below. After transfer, contact support so the proof can be re-attached.",
         failed:
-          "We couldn't match the previous transfer. Open a support thread so finance can re-verify or accept a fresh proof.",
+          "We couldn't match the previous transfer. Open a support thread so we can re-check it or accept a fresh proof.",
       },
       guideTitle: "Send the order total using the verified company account",
       proofHint:
-        "If you need to re-attach a receipt after rejection, open a support thread from the bottom rail — keeping all proofs on the same record helps finance verify quickly.",
+        "If you need to re-attach a receipt after rejection, open a support thread from the bottom rail — keeping all proofs on the same record helps us confirm quickly.",
       receiptText:
-        "Confirmed on {date}.{proof} Your order moved to escrow and the seller is preparing dispatch.",
+        "Confirmed on {date}.{proof} Your payment is protected and the seller is preparing dispatch.",
     },
     theme: MARKETPLACE_THEME,
+    cardCta,
   });
 
   return <PaymentSurface ctx={ctx} />;

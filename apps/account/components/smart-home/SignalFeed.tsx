@@ -71,7 +71,7 @@ export function SignalFeed({ items, nextCursor, prevHref, hideEmpty, timezone }:
   return (
     <Section
       kicker="Signal feed"
-      headline="Everything across HenryCo, ranked"
+      headline="Everything across Henry Onyx, ranked"
       action={
         <Link
           href="/notifications"

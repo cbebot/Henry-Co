@@ -77,16 +77,16 @@ async function runInterviewReminders(admin: AdminClient) {
     }
     if (!window) continue;
 
-    // Resolve candidate user for routing.
+    // Resolve candidate user for routing (prod column: candidate_id = auth user id).
     const { data: app } = await admin
       .from("jobs_applications")
-      .select("candidate_user_id, candidate_name")
+      .select("candidate_id, candidate_name")
       .eq("id", item.application_id)
       .maybeSingle();
     if (!app) continue;
 
     const candidateUserId = String(
-      (app as Record<string, unknown>).candidate_user_id || "",
+      (app as Record<string, unknown>).candidate_id || "",
     );
     if (!candidateUserId) continue;
 
@@ -165,13 +165,13 @@ async function runOfferLetterExpiryReminders(admin: AdminClient) {
 
     const { data: app } = await admin
       .from("jobs_applications")
-      .select("candidate_user_id")
+      .select("candidate_id")
       .eq("id", item.application_id)
       .maybeSingle();
     if (!app) continue;
 
     const candidateUserId = String(
-      (app as Record<string, unknown>).candidate_user_id || "",
+      (app as Record<string, unknown>).candidate_id || "",
     );
     if (!candidateUserId) continue;
 
@@ -206,8 +206,10 @@ async function runOfferLetterExpiryReminders(admin: AdminClient) {
 async function runAlerts(request: Request) {
   const secret = String(process.env.CRON_SECRET || "").trim();
   if (!secret) {
+    // Do not name the gating env var to unauthenticated callers.
+    console.error("[jobs][cron] alerts cron secret not configured — rejecting");
     return NextResponse.json(
-      { ok: false, error: "CRON_SECRET is not configured for jobs alerts." },
+      { ok: false, error: "service_unavailable" },
       { status: 503 }
     );
   }
@@ -272,7 +274,7 @@ async function runAlerts(request: Request) {
         {
           key: "job_alert",
           heading: "New jobs matched your alert",
-          summary: `HenryCo Jobs found ${topMatches.length} fresh role${topMatches.length === 1 ? "" : "s"} for ${metadata.label || "your saved alert"}.`,
+          summary: `Henry Onyx Jobs found ${topMatches.length} fresh role${topMatches.length === 1 ? "" : "s"} for ${metadata.label || "your saved alert"}.`,
           detailLines: topMatches.map((job) => `${job.title} · ${job.employerName} · ${job.location}`),
           ctaLabel: "Open alerts",
           ctaHref: "/candidate/alerts",

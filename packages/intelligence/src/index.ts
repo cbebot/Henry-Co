@@ -2,6 +2,12 @@ import { z } from "zod";
 
 export * from "./analytics";
 export * from "./search";
+export * from "./recommendations";
+export * from "./deals";
+export * from "./availability";
+export * from "./next-action";
+export * from "./risk/index";
+export * from "./predictive/index";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -17,6 +23,9 @@ export const henryDivisionSchema = z.enum([
   "staff",
   "system",
   "wallet",
+  // V3-AI-01 — Henry Onyx Intelligence (the governed AI engine). The provider/model
+  // behind it is server-only and never named here; this is only an envelope division.
+  "ai",
 ]);
 
 export type HenryDivision = z.infer<typeof henryDivisionSchema>;
@@ -73,6 +82,65 @@ export const HenryEventNames = {
   LIFECYCLE_DORMANT_DETECTED: "henry.lifecycle.dormant.detected",
   LIFECYCLE_REENTRY_COMPLETED: "henry.lifecycle.reentry.completed",
   LIFECYCLE_BLOCKER_DETECTED: "henry.lifecycle.blocker.detected",
+  // Business events (V3-57) — emitted with division 'account' + actor.kind 'user'
+  // (the acting member); the business identity rides in eventId + properties and
+  // the business role in actor.roleHint (no 'business' division/actor.kind exists).
+  BUSINESS_PROFILE_CREATED: "henry.business.profile.created",
+  BUSINESS_MEMBER_ADDED: "henry.business.member.added",
+  BUSINESS_CONTEXT_SWITCHED: "henry.business.context.switched",
+  BUSINESS_PROFILE_VIEWED: "henry.business.profile.viewed",
+  // Seller Academy / tier events (V3-58). The "seller" domain lives only in the
+  // event NAME (regex-valid); the envelope division must be a HenryDivision —
+  // academy enrol/complete ride on division 'learn', tier changes on 'marketplace'.
+  // Tier moves reuse SELLER_TIER_UPGRADED for both directions; the direction is
+  // read from properties.fromTier vs properties.toTier (a downgrade has
+  // fromTier ranked above toTier). businessId rides in eventId + properties.
+  SELLER_ACADEMY_ENROLLED: "henry.seller.academy.enrolled",
+  SELLER_ACADEMY_COMPLETED: "henry.seller.academy.completed",
+  SELLER_TIER_UPGRADED: "henry.seller.tier.upgraded",
+  // Employer hiring suite events (V3-70). The "hiring" domain lives only in the
+  // event NAME (regex-valid); the envelope division must be a HenryDivision — all
+  // four ride on division 'jobs'. actor.kind is 'user' (the acting recruiter); the
+  // hiring business identity rides in eventId + properties and the member role in
+  // actor.roleHint (no 'business'/'hiring' division or actor.kind exists).
+  HIRING_APPLICATION_STAGED: "henry.hiring.application.staged",
+  HIRING_INTERVIEW_SCHEDULED: "henry.hiring.interview.scheduled",
+  HIRING_OFFER_SENT: "henry.hiring.offer.sent",
+  HIRING_CANDIDATE_HIRED: "henry.hiring.candidate.hired",
+  // Henry Onyx Intelligence usage events (V3-AI-01). Emitted with division 'ai'.
+  // These are observability signals only — NEVER the source of truth for a charge
+  // (money posts through the ledger via post_ai_usage_charge). No provider/model
+  // name ever rides in the envelope properties.
+  AI_USAGE_ESTIMATED: "henry.ai.usage.estimated",
+  AI_USAGE_METERED: "henry.ai.usage.metered",
+  AI_USAGE_BLOCKED: "henry.ai.usage.blocked",
+  AI_PROVIDER_FAILED: "henry.ai.provider.failed",
+  // V3-38 local availability (Phase E). Envelope division = the resolving
+  // division app. Payloads carry aggregate counts + coarse location codes
+  // (country/region) only — never a user id key, never provider counts per
+  // offering, never coordinates.
+  AVAILABILITY_BATCH_RESOLVED: "henry.availability.batch.resolved",
+  AVAILABILITY_UNAVAILABLE_SHOWN: "henry.availability.unavailable.shown",
+  AVAILABILITY_FIND_SIMILAR_CLICKED: "henry.availability.find_similar.clicked",
+  // Predictive fraud & risk (V3-40). Division 'system' (platform-invoked batch) except
+  // staff actions, which ride division 'staff'. Properties carry entity ids + tiers ONLY —
+  // never PII, never a raw score outside the staff surface, never a provider/model name.
+  // (The pass spec's two-segment names, e.g. "henry.risk.scored", fail the registered
+  // henry.<domain>.<object>.<verb> schema — these are the schema-valid forms.)
+  RISK_ENTITY_SCORED: "henry.risk.entity.scored",
+  RISK_ENFORCEMENT_HELD: "henry.risk.enforcement.held",
+  RISK_ENFORCEMENT_FROZEN: "henry.risk.enforcement.frozen",
+  RISK_ENFORCEMENT_RELEASED: "henry.risk.enforcement.released",
+  RISK_STAFF_OVERRIDE: "henry.risk.staff.overrode",
+  RISK_MODEL_PROMOTED: "henry.risk.model.promoted",
+  RISK_MODEL_ROLLED_BACK: "henry.risk.model.rolled_back",
+  // Predictive quality & workload (V3-41, Phase E Wave E.4). Platform-invoked
+  // batch events ride actorless (division 'system'). Properties carry queue keys,
+  // unit/transaction ids, bands and COUNTS only — never PII, never a raw score,
+  // never a provider/model name. (Four segments: henry.<domain>.<object>.<verb>.)
+  PREDICTIVE_WORKLOAD_COMPUTED: "henry.predictive.workload.computed",
+  PREDICTIVE_QUALITY_AT_RISK_FLAGGED: "henry.predictive.quality.at_risk_flagged",
+  PREDICTIVE_DISPUTE_HIGH_LIKELIHOOD: "henry.predictive.dispute.high_likelihood",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
@@ -119,13 +187,24 @@ export interface TaskItem {
 export type TrustState = "unverified" | "pending_review" | "needs_action" | "verified" | "restricted" | "frozen";
 export type UserRoleHint = "guest" | "buyer" | "seller" | "staff" | "owner";
 export type RecommendationConfidence = "low" | "medium" | "high";
+// The ONE cross-division recommendation-reason vocabulary (ARCHITECTURE §7:
+// "defined once … reused by every division surface"). The first six are the
+// V3 floor (`nextAccountSteps`); V3-36 extends the set for the cross-division
+// engine — every new code maps to a localized reason string, never a raw score.
 export type RecommendationReasonCode =
   | "profile_incomplete"
   | "trust_pending"
   | "saved_items"
   | "recent_activity"
   | "cross_sell_division"
-  | "role_default";
+  | "role_default"
+  // V3-36 cross-division engine
+  | "saved_item_match"
+  | "cross_division_bridge"
+  | "frequently_bought_together"
+  | "lifecycle_stage_fit"
+  | "popular_in_segment"
+  | "continue_where_you_left_off";
 
 export interface UserContext {
   roleHint: UserRoleHint;
@@ -156,7 +235,7 @@ export function nextAccountSteps(ctx: UserContext): Recommendation[] {
       id: "trust-next",
       division: "account",
       title: "Complete your trust verification",
-      description: "Unlock more actions across HenryCo.",
+      description: "Unlock more actions across Henry Onyx.",
       reasonCodes: ["trust_pending"],
       confidence: "high",
       ctaHref: "/security",
@@ -266,7 +345,47 @@ export interface RiskSignal {
 export type HenryFeatureFlagName =
   | "intelligence_events"
   | "intelligence_recommendations"
-  | "intelligence_staff_queues";
+  | "intelligence_staff_queues"
+  // V3-AI-01 — the system-wide Henry Onyx Intelligence kill switch. Default OFF
+  // (absent env ⇒ false), so the AI engine launches dark; flipping it off halts all
+  // gateway dispatch instantly (in-flight holds expire and release — no stranded funds).
+  | "ai_gateway"
+  // V3-34 (Phase E) — per-surface kill switch for the personalized home layout.
+  // Default OFF: the account home falls back to pure DASH weight ordering instantly.
+  // Deterministic + AI-free; gates only the user-preference/signal projection.
+  | "personalization_home"
+  // V3-35 (Phase E) — kill switch for the deals & campaigns surfaces. Default
+  // OFF: the deal pages/actions do not activate; the legacy marketplace
+  // curation fallback keeps serving its widget. Deterministic + AI-free.
+  | "personalization_deals"
+  // V3-38 (Phase E) — local-availability badges/states. Default OFF: catalog
+  // surfaces render exactly as before (no badge, no fetch). Stays dark until
+  // `service_area_coverage` seeding is verified on prod (the soak note: a flood
+  // of unavailable_shown means missing rows, not a broken resolver).
+  | "personalization_availability"
+  // V3-39 (Phase E) — kill switch for the per-page "do this next" chip + resolver.
+  // Default OFF (dark launch): with the flag unset nothing mounts, nothing reads,
+  // nothing emits. Deterministic + AI-free; the stitch inside is additionally
+  // consent-gated at runtime (E-D2) — the flag gates the whole surface.
+  | "personalization_next_action"
+  // V3-40 (Phase E) — the predictive risk batch scorer, shadow-first. Default OFF:
+  // no batch runs, no rows written, the staff risk queue renders its empty state.
+  // Deterministic + AI-free; enforcement additionally requires a LIVE model version
+  // (owner-promoted) and a STAFF-applied action — this flag alone affects no user.
+  | "predictive_shadow"
+  // V3-40 — the OPTIONAL LLM-advisory slice on top of the deterministic risk floor
+  // (E-D1-A). Default OFF. Also requires `ai_gateway` + `predictive_shadow`; spend is
+  // platform COGS under the internal daily ledger, reserve-before-run, degrade-CLOSED.
+  | "predictive_risk_assist"
+  // V3-41 (Phase E) — the predictive quality & workload batch. Default OFF: no
+  // batch runs, no rows written, the staff panels render their empty state. The
+  // engines are deterministic + AI-free, and every output is ADVISORY (a
+  // prediction can never act on a customer), so this flag alone affects no user.
+  | "predictive_operations"
+  // V3-41 — the OPTIONAL staff-narrative slice on top of the deterministic
+  // forecast (E-D1-A). Default OFF. Also requires `ai_gateway`; spend is platform
+  // COGS on the unified internal ledger, reserve-before-run, degrade-CLOSED.
+  | "predictive_quality_narrative";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -310,6 +429,52 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_INTELLIGENCE_STAFF_QUEUES) ||
       list.has("intelligence_staff_queues") ||
       list.has("staff_queues"),
+    // V3-AI-01 kill switch — default OFF; enabled only when explicitly set.
+    ai_gateway:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_AI_GATEWAY) ||
+      list.has("ai_gateway") ||
+      list.has("ai"),
+    // V3-34 personalization-home kill switch — default OFF (dark launch).
+    personalization_home:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_HOME) ||
+      list.has("personalization_home") ||
+      list.has("personalization"),
+    // V3-35 deals & campaigns kill switch — default OFF (dark launch).
+    personalization_deals:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_DEALS) ||
+      list.has("personalization_deals") ||
+      list.has("deals"),
+    // V3-38 local-availability kill switch — default OFF (dark until seeded).
+    personalization_availability:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_AVAILABILITY) ||
+      list.has("personalization_availability") ||
+      list.has("availability"),
+    // V3-39 next-action kill switch — default OFF (dark launch). Deliberately
+    // NOT covered by the broad "personalization" alias: the chip is a new
+    // chrome affordance and turns on only by its own explicit name.
+    personalization_next_action:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_NEXT_ACTION) ||
+      list.has("personalization_next_action"),
+    // V3-40 predictive risk batch (shadow-first) — default OFF (dark launch).
+    predictive_shadow:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_SHADOW) ||
+      list.has("predictive_shadow") ||
+      list.has("predictive"),
+    // V3-40 LLM-advisory slice — default OFF; deterministic floor never needs it.
+    predictive_risk_assist:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_RISK_ASSIST) ||
+      list.has("predictive_risk_assist") ||
+      list.has("risk_assist"),
+    // V3-41 predictive operations batch — default OFF (dark launch).
+    predictive_operations:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_OPERATIONS) ||
+      list.has("predictive_operations") ||
+      list.has("predictive_ops"),
+    // V3-41 staff-narrative AI slice — default OFF; the forecast never needs it.
+    predictive_quality_narrative:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_QUALITY_NARRATIVE) ||
+      list.has("predictive_quality_narrative") ||
+      list.has("predictive_narrative"),
   };
 }
 

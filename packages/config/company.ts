@@ -10,7 +10,8 @@ export type DivisionKey =
   | "logistics"
   | "studio"
   | "jobs"
-  | "learn";
+  | "learn"
+  | "gaming";
 
 export type NavItem = {
   label: string;
@@ -37,6 +38,15 @@ export type DivisionConfig = {
    * `accent` to clear WCAG 1.4.3 on white/near-white surfaces.
    */
   accentText: string;
+  /**
+   * WCAG-AA-safe LIFTED sibling of `accent`, for accent-as-text on the
+   * near-black dark public canvas. These were hand-tuned per division inside
+   * each app's `*_PUBLIC_THEME_STYLE` object and moved here by the token
+   * consolidation (2026-07-10) so accent truth has ONE source. Optional:
+   * divisions without a public marketing surface omit it;
+   * `createDivisionPublicThemeStyle` falls back to `accentText`.
+   */
+  accentTextOnDark?: string;
   dark: string;
   supportEmail: string;
   supportPhone: string;
@@ -57,19 +67,117 @@ function normalizeHostname(value?: string | null) {
 }
 
 const BASE_DOMAIN =
-  normalizeHostname(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henrycogroup.com") ||
-  "henrycogroup.com";
+  normalizeHostname(process.env.NEXT_PUBLIC_BASE_DOMAIN || "henryonyx.com") ||
+  "henryonyx.com";
 const GROUP_SUPPORT_PHONE = "+2349133957084";
+
+// V3-DOMAIN-FIX-01 (2026-06-04): the henryonyx.com subdomains (`account.`,
+// `hq.`, `staff.`, `workspace.`, division `<sub>.`) are now LIVE — custom
+// domains attached on the henry-co-studio Vercel team and DNS cut over in
+// Cloudflare (verified HTTP 200). Per-app URLs therefore resolve to the real
+// canonical subdomains (e.g. https://account.henryonyx.com), NOT the internal
+// *.vercel.app aliases below — those remain only as a last-resort net should a
+// FUTURE base-domain flip ever point at an unwired host. Keeping this flag
+// false is what makes post-login redirects land on account.henryonyx.com.
+const BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP = false;
+
+function normalizeAppOriginEnv(value?: string | null): string | null {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed);
+    if (!/^https?:$/.test(url.protocol)) return null;
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    return null;
+  }
+}
+
+const ACCOUNT_URL_OVERRIDE = normalizeAppOriginEnv(
+  process.env.NEXT_PUBLIC_ACCOUNT_URL,
+);
+const HUB_URL_OVERRIDE = normalizeAppOriginEnv(process.env.NEXT_PUBLIC_HUB_URL);
+const HQ_URL_OVERRIDE = normalizeAppOriginEnv(process.env.NEXT_PUBLIC_HQ_URL);
+const STAFF_HQ_URL_OVERRIDE = normalizeAppOriginEnv(
+  process.env.NEXT_PUBLIC_STAFF_HQ_URL,
+);
+const WORKSPACE_URL_OVERRIDE = normalizeAppOriginEnv(
+  process.env.NEXT_PUBLIC_WORKSPACE_URL,
+);
+
+// Live customer-facing Vercel production aliases for the `henry-co-studio`
+// team (verified live with HTTP 200 on 2026-05-28). These exist only as the
+// last-resort default so that a zero-config build never points users at a
+// dead URL while the canonical custom domains are unwired.
+//
+// Resolution precedence per app:
+//   1. `NEXT_PUBLIC_<APP>_URL` env override (explicit Vercel project config)
+//   2. `https://<sub>.<NEXT_PUBLIC_BASE_DOMAIN>` (when base domain has been
+//      explicitly changed away from the dead `henryonyx.com` default —
+//      the V3-DOMAIN-01 single-flip path: set `NEXT_PUBLIC_BASE_DOMAIN`
+//      to `henry.holdings` and the helpers automatically produce
+//      `https://account.henry.holdings`)
+//   3. Live Vercel alias below (current safety net)
+//
+// The hub app on Vercel hosts both the public hub (`/`) and the owner
+// console (`/owner/*`), so `getHubUrl` and `getHqUrl` share the same
+// fallback. Likewise the staff app hosts both `/` and `/workspace/*`.
+const ACCOUNT_LIVE_FALLBACK_ORIGIN = "https://henryco-account-tau.vercel.app";
+const HUB_LIVE_FALLBACK_ORIGIN = "https://hub-mu-wheat.vercel.app";
+const HQ_LIVE_FALLBACK_ORIGIN = "https://hub-mu-wheat.vercel.app";
+const STAFF_HQ_LIVE_FALLBACK_ORIGIN = "https://staff-kappa-livid.vercel.app";
+const WORKSPACE_LIVE_FALLBACK_ORIGIN = "https://staff-kappa-livid.vercel.app";
+
+function joinOriginAndPath(origin: string, path: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${origin.replace(/\/+$/, "")}${normalizedPath}`;
+}
+
+function resolveAppOrigin(
+  override: string | null,
+  subdomain: string | null,
+  liveFallback: string,
+): string {
+  if (override) return override;
+  if (BASE_DOMAIN_IS_LEGACY_HENRYCOGROUP) return liveFallback;
+  return subdomain
+    ? `https://${subdomain}.${BASE_DOMAIN}`
+    : `https://${BASE_DOMAIN}`;
+}
+
+function hostnameOf(origin: string): string | null {
+  try {
+    return new URL(origin).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function dedupedHosts(...candidates: Array<string | null | undefined>): string[] {
+  const set = new Set<string>();
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const host = hostnameOf(candidate);
+    if (host) set.add(host);
+  }
+  return [...set];
+}
 
 export const COMPANY = {
   group: {
-    name: "Henry & Co.",
-    legalName: "Henry & Co. Group",
+    name: "Henry Onyx",
+    legalName: "Henry Onyx Limited",
     baseDomain: BASE_DOMAIN,
     mission:
       "A premium group of service businesses built on clarity, trust, and operational excellence.",
     promise:
-      "Every Henry & Co. division should feel premium, dependable, and beautifully structured.",
+      "Every Henry Onyx division should feel premium, dependable, and beautifully structured.",
+    // Master-brand line shown on the shared social/OG card.
+    tagline: "One standard, held across every engine we run.",
+    // Registered-company facts (Henry Onyx Limited, CAC) used on the OG card
+    // masthead to signal a real, registered operating company.
+    established: "2026",
+    hqLocation: "Emene, Enugu",
     supportEmail: BRAND_EMAILS.hello,
     supportPhone: GROUP_SUPPORT_PHONE,
   },
@@ -77,12 +185,12 @@ export const COMPANY = {
   divisions: {
     hub: {
       key: "hub",
-      name: "Henry & Co.",
+      name: "Henry Onyx",
       shortName: "Hub",
       sub: "Group Directory",
-      tagline: "The ecosystem hub for every Henry & Co. business.",
+      tagline: "The ecosystem hub for every Henry Onyx business.",
       description:
-        "Explore all Henry & Co. divisions from one premium central discovery experience.",
+        "Explore all Henry Onyx divisions from one premium central discovery experience.",
       path: "/",
       subdomain: null,
       accent: "#C9A227",
@@ -101,14 +209,14 @@ export const COMPANY = {
       publicNav: [
         { label: "Directory", href: "/#directory" },
         { label: "How It Works", href: "/#how" },
-        { label: "Why Henry & Co.", href: "/#why" },
+        { label: "Why Henry Onyx", href: "/#why" },
         { label: "FAQ", href: "/#faq" }
       ],
     },
 
     care: {
       key: "care",
-      name: "Henry & Co. Fabric Care",
+      name: "Henry Onyx Fabric Care",
       shortName: "Fabric Care",
       sub: "Garment care, home cleaning, office cleaning, and pickup delivery",
       tagline: "A premium care company for garments, homes, offices, and recurring service.",
@@ -119,12 +227,13 @@ export const COMPANY = {
       accent: "#6B7CFF",
       accentStrong: "#E8EBFF",
       accentText: "#4F5BD0",
+      accentTextOnDark: "#AAB4FF",
       dark: "#09112B",
       supportEmail: BRAND_EMAILS.care,
       supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Home" intentionally absent — the brand
       // logo links to `/`. Order optimises for the top customer intents on
-      // care.henrycogroup.com: browse → understand cost → book/track → trust
+      // care.henryonyx.com: browse → understand cost → book/track → trust
       // (reviews) → about/contact. Both `book` and `track` also render as
       // CTAs in the header (`siteNavCare.defaultCtas`), but staying in the
       // nav row keeps them reachable from drawer mode and the desktop tab
@@ -144,12 +253,12 @@ export const COMPANY = {
 
     building: {
       key: "building",
-      name: "Henry & Co. Building",
+      name: "Henry Onyx Building",
       shortName: "Building",
       sub: "Construction & Project Delivery",
       tagline: "Modern construction, delivery, and project confidence.",
       description:
-        "Construction and project services under the Henry & Co. premium operating standard.",
+        "Construction and project services under the Henry Onyx premium operating standard.",
       path: "/",
       subdomain: "building",
       accent: "#C9A227",
@@ -157,7 +266,7 @@ export const COMPANY = {
       accentText: "#8A6F00",
       dark: "#07111F",
       supportEmail: BRAND_EMAILS.building,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       publicNav: [
         { label: "Home", href: "/" },
         { label: "Services", href: "/services" },
@@ -168,7 +277,7 @@ export const COMPANY = {
 
     hotel: {
       key: "hotel",
-      name: "Henry & Co. Hotels",
+      name: "Henry Onyx Hotels",
       shortName: "Hotels",
       sub: "Hospitality & Stays",
       tagline: "Premium stays, bookings, and guest experience.",
@@ -192,21 +301,22 @@ export const COMPANY = {
 
     marketplace: {
       key: "marketplace",
-      name: "Henry & Co. Marketplace",
+      name: "Henry Onyx Marketplace",
       shortName: "Marketplace",
       sub: "Premium multi-vendor commerce",
       tagline:
         "A calmer marketplace for premium buyers, accountable sellers, and sharper operators.",
       description:
-        "Premium multi-vendor commerce with cleaner discovery, stronger trust signals, vendor accountability, and operational clarity across buyers, sellers, and HenryCo teams.",
+        "Premium multi-vendor commerce with cleaner discovery, stronger trust signals, vendor accountability, and operational clarity across buyers, sellers, and Henry Onyx teams.",
       path: "/",
       subdomain: "marketplace",
       accent: "#B2863B",
       accentStrong: "#F7E8CA",
       accentText: "#7E5E1F",
+      accentTextOnDark: "#E3C088",
       dark: "#18120C",
       supportEmail: BRAND_EMAILS.marketplace,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Home" intentionally absent — the brand
       // logo links to `/`. "Track" surfaces the customer's #1 post-purchase
       // intent ("where is my order?") that previously routed through the
@@ -227,21 +337,22 @@ export const COMPANY = {
 
     property: {
       key: "property",
-      name: "HenryCo Property",
+      name: "Henry Onyx Property",
       shortName: "Property",
       sub: "Premium rentals, listings, and managed property operations",
       tagline:
         "A calmer property platform for high-trust discovery, sharper operations, and managed-property confidence.",
       description:
-        "HenryCo Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations into one editorial, high-conviction platform.",
+        "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations into one editorial, high-conviction platform.",
       path: "/",
       subdomain: "property",
       accent: "#B06C3E",
       accentStrong: "#F8DDCB",
       accentText: "#7A4924",
+      accentTextOnDark: "#E8B894",
       dark: "#130B08",
       supportEmail: BRAND_EMAILS.property,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Home" intentionally absent — the brand
       // logo links to `/`. "FAQ" added — real `(public)/faq` route never
       // exposed in nav, even though pre-decision question funnel matters
@@ -263,21 +374,22 @@ export const COMPANY = {
 
     logistics: {
       key: "logistics",
-      name: "HenryCo Logistics",
+      name: "Henry Onyx Logistics",
       shortName: "Logistics",
       sub: "Pickup, dispatch, delivery, and fleet operations",
       tagline:
         "Premium dispatch and delivery operations with sharper booking, cleaner tracking, and confident execution.",
       description:
-        "HenryCo Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.",
+        "Henry Onyx Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.",
       path: "/",
       subdomain: "logistics",
       accent: "#D06F32",
       accentStrong: "#FFE4D3",
       accentText: "#9D4F1F",
+      accentTextOnDark: "#F3A877",
       dark: "#120B08",
       supportEmail: BRAND_EMAILS.logistics,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. "Home" intentionally absent — logo handles
       // it. "Quote" and "Book" were both in the nav AND duplicated as the two
       // most-prominent CTAs, eating row space. They now render only as CTAs
@@ -297,21 +409,22 @@ export const COMPANY = {
 
     studio: {
       key: "studio",
-      name: "HenryCo Studio",
+      name: "Henry Onyx Studio",
       shortName: "Studio",
       sub: "Premium digital products, software systems, and brand execution",
       tagline:
         "A premium product studio for websites, apps, internal systems, brand systems, and elite delivery.",
       description:
-        "HenryCo Studio designs and delivers websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software with premium process, milestone visibility, and operational clarity.",
+        "Henry Onyx Studio designs and delivers websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software with premium process, milestone visibility, and operational clarity.",
       path: "/",
       subdomain: "studio",
       accent: "#4AC1C5",
       accentStrong: "#D3FBFC",
       accentText: "#1F7375",
+      accentTextOnDark: "#63D2D5",
       dark: "#081219",
       supportEmail: BRAND_EMAILS.studio,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // NOTE: `apps/studio` chrome reads from `siteNavStudio` in
       // `packages/ui/src/public-shell/navigation/site-nav.studio.ts` (local
       // override of the registry default), not from this array. This array
@@ -332,27 +445,28 @@ export const COMPANY = {
 
     jobs: {
       key: "jobs",
-      name: "HenryCo Jobs",
+      name: "Henry Onyx Jobs",
       shortName: "Jobs",
       sub: "Hiring, verified talent, and recruitment operations",
       tagline:
         "A premium hiring operating system for serious employers, verified talent, and cleaner recruitment.",
       description:
-        "HenryCo Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal HenryCo hiring into one premium operating system.",
+        "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one premium operating system.",
       path: "/",
       subdomain: "jobs",
       accent: "#0E7C86",
       accentStrong: "#D7F4F3",
       accentText: "#0E7C86",
+      accentTextOnDark: "#5CC9D0",
       dark: "#071418",
       supportEmail: BRAND_EMAILS.jobs,
-      supportPhone: "+2349133957084",
-      // Public chrome primary nav. "Careers" (internal HenryCo hiring)
+      supportPhone: GROUP_SUPPORT_PHONE,
+      // Public chrome primary nav. "Careers" (internal Henry Onyx hiring)
       // removed from primary because it semantically collides with
       // "Find jobs" — candidates routinely clicked it expecting public
-      // listings. "Careers" still lives in the footer ("Work at HenryCo")
+      // listings. "Careers" still lives in the footer ("Work at Henry Onyx")
       // and the employer/candidate-aware account-chip menu, so the
-      // work-for-HenryCo surface is preserved where context disambiguates.
+      // work-for-Henry Onyx surface is preserved where context disambiguates.
       //
       // NOTE: A "Categories" nav entry was considered but NOT added — the
       // route `/categories` has no index `page.tsx` (only `[slug]`), so a
@@ -370,21 +484,22 @@ export const COMPANY = {
 
     learn: {
       key: "learn",
-      name: "HenryCo Learn",
+      name: "Henry Onyx Learn",
       shortName: "Learn",
       sub: "Courses, paths, quizzes, and verified certificates",
       tagline:
         "Practical courses you can finish—with clear progress, fair assessments, and credentials employers can check.",
       description:
-        "Browse structured programs, learn at your own pace, pass short assessments where required, and earn HenryCo certificates with a public verification code. Your enrollments and progress also appear in your HenryCo account dashboard.",
+        "Browse structured programs, learn at your own pace, pass short assessments where required, and earn Henry Onyx certificates with a public verification code. Your enrollments and progress also appear in your Henry Onyx account dashboard.",
       path: "/",
       subdomain: "learn",
       accent: "#3C8C7A",
       accentStrong: "#D8F4EB",
       accentText: "#2E6E5F",
+      accentTextOnDark: "#6FD0B6",
       dark: "#081414",
       supportEmail: BRAND_EMAILS.learn,
-      supportPhone: "+2349133957084",
+      supportPhone: GROUP_SUPPORT_PHONE,
       // Public chrome primary nav. Rename "How it works" → "Academy" — the
       // route slug is `/academy`, the new label is terser, and "Academy"
       // matches the brand surface across emails/marketing. No structural
@@ -398,6 +513,30 @@ export const COMPANY = {
         { label: "Teach", href: "/teach" },
         { label: "Trust", href: "/trust" },
         { label: "Help", href: "/help" }
+      ],
+    },
+    gaming: {
+      key: "gaming",
+      name: "Henry Onyx Live",
+      shortName: "Live",
+      sub: "Skill-based PvP arena, ranked play, and provably-fair matches",
+      tagline:
+        "A premium, provably-fair arena for skill-based player-versus-player competition.",
+      description:
+        "Henry Onyx Live is the Henry Onyx gaming arena — original, free-to-play, skill-based head-to-head matches with server-decided outcomes, ranked profiles, and a verifiable fairness proof on every match. The arena lives inside your Henry Onyx account.",
+      path: "/play",
+      subdomain: null,
+      accent: "#A21CAF",
+      accentStrong: "#F5D0FE",
+      accentText: "#86198F",
+      dark: "#0B0510",
+      supportEmail: BRAND_EMAILS.gaming,
+      supportPhone: GROUP_SUPPORT_PHONE,
+      publicNav: [
+        { label: "Play", href: "/play" },
+        { label: "Games", href: "/play/games" },
+        { label: "Leaderboard", href: "/play/leaderboard" },
+        { label: "Fair play", href: "/play/fair-play" }
       ],
     },
   },
@@ -415,29 +554,222 @@ export function getDivisionUrl(key: DivisionKey) {
   return `https://${division.subdomain}.${COMPANY.group.baseDomain}`;
 }
 
+/**
+ * Map the CODE shorthand "HenryCo" → the user-facing brand "Henry Onyx" in any
+ * dynamic / CMS-authored text before it reaches the UI.
+ *
+ * "HenryCo" is the internal shorthand only (package names, identifiers, the
+ * `henryonyx.com` domain) and must NEVER surface in user-facing copy — the
+ * brand is always `COMPANY.group.name`. Static strings are fixed at rest, but
+ * CMS/DB-authored values (division names, taglines) can reintroduce the
+ * shorthand, so the read path runs them through this guard. The brand name is
+ * locale-invariant, so this is safe for every locale.
+ *
+ * Surgical by construction: `\bHenryCo\b` matches only the standalone word, so
+ * identifiers (`HenryCoLogo` — no word boundary) and the lowercase domain
+ * (`henryonyx.com`) are left untouched. "HenryCo Group" collapses to the
+ * brand (not "Henry Onyx Group"), matching the V3 identity-rename migration.
+ */
+export function toBrandName(value: string | null | undefined): string {
+  return String(value ?? "")
+    // Retired brand (V3-IDENTITY-01): rewrite stale CMS/DB-authored "Henry & Co."
+    // / "Henry Holdings Limited" at read-time so legacy rows render the current
+    // identity. `Co\.?(?![A-Za-z])` guards against eating "Cooperative" etc.
+    .replace(/\bHenry Holdings Limited\b/g, COMPANY.group.legalName)
+    .replace(/\bHenry Holdings\b/g, COMPANY.group.legalName)
+    .replace(/\bHenry (?:&amp;|&) Co\.?(?![A-Za-z])/g, COMPANY.group.name)
+    // Code shorthand → brand (CMS/DB values can reintroduce it).
+    .replace(/\bHenryCo Group\b/g, COMPANY.group.name)
+    .replace(/\bHenryCo\b/g, COMPANY.group.name);
+}
+
+/**
+ * The canonical, ordered list of LIVE public divisions for shared chrome
+ * (footers, directories, cross-sell nav). Names come straight from config — so
+ * every site renders the same correct "Henry Onyx <Division>" label — and URLs
+ * route through `getDivisionUrl`, so the henry.holdings domain migration stays a
+ * single config flip with ZERO hardcoded domains. `hub` (the group itself) and
+ * not-yet-live divisions (`building`, `hotel`) are intentionally excluded.
+ */
+export const PUBLIC_DIVISION_KEYS = [
+  "marketplace",
+  "studio",
+  "property",
+  "logistics",
+  "jobs",
+  "learn",
+  "care",
+  "gaming",
+] as const satisfies readonly DivisionKey[];
+
+export type PublicDivisionLink = {
+  key: DivisionKey;
+  name: string;
+  shortName: string;
+  url: string;
+  accent: string;
+  accentText: string;
+};
+
+export function getPublicDivisions(): PublicDivisionLink[] {
+  return PUBLIC_DIVISION_KEYS.map((key) => {
+    const division = COMPANY.divisions[key];
+    return {
+      key,
+      name: division.name,
+      shortName: division.shortName,
+      url: getDivisionUrl(key),
+      accent: division.accent,
+      accentText: division.accentText,
+    };
+  });
+}
+
 export function getHubUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(HUB_URL_OVERRIDE, null, HUB_LIVE_FALLBACK_ORIGIN),
+    path,
+  );
 }
 
 export function getAccountUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://account.${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(ACCOUNT_URL_OVERRIDE, "account", ACCOUNT_LIVE_FALLBACK_ORIGIN),
+    path,
+  );
+}
+
+/**
+ * Origins the shared Intelligence launcher fetches cross-subdomain. The launcher is mounted on
+ * every division page but the /api/intelligence/* endpoints (chat, quote, run) all live in the
+ * account app, so it POSTs to the account origin from whatever subdomain the visitor is on.
+ *
+ * A browser applies TWO independent gates to that cross-origin fetch: the destination's CORS
+ * headers (handled by intelligenceCorsHeaders) AND the CALLING page's own `connect-src` CSP.
+ * Any app that ships a strict `connect-src` (hub, staff) MUST splice these origins in, or the
+ * browser blocks the request before it leaves the page and the panel shows "couldn't reach the
+ * service" — a failure invisible to a server-side probe because CSP is browser-only.
+ *
+ * Derived from the same `getAccountUrl` the launcher fetches, so the CSP allow-list and the
+ * fetch target can never drift apart. Returns bare origins (scheme + host), ready to join into a
+ * connect-src directive.
+ */
+export function getIntelligenceConnectSrc(): string[] {
+  return [new URL(getAccountUrl("/")).origin];
+}
+
+/**
+ * True when an Origin header belongs to the Henry Onyx first party — the base domain, any
+ * subdomain of it, or a local dev host. Used to allow-list cross-subdomain, credentialed
+ * requests (e.g. the shared Intelligence launcher POSTing from a division page to the
+ * account app's endpoint). Deliberately narrow: never reflects an arbitrary origin.
+ */
+export function isFirstPartyOrigin(origin: string | null | undefined): boolean {
+  if (!origin) return false;
+  try {
+    const url = new URL(origin);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+    const host = url.hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1") return true;
+    return host === BASE_DOMAIN || host.endsWith(`.${BASE_DOMAIN}`);
+  } catch {
+    return false;
+  }
 }
 
 export function getHqUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://hq.${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(HQ_URL_OVERRIDE, "hq", HQ_LIVE_FALLBACK_ORIGIN),
+    path,
+  );
 }
 
 export function getWorkspaceUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://workspace.${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(
+      WORKSPACE_URL_OVERRIDE,
+      "workspace",
+      WORKSPACE_LIVE_FALLBACK_ORIGIN,
+    ),
+    path,
+  );
 }
 
 export function getStaffHqUrl(path = "/") {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `https://staff.${COMPANY.group.baseDomain}${normalizedPath}`;
+  return joinOriginAndPath(
+    resolveAppOrigin(STAFF_HQ_URL_OVERRIDE, "staff", STAFF_HQ_LIVE_FALLBACK_ORIGIN),
+    path,
+  );
+}
+
+/**
+ * Canonical hostnames the auth flow treats as authoritative for each app
+ * lane. Each set unions the env override host (if configured), the legacy
+ * `<sub>.<baseDomain>` host (so historical deep-link `next=` params still
+ * route correctly), and the live Vercel-alias fallback host (so traffic
+ * arriving from preview/local environments is recognised). Consumed by
+ * `packages/auth/src/server.ts` to detect owner/staff/account-auth targets
+ * and by `packages/config/urls.ts` to widen the open-redirect allowlist.
+ */
+export function getCanonicalAccountHosts(): string[] {
+  return dedupedHosts(
+    ACCOUNT_URL_OVERRIDE,
+    `https://account.${BASE_DOMAIN}`,
+    ACCOUNT_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+export function getCanonicalHubHosts(): string[] {
+  return dedupedHosts(
+    HUB_URL_OVERRIDE,
+    `https://${BASE_DOMAIN}`,
+    HUB_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+export function getCanonicalHqHosts(): string[] {
+  return dedupedHosts(
+    HQ_URL_OVERRIDE,
+    `https://hq.${BASE_DOMAIN}`,
+    HQ_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+export function getCanonicalStaffHqHosts(): string[] {
+  return dedupedHosts(
+    STAFF_HQ_URL_OVERRIDE,
+    `https://staff.${BASE_DOMAIN}`,
+    STAFF_HQ_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+export function getCanonicalWorkspaceHosts(): string[] {
+  return dedupedHosts(
+    WORKSPACE_URL_OVERRIDE,
+    `https://workspace.${BASE_DOMAIN}`,
+    WORKSPACE_LIVE_FALLBACK_ORIGIN,
+  );
+}
+
+/**
+ * Union of every canonical app host plus the `BASE_DOMAIN` itself. The
+ * open-redirect allowlist in `urls.ts` consults this to decide which
+ * absolute `next=` URLs are trusted. Localhost matching is handled
+ * separately by `isTrustedHenryCoHost`.
+ */
+export function getTrustedAppHosts(): string[] {
+  const set = new Set<string>();
+  set.add(BASE_DOMAIN.toLowerCase());
+  for (const host of [
+    ...getCanonicalAccountHosts(),
+    ...getCanonicalHubHosts(),
+    ...getCanonicalHqHosts(),
+    ...getCanonicalStaffHqHosts(),
+    ...getCanonicalWorkspaceHosts(),
+  ]) {
+    set.add(host);
+  }
+  return [...set];
 }
 
 export function getSharedCookieDomain(hostname?: string | null) {

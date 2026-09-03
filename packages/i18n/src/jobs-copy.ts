@@ -210,6 +210,77 @@ export type JobsCopy = {
     statusRejected: string;
     statusHired: string;
   };
+  employerHiringSuite: {
+    // Bulk stage move
+    bulkSelectLabel: string;
+    bulkSelectedTemplate: string;
+    bulkMoveLabel: string;
+    bulkMovePlaceholder: string;
+    bulkMoveButton: string;
+    bulkMovedTemplate: string;
+    bulkMoveError: string;
+    bulkClearLabel: string;
+    // Scoring
+    scoreTitle: string;
+    scoreBody: string;
+    scoreRubricTechnical: string;
+    scoreRubricCommunication: string;
+    scoreRubricCulture: string;
+    scoreRubricExperience: string;
+    scoreYourLabel: string;
+    scoreTeamAverage: string;
+    scoreOverall: string;
+    scoreScorersTemplate: string;
+    scoreNotYet: string;
+    scoreSave: string;
+    scoreSaving: string;
+    scoreSaved: string;
+    scoreError: string;
+    scoreCommentPlaceholder: string;
+    predictiveLabel: string;
+    // Team notes
+    notesTitle: string;
+    notesBody: string;
+    notesEmpty: string;
+    notesComposerPlaceholder: string;
+    notesPost: string;
+    notesPosting: string;
+    notesReply: string;
+    notesMentionLabel: string;
+    notesMentionHint: string;
+    notesError: string;
+    // Decision
+    decisionTitle: string;
+    decisionBody: string;
+    decisionOffer: string;
+    decisionHire: string;
+    decisionReject: string;
+    decisionToneLabel: string;
+    decisionToneWarm: string;
+    decisionToneStandard: string;
+    decisionToneBrief: string;
+    decisionConfirmRejectTemplate: string;
+    decisionSending: string;
+    decisionSent: string;
+    decisionError: string;
+    // Rejection letter document copy (merge fields filled server-side)
+    rejectionDocType: string;
+    rejectionDocTitle: string;
+    rejectionDocSubtitleTemplate: string;
+    rejectionDocKicker: string;
+    rejectionParaGreetingTemplate: string;
+    rejectionParaBodyTemplate: string;
+    rejectionParaClosingTemplate: string;
+    rejectionSignOffTemplate: string;
+    rejectionLegalLineTemplate: string;
+    // Business-context gate
+    switchToBusinessTitle: string;
+    switchToBusinessBody: string;
+    // Candidate-detail chrome (shared, all contexts)
+    applicationDetailTitle: string;
+    stageProgressionTitle: string;
+    stageProgressionBody: string;
+  };
   employerCompany: {
     pageTitle: string;
     pageSubtitle: string;
@@ -623,7 +694,7 @@ const EN: JobsCopy = {
     tabChat: "Chat",
     tabNotes: "Notes",
     chatHint:
-      "In-room chat is provided by the video provider. Use it to share links during the call.",
+      "Use the in-room chat to share links during the call.",
     notesLabel: "Private notes",
     notesPlaceholder:
       "Capture observations. Visible to your hiring team only.",
@@ -693,7 +764,7 @@ const EN: JobsCopy = {
   },
   candidateProfile: {
     pageTitle: "Candidate Profile",
-    pageSubtitle: "Keep your profile complete so employers can see the best version of you.",
+    pageSubtitle: "Keep your profile complete so employers see an accurate, current picture of you.",
     rightRailTrustTitle: "Profile trust",
     rightRailVerificationKicker: "Verification",
     rightRailDefaultReadiness:
@@ -716,7 +787,7 @@ const EN: JobsCopy = {
       "Work-in-progress changes auto-save every 30 seconds and on blur. Press 'Save profile' below to publish.",
     editSectionTitle: "Edit your profile",
     editSectionBody:
-      "Professional details here are visible to employers when you apply to roles. Phone and email are held by HenryCo for verification and trust scoring only — they are not passed to employers.",
+      "Professional details here are visible to employers when you apply to roles. Your phone number and email address are held by Henry Onyx for verification only — they are not shared with employers.",
     fieldFullNamePlaceholder: "Full name",
     fieldHeadlinePlaceholder: "Headline",
     fieldSummaryPlaceholder: "Professional summary",
@@ -729,7 +800,7 @@ const EN: JobsCopy = {
     fieldPortfolioLinksPlaceholder: "Portfolio links",
     fieldSalaryExpectationPlaceholder: "Salary expectation",
     fieldAvailabilityPlaceholder: "Availability",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Operations Lead"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"Operations Lead"}]',
     fieldEducationPlaceholder: '[{"school":"University","degree":"BSc"}]',
     fieldCertificationsPlaceholder: '[{"name":"Project Management"}]',
     submitSaving: "Saving profile...",
@@ -771,6 +842,75 @@ const EN: JobsCopy = {
     statusRejected: "Rejected",
     statusHired: "Hired",
   },
+  employerHiringSuite: {
+    bulkSelectLabel: "Select",
+    bulkSelectedTemplate: "{count} selected",
+    bulkMoveLabel: "Move selected to",
+    bulkMovePlaceholder: "Choose a stage…",
+    bulkMoveButton: "Move",
+    bulkMovedTemplate: "Moved {count} applicant(s).",
+    bulkMoveError: "Couldn't move the selected applicants.",
+    bulkClearLabel: "Clear selection",
+    scoreTitle: "Candidate scoring",
+    scoreBody:
+      "Score this candidate against the team rubric. Scores stay private to your hiring team — the candidate never sees them.",
+    scoreRubricTechnical: "Technical",
+    scoreRubricCommunication: "Communication",
+    scoreRubricCulture: "Culture add",
+    scoreRubricExperience: "Experience",
+    scoreYourLabel: "Your score",
+    scoreTeamAverage: "Team average",
+    scoreOverall: "Overall",
+    scoreScorersTemplate: "{count} scorer(s)",
+    scoreNotYet: "Not scored yet",
+    scoreSave: "Save score",
+    scoreSaving: "Saving…",
+    scoreSaved: "Saved",
+    scoreError: "Couldn't save score.",
+    scoreCommentPlaceholder: "Add a note (optional)",
+    predictiveLabel: "Predicted quality",
+    notesTitle: "Team notes",
+    notesBody: "Internal notes for your hiring team. Candidates never see these.",
+    notesEmpty: "No team notes yet. Start the discussion.",
+    notesComposerPlaceholder: "Write a note… type @ to mention a teammate",
+    notesPost: "Post note",
+    notesPosting: "Posting…",
+    notesReply: "Reply",
+    notesMentionLabel: "Mention",
+    notesMentionHint: "Only teammates in your business can be mentioned.",
+    notesError: "Couldn't post the note.",
+    decisionTitle: "Decision",
+    decisionBody: "Send an offer, mark the candidate hired, or send a respectful rejection.",
+    decisionOffer: "Send offer",
+    decisionHire: "Mark hired",
+    decisionReject: "Send rejection",
+    decisionToneLabel: "Tone",
+    decisionToneWarm: "Warm",
+    decisionToneStandard: "Standard",
+    decisionToneBrief: "Brief",
+    decisionConfirmRejectTemplate: "Send a rejection to {name}? This moves the application to the rejected stage.",
+    decisionSending: "Sending…",
+    decisionSent: "Decision recorded.",
+    decisionError: "Couldn't record the decision.",
+    rejectionDocType: "Application update",
+    rejectionDocTitle: "Update on your application",
+    rejectionDocSubtitleTemplate: "{role} · {business}",
+    rejectionDocKicker: "Our decision",
+    rejectionParaGreetingTemplate: "Dear {candidate},",
+    rejectionParaBodyTemplate:
+      "Thank you for applying for {role} at {business}. After careful consideration, we will not be moving forward with your application at this time.",
+    rejectionParaClosingTemplate:
+      "We were genuinely impressed by much of your background and encourage you to apply for future roles that match your strengths. We wish you every success.",
+    rejectionSignOffTemplate: "With appreciation, the {business} hiring team.",
+    rejectionLegalLineTemplate:
+      "This letter was issued by {business} on the Henry Onyx Jobs platform. It reflects the hiring decision recorded at the time of issue.",
+    switchToBusinessTitle: "Switch to your business",
+    switchToBusinessBody:
+      "These hiring tools are available when you act as your business. Switch context to manage your team's pipeline.",
+    applicationDetailTitle: "Application detail",
+    stageProgressionTitle: "Stage progression",
+    stageProgressionBody: "Track where this candidate sits in the hiring pipeline.",
+  },
   employerCompany: {
     pageTitle: "Company Profile",
     pageSubtitle: "Set up your company profile so candidates can learn about your team.",
@@ -789,7 +929,7 @@ const EN: JobsCopy = {
     rightRailTipVerified: "A verified surface that recruiters and candidates can trust.",
     profileSavedNoticeTitle: "Employer profile saved",
     profileSavedNoticeBodyTemplate:
-      "{name} has been saved. Your company profile is now in the verification queue.",
+      "{name} has been saved. Your company profile is now under review.",
     verificationCalloutBodySuffix:
       "Complete account verification before expecting role posting or employer trust upgrades to unlock.",
     openAccountVerification: "Open account verification",
@@ -808,7 +948,7 @@ const EN: JobsCopy = {
     fieldBenefitsHeadlinePlaceholder: "Benefits headline",
     fieldCulturePointsPlaceholder: "Culture points",
     employerTypeExternal: "External employer",
-    employerTypeInternal: "Internal HenryCo hiring",
+    employerTypeInternal: "Internal Henry Onyx hiring",
     submitSaving: "Saving company...",
     submitLabel: "Save employer profile",
   },
@@ -820,7 +960,7 @@ const EN: JobsCopy = {
     emptyKicker: "No live roles",
     emptyTitle: "Post the first role for this employer.",
     emptyBody:
-      "Once a role is created, this list will track moderation state, visibility, and applicant volume.",
+      "Once a role is created, this list will show its status, who can see it, and how many candidates have applied.",
     emptyAction: "Open job builder",
     applicantSingular: "applicant",
     applicantPlural: "applicants",
@@ -906,10 +1046,10 @@ const EN: JobsCopy = {
       "Fill in the details below. New posts may go through a brief review before going live.",
     subscriptionRequiredTitle: "Subscription required to publish",
     subscriptionRequiredBodyTemplate:
-      "Your employer subscription is \"{status}\". Posting is blocked until a live subscription is in place. Contact the HenryCo team to renew before publishing.",
+      "Your employer subscription is no longer active. Posting is blocked until a live subscription is in place. Contact support to renew.",
     subscriptionPendingTitle: "Subscription pending",
     subscriptionPendingBody:
-      "Posting roles will require an active employer subscription once billing rolls out. You can publish today; expect a follow-up from the HenryCo team about plan selection.",
+      "Employer subscriptions are coming. You can publish roles today — we will be in touch when a plan is ready.",
     verificationGateBodySuffix: "Jobs posting stays blocked until that review is approved.",
     directPublishingTitle: "Direct publishing available",
     directPublishingBody:
@@ -943,10 +1083,10 @@ const EN: JobsCopy = {
   employerAnalytics: {
     metaTitle: "Employer Analytics",
     metaDescription:
-      "Track role output, pipeline concentration, and verification posture across your hiring funnel.",
+      "Track active roles, applicant volume, and where candidates are in your hiring process.",
     eyebrow: "Hiring intelligence",
     pageTitle: "Employer Analytics",
-    pageSubtitle: "Track role output, pipeline concentration, and verification posture.",
+    pageSubtitle: "Track active roles, applicant volume, and where candidates are in your hiring process.",
     heroBody:
       "Monitor how your roles convert from listing impressions through hire — each tile and stage cell stays live as candidates move.",
     tileJobsLabel: "Jobs",
@@ -1035,7 +1175,7 @@ const EN: JobsCopy = {
     networkError: "Network error. Please try again.",
   },
   hirePage: {
-    metaTitle: "Hire with clarity — HenryCo Jobs",
+    metaTitle: "Hire with clarity — Henry Onyx Jobs",
     metaDescription:
       "Post real roles, read applications in one place, and move candidates through visible stages. Employers and posts are reviewed to protect quality.",
     eyebrow: "For employers",
@@ -1046,7 +1186,7 @@ const EN: JobsCopy = {
       "Posting live roles requires an active employer subscription. Candidates always browse for free; the subscription pays for moderation, anti-scam review, and candidate trust signals.",
     ctaSignedIn: "Go to company setup",
     ctaSignedOut: "Start hiring — sign up free",
-    ctaLogin: "I already have a HenryCo account",
+    ctaLogin: "I already have a Henry Onyx account",
     ctaBrowseCandidates: "Browse candidates",
     featureVerificationLabel: "Verification",
     featureVerificationValue: "Manual review — no pay-to-play",
@@ -1072,7 +1212,7 @@ const EN: JobsCopy = {
     moderationKicker: "After you submit a post",
     moderationTitle: "Moderation explains itself, then gets out of the way.",
     moderationBody:
-      "Moderation checks for clarity, fairness, and fraud patterns. If something needs a fix, we will tell you why. When the role is live, candidates apply with one HenryCo profile; you review them in your applicant list and move stages when you are ready.",
+      "Moderation checks for clarity, fairness, and fraud patterns. If something needs a fix, we will tell you why. When the role is live, candidates apply with one Henry Onyx profile; you review them in your applicant list and move stages when you are ready.",
     qualityKicker: "Quality over volume",
     qualityTitle: "We protect the board so serious employers stand out.",
     qualityBody:
@@ -1084,7 +1224,7 @@ const EN: JobsCopy = {
     questionsPrefix: "Questions?",
   },
   candidateHome: {
-    metaTitle: "Candidate Hub — HenryCo Jobs",
+    metaTitle: "Candidate Hub — Henry Onyx Jobs",
     metaDescription:
       "Track your profile, applications, saved roles, and recruiter updates — all in one place.",
     pageTitle: "Candidate hub",
@@ -1225,7 +1365,7 @@ const FR: DeepPartial<JobsCopy> = {
     tabChat: "Discussion",
     tabNotes: "Bloc-notes",
     chatHint:
-      "La messagerie en salle est fournie par le prestataire vidéo. Utilisez-la pour partager des liens pendant l'appel.",
+      "Utilisez la messagerie de la salle pour partager des liens pendant l'appel.",
     notesLabel: "Notes privées",
     notesPlaceholder:
       "Consignez vos observations. Visible uniquement par votre équipe de recrutement.",
@@ -1328,7 +1468,7 @@ const FR: DeepPartial<JobsCopy> = {
       "Une présence vérifiée à laquelle recruteurs et candidats peuvent faire confiance.",
     profileSavedNoticeTitle: "Profil employeur enregistré",
     profileSavedNoticeBodyTemplate:
-      "{name} a été enregistré. Le profil de votre entreprise est désormais dans la file de vérification.",
+      "{name} a été enregistré. Le profil de votre entreprise est désormais en cours d'examen.",
     verificationCalloutBodySuffix:
       "Terminez la vérification du compte avant d'attendre la publication d'offres ou des améliorations de confiance employeur.",
     openAccountVerification: "Ouvrir la vérification du compte",
@@ -1347,7 +1487,7 @@ const FR: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "Avantages clés",
     fieldCulturePointsPlaceholder: "Éléments de culture",
     employerTypeExternal: "Employeur externe",
-    employerTypeInternal: "Recrutement interne HenryCo",
+    employerTypeInternal: "Recrutement interne Henry Onyx",
     submitSaving: "Enregistrement de l'entreprise...",
     submitLabel: "Enregistrer le profil employeur",
   },
@@ -1401,7 +1541,7 @@ const FR: DeepPartial<JobsCopy> = {
       "Les changements en cours s'enregistrent automatiquement toutes les 30 secondes et à la perte de focus. Cliquez sur « Enregistrer le profil » ci-dessous pour publier.",
     editSectionTitle: "Modifier votre profil",
     editSectionBody:
-      "Les informations professionnelles ici sont visibles par les employeurs lors de vos candidatures. Le téléphone et l'e-mail sont conservés par HenryCo pour la vérification et la notation de confiance uniquement — ils ne sont pas transmis aux employeurs.",
+      "Les informations professionnelles ici sont visibles par les employeurs lors de vos candidatures. Votre numéro de téléphone et votre adresse e-mail sont conservés par Henry Onyx à des fins de vérification uniquement — ils ne sont pas partagés avec les employeurs.",
     fieldFullNamePlaceholder: "Nom complet",
     fieldHeadlinePlaceholder: "Titre professionnel",
     fieldSummaryPlaceholder: "Résumé professionnel",
@@ -1414,7 +1554,7 @@ const FR: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "Liens du portfolio",
     fieldSalaryExpectationPlaceholder: "Prétentions salariales",
     fieldAvailabilityPlaceholder: "Disponibilité",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Responsable des opérations"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"Responsable des opérations"}]',
     fieldEducationPlaceholder: '[{"school":"Université","degree":"Licence"}]',
     fieldCertificationsPlaceholder: '[{"name":"Gestion de projet"}]',
     submitSaving: "Enregistrement du profil...",
@@ -1428,7 +1568,7 @@ const FR: DeepPartial<JobsCopy> = {
     emptyKicker: "Aucun poste actif",
     emptyTitle: "Publiez le premier poste pour cet employeur.",
     emptyBody:
-      "Dès qu'un poste est créé, cette liste suit son état de modération, sa visibilité et le volume de candidatures.",
+      "Dès qu'un poste est créé, cette liste affiche son statut, qui peut le voir et le nombre de candidats ayant postulé.",
     emptyAction: "Ouvrir l'éditeur d'offre",
     applicantSingular: "candidat",
     applicantPlural: "candidats",
@@ -1515,10 +1655,10 @@ const FR: DeepPartial<JobsCopy> = {
       "Remplissez les détails ci-dessous. Les nouvelles annonces peuvent passer par une courte revue avant publication.",
     subscriptionRequiredTitle: "Abonnement requis pour publier",
     subscriptionRequiredBodyTemplate:
-      "Votre abonnement employeur est «{status}». La publication est bloquée tant qu'un abonnement actif n'est pas en place. Contactez l'équipe HenryCo pour renouveler avant de publier.",
+      "Votre abonnement employeur n'est plus actif. La publication est bloquée tant qu'un abonnement actif n'est pas en place. Contactez l'assistance pour renouveler.",
     subscriptionPendingTitle: "Abonnement en attente",
     subscriptionPendingBody:
-      "La publication de postes nécessitera un abonnement employeur actif une fois la facturation déployée. Vous pouvez publier aujourd'hui ; attendez-vous à un suivi de l'équipe HenryCo concernant le choix du plan.",
+      "Les abonnements employeur arrivent. Vous pouvez publier des postes dès aujourd'hui — nous vous contacterons lorsqu'un plan sera prêt.",
     verificationGateBodySuffix: "La publication d'offres reste bloquée tant que cette vérification n'est pas approuvée.",
     directPublishingTitle: "Publication directe disponible",
     directPublishingBody:
@@ -1552,11 +1692,11 @@ const FR: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "Analyse employeur",
     metaDescription:
-      "Suivez la production de postes, la concentration du pipeline et la posture de vérification de votre entonnoir de recrutement.",
+      "Suivez les postes actifs, le volume de candidatures et la progression des candidats dans votre processus de recrutement.",
     eyebrow: "Intelligence du recrutement",
     pageTitle: "Analyse employeur",
     pageSubtitle:
-      "Suivez la production de postes, la concentration du pipeline et la posture de vérification.",
+      "Suivez les postes actifs, le volume de candidatures et la progression des candidats dans votre processus de recrutement.",
     heroBody:
       "Visualisez la conversion de vos postes depuis les impressions jusqu’à l’embauche — chaque tuile et chaque étape restent à jour en temps réel.",
     tileJobsLabel: "Postes",
@@ -1645,7 +1785,7 @@ const FR: DeepPartial<JobsCopy> = {
     networkError: "Erreur réseau. Veuillez réessayer.",
   },
   hirePage: {
-    metaTitle: "Recrutez avec clarté — HenryCo Jobs",
+    metaTitle: "Recrutez avec clarté — Henry Onyx Jobs",
     metaDescription:
       "Publiez de vraies offres, lisez les candidatures au même endroit et faites avancer les candidats à travers des étapes visibles.",
     eyebrow: "Pour les employeurs",
@@ -1656,7 +1796,7 @@ const FR: DeepPartial<JobsCopy> = {
       "La publication d'offres en direct nécessite un abonnement employeur actif. Les candidats parcourent toujours gratuitement ; l'abonnement finance la modération, la lutte anti-arnaques et les signaux de confiance candidats.",
     ctaSignedIn: "Aller à la configuration de l'entreprise",
     ctaSignedOut: "Commencer à recruter — inscription gratuite",
-    ctaLogin: "J'ai déjà un compte HenryCo",
+    ctaLogin: "J'ai déjà un compte Henry Onyx",
     ctaBrowseCandidates: "Parcourir les candidats",
     featureVerificationLabel: "Vérification",
     featureVerificationValue: "Révision manuelle — sans paiement requis",
@@ -1694,7 +1834,7 @@ const FR: DeepPartial<JobsCopy> = {
     questionsPrefix: "Des questions ?",
   },
   candidateHome: {
-    metaTitle: "Espace candidat — HenryCo Jobs",
+    metaTitle: "Espace candidat — Henry Onyx Jobs",
     metaDescription:
       "Suivez votre profil, vos candidatures, les offres sauvegardées et les mises à jour des recruteurs — tout en un seul endroit.",
     pageTitle: "Espace candidat",
@@ -1834,7 +1974,7 @@ const ES: DeepPartial<JobsCopy> = {
     tabChat: "Chat",
     tabNotes: "Notas",
     chatHint:
-      "El chat de la sala lo proporciona el proveedor de vídeo. Úsalo para compartir enlaces durante la llamada.",
+      "Usa el chat de la sala para compartir enlaces durante la llamada.",
     notesLabel: "Notas privadas",
     notesPlaceholder:
       "Recoge tus observaciones. Solo las verá tu equipo de selección.",
@@ -1937,7 +2077,7 @@ const ES: DeepPartial<JobsCopy> = {
       "Una presencia verificada en la que reclutadores y candidatos pueden confiar.",
     profileSavedNoticeTitle: "Perfil del empleador guardado",
     profileSavedNoticeBodyTemplate:
-      "{name} se ha guardado. Tu perfil de empresa ya está en la cola de verificación.",
+      "{name} se ha guardado. Tu perfil de empresa está ahora en revisión.",
     verificationCalloutBodySuffix:
       "Completa la verificación de la cuenta antes de esperar la publicación de roles o mejoras en la confianza del empleador.",
     openAccountVerification: "Abrir verificación de cuenta",
@@ -1956,7 +2096,7 @@ const ES: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "Beneficios destacados",
     fieldCulturePointsPlaceholder: "Puntos de cultura",
     employerTypeExternal: "Empleador externo",
-    employerTypeInternal: "Contratación interna HenryCo",
+    employerTypeInternal: "Contratación interna Henry Onyx",
     submitSaving: "Guardando empresa...",
     submitLabel: "Guardar perfil del empleador",
   },
@@ -2010,7 +2150,7 @@ const ES: DeepPartial<JobsCopy> = {
       "Los cambios en curso se guardan automáticamente cada 30 segundos y al perder el foco. Pulsa «Guardar perfil» abajo para publicar.",
     editSectionTitle: "Editar tu perfil",
     editSectionBody:
-      "Los datos profesionales aquí son visibles para los empleadores cuando te postules. El teléfono y el correo los conserva HenryCo solo para la verificación y la puntuación de confianza — no se transmiten a los empleadores.",
+      "Los datos profesionales aquí son visibles para los empleadores cuando te postules. Tu número de teléfono y tu correo electrónico los conserva Henry Onyx solo para la verificación — no se comparten con los empleadores.",
     fieldFullNamePlaceholder: "Nombre completo",
     fieldHeadlinePlaceholder: "Titular profesional",
     fieldSummaryPlaceholder: "Resumen profesional",
@@ -2023,7 +2163,7 @@ const ES: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "Enlaces del portafolio",
     fieldSalaryExpectationPlaceholder: "Expectativa salarial",
     fieldAvailabilityPlaceholder: "Disponibilidad",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Responsable de operaciones"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"Responsable de operaciones"}]',
     fieldEducationPlaceholder: '[{"school":"Universidad","degree":"Licenciatura"}]',
     fieldCertificationsPlaceholder: '[{"name":"Gestión de proyectos"}]',
     submitSaving: "Guardando perfil...",
@@ -2037,7 +2177,7 @@ const ES: DeepPartial<JobsCopy> = {
     emptyKicker: "Sin puestos activos",
     emptyTitle: "Publica el primer puesto para este empleador.",
     emptyBody:
-      "Una vez creado un puesto, esta lista registrará su estado de moderación, visibilidad y volumen de candidaturas.",
+      "Una vez creado un puesto, esta lista mostrará su estado, quién puede verlo y cuántos candidatos se han postulado.",
     emptyAction: "Abrir editor de puestos",
     applicantSingular: "candidato",
     applicantPlural: "candidatos",
@@ -2125,10 +2265,10 @@ const ES: DeepPartial<JobsCopy> = {
       "Completa los detalles a continuación. Las nuevas ofertas pueden pasar por una breve revisión antes de publicarse.",
     subscriptionRequiredTitle: "Suscripción requerida para publicar",
     subscriptionRequiredBodyTemplate:
-      "Tu suscripción de empleador es «{status}». La publicación está bloqueada hasta que tengas una suscripción activa. Contacta al equipo de HenryCo para renovar antes de publicar.",
+      "Tu suscripción de empleador ya no está activa. La publicación está bloqueada hasta que tengas una suscripción activa. Contacta con soporte para renovar.",
     subscriptionPendingTitle: "Suscripción pendiente",
     subscriptionPendingBody:
-      "Publicar puestos requerirá una suscripción de empleador activa cuando se active la facturación. Hoy puedes publicar; espera un seguimiento del equipo de HenryCo sobre la elección del plan.",
+      "Las suscripciones de empleador llegarán próximamente. Hoy puedes publicar puestos — nos pondremos en contacto cuando haya un plan disponible.",
     verificationGateBodySuffix: "La publicación de empleos seguirá bloqueada hasta que se apruebe esa revisión.",
     directPublishingTitle: "Publicación directa disponible",
     directPublishingBody:
@@ -2162,11 +2302,11 @@ const ES: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "Analítica del empleador",
     metaDescription:
-      "Sigue la publicación de puestos, la concentración del pipeline y la postura de verificación a lo largo de tu embudo de contratación.",
+      "Sigue los puestos activos, el volumen de candidatos y en qué punto del proceso de contratación se encuentran.",
     eyebrow: "Inteligencia de contratación",
     pageTitle: "Analítica del empleador",
     pageSubtitle:
-      "Sigue la publicación de puestos, la concentración del pipeline y la postura de verificación.",
+      "Sigue los puestos activos, el volumen de candidatos y en qué punto del proceso de contratación se encuentran.",
     heroBody:
       "Observa cómo tus puestos se convierten desde las impresiones hasta la contratación: cada métrica y etapa se actualiza en vivo.",
     tileJobsLabel: "Puestos",
@@ -2255,7 +2395,7 @@ const ES: DeepPartial<JobsCopy> = {
     networkError: "Error de red. Por favor, inténtalo de nuevo.",
   },
   hirePage: {
-    metaTitle: "Contrata con claridad — HenryCo Jobs",
+    metaTitle: "Contrata con claridad — Henry Onyx Jobs",
     metaDescription:
       "Publica roles reales, lee candidaturas en un solo lugar y avanza a los candidatos en etapas visibles.",
     eyebrow: "Para empleadores",
@@ -2266,7 +2406,7 @@ const ES: DeepPartial<JobsCopy> = {
       "Publicar roles en vivo requiere una suscripción activa de empleador. Los candidatos siempre navegan gratis.",
     ctaSignedIn: "Ir a la configuración de la empresa",
     ctaSignedOut: "Empezar a contratar — registro gratuito",
-    ctaLogin: "Ya tengo una cuenta HenryCo",
+    ctaLogin: "Ya tengo una cuenta Henry Onyx",
     ctaBrowseCandidates: "Ver candidatos",
     featureVerificationLabel: "Verificación",
     featureVerificationValue: "Revisión manual — sin pago para destacar",
@@ -2304,7 +2444,7 @@ const ES: DeepPartial<JobsCopy> = {
     questionsPrefix: "¿Preguntas?",
   },
   candidateHome: {
-    metaTitle: "Hub del candidato — HenryCo Jobs",
+    metaTitle: "Hub del candidato — Henry Onyx Jobs",
     metaDescription:
       "Sigue tu perfil, candidaturas, roles guardados y actualizaciones de reclutadores — todo en un solo lugar.",
     pageTitle: "Hub del candidato",
@@ -2444,7 +2584,7 @@ const PT: DeepPartial<JobsCopy> = {
     tabChat: "Chat",
     tabNotes: "Notas",
     chatHint:
-      "O chat da sala é fornecido pelo serviço de vídeo. Utilize-o para partilhar ligações durante a chamada.",
+      "Utilize o chat da sala para partilhar ligações durante a chamada.",
     notesLabel: "Notas privadas",
     notesPlaceholder:
       "Registe as suas observações. Visíveis apenas para a equipa de recrutamento.",
@@ -2547,7 +2687,7 @@ const PT: DeepPartial<JobsCopy> = {
       "Uma presença verificada na qual recrutadores e candidatos podem confiar.",
     profileSavedNoticeTitle: "Perfil do empregador guardado",
     profileSavedNoticeBodyTemplate:
-      "{name} foi guardado. O perfil da sua empresa está agora na fila de verificação.",
+      "{name} foi guardado. O perfil da sua empresa está agora em análise.",
     verificationCalloutBodySuffix:
       "Conclua a verificação da conta antes de esperar a publicação de vagas ou melhorias na confiança do empregador.",
     openAccountVerification: "Abrir verificação da conta",
@@ -2566,7 +2706,7 @@ const PT: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "Benefícios em destaque",
     fieldCulturePointsPlaceholder: "Pontos de cultura",
     employerTypeExternal: "Empregador externo",
-    employerTypeInternal: "Contratação interna HenryCo",
+    employerTypeInternal: "Contratação interna Henry Onyx",
     submitSaving: "A guardar empresa...",
     submitLabel: "Guardar perfil do empregador",
   },
@@ -2620,7 +2760,7 @@ const PT: DeepPartial<JobsCopy> = {
       "As alterações em curso são guardadas automaticamente a cada 30 segundos e ao perder o foco. Prima «Guardar perfil» abaixo para publicar.",
     editSectionTitle: "Editar o seu perfil",
     editSectionBody:
-      "Os dados profissionais aqui são visíveis para os empregadores quando se candidata. O telefone e o e-mail são mantidos pela HenryCo apenas para verificação e pontuação de confiança — não são transmitidos aos empregadores.",
+      "Os dados profissionais aqui são visíveis para os empregadores quando se candidata. O seu número de telefone e o seu e-mail são mantidos pela Henry Onyx apenas para verificação — não são partilhados com os empregadores.",
     fieldFullNamePlaceholder: "Nome completo",
     fieldHeadlinePlaceholder: "Título profissional",
     fieldSummaryPlaceholder: "Resumo profissional",
@@ -2633,7 +2773,7 @@ const PT: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "Links do portefólio",
     fieldSalaryExpectationPlaceholder: "Expectativa salarial",
     fieldAvailabilityPlaceholder: "Disponibilidade",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Líder de operações"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"Líder de operações"}]',
     fieldEducationPlaceholder: '[{"school":"Universidade","degree":"Licenciatura"}]',
     fieldCertificationsPlaceholder: '[{"name":"Gestão de projetos"}]',
     submitSaving: "A guardar perfil...",
@@ -2647,7 +2787,7 @@ const PT: DeepPartial<JobsCopy> = {
     emptyKicker: "Sem vagas ativas",
     emptyTitle: "Publique a primeira vaga para este empregador.",
     emptyBody:
-      "Após criar uma vaga, esta lista mostrará o estado de moderação, visibilidade e volume de candidaturas.",
+      "Após criar uma vaga, esta lista mostrará o seu estado, quem a pode ver e quantos candidatos se candidataram.",
     emptyAction: "Abrir editor de vagas",
     applicantSingular: "candidato",
     applicantPlural: "candidatos",
@@ -2735,10 +2875,10 @@ const PT: DeepPartial<JobsCopy> = {
       "Preencha os detalhes abaixo. Novas vagas podem passar por uma revisão breve antes de irem ao ar.",
     subscriptionRequiredTitle: "Assinatura necessária para publicar",
     subscriptionRequiredBodyTemplate:
-      "A sua assinatura de empregador está «{status}». A publicação está bloqueada até existir uma assinatura ativa. Contacte a equipa HenryCo para renovar antes de publicar.",
+      "A sua assinatura de empregador já não está ativa. A publicação está bloqueada até existir uma assinatura ativa. Contacte o suporte para renovar.",
     subscriptionPendingTitle: "Assinatura pendente",
     subscriptionPendingBody:
-      "Publicar vagas exigirá uma assinatura de empregador ativa quando a faturação for ativada. Pode publicar hoje; a equipa HenryCo entrará em contacto sobre a escolha do plano.",
+      "As assinaturas de empregador estão a chegar. Pode publicar vagas hoje — entraremos em contacto quando houver um plano disponível.",
     verificationGateBodySuffix: "A publicação de vagas permanece bloqueada até essa revisão ser aprovada.",
     directPublishingTitle: "Publicação direta disponível",
     directPublishingBody:
@@ -2772,11 +2912,11 @@ const PT: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "Análise do empregador",
     metaDescription:
-      "Acompanhe a publicação de vagas, a concentração do pipeline e a postura de verificação ao longo do seu funil de contratação.",
+      "Acompanhe as vagas ativas, o volume de candidatos e em que fase do processo de contratação se encontram.",
     eyebrow: "Inteligência de contratação",
     pageTitle: "Análise do empregador",
     pageSubtitle:
-      "Acompanhe a publicação de vagas, a concentração do pipeline e a postura de verificação.",
+      "Acompanhe as vagas ativas, o volume de candidatos e em que fase do processo de contratação se encontram.",
     heroBody:
       "Veja como as suas vagas convertem desde a exibição até à contratação — cada métrica e etapa atualiza-se em direto.",
     tileJobsLabel: "Vagas",
@@ -2865,7 +3005,7 @@ const PT: DeepPartial<JobsCopy> = {
     networkError: "Erro de rede. Por favor, tente novamente.",
   },
   hirePage: {
-    metaTitle: "Contrate com clareza — HenryCo Jobs",
+    metaTitle: "Contrate com clareza — Henry Onyx Jobs",
     metaDescription:
       "Publique vagas reais, leia candidaturas num só lugar e mova candidatos por etapas visíveis.",
     eyebrow: "Para empregadores",
@@ -2876,7 +3016,7 @@ const PT: DeepPartial<JobsCopy> = {
       "A publicação de vagas ao vivo requer uma subscrição ativa de empregador. Os candidatos navegam sempre gratuitamente.",
     ctaSignedIn: "Ir para a configuração da empresa",
     ctaSignedOut: "Começar a contratar — registo gratuito",
-    ctaLogin: "Já tenho uma conta HenryCo",
+    ctaLogin: "Já tenho uma conta Henry Onyx",
     ctaBrowseCandidates: "Ver candidatos",
     featureVerificationLabel: "Verificação",
     featureVerificationValue: "Revisão manual — sem pagamento para destaque",
@@ -2914,7 +3054,7 @@ const PT: DeepPartial<JobsCopy> = {
     questionsPrefix: "Dúvidas?",
   },
   candidateHome: {
-    metaTitle: "Hub do candidato — HenryCo Jobs",
+    metaTitle: "Hub do candidato — Henry Onyx Jobs",
     metaDescription:
       "Acompanhe o seu perfil, candidaturas, vagas guardadas e atualizações de recrutadores — tudo num só lugar.",
     pageTitle: "Hub do candidato",
@@ -3054,7 +3194,7 @@ const AR: DeepPartial<JobsCopy> = {
     tabChat: "الدردشة",
     tabNotes: "الملاحظات",
     chatHint:
-      "دردشة الغرفة يوفرها مزود خدمة الفيديو. استخدمها لمشاركة الروابط أثناء المكالمة.",
+      "استخدم دردشة الغرفة لمشاركة الروابط أثناء المكالمة.",
     notesLabel: "ملاحظات خاصة",
     notesPlaceholder:
       "دوّن ملاحظاتك. يراها فريق التوظيف فقط.",
@@ -3153,7 +3293,7 @@ const AR: DeepPartial<JobsCopy> = {
     rightRailTipVerified: "حضور موثق يمكن للمسؤولين والمرشحين الوثوق به.",
     profileSavedNoticeTitle: "تم حفظ ملف صاحب العمل",
     profileSavedNoticeBodyTemplate:
-      "تم حفظ {name}. ملف شركتك الآن في قائمة انتظار التحقق.",
+      "تم حفظ {name}. ملف شركتك الآن قيد المراجعة.",
     verificationCalloutBodySuffix:
       "أكمل التحقق من الحساب قبل أن تتوقع فتح إمكانية نشر الوظائف أو ترقيات ثقة صاحب العمل.",
     openAccountVerification: "فتح التحقق من الحساب",
@@ -3172,7 +3312,7 @@ const AR: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "أبرز المزايا",
     fieldCulturePointsPlaceholder: "عناصر الثقافة",
     employerTypeExternal: "صاحب عمل خارجي",
-    employerTypeInternal: "توظيف داخلي في HenryCo",
+    employerTypeInternal: "توظيف داخلي في Henry Onyx",
     submitSaving: "جارٍ حفظ الشركة...",
     submitLabel: "حفظ ملف صاحب العمل",
   },
@@ -3225,7 +3365,7 @@ const AR: DeepPartial<JobsCopy> = {
       "يتم حفظ التغييرات قيد التنفيذ تلقائيًا كل 30 ثانية وعند فقدان التركيز. اضغط «حفظ الملف الشخصي» بالأسفل للنشر.",
     editSectionTitle: "تعديل ملفك الشخصي",
     editSectionBody:
-      "التفاصيل المهنية هنا مرئية لأصحاب العمل عند التقديم على الوظائف. تحتفظ HenryCo بالهاتف والبريد الإلكتروني للتحقق وحساب درجة الثقة فقط — ولا يتم تمريرها إلى أصحاب العمل.",
+      "التفاصيل المهنية هنا مرئية لأصحاب العمل عند التقديم على الوظائف. تحتفظ Henry Onyx برقم هاتفك وبريدك الإلكتروني للتحقق فقط — ولا تتم مشاركتها مع أصحاب العمل.",
     fieldFullNamePlaceholder: "الاسم الكامل",
     fieldHeadlinePlaceholder: "العنوان المهني",
     fieldSummaryPlaceholder: "ملخّص مهني",
@@ -3238,7 +3378,7 @@ const AR: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "روابط المعرض",
     fieldSalaryExpectationPlaceholder: "الراتب المتوقع",
     fieldAvailabilityPlaceholder: "التوفر",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"قائد العمليات"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"قائد العمليات"}]',
     fieldEducationPlaceholder: '[{"school":"جامعة","degree":"بكالوريوس"}]',
     fieldCertificationsPlaceholder: '[{"name":"إدارة المشاريع"}]',
     submitSaving: "جارٍ حفظ الملف الشخصي...",
@@ -3252,7 +3392,7 @@ const AR: DeepPartial<JobsCopy> = {
     emptyKicker: "لا توجد وظائف نشطة",
     emptyTitle: "انشر أول وظيفة لصاحب العمل هذا.",
     emptyBody:
-      "بمجرد إنشاء وظيفة، ستعرض هذه القائمة حالة المراجعة والظهور وعدد المتقدمين.",
+      "بمجرد إنشاء وظيفة، ستعرض هذه القائمة حالتها، ومن يمكنه رؤيتها، وعدد المتقدمين إليها.",
     emptyAction: "فتح أداة إنشاء الوظائف",
     applicantSingular: "متقدم",
     applicantPlural: "متقدمين",
@@ -3340,10 +3480,10 @@ const AR: DeepPartial<JobsCopy> = {
       "أكمل التفاصيل أدناه. قد تمر الإعلانات الجديدة بمراجعة قصيرة قبل النشر.",
     subscriptionRequiredTitle: "الاشتراك مطلوب للنشر",
     subscriptionRequiredBodyTemplate:
-      "اشتراك صاحب العمل لديك «{status}». تم حظر النشر حتى يتوفر اشتراك فعّال. تواصل مع فريق HenryCo للتجديد قبل النشر.",
+      "اشتراك صاحب العمل لديك لم يعد نشطًا. تم حظر النشر حتى يتوفر اشتراك فعّال. تواصل مع الدعم للتجديد.",
     subscriptionPendingTitle: "الاشتراك قيد الانتظار",
     subscriptionPendingBody:
-      "سيتطلب نشر الوظائف اشتراك صاحب عمل نشطًا عند تفعيل الفوترة. يمكنك النشر اليوم؛ توقع متابعة من فريق HenryCo بشأن اختيار الخطة.",
+      "اشتراكات أصحاب العمل قادمة. يمكنك نشر الوظائف اليوم — وسنتواصل معك عندما تصبح الخطة جاهزة.",
     verificationGateBodySuffix: "يظل نشر الوظائف محظورًا حتى تتم الموافقة على تلك المراجعة.",
     directPublishingTitle: "النشر المباشر متاح",
     directPublishingBody:
@@ -3377,11 +3517,11 @@ const AR: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "تحليلات صاحب العمل",
     metaDescription:
-      "تابع إنتاج الوظائف، وتركّز خط التوظيف، ووضع التحقق عبر قمع التوظيف الخاص بك.",
+      "تابع الوظائف النشطة وعدد المتقدمين وموقع المرشحين في عملية التوظيف لديك.",
     eyebrow: "ذكاء التوظيف",
     pageTitle: "تحليلات صاحب العمل",
     pageSubtitle:
-      "تابع إنتاج الوظائف، وتركّز خط التوظيف، ووضع التحقق.",
+      "تابع الوظائف النشطة وعدد المتقدمين وموقع المرشحين في عملية التوظيف لديك.",
     heroBody:
       "راقب كيف تتحول وظائفك من مشاهدات الإعلان إلى تعيين فعلي — كل مؤشر ومرحلة يتحدث مباشرة مع تحرك المرشحين.",
     tileJobsLabel: "الوظائف",
@@ -3470,7 +3610,7 @@ const AR: DeepPartial<JobsCopy> = {
     networkError: "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
   },
   hirePage: {
-    metaTitle: "وظِّف بوضوح — HenryCo Jobs",
+    metaTitle: "وظِّف بوضوح — Henry Onyx Jobs",
     metaDescription:
       "انشر وظائف حقيقية، واقرأ الطلبات في مكان واحد، وانقل المرشحين عبر مراحل مرئية.",
     eyebrow: "للأصحاب العمل",
@@ -3481,7 +3621,7 @@ const AR: DeepPartial<JobsCopy> = {
       "نشر الوظائف المباشرة يتطلب اشتراكًا نشطًا لصاحب العمل. يتصفح المرشحون دائمًا مجانًا.",
     ctaSignedIn: "الذهاب إلى إعداد الشركة",
     ctaSignedOut: "ابدأ التوظيف — سجّل مجانًا",
-    ctaLogin: "لدي بالفعل حساب HenryCo",
+    ctaLogin: "لدي بالفعل حساب Henry Onyx",
     ctaBrowseCandidates: "تصفح المرشحين",
     featureVerificationLabel: "التحقق",
     featureVerificationValue: "مراجعة يدوية — لا دفع للتميز",
@@ -3519,7 +3659,7 @@ const AR: DeepPartial<JobsCopy> = {
     questionsPrefix: "أسئلة؟",
   },
   candidateHome: {
-    metaTitle: "مركز المرشح — HenryCo Jobs",
+    metaTitle: "مركز المرشح — Henry Onyx Jobs",
     metaDescription:
       "تتبع ملفك الشخصي والطلبات والأدوار المحفوظة وتحديثات المُوظِّفين — كل شيء في مكان واحد.",
     pageTitle: "مركز المرشح",
@@ -3658,7 +3798,7 @@ const IG: DeepPartial<JobsCopy> = {
       "Ọ ka na-akwadebe ụlọ ahụ. Onye gị na ya ga-eme ajụjụ ọnụ ga-ekekọrịta njikọ nzukọ na nkata na-adịghị anya.",
     tabNotes: "Ihe edetụ",
     chatHint:
-      "Onye na-eweta vidiyo na-enye nkata ụlọ ahụ. Jiri ya kekọrịta njikọ n'oge oku.",
+      "Use the in-room chat to share links during the call.",
     notesLabel: "Ihe edetụ nzuzo",
     notesPlaceholder:
       "Detuo ihe ị hụrụ. Naanị ndị otu gị na-eburu ga-ahụ ya.",
@@ -3761,7 +3901,7 @@ const IG: DeepPartial<JobsCopy> = {
       "Ihu nyochara nke ndị na-achọ ndị ọrụ na ndị na-achọ ọrụ nwere ike ịtụkwasị obi.",
     profileSavedNoticeTitle: "Edebere profaịlụ ọchịchị",
     profileSavedNoticeBodyTemplate:
-      "Edebela {name}. Profaịlụ ụlọ ọrụ gị nọ ugbu a n'usoro nyocha.",
+      "{name} has been saved. Your company profile is now under review.",
     verificationCalloutBodySuffix:
       "Mechaa nyocha akaụntụ tupu ị tụgharị atụ na ibipụta ọrụ ma ọ bụ nkwalite ntụkwasị obi ọchịchị ga-emeghe.",
     openAccountVerification: "Mepee nyocha akaụntụ",
@@ -3780,7 +3920,7 @@ const IG: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "Uru pụtara ìhè",
     fieldCulturePointsPlaceholder: "Isi ihe omenala",
     employerTypeExternal: "Ọchịchị mpụga",
-    employerTypeInternal: "Ọrụ ime ụlọ HenryCo",
+    employerTypeInternal: "Ọrụ ime ụlọ Henry Onyx",
     submitSaving: "Na-edebe ụlọ ọrụ...",
     submitLabel: "Debe profaịlụ ọchịchị",
   },
@@ -3834,7 +3974,7 @@ const IG: DeepPartial<JobsCopy> = {
       "Mgbanwe ndị na-aga n'ihu na-edebe akpaaka kwa sekọnd 30 na mgbe ọ kụlachara. Pịa 'Debe profaịlụ' n'okpuru iji bipụta.",
     editSectionTitle: "Dezie profaịlụ gị",
     editSectionBody:
-      "Nkọwa ọrụ ebe a na-egosi ndị ọchịchị mgbe ị na-etinye akwụkwọ. Ekwentị na email bụ nke HenryCo na-edebe maka nyocha na akara ntụkwasị obi naanị — a naghị enye ya ndị ọchịchị.",
+      "Professional details here are visible to employers when you apply to roles. Your phone number and email address are held by Henry Onyx for verification only — they are not shared with employers.",
     fieldFullNamePlaceholder: "Aha zuru ezu",
     fieldHeadlinePlaceholder: "Aha akwụkwọ ọrụ",
     fieldSummaryPlaceholder: "Nchịkọta ọrụ",
@@ -3847,7 +3987,7 @@ const IG: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "Njikọ pọtfọlio",
     fieldSalaryExpectationPlaceholder: "Ụgwọ ọnwa atụrụ anya",
     fieldAvailabilityPlaceholder: "Inwe ohere",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Onye ndu ọrụ"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"Onye ndu ọrụ"}]',
     fieldEducationPlaceholder: '[{"school":"Mahadum","degree":"BSc"}]',
     fieldCertificationsPlaceholder: '[{"name":"Njikwa ọrụ"}]',
     submitSaving: "Na-edebe profaịlụ...",
@@ -3861,7 +4001,7 @@ const IG: DeepPartial<JobsCopy> = {
     emptyKicker: "Enweghị ọrụ na-arụ ọrụ",
     emptyTitle: "Bipụta ọrụ mbụ maka onye ọrụ a.",
     emptyBody:
-      "Mgbe e mepụtara ọrụ, ndepụta a ga-egosi ọnọdụ nlele, ọhụụ na ọnụọgụ ndị tinyere akwụkwọ.",
+      "Once a role is created, this list will show its status, who can see it, and how many candidates have applied.",
     emptyAction: "Mepee ihe nrụzi ọrụ",
     applicantSingular: "onye tinyere akwụkwọ",
     applicantPlural: "ndị tinyere akwụkwọ",
@@ -3949,10 +4089,10 @@ const IG: DeepPartial<JobsCopy> = {
       "Dejupụta nkọwa ndị dị n'okpuru. Mkpọsa ọhụrụ nwere ike ịgafe nyocha mkpirikpi tupu ọ pụta ìhè.",
     subscriptionRequiredTitle: "Ndenye aha dị mkpa ka ibipụta",
     subscriptionRequiredBodyTemplate:
-      "Ndenye aha onye were ọrụ gị bụ «{status}». A gbochiri ibipụta ruo mgbe enwere ndenye aha dị ndụ. Kpọtụrụ ndị otu HenryCo ka ha kpọghachi tupu ibipụta.",
+      "Your employer subscription is no longer active. Posting is blocked until a live subscription is in place. Contact support to renew.",
     subscriptionPendingTitle: "Ndenye aha na-echere",
     subscriptionPendingBody:
-      "Ibipụta ọrụ ga-achọ ndenye aha onye were ọrụ rụ ọrụ ozugbo ụgwọ ọnwa amalitere. Ị nwere ike ibipụta taa; tụgharịa anya na ndị otu HenryCo ga-akpọtụrụ gị banyere nhọrọ atụmatụ.",
+      "Employer subscriptions are coming. You can publish roles today — we will be in touch when a plan is ready.",
     verificationGateBodySuffix: "Ibipụta ọrụ ga-anọgide na-egbochi ruo mgbe akwadoro nyocha ahụ.",
     directPublishingTitle: "Mbipụta ozugbo dị",
     directPublishingBody:
@@ -3986,11 +4126,11 @@ const IG: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "Nyocha onye ọrụ na-enye ọrụ",
     metaDescription:
-      "Soro mmepụta ọrụ, mkpọkọta usoro nleba anya, na ọnọdụ nkwenye gị n'ime usoro inwere onye ọrụ.",
+      "Track active roles, applicant volume, and where candidates are in your hiring process.",
     eyebrow: "Ọgụgụ isi nke inwere onye ọrụ",
     pageTitle: "Nyocha onye ọrụ na-enye ọrụ",
     pageSubtitle:
-      "Soro mmepụta ọrụ, mkpọkọta usoro nleba anya, na ọnọdụ nkwenye.",
+      "Track active roles, applicant volume, and where candidates are in your hiring process.",
     heroBody:
       "Hụ ka ọrụ gị si esi mgbasa ozi gaa n'inwere onye ọrụ — akụkụ na nzọụkwụ ọ bụla na-emelite ozugbo ka ndị na-arịọ na-aga n'ihu.",
     tileJobsLabel: "Ọrụ",
@@ -4079,7 +4219,7 @@ const IG: DeepPartial<JobsCopy> = {
     networkError: "Njehie netwọk. Biko nwalee ọzọ.",
   },
   hirePage: {
-    metaTitle: "Nweta ndị ọrụ n'ìhè — HenryCo Jobs",
+    metaTitle: "Nweta ndị ọrụ n'ìhè — Henry Onyx Jobs",
     metaDescription:
       "Bipụta ọrụ n'ezie, gụọ arịrịọ n'otu ebe, kewaa ndị ọrụ n'oge ndị dị ka ọ dị.",
     eyebrow: "Maka ndị nọ n'ọrụ",
@@ -4090,7 +4230,7 @@ const IG: DeepPartial<JobsCopy> = {
       "Bipụta ọrụ dị ndụ chọrọ ndebanye aha onye ọrụ na-arụ ọrụ. Ndị na-achọ ọrụ na-achọghị ego.",
     ctaSignedIn: "Gaa na nkwadebe ụlọ ọrụ",
     ctaSignedOut: "Bido nweta ndị ọrụ — debanye aha n'efu",
-    ctaLogin: "Enweela m akaụntụ HenryCo",
+    ctaLogin: "Enweela m akaụntụ Henry Onyx",
     ctaBrowseCandidates: "Lelee ndị ọrụ",
     featureVerificationLabel: "Nkwenye",
     featureVerificationValue: "Nlele aka — ọ bụghị ịkwụ ụgwọ iji pụta ìhè",
@@ -4128,7 +4268,7 @@ const IG: DeepPartial<JobsCopy> = {
     questionsPrefix: "Ajụjụ?",
   },
   candidateHome: {
-    metaTitle: "Ebe onye na-achọ ọrụ — HenryCo Jobs",
+    metaTitle: "Ebe onye na-achọ ọrụ — Henry Onyx Jobs",
     metaDescription:
       "Sọpụrụ profaịl gị, arịrịọ, ọrụ echedoro, na mmelite site ndị ọrụ — ihe nile n'otu ebe.",
     pageTitle: "Ebe onye na-achọ ọrụ",
@@ -4267,7 +4407,7 @@ const YO: DeepPartial<JobsCopy> = {
       "À ń pèsè yàrá náà. Ẹni tó máa fọ̀rọ̀ wá yín lẹ́nuwò yóò pín ìjápọ̀ ìpàdé sí ìjíròrò láìpẹ́.",
     tabNotes: "Àkọsílẹ̀",
     chatHint:
-      "Olùpèsè fídíò ló ń ṣe ìjíròrò inú yàrá. Lò ó láti pín ìjápọ̀ nínú ìpè.",
+      "Use the in-room chat to share links during the call.",
     notesLabel: "Àkọsílẹ̀ àdáni",
     notesPlaceholder:
       "Kọ ohun tí o ṣàkíyèsí sílẹ̀. Ẹgbẹ́ àgbàṣe òṣìṣẹ́ rẹ nìkan ló máa rí i.",
@@ -4393,7 +4533,7 @@ const YO: DeepPartial<JobsCopy> = {
       "Ìjókòó tí a fìdí múlẹ̀ tí àwọn olùforíniṣẹ́ àti olubẹwẹ lè gbẹ́kẹ̀lé.",
     profileSavedNoticeTitle: "Profaili agbanisiṣẹ ti fipamọ",
     profileSavedNoticeBodyTemplate:
-      "A ti fi {name} pamọ. Profaili ile-iṣẹ rẹ ti wa ní ìlà ìfìdíhanrọ̀ báyìí.",
+      "{name} has been saved. Your company profile is now under review.",
     verificationCalloutBodySuffix:
       "Pari ìfìdíhanrọ̀ ákántì ṣáájú kí o tó dúró de ìfìjáde ipa tàbí àwọn àyípadà ìgbẹ́kẹ̀lé agbanisiṣẹ.",
     openAccountVerification: "Ṣí ìfìdíhanrọ̀ ákántì",
@@ -4412,7 +4552,7 @@ const YO: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "Anfani pàtàkì",
     fieldCulturePointsPlaceholder: "Awọn ìṣe àṣà",
     employerTypeExternal: "Agbanisiṣẹ ode",
-    employerTypeInternal: "Ìgbaniṣiṣẹ́ inú HenryCo",
+    employerTypeInternal: "Ìgbaniṣiṣẹ́ inú Henry Onyx",
     submitSaving: "Ńfi ile-iṣẹ pamọ...",
     submitLabel: "Fi profaili agbanisiṣẹ pamọ",
   },
@@ -4424,7 +4564,7 @@ const YO: DeepPartial<JobsCopy> = {
     emptyKicker: "Kò sí ipa tó ń ṣiṣẹ́",
     emptyTitle: "Tẹ ipa àkọ́kọ́ jáde fún agbanisiṣẹ yìí.",
     emptyBody:
-      "Lẹ́yìn tí a bá dá ipa kan sílẹ̀, àkọsílẹ̀ yìí á ṣàfihàn ipò àtúnyẹ̀wò, hiho, àti iye olubẹwẹ.",
+      "Once a role is created, this list will show its status, who can see it, and how many candidates have applied.",
     emptyAction: "Ṣí olùtọ́ ipa",
     applicantSingular: "olubẹwẹ",
     applicantPlural: "olubẹwẹ",
@@ -4507,7 +4647,7 @@ const YO: DeepPartial<JobsCopy> = {
       "Àwọn ìyípadà tí ó wà lọ́wọ́lọ́wọ́ ń pa ara wọn mọ́ ní gbogbo ìṣẹ́jú 30 àti nígbà tí o bá kúrò ní ààyè. Tẹ ‘Pa profaili mọ́’ nísàlẹ̀ láti tẹ̀jáde.",
     editSectionTitle: "Ṣàtúnṣe profaili rẹ",
     editSectionBody:
-      "Àwọn ẹ̀kúnrẹ́rẹ́ iṣẹ́ níhìn-ín han fún àwọn agbanisíṣẹ́ nígbà tí o bá ń bẹ̀rẹ̀ ìbéèrè fún ipa. HenryCo ní fóònù àti ímẹ̀ìlì rẹ fún ìdánilójú àti àmì ìgbẹ́kẹ̀lé nìkan — kì í ṣe fún àwọn agbanisíṣẹ́.",
+      "Professional details here are visible to employers when you apply to roles. Your phone number and email address are held by Henry Onyx for verification only — they are not shared with employers.",
     fieldFullNamePlaceholder: "Orúkọ kíkún",
     fieldHeadlinePlaceholder: "Àkọ́sórí",
     fieldSummaryPlaceholder: "Àkópọ̀ iṣẹ́",
@@ -4520,7 +4660,7 @@ const YO: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "Àwọn ìjápọ̀ àkójọ iṣẹ́",
     fieldSalaryExpectationPlaceholder: "Owó-oṣù tí a ń retí",
     fieldAvailabilityPlaceholder: "Wíwà",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Olórí iṣẹ́"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"Olórí iṣẹ́"}]',
     fieldEducationPlaceholder: '[{"school":"Yunifásítì","degree":"BSc"}]',
     fieldCertificationsPlaceholder: '[{"name":"Ìṣàkóso iṣẹ́"}]',
     submitSaving: "Ń pa profaili mọ́...",
@@ -4557,10 +4697,10 @@ const YO: DeepPartial<JobsCopy> = {
       "Kọ àwọn ẹ̀kúnrẹ́rẹ́ ní isàlẹ̀. Àwọn ìpolówó tuntun lè la àyẹ̀wò kúkúrú kí wọ́n tó wà ní àkànṣe.",
     subscriptionRequiredTitle: "A nílò ìforúkọsílẹ̀ láti tẹ̀jáde",
     subscriptionRequiredBodyTemplate:
-      "Ìforúkọsílẹ̀ agbanisíṣẹ́ rẹ jẹ́ «{status}». A ti dí ìtẹ̀jáde títí tí ìforúkọsílẹ̀ tó wà láàyè yóò fi wà. Kàn sí ẹgbẹ́ HenryCo láti tún ṣe kí o tó tẹ̀jáde.",
+      "Your employer subscription is no longer active. Posting is blocked until a live subscription is in place. Contact support to renew.",
     subscriptionPendingTitle: "Ìforúkọsílẹ̀ ń dúró",
     subscriptionPendingBody:
-      "Ìtẹ̀jáde àwọn ipa yóò nílò ìforúkọsílẹ̀ agbanisíṣẹ́ tó ń ṣiṣẹ́ nígbà tí ìsanwó bá bẹ̀rẹ̀. O lè tẹ̀jáde lónìí; dúró fún ìfọwọ́sí láti ẹgbẹ́ HenryCo nípa yíyàn ètò.",
+      "Employer subscriptions are coming. You can publish roles today — we will be in touch when a plan is ready.",
     verificationGateBodySuffix: "Ìtẹ̀jáde iṣẹ́ máa ń dí títí ìfọwọ́sí àyẹ̀wò yẹn yóò fi parí.",
     directPublishingTitle: "Ìtẹ̀jáde tààrà ṣeé wà",
     directPublishingBody:
@@ -4594,11 +4734,11 @@ const YO: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "Ìṣirò agbanisíṣẹ́",
     metaDescription:
-      "Tọpinpin ìjáde àwọn ipa, ìkójọ ìṣàn ìwákírí, àti ipò ìfọwọ́sí lórí gbogbo ọ̀nà ìgbaniṣẹ́ rẹ.",
+      "Track active roles, applicant volume, and where candidates are in your hiring process.",
     eyebrow: "Ọgbọ́n ìgbaniṣẹ́",
     pageTitle: "Ìṣirò agbanisíṣẹ́",
     pageSubtitle:
-      "Tọpinpin ìjáde àwọn ipa, ìkójọ ìṣàn ìwákírí, àti ipò ìfọwọ́sí.",
+      "Track active roles, applicant volume, and where candidates are in your hiring process.",
     heroBody:
       "Wo bí àwọn ipa rẹ ṣe ń yí padà láti ìfojúsọ́nà títí dé ìgbaniṣẹ́ — gbogbo àpótí àti ipele ń sọnà lójú ẹsẹ̀ bí àwọn olùbéèrè ṣe ń tẹ̀síwájú.",
     tileJobsLabel: "Iṣẹ́",
@@ -4687,7 +4827,7 @@ const YO: DeepPartial<JobsCopy> = {
     networkError: "Àṣìṣe nẹ́tíwọ̀ọ̀kì. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan si.",
   },
   hirePage: {
-    metaTitle: "Gbà iṣẹ́ pẹ̀lú ìtọ́sọ́nà — HenryCo Jobs",
+    metaTitle: "Gbà iṣẹ́ pẹ̀lú ìtọ́sọ́nà — Henry Onyx Jobs",
     metaDescription:
       "Ṣeéde àwọn ipa gidi, ka àwọn ohun elo ní ibi kan, kí o sì gbé àwọn oludije lọ nípa àwọn ìpele tí a lè ríi.",
     eyebrow: "Fún àwọn agbanisẹ́ṣẹ",
@@ -4698,7 +4838,7 @@ const YO: DeepPartial<JobsCopy> = {
       "Ṣíṣe àtẹ̀jáde àwọn ipa tààràtà nilo ẹlẹ́wọ̀ agbanisẹ́ṣẹ tí ó wà ní ṣíṣẹ. Àwọn oludije máa ń wò lọ́fẹ̀ẹ́ nígbà gbogbo.",
     ctaSignedIn: "Lọ sí ìṣọ̀kan ilé-iṣẹ́",
     ctaSignedOut: "Bẹ̀rẹ̀ gbíjà iṣẹ́ — forúkọ silẹ̀ lọ́fẹ̀ẹ́",
-    ctaLogin: "Mo ti ní àkọọ́ntì HenryCo",
+    ctaLogin: "Mo ti ní àkọọ́ntì Henry Onyx",
     ctaBrowseCandidates: "Wò àwọn oludije",
     featureVerificationLabel: "Ìfọwọ́sí",
     featureVerificationValue: "Àgbeyẹ̀wò ọwọ́ — kò sí ìsanwó látọ̀dọ̀ àmì",
@@ -4736,7 +4876,7 @@ const YO: DeepPartial<JobsCopy> = {
     questionsPrefix: "Àwọn ìbéèrè?",
   },
   candidateHome: {
-    metaTitle: "Ibùdó oludije — HenryCo Jobs",
+    metaTitle: "Ibùdó oludije — Henry Onyx Jobs",
     metaDescription:
       "Tọpìnpìn àkọsílẹ̀ rẹ, àwọn ohun elo, àwọn ipa tí a fi pamọ́, àti àwọn ìmúdójúìwọ̀n láti ọ̀dọ̀ àwọn agbẹjọ — gbogbo wọn ní ibi kan.",
     pageTitle: "Ibùdó oludije",
@@ -4875,7 +5015,7 @@ const HA: DeepPartial<JobsCopy> = {
       "Ana shirya ɗakin. Mai yi maka hira zai raba muku haɗin taro a tattaunawa nan ba da daɗewa ba.",
     tabNotes: "Bayanan kula",
     chatHint:
-      "Mai bayar da bidiyo ne ke samar da tattaunawar ɗakin. Yi amfani da ita don raba haɗi yayin kira.",
+      "Use the in-room chat to share links during the call.",
     notesLabel: "Bayanai masu zaman kansu",
     notesPlaceholder:
       "Rubuta abubuwan da ka lura da su. Tawagar ɗaukar ma'aikata ke kaɗai za ta gansu.",
@@ -5001,7 +5141,7 @@ const HA: DeepPartial<JobsCopy> = {
       "Kasancewar da aka tabbatar wadda masu daukar ma'aikata da masu nema za su iya amincewa da ita.",
     profileSavedNoticeTitle: "An adana bayanan ma'aikaci",
     profileSavedNoticeBodyTemplate:
-      "An adana {name}. Bayanan kamfaninka yanzu yana cikin jerin jiran tabbatarwa.",
+      "{name} has been saved. Your company profile is now under review.",
     verificationCalloutBodySuffix:
       "Kammala tabbatar da asusu kafin ka yi tsammanin sakin matsayi ko inganta amincewar ma'aikaci.",
     openAccountVerification: "Buɗe tabbatar da asusu",
@@ -5020,7 +5160,7 @@ const HA: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "Manyan amfanin",
     fieldCulturePointsPlaceholder: "Abubuwan al'ada",
     employerTypeExternal: "Ma'aikaci na waje",
-    employerTypeInternal: "Daukar ma'aikata na cikin HenryCo",
+    employerTypeInternal: "Daukar ma'aikata na cikin Henry Onyx",
     submitSaving: "Ana adana kamfani...",
     submitLabel: "Adana bayanan ma'aikaci",
   },
@@ -5032,7 +5172,7 @@ const HA: DeepPartial<JobsCopy> = {
     emptyKicker: "Babu ayyukan aiki",
     emptyTitle: "Wallafa aiki na farko don wannan ma'aikaci.",
     emptyBody:
-      "Da zarar an ƙirƙira aiki, wannan jeri zai bibiyi yanayin tantancewa, ganuwa, da yawan masu nema.",
+      "Once a role is created, this list will show its status, who can see it, and how many candidates have applied.",
     emptyAction: "Buɗe mai gina aiki",
     applicantSingular: "mai nema",
     applicantPlural: "masu nema",
@@ -5115,7 +5255,7 @@ const HA: DeepPartial<JobsCopy> = {
       "Canje-canjen da ake yi yanzu suna adana kansu kowane sakan 30 da lokacin da ka bar maɓallin. Danna ‘Adana bayanin’ a ƙasa don wallafa.",
     editSectionTitle: "Gyara bayanin ka",
     editSectionBody:
-      "Bayanan sana'a a nan suna bayyana ga ma'aikata lokacin da kake neman ayyuka. HenryCo na riƙe da waya da imel don tantancewa da kimar amincewa kawai — ba a aika su ga ma'aikata ba.",
+      "Professional details here are visible to employers when you apply to roles. Your phone number and email address are held by Henry Onyx for verification only — they are not shared with employers.",
     fieldFullNamePlaceholder: "Cikakken suna",
     fieldHeadlinePlaceholder: "Kanun bayani",
     fieldSummaryPlaceholder: "Taƙaitaccen sana'a",
@@ -5128,7 +5268,7 @@ const HA: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "Hanyoyin haɗin fayil",
     fieldSalaryExpectationPlaceholder: "Albashin da ake tsammanin",
     fieldAvailabilityPlaceholder: "Samuwa",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Jagoran ayyuka"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"Jagoran ayyuka"}]',
     fieldEducationPlaceholder: '[{"school":"Jami\'a","degree":"BSc"}]',
     fieldCertificationsPlaceholder: '[{"name":"Gudanar da ayyuka"}]',
     submitSaving: "Ana adana bayani...",
@@ -5165,10 +5305,10 @@ const HA: DeepPartial<JobsCopy> = {
       "Cika bayanan da ke ƙasa. Sabbin tallace-tallace na iya wuce ta dubawar gajere kafin a buga su.",
     subscriptionRequiredTitle: "Ana buƙatar biyan kuɗi don bugawa",
     subscriptionRequiredBodyTemplate:
-      "Biyan kuɗin ma'aikaci na ka shine «{status}». An toshe bugawa har sai akwai biyan kuɗi mai aiki. Tuntuɓi ƙungiyar HenryCo don sabuntawa kafin bugawa.",
+      "Your employer subscription is no longer active. Posting is blocked until a live subscription is in place. Contact support to renew.",
     subscriptionPendingTitle: "Biyan kuɗi yana jira",
     subscriptionPendingBody:
-      "Buga ayyuka zai buƙaci biyan kuɗin ma'aikaci mai aiki lokacin da aka kunna lissafin kuɗi. Kana iya bugawa a yau; ka jira mu kira kai daga ƙungiyar HenryCo game da zaɓin shirin.",
+      "Employer subscriptions are coming. You can publish roles today — we will be in touch when a plan is ready.",
     verificationGateBodySuffix: "Buga ayyuka zai ci gaba da toshe har sai an amince da wannan dubawa.",
     directPublishingTitle: "Bugawa kai tsaye yana samuwa",
     directPublishingBody:
@@ -5202,11 +5342,11 @@ const HA: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "Bayanan ma'aikaci",
     metaDescription:
-      "Bibiyi yawan ayyukan da aka buga, taron tashar daukar ma'aikata, da matsayin tabbatarwa a kowane bangare na daukar aikinka.",
+      "Track active roles, applicant volume, and where candidates are in your hiring process.",
     eyebrow: "Hankalin daukar ma'aikata",
     pageTitle: "Bayanan ma'aikaci",
     pageSubtitle:
-      "Bibiyi yawan ayyukan da aka buga, taron tashar daukar ma'aikata, da matsayin tabbatarwa.",
+      "Track active roles, applicant volume, and where candidates are in your hiring process.",
     heroBody:
       "Duba yadda ayyukanka ke juyawa daga kallo har zuwa daukar ma'aikaci — kowane kati da mataki suna sabuntawa nan take yayin da ‘yan takara ke ci gaba.",
     tileJobsLabel: "Ayyuka",
@@ -5295,7 +5435,7 @@ const HA: DeepPartial<JobsCopy> = {
     networkError: "Matsalar cibiyar sadarwa. Da fatan za a sake gwadawa.",
   },
   hirePage: {
-    metaTitle: "Yi hayar ma'aikata da fayyace — HenryCo Jobs",
+    metaTitle: "Yi hayar ma'aikata da fayyace — Henry Onyx Jobs",
     metaDescription:
       "Buga ayyuka na gaske, karanta nema a wuri guda, kuma matsa 'yan takara ta matakai bayyanannun.",
     eyebrow: "Ga ma'aikata",
@@ -5306,7 +5446,7 @@ const HA: DeepPartial<JobsCopy> = {
       "Buga ayyukan rayuwa yana bukata kuɗin subscriben mai aiki na ma'aikaci. 'Yan takara suna bincike kyauta koyaushe.",
     ctaSignedIn: "Je zuwa saita kamfani",
     ctaSignedOut: "Fara hayar ma'aikata — yi rajista kyauta",
-    ctaLogin: "Ina da asusun HenryCo",
+    ctaLogin: "Ina da asusun Henry Onyx",
     ctaBrowseCandidates: "Duba 'yan takara",
     featureVerificationLabel: "Tabbatarwa",
     featureVerificationValue: "Bincike da hannu — ba tare da biyan kuɗi ba",
@@ -5344,7 +5484,7 @@ const HA: DeepPartial<JobsCopy> = {
     questionsPrefix: "Tambayoyi?",
   },
   candidateHome: {
-    metaTitle: "Cibiyar dan takara — HenryCo Jobs",
+    metaTitle: "Cibiyar dan takara — Henry Onyx Jobs",
     metaDescription:
       "Bi sawun bayananku, nema, rawar da aka ajiye, da sabuntawa daga masu daukar ma'aikata — duk a wuri guda.",
     pageTitle: "Cibiyar dan takara",
@@ -5484,7 +5624,7 @@ const DE: DeepPartial<JobsCopy> = {
     tabChat: "Chat",
     tabNotes: "Notizen",
     chatHint:
-      "Der Raum-Chat wird vom Videoanbieter bereitgestellt. Nutzen Sie ihn, um Links während des Gesprächs zu teilen.",
+      "Nutzen Sie den Raum-Chat, um Links während des Gesprächs zu teilen.",
     notesLabel: "Private Notizen",
     notesPlaceholder:
       "Halten Sie Ihre Beobachtungen fest. Sichtbar ausschließlich für Ihr Recruiting-Team.",
@@ -5610,7 +5750,7 @@ const DE: DeepPartial<JobsCopy> = {
       "Eine verifizierte Präsenz, der Recruiter und Bewerber vertrauen können.",
     profileSavedNoticeTitle: "Arbeitgeberprofil gespeichert",
     profileSavedNoticeBodyTemplate:
-      "{name} wurde gespeichert. Ihr Unternehmensprofil befindet sich nun in der Verifizierungswarteschlange.",
+      "{name} wurde gespeichert. Ihr Unternehmensprofil wird nun geprüft.",
     verificationCalloutBodySuffix:
       "Schließen Sie die Kontoverifizierung ab, bevor Sie mit der Stellenveröffentlichung oder Upgrades des Arbeitgebervertrauens rechnen.",
     openAccountVerification: "Kontoverifizierung öffnen",
@@ -5629,7 +5769,7 @@ const DE: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "Leistungen im Überblick",
     fieldCulturePointsPlaceholder: "Kulturpunkte",
     employerTypeExternal: "Externer Arbeitgeber",
-    employerTypeInternal: "Interne HenryCo-Einstellung",
+    employerTypeInternal: "Interne Henry Onyx-Einstellung",
     submitSaving: "Unternehmen wird gespeichert...",
     submitLabel: "Arbeitgeberprofil speichern",
   },
@@ -5641,7 +5781,7 @@ const DE: DeepPartial<JobsCopy> = {
     emptyKicker: "Keine aktiven Stellen",
     emptyTitle: "Veröffentlichen Sie die erste Stelle für diesen Arbeitgeber.",
     emptyBody:
-      "Sobald eine Stelle erstellt ist, zeigt diese Liste Moderationsstatus, Sichtbarkeit und Bewerberaufkommen.",
+      "Sobald eine Stelle erstellt ist, zeigt diese Liste ihren Status, wer sie sehen kann und wie viele Bewerbungen eingegangen sind.",
     emptyAction: "Stellenbaukasten öffnen",
     applicantSingular: "Bewerber",
     applicantPlural: "Bewerber",
@@ -5701,7 +5841,7 @@ const DE: DeepPartial<JobsCopy> = {
   candidateProfile: {
     pageTitle: "Bewerberprofil",
     pageSubtitle:
-      "Halten Sie Ihr Profil vollständig, damit Arbeitgeber die beste Version von Ihnen sehen.",
+      "Halten Sie Ihr Profil vollständig, damit Arbeitgeber ein genaues, aktuelles Bild von Ihnen sehen.",
     rightRailTrustTitle: "Profilvertrauen",
     rightRailVerificationKicker: "Verifizierung",
     rightRailDefaultReadiness:
@@ -5724,7 +5864,7 @@ const DE: DeepPartial<JobsCopy> = {
       "Laufende Änderungen werden alle 30 Sekunden und beim Verlassen des Feldes automatisch gespeichert. Drücken Sie unten auf „Profil speichern“, um zu veröffentlichen.",
     editSectionTitle: "Profil bearbeiten",
     editSectionBody:
-      "Berufliche Angaben hier sind für Arbeitgeber sichtbar, wenn Sie sich auf Stellen bewerben. Telefon und E-Mail werden von HenryCo nur zur Verifizierung und Vertrauensbewertung gespeichert — sie werden nicht an Arbeitgeber weitergegeben.",
+      "Berufliche Angaben hier sind für Arbeitgeber sichtbar, wenn Sie sich auf Stellen bewerben. Ihre Telefonnummer und E-Mail-Adresse werden von Henry Onyx nur zur Verifizierung gespeichert — sie werden nicht an Arbeitgeber weitergegeben.",
     fieldFullNamePlaceholder: "Vollständiger Name",
     fieldHeadlinePlaceholder: "Schlagzeile",
     fieldSummaryPlaceholder: "Berufliche Zusammenfassung",
@@ -5737,7 +5877,7 @@ const DE: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "Portfolio-Links",
     fieldSalaryExpectationPlaceholder: "Gehaltsvorstellung",
     fieldAvailabilityPlaceholder: "Verfügbarkeit",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"Operations-Leiter"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"Operations-Leiter"}]',
     fieldEducationPlaceholder: '[{"school":"Universität","degree":"BSc"}]',
     fieldCertificationsPlaceholder: '[{"name":"Projektmanagement"}]',
     submitSaving: "Profil wird gespeichert...",
@@ -5774,10 +5914,10 @@ const DE: DeepPartial<JobsCopy> = {
       "Füllen Sie die Details unten aus. Neue Anzeigen können vor der Veröffentlichung eine kurze Prüfung durchlaufen.",
     subscriptionRequiredTitle: "Abonnement zur Veröffentlichung erforderlich",
     subscriptionRequiredBodyTemplate:
-      "Ihr Arbeitgeber-Abonnement ist „{status}“. Die Veröffentlichung ist blockiert, bis ein aktives Abonnement vorliegt. Wenden Sie sich an das HenryCo-Team, um vor der Veröffentlichung zu verlängern.",
+      "Ihr Arbeitgeber-Abonnement ist nicht mehr aktiv. Die Veröffentlichung ist blockiert, bis ein aktives Abonnement vorliegt. Wenden Sie sich zur Verlängerung an den Support.",
     subscriptionPendingTitle: "Abonnement ausstehend",
     subscriptionPendingBody:
-      "Das Veröffentlichen von Stellen erfordert ein aktives Arbeitgeber-Abonnement, sobald die Abrechnung eingeführt wird. Sie können heute veröffentlichen; erwarten Sie eine Nachfrage des HenryCo-Teams zur Tarifauswahl.",
+      "Arbeitgeber-Abonnements kommen bald. Sie können heute Stellen veröffentlichen — wir melden uns, sobald ein Tarif für Sie bereitsteht.",
     verificationGateBodySuffix: "Die Stellenausschreibung bleibt blockiert, bis diese Prüfung genehmigt ist.",
     directPublishingTitle: "Direkte Veröffentlichung verfügbar",
     directPublishingBody:
@@ -5811,11 +5951,11 @@ const DE: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "Arbeitgeber-Analytik",
     metaDescription:
-      "Verfolgen Sie Stellenproduktion, Pipeline-Konzentration und Verifizierungsstatus entlang Ihres gesamten Einstellungstrichters.",
+      "Verfolgen Sie aktive Stellen, Bewerberzahlen und wo sich Kandidaten in Ihrem Einstellungsprozess befinden.",
     eyebrow: "Recruiting-Intelligenz",
     pageTitle: "Arbeitgeber-Analytik",
     pageSubtitle:
-      "Verfolgen Sie Stellenproduktion, Pipeline-Konzentration und Verifizierungsstatus.",
+      "Verfolgen Sie aktive Stellen, Bewerberzahlen und wo sich Kandidaten in Ihrem Einstellungsprozess befinden.",
     heroBody:
       "Beobachten Sie, wie Ihre Rollen von Anzeigen-Impressionen bis zur Einstellung konvertieren — jede Kachel und jede Phase aktualisiert sich in Echtzeit.",
     tileJobsLabel: "Stellen",
@@ -5904,7 +6044,7 @@ const DE: DeepPartial<JobsCopy> = {
     networkError: "Netzwerkfehler. Bitte versuche es erneut.",
   },
   hirePage: {
-    metaTitle: "Klar einstellen — HenryCo Jobs",
+    metaTitle: "Klar einstellen — Henry Onyx Jobs",
     metaDescription:
       "Echte Stellen ausschreiben, Bewerbungen an einem Ort lesen, Kandidaten durch sichtbare Stufen führen.",
     eyebrow: "Für Arbeitgeber",
@@ -5915,7 +6055,7 @@ const DE: DeepPartial<JobsCopy> = {
       "Für die Veröffentlichung von Live-Stellen ist ein aktives Arbeitgeber-Abonnement erforderlich. Kandidaten surfen immer kostenlos.",
     ctaSignedIn: "Zur Unternehmenseinrichtung",
     ctaSignedOut: "Einstellen beginnen — kostenlos registrieren",
-    ctaLogin: "Ich habe bereits ein HenryCo-Konto",
+    ctaLogin: "Ich habe bereits ein Henry Onyx-Konto",
     ctaBrowseCandidates: "Kandidaten durchsuchen",
     featureVerificationLabel: "Verifizierung",
     featureVerificationValue: "Manuelle Prüfung — kein Pay-to-play",
@@ -5953,7 +6093,7 @@ const DE: DeepPartial<JobsCopy> = {
     questionsPrefix: "Fragen?",
   },
   candidateHome: {
-    metaTitle: "Kandidaten-Hub — HenryCo Jobs",
+    metaTitle: "Kandidaten-Hub — Henry Onyx Jobs",
     metaDescription:
       "Verfolgen Sie Ihr Profil, Bewerbungen, gespeicherte Stellen und Recruiter-Updates — alles an einem Ort.",
     pageTitle: "Kandidaten-Hub",
@@ -6090,7 +6230,7 @@ const ZH: DeepPartial<JobsCopy> = {
     iframeTitle: "视频面试间",
     placeholder: "面试间正在准备中。面试官稍后会在聊天中发送会议链接。",
     tabNotes: "笔记",
-    chatHint: "面试间聊天由视频服务方提供。可在通话期间用于分享链接。",
+    chatHint: "可在通话期间使用面试间聊天分享链接。",
     notesLabel: "私人笔记",
     notesPlaceholder: "记录你的观察。仅你的招聘团队可见。",
     notesSaving: "保存中…",
@@ -6201,7 +6341,7 @@ const ZH: DeepPartial<JobsCopy> = {
     rightRailTipPolicies: "工作政策、办公地点和文化要点，消除模糊。",
     rightRailTipVerified: "招聘者和候选人都能信赖的认证形象。",
     profileSavedNoticeTitle: "雇主资料已保存",
-    profileSavedNoticeBodyTemplate: "{name} 已保存。您的公司资料已进入认证队列。",
+    profileSavedNoticeBodyTemplate: "{name} 已保存。您的公司资料正在审核中。",
     verificationCalloutBodySuffix: "请先完成账户认证，再期待职位发布或雇主信任升级解锁。",
     openAccountVerification: "打开账户认证",
     sectionTitle: "公司详情",
@@ -6218,7 +6358,7 @@ const ZH: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "核心福利",
     fieldCulturePointsPlaceholder: "文化要点",
     employerTypeExternal: "外部雇主",
-    employerTypeInternal: "HenryCo 内部招聘",
+    employerTypeInternal: "Henry Onyx 内部招聘",
     submitSaving: "正在保存公司...",
     submitLabel: "保存雇主资料",
   },
@@ -6229,7 +6369,7 @@ const ZH: DeepPartial<JobsCopy> = {
     postRoleCta: "发布职位",
     emptyKicker: "暂无在招职位",
     emptyTitle: "为此雇主发布第一个职位。",
-    emptyBody: "创建职位后，此列表将显示审核状态、可见性以及候选人数量。",
+    emptyBody: "创建职位后，此列表将显示职位状态、可见范围以及已申请的候选人数量。",
     emptyAction: "打开职位编辑器",
     applicantSingular: "候选人",
     applicantPlural: "候选人",
@@ -6302,7 +6442,7 @@ const ZH: DeepPartial<JobsCopy> = {
     draftSectionBody: "进行中的更改每 30 秒以及失去焦点时自动保存。点击下方“保存资料”发布。",
     editSectionTitle: "编辑资料",
     editSectionBody:
-      "此处的职业信息在你申请职位时对雇主可见。电话和邮箱仅由 HenryCo 用于认证和信任评分 — 不会传递给雇主。",
+      "此处的职业信息在你申请职位时对雇主可见。你的电话号码和邮箱仅由 Henry Onyx 用于认证 — 不会与雇主共享。",
     fieldFullNamePlaceholder: "全名",
     fieldHeadlinePlaceholder: "标题",
     fieldSummaryPlaceholder: "职业简介",
@@ -6315,7 +6455,7 @@ const ZH: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "作品集链接",
     fieldSalaryExpectationPlaceholder: "期望薪资",
     fieldAvailabilityPlaceholder: "可用时间",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"运营主管"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"运营主管"}]',
     fieldEducationPlaceholder: '[{"school":"大学","degree":"学士"}]',
     fieldCertificationsPlaceholder: '[{"name":"项目管理"}]',
     submitSaving: "正在保存资料...",
@@ -6348,10 +6488,10 @@ const ZH: DeepPartial<JobsCopy> = {
     formSectionBody: "填写以下详情。新职位在上线前可能会经过简短审核。",
     subscriptionRequiredTitle: "发布需要订阅",
     subscriptionRequiredBodyTemplate:
-      "你的雇主订阅为「{status}」。在订阅有效之前，发布将被阻止。请联系 HenryCo 团队在发布前续订。",
+      "你的雇主订阅已失效。在订阅有效之前，发布将被阻止。请联系客服续订。",
     subscriptionPendingTitle: "订阅待处理",
     subscriptionPendingBody:
-      "计费功能上线后，发布职位将需要有效的雇主订阅。你今天可以发布；请等待 HenryCo 团队就方案选择与你跟进。",
+      "雇主订阅即将推出。你今天即可发布职位 — 方案就绪后我们会与你联系。",
     verificationGateBodySuffix: "在该审核获得批准之前，发布职位将保持被阻止。",
     directPublishingTitle: "可直接发布",
     directPublishingBody: "你的账户可以直接发布职位。提交后立即上线。",
@@ -6383,10 +6523,10 @@ const ZH: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "雇主分析",
     metaDescription:
-      "全程追踪职位发布、招聘漏斗分布与认证状态。",
+      "追踪活跃职位、申请人数量以及候选人在招聘流程中的进展。",
     eyebrow: "招聘洞察",
     pageTitle: "雇主分析",
-    pageSubtitle: "追踪职位发布、招聘漏斗分布与认证状态。",
+    pageSubtitle: "追踪活跃职位、申请人数量以及候选人在招聘流程中的进展。",
     heroBody:
       "查看您的职位如何从曝光转化为录用 — 候选人每一步进展，所有指标和阶段都会实时更新。",
     tileJobsLabel: "职位",
@@ -6473,7 +6613,7 @@ const ZH: DeepPartial<JobsCopy> = {
     networkError: "网络错误，请重试。",
   },
   hirePage: {
-    metaTitle: "清晰招聘 — HenryCo Jobs",
+    metaTitle: "清晰招聘 — Henry Onyx Jobs",
     metaDescription:
       "发布真实职位，在一处阅读申请，通过可见阶段推进候选人流程。",
     eyebrow: "面向雇主",
@@ -6484,7 +6624,7 @@ const ZH: DeepPartial<JobsCopy> = {
       "发布实时职位需要有效的雇主订阅。候选人始终免费浏览；订阅费用用于审核、反欺诈和候选人信任信号。",
     ctaSignedIn: "前往公司设置",
     ctaSignedOut: "开始招聘 — 免费注册",
-    ctaLogin: "我已有 HenryCo 账户",
+    ctaLogin: "我已有 Henry Onyx 账户",
     ctaBrowseCandidates: "浏览候选人",
     featureVerificationLabel: "验证",
     featureVerificationValue: "人工审核 — 无需付费",
@@ -6522,7 +6662,7 @@ const ZH: DeepPartial<JobsCopy> = {
     questionsPrefix: "有疑问？",
   },
   candidateHome: {
-    metaTitle: "候选人中心 — HenryCo Jobs",
+    metaTitle: "候选人中心 — Henry Onyx Jobs",
     metaDescription:
       "在一处跟踪您的档案、申请、保存的职位和招聘方更新。",
     pageTitle: "候选人中心",
@@ -6661,7 +6801,7 @@ const HI: DeepPartial<JobsCopy> = {
       "कक्ष तैयार किया जा रहा है। आपके साक्षात्कारकर्ता शीघ्र ही चैट में मीटिंग लिंक साझा करेंगे।",
     tabNotes: "नोट्स",
     chatHint:
-      "कक्ष चैट वीडियो प्रदाता द्वारा उपलब्ध कराई जाती है। कॉल के दौरान लिंक साझा करने के लिए इसका उपयोग करें।",
+      "कॉल के दौरान लिंक साझा करने के लिए कक्ष चैट का उपयोग करें।",
     notesLabel: "निजी नोट्स",
     notesPlaceholder:
       "अपने अवलोकन दर्ज करें। केवल आपकी भर्ती टीम को दिखाई देंगे।",
@@ -6787,7 +6927,7 @@ const HI: DeepPartial<JobsCopy> = {
       "एक सत्यापित उपस्थिति जिस पर भर्तीकर्ता और उम्मीदवार भरोसा कर सकते हैं।",
     profileSavedNoticeTitle: "नियोक्ता प्रोफ़ाइल सहेज ली गई",
     profileSavedNoticeBodyTemplate:
-      "{name} सहेज लिया गया है। आपकी कंपनी की प्रोफ़ाइल अब सत्यापन कतार में है।",
+      "{name} सहेज लिया गया है। आपकी कंपनी की प्रोफ़ाइल अब समीक्षा में है।",
     verificationCalloutBodySuffix:
       "भूमिका प्रकाशन या नियोक्ता विश्वास उन्नयन को अनलॉक होने की उम्मीद करने से पहले खाता सत्यापन पूरा करें।",
     openAccountVerification: "खाता सत्यापन खोलें",
@@ -6806,7 +6946,7 @@ const HI: DeepPartial<JobsCopy> = {
     fieldBenefitsHeadlinePlaceholder: "प्रमुख लाभ",
     fieldCulturePointsPlaceholder: "सांस्कृतिक बिंदु",
     employerTypeExternal: "बाहरी नियोक्ता",
-    employerTypeInternal: "आंतरिक HenryCo भर्ती",
+    employerTypeInternal: "आंतरिक Henry Onyx भर्ती",
     submitSaving: "कंपनी सहेजी जा रही है...",
     submitLabel: "नियोक्ता प्रोफ़ाइल सहेजें",
   },
@@ -6818,7 +6958,7 @@ const HI: DeepPartial<JobsCopy> = {
     emptyKicker: "कोई सक्रिय भूमिका नहीं",
     emptyTitle: "इस नियोक्ता के लिए पहली भूमिका पोस्ट करें.",
     emptyBody:
-      "एक बार भूमिका बनाने के बाद, यह सूची मॉडरेशन स्थिति, दृश्यता और आवेदकों की संख्या दिखाएगी.",
+      "एक बार भूमिका बनाने के बाद, यह सूची उसकी स्थिति, उसे कौन देख सकता है, और कितने उम्मीदवारों ने आवेदन किया है, दिखाएगी.",
     emptyAction: "नौकरी बिल्डर खोलें",
     applicantSingular: "आवेदक",
     applicantPlural: "आवेदक",
@@ -6901,7 +7041,7 @@ const HI: DeepPartial<JobsCopy> = {
       "चल रहे बदलाव हर 30 सेकंड और फ़ोकस खोने पर स्वतः सहेजे जाते हैं. प्रकाशित करने के लिए नीचे ‘प्रोफ़ाइल सहेजें’ दबाएँ.",
     editSectionTitle: "अपनी प्रोफ़ाइल संपादित करें",
     editSectionBody:
-      "यहाँ की पेशेवर जानकारी आवेदन करते समय नियोक्ताओं को दिखाई देती है. फ़ोन और ईमेल HenryCo केवल सत्यापन और विश्वास स्कोरिंग के लिए रखता है — इन्हें नियोक्ताओं को नहीं भेजा जाता.",
+      "यहाँ की पेशेवर जानकारी आवेदन करते समय नियोक्ताओं को दिखाई देती है. आपका फ़ोन नंबर और ईमेल पता Henry Onyx केवल सत्यापन के लिए रखता है — इन्हें नियोक्ताओं के साथ साझा नहीं किया जाता.",
     fieldFullNamePlaceholder: "पूरा नाम",
     fieldHeadlinePlaceholder: "शीर्षक",
     fieldSummaryPlaceholder: "पेशेवर सारांश",
@@ -6914,7 +7054,7 @@ const HI: DeepPartial<JobsCopy> = {
     fieldPortfolioLinksPlaceholder: "पोर्टफ़ोलियो लिंक",
     fieldSalaryExpectationPlaceholder: "वेतन अपेक्षा",
     fieldAvailabilityPlaceholder: "उपलब्धता",
-    fieldWorkHistoryPlaceholder: '[{"company":"HenryCo","title":"संचालन प्रमुख"}]',
+    fieldWorkHistoryPlaceholder: '[{"company":"Henry Onyx","title":"संचालन प्रमुख"}]',
     fieldEducationPlaceholder: '[{"school":"विश्वविद्यालय","degree":"BSc"}]',
     fieldCertificationsPlaceholder: '[{"name":"परियोजना प्रबंधन"}]',
     submitSaving: "प्रोफ़ाइल सहेजी जा रही है...",
@@ -6951,10 +7091,10 @@ const HI: DeepPartial<JobsCopy> = {
       "नीचे विवरण भरें. नई पोस्ट लाइव होने से पहले संक्षिप्त समीक्षा से गुज़र सकती हैं.",
     subscriptionRequiredTitle: "प्रकाशन के लिए सब्सक्रिप्शन आवश्यक",
     subscriptionRequiredBodyTemplate:
-      "आपकी नियोक्ता सब्सक्रिप्शन «{status}» है. सक्रिय सब्सक्रिप्शन लागू होने तक पोस्टिंग अवरुद्ध है. प्रकाशन से पहले नवीनीकरण के लिए HenryCo टीम से संपर्क करें.",
+      "आपकी नियोक्ता सब्सक्रिप्शन अब सक्रिय नहीं है. सक्रिय सब्सक्रिप्शन लागू होने तक पोस्टिंग अवरुद्ध है. नवीनीकरण के लिए सहायता टीम से संपर्क करें.",
     subscriptionPendingTitle: "सब्सक्रिप्शन लंबित",
     subscriptionPendingBody:
-      "बिलिंग शुरू होने के बाद भूमिकाएँ पोस्ट करने के लिए सक्रिय नियोक्ता सब्सक्रिप्शन की आवश्यकता होगी. आप आज प्रकाशित कर सकते हैं; योजना चयन के बारे में HenryCo टीम का अनुवर्ती अपेक्षा करें.",
+      "नियोक्ता सब्सक्रिप्शन जल्द आ रही हैं. आप आज भूमिकाएँ प्रकाशित कर सकते हैं — योजना तैयार होने पर हम आपसे संपर्क करेंगे.",
     verificationGateBodySuffix: "जब तक उस समीक्षा को मंज़ूरी नहीं मिलती, नौकरी पोस्टिंग अवरुद्ध रहती है.",
     directPublishingTitle: "सीधा प्रकाशन उपलब्ध",
     directPublishingBody:
@@ -6988,11 +7128,11 @@ const HI: DeepPartial<JobsCopy> = {
   employerAnalytics: {
     metaTitle: "नियोक्ता विश्लेषण",
     metaDescription:
-      "अपने भर्ती फ़नल में भूमिका प्रकाशन, पाइपलाइन सघनता और सत्यापन स्थिति को ट्रैक करें।",
+      "सक्रिय भूमिकाएँ, आवेदकों की संख्या और आपकी भर्ती प्रक्रिया में उम्मीदवार कहाँ हैं, ट्रैक करें।",
     eyebrow: "भर्ती इंटेलिजेंस",
     pageTitle: "नियोक्ता विश्लेषण",
     pageSubtitle:
-      "भूमिका प्रकाशन, पाइपलाइन सघनता और सत्यापन स्थिति को ट्रैक करें।",
+      "सक्रिय भूमिकाएँ, आवेदकों की संख्या और आपकी भर्ती प्रक्रिया में उम्मीदवार कहाँ हैं, ट्रैक करें।",
     heroBody:
       "देखें कि आपकी भूमिकाएँ इम्प्रेशन से लेकर भर्ती तक कैसे परिवर्तित होती हैं — उम्मीदवारों के बढ़ने पर हर टाइल और चरण रीयल-टाइम में अपडेट होता रहता है।",
     tileJobsLabel: "भूमिकाएँ",
@@ -7081,7 +7221,7 @@ const HI: DeepPartial<JobsCopy> = {
     networkError: "नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।",
   },
   hirePage: {
-    metaTitle: "स्पष्टता से भर्ती करें — HenryCo Jobs",
+    metaTitle: "स्पष्टता से भर्ती करें — Henry Onyx Jobs",
     metaDescription:
       "वास्तविक भूमिकाएँ पोस्ट करें, एक स्थान पर आवेदन पढ़ें और दृश्यमान चरणों के माध्यम से उम्मीदवारों को आगे बढ़ाएं।",
     eyebrow: "नियोक्ताओं के लिए",
@@ -7092,7 +7232,7 @@ const HI: DeepPartial<JobsCopy> = {
       "लाइव भूमिकाएँ पोस्ट करने के लिए सक्रिय नियोक्ता सदस्यता आवश्यक है। उम्मीदवार हमेशा मुफ़्त में ब्राउज़ करते हैं।",
     ctaSignedIn: "कंपनी सेटअप पर जाएं",
     ctaSignedOut: "भर्ती शुरू करें — मुफ़्त साइन अप",
-    ctaLogin: "मेरे पास पहले से HenryCo खाता है",
+    ctaLogin: "मेरे पास पहले से Henry Onyx खाता है",
     ctaBrowseCandidates: "उम्मीदवार देखें",
     featureVerificationLabel: "सत्यापन",
     featureVerificationValue: "मैनुअल समीक्षा — पे-टु-प्ले नहीं",
@@ -7130,7 +7270,7 @@ const HI: DeepPartial<JobsCopy> = {
     questionsPrefix: "प्रश्न?",
   },
   candidateHome: {
-    metaTitle: "उम्मीदवार हब — HenryCo Jobs",
+    metaTitle: "उम्मीदवार हब — Henry Onyx Jobs",
     metaDescription:
       "अपनी प्रोफाइल, आवेदन, सहेजी गई भूमिकाएं और भर्तीकर्ता अपडेट ट्रैक करें — सब एक जगह।",
     pageTitle: "उम्मीदवार हब",
@@ -7269,7 +7409,7 @@ const IT: DeepPartial<JobsCopy> = {
       "L'allestimento della stanza è in corso. Il selezionatore condividerà a breve un link alla riunione in chat.",
     "tabNotes": "Note",
     "chatHint":
-      "La chat della stanza è fornita dal servizio video. Usala per condividere link durante la chiamata.",
+      "Usa la chat della stanza per condividere link durante la chiamata.",
     "notesLabel": "Note private",
     "notesPlaceholder":
       "Annota le tue osservazioni. Visibili solo al team di selezione.",
@@ -7393,7 +7533,7 @@ const IT: DeepPartial<JobsCopy> = {
       "Una presenza verificata di cui recruiter e candidati possono fidarsi.",
     "profileSavedNoticeTitle": "Profilo datore di lavoro salvato",
     "profileSavedNoticeBodyTemplate":
-      "{name} è stato salvato. Il profilo della tua azienda è ora nella coda di verifica.",
+      "{name} è stato salvato. Il profilo della tua azienda è ora in revisione.",
     "verificationCalloutBodySuffix":
       "Completa la verifica dell'account prima di aspettarti che la pubblicazione dei ruoli o gli upgrade di fiducia del datore di lavoro si sblocchino.",
     "openAccountVerification": "Apri verifica dell'account",
@@ -7412,7 +7552,7 @@ const IT: DeepPartial<JobsCopy> = {
     "fieldBenefitsHeadlinePlaceholder": "Benefit principali",
     "fieldCulturePointsPlaceholder": "Punti culturali",
     "employerTypeExternal": "Datore di lavoro esterno",
-    "employerTypeInternal": "Assunzione interna HenryCo",
+    "employerTypeInternal": "Assunzione interna Henry Onyx",
     "submitSaving": "Salvataggio azienda...",
     "submitLabel": "Salva profilo datore di lavoro"
   },
@@ -7424,7 +7564,7 @@ const IT: DeepPartial<JobsCopy> = {
     "emptyKicker": "Nessun ruolo attivo",
     "emptyTitle": "Pubblica il primo ruolo per questo datore di lavoro.",
     "emptyBody":
-      "Una volta creato un ruolo, questo elenco mostrerà stato di moderazione, visibilità e volume di candidati.",
+      "Una volta creato un ruolo, questo elenco mostrerà il suo stato, chi può vederlo e quanti candidati si sono candidati.",
     "emptyAction": "Apri il costruttore di ruoli",
     "applicantSingular": "candidato",
     "applicantPlural": "candidati",
@@ -7507,7 +7647,7 @@ const IT: DeepPartial<JobsCopy> = {
       "Le modifiche in corso si salvano automaticamente ogni 30 secondi e quando perdi il focus. Premi «Salva profilo» qui sotto per pubblicare.",
     "editSectionTitle": "Modifica il tuo profilo",
     "editSectionBody":
-      "I dettagli professionali qui sono visibili ai datori di lavoro quando ti candidi per un ruolo. Telefono ed e-mail sono conservati da HenryCo solo per verifica e punteggio di affidabilità — non vengono trasmessi ai datori di lavoro.",
+      "I dettagli professionali qui sono visibili ai datori di lavoro quando ti candidi per un ruolo. Il tuo numero di telefono e il tuo indirizzo e-mail sono conservati da Henry Onyx solo per la verifica — non vengono condivisi con i datori di lavoro.",
     "fieldFullNamePlaceholder": "Nome completo",
     "fieldHeadlinePlaceholder": "Titolo",
     "fieldSummaryPlaceholder": "Riepilogo professionale",
@@ -7520,7 +7660,7 @@ const IT: DeepPartial<JobsCopy> = {
     "fieldPortfolioLinksPlaceholder": "Link del portfolio",
     "fieldSalaryExpectationPlaceholder": "Aspettativa salariale",
     "fieldAvailabilityPlaceholder": "Disponibilità",
-    "fieldWorkHistoryPlaceholder": "[{\"company\":\"HenryCo\",\"title\":\"Responsabile operazioni\"}]",
+    "fieldWorkHistoryPlaceholder": "[{\"company\":\"Henry Onyx\",\"title\":\"Responsabile operazioni\"}]",
     "fieldEducationPlaceholder": "[{\"school\":\"Università\",\"degree\":\"BSc\"}]",
     "fieldCertificationsPlaceholder": "[{\"name\":\"Project Management\"}]",
     "submitSaving": "Salvataggio profilo...",
@@ -7557,10 +7697,10 @@ const IT: DeepPartial<JobsCopy> = {
       "Compila i dettagli qui sotto. I nuovi annunci possono passare per una breve revisione prima della pubblicazione.",
     "subscriptionRequiredTitle": "Abbonamento richiesto per pubblicare",
     "subscriptionRequiredBodyTemplate":
-      "Il tuo abbonamento come datore di lavoro è «{status}». La pubblicazione è bloccata finché non è attivo un abbonamento valido. Contatta il team HenryCo per rinnovare prima di pubblicare.",
+      "Il tuo abbonamento come datore di lavoro non è più attivo. La pubblicazione è bloccata finché non è attivo un abbonamento valido. Contatta l'assistenza per rinnovare.",
     "subscriptionPendingTitle": "Abbonamento in attesa",
     "subscriptionPendingBody":
-      "La pubblicazione dei ruoli richiederà un abbonamento datore di lavoro attivo una volta avviata la fatturazione. Puoi pubblicare oggi; attendi un seguito dal team HenryCo riguardo alla scelta del piano.",
+      "Gli abbonamenti per i datori di lavoro stanno arrivando. Puoi pubblicare ruoli oggi — ti contatteremo quando un piano sarà pronto.",
     "verificationGateBodySuffix": "La pubblicazione dei lavori resta bloccata finché tale revisione non viene approvata.",
     "directPublishingTitle": "Pubblicazione diretta disponibile",
     "directPublishingBody":
@@ -7593,10 +7733,10 @@ const IT: DeepPartial<JobsCopy> = {
   },
   "employerAnalytics": {
     "metaTitle": "Analisi datore di lavoro",
-    "metaDescription": "Monitora la produzione di ruoli, la concentrazione della pipeline e lo stato di verifica lungo il tuo funnel di assunzioni.",
+    "metaDescription": "Monitora i ruoli attivi, il numero di candidature e a che punto sono i candidati nel tuo processo di assunzione.",
     "eyebrow": "Intelligence per il recruiting",
     "pageTitle": "Analisi datore di lavoro",
-    "pageSubtitle": "Monitora la produzione di ruoli, la concentrazione della pipeline e lo stato di verifica.",
+    "pageSubtitle": "Monitora i ruoli attivi, il numero di candidature e a che punto sono i candidati nel tuo processo di assunzione.",
     "heroBody": "Osserva come i tuoi ruoli si convertono dalle impressioni all’assunzione — ogni tile e ogni fase si aggiornano in tempo reale mentre i candidati avanzano.",
     "tileJobsLabel": "Ruoli",
     "tileJobsDetail": "Ruoli sotto l’ambito di questo datore di lavoro.",
@@ -7682,7 +7822,7 @@ const IT: DeepPartial<JobsCopy> = {
     "networkError": "Errore di rete. Riprova."
   },
   "hirePage": {
-    "metaTitle": "Assumi con chiarezza — HenryCo Jobs",
+    "metaTitle": "Assumi con chiarezza — Henry Onyx Jobs",
     "metaDescription": "Pubblica ruoli reali, leggi le candidature in un unico posto e avanza i candidati attraverso fasi visibili.",
     "eyebrow": "Per i datori di lavoro",
     "heroTitle": "Assumi con chiarezza, senza il caos.",
@@ -7690,7 +7830,7 @@ const IT: DeepPartial<JobsCopy> = {
     "shieldNotice": "Pubblicare ruoli in diretta richiede un abbonamento datore di lavoro attivo. I candidati navigano sempre gratuitamente.",
     "ctaSignedIn": "Vai alla configurazione aziendale",
     "ctaSignedOut": "Inizia ad assumere — registrati gratuitamente",
-    "ctaLogin": "Ho già un account HenryCo",
+    "ctaLogin": "Ho già un account Henry Onyx",
     "ctaBrowseCandidates": "Sfoglia i candidati",
     "featureVerificationLabel": "Verifica",
     "featureVerificationValue": "Revisione manuale — nessun pay-to-play",
@@ -7722,7 +7862,7 @@ const IT: DeepPartial<JobsCopy> = {
     "questionsPrefix": "Domande?"
   },
   "candidateHome": {
-    "metaTitle": "Hub candidato — HenryCo Jobs",
+    "metaTitle": "Hub candidato — Henry Onyx Jobs",
     "metaDescription": "Tieni traccia del tuo profilo, candidature, ruoli salvati e aggiornamenti dei recruiter — tutto in un unico posto.",
     "pageTitle": "Hub candidato",
     "pageSubtitle": "Tieni traccia del tuo profilo, candidature, ruoli salvati e aggiornamenti dei recruiter — tutto in un unico posto.",

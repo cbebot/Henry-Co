@@ -294,8 +294,8 @@ export default async function OperationsAnalyticsPage() {
                   <span
                     className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${
                       guardrail.allowed
-                        ? "bg-[var(--acct-green-soft)] text-[var(--acct-green)]"
-                        : "bg-[var(--acct-red-soft)] text-[var(--acct-red)]"
+                        ? "bg-[var(--acct-green-soft)] text-[var(--acct-green-text)]"
+                        : "bg-[var(--acct-red-soft)] text-[var(--acct-red-text)]"
                     }`}
                   >
                     {guardrail.allowed ? t("allowed") : t("restricted")}

@@ -170,7 +170,7 @@ export default async function AdminListingsPage() {
                   key={listing.id}
                   className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5"
                 >
-                  <div className="grid gap-6 xl:grid-cols-[1.2fr,0.8fr]">
+                  <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
                     <div className="space-y-5">
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-[18rem]">
@@ -357,7 +357,7 @@ export default async function AdminListingsPage() {
                               rows={3}
                               defaultValue={inspection?.outcomeNotes || ""}
                               className="property-textarea mt-2 w-full rounded-2xl px-4 py-3"
-                              placeholder={t("What HenryCo verified, what failed, or why the inspection was waived.")}
+                              placeholder={t("What Henry Onyx verified, what failed, or why the inspection was waived.")}
                             />
                           </label>
 

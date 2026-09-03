@@ -1,27 +1,16 @@
-# SEARCH-01 — Dashboard Search Productivity Uplift (backend only)
+# SEARCH-CORE-01 — Dashboard Search Productivity Uplift (backend only)
 
-**Pass ID:** SEARCH-01
-**Phase:** Polish / capability
-**Pillar:** P3 (Personalization), P12 (Global UX)
-**Dependencies:** Wave B.1 + close-out PRs all on main
-**Effort:** L (2–4 sessions; this session targets Phases 1–3)
-**Parallel-safe:** YES
-**Owner gate:** Visual sign-off on the upgraded relevance + recents UX
-**Risk class:** None
+**Pass ID:** SEARCH-CORE-01  ·  **Phase:** B-adjacent (Foundation polish / capability)  ·  **Pillar:** P3 (Personalization) + P12 (Global UX)
+**Dependencies:** V3-10 (`@henryco/observability` + `henry_events` owner tile), V3-07 (i18n strict gate), V3-IDENTITY-01 (#188, brand truth)  ·  **Effort:** L (2–4 sessions; this session targets Phases 1–3)  ·  **Parallel-safe:** Y
+**Owner gate:** Visual sign-off on the upgraded relevance + recents UX  ·  **Risk class:** —
 
 ---
 
 ## Role
 
-You are the V3 Search engineer. Owner directive, verbatim:
+You are the V3 Search engineer for Henry Onyx. You execute exactly this one pass — make the dashboard search engine more accurate, more productive, and production-ready on the BACKEND — then stop and report. Every query must return relevant, freshly-indexed results; recents persist sensibly per user; suggestions surface the right next thing for the user's role; module-jump shortcuts are reliable; zero-result queries become observable so the catalogue can be expanded. The line you must not cross: **`packages/search-ui/` is OFF-LIMITS** (memory `feedback_dashboard_search_engine_no_touch.md` — it is the quality reference renderer). This pass works only on the backend that feeds it: `packages/search-core/`, the per-app `/api/search/*` routes, the outbox pipeline, Typesense collection config, and ranking helpers. No fake-data fixtures, no stubbed endpoints.
 
-> "Maximize, standardize and upgrade the dashboard search engine to be more accurate and helpful, also so that it will be more productive. … production ready, no shallow or fake data or fake work … should complete the whole wonderful work the theme has done so that it will be well polished, smooth, and satisfying in maximum."
-
-**The bar:** every query returns relevant, freshly-indexed results; recents persist sensibly per user; suggestions surface the right next thing for the user's role; module-jump shortcuts are reliable; zero-result queries become observable so the catalogue can be expanded. Production-ready — no fake-data fixtures, no stubbed endpoints.
-
-**HARD CONSTRAINT (owner-reserved):** `packages/search-ui/` is **OFF-LIMITS** per memory `feedback_dashboard_search_engine_no_touch.md`. It is the quality reference renderer — do NOT modify any file under `packages/search-ui/`. This pass works on the BACKEND that feeds the renderer: `packages/search-core/`, per-app `/api/search/*` routes, the outbox pipeline, Typesense collection config, and ranking helpers.
-
----
+Owner directive, verbatim: "Maximize, standardize and upgrade the dashboard search engine to be more accurate and helpful, also so that it will be more productive. … production ready, no shallow or fake data or fake work … should complete the whole wonderful work the theme has done so that it will be well polished, smooth, and satisfying in maximum."
 
 ## Project
 
@@ -29,132 +18,119 @@ You are the V3 Search engineer. Owner directive, verbatim:
 |---|---|
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
-| Working branch | `feat/search-productivity-uplift` |
-| Worktree | `C:/Users/HP VICTUS/HenryCo/.worktree/search-productivity` |
-| Branch base | `main @ 1768a99d` (Wave B.1 + close-out merged) |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Working branch | `v3/search-productivity-uplift` |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) + Typesense |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
-Use ABSOLUTE PATHS. For Bash, first call `cd "C:/Users/HP VICTUS/HenryCo/.worktree/search-productivity"`. For git, prefer `git -C "<path>" <cmd>`. DO NOT touch the parent repo or sibling worktrees (REALTIME-01 + MODULES-01 + FIX-MOBILE-CLICKS agents run in parallel).
+Branch off `origin/main`. Use absolute paths. Do not auto-merge — owner reviews search relevance visually before merge.
 
----
+## Audit summary
 
-## Reference architecture (conductor-verified)
+`packages/search-core/src/` already ships: `client.ts` (Typesense client wrapper), `collections.ts` (per-division collection schemas), `collection-tuning.ts` (field weights / typo tolerance config), `outbox.ts` (DB → Typesense sync pipeline), `palette-ranker.ts` (command-palette ranking), `query.ts` (filters/facets/sort construction), `ranking.ts` (relevance scoring), `rate-limit.ts`, `role.ts` (role-aware collection access), `schema.ts`/`types.ts` (shared types), `synonyms.ts`, `suggestions.ts`, plus `__tests__/`. A prior audit landed at `docs/v3/search-audit-2026-05-23.md`. The renderer — `packages/search-ui/src/palette/DashboardCommandPalette.tsx` and `KeyboardCheatSheet.tsx` — is owner-reserved and must stay byte-stable; if it needs new ranking signals, feed them through the props/types it already exposes.
 
-### Backend touch-points (in scope)
-
-`packages/search-core/src/`:
-- `client.ts` — Typesense client wrapper
-- `collections.ts` — schema definitions for searchable types (per-division)
-- `outbox.ts` — outbox pipeline that syncs DB → Typesense
-- `palette-ranker.ts` — ranking for command palette results
-- `query.ts` — query construction (filters, facets, sort)
-- `ranking.ts` — relevance scoring
-- `rate-limit.ts` — search rate-limit policy
-- `role.ts` — role-aware collection access
-- `schema.ts` — shared schema types
-
-Per-app search routes (in scope):
-- `apps/account/app/api/search/route.ts` (or similar — verify)
-- `apps/hub/app/api/search/route.ts` (or similar — verify)
-- per-division federated routes
-
-Consumer that must stay stable:
-- `packages/search-ui/src/palette/DashboardCommandPalette.tsx` — **OWNER-RESERVED, do NOT modify**
-- `packages/search-ui/src/palette/KeyboardCheatSheet.tsx` — **OWNER-RESERVED**
-
-If the palette's interface needs widening to consume new ranking signals, work via the props/types that search-ui already exposes — don't change the renderer.
-
-### Out of scope (HARD)
-
-- `packages/search-ui/` — owner-reserved, full reservation
-- `apps/account/**` — customer dashboard per existing memory (search RESULTS for customers are NOT out of scope, but the customer UI shell stays untouched)
-- Mobile apps (`apps/super-app`, `apps/company-hub`) — Expo, separate stack
-- New search providers (Algolia, Elasticsearch) — stay on Typesense
-- New search SURFACES (don't add new search pages; improve the existing palette + per-app search routes)
-
----
+**The gaps this pass closes:** (1) indexing reliability is not yet SLO-observable — there is no lag/failure telemetry and no backfill-audit reconciling DB row counts against Typesense document counts; (2) relevance tuning (typo tolerance, synonyms, field weights, per-division diversity caps, personalization signals) exists in scaffolding but is not fully wired/tuned per collection; (3) recents are device-local (localStorage), not cross-device per user; (4) suggestions and the Cmd+1..9 module-jump registry need a verified server-derived source of truth; (5) zero-result queries are not logged, so the catalogue-expansion plan is blind.
 
 ## Mandatory scope
 
-### Phase 1 — Audit (this is the foundation)
+### S1 — Backend audit refresh (foundation)
+Refresh `docs/v3/search-audit-2026-05-23.md` (or add a dated successor) covering, per area, the current real state + the gap: **Collections** (every Typesense collection: schema, indexed fields, weights, facets, sort; which divisions/content types feed each) · **Outbox** (what writes to it, which DB triggers fire on INSERT/UPDATE/DELETE, DB-write → index latency) · **Routes** (every `/api/search` endpoint: request shape, role check, query construction, response shape, rate-limit policy) · **Ranking** (weights, typo tolerance, synonyms, boosts) · **Recents** (storage location, per-device vs cross-device, retention) · **Suggestions** (static / role-aware / learned) · **Module jump** (how Cmd+1..9 resolves; registry source) · **Zero-result handling** (logged or silent).
 
-Walk the existing search backend and document:
+### S2 — Indexing reliability + SLO observability
+Audit each DB trigger feeding the outbox (correct events, bulk-safe). Verify the outbox consumer (worker/cron/edge function) retries with backoff on transient Typesense failures. Register and emit `henry.search.indexing.lag` (from the outbox worker; V3-10's owner tile reads `henry_events`) and `henry.search.indexing.failed` (with failure class: `network | schema_mismatch | rate_limit`). Ship `scripts/v3/search-backfill-audit.mjs` comparing each source table's row count to its Typesense collection document count, reporting the gap; owner-gated apply mode (`OWNER_OK=true --apply`) re-indexes missing rows only.
 
-1. **Collections** — every Typesense collection: schema, indexed fields, weights, facets, sort signals. Which divisions have collections? Which content types feed each?
-2. **Outbox** — what writes to the outbox? Which DB triggers fire? What's the latency from DB write → Typesense index?
-3. **Routes** — every `/api/search` endpoint: request shape, role check, query construction, response shape, rate-limit policy.
-4. **Ranking** — current relevance scoring: weights, typo tolerance, synonym tables, boost rules.
-5. **Recents** — where are user recents stored? Is the storage cross-device or per-device? Is there a retention policy?
-6. **Suggestions** — how are "top picks" / "suggestions" computed? Are they static, role-aware, or learned from usage?
-7. **Module jump** — how do Cmd+1..9 entries resolve? Where's the registry?
-8. **Zero-result handling** — what happens when a query returns no results? Is it logged?
+### S3 — Relevance + ranking
+Tune `collection-tuning.ts` per collection: Typesense `num_typos: 1` (2 for longer queries) on the right fields; field weights boosting name/title over body and boosting recent/active items. Populate `synonyms.ts` per division (marketplace `tee→t-shirt`, `naija→nigerian`; care `cleaning→housekeeping`; etc.) and wire via Typesense's `synonyms` API. Pass the user's role + division + recent-activity signals into the query so results score against context (document each signal and its influence in `ranking.ts`). Add a per-division result-diversity cap with overflow fallback so a generic query spans divisions instead of flooding one type.
 
-Output: `docs/v3/search-audit-2026-05-23.md` — per-area findings + gap list + recommended uplift.
+### S4 — Recents + suggestions (cross-device)
+Move recents from localStorage-only to Supabase-backed cross-device per user. Migration (author SQL, do NOT auto-apply to prod):
+```sql
+create table public.search_user_recents (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  surface text not null,
+  query text not null,
+  result_clicked_id text,
+  created_at timestamptz not null default now()
+);
+create index search_user_recents_user_created_idx
+  on public.search_user_recents (user_id, created_at desc);
+alter table public.search_user_recents enable row level security;
+create policy "recents_owner_select" on public.search_user_recents
+  for select using (auth.uid() = user_id);
+create policy "recents_owner_insert" on public.search_user_recents
+  for insert with check (auth.uid() = user_id);
+create policy "recents_owner_delete" on public.search_user_recents
+  for delete using (auth.uid() = user_id);
+```
+Retention: 30-day rolling (cron prune). Wire the suggestions surface (`suggestions.ts`) so an empty-query palette shows most-recent (5) + most-used commands (5) + role/division trending content (5), where "trending" is computed from `henry_events` clicks over the last 7d filtered by role. Verify the Cmd+1..9 module-jump registry is server-derived (per the existing `getOwnerRailEntries(viewer)` pattern), not client-hardcoded; document its source of truth.
 
-### Phase 2 — Indexing reliability
+### S5 — Zero-result observability
+Emit `henry.search.query.zero_results` with `{ query, surface, role, division, hint_count }` when a query returns fewer than N relevant hits. Extend V3-10's owner-workspace observability tile (or add a "search-health" tile) to show the top-N zero-result queries from the last 7d — this drives the catalogue-expansion plan.
 
-The outbox pipeline must guarantee every searchable write reaches Typesense within an SLO:
+### S6 — Tests + verification
+Unit tests for ranking helpers (snapshot the score function on canonical inputs). Integration smoke for the outbox pipeline (write to DB → assert the document appears in Typesense within N seconds). Assertion-driven E2E smoke for the federated `/api/search` route (not visual).
 
-1. Audit each DB trigger that writes to the outbox. Is the trigger fired for the right events (INSERT, UPDATE, DELETE)? Does it handle bulk operations correctly?
-2. Verify the outbox consumer (worker / cron / edge function) processes items reliably with retries on transient Typesense failures.
-3. Add `henry.search.indexing.lag` event emitting from the outbox worker so the SLO is observable (V3-10 owner observability tile already reads `henry_events`).
-4. Add a `henry.search.indexing.failed` event with the failure class (network / schema mismatch / rate limit) so the failure pattern is debuggable.
-5. Backfill missing-index audit script: `scripts/v3/search-backfill-audit.mjs` that compares each DB table's row count against the corresponding Typesense collection's document count. Report the gap. Owner-gated apply mode (`OWNER_OK=true --apply`) re-indexes missing rows.
+## Out of scope
+- `packages/search-ui/` — owner-reserved, full reservation (renderer untouched).
+- New search providers (Algolia, Elasticsearch) — stay on Typesense.
+- New search SURFACES / pages — improve the existing palette + per-app routes only.
+- The account customer-dashboard UI shell — owned by ACCOUNT-PREMIUM-01 (search RESULTS for customers are in scope; the shell is not).
+- Mobile Expo apps (`apps/super-app`, `apps/company-hub`).
 
-### Phase 3 — Relevance + ranking
+## Dependencies
+Depends on V3-10 (observability + `henry_events`), V3-07 (i18n gate). BLOCKS nothing as a hard gate, but a reliable, observable, well-ranked search backend is the substrate the personalization passes (V3-34 personalization-home, V3-36 cross-division recommendations) draw their relevance signals from — keep the ranking-signal contract documented for them.
 
-1. **Typo tolerance** — confirm Typesense's `num_typos: 1` (or 2 for longer queries) is set on the right fields. Tune per collection.
-2. **Synonyms** — author a synonyms table per division (e.g., for marketplace: `tee → t-shirt`, `nigerian → naija`; for care: `cleaning → housekeeping`). Wire via Typesense's `synonyms` API.
-3. **Field weights** — boost name/title fields over body fields. Boost recent + active items.
-4. **Personalization signals** — pass the user's role + division + recent activity to the search query so results are scored against context. Document the signals + how they influence ranking.
-5. **Result diversity** — when a query is generic, the result set should span divisions, not flood with one type. Implement a per-division cap with overflow fallback.
+## Inheritance
+`@henryco/search-core` (client, collections, outbox, ranking, synonyms, suggestions, role, rate-limit), `@henryco/observability` (events, `henry_events`, owner tile), `@henryco/config` (role/division), `@henryco/i18n`. Typesense as the index. The owner-rail pattern `getOwnerRailEntries(viewer)` as the server-derived-registry template.
 
-### Phase 4 — Recents + suggestions
+## Implementation requirements
 
-1. **Recents persistence** — move from localStorage-only (per-device) to Supabase-backed (cross-device per user). Table: `search_user_recents (user_id, surface, query, result_clicked_id, created_at)`. RLS: user reads/writes their own only. Retention: 30 days rolling.
-2. **Suggestions surface** — when the palette opens with no query, show: most-recent (5 items), most-used commands (5 items), trending content for the user's role/division (5 items). Compute "trending" from `henry_events` clicks over the last 7d filtered by role.
-3. **Module jump entries** — verify the Cmd+1..9 registry is server-derived (not client-hardcoded) per the existing `getOwnerRailEntries(viewer)` pattern. Document the registry source-of-truth.
+### Files
+- `packages/search-core/src/{outbox,collection-tuning,synonyms,suggestions,ranking,query}.ts` (tuning + signals + diversity + retries).
+- `packages/observability/src/events.ts` (add `henry.search.indexing.lag/failed`, `henry.search.query.zero_results`).
+- `scripts/v3/search-backfill-audit.mjs` (new).
+- Migration SQL for `search_user_recents` (authored, NOT auto-applied) + recents read/write path in search-core + the per-app route that records them.
+- `docs/v3/search-audit-2026-05-23.md` (refreshed/successor).
+- Report at `.codex-temp/search-productivity-uplift/report.md`.
 
-### Phase 5 — Zero-result observability
+### Trust / safety / compliance
+`search_user_recents` is RLS-locked to the owner (`auth.uid() = user_id`) for select/insert/delete — author the policies above; no service-role recents access. Role-aware collection access (`role.ts`) is enforced so a user never gets results from collections their role can't see. Rate-limit policy (`rate-limit.ts`) stays enforced per surface. No migration is applied to production without explicit owner approval — author the SQL, document it, propose a dry-run. Telemetry payloads carry the query text (needed for zero-result analysis) but no other PII; redact per `@henryco/observability` redaction rules.
 
-1. Emit `henry.search.query.zero_results` event with `{ query, surface, role, division, hint_count }` when a query returns nothing useful (less than N relevant hits).
-2. Owner-workspace tile (extend V3-10's observability tile or add a new "search-health" tile) shows the top-N zero-result queries from the last 7d. This drives the catalogue expansion plan.
+### Mobile + desktop parity
+Backend-only — no viewport concern of its own; the owner-reserved renderer handles presentation across viewports. N/A beyond ensuring response shapes the existing palette consumes are unchanged. Expo super-app out of scope.
 
-### Phase 6 — Tests + verification
+### i18n
+This pass is backend, but any user-facing string it introduces (e.g. zero-result hint copy, suggestion-section labels surfaced to the renderer via props) flows through `@henryco/i18n` under `surface:search` — never hardcode. Synonym tables are data, not user copy. `pnpm i18n:check:strict` stays green.
 
-- Unit tests for ranking helpers (snapshot of the score function on canonical inputs)
-- Integration smoke for the outbox pipeline (write to DB → assert document in Typesense within N seconds)
-- E2E smoke for the federated `/api/search` route (assertion-driven, not visual)
+### Brand & design system
+No UI rendered here, so no token work — but any brand string surfaced through props (section headers, empty-search copy) is **Henry Onyx** sourced from `@henryco/config`, never the retired "Henry & Co.". Division labels in trending/suggestions read `COMPANY.divisions[...].name` ("Henry Onyx <Division>"). Zero hardcoded domains in any deep-link a result emits — use `henryDomain(division)` / `henryWebRoot()`.
 
----
+## Validation gates
+1. `pnpm -F search-core typecheck` + lint PASS.
+2. `pnpm i18n:check:strict` PASS (V3-07 gate).
+3. Unit tests for ranking helpers PASS; integration outbox smoke PASS (DB write → Typesense doc within SLO); `/api/search` E2E smoke PASS.
+4. `henry.search.indexing.lag/failed` and `henry.search.query.zero_results` registered and emitting with correct payloads (no existing event removed).
+5. `search_user_recents` RLS verified — a second user cannot read another user's recents (tested).
+6. `scripts/v3/search-backfill-audit.mjs` runs read-only and reports the DB-vs-Typesense gap; apply mode gated on `OWNER_OK=true`.
 
-## Anti-patterns (HARD stops)
+## Deployment gate
+All gates green. Migration authored but NOT applied to prod without explicit owner approval. DRAFT PR opened, NOT auto-merged. Owner reviews search relevance + the recents/suggestions UX visually before merge. Session 1 target: Phases S1–S3; S4–S6 may spill to session 2 with crisp pickup notes.
 
-- **NO touching `packages/search-ui/`.** Owner-reserved.
-- **NO new search providers** (no Algolia, no Elasticsearch).
-- **NO fake data / stubbed results.** Every search response must be backed by Typesense or by a documented degraded fallback (V3-10 pattern).
-- **NO removing existing typed events** in `packages/observability/src/events.ts` — only add.
-- **NO breaking V3-07 strict `pnpm i18n:check:strict` gate.**
-- **NO migrations applied to production without owner explicit approval** — author the SQL, document it, propose dry-run.
-- **NO `git push --force`** (use `--force-with-lease` if needed).
-- **NO PR auto-merge** — owner reviews search relevance visually before merge.
+## Final report contract
+`.codex-temp/search-productivity-uplift/report.md` with the standard 9 sections (exec summary · files changed · migration/RLS/env · validation evidence · smoke · live verification · telemetry baseline · deferred items · pass-closure assertion), plus the audit-doc link and a per-area improvement summary (indexing reliability, relevance tuning, recents, suggestions, zero-result observability).
 
----
-
-## Self-verification checklist
-
-- [ ] `docs/v3/search-audit-2026-05-23.md` written, per-area findings + gaps
-- [ ] Outbox indexing reliability hardened (retries, backoff, observability)
-- [ ] `henry.search.indexing.lag/failed` events registered + emitting
-- [ ] Synonyms + typo tolerance + field weights tuned per collection
-- [ ] Recents migrated to Supabase-backed with RLS
-- [ ] Suggestions algorithm wired (recents + most-used + trending)
-- [ ] Zero-result observability event firing
-- [ ] Optional: search-health owner tile rendering
-- [ ] `pnpm -F search-core typecheck` + lint PASS
-- [ ] V3-07 strict gate PASS
-- [ ] DRAFT PR opened with audit doc + per-area improvement summary
-
-Session 1 target: Phases 1–3. Phases 4–6 can spill to session 2 with crisp pickup notes.
-
-You're Opus 4.7. The owner asked for "remarkably and magnificently done". Search productivity isn't visual sparkle — it's the moment when a query lands the user on the exact next step they wanted. Every weight, every synonym, every recent — they all compound.
+## Self-verification
+- [ ] `docs/v3/search-audit-2026-05-23.md` refreshed — per-area current state + gaps
+- [ ] Outbox triggers + consumer hardened (correct events, bulk-safe, retry/backoff)
+- [ ] `henry.search.indexing.lag` + `henry.search.indexing.failed` registered + emitting
+- [ ] `scripts/v3/search-backfill-audit.mjs` reports DB-vs-Typesense gap; apply mode `OWNER_OK`-gated
+- [ ] Typo tolerance + per-division synonyms + field weights tuned in `collection-tuning.ts`/`synonyms.ts`
+- [ ] Personalization signals (role/division/recent activity) wired into the query; diversity cap added
+- [ ] `search_user_recents` table + RLS authored (not auto-applied); recents cross-device; 30-day retention prune
+- [ ] Suggestions wired (recents + most-used + role/division trending from `henry_events`); module-jump registry confirmed server-derived
+- [ ] `henry.search.query.zero_results` firing; search-health owner tile rendering top-N zero-result queries
+- [ ] Ranking unit tests + outbox integration smoke + `/api/search` E2E smoke PASS
+- [ ] Brand = Henry Onyx via `@henryco/config`; copy via `@henryco/i18n` (`surface:search`); zero hardcoded domains/strings
+- [ ] `packages/search-ui/` untouched; `pnpm i18n:check:strict` + typecheck + lint PASS; DRAFT PR opened, not auto-merged

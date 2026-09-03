@@ -40,7 +40,7 @@ export default async function TrustPage() {
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 xl:px-10">
       <section>
-        <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--learn-mint-soft)]">
               {copy.hero.eyebrow}
@@ -48,7 +48,8 @@ export default async function TrustPage() {
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {copy.hero.title}
             </h1>
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
+            {/* READING-02: hero body in the editorial serif reading face. */}
+            <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
               {copy.hero.body}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -106,7 +107,7 @@ export default async function TrustPage() {
       </section>
 
       <section className="mt-16 border-t border-[var(--learn-line)] pt-10">
-        <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
               {copy.footer.eyebrow}
@@ -114,7 +115,8 @@ export default async function TrustPage() {
             <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.85rem]">
               {copy.footer.title}
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--learn-ink-soft)]">
+            {/* READING-02: section intro in the serif reading face. */}
+            <p className="hc-font-reading text-pretty mt-3 max-w-xl text-sm leading-7 text-[var(--learn-ink-soft)]">
               {copy.footer.body}
             </p>
           </div>

@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { Bell, Bookmark, CheckCircle2, CircleAlert, FileCheck2, Sparkles } from "lucide-react";
-import { getJobsCopy } from "@henryco/i18n";
+import { BadgeCheck, Bell, Bookmark, CalendarCheck, CheckCircle2, CircleAlert, Eye, FileCheck2, Send, Sparkles, Star } from "lucide-react";
+import "@henryco/dashboard-shell/surfaces.css";
+import { HeroCard, NextStepRow } from "@henryco/dashboard-shell";
+import { getJobsCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { EmptyState } from "@/components/feedback";
 import { requireJobsUser } from "@/lib/auth";
 import { getCandidateDashboardData } from "@/lib/jobs/data";
+import {
+  buildCandidateHero,
+  buildCandidateNextStep,
+  candidateDashboardStats,
+  type CandidateHomeInput,
+  type CandidateNextStepModel,
+} from "@/lib/jobs/candidate-home";
 import { candidateNav } from "@/lib/jobs/navigation";
 import { getJobsPublicLocale } from "@/lib/locale-server";
-import { SectionCard, StatTile, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
+import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +46,16 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
+function nextStepIcon(iconKey: CandidateNextStepModel["iconKey"]): ReactNode {
+  const cls = "h-[18px] w-[18px]";
+  if (iconKey === "offer") return <BadgeCheck className={cls} />;
+  if (iconKey === "interview") return <CalendarCheck className={cls} />;
+  if (iconKey === "shortlist") return <Star className={cls} />;
+  if (iconKey === "profile") return <FileCheck2 className={cls} />;
+  if (iconKey === "apply") return <Send className={cls} />;
+  return <Eye className={cls} />;
+}
+
 export default async function CandidateOverviewPage() {
   const [viewer, locale] = await Promise.all([
     requireJobsUser("/candidate"),
@@ -43,12 +63,26 @@ export default async function CandidateOverviewPage() {
   ]);
   const copy = getJobsCopy(locale).candidateHome;
   const data = await getCandidateDashboardData(viewer.user!.id, locale);
-  const activeApplications = data.applicationJourneys.filter(
-    (journey) => journey.application.stage !== "rejected" && journey.application.stage !== "hired"
-  );
-  const interviewLaneCount = data.applicationJourneys.filter((journey) =>
-    ["shortlisted", "interview", "offer"].includes(journey.application.stage)
-  ).length;
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  // V3-INNER-L-ELEVATE-JOBS — the above-the-fold answer (Q1 "what's happening
+  // with my search?" + Q2 "what next?") is derived in a pure, TDD'd model
+  // (lib/jobs/candidate-home.ts) and rendered through the shared Register-L
+  // HeroCard + NextStepRow ("The Candidate Ledger"). The masthead now carries
+  // the full signal: a 4-state tone (incl. attention for offers/interviews), a
+  // pipeline side breakdown, and one decisive next step — so the page body
+  // stays a thin compose and the supporting sections below are unchanged.
+  const candidateInput: CandidateHomeInput = {
+    profile: data.profile,
+    applicationJourneys: data.applicationJourneys,
+    savedJobs: data.savedJobs,
+    recommendedJobs: data.recommendedJobs,
+    recruiterFeed: data.recruiterFeed,
+    profileChecklist: data.profileChecklist,
+  };
+  const stats = candidateDashboardStats(candidateInput);
+  const hero = buildCandidateHero(stats, t);
+  const nextStep = buildCandidateNextStep(candidateInput, stats, t);
 
   return (
     <WorkspaceShell
@@ -100,38 +134,31 @@ export default async function CandidateOverviewPage() {
       }
     >
       <div className="space-y-4">
-        <SectionCard
-          title={copy.overviewTitle}
-          body={copy.overviewBody}
-          actions={
-            <Link href="/candidate/profile" className="text-sm font-semibold text-[var(--jobs-accent)]">
-              {copy.overviewImproveProfile}
-            </Link>
-          }
-        >
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <StatTile
-              label={copy.tileProfileReadinessLabel}
-              value={`${data.profile?.trustScore ?? 0}%`}
-              detail={data.profile?.readinessLabel || copy.tileProfileReadinessFallback}
-            />
-            <StatTile
-              label={copy.tileActiveAppsLabel}
-              value={activeApplications.length}
-              detail={activeApplications.length > 0 ? copy.tileActiveAppsDetailActive : copy.tileActiveAppsDetailEmpty}
-            />
-            <StatTile
-              label={copy.tileInProgressLabel}
-              value={interviewLaneCount}
-              detail={interviewLaneCount > 0 ? copy.tileInProgressDetailActive : copy.tileInProgressDetailEmpty}
-            />
-            <StatTile
-              label={copy.tileSavedRolesLabel}
-              value={data.savedJobs.length}
-              detail={data.savedJobs.length > 0 ? copy.tileSavedRolesDetailActive : copy.tileSavedRolesDetailEmpty}
-            />
-          </div>
-        </SectionCard>
+        <HeroCard
+          variant="paired"
+          tone={hero.tone}
+          eyebrow={hero.eyebrow}
+          headline={hero.headline}
+          blurb={hero.blurb}
+          ariaLabel={hero.ariaLabel}
+          ariaTilesLabel={hero.ariaTilesLabel}
+          ctaPrimary={hero.ctaPrimary}
+          ctaSecondary={hero.ctaSecondary}
+          tiles={hero.tiles}
+          side={hero.side}
+          progress={hero.progress}
+        />
+
+        {nextStep ? (
+          <NextStepRow
+            tone={nextStep.tone}
+            kicker={nextStep.kicker}
+            title={nextStep.title}
+            detail={nextStep.detail}
+            icon={nextStepIcon(nextStep.iconKey)}
+            cta={nextStep.cta}
+          />
+        ) : null}
 
         <SectionCard
           title={copy.profileStrengthTitle}

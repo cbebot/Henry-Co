@@ -24,7 +24,7 @@ export default async function ClientProfilePage() {
           Profile
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Your sign-in details and security settings live on the shared HenryCo account. Open it
+          Your sign-in details and security settings live on the shared Henry Onyx account. Open it
           there to update your name, password, two-factor settings, and connected divisions.
         </p>
       </header>
@@ -40,7 +40,7 @@ export default async function ClientProfilePage() {
             className="h-16 w-16 flex-shrink-0 rounded-2xl border border-[var(--studio-line-strong)] object-cover"
           />
         ) : (
-          <span className="grid h-16 w-16 flex-shrink-0 place-items-center rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.08)] text-[var(--studio-signal)]">
+          <span className="grid h-16 w-16 flex-shrink-0 place-items-center rounded-2xl border border-[var(--studio-line-strong)] bg-[var(--studio-accent-soft)] text-[var(--studio-signal)]">
             <UserCircle className="h-8 w-8" />
           </span>
         )}
@@ -60,7 +60,7 @@ export default async function ClientProfilePage() {
             <ProfileLink
               icon={ExternalLink}
               title="Update profile"
-              body="Change your name, avatar, and contact details on your HenryCo account."
+              body="Change your name, avatar, and contact details on your Henry Onyx account."
               href={accountUrl}
               external
             />
@@ -73,7 +73,7 @@ export default async function ClientProfilePage() {
             />
             <ProfileLink
               icon={UserCircle}
-              title="HenryCo account home"
+              title="Henry Onyx account home"
               body="See all your divisions in one place — Studio, Care, Hub, and more."
               href={accountUrl}
               external
@@ -122,9 +122,9 @@ function ProfileLink({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
-      className="flex items-start gap-3 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 transition hover:border-[rgba(151,244,243,0.4)] hover:bg-[rgba(255,255,255,0.05)]"
+      className="flex items-start gap-3 rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-4 py-3 transition hover:border-[var(--studio-accent-ring)] hover:bg-[var(--studio-fill-soft)]"
     >
-      <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.04)] text-[var(--studio-ink-soft)]">
+      <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl border border-[var(--studio-line-strong)] bg-[var(--studio-fill-faint)] text-[var(--studio-ink-soft)]">
         <Icon className="h-4 w-4" />
       </span>
       <div className="min-w-0 flex-1">

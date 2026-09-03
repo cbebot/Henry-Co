@@ -5,6 +5,7 @@ import {
   isRecoverableSupabaseAuthError,
   normalizeTrustedRedirect,
   resolveRequestCookieDomain,
+  resolveRequestOrigin,
 } from "@henryco/config";
 import {
   DASHBOARD_PREFERENCE_COOKIE,
@@ -50,6 +51,11 @@ export async function POST(request: Request) {
   }
 
   const url = new URL(request.url);
+  const headerStore = await headers();
+  // Resolve the real public origin from proxy headers — `request.url` can
+  // be the internal Vercel deployment host, which would send the user to
+  // a domain where their .<baseDomain> session cookie is not present.
+  const origin = resolveRequestOrigin((name) => headerStore.get(name), url.origin);
   const next = typeof nextRaw === "string" ? normalizeTrustedRedirect(nextRaw) : "/";
 
   if (!user) {
@@ -71,7 +77,7 @@ export async function POST(request: Request) {
     const resolution = await resolveUserDashboard({
       user,
       next,
-      origin: url.origin,
+      origin,
       preferredDashboardKey,
     });
     return NextResponse.redirect(
@@ -90,7 +96,7 @@ export async function POST(request: Request) {
   const deepLinkResolution = await resolveUserDashboard({
     user,
     next,
-    origin: url.origin,
+    origin,
     preferredDashboardKey: chosen.key,
   });
   const finalDestination =
@@ -98,7 +104,6 @@ export async function POST(request: Request) {
 
   const response = NextResponse.redirect(finalDestination, 303);
 
-  const headerStore = await headers();
   const cookieDomain = resolveRequestCookieDomain((name) => headerStore.get(name));
 
   if (remember) {

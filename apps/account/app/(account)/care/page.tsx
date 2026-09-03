@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { getAccountCopy } from "@henryco/i18n/server";
 import { formatAccountTemplate } from "@henryco/i18n";
 import { henryDomain } from "@henryco/config";
@@ -10,6 +11,7 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import {
   getCareBookings,
   getDivisionActivity,
@@ -292,6 +294,9 @@ export default async function CarePage({
   return (
     <DivisionLanding
       className="acct-care acct-fade-in"
+      /* SP6: division-scoped resume chip — renders only when a REAL pending
+         care journey exists for this viewer. */
+      nextStep={<DivisionResumeChip division="care" userId={user.id} />}
       hero={
         <HeroCard
           variant="paired"
@@ -317,6 +322,9 @@ export default async function CarePage({
           }}
         />
       }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={sections}
     />
   );

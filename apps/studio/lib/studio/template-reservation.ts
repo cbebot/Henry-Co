@@ -231,6 +231,10 @@ export async function reserveStudioTemplate(
     urgency: "Ready-to-launch",
     timeline: `${template.readyInDays} days from kickoff`,
     packageIntent: pkg ? "package" : "custom",
+    // A template reservation is the fixed-price speed lane by definition —
+    // SA-D5 template class, even when the package anchor doesn't resolve
+    // (the template carries its own fixed price).
+    briefClass: "template",
     techPreferences: template.stack,
     requiredFeatures: template.features.slice(0, 6),
     referenceFiles: [],
@@ -284,7 +288,7 @@ export async function reserveStudioTemplate(
       domainStatus === "have"
         ? `Domain: customer connecting existing domain${domainPreference ? ` (${domainPreference})` : ""}`
         : domainStatus === "new"
-          ? `Domain: HenryCo to source new domain${domainPreference ? ` (preferred: ${domainPreference})` : ""}`
+          ? `Domain: Henry Onyx to source new domain${domainPreference ? ` (preferred: ${domainPreference})` : ""}`
           : "Domain: decide before launch",
     ],
     milestones: [

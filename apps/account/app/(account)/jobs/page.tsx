@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { henryDomainHost } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import {
@@ -9,6 +10,7 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import { getJobsModuleData } from "@/lib/jobs-module";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
@@ -122,7 +124,7 @@ export default async function JobsPage() {
           "Browse live roles on {host}, save shortlists, and apply with one tap. Recruiter updates land in your account in real time.",
         ).replace("{host}", jobsHost)
       : t(
-          "Applications, saved roles, recruiter updates, and profile signal — all mirrored from HenryCo Jobs into your account.",
+          "Applications, saved roles, recruiter updates, and profile signal — all mirrored from Henry Onyx Jobs into your account.",
         );
 
   // ── NextStepRow picker ───────────────────────────────────────────
@@ -229,7 +231,13 @@ export default async function JobsPage() {
           }}
         />
       }
-      nextStep={nextStep}
+      nextStep={
+        <>
+          {/* SP6: division-scoped resume chip — renders only when a REAL pending journey exists here. */}
+          <DivisionResumeChip division="jobs" userId={user.id} />
+          {nextStep}
+        </>
+      }
       sections={[
         {
           id: "acct-job-apps",
@@ -294,6 +302,9 @@ export default async function JobsPage() {
         },
       ]}
       footer={
+        <>
+        {/* SMART (2026-07-10): statuses tick without manual refresh. */}
+        <RouteLiveRefresh />
         <p
           style={{
             fontSize: 11,
@@ -306,6 +317,7 @@ export default async function JobsPage() {
             "Recruiter movement, employer follow-ups, and interview scheduling sync to your Notifications inbox.",
           )}
         </p>
+        </>
       }
     />
   );

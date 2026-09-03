@@ -218,7 +218,7 @@ export function buildSharedCookieWriteOptions(
  * are applied inconsistently by `@supabase/ssr` across different cookie
  * writes (refresh vs. sign-in vs. recovery). Forcing the domain on the
  * `cookieStore.set` call guarantees every session cookie gets the shared
- * `.henrycogroup.com` scope so any henrycogroup.com subdomain can read
+ * `.henryonyx.com` scope so any henryonyx.com subdomain can read
  * the session.
  */
 export function buildSharedCookieHandlers(

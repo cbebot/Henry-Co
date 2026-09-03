@@ -69,6 +69,13 @@ export {
 // Deep-link guard
 export { isSafeNotificationDeepLink } from "./deep-link";
 
+// Toast pacing (pure drip planner shared by every toast viewport)
+export {
+  planToastRelease,
+  type PlanToastReleaseInput,
+  type ToastReleasePlan,
+} from "./toast-pacing";
+
 // V3-03 — Shared notification bell primitive
 export { NotificationBell } from "./notification-bell";
 export type {

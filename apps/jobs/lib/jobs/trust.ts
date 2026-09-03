@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // apps/jobs/lib/jobs/trust.ts
-// Server-side employer and candidate trust scoring for HenryCo Jobs.
+// Server-side employer and candidate trust scoring for Henry Onyx Jobs.
 //
 // Design principles:
 //  - Explainable: every signal is named and returned alongside the score.
@@ -35,7 +35,7 @@ export type EmployerTrustSignals = {
   responseSlaHours: number;
   /** Interviews cancelled < 2 hours before or marked no-show by candidate. */
   noShowCount: number;
-  /** Applications that reached "hired" stage in HenryCo Jobs. */
+  /** Applications that reached "hired" stage in Henry Onyx Jobs. */
   completedHirings: number;
   /** Total applications received (used for context). */
   totalApplications: number;
@@ -93,13 +93,13 @@ export function computeEmployerTrustProfile(
     reasons.push("Identity verification is approved.");
   } else if (signals.verificationStatus === "pending") {
     reasons.push("Identity documents are currently under review.");
-    coaching.push("Identity verification is in progress — expect higher-trust lanes to unlock once approved.");
+    coaching.push("Identity verification is in progress — more posting options unlock once approved.");
   } else if (signals.verificationStatus === "rejected") {
     score -= 8;
     reasons.push("Identity verification needs attention before trust-gated actions can unlock.");
     coaching.push("Resubmit clear identity documents to restore normal employer trust access.");
   } else {
-    coaching.push("Start identity verification to unlock higher-trust employer posting lanes.");
+    coaching.push("Start identity verification to unlock live employer posting.");
   }
 
   // Company profile completeness (website + industry + locations + name + description)
@@ -138,7 +138,7 @@ export function computeEmployerTrustProfile(
     score += 5;
     reasons.push("One completed hire is on record.");
   } else {
-    coaching.push("Completing hires through HenryCo Jobs builds measurable hiring credibility.");
+    coaching.push("Completing hires through Henry Onyx Jobs builds measurable hiring credibility.");
   }
 
   // No-show penalty — interview abandonment harms candidate trust
@@ -318,7 +318,8 @@ export async function getEmployerTrustProfile(
       // Platform moderation cases linked to this employer
       admin
         .from("platform_moderation_queue")
-        .select("id, status, action_taken, entity_id, entity_type")
+        // prod column is review_action (no action_taken)
+        .select("id, status, review_action, entity_id, entity_type")
         .or(`entity_id.eq.${employerSlug},entity_type.eq.user_profile`)
         .order("created_at", { ascending: false })
         .limit(50),
@@ -371,7 +372,7 @@ export async function getEmployerTrustProfile(
   // Moderation incidents: warn / reject / block actions against this employer
   const moderationCases = (moderationRes.data ?? []) as Array<Record<string, unknown>>;
   const moderationIncidents = moderationCases.filter((c) => {
-    const action = asText(c.action_taken).toLowerCase();
+    const action = asText(c.review_action).toLowerCase();
     return action === "reject" || action === "block" || action === "warn";
   }).length;
 
@@ -432,7 +433,7 @@ export function deriveJobTrustHighlights(input: {
   const highlights: string[] = [];
 
   if (input.employerType === "internal") {
-    highlights.push("HenryCo internal role");
+    highlights.push("Henry Onyx internal role");
   }
 
   if (input.employerVerificationStatus === "verified") {
@@ -445,7 +446,9 @@ export function deriveJobTrustHighlights(input: {
   }
 
   if (input.employerTrustScore >= 82) {
-    highlights.push("High employer trust score");
+    // Candidate-facing outcome label — the internal trust-score system
+    // is never named on public listings.
+    highlights.push("Strong hiring track record");
   }
 
   if (input.responseSlaHours !== null && input.responseSlaHours <= 4) {

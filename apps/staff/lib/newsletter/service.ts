@@ -13,12 +13,12 @@ import {
   buildPreferenceToken,
   brevoBlocklistContact,
   brevoRemoveContactFromLists,
-  brevoSendTransactional,
   isBrevoEnabled,
   normalizeEmail,
   renderDraftAsHtml,
   resolveBrevoConfig,
   runVoiceGuard,
+  scopeMatchesCampaign,
   summarizeVoiceWarnings,
   listTopicsForDivision,
   type NewsletterBrandVoiceRule,
@@ -32,6 +32,7 @@ import {
 } from "@henryco/newsletter";
 
 import { henryWebRoot } from "@henryco/config";
+import { resolveProviderChain, sendTransactionalEmail } from "@henryco/email";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
 
 function getOptionalEnv(key: string): string | undefined {
@@ -59,6 +60,37 @@ function getHubPublicBase(): string {
   if (explicit) return explicit.replace(/\/+$/, "");
   // V3-07(S2): env-aware via henryWebRoot() instead of literal.
   return henryWebRoot();
+}
+
+// ─── Newsletter dispatch (EMAIL-POSTMARK, 2026-07-14) ───────────────────────
+//
+// Campaign + test sends ride the shared @henryco/email router (Postmark) —
+// Brevo transactional send is permanently retired. The Brevo contact/blocklist
+// sync calls elsewhere in this service stay as guarded no-ops until the
+// local-suppression-store replacement lands (they skip without BREVO_API_KEY).
+
+type NewsletterDispatch =
+  | { ok: true; provider: string; messageId: string }
+  | { ok: false; provider: string; error: string };
+
+function newsletterMailReady(): boolean {
+  return resolveProviderChain("newsletter").length > 0;
+}
+
+async function sendNewsletterEmail(input: {
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<NewsletterDispatch> {
+  const result = await sendTransactionalEmail({ ...input, purpose: "newsletter" });
+  if (result.status === "sent") {
+    return { ok: true, provider: result.provider, messageId: result.messageId || "" };
+  }
+  return {
+    ok: false,
+    provider: result.provider,
+    error: result.safeError || result.skippedReason || "email_not_sent",
+  };
 }
 
 type VoiceRuleRow = {
@@ -657,23 +689,21 @@ export async function sendTestDraft(input: SendTestDraftInput): Promise<SendTest
     .replace("{{preferences_url}}", `${getHubPublicBase()}/newsletter/preferences`)
     .replace("{{unsubscribe_url}}", `${getHubPublicBase()}/newsletter/unsubscribe`);
 
-  const brevoConfig = resolveBrevoConfig();
-  if (!isBrevoEnabled(brevoConfig)) {
+  if (!newsletterMailReady()) {
     await admin.from(NEWSLETTER_EDITORIAL_EVENTS_TABLE).insert({
       campaign_id: input.id,
       actor_id: input.actorId,
       kind: "test_sent",
-      note: "Brevo disabled — test send simulated.",
+      note: "Email transport not configured — test send simulated.",
       payload: { to: email, provider: "disabled" },
     });
-    return { ok: false, reason: "brevo_not_configured" };
+    return { ok: false, reason: "email_not_configured" };
   }
 
-  const result = await brevoSendTransactional(brevoConfig, {
+  const result = await sendNewsletterEmail({
     to: email,
     subject: `[TEST] ${campaignRes.data.content.subject}`,
     html,
-    tags: ["newsletter-test"],
   });
 
   await admin.from(NEWSLETTER_EDITORIAL_EVENTS_TABLE).insert({
@@ -881,8 +911,7 @@ export async function runCampaignSend(
     expires_at: string | null;
   }>;
 
-  const brevoConfig = resolveBrevoConfig();
-  const brevoReady = isBrevoEnabled(brevoConfig);
+  const mailReady = newsletterMailReady();
   const html = renderDraftAsHtml(campaign.content);
   const preferencesBase = `${getHubPublicBase()}/newsletter/preferences`;
   const unsubscribeBase = `${getHubPublicBase()}/newsletter/unsubscribe`;
@@ -898,7 +927,9 @@ export async function runCampaignSend(
     const scope = suppressionEntries
       .filter((e) => e.email.toLowerCase() === row.email.toLowerCase())
       .find((e) => {
-        if (e.scope === "transactional_only") return false;
+        // Canonical scope semantics — a transactional_only opt-down still
+        // suppresses every marketing class (STAFF-6: never skip it wholesale).
+        if (!scopeMatchesCampaign(e.scope, campaign.campaign_class)) return false;
         if (e.expires_at) {
           const exp = Date.parse(e.expires_at);
           if (!Number.isNaN(exp) && exp <= Date.now()) return false;
@@ -927,7 +958,7 @@ export async function runCampaignSend(
       });
       continue;
     }
-    if (!brevoReady) {
+    if (!mailReady) {
       failed++;
       await admin.from(NEWSLETTER_CAMPAIGN_SENDS_TABLE).insert({
         campaign_id: campaign.id,
@@ -935,10 +966,10 @@ export async function runCampaignSend(
         email: row.email,
         status: "failed",
         provider: "disabled",
-        error_code: "brevo_not_configured",
-        error_message: "BREVO_API_KEY not configured.",
+        error_code: "email_not_configured",
+        error_message: "No outbound email provider is configured.",
       });
-      notes.push("brevo_not_configured");
+      notes.push("email_not_configured");
       continue;
     }
     const token = buildPreferenceToken({
@@ -949,11 +980,10 @@ export async function runCampaignSend(
     const personalizedHtml = html
       .replace("{{preferences_url}}", `${preferencesBase}?token=${encodeURIComponent(token)}`)
       .replace("{{unsubscribe_url}}", `${unsubscribeBase}?token=${encodeURIComponent(token)}`);
-    const result = await brevoSendTransactional(brevoConfig, {
+    const result = await sendNewsletterEmail({
       to: row.email,
       subject: campaign.content.subject,
       html: personalizedHtml,
-      tags: ["newsletter", campaign.division, ...topicKeys].slice(0, 10),
     });
     if (result.ok) {
       sent++;
@@ -962,7 +992,7 @@ export async function runCampaignSend(
         subscriber_id: row.id,
         email: row.email,
         status: "sent",
-        provider: "brevo",
+        provider: result.provider,
         provider_message_id: result.messageId,
         sent_at: new Date().toISOString(),
       });
@@ -973,8 +1003,8 @@ export async function runCampaignSend(
         subscriber_id: row.id,
         email: row.email,
         status: "failed",
-        provider: "brevo",
-        error_code: `http_${result.status ?? "unknown"}`,
+        provider: result.provider,
+        error_code: "provider_error",
         error_message: result.error,
       });
     }

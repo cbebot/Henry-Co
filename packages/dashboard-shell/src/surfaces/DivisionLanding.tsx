@@ -78,6 +78,10 @@ export function DivisionLanding({
         ? sections.map((section) => (
             <section
               key={section.id}
+              /* The section carries its own id so in-page anchors
+                 (#<section.id>) land here — scroll-margin in surfaces.css
+                 clears the sticky chrome (redesign 2026-07-08). */
+              id={section.id}
               className="acct-division-landing__section"
               aria-labelledby={`section-head-${section.id}`}
               aria-label={section.ariaLabel}

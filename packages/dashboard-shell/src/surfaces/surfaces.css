@@ -35,33 +35,29 @@
  */
 
 /* ────────────────────────────────────────────────────────────────────
- * <HeroCard />
+ * <HeroCard /> — the EDITORIAL OPENER (redesign 2026-07-08).
+ *
+ * The state-driven brain (empty/calm/active/attention per
+ * docs/v3/account-design-language.md) is untouched; the dark rounded
+ * BAND is gone. The opener now sits directly on the page canvas —
+ * eyebrow kicker + serif headline + inline CTAs + an unboxed stat rail
+ * over a single hairline — the public-design "gravity not size,
+ * hairlines not glass" language brought inside the product. Class
+ * names + data attributes are byte-identical to the band era, so all
+ * consumers (account/jobs/studio/marketplace) inherit with zero edits.
+ * Tone semantics move from background tint to the type layer:
+ * attention = gold-strong kicker + a 2px gold rule on the lead.
  * ────────────────────────────────────────────────────────────────────*/
 
 .acct-hero {
   position: relative;
-  border-radius: var(--acct-radius-lg, 24px);
-  overflow: hidden;
-  isolation: isolate;
-  color: var(--acct-bg-soft);
-  background-color: var(--acct-ink);
-  background-image:
-    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--acct-gold) 26%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-gold) 10%, transparent) 0%, transparent 60%);
-  border: 1px solid color-mix(in srgb, var(--acct-gold) 22%, transparent);
+  color: var(--acct-ink, #1A1814);
+  border-bottom: 1px solid var(--acct-line, #E8E4DD);
 }
 
-.acct-hero[data-tone="attention"] {
-  background-image:
-    radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 36%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-red, #b91c1c) 14%, transparent) 0%, transparent 60%);
-  border-color: color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 32%, transparent);
-}
-
-.acct-hero[data-tone="empty"] {
-  background-image:
-    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--acct-gold) 14%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 90% at 100% 100%, color-mix(in srgb, var(--acct-bg-soft) 6%, transparent) 0%, transparent 60%);
+.acct-hero[data-tone="attention"] .acct-hero__lead {
+  border-left: 2px solid var(--acct-gold-strong, var(--acct-gold, #C9A227));
+  padding-left: 16px;
 }
 
 .acct-hero__inner {
@@ -69,7 +65,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
   gap: 32px;
-  padding: 32px;
+  padding: 4px 0 26px;
   align-items: flex-start;
 }
 
@@ -78,14 +74,14 @@
 }
 
 .acct-hero[data-variant="compact"] .acct-hero__inner {
-  padding: 24px 28px;
+  padding: 4px 0 20px;
   grid-template-columns: 1fr;
 }
 
 @media (max-width: 880px) {
   .acct-hero__inner {
     grid-template-columns: 1fr;
-    padding: 24px;
+    padding: 4px 0 20px;
     gap: 24px;
   }
 }
@@ -98,15 +94,15 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 18%, transparent);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-gold) 70%, var(--acct-bg-soft));
+  color: color-mix(in srgb, var(--acct-gold, #C9A227) 55%, var(--acct-ink, #1A1814));
+}
+
+.acct-hero[data-tone="attention"] .acct-hero__eyebrow {
+  color: var(--acct-gold-strong, var(--acct-gold, #C9A227));
 }
 
 .acct-hero__eyebrow-dot {
@@ -114,12 +110,12 @@
   height: 6px;
   border-radius: 999px;
   background: currentColor;
-  animation: acct-hero-pulse 2.6s ease-in-out infinite;
 }
 
+/* The pulse is a STATE signal now — only live states breathe. */
 .acct-hero[data-tone="active"] .acct-hero__eyebrow-dot,
 .acct-hero[data-tone="attention"] .acct-hero__eyebrow-dot {
-  animation-duration: 1.8s;
+  animation: acct-hero-pulse 1.8s ease-in-out infinite;
 }
 
 @keyframes acct-hero-pulse {
@@ -129,18 +125,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   .acct-hero__eyebrow-dot {
-    animation: none;
+    animation: none !important;
   }
 }
 
 .acct-hero__headline {
   font-family: var(--acct-font-display, "Iowan Old Style", "Newsreader", "Baskerville", "Palatino Linotype", "Times New Roman", serif);
-  font-size: clamp(26px, 3.4vw, 38px);
-  line-height: 1.1;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.12;
   letter-spacing: -0.01em;
   font-weight: 600;
-  color: var(--acct-bg-soft);
-  margin: 16px 0 12px;
+  color: var(--acct-ink, #1A1814);
+  margin: 14px 0 10px;
 }
 
 .acct-hero[data-tone="empty"] .acct-hero__headline {
@@ -148,7 +144,7 @@
 }
 
 .acct-hero__blurb {
-  color: color-mix(in srgb, var(--acct-bg-soft) 78%, transparent);
+  color: var(--acct-muted, #6B6560);
   font-size: 14px;
   line-height: 1.65;
   max-width: 56ch;
@@ -156,7 +152,7 @@
 }
 
 .acct-hero__ctas {
-  margin-top: 20px;
+  margin-top: 18px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -178,37 +174,39 @@
 }
 
 .acct-hero__cta--primary {
-  background: var(--acct-gold);
-  color: var(--acct-ink);
-  border: 1px solid color-mix(in srgb, var(--acct-gold) 80%, transparent);
+  background: var(--acct-gold, #C9A227);
+  color: var(--acct-ink, #1A1814);
+  border: 1px solid color-mix(in srgb, var(--acct-gold, #C9A227) 80%, transparent);
 }
 
 .acct-hero__cta--primary:hover {
-  background: color-mix(in srgb, var(--acct-gold) 90%, white);
+  background: var(--acct-gold-strong, var(--acct-gold, #C9A227));
   transform: translateY(-1px);
 }
 
 .acct-hero__cta--ghost {
-  color: var(--acct-bg-soft);
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 22%, transparent);
+  color: var(--acct-ink, #1A1814);
+  background: transparent;
+  border: 1px solid var(--acct-line, #E8E4DD);
 }
 
 .acct-hero__cta--ghost:hover {
-  background: color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
-  border-color: color-mix(in srgb, var(--acct-bg-soft) 34%, transparent);
+  background: var(--acct-bg-soft, #FFFFFF);
+  border-color: color-mix(in srgb, var(--acct-ink, #1A1814) 24%, transparent);
 }
 
 .acct-hero__cta:focus-visible {
-  outline: 2px solid var(--acct-gold-strong, var(--acct-gold));
+  outline: 2px solid var(--acct-gold-strong, var(--acct-gold, #C9A227));
   outline-offset: 2px;
 }
 
+/* Stat rail — unboxed tiles over one hairline; numbers carry the weight. */
 .acct-hero__tiles {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 24px;
+  gap: 0 28px;
+  margin-top: 22px;
+  border-top: 1px solid var(--acct-line, #E8E4DD);
 }
 
 .acct-hero__tiles:has(.acct-hero__tile:nth-child(3):last-child) {
@@ -222,6 +220,7 @@
 @media (max-width: 640px) {
   .acct-hero__tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
   }
 }
 
@@ -229,10 +228,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  padding: 14px 0 2px;
 }
 
 .acct-hero__tile-label {
@@ -240,7 +236,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 64%, transparent);
+  color: var(--acct-muted, #6B6560);
 }
 
 .acct-hero__tile-value {
@@ -249,22 +245,63 @@
   line-height: 1.05;
   font-weight: 500;
   letter-spacing: -0.005em;
-  color: var(--acct-bg-soft);
+  color: var(--acct-ink, #1A1814);
   font-variant-numeric: oldstyle-nums proportional-nums;
 }
 
 .acct-hero__tile[data-tone="warning"] .acct-hero__tile-value {
-  color: color-mix(in srgb, var(--acct-bg-soft) 92%, var(--acct-gold-strong, var(--acct-gold)));
+  color: color-mix(in srgb, var(--acct-ink, #1A1814) 45%, var(--acct-gold-strong, var(--acct-gold, #C9A227)));
 }
 
 .acct-hero__tile[data-tone="active"] .acct-hero__tile-value {
-  color: color-mix(in srgb, var(--acct-bg-soft) 92%, var(--acct-gold));
+  color: color-mix(in srgb, var(--acct-ink, #1A1814) 55%, var(--acct-gold, #C9A227));
 }
 
 .acct-hero__tile-foot {
   font-size: 11px;
   line-height: 1.4;
-  color: color-mix(in srgb, var(--acct-bg-soft) 60%, transparent);
+  color: var(--acct-muted, #6B6560);
+}
+
+/* Interactive tile (V3-DASHBOARD-TILES-INTERACTIVE) — href tiles remain
+   focusable deep-links: gold underline-rule on hover instead of the boxed
+   lift, arrow fades in, AA focus ring. Reduced-motion drops transitions. */
+.acct-hero .acct-hero__tile--link {
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  padding-right: 34px;
+  border-bottom: 2px solid transparent;
+  transition: border-color 180ms ease-out, transform 120ms ease-out;
+}
+.acct-hero .acct-hero__tile--link:hover {
+  border-bottom-color: color-mix(in srgb, var(--acct-gold, #C9A227) 55%, transparent);
+  transform: translateY(-1px);
+}
+.acct-hero .acct-hero__tile--link:focus-visible {
+  outline: 2px solid var(--acct-gold-strong, var(--acct-gold, #C9A227));
+  outline-offset: 2px;
+}
+.acct-hero .acct-hero__tile-go {
+  position: absolute;
+  top: 14px;
+  right: 6px;
+  color: var(--acct-muted, #6B6560);
+  opacity: 0;
+  transform: translate(-2px, 2px);
+  transition: opacity 180ms ease-out, transform 180ms ease-out, color 180ms ease-out;
+}
+.acct-hero .acct-hero__tile--link:hover .acct-hero__tile-go,
+.acct-hero .acct-hero__tile--link:focus-visible .acct-hero__tile-go {
+  opacity: 1;
+  transform: translate(0, 0);
+  color: color-mix(in srgb, var(--acct-ink, #1A1814) 40%, var(--acct-gold, #C9A227));
+}
+@media (prefers-reduced-motion: reduce) {
+  .acct-hero .acct-hero__tile--link { transition: none; }
+  .acct-hero .acct-hero__tile--link:hover { transform: none; }
+  .acct-hero .acct-hero__tile-go { transition: opacity 120ms ease-out; transform: none; }
 }
 
 .acct-hero__below-tiles {
@@ -281,13 +318,13 @@
 .acct-hero__progress-track {
   height: 6px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+  background: color-mix(in srgb, var(--acct-ink, #1A1814) 10%, transparent);
   overflow: hidden;
 }
 
 .acct-hero__progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--acct-gold) 0%, var(--acct-gold-strong, var(--acct-gold)) 100%);
+  background: linear-gradient(90deg, var(--acct-gold, #C9A227) 0%, var(--acct-gold-strong, var(--acct-gold, #C9A227)) 100%);
   transition: width 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -296,17 +333,24 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 64%, transparent);
+  color: var(--acct-muted, #6B6560);
 }
 
+/* Side panel — unboxed: a hairline-ruled column, not a glass card. */
 .acct-hero__side {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 22px 22px 24px;
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--acct-bg-soft) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acct-bg-soft) 14%, transparent);
+  padding: 4px 0 0 24px;
+  border-left: 1px solid var(--acct-line, #E8E4DD);
+}
+
+@media (max-width: 880px) {
+  .acct-hero__side {
+    border-left: 0;
+    border-top: 1px solid var(--acct-line, #E8E4DD);
+    padding: 16px 0 0;
+  }
 }
 
 .acct-hero__side-kicker {
@@ -314,7 +358,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 60%, transparent);
+  color: var(--acct-muted, #6B6560);
   margin: 0;
 }
 
@@ -323,21 +367,21 @@
   font-size: 18px;
   line-height: 1.25;
   letter-spacing: -0.005em;
-  color: var(--acct-bg-soft);
+  color: var(--acct-ink, #1A1814);
   margin: 0;
 }
 
 .acct-hero__side-body {
   font-size: 12.5px;
   line-height: 1.55;
-  color: color-mix(in srgb, var(--acct-bg-soft) 72%, transparent);
+  color: var(--acct-muted, #6B6560);
   margin: 0;
 }
 
 .acct-hero__breakdown {
   margin-top: 6px;
   padding-top: 12px;
-  border-top: 1px solid color-mix(in srgb, var(--acct-bg-soft) 12%, transparent);
+  border-top: 1px solid var(--acct-line, #E8E4DD);
 }
 
 .acct-hero__breakdown-label {
@@ -345,7 +389,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--acct-bg-soft) 56%, transparent);
+  color: var(--acct-muted, #6B6560);
   margin: 0 0 8px;
 }
 
@@ -361,7 +405,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: color-mix(in srgb, var(--acct-bg-soft) 86%, transparent);
+  color: color-mix(in srgb, var(--acct-ink, #1A1814) 86%, transparent);
 }
 
 .acct-hero__breakdown-dot {
@@ -375,7 +419,80 @@
   font-family: var(--acct-font-display, "Iowan Old Style", "Newsreader", "Baskerville", "Palatino Linotype", "Times New Roman", serif);
   font-weight: 500;
   font-feature-settings: "lnum" 0, "onum" 1;
-  color: var(--acct-bg-soft);
+  color: var(--acct-ink, #1A1814);
+}
+
+/* ────────────────────────────────────────────────────────────────────
+ * Alive on arrival — the hero entrance (2026-07-16).
+ *
+ * The hero was correct but static: it SNAPPED in. The auth surfaces the
+ * owner loves feel alive the instant they paint, and the marketing hero
+ * reveals in sequence — the product hero didn't. This brings that same
+ * premium arrival to the ONE hero every dashboard landing renders
+ * (account + jobs + marketplace + studio), so the whole authenticated
+ * ecosystem greets you rather than blinking on.
+ *
+ * Faithful to the "gravity not size, hairlines not glass" language: this
+ * is MOTION, not ornament — no glow, no glass. A graceful staggered rise
+ * (eyebrow → headline → blurb → CTAs → stat rail → side), plus one
+ * signature: the closing hairline is drawn in with a gold ink-stroke that
+ * fades to nothing — the hairline made kinetic.
+ *
+ * Safety: compositor-only (opacity + transform), and gated ENTIRELY behind
+ * `no-preference`. Reduced-motion (and any no-CSS path) gets the finished
+ * hero instantly with nothing hidden — the animation only ever ADDS an
+ * arrival, it never holds content back. `both` keeps the resting state.
+ * ────────────────────────────────────────────────────────────────────*/
+@media (prefers-reduced-motion: no-preference) {
+  .acct-hero__eyebrow,
+  .acct-hero__headline,
+  .acct-hero__blurb,
+  .acct-hero__ctas,
+  .acct-hero__tiles,
+  .acct-hero__below-tiles,
+  .acct-hero__progress,
+  .acct-hero__side {
+    animation: acct-hero-enter 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
+  }
+  .acct-hero__headline { animation-delay: 55ms; }
+  .acct-hero__blurb { animation-delay: 110ms; }
+  .acct-hero__ctas { animation-delay: 165ms; }
+  .acct-hero__side { animation-delay: 190ms; }
+  .acct-hero__tiles { animation-delay: 220ms; }
+  .acct-hero__below-tiles { animation-delay: 260ms; }
+  .acct-hero__progress { animation-delay: 300ms; }
+
+  /* The signature: a gold ink-stroke draws the hero's closing hairline in
+     from the lead edge, then fades to nothing — the design language's
+     hairline, made kinetic. Sits over (not instead of) the neutral border,
+     so no-motion users still get the clean rule. */
+  .acct-hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--acct-gold, #C9A227) 60%, transparent),
+      transparent 58%
+    );
+    transform-origin: left center;
+    animation: acct-hero-rule 920ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+    pointer-events: none;
+  }
+}
+
+@keyframes acct-hero-enter {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes acct-hero-rule {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
 }
 
 /* ────────────────────────────────────────────────────────────────────
@@ -397,12 +514,12 @@
 
 a.acct-next-step:hover {
   background: var(--acct-bg, #fff);
-  border-color: color-mix(in srgb, var(--acct-gold) 32%, transparent);
+  border-color: color-mix(in srgb, var(--acct-gold, #C9A227) 32%, transparent);
   transform: translateY(-1px);
 }
 
 a.acct-next-step:focus-visible {
-  outline: 2px solid var(--acct-gold);
+  outline: 2px solid var(--acct-gold, #C9A227);
   outline-offset: 2px;
 }
 
@@ -414,8 +531,8 @@ a.acct-next-step:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--acct-gold-soft, color-mix(in srgb, var(--acct-gold) 12%, transparent));
-  color: var(--acct-gold-text, var(--acct-gold));
+  background: var(--acct-gold-soft, color-mix(in srgb, var(--acct-gold, #C9A227) 12%, transparent));
+  color: var(--acct-gold-text, var(--acct-gold, #C9A227));
 }
 
 .acct-next-step__body {
@@ -428,7 +545,7 @@ a.acct-next-step:focus-visible {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
   margin: 0 0 2px;
 }
 
@@ -436,7 +553,7 @@ a.acct-next-step:focus-visible {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.005em;
-  color: var(--acct-ink);
+  color: var(--acct-ink, #1A1814);
   margin: 0;
   line-height: 1.35;
 }
@@ -444,7 +561,7 @@ a.acct-next-step:focus-visible {
 .acct-next-step__detail {
   font-size: 12.5px;
   line-height: 1.5;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
   margin: 4px 0 0;
 }
 
@@ -455,8 +572,8 @@ a.acct-next-step:focus-visible {
   gap: 6px;
   padding: 8px 14px;
   border-radius: 999px;
-  background: var(--acct-gold);
-  color: var(--acct-ink);
+  background: var(--acct-gold, #C9A227);
+  color: var(--acct-ink, #1A1814);
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
@@ -465,12 +582,12 @@ a.acct-next-step:focus-visible {
 }
 
 .acct-next-step__cta:hover {
-  background: color-mix(in srgb, var(--acct-gold) 90%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-gold, #C9A227) 90%, var(--acct-ink, #1A1814));
 }
 
 .acct-next-step[data-tone="attention"] {
-  border-color: color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 38%, transparent);
-  background: color-mix(in srgb, var(--acct-gold-soft, var(--acct-gold)) 32%, var(--acct-bg-elevated, var(--acct-bg)));
+  border-color: color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold, #C9A227)) 38%, transparent);
+  background: color-mix(in srgb, var(--acct-gold-soft, var(--acct-gold, #C9A227)) 32%, var(--acct-bg-elevated, var(--acct-bg, #FAFAF8)));
 }
 
 .acct-next-step[data-tone="success"] .acct-next-step__icon {
@@ -503,7 +620,7 @@ a.acct-next-step:focus-visible {
   padding: 18px 18px 20px;
   border-radius: 18px;
   background: var(--acct-bg-elevated, var(--acct-bg, #fff));
-  border: 1px solid var(--acct-line);
+  border: 1px solid var(--acct-line, #E8E4DD);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -513,12 +630,12 @@ a.acct-next-step:focus-visible {
 }
 
 a.acct-metric-strip__cell:hover {
-  border-color: color-mix(in srgb, var(--acct-gold) 32%, transparent);
+  border-color: color-mix(in srgb, var(--acct-gold, #C9A227) 32%, transparent);
   transform: translateY(-1px);
 }
 
 a.acct-metric-strip__cell:focus-visible {
-  outline: 2px solid var(--acct-gold);
+  outline: 2px solid var(--acct-gold, #C9A227);
   outline-offset: 2px;
 }
 
@@ -527,7 +644,7 @@ a.acct-metric-strip__cell:focus-visible {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
 }
 
 .acct-metric-strip__value {
@@ -536,13 +653,13 @@ a.acct-metric-strip__cell:focus-visible {
   line-height: 1.05;
   font-weight: 500;
   letter-spacing: -0.005em;
-  color: var(--acct-ink);
+  color: var(--acct-ink, #1A1814);
   font-feature-settings: "lnum" 0, "onum" 1;
 }
 
 .acct-metric-strip__context {
   font-size: 12px;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -552,19 +669,22 @@ a.acct-metric-strip__cell:focus-visible {
   margin-top: 8px;
   height: 26px;
   width: 100%;
-  color: var(--acct-gold-text, var(--acct-gold));
+  color: var(--acct-gold-text, var(--acct-gold, #C9A227));
 }
 
 .acct-metric-strip__cell[data-tone="warning"] .acct-metric-strip__value {
-  color: var(--acct-gold-text, var(--acct-gold));
+  color: var(--acct-gold-text, var(--acct-gold, #C9A227));
 }
 
 .acct-metric-strip__cell[data-tone="success"] .acct-metric-strip__value {
-  color: var(--acct-green, #1f8b4c);
+  /* Mix the status hue toward --acct-ink so the large metric value clears
+     WCAG-AA in BOTH themes: darkens on the cream surface, lightens on the
+     onyx surface. Raw --acct-green (#10B981) was ~2.1:1 on white. */
+  color: color-mix(in srgb, var(--acct-green, #10B981) 72%, var(--acct-ink, #1A1814));
 }
 
 .acct-metric-strip__cell[data-tone="danger"] .acct-metric-strip__value {
-  color: var(--acct-red, #b91c1c);
+  color: color-mix(in srgb, var(--acct-red, #EF4444) 74%, var(--acct-ink, #1A1814));
 }
 
 /* ────────────────────────────────────────────────────────────────────
@@ -573,8 +693,8 @@ a.acct-metric-strip__cell:focus-visible {
 
 .acct-timeline {
   border-radius: 18px;
-  background: var(--acct-bg-elevated, var(--acct-bg));
-  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-elevated, var(--acct-bg, #FAFAF8));
+  border: 1px solid var(--acct-line, #E8E4DD);
   overflow: hidden;
 }
 
@@ -583,7 +703,7 @@ a.acct-metric-strip__cell:focus-visible {
   align-items: flex-start;
   gap: 14px;
   padding: 16px 18px;
-  border-top: 1px solid var(--acct-line);
+  border-top: 1px solid var(--acct-line, #E8E4DD);
   text-decoration: none;
   color: inherit;
   transition: background-color 140ms ease-out;
@@ -595,11 +715,11 @@ a.acct-metric-strip__cell:focus-visible {
 
 a.acct-timeline__row:hover,
 a.acct-timeline__row:focus-visible {
-  background: color-mix(in srgb, var(--acct-gold-soft, var(--acct-gold)) 12%, transparent);
+  background: color-mix(in srgb, var(--acct-gold-soft, var(--acct-gold, #C9A227)) 12%, transparent);
 }
 
 a.acct-timeline__row:focus-visible {
-  outline: 2px solid var(--acct-gold);
+  outline: 2px solid var(--acct-gold, #C9A227);
   outline-offset: -2px;
 }
 
@@ -612,13 +732,13 @@ a.acct-timeline__row:focus-visible {
   align-items: center;
   justify-content: center;
   background: var(--acct-bg-soft, color-mix(in srgb, currentColor 6%, transparent));
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
   font-size: 13px;
   font-weight: 600;
 }
 
 .acct-timeline__avatar[data-tone="division"] {
-  color: var(--acct-bg-soft);
+  color: var(--acct-bg-soft, #FFFFFF);
 }
 
 .acct-timeline__body {
@@ -632,7 +752,7 @@ a.acct-timeline__row:focus-visible {
 .acct-timeline__title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--acct-ink);
+  color: var(--acct-ink, #1A1814);
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -642,7 +762,7 @@ a.acct-timeline__row:focus-visible {
 
 .acct-timeline__detail {
   font-size: 12.5px;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -665,12 +785,12 @@ a.acct-timeline__row:focus-visible {
   padding: 3px 8px;
   border-radius: 999px;
   background: var(--acct-bg-soft, color-mix(in srgb, currentColor 8%, transparent));
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
 }
 
 .acct-timeline__chip[data-tone="gold"] {
-  background: var(--acct-gold-soft, color-mix(in srgb, var(--acct-gold) 16%, transparent));
-  color: var(--acct-gold-text, var(--acct-gold));
+  background: var(--acct-gold-soft, color-mix(in srgb, var(--acct-gold, #C9A227) 16%, transparent));
+  color: var(--acct-gold-text, var(--acct-gold, #C9A227));
 }
 
 .acct-timeline__chip[data-tone="success"] {
@@ -679,8 +799,8 @@ a.acct-timeline__row:focus-visible {
 }
 
 .acct-timeline__chip[data-tone="warning"] {
-  background: color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold)) 14%, transparent);
-  color: var(--acct-gold-text, var(--acct-gold));
+  background: color-mix(in srgb, var(--acct-gold-strong, var(--acct-gold, #C9A227)) 14%, transparent);
+  color: var(--acct-gold-text, var(--acct-gold, #C9A227));
 }
 
 .acct-timeline__chip[data-tone="danger"] {
@@ -696,7 +816,7 @@ a.acct-timeline__row:focus-visible {
 .acct-timeline__time {
   flex-shrink: 0;
   font-size: 11px;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
   letter-spacing: 0.04em;
   align-self: flex-start;
   margin-top: 4px;
@@ -709,7 +829,7 @@ a.acct-timeline__row:focus-visible {
   align-items: flex-end;
   gap: 4px;
   font-size: 12.5px;
-  color: var(--acct-ink);
+  color: var(--acct-ink, #1A1814);
   font-weight: 600;
 }
 
@@ -723,8 +843,8 @@ a.acct-timeline__row:focus-visible {
   gap: 8px;
   padding: 28px 24px 32px;
   border-radius: 18px;
-  background: var(--acct-bg-elevated, var(--acct-bg));
-  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-elevated, var(--acct-bg, #FAFAF8));
+  border: 1px solid var(--acct-line, #E8E4DD);
   text-align: left;
 }
 
@@ -738,7 +858,7 @@ a.acct-timeline__row:focus-visible {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
   margin: 0;
 }
 
@@ -748,7 +868,7 @@ a.acct-timeline__row:focus-visible {
   line-height: 1.2;
   font-weight: 500;
   letter-spacing: -0.005em;
-  color: var(--acct-ink);
+  color: var(--acct-ink, #1A1814);
   margin: 0;
   max-width: 38ch;
 }
@@ -756,7 +876,7 @@ a.acct-timeline__row:focus-visible {
 .acct-empty-card__body {
   font-size: 13.5px;
   line-height: 1.6;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
   margin: 0;
   max-width: 60ch;
 }
@@ -768,8 +888,8 @@ a.acct-timeline__row:focus-visible {
   gap: 6px;
   padding: 10px 16px;
   border-radius: 999px;
-  background: var(--acct-gold);
-  color: var(--acct-ink);
+  background: var(--acct-gold, #C9A227);
+  color: var(--acct-ink, #1A1814);
   font-size: 12.5px;
   font-weight: 600;
   text-decoration: none;
@@ -778,11 +898,11 @@ a.acct-timeline__row:focus-visible {
 }
 
 .acct-empty-card__cta:hover {
-  background: color-mix(in srgb, var(--acct-gold) 92%, var(--acct-ink));
+  background: color-mix(in srgb, var(--acct-gold, #C9A227) 92%, var(--acct-ink, #1A1814));
 }
 
 .acct-empty-card__cta:focus-visible {
-  outline: 2px solid var(--acct-gold-strong, var(--acct-gold));
+  outline: 2px solid var(--acct-gold-strong, var(--acct-gold, #C9A227));
   outline-offset: 2px;
 }
 
@@ -804,6 +924,9 @@ a.acct-timeline__row:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  /* Anchor targets clear the sticky identity bar (in-page quick-nav,
+     redesign 2026-07-08). */
+  scroll-margin-top: 96px;
 }
 
 .acct-division-landing__section-head {
@@ -819,7 +942,7 @@ a.acct-timeline__row:focus-visible {
   line-height: 1.2;
   letter-spacing: -0.005em;
   font-weight: 500;
-  color: var(--acct-ink);
+  color: var(--acct-ink, #1A1814);
   margin: 0;
 }
 
@@ -828,5 +951,26 @@ a.acct-timeline__row:focus-visible {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--acct-muted);
+  color: var(--acct-muted, #6B6560);
+}
+
+/* ────────────────────────────────────────────────────────────────────
+ * Press feedback — instant, honest tactile acknowledgment.
+ *
+ * Every interactive surface answers a tap immediately with a subtle
+ * inward press (it overrides the hover lift while the pointer is down).
+ * Declared LAST so :active wins the cascade over the :hover rules above
+ * for the same specificity. Reduced-motion strips the transform.
+ * ──────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  a.acct-metric-strip__cell:active,
+  a.acct-next-step:active,
+  a.acct-timeline__row:active {
+    transform: scale(0.985);
+  }
+  .acct-hero__cta:active,
+  .acct-next-step__cta:active,
+  .acct-empty-card__cta:active {
+    transform: scale(0.96);
+  }
 }

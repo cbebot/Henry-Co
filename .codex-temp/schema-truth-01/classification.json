@@ -1,0 +1,2612 @@
+[
+  {
+    "file": "apps/care/supabase/migrations/20260515120000_care_garment_types.sql",
+    "version": "20260515120000",
+    "slug": "care_garment_types",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:care_garment_types"
+      ]
+    }
+  },
+  {
+    "file": "apps/care/supabase/migrations/20260515120500_care_user_preferences.sql",
+    "version": "20260515120500",
+    "slug": "care_user_preferences",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:care_user_preferences"
+      ]
+    }
+  },
+  {
+    "file": "apps/care/supabase/migrations/20260515121000_care_recurring_schedules.sql",
+    "version": "20260515121000",
+    "slug": "care_recurring_schedules",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:care_recurring_schedules"
+      ]
+    }
+  },
+  {
+    "file": "apps/care/supabase/migrations/20260515121500_care_claims.sql",
+    "version": "20260515121500",
+    "slug": "care_claims",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:care_claims"
+      ]
+    }
+  },
+  {
+    "file": "apps/care/supabase/migrations/20260515122000_care_pod_records.sql",
+    "version": "20260515122000",
+    "slug": "care_pod_records",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:care_pod_records"
+      ]
+    }
+  },
+  {
+    "file": "apps/care/supabase/migrations/20260515122500_care_booking_garments.sql",
+    "version": "20260515122500",
+    "slug": "care_booking_garments",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:care_booking_garments"
+      ]
+    }
+  },
+  {
+    "file": "apps/care/supabase/migrations/20260515123000_care_realtime_publication.sql",
+    "version": "20260515123000",
+    "slug": "care_realtime_publication",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260402235500_workspace_staff_platform.sql",
+    "version": "20260402235500",
+    "slug": "workspace_staff_platform",
+    "history": null,
+    "verdict": "PARTIAL",
+    "present": 1,
+    "absent": 20,
+    "evid": {
+      "present": [
+        "fn:workspace_set_updated_at"
+      ],
+      "absent": [
+        "table:workspace_staff_memberships",
+        "table:workspace_division_memberships",
+        "table:workspace_module_registry",
+        "table:workspace_tasks",
+        "table:workspace_queue_items",
+        "table:workspace_notifications",
+        "table:workspace_operational_events",
+        "table:workspace_internal_notes",
+        "table:workspace_preferences",
+        "table:workspace_helper_signals",
+        "trg:workspace_staff_memberships_updated_at",
+        "trg:workspace_division_memberships_updated_at",
+        "trg:workspace_module_registry_updated_at",
+        "trg:workspace_tasks_updated_at",
+        "trg:workspace_queue_items_updated_at",
+        "trg:workspace_notifications_updated_at",
+        "trg:workspace_operational_events_updated_at",
+        "trg:workspace_internal_notes_updated_at",
+        "trg:workspace_preferences_updated_at",
+        "trg:workspace_helper_signals_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260403183000_account_integration_hardening.sql",
+    "version": "20260403183000",
+    "slug": "account_integration_hardening",
+    "history": null,
+    "verdict": "PARTIAL",
+    "present": 2,
+    "absent": 21,
+    "evid": {
+      "present": [
+        "col:customer_preferences.notification_jobs",
+        "col:customer_notifications.read_at"
+      ],
+      "absent": [
+        "table:customer_wallet_funding_requests",
+        "table:customer_payout_methods",
+        "table:customer_referral_profiles",
+        "table:customer_referrals",
+        "table:customer_referral_rewards",
+        "table:jobs_interview_sessions",
+        "table:jobs_interview_participants",
+        "table:jobs_interview_events",
+        "table:customer_trust_profiles",
+        "col:care_bookings.user_id",
+        "col:customer_security_log.event_category",
+        "fn:account_set_updated_at",
+        "trg:customer_wallet_funding_requests_updated_at",
+        "trg:customer_payout_methods_updated_at",
+        "trg:customer_referral_profiles_updated_at",
+        "trg:customer_referrals_updated_at",
+        "trg:customer_referral_rewards_updated_at",
+        "trg:jobs_interview_sessions_updated_at",
+        "trg:jobs_interview_participants_updated_at",
+        "trg:jobs_interview_events_updated_at",
+        "trg:customer_trust_profiles_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260405120000_hq_internal_communications.sql",
+    "version": "20260405120000",
+    "slug": "hq_internal_communications",
+    "history": "20260405132914:hq_internal_communications",
+    "verdict": "applied-by-evidence",
+    "present": 2,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:hq_internal_comm_threads",
+        "table:hq_internal_comm_messages"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260405123000_hq_internal_comm_members.sql",
+    "version": "20260405123000",
+    "slug": "hq_internal_comm_members",
+    "history": "20260405132927:hq_internal_comm_members",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:hq_internal_comm_thread_members"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260405150000_logistics_customer_surface.sql",
+    "version": "20260405150000",
+    "slug": "logistics_customer_surface",
+    "history": null,
+    "verdict": "PARTIAL",
+    "present": 11,
+    "absent": 1,
+    "evid": {
+      "present": [
+        "table:logistics_settings",
+        "table:logistics_zones",
+        "table:logistics_rate_cards",
+        "table:logistics_shipments",
+        "table:logistics_addresses",
+        "table:logistics_assignments",
+        "table:logistics_events",
+        "table:logistics_proof_of_delivery",
+        "table:logistics_issues",
+        "table:logistics_expenses",
+        "table:logistics_notifications"
+      ],
+      "absent": [
+        "table:logistics_tracking_points"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260406140000_wallet_withdrawals.sql",
+    "version": "20260406140000",
+    "slug": "wallet_withdrawals",
+    "history": null,
+    "verdict": "PARTIAL",
+    "present": 1,
+    "absent": 2,
+    "evid": {
+      "present": [
+        "col:customer_preferences.withdrawal_pin_hash"
+      ],
+      "absent": [
+        "table:customer_wallet_withdrawal_requests",
+        "trg:customer_wallet_withdrawal_requests_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260407150000_hq_internal_comm_thread_touch.sql",
+    "version": "20260407150000",
+    "slug": "hq_internal_comm_thread_touch",
+    "history": "20260405132937:hq_internal_comm_thread_touch",
+    "verdict": "applied-by-evidence",
+    "present": 2,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "fn:hq_internal_comm_touch_thread_updated_at",
+        "trg:hq_internal_comm_messages_touch_thread"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260407160000_staff_navigation_audit_prep.sql",
+    "version": "20260407160000",
+    "slug": "staff_navigation_audit_prep",
+    "history": "20260416025820:staff_navigation_audit",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:staff_navigation_audit"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260407190000_account_webhook_receipts.sql",
+    "version": "20260407190000",
+    "slug": "account_webhook_receipts",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:account_webhook_receipts"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260407193000_idempotency_and_nonce_scope.sql",
+    "version": "20260407193000",
+    "slug": "idempotency_and_nonce_scope",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:account_idempotency_keys"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260408120000_hq_internal_comms_attachments_visibility_rls.sql",
+    "version": "20260408120000",
+    "slug": "hq_internal_comms_attachments_visibility_rls",
+    "history": null,
+    "verdict": "PARTIAL",
+    "present": 21,
+    "absent": 4,
+    "evid": {
+      "present": [
+        "table:hq_internal_comm_attachments",
+        "table:hq_internal_comm_presence",
+        "col:hq_internal_comm_threads.visibility",
+        "col:hq_internal_comm_messages.client_nonce",
+        "col:hq_internal_comm_messages.delivery_state",
+        "col:hq_internal_comm_messages.body_tsv",
+        "fn:hq_ic_can_read_thread",
+        "fn:hq_ic_can_write_thread",
+        "fn:hq_ic_storage_thread_id_from_path",
+        "policy:hq_internal_comm_threads.hq_ic_threads_select",
+        "policy:hq_internal_comm_messages.hq_ic_messages_select",
+        "policy:hq_internal_comm_messages.hq_ic_messages_insert",
+        "policy:hq_internal_comm_thread_members.hq_ic_members_select",
+        "policy:hq_internal_comm_thread_members.hq_ic_members_insert",
+        "policy:hq_internal_comm_thread_members.hq_ic_members_update",
+        "policy:hq_internal_comm_attachments.hq_ic_attachments_select",
+        "policy:hq_internal_comm_attachments.hq_ic_attachments_insert",
+        "policy:hq_internal_comm_attachments.hq_ic_attachments_update",
+        "policy:hq_internal_comm_presence.hq_ic_presence_select",
+        "policy:hq_internal_comm_presence.hq_ic_presence_upsert",
+        "policy:hq_internal_comm_presence.hq_ic_presence_update"
+      ],
+      "absent": [
+        "policy:storage.hq_ic_storage_select",
+        "policy:storage.hq_ic_storage_insert",
+        "policy:storage.hq_ic_storage_update",
+        "policy:storage.hq_ic_storage_delete"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260410120000_referral_fraud_hardening.sql",
+    "version": "20260410120000",
+    "slug": "referral_fraud_hardening",
+    "history": "20260413112814:referral_fraud_hardening",
+    "verdict": "applied-by-evidence",
+    "present": 3,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:referrals.qualified_at",
+        "col:customer_profiles.referral_code",
+        "col:referral_rewards.support_note"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260410130000_kyc_verification_infra.sql",
+    "version": "20260410130000",
+    "slug": "kyc_verification_infra",
+    "history": "20260413112827:kyc_verification_infra",
+    "verdict": "applied-by-evidence",
+    "present": 3,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:customer_verification_submissions",
+        "col:customer_profiles.verification_status",
+        "trg:customer_verification_submissions_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260416120000_trust_scoring_infra.sql",
+    "version": "20260416120000",
+    "slug": "trust_scoring_infra",
+    "history": "20260416134553:trust_scoring_infra",
+    "verdict": "applied-by-evidence",
+    "present": 5,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:marketplace_vendor_trust_snapshots",
+        "col:marketplace_vendors.trust_last_computed_at",
+        "col:marketplace_moderation_cases.vendor_id",
+        "policy:marketplace_vendor_trust_snapshots.staff_read_vendor_trust_snapshots",
+        "policy:marketplace_vendor_trust_snapshots.service_role_insert_vendor_trust_snapshots"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260417170000_shared_pricing_governance.sql",
+    "version": "20260417170000",
+    "slug": "shared_pricing_governance",
+    "history": "20260417063230:shared_pricing_governance_20260417170000",
+    "verdict": "applied-by-evidence",
+    "present": 6,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:pricing_rule_books",
+        "table:pricing_quotes",
+        "table:pricing_override_events",
+        "policy:pricing_rule_books.pricing_rule_books_service_only",
+        "policy:pricing_quotes.pricing_quotes_service_only",
+        "policy:pricing_override_events.pricing_override_events_service_only"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260419120000_multi_currency_schema_foundation.sql",
+    "version": "20260419120000",
+    "slug": "multi_currency_schema_foundation",
+    "history": "20260419042336:multi_currency_schema_foundation",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260419150000_notification_delivery_log.sql",
+    "version": "20260419150000",
+    "slug": "notification_delivery_log",
+    "history": "20260419184310:notification_delivery_log",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:notification_delivery_log"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260420160000_notification_signal_preferences.sql",
+    "version": "20260420160000",
+    "slug": "notification_signal_preferences",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:customer_preferences.in_app_toast_enabled"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260420193000_profiles_role_customer_constraint.sql",
+    "version": "20260420193000",
+    "slug": "profiles_role_customer_constraint",
+    "history": "20260420232812:20260420193000_profiles_role_customer_constraint",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260421191500_handle_new_customer_search_path.sql",
+    "version": "20260421191500",
+    "slug": "handle_new_customer_search_path",
+    "history": "20260421191500:20260421191500_handle_new_customer_search_path",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "fn:handle_new_customer"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260423143000_data_governance_foundation.sql",
+    "version": "20260423143000",
+    "slug": "data_governance_foundation",
+    "history": "20260424111014:data_governance_foundation",
+    "verdict": "applied-by-evidence",
+    "present": 9,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:data_governance_domains",
+        "table:data_retention_policies",
+        "table:data_storage_surfaces",
+        "table:data_recovery_drill_runs",
+        "fn:data_governance_set_updated_at",
+        "trg:data_governance_domains_updated_at",
+        "trg:data_retention_policies_updated_at",
+        "trg:data_storage_surfaces_updated_at",
+        "trg:data_recovery_drill_runs_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260424140000_customer_lifecycle_snapshot.sql",
+    "version": "20260424140000",
+    "slug": "customer_lifecycle_snapshot",
+    "history": "20260424112139:customer_lifecycle_snapshot",
+    "verdict": "applied-by-evidence",
+    "present": 3,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:customer_lifecycle_snapshots",
+        "fn:customer_lifecycle_snapshots_set_updated_at",
+        "trg:customer_lifecycle_snapshots_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260424160000_newsletter_foundation.sql",
+    "version": "20260424160000",
+    "slug": "newsletter_foundation",
+    "history": "20260424112330:newsletter_foundation",
+    "verdict": "applied-by-evidence",
+    "present": 23,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:email_subscribers",
+        "table:email_subscriber_topics",
+        "table:email_suppression_list",
+        "table:email_audience_segments",
+        "table:email_brand_voice_rules",
+        "table:email_campaigns",
+        "table:email_campaign_sends",
+        "table:email_editorial_events",
+        "table:email_draft_assists",
+        "fn:newsletter_set_updated_at",
+        "policy:email_subscribers.email_subscribers_service_role",
+        "policy:email_subscriber_topics.email_subscriber_topics_service_role",
+        "policy:email_suppression_list.email_suppression_list_service_role",
+        "policy:email_audience_segments.email_audience_segments_service_role",
+        "policy:email_brand_voice_rules.email_brand_voice_rules_service_role",
+        "policy:email_campaigns.email_campaigns_service_role",
+        "policy:email_campaign_sends.email_campaign_sends_service_role",
+        "policy:email_editorial_events.email_editorial_events_service_role",
+        "policy:email_draft_assists.email_draft_assists_service_role",
+        "trg:email_subscribers_updated_at",
+        "trg:email_subscriber_topics_updated_at",
+        "trg:email_audience_segments_updated_at",
+        "trg:email_campaigns_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260501120000_notification_signal_foundation_extensions.sql",
+    "version": "20260501120000",
+    "slug": "notification_signal_foundation_extensions",
+    "history": "20260508105640:notification_signal_foundation_extensions",
+    "verdict": "applied-by-evidence",
+    "present": 3,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:customer_preferences.email_fallback_enabled",
+        "col:customer_notifications.actor_user_id",
+        "col:notification_delivery_log.publisher"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260501130000_notification_realtime_publication.sql",
+    "version": "20260501130000",
+    "slug": "notification_realtime_publication",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260502120000_staff_notifications_audience.sql",
+    "version": "20260502120000",
+    "slug": "staff_notifications_audience",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 5,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:staff_notifications",
+        "table:staff_notification_states",
+        "col:notification_delivery_log.purged_at",
+        "fn:is_staff_in",
+        "trg:staff_notification_states_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260502160000_user_addresses_canonical.sql",
+    "version": "20260502160000",
+    "slug": "user_addresses_canonical",
+    "history": "20260502160000:user_addresses_canonical",
+    "verdict": "applied-by-evidence",
+    "present": 14,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:user_addresses",
+        "fn:user_addresses_set_updated_at",
+        "fn:user_addresses_enforce_default",
+        "fn:user_addresses_promote_after_delete",
+        "fn:is_platform_staff",
+        "fn:get_default_user_address",
+        "policy:user_addresses.user_addresses_owner_select",
+        "policy:user_addresses.user_addresses_owner_insert",
+        "policy:user_addresses.user_addresses_owner_update",
+        "policy:user_addresses.user_addresses_owner_delete",
+        "policy:user_addresses.user_addresses_staff_select",
+        "trg:user_addresses_updated_at",
+        "trg:user_addresses_default_enforce",
+        "trg:user_addresses_default_promote"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260502170000_v2_cart_01_saved_items_engagement.sql",
+    "version": "20260502170000",
+    "slug": "v2_cart_01_saved_items_engagement",
+    "history": "20260502170000:v2_cart_01_saved_items_engagement",
+    "verdict": "applied-by-evidence",
+    "present": 21,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:saved_items",
+        "table:user_engagement_events",
+        "table:cart_recovery_state",
+        "table:recently_viewed_items",
+        "fn:saved_items_touch_updated_at",
+        "fn:cart_recovery_state_touch",
+        "fn:saved_items_sweep_expiry",
+        "policy:saved_items.saved_items_owner_select",
+        "policy:saved_items.saved_items_owner_insert",
+        "policy:saved_items.saved_items_owner_update",
+        "policy:saved_items.saved_items_owner_delete",
+        "policy:user_engagement_events.user_engagement_events_owner_select",
+        "policy:cart_recovery_state.cart_recovery_state_owner_select",
+        "policy:cart_recovery_state.cart_recovery_state_owner_upsert",
+        "policy:cart_recovery_state.cart_recovery_state_owner_update",
+        "policy:recently_viewed_items.recently_viewed_items_owner_select",
+        "policy:recently_viewed_items.recently_viewed_items_owner_upsert",
+        "policy:recently_viewed_items.recently_viewed_items_owner_update",
+        "policy:recently_viewed_items.recently_viewed_items_owner_delete",
+        "trg:saved_items_touch",
+        "trg:cart_recovery_state_touch"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260502180000_search_index_outbox_v2_search_01.sql",
+    "version": "20260502180000",
+    "slug": "search_index_outbox_v2_search_01",
+    "history": "20260502180000:search_index_outbox_v2_search_01",
+    "verdict": "applied-by-evidence",
+    "present": 8,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:search_index_outbox",
+        "table:search_workflow_targets",
+        "fn:enqueue_search_index_op",
+        "fn:tg_workflow_targets_to_outbox",
+        "fn:purge_completed_search_outbox",
+        "policy:search_index_outbox.outbox_deny_all",
+        "policy:search_workflow_targets.workflow_targets_owner_select",
+        "trg:tr_workflow_targets_to_outbox"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260507120000_get_signal_feed.sql",
+    "version": "20260507120000",
+    "slug": "get_signal_feed",
+    "history": "20260507182134:get_signal_feed",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "fn:get_signal_feed"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260508120000_is_staff_in_any.sql",
+    "version": "20260508120000",
+    "slug": "is_staff_in_any",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 4,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:audit_logs.division",
+        "col:audit_logs.correlation_id",
+        "fn:is_staff_in_any",
+        "fn:add_audit_log_v2"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260509120000_v2_closure_d8_rls_hot_patch.sql",
+    "version": "20260509120000",
+    "slug": "v2_closure_d8_rls_hot_patch",
+    "history": "20260509092455:v2_closure_d8_rls_hot_patch",
+    "verdict": "applied-by-evidence",
+    "present": 2,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "policy:wallets.wallets_select_own_v2_d8",
+        "policy:wallet_transactions.wallet_tx_select_own_v2_d8"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260510010000_i18n_translation_cache.sql",
+    "version": "20260510010000",
+    "slug": "i18n_translation_cache",
+    "history": "20260509233549:i18n_translation_cache",
+    "verdict": "applied-by-evidence",
+    "present": 3,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:i18n_translation_cache",
+        "fn:i18n_translation_cache_touch_updated_at",
+        "trg:i18n_translation_cache_touch_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260513200000_support_thread_state_pass24_phase5.sql",
+    "version": "20260513200000",
+    "slug": "support_thread_state_pass24_phase5",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 2,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:support_threads.customer_muted_at",
+        "col:support_threads.staff_muted_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260514100000_security_invoker_views.sql",
+    "version": "20260514100000",
+    "slug": "security_invoker_views",
+    "history": "20260515054839:security_invoker_views",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260514110000_function_search_path_lockdown.sql",
+    "version": "20260514110000",
+    "slug": "function_search_path_lockdown",
+    "history": "20260515055412:function_search_path_lockdown",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260514120000_unindexed_foreign_keys.sql",
+    "version": "20260514120000",
+    "slug": "unindexed_foreign_keys",
+    "history": "20260515055507:unindexed_foreign_keys",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260514130000_drop_duplicate_indexes.sql",
+    "version": "20260514130000",
+    "slug": "drop_duplicate_indexes",
+    "history": "20260515055526:drop_duplicate_indexes",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260514140000_auth_rls_initplan_wrap.sql",
+    "version": "20260514140000",
+    "slug": "auth_rls_initplan_wrap",
+    "history": "20260515055657:auth_rls_initplan_wrap",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260515060000_auth_rls_initplan_storage_policies.sql",
+    "version": "20260515060000",
+    "slug": "auth_rls_initplan_storage_policies",
+    "history": "20260515055818:auth_rls_initplan_storage_policies",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260515100000_rooms_sessions.sql",
+    "version": "20260515100000",
+    "slug": "rooms_sessions",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:rooms_sessions",
+        "trg:rooms_sessions_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260515100100_rooms_participants.sql",
+    "version": "20260515100100",
+    "slug": "rooms_participants",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:rooms_participants"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260515100200_rooms_recordings_consent.sql",
+    "version": "20260515100200",
+    "slug": "rooms_recordings_consent",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:rooms_recordings_consent"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260515100300_rooms_recordings.sql",
+    "version": "20260515100300",
+    "slug": "rooms_recordings",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:rooms_recordings"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260515100400_rooms_scorecards.sql",
+    "version": "20260515100400",
+    "slug": "rooms_scorecards",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:rooms_scorecards"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260515100500_rooms_messages.sql",
+    "version": "20260515100500",
+    "slug": "rooms_messages",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:rooms_messages"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260515100600_rooms_realtime_publication.sql",
+    "version": "20260515100600",
+    "slug": "rooms_realtime_publication",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260522103000_v3_01_henry_events.sql",
+    "version": "20260522103000",
+    "slug": "v3_01_henry_events",
+    "history": "20260522124106:v3_01_henry_events",
+    "verdict": "applied-by-evidence",
+    "present": 3,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:henry_events",
+        "policy:henry_events.henry_events_insert_own",
+        "policy:henry_events.henry_events_select_service_role"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260522154818_message_read_state.sql",
+    "version": "20260522154818",
+    "slug": "message_read_state",
+    "history": "20260523041459:v3_03_message_read_state",
+    "verdict": "applied-by-evidence",
+    "present": 14,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:support_messages.read_by",
+        "col:support_messages.delivery_state",
+        "col:support_threads.last_read_message_id",
+        "col:support_threads.last_staff_read_message_id",
+        "col:support_threads.unread_count_customer",
+        "col:support_threads.unread_count_staff",
+        "col:customer_notifications.delivery_state",
+        "col:staff_notifications.delivery_state",
+        "fn:update_thread_unread_counts",
+        "policy:support_messages.support_messages_update_customer_read",
+        "policy:support_messages.support_messages_update_staff_read",
+        "policy:support_threads.support_threads_update_customer_read_pointer",
+        "policy:support_threads.support_threads_update_staff_read_pointer",
+        "trg:trigger_support_messages_unread_count"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260522235119_v3_01_henry_events_anon_insert_policy.sql",
+    "version": "20260522235119",
+    "slug": "v3_01_henry_events_anon_insert_policy",
+    "history": "20260522124106:v3_01_henry_events",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "policy:henry_events.henry_events_insert_anon_system"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260523103000_diag_account_01_customer_preferences_missing_columns.sql",
+    "version": "20260523103000",
+    "slug": "diag_account_01_customer_preferences_missing_columns",
+    "history": "20260523104313:diag_account_01_customer_preferences_missing_columns",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:customer_preferences.in_app_toast_enabled"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260523190000_realtime_publication_backfill.sql",
+    "version": "20260523190000",
+    "slug": "realtime_publication_backfill",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260529120000_payment_intents.sql",
+    "version": "20260529120000",
+    "slug": "payment_intents",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 13,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:payment_intents",
+        "table:payment_attempts",
+        "table:processed_webhooks",
+        "fn:payments_set_updated_at",
+        "fn:enforce_payment_intent_transition",
+        "fn:advance_payment_intent",
+        "fn:apply_payment_webhook",
+        "policy:payment_intents.payment_intents_select_own",
+        "policy:payment_intents.payment_intents_insert_own",
+        "policy:payment_intents.payment_intents_select_platform_staff",
+        "policy:payment_attempts.payment_attempts_select_platform_staff",
+        "trg:payment_intents_set_updated_at",
+        "trg:payment_intents_enforce_transition"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260602120000_v3_division_name_brand_fix.sql",
+    "version": "20260602120000",
+    "slug": "v3_division_name_brand_fix",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260605120000_customer_notifications_metadata_column.sql",
+    "version": "20260605120000",
+    "slug": "customer_notifications_metadata_column",
+    "history": "20260605052924:customer_notifications_metadata_column",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:customer_notifications.metadata"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260605123000_payments_private_isolation.sql",
+    "version": "20260605123000",
+    "slug": "payments_private_isolation",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "trg:payment_intents_set_updated_at",
+        "trg:payment_intents_enforce_transition"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260605160000_push_subscriptions_known_devices.sql",
+    "version": "20260605160000",
+    "slug": "push_subscriptions_known_devices",
+    "history": "20260605155217:push_subscriptions_known_devices",
+    "verdict": "applied-by-evidence",
+    "present": 5,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:push_subscriptions",
+        "table:account_known_devices",
+        "policy:push_subscriptions.push_sub_owner_select",
+        "policy:push_subscriptions.push_sub_owner_delete",
+        "policy:account_known_devices.known_devices_owner_select"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260605210000_service_role_statement_timeout_cap.sql",
+    "version": "20260605210000",
+    "slug": "service_role_statement_timeout_cap",
+    "history": "20260605225852:service_role_statement_timeout_cap",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260606120500_customer_notifications_category_constraint_reconcile.sql",
+    "version": "20260606120500",
+    "slug": "customer_notifications_category_constraint_reconcile",
+    "history": "20260606120817:customer_notifications_category_constraint_reconcile",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260606121500_customer_notifications_priority_constraint_reconcile.sql",
+    "version": "20260606121500",
+    "slug": "customer_notifications_priority_constraint_reconcile",
+    "history": "20260606124833:customer_notifications_priority_constraint_reconcile",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260607120000_double_entry_ledger.sql",
+    "version": "20260607120000",
+    "slug": "double_entry_ledger",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 11,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:ledger_accounts",
+        "table:journal_entries",
+        "table:journal_lines",
+        "policy:ledger_accounts.ledger_accounts_select_staff",
+        "policy:journal_entries.journal_entries_select_staff",
+        "policy:journal_lines.journal_lines_select_staff",
+        "trg:journal_lines_balanced",
+        "trg:journal_entries_immutable",
+        "trg:journal_lines_immutable",
+        "trg:journal_entries_no_truncate",
+        "trg:journal_lines_no_truncate"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260607130000_v3_18_payment_documents.sql",
+    "version": "20260607130000",
+    "slug": "v3_18_payment_documents",
+    "history": null,
+    "verdict": "PARTIAL",
+    "present": 1,
+    "absent": 6,
+    "evid": {
+      "present": [
+        "table:customer_invoices"
+      ],
+      "absent": [
+        "table:document_number_counters",
+        "table:customer_receipts",
+        "policy:customer_invoices.customer_invoices_select_own",
+        "policy:customer_invoices.customer_invoices_select_finance",
+        "policy:customer_receipts.customer_receipts_select_own",
+        "policy:customer_receipts.customer_receipts_select_finance"
+      ]
+    }
+  },
+  {
+    "file": "apps/hub/supabase/migrations/20260607140000_v3_vat_01_settlement_vat.sql",
+    "version": "20260607140000",
+    "slug": "v3_vat_01_settlement_vat",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/jobs/supabase/migrations/20260504130000_jobs_employer_subscriptions.sql",
+    "version": "20260504130000",
+    "slug": "jobs_employer_subscriptions",
+    "history": "20260504133803:jobs_employer_subscriptions",
+    "verdict": "applied-by-evidence",
+    "present": 2,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:jobs_employer_subscriptions",
+        "policy:jobs_employer_subscriptions.jobs_employer_subscriptions_admin_only"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/jobs/supabase/migrations/20260515120000_jobs_taxonomy.sql",
+    "version": "20260515120000",
+    "slug": "jobs_taxonomy",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 3,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:jobs_categories",
+        "table:jobs_skills",
+        "table:jobs_role_titles"
+      ]
+    }
+  },
+  {
+    "file": "apps/jobs/supabase/migrations/20260515120500_jobs_skill_verifications.sql",
+    "version": "20260515120500",
+    "slug": "jobs_skill_verifications",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 3,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:jobs_skill_verifications",
+        "table:jobs_experience_verifications",
+        "table:jobs_reference_checks"
+      ]
+    }
+  },
+  {
+    "file": "apps/jobs/supabase/migrations/20260515121000_jobs_interview_rooms.sql",
+    "version": "20260515121000",
+    "slug": "jobs_interview_rooms",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:jobs_interview_rooms",
+        "table:jobs_interview_room_events"
+      ]
+    }
+  },
+  {
+    "file": "apps/jobs/supabase/migrations/20260515121500_jobs_offer_letters.sql",
+    "version": "20260515121500",
+    "slug": "jobs_offer_letters",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:jobs_offer_letters",
+        "table:jobs_offer_letter_events"
+      ]
+    }
+  },
+  {
+    "file": "apps/jobs/supabase/migrations/20260515122000_jobs_salary_benchmarks.sql",
+    "version": "20260515122000",
+    "slug": "jobs_salary_benchmarks",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:jobs_salary_benchmarks"
+      ]
+    }
+  },
+  {
+    "file": "apps/jobs/supabase/migrations/20260515122500_jobs_pipeline_extras.sql",
+    "version": "20260515122500",
+    "slug": "jobs_pipeline_extras",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:jobs_pipeline_stages",
+        "table:jobs_application_notes"
+      ]
+    }
+  },
+  {
+    "file": "apps/jobs/supabase/migrations/20260515123000_jobs_realtime_publication.sql",
+    "version": "20260515123000",
+    "slug": "jobs_realtime_publication",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/learn/supabase/migrations/20260402233000_learn_init.sql",
+    "version": "20260402233000",
+    "slug": "learn_init",
+    "history": "20260504135613:learn_init",
+    "verdict": "applied-by-evidence",
+    "present": 37,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:learn_role_memberships",
+        "table:learn_course_categories",
+        "table:learn_instructors",
+        "table:learn_plans",
+        "table:learn_courses",
+        "table:learn_learning_paths",
+        "table:learn_path_items",
+        "table:learn_modules",
+        "table:learn_lessons",
+        "table:learn_lesson_resources",
+        "table:learn_quizzes",
+        "table:learn_quiz_questions",
+        "table:learn_enrollments",
+        "table:learn_progress",
+        "table:learn_quiz_attempts",
+        "table:learn_certificates",
+        "table:learn_certificate_verification",
+        "table:learn_reviews",
+        "table:learn_notifications",
+        "table:learn_assignments",
+        "table:learn_payments",
+        "table:learn_saved_courses",
+        "table:learn_settings",
+        "fn:learn_set_updated_at",
+        "fn:learn_auth_email",
+        "fn:learn_is_staff",
+        "trg:learn_role_memberships_updated_at",
+        "trg:learn_course_categories_updated_at",
+        "trg:learn_instructors_updated_at",
+        "trg:learn_plans_updated_at",
+        "trg:learn_courses_updated_at",
+        "trg:learn_learning_paths_updated_at",
+        "trg:learn_modules_updated_at",
+        "trg:learn_lessons_updated_at",
+        "trg:learn_quizzes_updated_at",
+        "trg:learn_reviews_updated_at",
+        "trg:learn_settings_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/learn/supabase/migrations/20260402233500_learn_policies.sql",
+    "version": "20260402233500",
+    "slug": "learn_policies",
+    "history": "20260504135700:learn_policies",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "fn:learn_matches_identity"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/learn/supabase/migrations/20260403120000_learn_teacher_applications.sql",
+    "version": "20260403120000",
+    "slug": "learn_teacher_applications",
+    "history": "20260504135721:learn_teacher_applications",
+    "verdict": "applied-by-evidence",
+    "present": 2,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:learn_teacher_applications",
+        "trg:learn_teacher_applications_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/learn/supabase/migrations/20260501000000_learn_unlock_policy.sql",
+    "version": "20260501000000",
+    "slug": "learn_unlock_policy",
+    "history": "20260504135726:learn_unlock_policy",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/learn/supabase/migrations/20260515000000_learn_v3_pass21_player.sql",
+    "version": "20260515000000",
+    "slug": "learn_v3_pass21_player",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 25,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:learn_quiz_answer_options",
+        "table:learn_quiz_answer_responses",
+        "table:learn_assignment_submissions",
+        "table:learn_assignment_grades",
+        "table:learn_discussions",
+        "table:learn_cohorts",
+        "table:learn_live_sessions",
+        "table:learn_cohort_enrollments",
+        "table:learn_lesson_bookmarks",
+        "table:learn_lesson_notes",
+        "table:learn_lesson_playback",
+        "table:learn_instructor_payouts",
+        "table:learn_streaks",
+        "table:learn_badges",
+        "table:learn_badge_awards",
+        "fn:learn_cohort_enrol",
+        "trg:learn_quiz_answer_options_updated_at",
+        "trg:learn_assignment_submissions_updated_at",
+        "trg:learn_discussions_updated_at",
+        "trg:learn_cohorts_updated_at",
+        "trg:learn_live_sessions_updated_at",
+        "trg:learn_lesson_notes_updated_at",
+        "trg:learn_lesson_playback_updated_at",
+        "trg:learn_instructor_payouts_updated_at",
+        "trg:learn_streaks_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/learn/supabase/migrations/20260515001000_learn_v3_pass21_policies.sql",
+    "version": "20260515001000",
+    "slug": "learn_v3_pass21_policies",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/learn/supabase/migrations/20260515002000_learn_v3_pass21_realtime.sql",
+    "version": "20260515002000",
+    "slug": "learn_v3_pass21_realtime",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/logistics/supabase/migrations/20260514120000_logistics_quotes.sql",
+    "version": "20260514120000",
+    "slug": "logistics_quotes",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:logistics_quotes"
+      ]
+    }
+  },
+  {
+    "file": "apps/logistics/supabase/migrations/20260514120500_logistics_shipment_legs.sql",
+    "version": "20260514120500",
+    "slug": "logistics_shipment_legs",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:logistics_shipment_legs"
+      ]
+    }
+  },
+  {
+    "file": "apps/logistics/supabase/migrations/20260514121000_logistics_pod.sql",
+    "version": "20260514121000",
+    "slug": "logistics_pod",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:logistics_pod_records"
+      ]
+    }
+  },
+  {
+    "file": "apps/logistics/supabase/migrations/20260514121500_logistics_claims.sql",
+    "version": "20260514121500",
+    "slug": "logistics_claims",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:logistics_claims"
+      ]
+    }
+  },
+  {
+    "file": "apps/logistics/supabase/migrations/20260514122000_logistics_fleet.sql",
+    "version": "20260514122000",
+    "slug": "logistics_fleet",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 3,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:logistics_fleet_vehicles",
+        "table:logistics_fleet_riders",
+        "table:logistics_rider_assignments"
+      ]
+    }
+  },
+  {
+    "file": "apps/logistics/supabase/migrations/20260514122500_logistics_b2b_accounts.sql",
+    "version": "20260514122500",
+    "slug": "logistics_b2b_accounts",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 3,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:logistics_b2b_accounts",
+        "table:logistics_b2b_admins",
+        "col:logistics_shipments.b2b_account_id"
+      ]
+    }
+  },
+  {
+    "file": "apps/logistics/supabase/migrations/20260514123000_logistics_realtime_publication.sql",
+    "version": "20260514123000",
+    "slug": "logistics_realtime_publication",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260402180000_marketplace_init.sql",
+    "version": "20260402180000",
+    "slug": "marketplace_init",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 63,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:marketplace_role_memberships",
+        "table:marketplace_settings",
+        "table:marketplace_categories",
+        "table:marketplace_brands",
+        "table:marketplace_vendors",
+        "table:marketplace_vendor_applications",
+        "table:marketplace_products",
+        "table:marketplace_product_media",
+        "table:marketplace_product_variants",
+        "table:marketplace_collections",
+        "table:marketplace_collection_items",
+        "table:marketplace_campaigns",
+        "table:marketplace_carts",
+        "table:marketplace_cart_items",
+        "table:marketplace_orders",
+        "table:marketplace_order_groups",
+        "table:marketplace_order_items",
+        "table:marketplace_payment_records",
+        "table:marketplace_shipments",
+        "table:marketplace_discount_codes",
+        "table:marketplace_addresses",
+        "table:marketplace_wishlists",
+        "table:marketplace_vendor_follows",
+        "table:marketplace_recently_viewed",
+        "table:marketplace_user_notifications",
+        "table:marketplace_behavior_events",
+        "table:marketplace_reviews",
+        "table:marketplace_reports",
+        "table:marketplace_returns",
+        "table:marketplace_disputes",
+        "table:marketplace_moderation_cases",
+        "table:marketplace_payout_requests",
+        "table:marketplace_notification_queue",
+        "table:marketplace_audit_logs",
+        "table:marketplace_support_threads",
+        "table:marketplace_support_messages",
+        "fn:marketplace_set_updated_at",
+        "trg:marketplace_role_memberships_updated_at",
+        "trg:marketplace_settings_updated_at",
+        "trg:marketplace_categories_updated_at",
+        "trg:marketplace_brands_updated_at",
+        "trg:marketplace_vendors_updated_at",
+        "trg:marketplace_vendor_applications_updated_at",
+        "trg:marketplace_products_updated_at",
+        "trg:marketplace_collections_updated_at",
+        "trg:marketplace_product_variants_updated_at",
+        "trg:marketplace_campaigns_updated_at",
+        "trg:marketplace_carts_updated_at",
+        "trg:marketplace_cart_items_updated_at",
+        "trg:marketplace_orders_updated_at",
+        "trg:marketplace_order_groups_updated_at",
+        "trg:marketplace_payment_records_updated_at",
+        "trg:marketplace_shipments_updated_at",
+        "trg:marketplace_discount_codes_updated_at",
+        "trg:marketplace_addresses_updated_at",
+        "trg:marketplace_reviews_updated_at",
+        "trg:marketplace_reports_updated_at",
+        "trg:marketplace_returns_updated_at",
+        "trg:marketplace_disputes_updated_at",
+        "trg:marketplace_moderation_cases_updated_at",
+        "trg:marketplace_payout_requests_updated_at",
+        "trg:marketplace_notification_queue_updated_at",
+        "trg:marketplace_support_threads_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260402180500_marketplace_policies.sql",
+    "version": "20260402180500",
+    "slug": "marketplace_policies",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 27,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "policy:marketplace_categories.marketplace_public_categories",
+        "policy:marketplace_brands.marketplace_public_brands",
+        "policy:marketplace_vendors.marketplace_public_vendors",
+        "policy:marketplace_products.marketplace_public_products",
+        "policy:marketplace_product_media.marketplace_public_product_media",
+        "policy:marketplace_product_variants.marketplace_public_product_variants",
+        "policy:marketplace_collections.marketplace_public_collections",
+        "policy:marketplace_collection_items.marketplace_public_collection_items",
+        "policy:marketplace_campaigns.marketplace_public_campaigns",
+        "policy:marketplace_reviews.marketplace_public_reviews",
+        "policy:marketplace_role_memberships.marketplace_member_roles",
+        "policy:marketplace_carts.marketplace_member_carts",
+        "policy:marketplace_cart_items.marketplace_member_cart_items",
+        "policy:marketplace_orders.marketplace_member_orders",
+        "policy:marketplace_order_groups.marketplace_member_order_groups",
+        "policy:marketplace_order_items.marketplace_member_order_items",
+        "policy:marketplace_shipments.marketplace_member_shipments",
+        "policy:marketplace_payment_records.marketplace_member_payments",
+        "policy:marketplace_addresses.marketplace_member_addresses",
+        "policy:marketplace_wishlists.marketplace_member_wishlists",
+        "policy:marketplace_vendor_follows.marketplace_member_follows",
+        "policy:marketplace_recently_viewed.marketplace_member_recent",
+        "policy:marketplace_user_notifications.marketplace_member_notifications",
+        "policy:marketplace_vendor_applications.marketplace_member_vendor_applications",
+        "policy:marketplace_disputes.marketplace_member_disputes",
+        "policy:marketplace_support_threads.marketplace_member_support_threads",
+        "policy:marketplace_support_messages.marketplace_member_support_messages"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260402223000_marketplace_events_and_application_state.sql",
+    "version": "20260402223000",
+    "slug": "marketplace_events_and_application_state",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 11,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:marketplace_events",
+        "table:marketplace_notification_attempts",
+        "table:marketplace_automation_runs",
+        "table:marketplace_user_comm_preferences",
+        "col:marketplace_vendor_applications.progress_step",
+        "col:marketplace_notification_queue.event_id",
+        "policy:marketplace_user_comm_preferences.marketplace_member_comm_preferences_select",
+        "policy:marketplace_user_comm_preferences.marketplace_member_comm_preferences_insert",
+        "policy:marketplace_user_comm_preferences.marketplace_member_comm_preferences_update",
+        "trg:marketplace_automation_runs_updated_at",
+        "trg:marketplace_user_comm_preferences_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260417160000_marketplace_pricing_breakdowns.sql",
+    "version": "20260417160000",
+    "slug": "marketplace_pricing_breakdowns",
+    "history": "20260417063220:marketplace_pricing_breakdowns_20260417160000",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260501010000_marketplace_deals_curation.sql",
+    "version": "20260501010000",
+    "slug": "marketplace_deals_curation",
+    "history": "20260501080620:marketplace_deals_curation",
+    "verdict": "applied-by-evidence",
+    "present": 3,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:marketplace_deals_curation",
+        "policy:marketplace_deals_curation.marketplace_deals_curation_read",
+        "policy:marketplace_deals_curation.marketplace_deals_curation_admin_all"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260501020000_marketplace_seller_tiers.sql",
+    "version": "20260501020000",
+    "slug": "marketplace_seller_tiers",
+    "history": "20260501080658:marketplace_seller_tiers",
+    "verdict": "applied-by-evidence",
+    "present": 5,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "fn:marketplace_tier_listing_cap",
+        "fn:enforce_marketplace_listing_cap",
+        "fn:touch_marketplace_tier_changed_at",
+        "trg:marketplace_listing_cap_check",
+        "trg:marketplace_vendors_tier_changed_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260505090000_marketplace_checkout_payment_completion.sql",
+    "version": "20260505090000",
+    "slug": "marketplace_checkout_payment_completion",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260514120000_marketplace_inventory_movements.sql",
+    "version": "20260514120000",
+    "slug": "marketplace_inventory_movements",
+    "history": "20260605202350:marketplace_inventory_movements",
+    "verdict": "applied-by-evidence",
+    "present": 4,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:marketplace_inventory_movements",
+        "policy:marketplace_inventory_movements.marketplace_inventory_movements_staff_read",
+        "policy:marketplace_inventory_movements.marketplace_inventory_movements_vendor_read",
+        "policy:marketplace_inventory_movements.marketplace_inventory_movements_service_write"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260514120500_marketplace_refunds.sql",
+    "version": "20260514120500",
+    "slug": "marketplace_refunds",
+    "history": "20260605202602:marketplace_refunds",
+    "verdict": "applied-by-evidence",
+    "present": 6,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:marketplace_refunds",
+        "policy:marketplace_refunds.marketplace_refunds_buyer_read",
+        "policy:marketplace_refunds.marketplace_refunds_vendor_read",
+        "policy:marketplace_refunds.marketplace_refunds_staff_read",
+        "policy:marketplace_refunds.marketplace_refunds_staff_write",
+        "trg:marketplace_refunds_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260514121000_marketplace_review_photos.sql",
+    "version": "20260514121000",
+    "slug": "marketplace_review_photos",
+    "history": "20260605202712:marketplace_review_photos",
+    "verdict": "applied-by-evidence",
+    "present": 9,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:marketplace_review_photos",
+        "table:marketplace_review_votes",
+        "policy:marketplace_review_photos.marketplace_review_photos_public_read",
+        "policy:marketplace_review_photos.marketplace_review_photos_owner_read",
+        "policy:marketplace_review_photos.marketplace_review_photos_owner_write",
+        "policy:marketplace_review_photos.marketplace_review_photos_staff_all",
+        "policy:marketplace_review_votes.marketplace_review_votes_public_read",
+        "policy:marketplace_review_votes.marketplace_review_votes_owner_write",
+        "trg:marketplace_review_photos_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260514121500_marketplace_recommendation_signals.sql",
+    "version": "20260514121500",
+    "slug": "marketplace_recommendation_signals",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 4,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:marketplace_recommendation_signals",
+        "policy:marketplace_recommendation_signals.marketplace_recommendation_signals_public_read",
+        "policy:marketplace_recommendation_signals.marketplace_recommendation_signals_staff_write",
+        "trg:marketplace_recommendation_signals_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/marketplace/supabase/migrations/20260514122000_marketplace_product_variants_matrix.sql",
+    "version": "20260514122000",
+    "slug": "marketplace_product_variants_matrix",
+    "history": "20260605202941:marketplace_product_variants_matrix",
+    "verdict": "applied-history-only",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260402183000_property_init.sql",
+    "version": "20260402183000",
+    "slug": "property_init",
+    "history": "20260504135417:property_init",
+    "verdict": "applied-by-evidence",
+    "present": 23,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:property_role_memberships",
+        "table:property_agents",
+        "table:property_listings",
+        "table:property_listing_media",
+        "table:property_amenities",
+        "table:property_inquiries",
+        "table:property_viewing_requests",
+        "table:property_listing_applications",
+        "table:property_managed_records",
+        "table:property_featured_campaigns",
+        "table:property_notifications",
+        "table:property_settings",
+        "table:property_saved_listings",
+        "fn:set_updated_at",
+        "trg:trg_property_role_memberships_updated_at",
+        "trg:trg_property_agents_updated_at",
+        "trg:trg_property_listings_updated_at",
+        "trg:trg_property_inquiries_updated_at",
+        "trg:trg_property_viewings_updated_at",
+        "trg:trg_property_applications_updated_at",
+        "trg:trg_property_managed_records_updated_at",
+        "trg:trg_property_campaigns_updated_at",
+        "trg:trg_property_settings_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260402183500_property_policies.sql",
+    "version": "20260402183500",
+    "slug": "property_policies",
+    "history": "20260504135452:property_policies",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "fn:is_property_staff"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260504135000_property_lock_owner_status_visibility.sql",
+    "version": "20260504135000",
+    "slug": "property_lock_owner_status_visibility",
+    "history": "20260504135744:property_lock_owner_status_visibility",
+    "verdict": "applied-by-evidence",
+    "present": 2,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "fn:prevent_owner_property_status_change",
+        "trg:property_listings_lock_status_visibility"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515120000_property_amenities_catalog.sql",
+    "version": "20260515120000",
+    "slug": "property_amenities_catalog",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 3,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:property_amenity_catalog",
+        "table:property_listing_amenities",
+        "trg:trg_property_amenity_catalog_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515120500_property_floorplans.sql",
+    "version": "20260515120500",
+    "slug": "property_floorplans",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:property_floorplans",
+        "trg:trg_property_floorplans_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515121000_property_virtual_tours.sql",
+    "version": "20260515121000",
+    "slug": "property_virtual_tours",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:property_virtual_tours",
+        "trg:trg_property_virtual_tours_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515121500_property_neighborhood_signals.sql",
+    "version": "20260515121500",
+    "slug": "property_neighborhood_signals",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:property_neighborhood_signals",
+        "trg:trg_property_neighborhood_signals_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515122000_property_saved_searches.sql",
+    "version": "20260515122000",
+    "slug": "property_saved_searches",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:property_saved_searches",
+        "trg:trg_property_saved_searches_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515122500_property_inspection_rules.sql",
+    "version": "20260515122500",
+    "slug": "property_inspection_rules",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 3,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:property_inspection_rules",
+        "table:property_inspection_rule_evaluations",
+        "trg:trg_property_inspection_rules_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515123000_property_rent_payments.sql",
+    "version": "20260515123000",
+    "slug": "property_rent_payments",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:property_rent_payments",
+        "trg:trg_property_rent_payments_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515123500_property_maintenance_tickets.sql",
+    "version": "20260515123500",
+    "slug": "property_maintenance_tickets",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:property_maintenance_tickets",
+        "trg:trg_property_maintenance_tickets_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515124000_property_viewings_extensions.sql",
+    "version": "20260515124000",
+    "slug": "property_viewings_extensions",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "col:property_viewing_requests.reminder_24h_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/property/supabase/migrations/20260515124500_property_realtime_publication.sql",
+    "version": "20260515124500",
+    "slug": "property_realtime_publication",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260402190000_studio_init.sql",
+    "version": "20260402190000",
+    "slug": "studio_init",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 34,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:studio_role_memberships",
+        "table:studio_services",
+        "table:studio_packages",
+        "table:studio_team_profiles",
+        "table:studio_settings",
+        "table:studio_leads",
+        "table:studio_briefs",
+        "table:studio_brief_files",
+        "table:studio_proposals",
+        "table:studio_proposal_milestones",
+        "table:studio_projects",
+        "table:studio_project_assignments",
+        "table:studio_project_milestones",
+        "table:studio_revisions",
+        "table:studio_project_files",
+        "table:studio_deliverables",
+        "table:studio_project_messages",
+        "table:studio_payments",
+        "table:studio_notifications",
+        "table:studio_reviews",
+        "fn:studio_set_updated_at",
+        "fn:studio_auth_email",
+        "fn:studio_is_staff",
+        "trg:studio_role_memberships_updated_at",
+        "trg:studio_services_updated_at",
+        "trg:studio_packages_updated_at",
+        "trg:studio_team_profiles_updated_at",
+        "trg:studio_settings_updated_at",
+        "trg:studio_leads_updated_at",
+        "trg:studio_proposals_updated_at",
+        "trg:studio_projects_updated_at",
+        "trg:studio_project_milestones_updated_at",
+        "trg:studio_revisions_updated_at",
+        "trg:studio_payments_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260402190500_studio_policies.sql",
+    "version": "20260402190500",
+    "slug": "studio_policies",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 20,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "policy:studio_role_memberships.studio_member_roles",
+        "policy:studio_services.studio_public_services",
+        "policy:studio_packages.studio_public_packages",
+        "policy:studio_team_profiles.studio_public_team_profiles",
+        "policy:studio_reviews.studio_public_reviews",
+        "policy:studio_settings.studio_staff_settings",
+        "policy:studio_leads.studio_member_leads",
+        "policy:studio_briefs.studio_member_briefs",
+        "policy:studio_brief_files.studio_member_brief_files",
+        "policy:studio_proposals.studio_member_proposals",
+        "policy:studio_proposal_milestones.studio_member_proposal_milestones",
+        "policy:studio_projects.studio_member_projects",
+        "policy:studio_project_assignments.studio_member_project_assignments",
+        "policy:studio_project_milestones.studio_member_project_milestones",
+        "policy:studio_revisions.studio_member_revisions",
+        "policy:studio_project_files.studio_member_project_files",
+        "policy:studio_deliverables.studio_member_deliverables",
+        "policy:studio_project_messages.studio_member_project_messages",
+        "policy:studio_payments.studio_member_payments",
+        "policy:studio_notifications.studio_member_notifications"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260402223000_studio_extensions.sql",
+    "version": "20260402223000",
+    "slug": "studio_extensions",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 4,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:studio_custom_requests",
+        "table:studio_project_updates",
+        "policy:studio_custom_requests.studio_member_custom_requests",
+        "policy:studio_project_updates.studio_member_project_updates"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260405120000_studio_brief_domain_intent.sql",
+    "version": "20260405120000",
+    "slug": "studio_brief_domain_intent",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:studio_briefs.domain_intent"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260503120000_studio_client_portal.sql",
+    "version": "20260503120000",
+    "slug": "studio_client_portal",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 17,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:studio_invoices",
+        "col:studio_payments.invoice_id",
+        "col:studio_project_messages.sender_id",
+        "col:studio_deliverables.milestone_id",
+        "col:studio_project_updates.author_id",
+        "col:studio_project_milestones.due_date",
+        "col:studio_projects.brief",
+        "fn:studio_invoice_by_token",
+        "policy:studio_invoices.studio_invoices_select",
+        "policy:studio_invoices.studio_invoices_staff_write",
+        "policy:studio_payments.studio_member_payments_insert",
+        "policy:studio_payments.studio_staff_payments_update",
+        "policy:studio_project_messages.studio_member_messages_insert",
+        "policy:studio_project_messages.studio_member_messages_update",
+        "policy:studio_deliverables.studio_staff_deliverables_write",
+        "policy:studio_deliverables.studio_member_deliverables_approve",
+        "trg:studio_invoices_updated_at"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260503120500_studio_client_portal_seed.sql",
+    "version": "20260503120500",
+    "slug": "studio_client_portal_seed",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260503130000_studio_brief_drafts.sql",
+    "version": "20260503130000",
+    "slug": "studio_brief_drafts",
+    "history": "20260504170556:studio_brief_drafts",
+    "verdict": "applied-by-evidence",
+    "present": 4,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:studio_brief_drafts",
+        "policy:studio_brief_drafts.studio_brief_drafts_select",
+        "policy:studio_brief_drafts.studio_brief_drafts_staff_select",
+        "policy:studio_brief_drafts.studio_brief_drafts_staff_write"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260503140000_studio_messaging.sql",
+    "version": "20260503140000",
+    "slug": "studio_messaging",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 16,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:studio_message_reactions",
+        "table:studio_message_read_receipts",
+        "table:studio_typing_indicators",
+        "col:studio_project_messages.reply_to_id",
+        "fn:studio_prune_stale_typing",
+        "fn:studio_seed_welcome_message",
+        "policy:studio_message_reactions.studio_message_reactions_select",
+        "policy:studio_message_reactions.studio_message_reactions_insert",
+        "policy:studio_message_reactions.studio_message_reactions_delete",
+        "policy:studio_message_read_receipts.studio_message_read_receipts_select",
+        "policy:studio_message_read_receipts.studio_message_read_receipts_insert",
+        "policy:studio_typing_indicators.studio_typing_indicators_select",
+        "policy:studio_typing_indicators.studio_typing_indicators_insert",
+        "policy:studio_typing_indicators.studio_typing_indicators_update",
+        "policy:studio_typing_indicators.studio_typing_indicators_delete",
+        "trg:studio_projects_seed_welcome"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260504100000_studio_brief_drafts_guards.sql",
+    "version": "20260504100000",
+    "slug": "studio_brief_drafts_guards",
+    "history": "20260504170556:studio_brief_drafts",
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:studio_brief_drafts.ip_hash"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260505110000_studio_live_schema_guards.sql",
+    "version": "20260505110000",
+    "slug": "studio_live_schema_guards",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 5,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "fn:studio_set_updated_at",
+        "fn:studio_auth_email",
+        "fn:studio_is_staff",
+        "fn:studio_guard_client_deliverable_approval",
+        "trg:studio_guard_client_deliverable_approval"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260505111000_studio_project_updates_live_drift.sql",
+    "version": "20260505111000",
+    "slug": "studio_project_updates_live_drift",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 1,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "col:studio_project_updates.kind"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260505112000_studio_legacy_table_compatibility.sql",
+    "version": "20260505112000",
+    "slug": "studio_legacy_table_compatibility",
+    "history": null,
+    "verdict": "applied-by-evidence",
+    "present": 37,
+    "absent": 0,
+    "evid": {
+      "present": [
+        "table:studio_services",
+        "table:studio_packages",
+        "table:studio_team_profiles",
+        "table:studio_settings",
+        "table:studio_brief_files",
+        "col:studio_leads.full_name",
+        "col:studio_briefs.title",
+        "col:studio_proposals.brief_id",
+        "col:studio_proposal_milestones.title",
+        "col:studio_projects.user_id",
+        "col:studio_project_milestones.title",
+        "col:studio_revisions.deliverable_id",
+        "col:studio_project_files.name",
+        "col:studio_deliverables.title",
+        "col:studio_project_messages.sender_type",
+        "col:studio_project_updates.description",
+        "col:studio_payments.user_id",
+        "col:studio_notifications.title",
+        "col:studio_reviews.user_id",
+        "col:studio_custom_requests.brief_id",
+        "col:studio_role_memberships.updated_at",
+        "col:studio_leads.customer_name",
+        "col:studio_briefs.goals",
+        "col:studio_proposals.lead_id",
+        "col:studio_proposal_milestones.name",
+        "col:studio_projects.lead_id",
+        "col:studio_project_assignments.team_id",
+        "col:studio_project_milestones.name",
+        "col:studio_revisions.project_id",
+        "col:studio_project_files.lead_id",
+        "col:studio_deliverables.label",
+        "col:studio_project_messages.sender",
+        "col:studio_project_updates.author_id",
+        "col:studio_payments.milestone_id",
+        "col:studio_notifications.normalized_email",
+        "col:studio_reviews.project_id",
+        "col:studio_custom_requests.lead_id"
+      ],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260514130000_studio_proposal_signatures.sql",
+    "version": "20260514130000",
+    "slug": "studio_proposal_signatures",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:studio_proposal_signatures",
+        "col:studio_proposals.accepted_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260514130500_studio_revisions_versioning.sql",
+    "version": "20260514130500",
+    "slug": "studio_revisions_versioning",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 3,
+    "evid": {
+      "present": [],
+      "absent": [
+        "col:studio_revisions.version",
+        "policy:studio_revisions.studio_client_revisions_insert",
+        "policy:studio_revisions.studio_client_revisions_select"
+      ]
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260514131000_studio_milestone_extensions.sql",
+    "version": "20260514131000",
+    "slug": "studio_milestone_extensions",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 1,
+    "evid": {
+      "present": [],
+      "absent": [
+        "col:studio_project_milestones.due_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260514131500_studio_payment_plans.sql",
+    "version": "20260514131500",
+    "slug": "studio_payment_plans",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 4,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:studio_payment_plans",
+        "table:studio_payment_plan_releases",
+        "trg:studio_payment_plans_updated_at",
+        "trg:studio_payment_plan_releases_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260514132000_studio_resource_allocations.sql",
+    "version": "20260514132000",
+    "slug": "studio_resource_allocations",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 2,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:studio_resource_allocations",
+        "trg:studio_resource_allocations_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260514132500_studio_asset_packs.sql",
+    "version": "20260514132500",
+    "slug": "studio_asset_packs",
+    "history": null,
+    "verdict": "absent-from-prod",
+    "present": 0,
+    "absent": 3,
+    "evid": {
+      "present": [],
+      "absent": [
+        "table:studio_asset_packs",
+        "col:studio_project_files.cloudinary_public_id",
+        "trg:studio_asset_packs_updated_at"
+      ]
+    }
+  },
+  {
+    "file": "apps/studio/supabase/migrations/20260514133000_studio_realtime_publication.sql",
+    "version": "20260514133000",
+    "slug": "studio_realtime_publication",
+    "history": null,
+    "verdict": "NO-EVIDENCE",
+    "present": 0,
+    "absent": 0,
+    "evid": {
+      "present": [],
+      "absent": []
+    }
+  },
+  {
+    "file": "apps/super-app/supabase/migrations/20260405120000_super_app_core.sql",
+    "version": "20260405120000",
+    "slug": "super_app_core",
+    "history": null,
+    "verdict": "PARTIAL",
+    "present": 4,
+    "absent": 6,
+    "evid": {
+      "present": [
+        "table:profiles",
+        "fn:handle_new_user",
+        "policy:profiles.profiles_update_self",
+        "trg:on_auth_user_created"
+      ],
+      "absent": [
+        "table:divisions",
+        "table:contact_submissions",
+        "policy:divisions.divisions_select_public",
+        "policy:profiles.profiles_select_self",
+        "policy:profiles.profiles_insert_self",
+        "policy:contact_submissions.contact_insert_clients"
+      ]
+    }
+  }
+]

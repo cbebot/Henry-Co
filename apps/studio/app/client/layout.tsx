@@ -1,3 +1,4 @@
+import "@henryco/dashboard-shell/surfaces.css";
 import { headers } from "next/headers";
 import { Sparkles } from "lucide-react";
 import {
@@ -31,7 +32,7 @@ const FULL_TAKEOVER_PREFIXES = ["/client/messages"];
 
 const STUDIO_BRAND: WorkspaceBrand = {
   shortName: "Studio portal",
-  kicker: "HenryCo",
+  kicker: "Henry Onyx",
   href: "/client",
   icon: Sparkles,
 };
@@ -72,38 +73,51 @@ export default async function StudioClientLayout({
 
   return (
     <StudioRealtimeBridge viewer={viewer}>
-      <WorkspaceShell
-        division="studio"
-        brand={STUDIO_BRAND}
-        viewer={shellViewer}
-        navigation={portalNavItems}
-        mobileNavigation={portalMobileNavItems}
-        badges={badges}
-        attentionCount={attentionCount}
-        notificationsHref="/client/notifications"
-        profileHref="/client/profile"
-        accountSettingsUrl={accountUrl}
-        takeoverPrefixes={FULL_TAKEOVER_PREFIXES}
-        pathname={pathname}
-      >
-        {children}
-      </WorkspaceShell>
+      {/* V3-INNER-L-STUDIO — the client portal runs on Register L: the shared
+          light-primary, theme-aware Henry Onyx dashboard system. The
+          .studio-workspace-light scope (app/globals.css) re-grounds the studio
+          tokens on the light register + the configured teal accent and re-tones
+          the shared WorkspaceShell + the studio/portal utilities. Dark is the
+          device-preference flip, not the default — the forced-dark client-portal
+          defect is gone here. V3-INNER-L-STUDIO-TAIL folded the realtime
+          messages centre into the scope too (its --studio-thread-* tokens carry
+          the near-black chat under .dark and an AA light register under light),
+          so the whole customer portal is one register with no dark room. */}
+      <div className="studio-workspace-light">
+        <WorkspaceShell
+          division="studio"
+          brand={STUDIO_BRAND}
+          viewer={shellViewer}
+          navigation={portalNavItems}
+          mobileNavigation={portalMobileNavItems}
+          badges={badges}
+          attentionCount={attentionCount}
+          notificationsHref="/client/notifications"
+          profileHref="/client/profile"
+          accountSettingsUrl={accountUrl}
+          takeoverPrefixes={FULL_TAKEOVER_PREFIXES}
+          pathname={pathname}
+        >
+          {children}
+        </WorkspaceShell>
+
+        {/* The studio project-message toast lives INSIDE the scope so its
+         * --studio-thread-* tokens resolve theme-correctly (it is position:fixed,
+         * so nesting doesn't move it). Covers project-direct postgres_changes
+         * (messages + updates) the cross-division spine doesn't see yet. */}
+        {subscriptions.viewerId ? (
+          <NotificationToast
+            viewerId={subscriptions.viewerId}
+            projectSubscriptions={subscriptions.projects}
+            hrefTemplate="/client/projects/{projectId}/messages"
+          />
+        ) : null}
+      </div>
 
       {/* Cross-division customer-notifications toast — fires when a row
        * lands in customer_notifications for this viewer (orders, system
-       * updates, invoice emails, etc). The studio-specific
-       * NotificationToast below stays for now and covers project-direct
-       * postgres_changes (project messages + updates), which the
-       * cross-division spine doesn't see yet. */}
+       * updates, invoice emails, etc). Has its own theming; stays outside. */}
       <NotificationsToastViewport audience="customer" />
-
-      {subscriptions.viewerId ? (
-        <NotificationToast
-          viewerId={subscriptions.viewerId}
-          projectSubscriptions={subscriptions.projects}
-          hrefTemplate="/client/projects/{projectId}/messages"
-        />
-      ) : null}
     </StudioRealtimeBridge>
   );
 }

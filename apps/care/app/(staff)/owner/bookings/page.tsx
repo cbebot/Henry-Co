@@ -31,7 +31,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Owner Bookings | Henry & Co. Fabric Care",
+  title: "Owner Bookings | Henry Onyx Fabric Care",
   description:
     "Owner-level booking oversight with grouped queue rails, selected-detail review, status control, and payment capture.",
 };

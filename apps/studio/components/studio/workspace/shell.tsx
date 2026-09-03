@@ -22,7 +22,7 @@ export function StudioWorkspaceShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto grid max-w-[88rem] gap-6 px-5 py-8 sm:px-8 lg:grid-cols-[260px,1fr] lg:px-10">
+    <div className="mx-auto grid max-w-[88rem] gap-6 px-5 py-8 sm:px-8 lg:grid-cols-[260px_1fr] lg:px-10">
       <aside className="studio-panel rounded-[2rem] p-4">
         <div className="studio-kicker">{kicker}</div>
         <h1 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--studio-ink)]">
@@ -37,8 +37,8 @@ export function StudioWorkspaceShell({
               className={joinClassNames(
                 "flex items-center justify-between rounded-[1.4rem] px-4 py-3 text-sm font-semibold transition",
                 item.active
-                  ? "bg-[linear-gradient(135deg,#113743,#1d6973)] text-white"
-                  : "border border-[var(--studio-line)] bg-black/10 text-[var(--studio-ink)]"
+                  ? "bg-[var(--studio-accent-soft)] text-[var(--studio-accent-text)]"
+                  : "border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] text-[var(--studio-ink)]"
               )}
             >
               <span>{item.label}</span>

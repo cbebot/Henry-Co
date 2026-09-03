@@ -5,10 +5,12 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./chime": "./src/chime.ts",
     "./icons": "./src/icons.tsx",
     "./motion": "./src/motion.ts",
     "./severity-style": "./src/severity-style.ts",
     "./tokens": "./src/tokens.ts",
+    "./toast-pacing": "./src/toast-pacing.ts",
     "./gestures": "./src/gestures/index.ts",
     "./types": "./src/types.ts",
     "./deep-link": "./src/deep-link.ts"

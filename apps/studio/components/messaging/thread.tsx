@@ -323,24 +323,24 @@ export function ProjectThread({
   }, [messages, searchQuery]);
 
   return (
-    <div className="flex h-full min-h-0 w-full overflow-hidden bg-[#050816]">
+    <div className="flex h-full min-h-0 w-full overflow-hidden bg-[var(--studio-thread-canvas)]">
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex shrink-0 items-center gap-3 border-b border-white/[0.06] bg-[#070B14] px-3 py-2.5 sm:px-4">
+        <header className="flex shrink-0 items-center gap-3 border-b border-[var(--studio-thread-line)] bg-[var(--studio-thread-rail)] px-3 py-2.5 sm:px-4">
           {showBack ? (
             <button
               type="button"
               onClick={onBack}
-              className="rounded-full p-1.5 text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white sm:hidden"
+              className="rounded-full p-1.5 text-[var(--studio-thread-ink-soft)] transition-colors hover:bg-[var(--studio-thread-hover)] hover:text-[var(--studio-thread-ink)] sm:hidden"
               aria-label="Back to message list"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
             </button>
           ) : null}
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-[14px] font-semibold tracking-[-0.005em] text-[#F5F4EE]">
+            <h1 className="truncate text-[14px] font-semibold tracking-[-0.005em] text-[var(--studio-thread-ink)]">
               {initial.context.projectTitle}
             </h1>
-            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-white/45">
+            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[var(--studio-thread-ink-muted)]">
               <RealtimeStatusBadge status={realtimeStatus} />
               {!isOnline ? (
                 <>
@@ -356,7 +356,7 @@ export function ProjectThread({
           <button
             type="button"
             onClick={() => setSearchOpen((v) => !v)}
-            className="rounded-full p-1.5 text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="rounded-full p-1.5 text-[var(--studio-thread-ink-soft)] transition-colors hover:bg-[var(--studio-thread-hover)] hover:text-[var(--studio-thread-ink)]"
             aria-label="Search this conversation"
             aria-expanded={searchOpen}
           >
@@ -366,7 +366,7 @@ export function ProjectThread({
             <button
               type="button"
               onClick={() => setContextOpen((v) => !v)}
-              className="rounded-full p-1.5 text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white lg:hidden"
+              className="rounded-full p-1.5 text-[var(--studio-thread-ink-soft)] transition-colors hover:bg-[var(--studio-thread-hover)] hover:text-[var(--studio-thread-ink)] lg:hidden"
               aria-label={contextOpen ? "Hide project context" : "Show project context"}
               aria-expanded={contextOpen}
             >
@@ -425,7 +425,7 @@ export function ProjectThread({
             <button
               type="button"
               onClick={() => scrollToBottom(true)}
-              className="sticky bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[#d4b14e]/40 bg-[#0F1524] px-3 py-1.5 text-[12px] font-medium text-[#d4b14e] shadow-[0_18px_48px_-18px_rgba(0,0,0,0.6)] motion-safe:animate-[studio-msg-pop-up_220ms_ease-out]"
+              className="sticky bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-[var(--studio-thread-accent-line)] bg-[var(--studio-thread-inset)] px-3 py-1.5 text-[12px] font-medium text-[var(--studio-thread-accent-text)] shadow-[0_18px_48px_-18px_rgba(0,0,0,0.6)] motion-safe:animate-[studio-msg-pop-up_220ms_ease-out]"
               aria-label="Jump to new message"
             >
               <ArrowDown className="h-3.5 w-3.5" aria-hidden />
@@ -484,23 +484,23 @@ function RealtimeStatusBadge({
 }) {
   if (status === "live") {
     return (
-      <span className="inline-flex items-center gap-1 text-[#d4b14e]">
+      <span className="inline-flex items-center gap-1 text-[var(--studio-thread-accent-text)]">
         <span
           aria-hidden
-          className="block h-1.5 w-1.5 rounded-full bg-[#d4b14e] motion-safe:animate-[studio-msg-pulse_2.4s_ease-in-out_infinite]"
+          className="block h-1.5 w-1.5 rounded-full bg-[var(--studio-thread-accent)] motion-safe:animate-[studio-msg-pulse_2.4s_ease-in-out_infinite]"
         />
         Live
       </span>
     );
   }
   if (status === "connecting") {
-    return <span className="text-white/45">Connecting…</span>;
+    return <span className="text-[var(--studio-thread-ink-muted)]">Connecting…</span>;
   }
   if (status === "reconnecting") {
     return <span className="text-amber-300">Reconnecting…</span>;
   }
   if (status === "offline") {
-    return <span className="text-white/35">Offline</span>;
+    return <span className="text-[var(--studio-thread-ink-faint)]">Offline</span>;
   }
   return null;
 }
@@ -514,25 +514,25 @@ function MobileContextStrip({ context }: { context: ProjectThreadContext }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 border-b border-white/[0.04] bg-[#070B14] px-3 py-2 text-left"
+        className="flex w-full items-center justify-between gap-3 border-b border-[var(--studio-thread-line-soft)] bg-[var(--studio-thread-rail)] px-3 py-2 text-left"
         aria-expanded={open}
       >
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] font-medium uppercase tracking-[0.10em] text-white/45">
+          <div className="text-[10px] font-medium uppercase tracking-[0.10em] text-[var(--studio-thread-ink-muted)]">
             Current milestone
           </div>
-          <div className="truncate text-[12px] font-medium text-[#F5F4EE]">
+          <div className="truncate text-[12px] font-medium text-[var(--studio-thread-ink)]">
             {milestone.name}
           </div>
         </div>
-        <span className="shrink-0 rounded-full bg-[#d4b14e]/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.06em] text-[#d4b14e]">
+        <span className="shrink-0 rounded-full bg-[var(--studio-thread-accent-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.06em] text-[var(--studio-thread-accent-text)]">
           {milestone.status.replace("_", " ")}
         </span>
       </button>
       {open ? (
-        <div className="border-b border-white/[0.04] bg-[#070B14] px-3 pb-3 pt-1 text-[12px] text-white/65">
+        <div className="border-b border-[var(--studio-thread-line-soft)] bg-[var(--studio-thread-rail)] px-3 pb-3 pt-1 text-[12px] text-[var(--studio-thread-ink-soft)]">
           {milestone.description}
-          <div className="mt-1.5 text-[11px] text-white/45">
+          <div className="mt-1.5 text-[11px] text-[var(--studio-thread-ink-muted)]">
             {milestone.dueLabel}
           </div>
         </div>

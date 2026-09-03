@@ -49,6 +49,13 @@
      Usage: bg-[var(--hc-shell-topbar-bg)] backdrop-blur-md */
   --hc-shell-topbar-bg: color-mix(in oklab, var(--hc-surface) 88%, transparent);
 
+  /* CHROME-64 contract (redesign Phase 1, 2026-07-10): the public chrome
+     height BUDGET. The owner ceiling is 64px of sticky chrome — nothing
+     floats over content. Height-locked bars size with this token
+     (marketplace consumes it); the shared PublicChrome is padding-derived
+     and rests just under it. Change it here, never per app. */
+  --hc-shell-topbar-height: 64px;
+
   /* ───────────────────────────────────────────────────────────────
    * NEW ALIASES — accent split for light/dark text-on-light/dark
    * ─────────────────────────────────────────────────────────────── */

@@ -58,7 +58,7 @@ export default async function StudioPaymentPage({
         }
         eyebrow={`${t("Studio")} · ${t("Payment")}`}
         headline={payment.label}
-        blurb={t("Studio payment status, proof visibility, and the exact HenryCo transfer details linked to this milestone.")}
+        blurb={t("Studio payment status, proof visibility, and the exact Henry Onyx transfer details linked to this milestone.")}
         ctaPrimary={
           room.project
             ? { label: t("Open project room"), href: `/studio/projects/${room.project.id}` }
@@ -133,8 +133,8 @@ export default async function StudioPaymentPage({
 
             <div className="grid gap-3 sm:grid-cols-2">
               {[
-                ["Bank", bank.bankName || t("HenryCo account")],
-                ["Account name", bank.accountName || "HenryCo"],
+                ["Bank", bank.bankName || t("Henry Onyx account")],
+                ["Account name", bank.accountName || "Henry Onyx"],
                 ["Account number", bank.accountNumber || t("Provided after confirmation")],
                 ["Currency", bank.currency || "NGN"],
               ].map(([label, value]) => (
@@ -161,7 +161,7 @@ export default async function StudioPaymentPage({
               <CheckCircle2 size={15} className="text-[var(--acct-gold)]" />
               <div>
                 <p className="acct-kicker">{t("Proof visibility")}</p>
-                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("What HenryCo can already see")}</h3>
+                <h3 className="mt-2 text-lg font-semibold text-[var(--acct-ink)]">{t("What Henry Onyx can already see")}</h3>
               </div>
             </div>
 

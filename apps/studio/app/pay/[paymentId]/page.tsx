@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -7,22 +6,27 @@ import {
   buildPaymentRecordView,
   buildPaymentSurfaceContext,
 } from "@henryco/payment-surface";
-import type {
-  PaymentSurfaceContext,
-  PaymentSurfaceTheme,
-} from "@henryco/payment-surface";
+import type { PaymentSurfaceContext } from "@henryco/payment-surface";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { uploadPaymentProofAction } from "@/lib/studio/actions";
 import { getStudioViewer } from "@/lib/studio/auth";
 import { getPaymentWorkspace } from "@/lib/studio/data";
 import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioSnapshot } from "@/lib/studio/store";
+import { getAccountUrl } from "@henryco/config";
 import {
   getStudioAccountUrl,
   getStudioLoginUrl,
 } from "@/lib/studio/links";
+import { STUDIO_PAYMENT_THEME } from "@/lib/studio/payment-surface-theme";
 import { friendlyPaymentStatus } from "@/lib/studio/project-workspace-copy";
 import { withStudioToast } from "@/lib/studio/redirect-with-toast";
+import {
+  isStudioBankTransferRetired,
+  isStudioCardCheckoutReady,
+  reconcileStudioCardPayment,
+} from "@/lib/studio/card-rail";
+import { translateSurfaceLabel } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -30,26 +34,8 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Studio · Payment workspace",
   description:
-    "Send payment proof and track confirmation for your Henry & Co. Studio engagement.",
+    "Send payment proof and track confirmation for your Henry Onyx Studio engagement.",
   robots: { index: false, follow: false },
-};
-
-/**
- * Studio theme adapter — maps studio CSS variables onto the canonical
- * --payment-* token namespace consumed by @henryco/payment-surface.
- * Studio keeps using its own design system; the surface stays of-a-piece
- * with the rest of the studio app.
- */
-const STUDIO_PAYMENT_THEME: PaymentSurfaceTheme = {
-  accentVar: "var(--studio-signal, #97f4f3)",
-  heroTone: "contrast",
-  rootStyle: {
-    ["--payment-accent" as never]: "var(--studio-signal, #97f4f3)",
-    ["--payment-ink" as never]: "var(--studio-ink, white)",
-    ["--payment-soft" as never]: "var(--studio-ink-soft, rgba(255,255,255,0.65))",
-    ["--payment-line" as never]: "var(--studio-line, rgba(255,255,255,0.18))",
-    ["--payment-surface" as never]: "color-mix(in srgb, var(--studio-surface) 88%, transparent)",
-  } as CSSProperties,
 };
 
 function relativeProjectPath(projectId: string, accessKey: string | null) {
@@ -102,6 +88,14 @@ export default async function StudioPaymentWorkspace({
   }
 
   const { payment, project, milestone, platform, sameProjectPayments } = workspace;
+
+  // Card-rail reconcile on the buyer's return (flag-gated; a no-op otherwise): if the
+  // provider confirmed the charge, the row flipped to paid — render that truth now.
+  if (isStudioCardCheckoutReady()) {
+    const outcome = await reconcileStudioCardPayment(payment).catch(() => "unchanged" as const);
+    if (outcome === "paid") payment.status = "paid";
+  }
+
   const projectAccessKey = project.accessKey ?? accessKey;
   const projectHref = relativeProjectPath(project.id, projectAccessKey);
   const paidIndex = sameProjectPayments.findIndex((p) => p.id === payment.id);
@@ -139,6 +133,28 @@ export default async function StudioPaymentWorkspace({
       : Promise.resolve(""),
   ]);
 
+  // The card option rides beside bank transfer (never replacing it) — flag-dark, and only
+  // for signed-in viewers (the payment intent is user-owned). /card does the POST-only start.
+  const cardCta =
+    isStudioCardCheckoutReady() && viewer.user && payment.status !== "paid" && payment.status !== "cancelled"
+      ? {
+          label: translateSurfaceLabel(locale, "Pay with card"),
+          href: `/pay/${payment.id}/card${projectAccessKey ? `?access=${encodeURIComponent(projectAccessKey)}` : ""}`,
+        }
+      : null;
+
+  // Pay from wallet balance — reuses the account app's proven, guarded wallet-debit checkout
+  // (it debits the wallet, records the transaction, and marks this exact studio_payments row).
+  // Signed-in only (the wallet is the person's own); links out to the account surface.
+  const walletCta =
+    viewer.user && payment.status !== "paid" && payment.status !== "cancelled" && payment.status !== "processing"
+      ? {
+          label: translateSurfaceLabel(locale, "Pay from wallet balance"),
+          href: getAccountUrl(`/studio/payments/${payment.id}`),
+          note: translateSurfaceLabel(locale, "Uses your Henry Onyx wallet — no card needed."),
+        }
+      : null;
+
   const ctx: PaymentSurfaceContext = buildPaymentSurfaceContext({
     payment: buildPaymentRecordView({
       id: payment.id,
@@ -157,7 +173,7 @@ export default async function StudioPaymentWorkspace({
       title: localizedProjectTitle,
       subtitle: milestone ? localizedMilestoneName : undefined,
       back: { href: projectHref, label: "Project workspace" },
-      account: { href: getStudioAccountUrl(), label: "HenryCo account home" },
+      account: { href: getStudioAccountUrl(), label: "Henry Onyx account home" },
       primaryCta: { href: projectHref, label: "Open project workspace" },
     },
     platform: {
@@ -191,6 +207,11 @@ export default async function StudioPaymentWorkspace({
         "After sending, attach the proof below — finance reviews within one business day. You'll see the status flip to processing here as soon as the upload lands.",
     },
     theme: STUDIO_PAYMENT_THEME,
+    cardCta,
+    walletCta,
+    // Card-first: when bank transfer is retired (interlocked to a ready card rail), the surface
+    // hides the bank guide + proof upload — card + wallet are the ways. Off → surface untouched.
+    cardOnly: isStudioBankTransferRetired(),
   });
 
   return <PaymentSurface ctx={ctx} />;

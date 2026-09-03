@@ -1,0 +1,14 @@
+{
+  "name": "studio-build-agent",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "SA-2 executor (E1). Dedicated repo. Zero production credentials.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node run.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0"
+  }
+}

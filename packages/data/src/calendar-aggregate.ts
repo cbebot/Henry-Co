@@ -2,6 +2,11 @@ import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
 import { createDataAdminClient, type TypedSupabaseClient } from "./client";
+import {
+  studioViewerIdentity,
+  loadViewerStudioProjectIds,
+  filterToAllowedProjects,
+} from "./studio-scope";
 
 /**
  * @henryco/data/calendar-aggregate — V3 Wave A1 D4.
@@ -109,7 +114,16 @@ export async function getCalendarAggregate(
   const userId = viewer.user.id;
   const email = viewer.user.email ?? "";
 
-  const [care, propertyViewings, interviews, milestones, shipments] =
+  // Resolve the studio projects this viewer is a party to BEFORE the
+  // reads. The admin client bypasses RLS, so studio_project_milestones
+  // must be constrained to these ids — otherwise the calendar leaks
+  // every other customer's milestones (FIRE cross-user-leak class).
+  const studioIdentity = studioViewerIdentity(viewer);
+  const studioProjectIds = studioIdentity
+    ? await loadViewerStudioProjectIds(client, studioIdentity)
+    : new Set<string>();
+
+  const [care, propertyViewings, interviews, milestonesRaw, shipments] =
     await Promise.all([
       safeRead(() =>
         client
@@ -147,15 +161,22 @@ export async function getCalendarAggregate(
           .order("scheduled_at", { ascending: true })
           .limit(100),
       ),
-      safeRead(() =>
-        client
-          .from("studio_project_milestones")
-          .select("id, project_id, title, status, due_date")
-          .gte("due_date", range.from)
-          .lt("due_date", range.to)
-          .order("due_date", { ascending: true })
-          .limit(100),
-      ),
+      // Studio milestones — scoped in SQL to studioProjectIds (resolved
+      // from studio_projects by the session viewer's ownership/email), so
+      // no other customer's milestones are ever read. Skip entirely when
+      // the viewer has no studio projects (zero rows).
+      studioProjectIds.size > 0
+        ? safeRead(() =>
+            client
+              .from("studio_project_milestones")
+              .select("id, project_id, title, status, due_date")
+              .in("project_id", [...studioProjectIds])
+              .gte("due_date", range.from)
+              .lt("due_date", range.to)
+              .order("due_date", { ascending: true })
+              .limit(100),
+          )
+        : Promise.resolve(null),
       safeRead(() =>
         client
           .from("logistics_shipments")
@@ -243,7 +264,10 @@ export async function getCalendarAggregate(
     });
   }
 
-  for (const row of milestones ?? []) {
+  // Defence in depth on top of the SQL `.in(...)` scope: drop any
+  // milestone whose project is not in the viewer's allowed set.
+  const milestones = filterToAllowedProjects(milestonesRaw ?? [], studioProjectIds);
+  for (const row of milestones) {
     if (!row.due_date) continue;
     events.push({
       key: `milestone:${row.id}`,

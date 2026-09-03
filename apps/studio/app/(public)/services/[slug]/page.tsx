@@ -90,7 +90,8 @@ export default async function ServiceDetailPage({
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
           {localizedServiceHeadline}
         </h1>
-        <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
+        {/* READING-02: hero body in the editorial serif reading face. */}
+        <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
           {localizedServiceSummary}
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
@@ -110,7 +111,7 @@ export default async function ServiceDetailPage({
         </div>
       </section>
 
-      <section className="mt-16 grid gap-12 lg:grid-cols-[0.85fr,1.15fr]">
+      <section className="mt-16 grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
         <div>
           <p className="studio-kicker">What you get</p>
           <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[1.85rem]">
@@ -191,7 +192,7 @@ export default async function ServiceDetailPage({
 
       <section className="mt-16">
         <div className="flex items-baseline gap-4">
-          <p className="studio-kicker">Why choose HenryCo</p>
+          <p className="studio-kicker">Why choose Henry Onyx</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
         <ol className="mt-6 grid gap-8 md:grid-cols-2 md:divide-x md:divide-[var(--studio-line)]">

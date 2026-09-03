@@ -392,9 +392,11 @@ async function sendEmail(input: {
         : "failed";
   const reason =
     dispatch.status === "sent"
-      ? dispatch.messageId ?? null
+      ? // Don't persist the raw provider messageId into the per-notification
+        // reason (read back into a learner-scoped record) — mark success opaquely.
+        null
       : dispatch.status === "skipped"
-        ? dispatch.skippedReason || "Email provider not configured for this deployment."
+        ? dispatch.skippedReason || "Email delivery is temporarily unavailable."
         : dispatch.safeError || "Email dispatch failed.";
 
   return addLearnNotificationRecord({
@@ -447,21 +449,21 @@ export async function sendAcademyWelcomeNotification(input: {
   return sendEmail({
     audience: input.audience,
     templateKey: "academy_welcome",
-    title: "Your HenryCo Learn workspace is ready",
+    title: "Your Henry Onyx Learn workspace is ready",
     entityType: "academy",
     entityId: "welcome",
     layout: {
-      subject: "Your HenryCo Learn workspace is ready",
+      subject: "Your Henry Onyx Learn workspace is ready",
       eyebrow: "Academy onboarding",
       title: "Your academy workspace is ready.",
       intro:
-        "HenryCo Learn now tracks your enrollments, path progress, certificates, notifications, and internal assignments through one calm academy dashboard.",
+        "Your academy workspace keeps your courses, progress, and certificates in one place.",
       bullets: [
         "Browse public courses and premium tracks from one place.",
         "Keep certificates and training assignments tied to one identity.",
         "Pick up where you stopped without losing progress.",
       ],
-      actionLabel: "Open HenryCo account",
+      actionLabel: "Open Henry Onyx account",
       actionHref: getAccountLearnUrl(),
     },
   });
@@ -487,7 +489,7 @@ export async function sendEnrollmentConfirmedNotification(input: {
       eyebrow: "Enrollment confirmed",
       title: "Your place in the academy is now recorded.",
       intro:
-        "HenryCo Learn has created the enrollment and connected it to your unified academy history so progress, quiz attempts, payments, and certificates stay traceable.",
+        "Your enrollment is confirmed. Your progress and certificates for this course are saved to your account.",
       highlightLabel: "Access state",
       highlightValue: input.statusLabel,
       sections: [
@@ -508,7 +510,7 @@ export async function sendEnrollmentConfirmedNotification(input: {
     entityType: "course",
     entityId: input.courseId,
     body: [
-      `HenryCo Learn • ${input.courseTitle}`,
+      `Henry Onyx Learn • ${input.courseTitle}`,
       `Enrollment confirmed. Access state: ${input.statusLabel}.`,
       `Open course: ${baseUrl()}/courses/${input.courseSlug}`,
     ].join("\n"),
@@ -534,14 +536,14 @@ export async function sendPaymentConfirmedNotification(input: {
       eyebrow: "Payment confirmed",
       title: "Your course payment is now confirmed.",
       intro:
-        "HenryCo Learn recorded the payment, activated the course access lane, and synced the billing event into your unified account history.",
+        "Your payment is confirmed and your course access is active. A record is in your account.",
       highlightLabel: "Amount",
       highlightValue: formatCurrency(input.amount, input.currency),
       sections: [
         { label: "Course", value: input.courseTitle },
         { label: "Reference", value: input.reference },
       ],
-      actionLabel: "Open HenryCo account",
+      actionLabel: "Open Henry Onyx account",
       actionHref: getAccountLearnUrl("payments"),
     },
   });
@@ -565,7 +567,7 @@ export async function sendProgressReminderNotification(input: {
       eyebrow: "Progress reminder",
       title: "You already started. Pick it back up cleanly.",
       intro:
-        "HenryCo Learn keeps the next lesson and completion state ready so returning feels calm instead of confusing.",
+        "Henry Onyx Learn keeps the next lesson and completion state ready so returning feels calm instead of confusing.",
       highlightLabel: "Current progress",
       highlightValue: `${input.percentComplete}%`,
       sections: [{ label: "Course", value: input.courseTitle }],
@@ -581,7 +583,7 @@ export async function sendProgressReminderNotification(input: {
     entityType: "course",
     entityId: input.courseId,
     body: [
-      `HenryCo Learn • ${input.courseTitle}`,
+      `Henry Onyx Learn • ${input.courseTitle}`,
       `You are ${input.percentComplete}% complete.`,
       `Resume here: ${input.coursePlayerUrl}`,
     ].join("\n"),
@@ -605,7 +607,7 @@ export async function sendCourseNudgeNotification(input: {
       eyebrow: "Course nudge",
       title: "Your course seat is waiting for a first move.",
       intro:
-        "The course is active in HenryCo Learn. Starting the first lesson now makes later completion much easier.",
+        "The course is active in Henry Onyx Learn. Starting the first lesson now makes later completion much easier.",
       sections: [{ label: "Course", value: input.courseTitle }],
       actionLabel: "Start learning",
       actionHref: input.coursePlayerUrl,
@@ -632,7 +634,7 @@ export async function sendCertificateEarnedNotification(input: {
       eyebrow: "Certificate earned",
       title: "Your certificate is now live.",
       intro:
-        "HenryCo Learn issued the completion record, attached public verification, and synced the credential into your unified account history.",
+        "Your certificate has been issued and is publicly verifiable. It is saved to your account.",
       highlightLabel: "Certificate no",
       highlightValue: input.certificateNo,
       sections: [
@@ -651,7 +653,7 @@ export async function sendCertificateEarnedNotification(input: {
     entityType: "certificate",
     entityId: input.certificateId,
     body: [
-      `HenryCo Learn • ${input.courseTitle}`,
+      `Henry Onyx Learn • ${input.courseTitle}`,
       `Certificate issued: ${input.certificateNo}`,
       `Verify: ${verifyUrl}`,
     ].join("\n"),
@@ -675,16 +677,16 @@ export async function sendInternalAssignmentNotification(input: {
     layout: {
       subject: `Internal training assigned • ${input.title}`,
       eyebrow: "Internal assignment",
-      title: "A HenryCo training assignment was added to your queue.",
+      title: "A Henry Onyx training assignment was added to your queue.",
       intro:
-        "The assignment is now visible in HenryCo Learn with progress tracking, due date visibility, and certificate readiness when applicable.",
+        "This training has been added to your account. You can track your progress and see the due date there.",
       sections: [
         { label: "Assigned training", value: input.title },
         ...(input.sponsorName ? [{ label: "Sponsor", value: input.sponsorName }] : []),
         ...(input.dueAt ? [{ label: "Due", value: new Date(input.dueAt).toLocaleDateString("en-NG") }] : []),
       ],
       bullets: input.note ? [input.note] : [],
-      actionLabel: "Open HenryCo account",
+      actionLabel: "Open Henry Onyx account",
       actionHref: getAccountLearnUrl("assignments"),
     },
   });
@@ -696,7 +698,7 @@ export async function sendInternalAssignmentNotification(input: {
     entityType: "assignment",
     entityId: input.entityId,
     body: [
-      `HenryCo Learn • ${input.title}`,
+      `Henry Onyx Learn • ${input.title}`,
       input.sponsorName ? `Sponsor: ${input.sponsorName}` : null,
       input.dueAt ? `Due: ${new Date(input.dueAt).toLocaleDateString("en-NG")}` : null,
       `Dashboard: ${getAccountLearnUrl("assignments")}`,
@@ -723,7 +725,7 @@ export async function sendAcademyAnnouncementNotification(input: {
       eyebrow: "Academy announcement",
       title: input.title,
       intro: input.body,
-      actionLabel: "Open HenryCo account",
+      actionLabel: "Open Henry Onyx account",
       actionHref: getAccountLearnUrl("notifications"),
     },
   });
@@ -744,11 +746,11 @@ export async function sendTeacherApplicationSubmittedNotification(input: {
     entityType: "teacher_application",
     entityId: input.applicationId,
     layout: {
-      subject: "Teaching application received • HenryCo Learn",
-      eyebrow: "Teach with HenryCo",
+      subject: "Teaching application received • Henry Onyx Learn",
+      eyebrow: "Teach with Henry Onyx",
       title: "Your teaching application is with the academy team.",
       intro:
-        "HenryCo Learn has recorded your application and attached it to your HenryCo identity so review, onboarding, and future instructor operations stay connected.",
+        "Your teaching application has been received and is under review.",
       sections: [
         { label: "Applicant", value: input.fullName },
         { label: "Expertise", value: input.expertiseArea },
@@ -768,7 +770,7 @@ export async function sendTeacherApplicationSubmittedNotification(input: {
     entityType: "teacher_application",
     entityId: input.applicationId,
     body: [
-      "HenryCo Learn • Teach with HenryCo",
+      "Henry Onyx Learn • Teach with Henry Onyx",
       "Your teaching application has been received.",
       `Review it here: ${input.manageUrl}`,
     ].join("\n"),
@@ -807,7 +809,7 @@ export async function sendTeacherApplicationStatusNotification(input: {
     input.status === "approved"
       ? "Your application is approved and ready to move into instructor onboarding."
       : input.status === "changes_requested"
-        ? "HenryCo Learn needs a few updates before the application can move forward."
+        ? "Henry Onyx Learn needs a few updates before the application can move forward."
         : input.status === "rejected"
           ? "The academy team has reviewed the application and it is not moving forward in its current form."
           : "Your application is currently being reviewed by the academy team.";
@@ -819,8 +821,8 @@ export async function sendTeacherApplicationStatusNotification(input: {
     entityType: "teacher_application",
     entityId: input.applicationId,
     layout: {
-      subject: `Teaching application ${statusLabel} • HenryCo Learn`,
-      eyebrow: "Teach with HenryCo",
+      subject: `Teaching application ${statusLabel} • Henry Onyx Learn`,
+      eyebrow: "Teach with Henry Onyx",
       title: `Application ${statusLabel.toLowerCase()}.`,
       intro,
       sections: [{ label: "Applicant", value: input.fullName }],
@@ -842,7 +844,7 @@ export async function sendTeacherApplicationStatusNotification(input: {
     entityType: "teacher_application",
     entityId: input.applicationId,
     body: [
-      "HenryCo Learn • Teach with HenryCo",
+      "Henry Onyx Learn • Teach with Henry Onyx",
       `Application status: ${statusLabel}.`,
       input.reviewNotes ? `Notes: ${input.reviewNotes}` : null,
       `Open application: ${input.manageUrl}`,

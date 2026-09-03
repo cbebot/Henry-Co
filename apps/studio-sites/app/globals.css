@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* The rendered client site is Register-L (light-primary). Theme tokens are
+   injected inline per bundle on the root element; these are safe fallbacks. */
+body {
+  background: var(--site-surface, #ffffff);
+  color: var(--site-ink, #0b0f14);
+  font-family: var(--site-font, ui-sans-serif, system-ui, sans-serif);
+  line-height: 1.6;
+}

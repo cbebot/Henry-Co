@@ -263,3 +263,32 @@ export async function loadWalletSnapshot(
     payoutMethodCount: dedupedPayouts.length,
   };
 }
+
+/**
+ * SMART (2026-07-10) — trust-aware withdrawal nudge. True when the viewer is
+ * NOT identity-verified: withdrawals are KYC-gated, so the wallet surfaces one
+ * calm nudge with the exact unlock step instead of letting the viewer discover
+ * the gate at the withdrawal form. Real profile state only; any read failure
+ * suppresses the nudge (never fabricate urgency).
+ */
+export async function loadNeedsVerificationNudge(viewer: UnifiedViewer): Promise<boolean> {
+  if (viewer.kind !== "customer") return false;
+  const client = createDataAdminClient();
+  try {
+    const { data } = await client
+      .from("customer_profiles")
+      .select("verification_status, is_verified")
+      .eq("id", viewer.user.id)
+      .maybeSingle();
+    const row = data as {
+      verification_status?: string | null;
+      is_verified?: boolean | null;
+    } | null;
+    if (!row) return false;
+    const status = String(row.verification_status || "").toLowerCase();
+    const verified = row.is_verified === true || status === "verified";
+    return !verified;
+  } catch {
+    return false;
+  }
+}

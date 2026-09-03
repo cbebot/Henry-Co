@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { getJobsCopy } from "@henryco/i18n";
+import { getJobsCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { createJobPostAction } from "@/app/actions";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
+import { DraftPostingPanel } from "@/components/ai/DraftPostingPanel";
 import { requireJobsRoles } from "@/lib/auth";
 import { getEmployerDashboardData, getEmployerProfileBySlug } from "@/lib/jobs/data";
 import { employerNav } from "@/lib/jobs/navigation";
@@ -12,6 +14,10 @@ import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
+
+// Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
+// company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
+const JOBS_AI_POSTING_ASSIST = isAiSurfaceEnabled(process.env.JOBS_AI_POSTING_ASSIST, process.env);
 
 export async function generateMetadata() {
   const locale = await getJobsPublicLocale();
@@ -82,8 +88,14 @@ export default async function EmployerNewJobPage() {
                 <div className="space-y-3">
                   <div className="rounded-2xl bg-[var(--jobs-paper-soft)] p-4">
                     <div className="jobs-kicker">{copy.rightRailAccountTierKicker}</div>
-                    <div className="mt-2 text-lg font-semibold capitalize">
-                      {eligibility.trustTier.replace(/_/g, " ")}
+                    <div className="mt-2 text-lg font-semibold">
+                      {eligibility.trustTier === "premium_verified"
+                        ? "Premium"
+                        : eligibility.trustTier === "trusted"
+                          ? "Trusted"
+                          : eligibility.trustTier === "verified"
+                            ? "Verified"
+                            : "Getting started"}
                     </div>
                     <p className="mt-2 text-sm leading-7 text-[var(--jobs-muted)]">
                       {copy.rightRailAccountTierBody}
@@ -127,7 +139,7 @@ export default async function EmployerNewJobPage() {
               <InlineNotice
                 tone="warn"
                 title={copy.subscriptionRequiredTitle}
-                body={copy.subscriptionRequiredBodyTemplate.replace("{status}", subscription.status)}
+                body={copy.subscriptionRequiredBodyTemplate}
               />
             </div>
           ) : null}
@@ -171,6 +183,19 @@ export default async function EmployerNewJobPage() {
                 />
               )}
             </div>
+          ) : null}
+          {JOBS_AI_POSTING_ASSIST ? (
+            <DraftPostingPanel
+              copy={{
+                heading: translateSurfaceLabel(locale, "Draft with Henry Onyx Intelligence"),
+                intro: translateSurfaceLabel(locale, "Henry Onyx Intelligence drafts a starting point from your idea — review and edit every field before you publish."),
+                draftButton: translateSurfaceLabel(locale, "Draft with Henry Onyx Intelligence"),
+                drafting: translateSurfaceLabel(locale, "Drafting…"),
+                needTitle: translateSurfaceLabel(locale, "Add a title first, then let Henry Onyx Intelligence draft the rest."),
+                errorFallback: translateSurfaceLabel(locale, "Henry Onyx Intelligence is unavailable right now."),
+                priceTemplate: translateSurfaceLabel(locale, "Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+              }}
+            />
           ) : null}
           <form action={createJobPostAction} className="grid gap-4">
             <input type="hidden" name="employerSlug" value={membership.employerSlug} />

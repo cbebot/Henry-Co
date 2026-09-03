@@ -1,10 +1,12 @@
 import type { AppLocale } from "@henryco/i18n/server";
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
 
 type NavItem = { href: string; label: string; active: boolean };
 
 export function accountNav(active: string, locale: AppLocale): NavItem[] {
   const t = (s: string) => translateSurfaceLabel(locale, s);
+  const messagingEnabled = process.env.MARKETPLACE_MESSAGING_ENABLED === "1";
   return [
     { href: "/account", label: t("Overview"), active: active === "/account" },
     { href: "/account/orders", label: t("Orders"), active: active === "/account/orders" },
@@ -17,6 +19,11 @@ export function accountNav(active: string, locale: AppLocale): NavItem[] {
     { href: "/account/following", label: t("Following"), active: active === "/account/following" },
     { href: "/account/notifications", label: t("Notifications"), active: active === "/account/notifications" },
     { href: "/account/reviews", label: t("Reviews"), active: active === "/account/reviews" },
+    // The Onyx Line (WS-4) — buyer<->seller messaging. Gated dark until the
+    // flag is on so the surface stays hidden in production.
+    ...(messagingEnabled
+      ? [{ href: "/account/messages", label: t("Messages"), active: active === "/account/messages" }]
+      : []),
     { href: "/account/support", label: t("Support"), active: active === "/account/support" },
     {
       href: "/account/seller-application",
@@ -45,12 +52,19 @@ export function accountWorkspaceNav(active: string, locale: AppLocale) {
  */
 export function accountNavGroups(active: string, locale: AppLocale) {
   const t = (s: string) => translateSurfaceLabel(locale, s);
+  const messagingEnabled = process.env.MARKETPLACE_MESSAGING_ENABLED === "1";
   const flat = accountNav(active, locale);
   const byHref = (href: string) => flat.find((item) => item.href === href)!;
   return [
     {
       label: t("Activity"),
-      items: [byHref("/account"), byHref("/account/orders"), byHref("/account/notifications")],
+      items: [
+        byHref("/account"),
+        byHref("/account/orders"),
+        byHref("/account/notifications"),
+        // Onyx Line messaging — only present (and resolvable in `flat`) when on.
+        ...(messagingEnabled ? [byHref("/account/messages")] : []),
+      ],
     },
     {
       label: t("Commerce"),
@@ -83,15 +97,68 @@ export function accountNavGroups(active: string, locale: AppLocale) {
 
 export function vendorNav(active: string, locale: AppLocale) {
   const t = (s: string) => translateSurfaceLabel(locale, s);
+  const messagingEnabled = process.env.MARKETPLACE_MESSAGING_ENABLED === "1";
   return [
     { href: "/vendor", label: t("Overview"), active: active === "/vendor" },
     { href: "/vendor/products", label: t("Products"), active: active === "/vendor/products" },
     { href: "/vendor/orders", label: t("Orders"), active: active === "/vendor/orders" },
+    // The Onyx Line (WS-4) — buyer<->seller messaging, gated dark until enabled.
+    ...(messagingEnabled
+      ? [{ href: "/vendor/messages", label: t("Messages"), active: active === "/vendor/messages" }]
+      : []),
     { href: "/vendor/disputes", label: t("Disputes"), active: active === "/vendor/disputes" },
     { href: "/vendor/payouts", label: t("Payouts"), active: active === "/vendor/payouts" },
     { href: "/vendor/analytics", label: t("Analytics"), active: active === "/vendor/analytics" },
+    ...(isAiSurfaceEnabled(process.env.MARKETPLACE_AI_CHAT, process.env)
+      ? [{ href: "/vendor/intelligence", label: t("Intelligence"), active: active === "/vendor/intelligence" }]
+      : []),
     { href: "/vendor/store", label: t("Store"), active: active === "/vendor/store" },
     { href: "/vendor/settings", label: t("Settings"), active: active === "/vendor/settings" },
+  ];
+}
+
+/**
+ * One-call helper for every /vendor/* page — flat nav + mobile groups together:
+ * `<WorkspaceShell {...vendorWorkspaceNav("/vendor/orders", locale)} />`.
+ */
+export function vendorWorkspaceNav(active: string, locale: AppLocale) {
+  return { nav: vendorNav(active, locale), navGroups: vendorNavGroups(active, locale) };
+}
+
+/**
+ * Same routes as `vendorNav` bucketed into mobile-friendly groups, so the seller's
+ * drawer reads as a workspace, not a nine-item flat list.
+ */
+export function vendorNavGroups(active: string, locale: AppLocale) {
+  const t = (s: string) => translateSurfaceLabel(locale, s);
+  const messagingEnabled = process.env.MARKETPLACE_MESSAGING_ENABLED === "1";
+  const intelligenceEnabled = isAiSurfaceEnabled(process.env.MARKETPLACE_AI_CHAT, process.env);
+  const flat = vendorNav(active, locale);
+  const byHref = (href: string) => flat.find((item) => item.href === href)!;
+  return [
+    {
+      label: t("Storefront"),
+      items: [byHref("/vendor"), byHref("/vendor/products"), byHref("/vendor/store")],
+    },
+    {
+      label: t("Sales"),
+      items: [
+        byHref("/vendor/orders"),
+        ...(messagingEnabled ? [byHref("/vendor/messages")] : []),
+        byHref("/vendor/disputes"),
+      ],
+    },
+    {
+      label: t("Money"),
+      items: [byHref("/vendor/payouts"), byHref("/vendor/analytics")],
+    },
+    {
+      label: t("Trust"),
+      items: [
+        byHref("/vendor/settings"),
+        ...(intelligenceEnabled ? [byHref("/vendor/intelligence")] : []),
+      ],
+    },
   ];
 }
 
@@ -100,6 +167,7 @@ export function staffNav(active: string, root: string, locale: AppLocale) {
   const resourceMap: Record<string, Array<{ href: string; label: string }>> = {
     "/owner": [
       { href: "/owner", label: t("Overview") },
+      { href: "/owner/seller-applications", label: t("Seller applications") },
       { href: "/owner/alerts", label: t("Alerts") },
       { href: "/owner/digest", label: t("Digest") },
       { href: "/owner/automation-health", label: t("Automation health") },

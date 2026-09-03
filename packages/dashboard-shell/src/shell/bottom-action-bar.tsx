@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
@@ -25,6 +25,7 @@ import { BottomSheet } from "../components/bottom-sheet";
 import { Badge } from "../components/badge";
 import { EmptyState } from "../components/empty-state";
 import { useRealtimeOptional } from "./supabase-realtime-provider";
+import { LinkActivity } from "./link-activity";
 
 /**
  * BottomActionBar — the canonical mobile chrome.
@@ -96,6 +97,13 @@ export type BottomActionBarProps = {
    * Same contract as IdentityBar.onSignOut.
    */
   onSignOut?: () => void;
+  /**
+   * Optional "browse all pages" navigator, rendered at the TOP of the More
+   * sheet (above Settings/Help). The account shell passes its dashboard page
+   * index here so navigation lives in one place instead of a separate floating
+   * control. Omitted → the More sheet is settings/help/theme/sign-out only.
+   */
+  navigatorSlot?: ReactNode;
   /** Optional translation function for ARIA labels. */
   t?: (key: string) => string;
 };
@@ -112,6 +120,7 @@ export function BottomActionBar({
   statusHref,
   themeToggleSlot,
   onSignOut,
+  navigatorSlot,
   t = (s) => s,
 }: BottomActionBarProps) {
   const pathname = usePathname() ?? "/";
@@ -121,6 +130,20 @@ export function BottomActionBar({
 
   // Determine the active anchor from the current pathname.
   const activeAnchor: AnchorKey = computeActive(pathname, openSheet);
+
+  // Close any open sheet/drawer once a navigation actually COMMITS (the
+  // pathname changes). This is the CLOSE mechanism for in-sheet nav links
+  // (they carry no onClick-close, so the route change dismisses the sheet
+  // once the destination is ready). The companion fix that lets the link
+  // actually navigate lives in the Drawer/BottomSheet primitives: their
+  // `onClickCapture={suppressSentinelPopForNavLink}` tells
+  // `useAndroidBackClose`'s cleanup to skip its `history.back()`, so
+  // closing the sheet can't cancel the in-flight App Router navigation
+  // (the "tap Settings / Help / a module just closes the sheet but never
+  // navigates" bug). A no-op on the current page (no pathname change).
+  useEffect(() => {
+    setOpenSheet(null);
+  }, [pathname]);
 
   return (
     <>
@@ -220,7 +243,6 @@ export function BottomActionBar({
         <ModulesList
           modules={modules}
           activeHref={pathname}
-          onPick={() => setOpenSheet(null)}
           t={t}
         />
       </Drawer>
@@ -259,6 +281,7 @@ export function BottomActionBar({
           statusHref={statusHref}
           themeToggleSlot={themeToggleSlot}
           onSignOut={onSignOut}
+          navigatorSlot={navigatorSlot}
           onItemPick={() => setOpenSheet(null)}
           t={t}
         />
@@ -411,11 +434,10 @@ function AnchorButton({
 type ModulesListProps = {
   modules: ReadonlyArray<ModuleNavEntry>;
   activeHref: string;
-  onPick: () => void;
   t: (key: string) => string;
 };
 
-function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
+function ModulesList({ modules, activeHref, t }: ModulesListProps) {
   if (modules.length === 0) {
     return (
       <EmptyState
@@ -442,7 +464,6 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
           <li key={module.slug}>
             <Link
               href={module.href}
-              onClick={onPick}
               aria-current={isActive ? "page" : undefined}
               style={{
                 position: "relative",
@@ -464,7 +485,7 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
             >
               {/* DASH-7 — left accent stripe in the module's division
                   color. Closes anti-pattern #15 at a per-entry level
-                  while preserving HenryCo gold as the active state. */}
+                  while preserving Henry Onyx gold as the active state. */}
               {accentHex ? (
                 <span
                   aria-hidden
@@ -517,6 +538,7 @@ function ModulesList({ modules, activeHref, onPick, t }: ModulesListProps) {
                   </span>
                 ) : null}
               </span>
+              <LinkActivity />
               <ChevronRight
                 size={16}
                 aria-hidden
@@ -536,6 +558,7 @@ type MoreSheetBodyProps = {
   statusHref?: string;
   themeToggleSlot?: ReactNode;
   onSignOut?: () => void;
+  navigatorSlot?: ReactNode;
   onItemPick: () => void;
   t: (key: string) => string;
 };
@@ -546,6 +569,7 @@ function MoreSheetBody({
   statusHref,
   themeToggleSlot,
   onSignOut,
+  navigatorSlot,
   onItemPick,
   t,
 }: MoreSheetBodyProps) {
@@ -559,6 +583,21 @@ function MoreSheetBody({
       className="hc-more-sheet-body"
       style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
     >
+      {/* "Browse all pages" navigator, when the host supplies one — it leads the
+          sheet so the whole mobile navigation surface reads as one list. */}
+      {navigatorSlot ? (
+        <>
+          {navigatorSlot}
+          <span
+            aria-hidden
+            style={{
+              height: "1px",
+              margin: "0.25rem 0",
+              backgroundColor: `var(${CSS_VARS.hairline})`,
+            }}
+          />
+        </>
+      ) : null}
       <MoreLink
         href={settingsHref}
         icon={<Settings size={18} aria-hidden />}
@@ -746,9 +785,15 @@ function MoreLink({ href, icon, label, onPick, external }: MoreLinkProps) {
       </a>
     );
   }
+  // Internal navigation: do NOT close on click. Closing here unmounts
+  // this <Link> (the sheet returns null when openSheet flips), cancelling
+  // the App Router navigation. The BottomActionBar's pathname effect
+  // closes the sheet once the route commits. (The external `<a>` above
+  // opens a new tab — no route change — so it keeps onClick={onPick}.)
   return (
-    <Link href={href} onClick={onPick} style={sharedStyle}>
+    <Link href={href} style={sharedStyle}>
       {inner}
+      <LinkActivity />
     </Link>
   );
 }

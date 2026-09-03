@@ -95,7 +95,10 @@ export async function proxy(request: NextRequest) {
 
   const state = sessionStateFor(session);
   if (state) {
-    writeSessionStateCookie(response, state);
+    writeSessionStateCookie(response, state, {
+      hostname: request.nextUrl.hostname,
+      secure: request.nextUrl.protocol === "https:",
+    });
   }
 
   return response;

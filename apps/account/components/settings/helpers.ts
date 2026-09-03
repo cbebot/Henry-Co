@@ -144,13 +144,13 @@ export function identityHeadline(
 
   if (state === "unverified") {
     return firstName
-      ? `One short pass and HenryCo recognises you, ${firstName}.`
-      : "A short pass and HenryCo recognises you across every division.";
+      ? `One short pass and Henry Onyx recognises you, ${firstName}.`
+      : "A short pass and Henry Onyx recognises you across every division.";
   }
   if (state === "verified-base") {
     return firstName
       ? `${firstName} — identity confirmed, ready for full reach.`
-      : "Identity confirmed — ready for full HenryCo reach.";
+      : "Identity confirmed — ready for full Henry Onyx reach.";
   }
   if (state === "power-user") {
     return firstName
@@ -160,20 +160,20 @@ export function identityHeadline(
   // verified-rich
   return firstName
     ? `${firstName} — preferences shaping ${divisions} divisions.`
-    : `Preferences shaping ${divisions} divisions of HenryCo.`;
+    : `Preferences shaping ${divisions} divisions of Henry Onyx.`;
 }
 
 export function identityBlurb(state: IdentityState): string {
   if (state === "unverified") {
-    return "Add a phone, a region and a language and HenryCo will recognise you in every division — same identity, same trust, same address book.";
+    return "Add a phone, a region and a language and Henry Onyx will recognise you in every division — same identity, same trust, same address book.";
   }
   if (state === "verified-base") {
-    return "Profile basics are set. Add a photo and pin your preferred language to lift the experience to fully personalised across HenryCo.";
+    return "Profile basics are set. Add a photo and pin your preferred language to lift the experience to fully personalised across Henry Onyx.";
   }
   if (state === "power-user") {
     return "Every signal you toggle here propagates instantly across Care, Marketplace, Studio, Jobs, Learn, Property and Logistics. One identity, many divisions.";
   }
-  return "Identity, channels and per-division reach — every change here propagates across HenryCo within seconds.";
+  return "Identity, channels and per-division reach — every change here propagates across Henry Onyx within seconds.";
 }
 
 export const DIVISION_LABEL: Record<DivisionKey, string> = {

@@ -37,6 +37,8 @@ export {
 export {
   useAndroidBackClose,
   emitModalBackdropTap,
+  suppressSentinelPop,
+  suppressSentinelPopForNavLink,
   type UseAndroidBackCloseOptions,
 } from "./use-android-back-close";
 export {

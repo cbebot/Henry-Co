@@ -40,7 +40,7 @@ type EstimateInput = {
     StudioCustomRequest,
     "projectType" | "platformPreference" | "pageRequirements" | "addonServices"
   > | null;
-  /** Tech-stack picks. Optional — `HenryCo recommends ...` selections cost 0. */
+  /** Tech-stack picks. Optional — `Henry Onyx recommends ...` selections cost 0. */
   techStack?: {
     framework?: string | null;
     backend?: string | null;
@@ -261,12 +261,9 @@ export function buildProposalPricingBreakdown(input: {
   const lines = [...estimated.lines];
   if (delta !== 0) {
     lines.push({
-      label: delta > 0 ? "Commercial calibration" : "Scope adjustment",
+      label: "Scope & delivery",
       amount: Math.abs(delta),
-      detail:
-        delta > 0
-          ? "Recorded proposal total includes calibrated delivery overhead."
-          : "Recorded proposal total is lower than the current heuristic estimate.",
+      detail: "Reflects the agreed scope and delivery plan for this engagement.",
     });
   }
 

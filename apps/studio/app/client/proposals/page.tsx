@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ScrollText, Sparkles } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { formatCurrency } from "@/lib/env";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { requireStudioUser } from "@/lib/studio/auth";
 import { studioClientSnapshot } from "@/lib/studio/data";
 import { getStudioSnapshot } from "@/lib/studio/store";
@@ -17,6 +19,7 @@ export const revalidate = 0;
 
 const STATUS_TONE: Record<string, string> = {
   draft: "var(--studio-ink-soft)",
+  in_review: "var(--studio-signal)",
   sent: "var(--studio-signal)",
   accepted: "#bdf2cf",
   rejected: "#ffb8b8",
@@ -27,6 +30,8 @@ export default async function ClientProposalsPage() {
   const viewer = await requireStudioUser("/client/proposals");
   const snapshot = await getStudioSnapshot();
   const clientData = studioClientSnapshot(viewer, snapshot);
+  const locale = await getStudioPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   if (clientData.proposals.length === 0) {
     return (
@@ -47,10 +52,11 @@ export default async function ClientProposalsPage() {
     );
   }
 
-  // Sort: open proposals first (sent/draft), then accepted, then archive
+  // Sort: live proposals first (sent), then in-review holds, then drafts,
+  // then accepted, then archive.
   const ordered = [...clientData.proposals].sort((a, b) => {
     const order = (s: string) =>
-      s === "sent" ? 0 : s === "draft" ? 1 : s === "accepted" ? 2 : 3;
+      s === "sent" ? 0 : s === "in_review" ? 1 : s === "draft" ? 2 : s === "accepted" ? 3 : 4;
     return order(a.status) - order(b.status);
   });
 
@@ -100,12 +106,27 @@ export default async function ClientProposalsPage() {
 
               <div className="flex items-baseline justify-between gap-3">
                 <div>
-                  <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-                    Investment
-                  </div>
-                  <div className="mt-0.5 text-[18px] font-semibold tracking-[-0.005em] text-[var(--studio-ink)]">
-                    {formatCurrency(proposal.investment, proposal.currency)}
-                  </div>
+                  {/* SA-D5: a held proposal shows no committed figure — the
+                    price lands only after the team's one-tap release. */}
+                  {proposal.status === "in_review" ? (
+                    <>
+                      <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+                        {t("Pricing")}
+                      </div>
+                      <div className="mt-0.5 text-[13px] leading-6 text-[var(--studio-ink-soft)]">
+                        {t("Arrives with the reviewed proposal — usually within one business day.")}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
+                        Investment
+                      </div>
+                      <div className="mt-0.5 text-[18px] font-semibold tracking-[-0.005em] text-[var(--studio-ink)]">
+                        {formatCurrency(proposal.investment, proposal.currency)}
+                      </div>
+                    </>
+                  )}
                 </div>
                 {proposal.validUntil ? (
                   <div className="text-right">

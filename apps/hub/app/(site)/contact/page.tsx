@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { COMPANY } from "@henryco/config";
 import { getHubPublicCopy, getHubHomeCopy } from "@henryco/i18n/server";
 import { getHubPublicLocale } from "../../../lib/locale-server";
-import CompanyPageClient from "../../components/CompanyPageClient";
+import CompanyPageEditorial from "../../components/CompanyPageEditorial";
 import ContactHeroLayout from "../../components/ContactHeroLayout";
 import {
   createFallbackCompanyPage,
@@ -26,6 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: resolved.seo_title || resolved.title,
     description: resolved.seo_description || resolved.intro || resolved.subtitle || undefined,
+    alternates: { canonical: "/contact" },
   };
 }
 
@@ -79,9 +80,8 @@ export default async function ContactPage({
         copy={copy.contactHero}
         formCopy={homeCopy.contactHeroForm}
       />
-      <CompanyPageClient
-        pageKey="contact"
-        initialData={localizedPage}
+      <CompanyPageEditorial
+        page={localizedPage}
         serverWarning={pageResult.hasServerError}
         hideHero
         copy={copy.companyPage}

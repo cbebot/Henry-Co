@@ -2,8 +2,28 @@ import * as Linking from "expo-linking";
 
 const prefix = Linking.createURL("/");
 
-/** Expo Router linking prefixes for universal links + custom scheme (staging). */
-export const linkingPrefixes = [prefix, "henryco://", "https://staging.henrycogroup.com/app"];
+/**
+ * Expo Router linking prefixes for universal links + custom scheme.
+ *
+ * V3-04 (S2): the production prefixes mirror `app.json`'s
+ * `associatedDomains` so a `https://<division>.henryonyx.com/…`
+ * universal link is recognised by the app. Path → in-app screen
+ * remapping is handled centrally in `app/+native-intent.ts`
+ * (`redirectSystemPath`), so this list only needs the origins.
+ */
+export const linkingPrefixes = [
+  prefix,
+  "henryco://",
+  "https://staging.henryonyx.com/app",
+  "https://account.henryonyx.com",
+  "https://care.henryonyx.com",
+  "https://marketplace.henryonyx.com",
+  "https://property.henryonyx.com",
+  "https://jobs.henryonyx.com",
+  "https://learn.henryonyx.com",
+  "https://logistics.henryonyx.com",
+  "https://studio.henryonyx.com",
+];
 
 export const linkingConfig = {
   prefixes: linkingPrefixes,

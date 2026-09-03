@@ -1,16 +1,27 @@
 import { headers } from "next/headers";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
-import { getAccountUrl } from "@henryco/config";
-import { StudioSiteFooter } from "@/components/studio/site-footer";
+import { STUDIO_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
+import { HenryCoPublicAccountPresets } from "@henryco/ui";
+import { LivePublicSiteFooter } from "@henryco/ui/public-design";
+import { getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { StudioAccountChip } from "@/components/studio/StudioAccountChip";
 import { StudioSiteHeader } from "@/components/studio/site-header";
+import { fraunces, manrope, STUDIO_PUBLIC_THEME_STYLE } from "@/components/studio/studio-public-theme";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 import { getStudioViewer } from "@/lib/studio/auth";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioAccountUrl, getStudioLoginUrl, getStudioSignupUrl } from "@/lib/studio/links";
 
+const studio = getDivisionConfig("studio");
+
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const catalog = await getStudioCatalog();
-  const viewer = await getStudioViewer();
-  const h = await headers();
+  const [catalog, viewer, h, locale] = await Promise.all([
+    getStudioCatalog(),
+    getStudioViewer(),
+    headers(),
+    getStudioPublicLocale(),
+  ]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const returnPath = h.get("x-studio-return-path") || "/";
   const loginHref = getStudioLoginUrl(returnPath);
   const signupHref = getStudioSignupUrl(returnPath);
@@ -23,13 +34,64 @@ export default async function PublicLayout({ children }: { children: React.React
       }
     : null;
 
+  const account = {
+    user: chipUser,
+    loginHref,
+    signupHref,
+    accountHref: accountUrl,
+  };
+
+  // AWARE-SP3: the chrome follows the viewer's STANDING — a studio team member
+  // sees their project console, everyone else the "start a project" CTA. Policy
+  // lives in @henryco/aware (tested matrix), not in this layout.
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    STUDIO_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("studio", standing);
+  const chromePrimary = { label: t(plan.primaryCta.label), href: plan.primaryCta.href };
+  const chromeAux = plan.aside ? { label: t(plan.aside.label), href: plan.aside.href } : undefined;
+
+  const footerColumns = [
+    {
+      title: t("Studio"),
+      links: [
+        { href: "/services", label: t("Services") },
+        { href: "/pricing", label: t("Packages") },
+        { href: "/work", label: t("Case studies") },
+        { href: "/teams", label: t("Teams") },
+      ],
+    },
+    {
+      title: t("Start"),
+      links: [
+        { href: "/request", label: t("Start a project") },
+        { href: "/pick", label: t("Project types") },
+        { href: "/process", label: t("Process") },
+        { href: "/trust", label: t("Trust") },
+      ],
+    },
+    {
+      title: t("Account"),
+      links: [
+        { href: accountUrl, label: t("Your account") },
+        { href: "/faq", label: t("FAQ") },
+        { href: "/contact", label: t("Contact") },
+      ],
+    },
+  ];
+
   return (
-    <div className="studio-page studio-shell">
+    <div
+      className={`${fraunces.variable} ${manrope.variable} studio-public home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
+      style={STUDIO_PUBLIC_THEME_STYLE}
+    >
       <StudioSiteHeader
-        supportEmail={catalog.platform.supportEmail}
-        accountHref={accountUrl}
+        account={account}
+        primaryCta={chromePrimary}
+        auxLink={chromeAux}
         accountMenu={
-          <PublicAccountChip
+          <StudioAccountChip
             {...HenryCoPublicAccountPresets.standard}
             user={chipUser}
             loginHref={loginHref}
@@ -38,23 +100,38 @@ export default async function PublicLayout({ children }: { children: React.React
             settingsHref={getAccountUrl("/security")}
             signupHref={signupHref}
             showSignOut
-            buttonClassName="border-[var(--studio-line)] bg-black/15 text-[var(--studio-ink)] hover:border-[rgba(151,244,243,0.28)] hover:bg-black/25 dark:text-[var(--studio-ink)]"
-            dropdownClassName="border-[var(--studio-line)] bg-[color-mix(in_srgb,var(--studio-bg)_100%,#0a1620)]"
+            buttonClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-surface-04)] text-[color:var(--home-ink)] hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-07)]"
+            dropdownClassName="border-[color:var(--home-line-15)] bg-[color:var(--home-sheet)] text-[color:var(--home-ink)]"
+            // AWARE-SP5: the project console rides the chip's unified
+            // workspaceHref contract (leads the menu); the recruit link is
+            // dropped for team members — they don't start briefs, they run them.
+            workspaceHref={standing.kind === "operator" ? plan.workspace?.href : undefined}
+            workspaceLabel={
+              standing.kind === "operator" && plan.workspace ? t(plan.workspace.label) : undefined
+            }
             menuItems={[
-              { label: "Start a project", href: "/request" },
-              { label: "Pick a project type", href: "/pick" },
-              { label: "Packages", href: "/pricing" },
-              { label: "Studio in your account", href: `${accountUrl}?ref=studio-nav` },
+              ...(standing.kind === "operator"
+                ? []
+                : [{ label: t("Start a project"), href: "/request" }]),
+              { label: t("Pick a project type"), href: "/pick" },
+              { label: t("Packages"), href: "/pricing" },
+              { label: t("Studio in your account"), href: `${accountUrl}?ref=studio-nav` },
             ]}
           />
         }
       />
-      {children}
-      <StudioSiteFooter
-        supportEmail={catalog.platform.supportEmail}
-        supportPhone={catalog.platform.supportPhone}
-        accountHref={getStudioAccountUrl()}
-        loginHref={getStudioLoginUrl("/")}
+      <div className="flex-1">{children}</div>
+      <LivePublicSiteFooter
+        copy={{
+          statement: t(
+            "Serious software, delivered with sharper process — every brief to launch on one record.",
+          ),
+          divisionsLabel: t("The Henry Onyx group"),
+          rightsReserved: t("All rights reserved."),
+          attribution: t("Built in-house by Henry Onyx Studio."),
+        }}
+        columns={footerColumns}
+        support={{ email: catalog.platform.supportEmail || studio.supportEmail }}
       />
     </div>
   );

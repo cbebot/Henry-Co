@@ -14,7 +14,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Manager Pricing | Henry & Co. Fabric Care",
+  title: "Manager Pricing | Henry Onyx Fabric Care",
   description:
     "Manager proposal desk for price drafts, approval handoff, and live pricing visibility.",
 };

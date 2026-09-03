@@ -10,6 +10,7 @@ import {
   type AccountCopy,
   type AppLocale,
 } from "@henryco/i18n";
+import { toast } from "@henryco/ui/feedback";
 import type { EnrichedNotification } from "@/lib/account-data";
 import NotificationLifecycleControls from "@/components/messages/NotificationLifecycleControls";
 import { timeAgoLocalized } from "@/lib/format";
@@ -63,6 +64,7 @@ function NotificationCard({
   };
 }) {
   const router = useRouter();
+  const t = useCallback((text: string) => translateSurfaceLabel(locale, text), [locale]);
   const sourceLabel = translateSurfaceLabel(locale, notification.source.label);
   // V2-NOT-01-B-2: severity icon + division accent applied per-row.
   const severityStyle = resolveSeverity(
@@ -73,32 +75,38 @@ function NotificationCard({
   const notificationId = String(notification.id);
 
   const runMutation = useCallback(
-    async (path: string, method: "POST" | "DELETE") => {
+    async (path: string, method: "POST" | "DELETE", confirmation: string, toastId: string) => {
+      let ok = false;
       try {
         const res = await fetch(path, { method, credentials: "same-origin" });
-        if (!res.ok) return;
+        ok = res.ok;
+        if (!ok) return;
       } finally {
+        // V3-DASH-TOAST-02: clean action-feedback popup on success (the
+        // marketplace pattern), separate from the realtime feed toasts.
+        if (ok) toast.success(confirmation, { id: toastId });
+        else toast.error(t("Notification update failed."), { id: "notif-action-error" });
         router.refresh();
       }
     },
-    [router],
+    [router, t],
   );
 
   const onMarkRead = useCallback(
-    () => runMutation(`/api/notifications/${notificationId}/read`, "POST"),
-    [notificationId, runMutation],
+    () => runMutation(`/api/notifications/${notificationId}/read`, "POST", t("Marked as read"), "notif-read"),
+    [notificationId, runMutation, t],
   );
   const onMarkUnread = useCallback(
-    () => runMutation(`/api/notifications/${notificationId}/unread`, "POST"),
-    [notificationId, runMutation],
+    () => runMutation(`/api/notifications/${notificationId}/unread`, "POST", t("Marked as unread"), "notif-unread"),
+    [notificationId, runMutation, t],
   );
   const onArchive = useCallback(
-    () => runMutation(`/api/notifications/${notificationId}/archive`, "POST"),
-    [notificationId, runMutation],
+    () => runMutation(`/api/notifications/${notificationId}/archive`, "POST", t("Notification archived"), "notif-archive"),
+    [notificationId, runMutation, t],
   );
   const onDelete = useCallback(
-    () => runMutation(`/api/notifications/${notificationId}`, "DELETE"),
-    [notificationId, runMutation],
+    () => runMutation(`/api/notifications/${notificationId}`, "DELETE", t("Notification deleted"), "notif-delete"),
+    [notificationId, runMutation, t],
   );
 
   return (

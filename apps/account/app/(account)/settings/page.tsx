@@ -1,4 +1,5 @@
 import { translateSurfaceLabel } from "@henryco/i18n";
+import { toBrandName } from "@henryco/config";
 import {
   HeroCard,
   DivisionLanding,
@@ -31,7 +32,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Settings · HenryCo",
+  title: toBrandName("Settings · Henry Onyx"),
   description:
     "Identity, channels and per-division reach — every change syncs instantly across Care, Marketplace, Studio, Jobs, Learn, Property and Logistics.",
 };
@@ -119,12 +120,35 @@ export default async function SettingsPage() {
                 ? "calm"
                 : "active"
           }
-          eyebrow={t("HenryCo · identity & preferences")}
-          headline={t(headline)}
-          blurb={t(blurb)}
+          eyebrow={t(toBrandName("Henry Onyx · identity & preferences"))}
+          headline={t(toBrandName(headline))}
+          blurb={t(toBrandName(blurb))}
           ariaLabel={t("Identity & preferences overview")}
           ariaTilesLabel={t("Identity capability snapshot")}
           tiles={tiles}
+          belowTiles={
+            /* In-page quick-nav (redesign 2026-07-08): the settings spread is
+               ~5,000px — the opener now hands the reader straight to each
+               section. Labels reuse the translated section titles. */
+            <nav
+              aria-label={t("Settings sections")}
+              className="flex flex-wrap gap-2"
+            >
+              {[
+                { href: "#acct-settings-profile", label: t("Profile") },
+                { href: "#acct-settings-notifications", label: t("Notifications") },
+                { href: "#acct-settings-privacy", label: t("Privacy & data") },
+              ].map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="inline-flex min-h-[36px] items-center rounded-full border border-[var(--acct-line)] px-3.5 text-xs font-semibold text-[var(--acct-muted)] transition-colors hover:border-[var(--acct-gold)] hover:text-[var(--acct-ink)]"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          }
           side={{
             kicker: verificationLabel,
             title: t("By division"),
@@ -150,7 +174,7 @@ export default async function SettingsPage() {
           meta: t("Identity"),
           content: (
             <div className="acct-settings__card">
-              <p className="acct-settings__card-kicker">{t("Who you are on HenryCo")}</p>
+              <p className="acct-settings__card-kicker">{t(toBrandName("Who you are on Henry Onyx"))}</p>
               <ProfileForm profile={profile} email={user.email} effectiveLocale={locale} />
             </div>
           ),
@@ -161,7 +185,7 @@ export default async function SettingsPage() {
           meta: t("Signal · channels"),
           content: (
             <div className="acct-settings__card">
-              <p className="acct-settings__card-kicker">{t("How HenryCo reaches you")}</p>
+              <p className="acct-settings__card-kicker">{t(toBrandName("How Henry Onyx reaches you"))}</p>
               <div className="space-y-4">
                 <NotificationSignalSettingsCard />
                 <PreferencesForm preferences={preferences} />

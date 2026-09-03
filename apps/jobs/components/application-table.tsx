@@ -61,8 +61,6 @@ export function ApplicationTable({
             <th>{copy.tableCandidate}</th>
             <th>{copy.tableRole}</th>
             <th>{copy.tableStage}</th>
-            <th>{copy.tableProfile}</th>
-            <th>{copy.tableMatch}</th>
           </tr>
         </thead>
         <tbody>
@@ -81,8 +79,6 @@ export function ApplicationTable({
               <td>
                 <StatusPill label={stageLabel(application.stage, copy)} tone={toneForStage(application.stage)} />
               </td>
-              <td>{application.candidateReadiness}</td>
-              <td>{application.recruiterConfidence}</td>
             </tr>
           ))}
         </tbody>

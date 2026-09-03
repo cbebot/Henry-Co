@@ -312,12 +312,12 @@ test("listing submission, owner update, and moderation approval stay connected",
     })
   ).toBeVisible();
 
-  await page.getByLabel("Owner or agent name").fill("HenryCo Verification Owner");
+  await page.getByLabel("Owner or agent name").fill("Henry Onyx Verification Owner");
   await page.getByLabel("Email").fill(ownerEmail);
   await page.getByLabel("Phone").fill(ownerPhone);
   await page.getByLabel("Listing title").fill(listingTitle);
   await page.getByLabel("Short summary").fill(
-    "A verification listing used to confirm the full HenryCo Property owner flow."
+    "A verification listing used to confirm the full Henry Onyx Property owner flow."
   );
   await page
     .getByLabel("Description")
@@ -337,7 +337,7 @@ test("listing submission, owner update, and moderation approval stay connected",
     .fill(
       "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80"
     );
-  await page.getByLabel("Request HenryCo management").check();
+  await page.getByLabel("Request Henry Onyx management").check();
   await page.getByRole("button", { name: /Submit listing/i }).click();
 
   await expect(page.getByText(/Listing submitted/i)).toBeVisible();
@@ -458,7 +458,7 @@ test("owner save flow, ops updates, and privileged workspaces render for the map
   ).toBeVisible();
 
   await page.getByRole("button", { name: /Save property/i }).click();
-  await expect(page.getByText(/Property saved to your HenryCo account history/i)).toBeVisible();
+  await expect(page.locator(".hc-fb-toast-title").filter({ hasText: /Property saved to your account/i }).first()).toBeVisible();
 
   const savedRecord = await waitForValue(
     "saved property record",

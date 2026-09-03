@@ -18,7 +18,7 @@ export function PortalTabBar({ tabs }: { tabs: PortalTabDefinition[] }) {
 
   return (
     <div
-      className="flex w-full gap-1 overflow-x-auto rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] p-1"
+      className="flex w-full gap-1 overflow-x-auto rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] p-1"
       role="tablist"
       aria-label="Project sections"
     >
@@ -44,8 +44,8 @@ export function PortalTabBar({ tabs }: { tabs: PortalTabDefinition[] }) {
               <span
                 className={`grid h-4 min-w-[1rem] place-items-center rounded-full px-1 text-[10px] font-semibold tabular-nums ${
                   active
-                    ? "bg-[rgba(2,16,22,0.4)] text-[var(--studio-signal)]"
-                    : "bg-[rgba(151,244,243,0.18)] text-[var(--studio-signal)]"
+                    ? "bg-[var(--studio-accent)] text-[var(--studio-accent-ink)]"
+                    : "bg-[var(--studio-accent-soft)] text-[var(--studio-signal)]"
                 }`}
               >
                 {tab.badge > 99 ? "99+" : tab.badge}

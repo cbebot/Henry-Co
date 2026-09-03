@@ -66,7 +66,7 @@ export function henryDomain(division: HenryDivision, path?: string): string {
 }
 
 /**
- * Public web root for Henry & Co. — `https://henrycogroup.com` (or whatever
+ * Public web root for Henry Onyx — `https://henrycogroup.com` (or whatever
  * `NEXT_PUBLIC_BASE_DOMAIN` resolves to). Pass a `path` to append.
  */
 export function henryWebRoot(path?: string): string {

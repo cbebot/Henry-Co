@@ -1,13 +1,19 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Fraunces } from "next/font/google";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { getStaffHqUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 
+// The brand editorial reading serif, loaded into the shared `--font-reading` seam so
+// `.hc-prose` and every input render in the real Fraunces (the company-wide reading face).
+const reading = Fraunces({ subsets: ["latin"], display: "swap", variable: "--font-reading" });
+
 export const metadata: Metadata = {
-  title: "Staff HQ — Henry & Co.",
-  description: "Internal staff platform for Henry & Co. operations.",
+  title: "Staff HQ — Henry Onyx",
+  description: "Internal staff platform for Henry Onyx operations.",
   robots: { index: false, follow: false },
   metadataBase: new URL(
     process.env.NODE_ENV === "production"
@@ -41,7 +47,7 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
+    <html lang="en" dir="ltr" suppressHydrationWarning data-onyx-type={onyxTypeAttr()} className={`${brandFontVariables} ${reading.variable}`}>
       <body className="min-h-screen antialiased">
         <PublicThemeGuard includeToasts={false}>
           <ScrollToTopOnNavigation />

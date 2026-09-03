@@ -50,6 +50,29 @@ export default async function CandidateApplicationsPage({
   const interviewCount = data.applicationJourneys.filter((journey) => journey.application.stage === "interview").length;
   const offerCount = data.applicationJourneys.filter((journey) => journey.application.stage === "offer").length;
 
+  // V3-DASHBOARD-TILES-INTERACTIVE — deep-link lane filter. The candidate
+  // dashboard's hero tiles link here with ?lane=active|room|interview|offer so
+  // a tile click lands pre-filtered to the matching applications.
+  const lane = typeof params.lane === "string" ? params.lane : null;
+  const CLOSED_STAGES = new Set(["rejected", "hired", "declined", "withdrawn"]);
+  const LANE_STAGES: Record<string, ReadonlyArray<string>> = {
+    room: ["shortlisted", "interview", "offer"],
+    interview: ["interview"],
+    offer: ["offer"],
+  };
+  const laneLabels: Record<string, string> = {
+    active: t("Live applications"),
+    room: t("In the room"),
+    interview: t("Interviewing"),
+    offer: t("Offers"),
+  };
+  const laneActive = Boolean(lane && laneLabels[lane]);
+  const visibleJourneys = !laneActive
+    ? data.applicationJourneys
+    : lane === "active"
+      ? data.applicationJourneys.filter((journey) => !CLOSED_STAGES.has(journey.application.stage))
+      : data.applicationJourneys.filter((journey) => (LANE_STAGES[lane!] ?? []).includes(journey.application.stage));
+
   return (
     <WorkspaceShell
       area="candidate"
@@ -89,7 +112,21 @@ export default async function CandidateApplicationsPage({
             />
           ) : (
             <div className="space-y-4">
-              {data.applicationJourneys.map((journey) => {
+              {laneActive ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="jobs-chip">{laneLabels[lane!]} · {visibleJourneys.length}</span>
+                  <Link
+                    href="/candidate/applications"
+                    className="text-sm font-semibold text-[var(--jobs-accent)]"
+                  >
+                    {t("Show all applications")}
+                  </Link>
+                </div>
+              ) : null}
+              {laneActive && visibleJourneys.length === 0 ? (
+                <p className="text-sm text-[var(--jobs-muted)]">{t("Nothing in this view yet.")}</p>
+              ) : null}
+              {visibleJourneys.map((journey) => {
                 const isFresh = submittedId === journey.application.applicationId;
                 return (
                   <article
@@ -112,14 +149,10 @@ export default async function CandidateApplicationsPage({
                         </p>
                       </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="grid gap-3">
                         <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] px-4 py-3">
                           <div className="jobs-kicker">{t("Candidate readiness")}</div>
                           <div className="mt-2 text-2xl font-semibold">{journey.application.candidateReadiness}%</div>
-                        </div>
-                        <div className="rounded-[1.4rem] bg-[var(--jobs-paper-soft)] px-4 py-3">
-                          <div className="jobs-kicker">{t("Recruiter confidence")}</div>
-                          <div className="mt-2 text-2xl font-semibold">{journey.application.recruiterConfidence}%</div>
                         </div>
                       </div>
                     </div>
@@ -199,7 +232,13 @@ export default async function CandidateApplicationsPage({
                             {journey.timeline.slice(0, 3).map((event) => (
                               <div key={event.id} className="rounded-[1.2rem] bg-white/80 p-3">
                                 <div className="text-xs text-[var(--jobs-muted)]">{formatDateTime(event.createdAt)}</div>
-                                <div className="mt-2 text-sm font-semibold capitalize">{event.action.replace(/^jobs_/, "").replace(/[_-]+/g, " ")}</div>
+                                <div className="mt-2 text-sm font-semibold">
+                                  {event.action.includes("stage")
+                                    ? t("Stage updated")
+                                    : event.action.includes("submitted") || event.action.includes("applied")
+                                      ? t("Application received")
+                                      : t("Application updated")}
+                                </div>
                                 <div className="mt-1 text-sm leading-7 text-[var(--jobs-muted)]">
                                   {event.reason || t("Your application status was updated.")}
                                 </div>

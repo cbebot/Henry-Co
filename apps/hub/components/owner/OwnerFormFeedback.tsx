@@ -7,9 +7,9 @@ export function OwnerFormFeedback({ state }: { state: OwnerFormState }) {
 
   const tone =
     state.ok === true
-      ? "border-emerald-500/35 bg-emerald-500/10 text-emerald-950 dark:text-emerald-100"
+      ? "border-[color-mix(in_srgb,var(--acct-green)_35%,transparent)] bg-[var(--acct-green-soft)] text-[var(--acct-ink)]"
       : state.ok === false
-        ? "border-red-500/35 bg-red-500/10 text-red-950 dark:text-red-100"
+        ? "border-[color-mix(in_srgb,var(--acct-red)_35%,transparent)] bg-[var(--acct-red-soft)] text-[var(--acct-ink)]"
         : "border-[var(--acct-line)] bg-[var(--acct-bg-soft)] text-[var(--acct-muted)]";
 
   return (

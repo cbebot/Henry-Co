@@ -55,10 +55,13 @@ async function sendViaTwilio(to: string, body: string): Promise<LearnWhatsAppRes
     | null;
 
   if (!response.ok || !json?.sid) {
+    // Never persist the provider name or raw provider error into the
+    // per-notification reason (it is read back into a learner-scoped record).
+    console.error("[learn][whatsapp] send failed:", response.status, json?.message);
     return {
       ok: false,
       status: "failed",
-      reason: json?.message || `Twilio rejected the message with status ${response.status}.`,
+      reason: `WhatsApp message could not be delivered (status ${response.status}).`,
       messageId: null,
       provider: "twilio",
     };
@@ -100,11 +103,11 @@ async function sendViaMeta(to: string, body: string): Promise<LearnWhatsAppResul
 
   const messageId = json?.messages?.[0]?.id ?? null;
   if (!response.ok || !messageId) {
+    console.error("[learn][whatsapp] send failed:", response.status, json?.error?.message);
     return {
       ok: false,
       status: "failed",
-      reason:
-        json?.error?.message || `Meta WhatsApp API rejected the message with status ${response.status}.`,
+      reason: `WhatsApp message could not be delivered (status ${response.status}).`,
       messageId: null,
       provider: "meta",
     };
@@ -145,7 +148,7 @@ export async function sendLearnWhatsAppText(input: {
   return {
     ok: false,
     status: "skipped",
-    reason: "WhatsApp delivery is not configured for this deployment.",
+    reason: "WhatsApp updates are not available for this account.",
     messageId: null,
     provider: null,
   } satisfies LearnWhatsAppResult;

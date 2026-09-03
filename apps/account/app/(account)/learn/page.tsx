@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { getDivisionUrl } from "@henryco/config";
 import {
   formatAccountTemplate,
@@ -14,6 +15,7 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import { getDivisionActivity } from "@/lib/division-data";
 import { getLearnAccountSummary } from "@/lib/learn-module";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -364,7 +366,16 @@ export default async function LearnPage() {
           }
         />
       }
-      nextStep={nextStep}
+      nextStep={
+        <>
+          {/* SP6: division-scoped resume chip — renders only when a REAL pending journey exists here. */}
+          <DivisionResumeChip division="learn" userId={user.id} />
+          {nextStep}
+        </>
+      }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={[
         {
           id: "acct-lrn-courses",

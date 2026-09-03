@@ -19,14 +19,14 @@ function copyForMethod(method: PaymentMethod | null): {
   if (method === "wallet_balance") {
     return {
       kicker: "Order placed · paid",
-      headline: "Paid from your HenryCo balance. Held in escrow.",
+      headline: "Paid from your Henry Onyx balance. Held in escrow.",
       lead:
         "Your wallet was debited and the order moved into escrow control. Funds release to the seller after delivery confirms — neither side carries the risk in between.",
       steps: [
         {
           icon: ShieldCheck,
-          title: "Escrow protection on by default",
-          body: "Seller payout is gated on fulfillment plus the cooling-off window. Open a dispute any time before then and the funds stay held.",
+          title: "Buyer protection on by default",
+          body: "Your payment stays protected until delivery is confirmed. Raise an issue any time before then and it stays held.",
         },
         {
           icon: Truck,
@@ -36,7 +36,7 @@ function copyForMethod(method: PaymentMethod | null): {
         {
           icon: Mail,
           title: "Receipts and updates land in your inbox",
-          body: "Email and in-app notifications fire on every status change. The full audit trail also lives under Account → Orders.",
+          body: "Email and in-app notifications fire on every status change. Your full order history lives under Account → Orders.",
         },
       ],
     };
@@ -44,10 +44,10 @@ function copyForMethod(method: PaymentMethod | null): {
 
   if (method === "bank_transfer") {
     return {
-      kicker: "Order placed · awaiting verification",
-      headline: "Proof submitted. Finance is reviewing.",
+      kicker: "Order placed · confirming payment",
+      headline: "Payment proof received — we're confirming it.",
       lead:
-        "Your transfer evidence is now with HenryCo finance. Verification typically lands within working hours; the timeline below updates the moment it does. We'll email and notify the second the order moves into fulfillment.",
+        "Your transfer proof has been submitted for review. Verification typically completes within working hours; the timeline below updates the moment it does. We'll email and notify you the second the order moves into fulfillment.",
       steps: [
         {
           icon: Clock3,
@@ -62,7 +62,7 @@ function copyForMethod(method: PaymentMethod | null): {
         {
           icon: Mail,
           title: "We'll reach out if anything's off",
-          body: "If the amount or reference doesn't match, the payment team contacts you on file before any status change.",
+          body: "If the amount or reference doesn't match, we'll reach out using the contact details on your account before any status changes.",
         },
       ],
     };
@@ -146,7 +146,7 @@ export function PlacementAcknowledgement({
       aria-labelledby="placement-ack-heading"
       className="market-paper rounded-[2rem] p-6 sm:p-8"
     >
-      <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-start">
+      <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
         <div>
           <div className="flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-brass)] bg-[rgba(200,163,106,0.12)] text-[var(--market-brass)]">
@@ -186,7 +186,7 @@ export function PlacementAcknowledgement({
                 Confirmation to
               </dt>
               <dd className="mt-1 truncate text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                {buyerEmail || "Your HenryCo account"}
+                {buyerEmail || "Your Henry Onyx account"}
               </dd>
             </div>
           </dl>

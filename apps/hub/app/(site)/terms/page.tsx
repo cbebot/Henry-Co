@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getHubPublicCopy } from "@henryco/i18n/server";
 import { getHubPublicLocale } from "../../../lib/locale-server";
-import CompanyPageClient from "../../components/CompanyPageClient";
+import CompanyPageEditorial from "../../components/CompanyPageEditorial";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
@@ -22,6 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: resolved.seo_title || resolved.title,
     description: resolved.seo_description || resolved.intro || resolved.subtitle || undefined,
+    alternates: { canonical: "/terms" },
   };
 }
 
@@ -39,9 +40,8 @@ export default async function TermsPage() {
   );
 
   return (
-    <CompanyPageClient
-      pageKey="terms"
-      initialData={localizedPage}
+    <CompanyPageEditorial
+      page={localizedPage}
       serverWarning={result.hasServerError}
       copy={copy.companyPage}
       locale={locale}

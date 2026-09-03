@@ -113,9 +113,9 @@ export type LogisticsHomeCopy = {
 
 const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
   metadata: {
-    title: "HenryCo Logistics — calm last-mile, visible end to end",
+    title: "Henry Onyx Logistics — calm last-mile, visible end to end",
     description:
-      "Honest ETAs, governed pricing, and proof-of-delivery on every shipment. Book, quote, or track a HenryCo Logistics delivery.",
+      "Honest ETAs, governed pricing, and proof-of-delivery on every shipment. Book, quote, or track a Henry Onyx Logistics delivery.",
   },
   hero: {
     eyebrow: "Pickup · Dispatch · Proof",
@@ -158,7 +158,7 @@ const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
       "Governed rate cards, immutable milestones, and one shared account remove the operational debt that quietly erodes premium experiences. Same dispatcher logic for same-day, scheduled, dispatch, and inter-city — same calm proof trail.",
     audienceTitle: "Who it is for",
     audienceBody:
-      "Retail replenishment, founder-led brands, professional services, and HenryCo divisions that need predictable pickup and delivery at scale.",
+      "Retail replenishment, founder-led brands, professional services, and Henry Onyx divisions that need predictable pickup and delivery at scale.",
     trackingTitle: "How tracking works",
     proofTitle: "Proof and accountability",
     proofBody:
@@ -181,13 +181,13 @@ const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
       "Routing assigns within the operating window; pickup milestone writes live to your timeline.",
     step03Title: "Live milestones, both sides",
     step03Body:
-      "Sender and recipient see the same events. Updates land via your HenryCo account thread.",
+      "Sender and recipient see the same events. Updates land via your Henry Onyx account thread.",
     step04Title: "Proof of delivery, captured",
     step04Body:
       "Recipient name, time, and capture method save to the shipment record — visible on the track page.",
   },
   spotlight: {
-    eyebrow: "The HenryCo posture",
+    eyebrow: "The Henry Onyx posture",
     title:
       "Operations stay calm because the platform makes it cheaper to do the right thing.",
     body:
@@ -200,7 +200,7 @@ const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
       "Every handoff writes to an immutable event log. Proof-of-delivery is a product feature, not a ticket attachment.",
     accountTitle: "One account, one bill",
     accountBody:
-      "Customers reuse the HenryCo account they already trust. Operators reconcile in one place across every division.",
+      "Customers reuse the Henry Onyx account they already trust. Operators reconcile in one place across every division.",
   },
   faq: {
     kicker: "Questions before you book",
@@ -217,7 +217,7 @@ const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
       "Yes. Quotes and bookings share the same shipment builder. Quote mode saves the shipment intent, calculates pricing, and stops before payment.",
     trackingQ: "How is tracking secured?",
     trackingA:
-      "Public tracking uses the tracking code plus the sender or recipient phone number. Signed-in customers also see any shipment linked to their user id or normalized email.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "What happens when a rider hits an issue?",
     riderIssueA:
       "Riders can raise structured issues directly from their workflow. Dispatch and support receive the escalation, and every resolution step is logged back onto the shipment timeline.",
@@ -229,9 +229,9 @@ const LOGISTICS_HOME_COPY_EN: LogisticsHomeCopy = {
 
 const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — un dernier kilomètre serein, visible de bout en bout",
+    title: "Henry Onyx Logistics — un dernier kilomètre serein, visible de bout en bout",
     description:
-      "Des ETA honnêtes, une tarification encadrée et une preuve de livraison sur chaque envoi. Réservez, demandez un devis ou suivez une livraison HenryCo Logistics.",
+      "Des ETA honnêtes, une tarification encadrée et une preuve de livraison sur chaque envoi. Réservez, demandez un devis ou suivez une livraison Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Enlèvement · Distribution · Preuve",
@@ -273,7 +273,7 @@ const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
       "Des grilles tarifaires encadrées, des jalons immuables et un compte partagé suppriment la dette opérationnelle qui érode discrètement les expériences premium. Même logique de dispatch pour le jour même, le programmé, le dispatch et l’inter-villes — la même piste de preuve sereine.",
     audienceTitle: "À qui c’est destiné",
     audienceBody:
-      "Réassort en boutique, marques fondées par leurs créateurs, services professionnels et divisions HenryCo qui ont besoin d’enlèvement et de livraison prévisibles à grande échelle.",
+      "Réassort en boutique, marques fondées par leurs créateurs, services professionnels et divisions Henry Onyx qui ont besoin d’enlèvement et de livraison prévisibles à grande échelle.",
     trackingTitle: "Comment fonctionne le suivi",
     proofTitle: "Preuve et responsabilité",
     proofBody:
@@ -296,13 +296,13 @@ const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
       "L’acheminement est attribué dans la fenêtre d’exploitation ; le jalon d’enlèvement s’écrit en direct sur votre fil.",
     step03Title: "Jalons en direct, des deux côtés",
     step03Body:
-      "Expéditeur et destinataire voient les mêmes événements. Les mises à jour arrivent via votre fil de compte HenryCo.",
+      "Expéditeur et destinataire voient les mêmes événements. Les mises à jour arrivent via votre fil de compte Henry Onyx.",
     step04Title: "Preuve de livraison, capturée",
     step04Body:
       "Le nom du destinataire, l’heure et la méthode de capture s’enregistrent dans l’envoi — visibles sur la page de suivi.",
   },
   spotlight: {
-    eyebrow: "La posture HenryCo",
+    eyebrow: "La posture Henry Onyx",
     title:
       "L’exploitation reste sereine parce que la plateforme rend moins coûteux de bien faire les choses.",
     body:
@@ -315,7 +315,7 @@ const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
       "Chaque transfert s’écrit dans un journal d’événements immuable. La preuve de livraison est une fonctionnalité produit, pas une pièce jointe à un ticket.",
     accountTitle: "Un seul compte, une seule facture",
     accountBody:
-      "Les clients réutilisent le compte HenryCo qu’ils connaissent. Les opérateurs réconcilient à un seul endroit sur l’ensemble des divisions.",
+      "Les clients réutilisent le compte Henry Onyx qu’ils connaissent. Les opérateurs réconcilient à un seul endroit sur l’ensemble des divisions.",
   },
   faq: {
     kicker: "Questions avant de réserver",
@@ -332,7 +332,7 @@ const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
       "Oui. Devis et réservations partagent le même constructeur d’envoi. Le mode devis enregistre l’intention, calcule le prix et s’arrête avant le paiement.",
     trackingQ: "Comment le suivi est-il sécurisé ?",
     trackingA:
-      "Le suivi public utilise le code de suivi plus le numéro de téléphone de l’expéditeur ou du destinataire. Les clients connectés voient aussi tout envoi lié à leur identifiant ou à leur e-mail normalisé.",
+      "Le suivi public utilise le code de suivi plus le numéro de téléphone de l’expéditeur ou du destinataire. Lorsque vous êtes connecté à votre compte Henry Onyx, les envois que vous avez expédiés ou reçus apparaissent aussi automatiquement.",
     riderIssueQ: "Que se passe-t-il quand un coursier rencontre un problème ?",
     riderIssueA:
       "Les coursiers peuvent signaler des incidents structurés directement depuis leur flux. Le dispatch et le support reçoivent l’escalade et chaque étape de résolution est journalisée sur la chronologie de l’envoi.",
@@ -344,9 +344,9 @@ const LOGISTICS_HOME_COPY_FR: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — última milla serena, visible de extremo a extremo",
+    title: "Henry Onyx Logistics — última milla serena, visible de extremo a extremo",
     description:
-      "ETAs honestos, precios gobernados y prueba de entrega en cada envío. Reserva, cotiza o rastrea una entrega de HenryCo Logistics.",
+      "ETAs honestos, precios gobernados y prueba de entrega en cada envío. Reserva, cotiza o rastrea una entrega de Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Recogida · Despacho · Prueba",
@@ -388,7 +388,7 @@ const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
       "Tarifas gobernadas, hitos inmutables y una cuenta compartida eliminan la deuda operativa que erosiona en silencio las experiencias premium. La misma lógica de despacho para mismo día, programado, despacho e interurbano — el mismo rastro tranquilo de pruebas.",
     audienceTitle: "Para quién es",
     audienceBody:
-      "Reposición minorista, marcas lideradas por fundadores, servicios profesionales y divisiones HenryCo que necesitan recogida y entrega predecibles a escala.",
+      "Reposición minorista, marcas lideradas por fundadores, servicios profesionales y divisiones Henry Onyx que necesitan recogida y entrega predecibles a escala.",
     trackingTitle: "Cómo funciona el rastreo",
     proofTitle: "Prueba y responsabilidad",
     proofBody:
@@ -411,13 +411,13 @@ const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
       "El enrutamiento se asigna dentro de la ventana de operación; el hito de recogida se escribe en vivo en tu línea.",
     step03Title: "Hitos en vivo, ambos lados",
     step03Body:
-      "Remitente y destinatario ven los mismos eventos. Las actualizaciones llegan por el hilo de tu cuenta HenryCo.",
+      "Remitente y destinatario ven los mismos eventos. Las actualizaciones llegan por el hilo de tu cuenta Henry Onyx.",
     step04Title: "Prueba de entrega, capturada",
     step04Body:
       "El nombre del destinatario, la hora y el método de captura se guardan en el envío — visibles en la página de rastreo.",
   },
   spotlight: {
-    eyebrow: "La postura HenryCo",
+    eyebrow: "La postura Henry Onyx",
     title:
       "La operación se mantiene serena porque la plataforma hace más barato hacer lo correcto.",
     body:
@@ -430,7 +430,7 @@ const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
       "Cada entrega se escribe en un registro inmutable. La prueba de entrega es una función del producto, no un adjunto de ticket.",
     accountTitle: "Una cuenta, una factura",
     accountBody:
-      "Los clientes reutilizan la cuenta HenryCo que ya conocen. Los operadores concilian en un solo lugar para todas las divisiones.",
+      "Los clientes reutilizan la cuenta Henry Onyx que ya conocen. Los operadores concilian en un solo lugar para todas las divisiones.",
   },
   faq: {
     kicker: "Preguntas antes de reservar",
@@ -447,7 +447,7 @@ const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
       "Sí. Cotizaciones y reservas comparten el mismo constructor. El modo cotización guarda la intención, calcula el precio y se detiene antes del pago.",
     trackingQ: "¿Cómo se asegura el rastreo?",
     trackingA:
-      "El rastreo público usa el código más el teléfono del remitente o destinatario. Los clientes con sesión también ven envíos ligados a su id o correo normalizado.",
+      "El rastreo público usa el código de rastreo más el teléfono del remitente o destinatario. Cuando inicias sesión en tu cuenta Henry Onyx, los envíos que enviaste o recibiste también aparecen automáticamente.",
     riderIssueQ: "¿Qué ocurre cuando un repartidor tiene un problema?",
     riderIssueA:
       "Los repartidores pueden levantar incidencias estructuradas desde su flujo. Despacho y soporte reciben la escalada y cada paso de resolución queda en la línea del envío.",
@@ -459,9 +459,9 @@ const LOGISTICS_HOME_COPY_ES: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — última milha serena, visível de ponta a ponta",
+    title: "Henry Onyx Logistics — última milha serena, visível de ponta a ponta",
     description:
-      "ETAs honestos, preços governados e comprovação de entrega em cada envio. Reserve, cote ou rastreie uma entrega HenryCo Logistics.",
+      "ETAs honestos, preços governados e comprovação de entrega em cada envio. Reserve, cote ou rastreie uma entrega Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Coleta · Despacho · Prova",
@@ -503,7 +503,7 @@ const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
       "Tabelas de preço governadas, marcos imutáveis e uma conta compartilhada removem a dívida operacional que silenciosamente corrói experiências premium. Mesma lógica de despacho para mesmo dia, agendado, despacho e intermunicipal — o mesmo rastro tranquilo de provas.",
     audienceTitle: "Para quem é",
     audienceBody:
-      "Reposição de varejo, marcas lideradas pelo fundador, serviços profissionais e divisões HenryCo que precisam de coleta e entrega previsíveis em escala.",
+      "Reposição de varejo, marcas lideradas pelo fundador, serviços profissionais e divisões Henry Onyx que precisam de coleta e entrega previsíveis em escala.",
     trackingTitle: "Como funciona o rastreio",
     proofTitle: "Prova e responsabilidade",
     proofBody:
@@ -526,13 +526,13 @@ const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
       "O roteamento é atribuído dentro da janela de operação; o marco de coleta é gravado ao vivo na sua linha.",
     step03Title: "Marcos ao vivo, dos dois lados",
     step03Body:
-      "Remetente e destinatário veem os mesmos eventos. As atualizações chegam pelo seu tópico de conta HenryCo.",
+      "Remetente e destinatário veem os mesmos eventos. As atualizações chegam pelo seu tópico de conta Henry Onyx.",
     step04Title: "Prova de entrega, capturada",
     step04Body:
       "Nome do destinatário, hora e método de captura ficam no registro — visíveis na página de rastreio.",
   },
   spotlight: {
-    eyebrow: "A postura HenryCo",
+    eyebrow: "A postura Henry Onyx",
     title:
       "A operação permanece calma porque a plataforma torna mais barato fazer o certo.",
     body:
@@ -545,7 +545,7 @@ const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
       "Cada handoff é gravado em um log imutável. A prova de entrega é uma funcionalidade do produto, não anexo de chamado.",
     accountTitle: "Uma conta, uma fatura",
     accountBody:
-      "Os clientes reusam a conta HenryCo em que já confiam. Operadores conciliam em um lugar só, em todas as divisões.",
+      "Os clientes reusam a conta Henry Onyx em que já confiam. Operadores conciliam em um lugar só, em todas as divisões.",
   },
   faq: {
     kicker: "Perguntas antes de reservar",
@@ -562,7 +562,7 @@ const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
       "Sim. Cotações e reservas compartilham o mesmo construtor. O modo cotação salva a intenção, calcula o preço e para antes do pagamento.",
     trackingQ: "Como o rastreio é protegido?",
     trackingA:
-      "O rastreio público usa o código mais o telefone do remetente ou destinatário. Clientes logados também veem envios ligados ao id ou e-mail normalizado.",
+      "O rastreio público usa o código de rastreio mais o telefone do remetente ou destinatário. Quando você está autenticado na sua conta Henry Onyx, os envios que enviou ou recebeu também aparecem automaticamente.",
     riderIssueQ: "O que acontece quando um entregador encontra um problema?",
     riderIssueA:
       "Os entregadores podem registrar incidentes estruturados direto do fluxo. Despacho e suporte recebem a escalada e cada passo de resolução é logado na linha do envio.",
@@ -574,9 +574,9 @@ const LOGISTICS_HOME_COPY_PT: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ميل أخير هادئ، مرئي من البداية حتى النهاية",
+    title: "Henry Onyx Logistics — ميل أخير هادئ، مرئي من البداية حتى النهاية",
     description:
-      "أوقات وصول صادقة، وتسعير محوكَم، وإثبات تسليم لكل شحنة. احجز أو اطلب عرضًا أو تتبّع شحنة HenryCo Logistics.",
+      "أوقات وصول صادقة، وتسعير محوكَم، وإثبات تسليم لكل شحنة. احجز أو اطلب عرضًا أو تتبّع شحنة Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "استلام · إرسال · إثبات",
@@ -618,7 +618,7 @@ const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
       "جداول أسعار محوكمة، ومعالم لا تتغير، وحساب واحد مشترك تُزيل الديون التشغيلية التي تُتلف بهدوء التجارب المميّزة. نفس منطق الإرسال لنفس اليوم والمجدول والإرسال وبين المدن — نفس أثر الإثبات الهادئ.",
     audienceTitle: "لمن هو موجَّه",
     audienceBody:
-      "تجديد المخزون لتجار التجزئة، والعلامات بقيادة المؤسسين، والخدمات المهنية، وأقسام HenryCo التي تحتاج استلامًا وتسليمًا قابلَين للتنبؤ على نطاق واسع.",
+      "تجديد المخزون لتجار التجزئة، والعلامات بقيادة المؤسسين، والخدمات المهنية، وأقسام Henry Onyx التي تحتاج استلامًا وتسليمًا قابلَين للتنبؤ على نطاق واسع.",
     trackingTitle: "كيف يعمل التتبع",
     proofTitle: "الإثبات والمساءلة",
     proofBody:
@@ -641,13 +641,13 @@ const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
       "يُسنَد التوجيه ضمن نافذة العمل؛ يُكتب معلم الاستلام مباشرة في خطك الزمني.",
     step03Title: "معالم حيّة على الجانبين",
     step03Body:
-      "يرى المرسل والمستلم نفس الأحداث. تصل التحديثات عبر خيط حسابك في HenryCo.",
+      "يرى المرسل والمستلم نفس الأحداث. تصل التحديثات عبر خيط حسابك في Henry Onyx.",
     step04Title: "إثبات التسليم، مُسجَّل",
     step04Body:
       "يُحفظ اسم المستلم والوقت وطريقة الالتقاط في سجل الشحنة — ظاهر في صفحة التتبع.",
   },
   spotlight: {
-    eyebrow: "موقف HenryCo",
+    eyebrow: "موقف Henry Onyx",
     title:
       "تبقى العمليات هادئة لأن المنصة تجعل فعل الصواب أرخص.",
     body:
@@ -660,7 +660,7 @@ const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
       "كل تسليم يُكتب في سجل لا يتغير. إثبات التسليم ميزة منتج، لا مرفق تذكرة.",
     accountTitle: "حساب واحد، فاتورة واحدة",
     accountBody:
-      "يُعيد العملاء استخدام حساب HenryCo الذي يثقون به. يسوّي المشغّلون في مكان واحد عبر كل الأقسام.",
+      "يُعيد العملاء استخدام حساب Henry Onyx الذي يثقون به. يسوّي المشغّلون في مكان واحد عبر كل الأقسام.",
   },
   faq: {
     kicker: "أسئلة قبل الحجز",
@@ -677,7 +677,7 @@ const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
       "نعم. تتشارك العروض والحجوزات نفس مُنشئ الشحنة. يحفظ وضع العرض نية الشحنة ويحسب التسعير ويتوقف قبل الدفع.",
     trackingQ: "كيف يُؤمَّن التتبع؟",
     trackingA:
-      "يستخدم التتبع العام كود التتبع مع رقم هاتف المرسل أو المستلم. كما يرى العملاء المسجَّلون أي شحنة مرتبطة بمعرّفهم أو بريدهم الموحَّد.",
+      "يستخدم التتبع العام كود التتبع مع رقم هاتف المرسل أو المستلم. وعند تسجيل دخولك إلى حسابك في Henry Onyx، تظهر أيضًا تلقائيًا الشحنات التي أرسلتها أو استلمتها.",
     riderIssueQ: "ماذا يحدث حين يواجه السائق مشكلة؟",
     riderIssueA:
       "يمكن للسائقين رفع مشكلات مهيكلة من سير عملهم. يتلقى الإرسال والدعم التصعيد، وتُسجَّل كل خطوة حل على الخط الزمني للشحنة.",
@@ -689,9 +689,9 @@ const LOGISTICS_HOME_COPY_AR: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ruhige letzte Meile, durchgängig sichtbar",
+    title: "Henry Onyx Logistics — ruhige letzte Meile, durchgängig sichtbar",
     description:
-      "Ehrliche ETAs, geregelte Preise und Zustellnachweis bei jeder Sendung. Buchen, anfragen oder verfolgen Sie eine HenryCo-Logistics-Lieferung.",
+      "Ehrliche ETAs, geregelte Preise und Zustellnachweis bei jeder Sendung. Buchen, anfragen oder verfolgen Sie eine Henry Onyx-Logistics-Lieferung.",
   },
   hero: {
     eyebrow: "Abholung · Disposition · Nachweis",
@@ -733,7 +733,7 @@ const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
       "Geregelte Tarife, unveränderliche Meilensteine und ein gemeinsames Konto beseitigen die operative Schuld, die Premium-Erlebnisse leise erodieren lässt. Dieselbe Dispositionslogik für selben Tag, geplant, Disposition und Inter-City — dieselbe ruhige Beweiskette.",
     audienceTitle: "Für wen es ist",
     audienceBody:
-      "Einzelhandelsbefüllung, gründergeführte Marken, professionelle Dienstleister und HenryCo-Divisionen, die planbare Abholung und Zustellung im großen Stil brauchen.",
+      "Einzelhandelsbefüllung, gründergeführte Marken, professionelle Dienstleister und Henry Onyx-Divisionen, die planbare Abholung und Zustellung im großen Stil brauchen.",
     trackingTitle: "So funktioniert das Tracking",
     proofTitle: "Nachweis und Verantwortung",
     proofBody:
@@ -756,13 +756,13 @@ const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
       "Das Routing wird im Betriebsfenster vergeben; der Abholmeilenstein wird live in Ihren Verlauf geschrieben.",
     step03Title: "Live-Meilensteine, beide Seiten",
     step03Body:
-      "Absender und Empfänger sehen dieselben Ereignisse. Updates kommen über Ihren HenryCo-Konto-Thread.",
+      "Absender und Empfänger sehen dieselben Ereignisse. Updates kommen über Ihren Henry Onyx-Konto-Thread.",
     step04Title: "Zustellnachweis, erfasst",
     step04Body:
       "Empfängername, Zeit und Erfassungsmethode werden im Sendungssatz gespeichert — sichtbar auf der Tracking-Seite.",
   },
   spotlight: {
-    eyebrow: "Die HenryCo-Haltung",
+    eyebrow: "Die Henry Onyx-Haltung",
     title:
       "Der Betrieb bleibt ruhig, weil die Plattform es günstiger macht, das Richtige zu tun.",
     body:
@@ -775,7 +775,7 @@ const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
       "Jede Übergabe wird in ein unveränderliches Ereignisprotokoll geschrieben. Zustellnachweis ist eine Produktfunktion, kein Ticket-Anhang.",
     accountTitle: "Ein Konto, eine Rechnung",
     accountBody:
-      "Kunden nutzen das HenryCo-Konto, dem sie schon vertrauen. Operatoren rechnen an einem Ort über alle Divisionen ab.",
+      "Kunden nutzen das Henry Onyx-Konto, dem sie schon vertrauen. Operatoren rechnen an einem Ort über alle Divisionen ab.",
   },
   faq: {
     kicker: "Fragen vor der Buchung",
@@ -792,7 +792,7 @@ const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
       "Ja. Angebote und Buchungen teilen denselben Sendungs-Builder. Der Angebotsmodus speichert die Absicht, berechnet den Preis und stoppt vor der Zahlung.",
     trackingQ: "Wie wird das Tracking abgesichert?",
     trackingA:
-      "Öffentliches Tracking nutzt den Tracking-Code plus die Telefonnummer von Absender oder Empfänger. Angemeldete Kunden sehen außerdem jede Sendung, die mit ihrer User-ID oder normalisierten E-Mail verknüpft ist.",
+      "Öffentliches Tracking nutzt den Tracking-Code plus die Telefonnummer von Absender oder Empfänger. Wenn Sie in Ihrem Henry Onyx-Konto angemeldet sind, erscheinen außerdem automatisch die Sendungen, die Sie versendet oder empfangen haben.",
     riderIssueQ: "Was passiert, wenn ein Fahrer auf ein Problem stößt?",
     riderIssueA:
       "Fahrer können strukturierte Vorfälle direkt aus ihrem Workflow melden. Disposition und Support erhalten die Eskalation, und jeder Lösungsschritt wird am Sendungsverlauf protokolliert.",
@@ -804,9 +804,9 @@ const LOGISTICS_HOME_COPY_DE: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ultimo miglio sereno, visibile da capo a piedi",
+    title: "Henry Onyx Logistics — ultimo miglio sereno, visibile da capo a piedi",
     description:
-      "ETA onesti, prezzi governati e prova di consegna su ogni spedizione. Prenota, richiedi un preventivo o traccia una consegna HenryCo Logistics.",
+      "ETA onesti, prezzi governati e prova di consegna su ogni spedizione. Prenota, richiedi un preventivo o traccia una consegna Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Ritiro · Dispatch · Prova",
@@ -848,7 +848,7 @@ const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
       "Tariffari governati, milestone immutabili e un account condiviso eliminano il debito operativo che erode in silenzio le esperienze premium. Stessa logica di dispatch per stesso giorno, programmato, dispatch e intercity — stessa scia tranquilla di prove.",
     audienceTitle: "A chi è destinato",
     audienceBody:
-      "Riassortimento retail, brand guidati dai fondatori, servizi professionali e divisioni HenryCo che hanno bisogno di ritiri e consegne prevedibili su larga scala.",
+      "Riassortimento retail, brand guidati dai fondatori, servizi professionali e divisioni Henry Onyx che hanno bisogno di ritiri e consegne prevedibili su larga scala.",
     trackingTitle: "Come funziona il tracking",
     proofTitle: "Prova e responsabilità",
     proofBody:
@@ -871,13 +871,13 @@ const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
       "Il routing assegna nella finestra operativa; il milestone di ritiro viene scritto in diretta nella tua timeline.",
     step03Title: "Milestone in diretta, entrambi i lati",
     step03Body:
-      "Mittente e destinatario vedono gli stessi eventi. Gli aggiornamenti arrivano dal thread del tuo account HenryCo.",
+      "Mittente e destinatario vedono gli stessi eventi. Gli aggiornamenti arrivano dal thread del tuo account Henry Onyx.",
     step04Title: "Prova di consegna, catturata",
     step04Body:
       "Nome del destinatario, ora e metodo di acquisizione vengono salvati sulla spedizione — visibili sulla pagina di tracking.",
   },
   spotlight: {
-    eyebrow: "La postura HenryCo",
+    eyebrow: "La postura Henry Onyx",
     title:
       "Le operazioni restano calme perché la piattaforma rende meno costoso fare la cosa giusta.",
     body:
@@ -890,7 +890,7 @@ const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
       "Ogni passaggio viene scritto in un log immutabile. La prova di consegna è una funzione di prodotto, non un allegato a un ticket.",
     accountTitle: "Un account, una fattura",
     accountBody:
-      "I clienti riusano l’account HenryCo di cui già si fidano. Gli operatori riconciliano in un solo posto su tutte le divisioni.",
+      "I clienti riusano l’account Henry Onyx di cui già si fidano. Gli operatori riconciliano in un solo posto su tutte le divisioni.",
   },
   faq: {
     kicker: "Domande prima di prenotare",
@@ -907,7 +907,7 @@ const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
       "Sì. Preventivi e prenotazioni condividono lo stesso costruttore. La modalità preventivo salva l’intento, calcola il prezzo e si ferma prima del pagamento.",
     trackingQ: "Come è protetto il tracking?",
     trackingA:
-      "Il tracking pubblico usa il codice più il telefono di mittente o destinatario. I clienti loggati vedono anche ogni spedizione collegata al loro id o email normalizzata.",
+      "Il tracking pubblico usa il codice di tracciamento più il telefono di mittente o destinatario. Quando accedi al tuo account Henry Onyx, compaiono automaticamente anche le spedizioni che hai inviato o ricevuto.",
     riderIssueQ: "Cosa succede quando un corriere ha un problema?",
     riderIssueA:
       "I corrieri possono aprire incidenti strutturati dal loro flusso. Dispatch e supporto ricevono l’escalation e ogni passo di risoluzione viene loggato sulla timeline della spedizione.",
@@ -919,9 +919,9 @@ const LOGISTICS_HOME_COPY_IT: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — 平静的最后一公里,全程可见",
+    title: "Henry Onyx Logistics — 平静的最后一公里,全程可见",
     description:
-      "诚实的预计送达时间、受治理的定价,以及每一票都有的送达证明。预订、报价或追踪一笔 HenryCo Logistics 配送。",
+      "诚实的预计送达时间、受治理的定价,以及每一票都有的送达证明。预订、报价或追踪一笔 Henry Onyx Logistics 配送。",
   },
   hero: {
     eyebrow: "取件 · 派送 · 凭证",
@@ -963,7 +963,7 @@ const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
       "受治理的运价表、不可篡改的里程碑,以及一个共享账户,移除了悄悄侵蚀高端体验的运营债务。同日、预约、派送、城际共用同一调度逻辑——同样平静的凭证链。",
     audienceTitle: "面向谁",
     audienceBody:
-      "零售补货、创始人主导的品牌、专业服务,以及需要规模化可预测取派的 HenryCo 各业务部。",
+      "零售补货、创始人主导的品牌、专业服务,以及需要规模化可预测取派的 Henry Onyx 各业务部。",
     trackingTitle: "追踪如何运作",
     proofTitle: "凭证与问责",
     proofBody:
@@ -986,13 +986,13 @@ const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
       "线路在运营窗口内分配;取件里程碑实时写入你的时间轴。",
     step03Title: "实时里程碑,两端同步",
     step03Body:
-      "发件人与收件人看到相同事件。更新通过你的 HenryCo 账户线程送达。",
+      "发件人与收件人看到相同事件。更新通过你的 Henry Onyx 账户线程送达。",
     step04Title: "送达凭证,已采集",
     step04Body:
       "收件人姓名、时间和采集方式保存到货件记录——在追踪页可见。",
   },
   spotlight: {
-    eyebrow: "HenryCo 的姿态",
+    eyebrow: "Henry Onyx 的姿态",
     title: "运营之所以平静,是因为平台让做对的事更便宜。",
     body:
       "受治理的运价表、不可篡改的里程碑,以及一个共享账户,移除了悄悄侵蚀高端体验的运营债务。",
@@ -1004,7 +1004,7 @@ const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
       "每一次交接都写入不可变日志。送达凭证是产品功能,不是工单附件。",
     accountTitle: "一个账户,一张账单",
     accountBody:
-      "客户复用已信任的 HenryCo 账户。运营方在所有业务部统一对账。",
+      "客户复用已信任的 Henry Onyx 账户。运营方在所有业务部统一对账。",
   },
   faq: {
     kicker: "预订前的问题",
@@ -1021,7 +1021,7 @@ const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
       "可以。报价与预订共用同一货件构造器。报价模式保存意向、计算价格,并在付款前停止。",
     trackingQ: "追踪如何受保护?",
     trackingA:
-      "公开追踪使用追踪码加上发件人或收件人电话号码进行安全查询。登录客户还能看到关联到其用户 ID 或归一邮箱的所有货件。",
+      "公开追踪使用追踪码加上发件人或收件人电话号码。当您登录 Henry Onyx 账户后,您寄出或收到的货件也会自动显示。",
     riderIssueQ: "骑手遇到问题时会怎样?",
     riderIssueA:
       "骑手可以直接从工作流提交结构化问题。调度与支持收到升级,所有解决步骤都会记回货件时间轴。",
@@ -1033,9 +1033,9 @@ const LOGISTICS_HOME_COPY_ZH: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — शांत लास्ट-माइल, शुरू से अंत तक दिखने वाला",
+    title: "Henry Onyx Logistics — शांत लास्ट-माइल, शुरू से अंत तक दिखने वाला",
     description:
-      "हर शिपमेंट पर ईमानदार ETA, नियंत्रित मूल्य निर्धारण और डिलीवरी का प्रमाण। HenryCo Logistics डिलीवरी को बुक करें, कोट करें या ट्रैक करें।",
+      "हर शिपमेंट पर ईमानदार ETA, नियंत्रित मूल्य निर्धारण और डिलीवरी का प्रमाण। Henry Onyx Logistics डिलीवरी को बुक करें, कोट करें या ट्रैक करें।",
   },
   hero: {
     eyebrow: "पिकअप · डिस्पैच · प्रमाण",
@@ -1077,7 +1077,7 @@ const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
       "नियंत्रित दर कार्ड, अपरिवर्तनीय माइलस्टोन और एक साझा खाता उस ऑपरेशनल कर्ज़ को हटाते हैं जो चुपचाप प्रीमियम अनुभव को क्षीण करता है। उसी डिस्पैचर लॉजिक से उसी दिन, अनुसूचित, डिस्पैच और इंटर-सिटी — उसी शांत प्रमाण-पथ पर।",
     audienceTitle: "यह किसके लिए है",
     audienceBody:
-      "रिटेल रिप्लेनिशमेंट, संस्थापक-नेतृत्व वाले ब्रांड, प्रोफेशनल सर्विसेज और HenryCo के वे डिवीज़न जिन्हें स्केल पर पूर्वानुमेय पिकअप और डिलीवरी चाहिए।",
+      "रिटेल रिप्लेनिशमेंट, संस्थापक-नेतृत्व वाले ब्रांड, प्रोफेशनल सर्विसेज और Henry Onyx के वे डिवीज़न जिन्हें स्केल पर पूर्वानुमेय पिकअप और डिलीवरी चाहिए।",
     trackingTitle: "ट्रैकिंग कैसे काम करती है",
     proofTitle: "प्रमाण और जवाबदेही",
     proofBody:
@@ -1100,13 +1100,13 @@ const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
       "रूटिंग ऑपरेटिंग विंडो में सौंपा जाता है; पिकअप माइलस्टोन आपकी टाइमलाइन में लाइव लिखा जाता है।",
     step03Title: "लाइव माइलस्टोन, दोनों तरफ",
     step03Body:
-      "प्रेषक और प्राप्तकर्ता को वही घटनाएँ दिखती हैं। अपडेट आपके HenryCo खाते के थ्रेड से आते हैं।",
+      "प्रेषक और प्राप्तकर्ता को वही घटनाएँ दिखती हैं। अपडेट आपके Henry Onyx खाते के थ्रेड से आते हैं।",
     step04Title: "डिलीवरी का प्रमाण, कैप्चर किया गया",
     step04Body:
       "प्राप्तकर्ता का नाम, समय और कैप्चर विधि शिपमेंट रिकॉर्ड में सेव होती है — ट्रैक पेज पर दिखाई देती है।",
   },
   spotlight: {
-    eyebrow: "HenryCo की मुद्रा",
+    eyebrow: "Henry Onyx की मुद्रा",
     title:
       "ऑपरेशन शांत रहते हैं क्योंकि प्लेटफ़ॉर्म सही काम करना सस्ता बना देता है।",
     body:
@@ -1119,7 +1119,7 @@ const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
       "हर हैंडऑफ अपरिवर्तनीय लॉग में लिखा जाता है। डिलीवरी का प्रमाण एक उत्पाद फ़ीचर है, टिकट अटैचमेंट नहीं।",
     accountTitle: "एक खाता, एक बिल",
     accountBody:
-      "ग्राहक अपने पहले से भरोसेमंद HenryCo खाते का पुन: उपयोग करते हैं। ऑपरेटर हर डिवीज़न में एक ही जगह मिलान करते हैं।",
+      "ग्राहक अपने पहले से भरोसेमंद Henry Onyx खाते का पुन: उपयोग करते हैं। ऑपरेटर हर डिवीज़न में एक ही जगह मिलान करते हैं।",
   },
   faq: {
     kicker: "बुक करने से पहले के प्रश्न",
@@ -1136,7 +1136,7 @@ const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
       "हाँ। कोट और बुकिंग एक ही शिपमेंट बिल्डर साझा करते हैं। कोट मोड शिपमेंट इरादा सेव करता है, मूल्य गणना करता है और भुगतान से पहले रुक जाता है।",
     trackingQ: "ट्रैकिंग कैसे सुरक्षित होती है?",
     trackingA:
-      "पब्लिक ट्रैकिंग ट्रैकिंग कोड के साथ प्रेषक या प्राप्तकर्ता का फ़ोन नंबर इस्तेमाल करती है। साइन-इन ग्राहकों को उनके यूज़र आईडी या नॉर्मलाइज़्ड ईमेल से जुड़ी सभी शिपमेंट भी दिखती हैं।",
+      "पब्लिक ट्रैकिंग ट्रैकिंग कोड के साथ प्रेषक या प्राप्तकर्ता का फ़ोन नंबर इस्तेमाल करती है। जब आप अपने Henry Onyx खाते में साइन-इन होते हैं, तो आपके द्वारा भेजी या प्राप्त की गई शिपमेंट भी अपने आप दिखती हैं।",
     riderIssueQ: "जब राइडर को समस्या आती है तो क्या होता है?",
     riderIssueA:
       "राइडर अपने वर्कफ़्लो से सीधे संरचित समस्या उठा सकते हैं। डिस्पैच और सपोर्ट को एस्केलेशन मिलता है, और हर समाधान चरण शिपमेंट टाइमलाइन पर वापस लॉग होता है।",
@@ -1148,9 +1148,9 @@ const LOGISTICS_HOME_COPY_HI: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ọnụụlọ-mma dị jụụ, nke a na-ahụ site na mmalite ruo na njedebe",
+    title: "Henry Onyx Logistics — ọnụụlọ-mma dị jụụ, nke a na-ahụ site na mmalite ruo na njedebe",
     description:
-      "Oge nnata ziri ezi, ọnụahịa nke a na-achịkwa, na ihe akaebe nnyefe na nnyefe ọ bụla. Debe, jụọ ọnụahịa, ma ọ bụ soro nnyefe HenryCo Logistics.",
+      "Oge nnata ziri ezi, ọnụahịa nke a na-achịkwa, na ihe akaebe nnyefe na nnyefe ọ bụla. Debe, jụọ ọnụahịa, ma ọ bụ soro nnyefe Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Nbubata · Mzipu · Ihe Akaebe",
@@ -1192,7 +1192,7 @@ const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
       "Kaadị ọnụahịa achịkwara, ihe ngosi na-adịghị agbanwe agbanwe, na otu akaụntụ ekekọrịtara na-ewepụ ụgwọ ọrụ nke na-emebi ahụmahụ dị elu n’anya. Otu uche mzipu maka otu ụbọchị, ahaziri, mzipu, na mba-na-mba — otu akara ihe akaebe dị jụụ.",
     audienceTitle: "Onye eji ya eme",
     audienceBody:
-      "Mweghachi azụmahịa, akara ndị onye guzobere na-edu, ọrụ ndị ọkachamara, na ngalaba HenryCo chọrọ nbubata na nnyefe a ga-akọwa n’ọtụtụ.",
+      "Mweghachi azụmahịa, akara ndị onye guzobere na-edu, ọrụ ndị ọkachamara, na ngalaba Henry Onyx chọrọ nbubata na nnyefe a ga-akọwa n’ọtụtụ.",
     trackingTitle: "Otú nsochi si arụ ọrụ",
     proofTitle: "Ihe akaebe na ịza ajụjụ",
     proofBody:
@@ -1215,13 +1215,13 @@ const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
       "A na-ekenye usoro n’ime oge ọrụ; e dere ihe ngosi nbubata ozugbo na akara oge gị.",
     step03Title: "Ihe ngosi ozugbo, n’akụkụ abụọ",
     step03Body:
-      "Onye nzipu na onye nnata na-ahụ otu ihe omume. Mmelite na-eru site na eserese akaụntụ HenryCo gị.",
+      "Onye nzipu na onye nnata na-ahụ otu ihe omume. Mmelite na-eru site na eserese akaụntụ Henry Onyx gị.",
     step04Title: "Ihe akaebe nnyefe, e gbanyere",
     step04Body:
       "Aha onye nnata, oge, na ụzọ e si gbanye na-echekwa na ndekọ mbufe — a na-ahụ ya na ibe nsochi.",
   },
   spotlight: {
-    eyebrow: "Ọnọdụ HenryCo",
+    eyebrow: "Ọnọdụ Henry Onyx",
     title:
       "Ọrụ na-anọgide na-adị jụụ n’ihi na ikpo okwu na-eme ka ime ihe ziri ezi dị ọnụ ala.",
     body:
@@ -1234,7 +1234,7 @@ const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
       "Nnyefe ọ bụla na-ede n’ime ndekọ na-adịghị agbanwe. Ihe akaebe nnyefe bụ atụmatụ ngwaahịa, ọ bụghị ihe e gbakwunyere na tiketi.",
     accountTitle: "Otu akaụntụ, otu ụgwọ",
     accountBody:
-      "Ndị ahịa na-eji akaụntụ HenryCo ha tụkwasịrịla obi. Ndị ọrụ na-akwalite n’otu ebe site n’ngalaba ọ bụla.",
+      "Ndị ahịa na-eji akaụntụ Henry Onyx ha tụkwasịrịla obi. Ndị ọrụ na-akwalite n’otu ebe site n’ngalaba ọ bụla.",
   },
   faq: {
     kicker: "Ajụjụ tupu ndebanye",
@@ -1251,7 +1251,7 @@ const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
       "Ee. Ọnụahịa na ndebanye na-ekekọ otu ihe nwuli mbufe. Ụdị ọnụahịa na-echekwa ebumnobi mbufe, na-agbakọ ọnụahịa, ma kwụsị tupu ịkwụ ụgwọ.",
     trackingQ: "Olee otú e si echekwa nsochi?",
     trackingA:
-      "Nsochi ọha na-eji koodu nsochi yana nọmba ekwentị onye nzipu ma ọ bụ onye nnata. Ndị ahịa banyere kwa na-ahụ mbufe ọ bụla ejikọtara na njirimara ojiji ha ma ọ bụ email achịkwara.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "Gịnị na-eme mgbe onye na-anya ụgbọ nwere nsogbu?",
     riderIssueA:
       "Ndị na-anya ụgbọ pụrụ iwelite nsogbu ahaziri site n’ọrụ ha. Mzipu na nkwado na-anata ịkwalite ahụ, e dekọkwara nzọụkwụ ngwọta ọ bụla n’ihe oge mbufe.",
@@ -1263,9 +1263,9 @@ const LOGISTICS_HOME_COPY_IG: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — ìfijiṣẹ́ ìparí tútù, tí ó hàn láti ìbẹ̀rẹ̀ dé òpin",
+    title: "Henry Onyx Logistics — ìfijiṣẹ́ ìparí tútù, tí ó hàn láti ìbẹ̀rẹ̀ dé òpin",
     description:
-      "Àkókò ìdégbé tó dájú, ìnà tí a ń ṣàkóso, àti ẹ̀rí ìfijiṣẹ́ lórí gbogbo gbígbé. Ṣe ìpèsè, béèrè ìdíyelé, tàbí tọpa ìfijiṣẹ́ HenryCo Logistics.",
+      "Àkókò ìdégbé tó dájú, ìnà tí a ń ṣàkóso, àti ẹ̀rí ìfijiṣẹ́ lórí gbogbo gbígbé. Ṣe ìpèsè, béèrè ìdíyelé, tàbí tọpa ìfijiṣẹ́ Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Gbígbà · Pípín · Ẹ̀rí",
@@ -1307,7 +1307,7 @@ const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
       "Káàdì oye ìnà tí a ń ṣàkóso, àwọn àmì tí kò ṣe é yí padà, àti àkàǹtì kan tí a ń pín ń yọ gbèsè iṣẹ́ tí ó ń ba ìrírí alágbára jẹ́ jẹ́ẹ́jẹ́ẹ́. Ọgbọ́n ìpín kan náà fún ọjọ́ kan, ètò, pípín, àti agbègbè-sí-agbègbè — ẹ̀rí kan náà tí ó tútù.",
     audienceTitle: "Ẹni tí ó wà fún",
     audienceBody:
-      "Àtúnkún ọjà, àwọn ààmì onípilẹ̀ṣẹ̀, iṣẹ́ ọmọ-iṣẹ́, àti àwọn ìpín HenryCo tí ó nílò gbígbà àti ìfijiṣẹ́ tí a lè pinnu lórí ìwọ̀nba ńlá.",
+      "Àtúnkún ọjà, àwọn ààmì onípilẹ̀ṣẹ̀, iṣẹ́ ọmọ-iṣẹ́, àti àwọn ìpín Henry Onyx tí ó nílò gbígbà àti ìfijiṣẹ́ tí a lè pinnu lórí ìwọ̀nba ńlá.",
     trackingTitle: "Bí ìtọpa ṣe ń ṣiṣẹ́",
     proofTitle: "Ẹ̀rí àti ìṣirò",
     proofBody:
@@ -1330,13 +1330,13 @@ const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
       "A fi ìpolówó láàrín fèrèsé iṣẹ́; àmì gbígbà gba kọ sí àkọsílẹ̀ rẹ ní àkókò gidi.",
     step03Title: "Àmì àkókò gidi, ní ẹ̀gbẹ́ méjèèjì",
     step03Body:
-      "Olùráńṣẹ́ àti olùgbà rí ìṣẹ̀lẹ̀ kan náà. Ìfojúsọ́nà dé nípasẹ̀ òwe àkàǹtì HenryCo rẹ.",
+      "Olùráńṣẹ́ àti olùgbà rí ìṣẹ̀lẹ̀ kan náà. Ìfojúsọ́nà dé nípasẹ̀ òwe àkàǹtì Henry Onyx rẹ.",
     step04Title: "Ẹ̀rí ìfijiṣẹ́, tí a gbà",
     step04Body:
       "Orúkọ olùgbà, àkókò, àti ọ̀nà gbígbà ní fipamọ́ sí àkọsílẹ̀ gbígbé — ó hàn ní ojú-ìwé ìtọpa.",
   },
   spotlight: {
-    eyebrow: "Ìduró HenryCo",
+    eyebrow: "Ìduró Henry Onyx",
     title:
       "Iṣẹ́ máa ń wà ní tútù nítorí pẹpẹ jẹ́ kí ó rọrùn láti ṣe ohun tó tọ́.",
     body:
@@ -1349,7 +1349,7 @@ const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
       "Gbogbo ìfijiṣẹ́ ń kọ sí ìwé ìṣẹ̀lẹ̀ tí kò ṣe é yí padà. Ẹ̀rí ìfijiṣẹ́ jẹ́ ẹ̀yà ọjà, kì í ṣe àfikún tikẹ́ẹ̀tì.",
     accountTitle: "Àkàǹtì kan, owó kan",
     accountBody:
-      "Àwọn oníbàárà tún lo àkàǹtì HenryCo tí wọ́n ti ní ìgbẹ́kẹ̀lé. Àwọn olùṣiṣẹ́ ń tún ṣe ní ibìkan lórí gbogbo ìpín.",
+      "Àwọn oníbàárà tún lo àkàǹtì Henry Onyx tí wọ́n ti ní ìgbẹ́kẹ̀lé. Àwọn olùṣiṣẹ́ ń tún ṣe ní ibìkan lórí gbogbo ìpín.",
   },
   faq: {
     kicker: "Àwọn ìbéèrè ṣáájú ìpèsè",
@@ -1366,7 +1366,7 @@ const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
       "Bẹ́ẹ̀ ni. Ìdíyelé àti ìpèsè pín ọ̀nà ìkọ́ gbígbé kan náà. Ipò ìdíyelé ń fipamọ́ ìfẹ́, ń ṣírò ìnà, ó sì dúró ṣáájú sísanwó.",
     trackingQ: "Báwo ni a ṣe ń dáàbò bo ìtọpa?",
     trackingA:
-      "Ìtọpa ìbúgbáù ń lo koodu ìtọpa pẹ̀lú nọ́mbà fóònù olùráńṣẹ́ tàbí olùgbà. Àwọn oníbàárà tí ó wọlé tún rí gbogbo gbígbé tí ó so mọ́ ID wọn tàbí imeèlì tí a ṣe láàmí.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "Kí ló ń ṣẹlẹ̀ nígbà tí ọmọkùnrin ìgbéjáde bá ní ìṣòro?",
     riderIssueA:
       "Àwọn ọmọkùnrin ìgbéjáde lè gbé ìṣòro tí a ṣe àgbékalẹ̀ sókè látinú iṣẹ́ wọn. Pípín àti àtìlẹ́yìn gba ìgbéga náà, a sì ń kọ gbogbo igbésẹ̀ ìpinnu padà sí ìtàn gbígbé.",
@@ -1378,9 +1378,9 @@ const LOGISTICS_HOME_COPY_YO: DeepPartial<LogisticsHomeCopy> = {
 
 const LOGISTICS_HOME_COPY_HA: DeepPartial<LogisticsHomeCopy> = {
   metadata: {
-    title: "HenryCo Logistics — sashin ƙarshe mai natsuwa, ana ganinsa daga farko zuwa ƙarshe",
+    title: "Henry Onyx Logistics — sashin ƙarshe mai natsuwa, ana ganinsa daga farko zuwa ƙarshe",
     description:
-      "Lokutan ETA na gaskiya, farashi mai sarrafawa, da tabbacin isarwa akan kowace jigila. Yi rajista, nemi farashi, ko bibiyi isarwa ta HenryCo Logistics.",
+      "Lokutan ETA na gaskiya, farashi mai sarrafawa, da tabbacin isarwa akan kowace jigila. Yi rajista, nemi farashi, ko bibiyi isarwa ta Henry Onyx Logistics.",
   },
   hero: {
     eyebrow: "Ɗauka · Aikawa · Tabbaci",
@@ -1422,7 +1422,7 @@ const LOGISTICS_HOME_COPY_HA: DeepPartial<LogisticsHomeCopy> = {
       "Katunan farashi da ake sarrafawa, alamomin da ba sa canzawa, da asusu ɗaya da aka raba suna cire bashin aikin da ke zubar da kwarewa mai daraja a hankali. Tunani ɗaya na aikawa na rana ɗaya, an tsara, aikawa, da tsakanin-birni — alamar tabbatarwa ɗaya mai natsuwa.",
     audienceTitle: "Ga wa ake yi",
     audienceBody:
-      "Maido da kayayyaki na ƙananan kasuwanci, alamun da masu kafa suke jagoranta, sabis na ƙwararru, da sashen HenryCo waɗanda ke buƙatar ɗauka da isarwa da ake iya hasashe a ma'auni.",
+      "Maido da kayayyaki na ƙananan kasuwanci, alamun da masu kafa suke jagoranta, sabis na ƙwararru, da sashen Henry Onyx waɗanda ke buƙatar ɗauka da isarwa da ake iya hasashe a ma'auni.",
     trackingTitle: "Yadda bibiya ke aiki",
     proofTitle: "Tabbaci da lissafi",
     proofBody:
@@ -1445,13 +1445,13 @@ const LOGISTICS_HOME_COPY_HA: DeepPartial<LogisticsHomeCopy> = {
       "Hanyar ana sanya ta cikin tagayar aiki; an rubuta alamar ɗauka kai tsaye akan layin lokacin ka.",
     step03Title: "Alamomi kai tsaye, bangarorin biyu",
     step03Body:
-      "Mai aiko da kuma mai karɓa suna ganin abubuwan da suka faru iri ɗaya. Sabuntawa tana zuwa ta hanyar tarukan asusun HenryCo naka.",
+      "Mai aiko da kuma mai karɓa suna ganin abubuwan da suka faru iri ɗaya. Sabuntawa tana zuwa ta hanyar tarukan asusun Henry Onyx naka.",
     step04Title: "Tabbacin isarwa, an kama",
     step04Body:
       "Sunan mai karɓa, lokaci, da hanyar kamawa ana ajiyewa cikin tarihin jigila — ana iya gani a shafin bibiya.",
   },
   spotlight: {
-    eyebrow: "Matsayin HenryCo",
+    eyebrow: "Matsayin Henry Onyx",
     title:
       "Ayyuka suna kasancewa cikin nutsuwa saboda dandalin yana sa yin abu daidai ya yi arha.",
     body:
@@ -1464,7 +1464,7 @@ const LOGISTICS_HOME_COPY_HA: DeepPartial<LogisticsHomeCopy> = {
       "Kowace mika-makamai ana rubuta ta cikin littafi da ba ya canzawa. Tabbacin isarwa siffa ce ta samfurin, ba haɗe da tikit ba.",
     accountTitle: "Asusu ɗaya, lissafi ɗaya",
     accountBody:
-      "Abokan ciniki suna sake amfani da asusun HenryCo da suka riga sun amince da shi. Masu aiki suna daidaita a wuri ɗaya a duk sassan.",
+      "Abokan ciniki suna sake amfani da asusun Henry Onyx da suka riga sun amince da shi. Masu aiki suna daidaita a wuri ɗaya a duk sassan.",
   },
   faq: {
     kicker: "Tambayoyi kafin a yi rajista",
@@ -1481,7 +1481,7 @@ const LOGISTICS_HOME_COPY_HA: DeepPartial<LogisticsHomeCopy> = {
       "Eh. Farashi da rajista suna raba mai gina jigila iri ɗaya. Yanayin farashi yana adana niyya, yana ƙididdige farashi, sai ya tsaya kafin biya.",
     trackingQ: "Yaya ake kare bibiya?",
     trackingA:
-      "Bibiya ta jama'a tana amfani da lambar bibiya tare da lambar wayar mai aikawa ko mai karɓa. Abokan da suka shiga kuma suna ganin kowace jigila da aka haɗa da ID ɗinsu ko email da aka daidaita.",
+      "Public tracking uses the tracking code plus the sender or recipient phone number. When you are signed in to your Henry Onyx account, shipments you sent or received also appear automatically.",
     riderIssueQ: "Me ke faruwa idan ɗan kasuwa ya ci karo da matsala?",
     riderIssueA:
       "‘Yan kasuwa za su iya ɗaga matsaloli masu tsari kai tsaye daga aikinsu. Aikawa da goyon baya suna karɓar haɓakawa, kuma kowane mataki na warwarewa ana yin rajistarsa a kan layin lokacin jigila.",

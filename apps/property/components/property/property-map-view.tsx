@@ -79,7 +79,7 @@ export function PropertyMapView({
 
   return (
     <section
-      className="relative overflow-hidden rounded-[1.4rem] border border-[var(--property-line)] bg-black/15"
+      className="relative overflow-hidden rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)]"
       aria-label={t("Property map view")}
     >
       <div className="relative h-[28rem]">
@@ -99,10 +99,10 @@ export function PropertyMapView({
 
         <div className="pointer-events-none absolute left-4 top-4 flex items-center gap-2 rounded-full border border-white/15 bg-black/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
           <MapPin className="h-3 w-3" aria-hidden />
-          {liveMap ? "Map view · Mapbox" : "Map view"}
+          {t("Map view")}
         </div>
         <div className="pointer-events-none absolute right-4 top-4 rounded-full border border-white/15 bg-black/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
-          {clusters.length} area{clusters.length === 1 ? "" : "s"}
+          {clusters.length} {clusters.length === 1 ? t("area") : t("areas")}
         </div>
       </div>
 
@@ -165,12 +165,14 @@ function MapFallback({
   onSelect: (slug: string | null) => void;
   tone?: "fallback" | "map";
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <div
       className={`absolute inset-0 ${
         tone === "map"
-          ? "bg-[radial-gradient(circle_at_30%_25%,rgba(232,184,148,0.18),transparent_55%),radial-gradient(circle_at_70%_75%,rgba(152,179,154,0.15),transparent_50%),#0b0705]"
-          : "bg-[radial-gradient(circle_at_25%_30%,rgba(232,184,148,0.1),transparent_60%),#0c0806]"
+          ? "bg-[radial-gradient(circle_at_30%_25%,rgba(232,184,148,0.18),transparent_55%),radial-gradient(circle_at_70%_75%,rgba(152,179,154,0.15),transparent_50%),var(--home-canvas-deep)]"
+          : "bg-[radial-gradient(circle_at_25%_30%,rgba(232,184,148,0.1),transparent_60%),var(--home-sheet)]"
       }`}
     >
       <svg
@@ -189,7 +191,7 @@ function MapFallback({
             <path
               d="M 10 0 L 0 0 0 10"
               fill="none"
-              stroke="rgba(255,255,255,0.04)"
+              stroke="rgb(var(--home-ink-rgb) / 0.06)"
               strokeWidth="0.4"
             />
           </pattern>
@@ -209,14 +211,16 @@ function MapFallback({
               isSelected ? "z-10 scale-110" : ""
             }`}
             style={{ left: `${x}%`, top: `${y}%` }}
-            aria-label={`${cluster.area.name} · ${cluster.listings.length} listings`}
+            aria-label={`${cluster.area.name} · ${cluster.listings.length} ${
+              cluster.listings.length === 1 ? t("listing") : t("listings")
+            }`}
             aria-pressed={isSelected}
           >
             <span
               className={`inline-flex h-12 w-12 items-center justify-center rounded-full border-2 text-sm font-semibold tabular-nums shadow-lg shadow-black/30 ${
                 isSelected
-                  ? "border-white bg-[var(--property-accent-strong)] text-white"
-                  : "border-white/20 bg-[rgba(176,108,62,0.85)] text-white hover:border-white/60"
+                  ? "border-white bg-[var(--home-accent)] text-[var(--home-accent-ink)]"
+                  : "border-white/20 bg-[color:color-mix(in_srgb,var(--home-accent)_88%,transparent)] text-[var(--home-accent-ink)] hover:border-white/60"
               }`}
             >
               {cluster.listings.length}
@@ -255,7 +259,7 @@ function SelectedAreaSheet({
       role="dialog"
       aria-modal="true"
       aria-labelledby="property-map-sheet-title"
-      className="absolute inset-x-0 bottom-0 max-h-[60%] overflow-y-auto rounded-t-[1.4rem] border-t border-[var(--property-line)] bg-[#0b0705] p-5 shadow-2xl sm:p-7"
+      className="absolute inset-x-0 bottom-0 max-h-[60%] overflow-y-auto rounded-t-[1.4rem] border-t border-[var(--property-line)] bg-[color:var(--home-sheet)] p-5 text-[color:var(--home-ink)] shadow-2xl sm:p-7"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -296,8 +300,8 @@ function SelectedAreaSheet({
                   {listing.title}
                 </span>
                 <span className="mt-0.5 block text-[12px] text-[var(--property-ink-soft)]">
-                  {listing.bedrooms ? `${listing.bedrooms} bed · ` : ""}
-                  {listing.sizeSqm ? `${listing.sizeSqm} sqm · ` : ""}
+                  {listing.bedrooms ? `${listing.bedrooms} ${t("bed")} · ` : ""}
+                  {listing.sizeSqm ? `${listing.sizeSqm} ${t("sqm")} · ` : ""}
                   {listing.kind}
                 </span>
               </div>
@@ -314,7 +318,7 @@ function SelectedAreaSheet({
           href={`/search?area=${encodeURIComponent(cluster.area.slug)}`}
           className="property-button-secondary inline-flex rounded-full px-5 py-3 text-[13px] font-semibold"
         >
-          Browse all in {cluster.area.name}
+          {t("Browse all in")} {cluster.area.name}
         </Link>
       </div>
     </div>

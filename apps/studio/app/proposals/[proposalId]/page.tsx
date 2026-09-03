@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { formatCurrency } from "@/lib/env";
 import { getStudioPublicLocale } from "@/lib/locale-server";
@@ -182,6 +183,75 @@ export default async function ProposalDetailPage({
     ),
   ]);
 
+  // SA-D5 — an agency brief holds in review: the client sees an honest
+  // "with the team" state, never a price that no human has looked at.
+  // Studio staff (the release roles) still see the full room below so they
+  // can review exactly what the client will receive.
+  const heldForClient =
+    proposal.status === "in_review" &&
+    !viewerHasRole(viewer, ["studio_owner", "sales_consultation"]);
+
+  if (heldForClient) {
+    const t = (text: string) => translateSurfaceLabel(locale, text);
+    const reviewSteps = [
+      t("A senior lead reads your brief in full — goals, scope, timing, and the details you shared."),
+      t("The team locks the scope and a fixed price, so the number you receive is one we stand behind."),
+      t("Your complete proposal arrives by email, usually within one business day."),
+    ];
+    return (
+      <main className="mx-auto max-w-4xl px-5 py-10 sm:px-8 lg:px-10">
+        <section className="studio-panel studio-mesh rounded-[2.8rem] px-7 py-10 sm:px-10 lg:px-14">
+          <div className="studio-kicker">{t("Proposal room")}</div>
+          <h1 className="studio-heading mt-4">{t("Your brief is with the team.")}</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--studio-ink-soft)]">
+            {t(
+              "This build asks for real judgment, so a senior lead reviews it personally before any pricing reaches you. Nothing is on hold — the review is already underway.",
+            )}
+          </p>
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--studio-accent-ring)] bg-[var(--studio-accent-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink)]">
+            <ShieldCheck className="h-4 w-4 text-[var(--studio-signal)]" aria-hidden />
+            {proposalStatusLabel(proposal.status)}
+          </div>
+
+          <div className="mt-8 space-y-4">
+            {reviewSteps.map((step, index) => (
+              <div key={step} className="flex gap-3">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] text-xs font-semibold text-[var(--studio-signal)]">
+                  {index + 1}
+                </div>
+                <div className="text-sm leading-7 text-[var(--studio-ink-soft)]">{step}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {brief ? (
+          <section className="studio-panel mt-8 rounded-[1.9rem] p-6">
+            <div className="studio-kicker">{t("What you told us")}</div>
+            <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
+              <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                {t("Goals and scope")}
+              </div>
+              <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedBriefGoals}</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{localizedBriefScope}</p>
+            </div>
+            {domainRecap ? (
+              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
+                <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
+                  {domainRecap.title}
+                </div>
+                <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{domainRecap.body}</p>
+              </div>
+            ) : null}
+            <p className="mt-5 text-sm leading-7 text-[var(--studio-ink-soft)]">
+              {t("Spotted something to add? Reply to your confirmation email and it reaches the same reviewer.")}
+            </p>
+          </section>
+        ) : null}
+      </main>
+    );
+  }
+
   return (
     <main className="mx-auto max-w-[88rem] px-5 py-10 sm:px-8 lg:px-10">
       <section className="studio-panel studio-mesh rounded-[2.8rem] px-7 py-10 sm:px-10 lg:px-14">
@@ -209,7 +279,7 @@ export default async function ProposalDetailPage({
               ))}
             </div>
 
-            <div className="mt-8 rounded-[1.75rem] border border-[var(--studio-line)] bg-black/10 p-5">
+            <div className="mt-8 rounded-[1.75rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
               <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                 <ShieldCheck className="h-4 w-4 text-[var(--studio-signal)]" />
                 <div className="text-sm font-semibold">Commercial confidence note</div>
@@ -222,7 +292,7 @@ export default async function ProposalDetailPage({
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-[2rem] border border-[rgba(151,244,243,0.2)] bg-[linear-gradient(180deg,rgba(8,30,38,0.92),rgba(6,16,23,0.98))] p-6">
+            <div className="rounded-[2rem] border border-[var(--studio-accent-ring)] bg-[linear-gradient(180deg,var(--studio-accent-soft),var(--studio-bg-soft))] p-6">
               <div className="flex items-center gap-3 text-[var(--studio-signal)]">
                 <CircleDollarSign className="h-5 w-5" />
                 <div className="text-xs uppercase tracking-[0.18em]">Total investment</div>
@@ -237,7 +307,7 @@ export default async function ProposalDetailPage({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Deposit checkpoint
                 </div>
@@ -248,7 +318,7 @@ export default async function ProposalDetailPage({
                   Activates the project room, payment verification, onboarding, and the first milestone.
                 </p>
               </div>
-              <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="rounded-[1.7rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="text-xs uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Proposal validity
                 </div>
@@ -273,13 +343,13 @@ export default async function ProposalDetailPage({
                 ["Client", lead?.customerName || "Studio client"],
                 ["Company", lead?.companyName || "Private brief"],
                 ["Service lane", service?.name || proposal.serviceId],
-                ["Delivery team", team?.name || "HenryCo Studio match"],
+                ["Delivery team", team?.name || "Henry Onyx Studio match"],
                 ["Budget lane", lead?.budgetBand || "Calibrated during review"],
                 ["Urgency", lead?.urgency || "Standard delivery lane"],
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="flex flex-col gap-2 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-[1.35rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                     {label}
@@ -292,7 +362,7 @@ export default async function ProposalDetailPage({
             </div>
 
             {brief ? (
-              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Goals and scope
                 </div>
@@ -304,7 +374,7 @@ export default async function ProposalDetailPage({
             ) : null}
 
             {domainRecap ? (
-              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   {domainRecap.title}
                 </div>
@@ -313,7 +383,7 @@ export default async function ProposalDetailPage({
             ) : null}
 
             {customRequest ? (
-              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+              <div className="mt-5 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                 <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                   <Layers3 className="h-4 w-4 text-[var(--studio-signal)]" />
                   <div className="text-sm font-semibold">Custom request profile</div>
@@ -366,7 +436,7 @@ export default async function ProposalDetailPage({
             <div className="studio-kicker">Decision guidance</div>
             <div className="mt-5 space-y-4">
               {[
-                "Approve the commercial direction and HenryCo activates the live project room.",
+                "Approve the commercial direction and Henry Onyx activates the live project room.",
                 "The deposit amount below becomes the first payment checkpoint in the delivery timeline.",
                 "Finance confirms payment, then onboarding, design, build, and delivery updates stay on the same Studio record.",
               ].map((step, index) => (
@@ -379,7 +449,7 @@ export default async function ProposalDetailPage({
               ))}
             </div>
 
-            <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-black/10 p-5">
+            <div className="mt-6 rounded-[1.5rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
               <div className="flex items-center gap-3 text-[var(--studio-ink)]">
                 <Sparkles className="h-4 w-4 text-[var(--studio-signal)]" />
                 <div className="text-sm font-semibold">What happens after approval</div>
@@ -412,7 +482,7 @@ export default async function ProposalDetailPage({
                   href={viewer.user ? platform.accountDashboardUrl : loginHref}
                   className="studio-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
-                  {viewer.user ? "Open HenryCo account" : "Sign in through HenryCo account"}
+                  {viewer.user ? "Open Henry Onyx account" : "Sign in through Henry Onyx account"}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               )}
@@ -427,7 +497,7 @@ export default async function ProposalDetailPage({
               {pricingBreakdown.map((line) => (
                 <div
                   key={`${line.label}-${line.amount}`}
-                  className="flex flex-col gap-3 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 sm:flex-row sm:items-start sm:justify-between"
+                  className="flex flex-col gap-3 rounded-[1.35rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-4 py-4 sm:flex-row sm:items-start sm:justify-between"
                 >
                   <div>
                     <div className="text-base font-semibold text-[var(--studio-ink)]">{line.label}</div>
@@ -444,7 +514,7 @@ export default async function ProposalDetailPage({
               ))}
             </div>
 
-            <div className="mt-5 flex flex-col gap-3 rounded-[1.5rem] border border-[rgba(151,244,243,0.2)] bg-[linear-gradient(180deg,rgba(8,30,38,0.72),rgba(6,16,23,0.96))] p-5 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mt-5 flex flex-col gap-3 rounded-[1.5rem] border border-[var(--studio-accent-ring)] bg-[linear-gradient(180deg,var(--studio-accent-soft),var(--studio-bg-soft))] p-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--studio-signal)]">
                   Commercial total
@@ -476,7 +546,7 @@ export default async function ProposalDetailPage({
                       <div className="mt-2 h-full min-h-10 w-px bg-[var(--studio-line)]" />
                     ) : null}
                   </div>
-                  <div className="flex-1 rounded-[1.35rem] border border-[var(--studio-line)] bg-black/10 p-5">
+                  <div className="flex-1 rounded-[1.35rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="text-base font-semibold text-[var(--studio-ink)]">
                         {milestone.name}
@@ -509,7 +579,7 @@ export default async function ProposalDetailPage({
               {proposal.comparisonNotes.map((note) => (
                 <div
                   key={note}
-                  className="rounded-[1.3rem] border border-[var(--studio-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]"
+                  className="rounded-[1.3rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] px-4 py-4 text-sm leading-7 text-[var(--studio-ink-soft)]"
                 >
                   {note}
                 </div>
@@ -518,7 +588,7 @@ export default async function ProposalDetailPage({
           </section>
 
           <StudioPaymentGuide
-            title="Transfer guidance is based on HenryCo’s live company account record."
+            title="Transfer guidance is based on Henry Onyx’s live company account record."
             amount={proposal.depositAmount}
             currency={proposal.currency}
             statusLabel={proposalStatusLabel(proposal.status)}
@@ -529,7 +599,7 @@ export default async function ProposalDetailPage({
             accountNumber={platform.paymentAccountNumber}
             supportEmail={platform.paymentSupportEmail}
             supportWhatsApp={platform.paymentSupportWhatsApp}
-            proofHint="If the project room is already active, upload proof inside the payment lane immediately after transfer. If not, HenryCo activates the workspace on acceptance so the exact proof path is attached to the same record."
+            proofHint="If the project room is already active, upload proof inside the payment lane immediately after transfer. If not, Henry Onyx activates the workspace on acceptance so the exact proof path is attached to the same record."
           />
 
           <section className="studio-panel rounded-[1.9rem] p-6">
@@ -538,7 +608,7 @@ export default async function ProposalDetailPage({
               <div className="text-sm font-semibold">Shared-account continuity</div>
             </div>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
-              Studio keeps the direct proposal and project rooms here, while the broader HenryCo account
+              Studio keeps the direct proposal and project rooms here, while the broader Henry Onyx account
               history remains the central place for account-level visibility, invoices, support context,
               and future cross-division records.
             </p>
@@ -547,7 +617,7 @@ export default async function ProposalDetailPage({
                 href={platform.accountDashboardUrl}
                 className="studio-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Open HenryCo account
+                Open Henry Onyx account
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

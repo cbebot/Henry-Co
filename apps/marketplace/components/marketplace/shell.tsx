@@ -15,11 +15,20 @@ import {
   WorkspaceMobileNav,
   type WorkspaceNavGroup,
 } from "@/components/marketplace/workspace-mobile-nav";
-import { BRAND_EMAILS, getAccountUrl, getHubUrl } from "@henryco/config";
+import {
+  BRAND_EMAILS,
+  getAccountUrl,
+  getDivisionConfig,
+  getHubUrl,
+  getSupportWhatsAppHref,
+} from "@henryco/config";
+import { HenryCoWordmark } from "@henryco/ui/brand";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { ProductCardClient } from "@/components/marketplace/product-card-client";
+import type { SellerTier } from "@henryco/ui";
 import { PublicHeaderClient } from "@/components/marketplace/public-header-client";
-import { MarketplaceToastStack } from "@/components/marketplace/toast-stack";
+import { LivePublicSiteFooter } from "@henryco/ui/public-design";
+import { manrope, MARKETPLACE_PUBLIC_THEME_STYLE } from "@/components/marketplace/marketplace-public-theme";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
 import { cn } from "@/lib/utils";
@@ -39,14 +48,50 @@ export function PublicHeader(_props: {
   return <PublicHeaderClient />;
 }
 
-export function PublicSurface({ children }: { children: React.ReactNode }) {
+export async function PublicSurface({ children }: { children: React.ReactNode }) {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  const t = (s: string) => translateSurfaceLabel(locale, s);
+  const footerColumns = [
+    { title: copy.footer.shopTitle, links: copy.footer.shopLinks },
+    {
+      title: copy.footer.sellTitle,
+      links: [
+        ...copy.footer.sellLinks,
+        { href: getAccountUrl("/marketplace"), label: t("Your account") },
+      ],
+    },
+    {
+      title: copy.footer.supportTitle,
+      links: [
+        { href: "/help", label: t("Help and support") },
+        { href: getHubUrl("/contact"), label: t("Contact") },
+        { href: "/trust", label: t("Trust") },
+      ],
+    },
+  ];
   return (
-    <div className="market-page">
+    <div
+      className={`${manrope.variable} market-page home-accent-scope flex min-h-screen flex-col bg-[color:var(--home-canvas)] text-[color:var(--home-ink)]`}
+      style={MARKETPLACE_PUBLIC_THEME_STYLE}
+    >
       <PublicHeader signedIn={false} />
-      <main id="henryco-main" tabIndex={-1}>{children}</main>
-      <PublicFooter />
+      <main id="henryco-main" tabIndex={-1} className="flex-1">
+        {children}
+      </main>
+      <LivePublicSiteFooter
+        copy={{
+          statement: t(
+            "A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.",
+          ),
+          divisionsLabel: t("The Henry Onyx group"),
+          rightsReserved: t("All rights reserved."),
+          attribution: t("Built in-house by Henry Onyx Studio."),
+        }}
+        columns={footerColumns}
+        support={{ email: BRAND_EMAILS.marketplace }}
+      />
       <MarketplaceCartDrawer />
-      <MarketplaceToastStack />
     </div>
   );
 }
@@ -65,14 +110,25 @@ export async function PublicFooter() {
           <div className="space-y-5">
             <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
               <Sparkles className="h-3.5 w-3.5" />
-              {translateSurfaceLabel(locale, "HenryCo Marketplace")}
+              {translateSurfaceLabel(locale, "Henry Onyx Marketplace")}
             </div>
             <p className="max-w-md text-sm leading-7 text-[var(--market-muted)]">
               {copy.footer.brandBody}
             </p>
             <div className="space-y-1.5 text-sm text-[var(--market-muted)]">
               <p className="text-[var(--market-paper-white)]">{BRAND_EMAILS.marketplace}</p>
-              <p>+234 913 395 7084</p>
+              {/* NUMBER-PURGE (2026-07-10): the spaced-digit literal here dodged
+                  every prior sweep and kept the company number crawlable. The
+                  masked WhatsApp link (single company source) replaces it —
+                  digits live only in the href, never in visible text. */}
+              <a
+                href={getSupportWhatsAppHref()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block transition-colors hover:text-[var(--market-paper-white)]"
+              >
+                WhatsApp
+              </a>
             </div>
           </div>
 
@@ -87,7 +143,7 @@ export async function PublicFooter() {
               ...copy.footer.sellLinks,
               {
                 href: getAccountUrl("/marketplace"),
-                label: translateSurfaceLabel(locale, "HenryCo account"),
+                label: translateSurfaceLabel(locale, "Your account"),
                 external: true,
               },
             ]}
@@ -114,7 +170,7 @@ export async function PublicFooter() {
 
         <div className="mt-10 flex flex-col items-start gap-3 border-t border-[var(--market-line)] pt-5 text-xs text-[var(--market-muted)]/90 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>&copy; {new Date().getFullYear()} {translateSurfaceLabel(locale, "HenryCo Marketplace")}. {translateSurfaceLabel(locale, "All rights reserved")}.</span>
+            <span>&copy; {new Date().getFullYear()} {translateSurfaceLabel(locale, "Henry Onyx Marketplace")}. {translateSurfaceLabel(locale, "All rights reserved")}.</span>
             <a
               href={getHubUrl("/privacy")}
               target="_blank"
@@ -134,7 +190,7 @@ export async function PublicFooter() {
           </div>
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--market-brass)]" />
-            {translateSurfaceLabel(locale, "Designed and built in-house by HenryCo Studio for the HenryCo ecosystem")}
+            {translateSurfaceLabel(locale, "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem")}
           </span>
         </div>
       </div>
@@ -219,8 +275,18 @@ export function KpiGrid({ items }: { items: MarketplaceKpi[] }) {
   );
 }
 
-export function ProductCard({ product }: { product: MarketplaceProduct }) {
-  return <ProductCardClient product={product} />;
+export function ProductCard({
+  product,
+  sellerTier,
+  deliveryPromise,
+}: {
+  product: MarketplaceProduct;
+  /** V3-58 server-derived seller tier for the listing's vendor; omitted → no chip. */
+  sellerTier?: SellerTier;
+  /** V3-DELIVERY-COMPLETE-01 tier-clamped Delivery Promise for the vendor; null → no badge. */
+  deliveryPromise?: { coveredStates: string[] } | null;
+}) {
+  return <ProductCardClient product={product} sellerTier={sellerTier} deliveryPromise={deliveryPromise} />;
 }
 
 export function VendorCard({
@@ -237,7 +303,7 @@ export function VendorCard({
 
   return (
     <Link href={`/store/${vendor.slug}`} className="group block">
-      <article className="overflow-hidden rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
+      <article className="overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] shadow-[0_30px_90px_-45px_rgb(var(--home-ink-rgb)/0.18)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[color:var(--home-accent)]/50">
         <div className="relative h-44 overflow-hidden">
           <DivisionImage
             src={imageSrc}
@@ -247,12 +313,12 @@ export function VendorCard({
             className="object-cover transition duration-500 group-hover:scale-[1.04]"
             radius="0"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(4,7,13,0.85)] via-[rgba(4,7,13,0.18)] to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--home-ink-rgb)/0.78)] via-[rgb(var(--home-ink-rgb)/0.16)] to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex flex-wrap gap-1.5 p-5">
             {vendor.badges.slice(0, 3).map((badge) => (
               <span
                 key={badge}
-                className="rounded-full border border-white/15 bg-[rgba(4,7,13,0.55)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-paper-white)] backdrop-blur-md"
+                className="rounded-full border border-[color:var(--home-sheet)]/25 bg-[rgb(var(--home-ink-rgb)/0.55)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-sheet)] backdrop-blur-md"
               >
                 {badge}
               </span>
@@ -314,7 +380,7 @@ export function CollectionCard({
   const localeCopy = copy ?? getMarketplacePublicCopy("en");
   return (
     <Link href={`/collections/${collection.slug}`} className="group block">
-      <article className="rounded-[1.8rem] border border-[var(--market-line)] bg-[rgba(0,0,0,0.04)] p-6 transition duration-300 group-hover:-translate-y-1 group-hover:border-[var(--market-brass)]/50">
+      <article className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-6 shadow-[0_30px_90px_-45px_rgb(var(--home-ink-rgb)/0.18)] transition duration-300 group-hover:-translate-y-1 group-hover:border-[color:var(--home-accent)]/50">
         <p className="market-kicker">{collection.kicker}</p>
         <h3 className="mt-4 text-[1.5rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.7rem]">
           {collection.title}
@@ -439,6 +505,7 @@ export async function WorkspaceShell({
   nav,
   navGroups,
   actions,
+  hero,
   children,
 }: {
   title: string;
@@ -451,25 +518,58 @@ export async function WorkspaceShell({
    */
   navGroups?: WorkspaceNavGroup[];
   actions?: React.ReactNode;
+  /**
+   * V3-INNER-L (elevation) — optional editorial masthead. When provided it
+   * REPLACES the generic `title`/`description` title-bar in the main column
+   * (the buyer home passes a state-driven <HeroCard /> here, answering Q1+Q2
+   * above the fold per account-design-language). The sidebar still renders
+   * `title`/`description` as the workspace identity, and `title`/`description`
+   * still feed the mobile nav — so pages without a hero are unchanged.
+   */
+  hero?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const locale = await getMarketplacePublicLocale();
   const copy = getMarketplacePublicCopy(locale);
+  const division = getDivisionConfig("marketplace");
+  const tShell = (s: string) => translateSurfaceLabel(locale, s);
   const groupsForMobile: WorkspaceNavGroup[] =
     navGroups && navGroups.length > 0
       ? navGroups
-      : [{ label: "Workspace", items: nav }];
+      : [{ label: tShell("Workspace"), items: nav }];
   const activeLabel = nav.find((item) => item.active)?.label ?? null;
   return (
-    <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[300px,1fr] xl:px-8">
+    <div className="mx-auto grid max-w-[1480px] gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[300px_1fr] xl:px-8">
       <WorkspaceMobileNav
         title={title}
         description={description}
         groups={groupsForMobile}
         currentLabel={activeLabel}
+        labels={{
+          kicker: tShell("Workspace"),
+          currentSection: tShell("Current section"),
+          openMenu: tShell("Open workspace menu"),
+          menuTitle: tShell("Workspace menu"),
+          closeMenu: tShell("Close workspace menu"),
+          fallbackActive: tShell("Overview"),
+        }}
       />
       <aside className="market-panel hidden rounded-[2.1rem] p-4 lg:block">
-        <p className="market-kicker">{copy.workspace.kicker}</p>
+        {/* Brand lockup — engineered "Henry Onyx" SVG wordmark (currentColor →
+            ink) primary, division a muted sub-label (getDivisionConfig). No
+            CMS logo_url in chrome. */}
+        <div className="flex items-center gap-2.5 border-b border-[var(--market-line)] px-1 pb-4">
+          <HenryCoWordmark
+            fontFamily="Fraunces"
+            height={18}
+            className="text-[var(--market-paper-white)]"
+          />
+          <span aria-hidden className="h-3 w-px bg-[var(--market-line-strong)]" />
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.2em] text-[var(--market-muted)]">
+            {division.shortName}
+          </span>
+        </div>
+        <p className="market-kicker mt-5">{copy.workspace.kicker}</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)]">{title}</h1>
         <p className="mt-3 text-sm leading-7 text-[var(--market-muted)]">{description}</p>
         <nav className="mt-6 space-y-2">
@@ -481,9 +581,14 @@ export async function WorkspaceShell({
               className={cn(
                 "flex items-center justify-between rounded-[1.25rem] px-4 py-3 text-sm font-semibold transition",
                 item.active
-                  ? "bg-[linear-gradient(135deg,rgba(246,240,222,0.14),rgba(117,209,255,0.1))] text-[var(--market-paper-white)]"
-                  : "bg-[rgba(255,255,255,0.04)] text-[var(--market-muted)] hover:text-[var(--market-paper-white)]"
+                  ? "text-[color:var(--market-paper-white)]"
+                  : "text-[color:var(--market-muted)] hover:text-[color:var(--market-paper-white)]"
               )}
+              style={{
+                background: item.active
+                  ? "var(--market-nav-active)"
+                  : "var(--market-nav-fill)",
+              }}
             >
               <span>{item.label}</span>
               <ChevronRight className="h-4 w-4" />
@@ -492,23 +597,24 @@ export async function WorkspaceShell({
         </nav>
       </aside>
       <main className="space-y-6">
-        <section className="market-panel rounded-[2.1rem] p-6 sm:p-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="market-kicker">{copy.workspace.operatorKicker}</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-4xl">
-                {title}
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
-                {description}
-              </p>
+        {hero ?? (
+          <section className="market-panel rounded-[2.1rem] p-6 sm:p-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="market-kicker">{copy.workspace.operatorKicker}</p>
+                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-4xl">
+                  {title}
+                </h2>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
+                  {description}
+                </p>
+              </div>
+              {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
             </div>
-            {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
-          </div>
-        </section>
+          </section>
+        )}
         {children}
       </main>
-      <MarketplaceToastStack />
     </div>
   );
 }

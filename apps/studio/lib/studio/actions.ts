@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { withStudioToast } from "@/lib/studio/redirect-with-toast";
+import { screenMessageBody } from "@/lib/messaging/screen-message";
 import { hasPublicSupabaseEnv } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import {
@@ -10,6 +11,7 @@ import {
   requireStudioRoles,
   viewerHasRole,
 } from "@/lib/studio/auth";
+import { markStudioBriefFlowDraftSubmitted } from "@/lib/studio/brief-flow-draft-server";
 import { getProjectWorkspace } from "@/lib/studio/data";
 import { getStudioSnapshot } from "@/lib/studio/store";
 import { normalizeStudioRequestConfig } from "@/lib/studio/request-config";
@@ -23,6 +25,7 @@ import {
   attachPaymentProof,
   createProjectFromProposal,
   publishReview,
+  releaseStudioProposal,
   saveStudioPackage,
   saveStudioPlatformSettings,
   saveStudioRequestConfig,
@@ -180,6 +183,11 @@ export async function submitStudioBriefAction(formData: FormData) {
     domainIntent: parseDomainIntentFromForm(String(formData.get("domainIntentJson") || "")),
   });
 
+  // SA-1 — the brief landed; retire the server recovery draft so a later
+  // visit starts clean instead of resurrecting a submitted brief. Best-
+  // effort and awaited (it never throws) before the redirect unwinds.
+  await markStudioBriefFlowDraftSubmitted();
+
   if (result.project && result.payment) {
     redirect(
       withStudioToast(`/pay/${result.payment.id}?access=${result.project.accessKey}`, "brief_submitted")
@@ -238,6 +246,15 @@ export async function appendProjectMessageAction(formData: FormData) {
   const { viewer } = await requireProjectWorkspaceAccess(projectId, accessKey, redirectPath);
   const isStaffSender = viewerHasRole(viewer, studioStaffRoles);
 
+  // Server-side contact-safety on the project-workspace chat too (the client is
+  // bypassable). This is the single caller of appendProjectMessage, so screening
+  // here also protects the downstream customer_activity copy. Block high/critical
+  // before persist; mask medium. The raw body never reaches studio_project_messages.
+  const screened = screenMessageBody(String(formData.get("body") || ""));
+  if (screened.action === "block") {
+    redirect(withStudioToast(redirectPath, "contact_blocked"));
+  }
+
   await appendProjectMessage({
     projectId,
     sender:
@@ -245,7 +262,7 @@ export async function appendProjectMessageAction(formData: FormData) {
       user?.email ||
       String(formData.get("sender") || "Studio client"),
     senderRole: isStaffSender ? "team" : "client",
-    body: String(formData.get("body") || ""),
+    body: screened.body,
     isInternal: isStaffSender && String(formData.get("isInternal") || "") === "on",
   });
 
@@ -376,12 +393,32 @@ export async function setProposalStatusAction(formData: FormData) {
     proposalId,
     String(formData.get("status") || "sent") as
       | "draft"
+      | "in_review"
       | "sent"
       | "accepted"
       | "rejected"
       | "expired"
   );
   redirect(redirectPath);
+}
+
+/**
+ * SA-D5 — one-tap release of a held agency proposal. Role gate matches the
+ * SA-D1 pre-approved delegation set exactly (studio_owner + sales_consultation);
+ * deploy/money/social stay with the owner and are not touched here.
+ */
+export async function releaseStudioProposalAction(formData: FormData) {
+  await requireStudioRoles(["studio_owner", "sales_consultation"], "/sales/proposals");
+  const proposalId = String(formData.get("proposalId") || "");
+  const redirectPath = String(formData.get("redirectPath") || "/sales/proposals");
+  if (!proposalId) redirect(redirectPath);
+
+  try {
+    await releaseStudioProposal(proposalId);
+  } catch {
+    redirect(withStudioToast(redirectPath, "proposal_release_failed"));
+  }
+  redirect(withStudioToast(redirectPath, "proposal_released"));
 }
 
 export async function createProjectUpdateAction(formData: FormData) {

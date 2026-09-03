@@ -4,8 +4,13 @@ import {
   sessionStateFor,
   verifySupabaseSession,
 } from "@henryco/auth/server/verify-supabase-session";
-import { writeSessionStateCookie } from "@henryco/auth/server/session-state";
+import {
+  HC_SESSION_STATE_COOKIE,
+  writeSessionStateCookie,
+} from "@henryco/auth/server/session-state";
+import { HC_REAUTH_CONTEXT_COOKIE } from "@henryco/auth/server/reauth-context";
 import { getHqUrl, getSharedCookieDomain } from "@henryco/config";
+import { isPublicAccountRoute } from "./lib/proxy-public-routes";
 
 /**
  * Account proxy — V3-01 wired (the SSO host).
@@ -25,20 +30,17 @@ import { getHqUrl, getSharedCookieDomain } from "@henryco/config";
  * preserves the draft key + return path so an in-flight form survives
  * the round-trip.
  */
-const PUBLIC_ROUTES = [
-  "/login",
-  "/signup",
-  "/forgot-password",
-  "/reset-password",
-  "/auth/callback",
-  "/auth/confirm",
-  "/auth/resolve",
-  "/auth/verified",
-  "/auth/reauth", // V3-01: the reauth surface itself must be reachable signed-out
-];
-
 const REFERRAL_COOKIE_NAME = "hc_ref";
 const REFERRAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+
+// V3-04 (S5): share-arrival attribution. A share URL carries
+// `?ref=share&from=<one-way-hash>`. We mirror the existing `hc_ref`
+// 30-day cookie pattern and stash the opaque `from=` fingerprint so an
+// eventual conversion can be correlated to the sharer. The hash is NOT a
+// credential — it grants nothing; it is matched against a known sharer
+// hash (`verifySharerHash`) only when attribution is actually applied.
+const SHARE_COOKIE_NAME = "hc_share_from";
+const SHARE_HASH_SHAPE = /^s1\.[A-Za-z0-9_-]{16,64}$/;
 
 function captureReferralCode(request: NextRequest, response: NextResponse): void {
   const ref = request.nextUrl.searchParams.get("ref");
@@ -52,18 +54,20 @@ function captureReferralCode(request: NextRequest, response: NextResponse): void
     secure: true,
     maxAge: REFERRAL_COOKIE_MAX_AGE,
   });
-}
 
-function isPublicRoute(pathname: string): boolean {
-  return (
-    PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/cron/") ||
-    pathname.startsWith("/api/webhooks/account") ||
-    pathname === "/api/health" ||
-    pathname.includes(".")
-  );
+  // Share arrivals (`ref=share`) additionally carry an opaque `from=`
+  // sharer fingerprint — capture it for later attribution correlation.
+  if (ref !== "share") return;
+  const from = request.nextUrl.searchParams.get("from");
+  if (!from || !SHARE_HASH_SHAPE.test(from)) return;
+  response.cookies.set(SHARE_COOKIE_NAME, from, {
+    path: "/",
+    domain: cookieDomain,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: true,
+    maxAge: REFERRAL_COOKIE_MAX_AGE,
+  });
 }
 
 export async function proxy(request: NextRequest) {
@@ -76,11 +80,26 @@ export async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request });
   const session = await verifySupabaseSession(request, response);
 
-  if (isPublicRoute(pathname)) {
+  if (isPublicAccountRoute(pathname)) {
     // Public auth routes: pass through with verification side effects
     // (cookie refresh + state tag + referral capture). No redirect.
     const state = sessionStateFor(session);
-    if (state) writeSessionStateCookie(response, state);
+    const hasActiveReauthContext = Boolean(
+      request.cookies.get(HC_REAUTH_CONTEXT_COOKIE),
+    );
+    const shouldPreserveReauthState =
+      session.status === "anonymous" &&
+      (hasActiveReauthContext ||
+        (pathname.startsWith("/auth/reauth") &&
+          request.cookies.get(HC_SESSION_STATE_COOKIE)?.value ===
+            "reauth-required"));
+
+    if (state && !shouldPreserveReauthState) {
+      writeSessionStateCookie(response, state, {
+        hostname: request.nextUrl.hostname,
+        secure: request.nextUrl.protocol === "https:",
+      });
+    }
     captureReferralCode(request, response);
     return response;
   }
@@ -106,7 +125,12 @@ export async function proxy(request: NextRequest) {
 
   // ok | no-config — pass through with security headers + referral.
   const state = sessionStateFor(session);
-  if (state) writeSessionStateCookie(response, state);
+  if (state) {
+    writeSessionStateCookie(response, state, {
+      hostname: request.nextUrl.hostname,
+      secure: request.nextUrl.protocol === "https:",
+    });
+  }
   captureReferralCode(request, response);
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAccountUser } from "@/lib/auth";
 import { createAdminSupabase } from "@/lib/supabase";
+import { signAccountMediaUrl } from "@/lib/account/media";
 
 /**
  * Same-origin download proxy for customer_documents rows.
@@ -103,11 +104,23 @@ export async function GET(
     );
   }
 
+  // Resolve the stored value to a fetchable URL: a `media://private/...` ref is
+  // turned into a short-lived SIGNED URL (the asset lives in an RLS-private
+  // bucket); a legacy absolute URL passes through unchanged. Empty => the ref
+  // could not be signed (treat as unavailable). (V3-MEDIA-SWEEP-01)
+  const resolvedUrl = await signAccountMediaUrl(fileUrl);
+  if (!resolvedUrl) {
+    return NextResponse.json(
+      { error: "no_file", message: "This document is no longer available." },
+      { status: 410 },
+    );
+  }
+
   // Refuse anything that isn't HTTPS — defence-in-depth against an
   // accidental upstream that points at internal infrastructure.
   let parsed: URL;
   try {
-    parsed = new URL(fileUrl);
+    parsed = new URL(resolvedUrl);
   } catch {
     return NextResponse.json(
       { error: "bad_upstream", message: "Document source is unavailable." },

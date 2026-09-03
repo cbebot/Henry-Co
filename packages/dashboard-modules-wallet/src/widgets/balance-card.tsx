@@ -156,7 +156,7 @@ export function BalanceCard({ snapshot }: { snapshot: WalletSnapshot }) {
       >
         {hasHold
           ? `${formatNaira(snapshot.pendingWithdrawalKobo)} held in pending withdrawal · ${snapshot.currency}`
-          : `Available across HenryCo · ${snapshot.currency}`}
+          : `Available across Henry Onyx · ${snapshot.currency}`}
       </p>
       <div
         style={{

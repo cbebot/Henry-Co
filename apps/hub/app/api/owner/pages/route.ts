@@ -70,7 +70,7 @@ export async function POST(request: Request) {
       const body = await request.json();
 
       const slug = cleanText(body.slug ?? body.page_key).toLowerCase();
-      const title = cleanText(body.title, slug === "home" ? "Henry & Co." : "Henry & Co.");
+      const title = cleanText(body.title, slug === "home" ? "Henry Onyx" : "Henry Onyx");
       let stats: unknown[] = [];
       let sections: unknown[] = [];
 

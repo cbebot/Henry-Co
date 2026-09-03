@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Panel, Section } from "@henryco/dashboard-shell";
+import { CardTelemetry } from "@henryco/ui";
 import type { NextBestAction } from "@/lib/smart-home/recommender";
 
 /**
@@ -57,7 +58,21 @@ export function NextBestActions({ actions }: NextBestActionsProps) {
         }}
       >
         {actions.slice(0, 3).map((action) => (
-          <Panel key={action.id} tone="flat" padding="lg">
+          // V3-11 (one-job-per-card): these are the canonical Class-A
+          // "exact next step" cards. CardTelemetry is a zero-DOM
+          // (display:contents) client wrapper — it fires
+          // `henry.ui.card.rendered` on mount and `henry.ui.card.clicked`
+          // on activation, so the owner card-clickthrough tile can rank
+          // weak next steps empirically. It adds no markup, no copy, and
+          // leaves the server-rendered Link/Panel untouched.
+          <CardTelemetry
+            key={action.id}
+            cardId={`account.next-best.${action.id}`}
+            classification="A"
+            division={action.kicker}
+            target={action.href}
+          >
+            <Panel tone="flat" padding="lg">
             <Link
               href={action.href}
               style={{
@@ -133,8 +148,8 @@ export function NextBestActions({ actions }: NextBestActionsProps) {
                     textTransform: "uppercase",
                     backgroundColor:
                       action.confidence === "high"
-                        ? "rgba(201, 162, 39, 0.12)"
-                        : "rgba(107, 114, 128, 0.10)",
+                        ? "var(--hc-accent-soft)"
+                        : "color-mix(in srgb, var(--acct-muted) 12%, transparent)",
                     color:
                       action.confidence === "high"
                         ? "var(--hc-accent-text, #8C6B0F)"
@@ -145,7 +160,8 @@ export function NextBestActions({ actions }: NextBestActionsProps) {
                 </span>
               ) : null}
             </Link>
-          </Panel>
+            </Panel>
+          </CardTelemetry>
         ))}
       </div>
     </Section>

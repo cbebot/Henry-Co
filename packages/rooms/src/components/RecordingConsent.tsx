@@ -103,7 +103,7 @@ export function RecordingConsent({
         }}
       >
         This session may be recorded for review. The recording is stored on
-        HenryCo infrastructure and is accessible only to participants and the
+        Henry Onyx infrastructure and is accessible only to participants and the
         session owner.
       </p>
       <ul

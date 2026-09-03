@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import HubHomeClient from "./HubHomeClient";
-import { getHubHomeCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
-import { getAccountUrl, henryWebRoot } from "@henryco/config";
+import {
+  getHubHomeCopy,
+  getHubPublicCopy,
+  resolveLocalizedDynamicField,
+} from "@henryco/i18n/server";
+import { buildHubFooter } from "../lib/site-footer";
+import { COMPANY, getAccountUrl, henryWebRoot } from "@henryco/config";
 import { getHubPublicLocale } from "../../lib/locale-server";
 import { getCompanySettings } from "../lib/company-settings";
 import { getHubSharedLoginUrl, getHubSharedSignupUrl } from "@/lib/hub-public-links";
@@ -17,13 +22,13 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
-  title: "HenryCo — Care, Marketplace, Property, Studio, and more",
+  title: "Henry Onyx — Care, Marketplace, Property, Studio, and more",
   description:
-    "HenryCo is a multi-division group: garment care, marketplace, property, studio, jobs, learn, and logistics — built around clear pricing, real records, and trusted delivery.",
+    "Henry Onyx brings together garment care, marketplace, property, studio, jobs, learn, and logistics — built around clear pricing, real records, and trusted delivery.",
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "HenryCo Group",
+    title: "Henry Onyx",
     description:
       "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
     type: "website",
@@ -31,7 +36,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HenryCo Group",
+    title: "Henry Onyx",
     description:
       "Care, Marketplace, Property, Studio, Jobs, Learn, Logistics — premium services with honest delivery records.",
   },
@@ -77,6 +82,22 @@ async function getHomeFaqs(): Promise<PublicFaqRecord[]> {
   }
 }
 
+/**
+ * HOTFIX (DB-saturation): bound every public homepage read so a slow/saturated
+ * database can never hang the SSR stream. Resolves to the supplied fallback if
+ * the read rejects OR exceeds `ms`, so the page always paints. The cached
+ * division directory still serves its 60s snapshot when warm; this only caps
+ * the cold-cache + live (settings/faqs/stats) reads.
+ */
+function withTimeout<T, F>(p: Promise<T>, ms: number, fallback: F): Promise<T | F> {
+  return Promise.race([
+    p.catch(() => fallback),
+    new Promise<F>((resolve) => {
+      setTimeout(() => resolve(fallback), ms);
+    }),
+  ]);
+}
+
 export default async function HomePage() {
   let hasServerError = false;
 
@@ -88,9 +109,9 @@ export default async function HomePage() {
 
   try {
     const [settingsResult, divisionsResult, faqsResult] = await Promise.all([
-      getCompanySettings().catch(() => null),
-      getPublishedDivisions().catch(() => ({ divisions: [], hasServerError: true })),
-      getHomeFaqs().catch(() => []),
+      withTimeout(getCompanySettings(), 2500, null),
+      withTimeout(getPublishedDivisions(), 3000, { divisions: [], hasServerError: true }),
+      withTimeout(getHomeFaqs(), 2500, [] as PublicFaqRecord[]),
     ]);
 
     settings = normalizeCompanySettings(settingsResult);
@@ -113,7 +134,7 @@ export default async function HomePage() {
         .filter((d) => d.status === "active")
         .map((d) => String(d.key || "").toLowerCase())
         .filter(Boolean);
-      divisionStats = await getDivisionLiveStats(activeKeys).catch(() => ({}));
+      divisionStats = await withTimeout(getDivisionLiveStats(activeKeys), 2500, {});
     }
   } catch {
     hasServerError = true;
@@ -140,7 +161,7 @@ export default async function HomePage() {
       record: settingsRecord,
       field: "brand_title",
       locale,
-      fallback: settings.brand_title ?? "Henry & Co.",
+      fallback: settings.brand_title ?? "Henry Onyx",
       machineTranslate,
     }),
     resolveLocalizedDynamicField({
@@ -165,6 +186,26 @@ export default async function HomePage() {
       machineTranslate,
     }),
   ]);
+
+  // Shared site footer — same builder + component as the inner-route shell, so
+  // the closing footer is identical across the whole hub. The CMS blurb feeds the
+  // brand statement; division links + legal entity come from @henryco/config.
+  const footer = buildHubFooter(getHubPublicCopy(locale), {
+    statement: footerBlurbI18n,
+    // NUMBER-PURGE: email only — never the DB support_phone (serializes to RSC).
+    support: { email: settings.support_email },
+  });
+
+  // V3 showcase band on the landing (owner directive 2026-07-08) — labels
+  // reuse the already-translated v3 namespace, zero new i18n keys.
+  const v3Copy = getHubPublicCopy(locale).v3;
+  const ecosystemBand = {
+    eyebrow: v3Copy.story.eyebrow,
+    title: v3Copy.story.title,
+    supportLine: v3Copy.story.divisionsLede,
+    tryLabel: v3Copy.story.tryLink,
+    earnLabel: v3Copy.story.earnLink,
+  };
 
   const translateRowField = async (
     record: Record<string, unknown>,
@@ -259,17 +300,19 @@ export default async function HomePage() {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: brandTitleI18n || "HenryCo",
+    name: COMPANY.group.name,
+    legalName: COMPANY.group.legalName,
+    alternateName: brandTitleI18n || undefined,
     url: canonicalSiteUrl,
     logo: organizationLogo,
     description:
       brandDescriptionI18n ||
-      "HenryCo is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",
+      "Henry Onyx is a multi-division group: Care, Marketplace, Property, Studio, Jobs, Learn, and Logistics.",
   };
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: brandTitleI18n || "HenryCo",
+    name: COMPANY.group.name,
     url: canonicalSiteUrl,
   };
 
@@ -284,11 +327,10 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
     <HubHomeClient
-      brandTitle={brandTitleI18n || "Henry & Co."}
+      brandTitle={brandTitleI18n || "Henry Onyx"}
       brandSub={brandSubtitleI18n || "Corporate Platform"}
       brandAccent={settings.brand_accent ?? "#C9A227"}
-      brandLogoUrl={settings.logo_url ?? null}
-      brandFooterBlurb={footerBlurbI18n}
+      footer={footer}
       intro={brandDescriptionI18n}
       initialDivisions={localizedDivisions}
       initialFaqs={localizedFaqs}
@@ -298,6 +340,7 @@ export default async function HomePage() {
       locale={locale}
       accountChip={accountChip}
       heroWelcome={heroWelcome}
+      ecosystemBand={ecosystemBand}
     />
     </>
   );

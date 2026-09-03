@@ -25,6 +25,7 @@
 
 export type {
   AccessSnapshot,
+  ActingContext,
   DashboardOption,
   DashboardPreference,
   DashboardResolution,

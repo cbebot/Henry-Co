@@ -41,21 +41,48 @@ create index if not exists henry_events_actor_id_idx
 
 alter table public.henry_events enable row level security;
 
+grant insert on table public.henry_events to authenticated;
+grant select on table public.henry_events to service_role;
+
 -- Authenticated users insert their own events (or anonymous ones
 -- where actor_id is null). The writer must not be able to attribute
 -- events to other users.
-create policy if not exists henry_events_insert_own
-  on public.henry_events
-  for insert
-  to authenticated
-  with check (actor_id is null or actor_id = auth.uid());
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'henry_events'
+      and policyname = 'henry_events_insert_own'
+  ) then
+    create policy henry_events_insert_own
+      on public.henry_events
+      for insert
+      to authenticated
+      with check (actor_id is null or actor_id = auth.uid());
+  end if;
+end
+$$;
 
 -- Service-role-only read. The owner tile reads via the admin client.
-create policy if not exists henry_events_select_service_role
-  on public.henry_events
-  for select
-  to service_role
-  using (true);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'henry_events'
+      and policyname = 'henry_events_select_service_role'
+  ) then
+    create policy henry_events_select_service_role
+      on public.henry_events
+      for select
+      to service_role
+      using (true);
+  end if;
+end
+$$;
 
 comment on table public.henry_events is
   'V3-01 session-persistence telemetry sink. Backs the owner session-health tile. RLS: insert own; select service_role only.';

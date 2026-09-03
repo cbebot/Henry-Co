@@ -832,47 +832,10 @@ export async function submitPaymentProof(input: SubmitPaymentProofInput) {
   };
 }
 
-async function recalculateBookingTotals(bookingId: string) {
-  const supabase = createAdminSupabase();
-
-  try {
-    await supabase.rpc("care_recalculate_booking_totals", {
-      p_booking_id: bookingId,
-    });
-  } catch {
-    // ignore recalculation failure
-  }
-}
-
-async function ensureLedgerEntry(input: {
-  sourceId: string;
-  bookingId: string;
-  amount: number;
-  narration: string;
-}) {
-  const supabase = createAdminSupabase();
-  const { data } = await supabase
-    .from("care_finance_ledger")
-    .select("id")
-    .eq("source_table", "care_payments")
-    .eq("source_id", input.sourceId)
-    .limit(1)
-    .maybeSingle();
-
-  if (data?.id) {
-    return;
-  }
-
-  await supabase.from("care_finance_ledger").insert({
-    entry_type: "payment",
-    source_table: "care_payments",
-    source_id: input.sourceId,
-    booking_id: input.bookingId,
-    direction: "inflow",
-    amount: input.amount,
-    narration: input.narration,
-  } as never);
-}
+// SEC-HARDEN-05: the raw `recalculateBookingTotals` (now done by the care_payments
+// trigger) and `ensureLedgerEntry` (the single-entry care_finance_ledger inflow is
+// posted by the trigger; the balanced double-entry by the guarded RPC) helpers were
+// removed — care money writes flow only through care_record_manual_payment.
 
 function verificationStatusFromDecision(
   decision: ReviewPaymentProofInput["decision"]
@@ -935,48 +898,34 @@ export async function reviewPaymentProof(input: ReviewPaymentProofInput) {
 
     const approvedReference =
       asText(latestSubmission?.paymentReference) || asText(payload.latest_reference);
-    const { data: existingPayment } = await supabase
-      .from("care_payments")
-      .select("id, amount, payment_method, reference")
-      .eq("booking_id", booking.id)
-      .eq("amount", approvedAmount)
-      .eq("reference", approvedReference)
-      .limit(1)
-      .maybeSingle();
 
-    let paymentId = asText(existingPayment?.id);
+    // SEC-HARDEN-05: record the payment through the guarded, balanced-ledger RPC. It
+    // validates the amount, is idempotent (one payment per request review), inserts
+    // care_payments as the table owner — so the care_append_payment_ledger +
+    // recalc triggers fire — posts the balanced double-entry, and flips the request to
+    // 'paid' atomically. No raw care_payments / care_finance_ledger / status='paid'
+    // write happens in app code anymore (the raw paths are revoked + guarded in the DB).
+    const { data: rpcResult, error: rpcError } = await supabase.rpc(
+      "care_record_manual_payment",
+      {
+        p_idempotency_key: `care_review:${request.id}`,
+        p_booking_id: booking.id,
+        p_amount: approvedAmount,
+        p_payment_method: asText(input.paymentMethod) || "bank_transfer",
+        p_reference: approvedReference,
+        p_notes:
+          reason || `Manually verified by ${input.actorName} from submitted receipt proof.`,
+        p_received_by: input.actorUserId,
+        p_request_id: request.id,
+        p_request_payload_patch: null,
+      } as never
+    );
 
-    if (!paymentId) {
-      const paymentInsert = await supabase
-        .from("care_payments")
-        .insert({
-          booking_id: booking.id,
-          amount: approvedAmount,
-          payment_method: asText(input.paymentMethod) || "bank_transfer",
-          reference: approvedReference,
-          notes:
-            reason ||
-            `Manually verified by ${input.actorName} from submitted receipt proof.`,
-          received_by: input.actorUserId,
-        } as never)
-        .select("id, amount, payment_method, reference")
-        .maybeSingle();
-
-      if (paymentInsert.error || !paymentInsert.data?.id) {
-        throw new Error(
-          paymentInsert.error?.message || "Payment could not be recorded after approval."
-        );
-      }
-
-      const createdPaymentId = paymentInsert.data.id;
-      paymentId = createdPaymentId;
-      await ensureLedgerEntry({
-        sourceId: createdPaymentId,
-        bookingId: booking.id,
-        amount: approvedAmount,
-        narration: `Payment verified by support • ${approvedReference || booking.tracking_code}`,
-      });
+    if (rpcError) {
+      throw new Error(rpcError.message || "Payment could not be recorded after approval.");
     }
+
+    const paymentId = asText((rpcResult as { payment_id?: string } | null)?.payment_id);
 
     const nextPayload = {
       ...payload,
@@ -992,16 +941,14 @@ export async function reviewPaymentProof(input: ReviewPaymentProofInput) {
       approved_reference: approvedReference,
     };
 
+    // The request is already 'paid' (set atomically inside the guarded RPC); this
+    // persists the review metadata only — a payload-only update the status guard
+    // permits (the booking totals were recalc'd by the payment trigger in the RPC).
     await supabase
       .from("care_payment_requests")
-      .update({
-        status: "paid",
-        paid_at: reviewedAt,
-        payload: nextPayload,
-      } as never)
+      .update({ payload: nextPayload } as never)
       .eq("id", request.id);
 
-    await recalculateBookingTotals(booking.id);
     const refreshedBooking = await getBookingById(booking.id);
     const trackUrl = await buildTrackingUrl(
       refreshedBooking.tracking_code,

@@ -70,66 +70,83 @@ const deliverableStatusTokens: Record<string, StatusTokenStyle> = {
   superseded: { tone: "neutral", label: "Replaced" },
 };
 
+// V3-73 — per-deliverable revision-round status (client approval depth layer).
+const revisionStatusTokens: Record<string, StatusTokenStyle> = {
+  submitted: { tone: "info", label: "Submitted" },
+  changes_requested: { tone: "warn", label: "Changes requested" },
+  approved: { tone: "success", label: "Approved" },
+};
+
 function localizeToken(token: StatusTokenStyle, locale?: AppLocale): StatusTokenStyle {
   if (!locale) return token;
   return { ...token, label: translateSurfaceLabel(locale, token.label) };
 }
 
+export function revisionStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
+  const token = revisionStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
+  return localizeToken(token, locale);
+}
+
 export function projectStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = projectStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = projectStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function milestoneStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = milestoneStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = milestoneStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function invoiceStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = invoiceStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = invoiceStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function paymentStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = paymentStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = paymentStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
 export function deliverableStatusToken(status: string, locale?: AppLocale): StatusTokenStyle {
-  const token = deliverableStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: status || "Status" };
+  const token = deliverableStatusTokens[status] ?? { tone: "neutral" as StatusTone, label: "In progress" };
   return localizeToken(token, locale);
 }
 
+// Status tones render through dual-valued studio tokens (status families
+// defined in app/globals.css). At :root they keep the original dark tints;
+// under .studio-workspace-light they resolve to AA-on-light inks; under the
+// dark scope they revert — so every badge stays theme-correct with no
+// per-call branching. See V3-INNER-L-STUDIO.
 export function toneToClasses(tone: StatusTone): string {
   switch (tone) {
     case "info":
-      return "border-[rgba(120,180,255,0.45)] bg-[rgba(120,180,255,0.12)] text-[#bcd6ff]";
+      return "border-[var(--studio-blue-line)] bg-[var(--studio-blue-soft)] text-[var(--studio-blue-ink)]";
     case "warn":
-      return "border-[rgba(244,196,108,0.45)] bg-[rgba(244,196,108,0.12)] text-[#f3d28a]";
+      return "border-[var(--studio-amber-line)] bg-[var(--studio-amber-soft)] text-[var(--studio-amber-ink)]";
     case "success":
-      return "border-[rgba(141,232,179,0.45)] bg-[rgba(141,232,179,0.12)] text-[#bdf2cf]";
+      return "border-[var(--studio-green-line)] bg-[var(--studio-green-soft)] text-[var(--studio-green-ink)]";
     case "danger":
-      return "border-[rgba(255,143,143,0.45)] bg-[rgba(255,143,143,0.12)] text-[#ffb8b8]";
+      return "border-[var(--studio-red-line)] bg-[var(--studio-red-soft)] text-[var(--studio-red-ink)]";
     case "accent":
-      return "border-[rgba(217,168,109,0.45)] bg-[rgba(217,168,109,0.12)] text-[#f0c89a]";
+      return "border-[var(--studio-copper-line)] bg-[var(--studio-copper-soft)] text-[var(--studio-copper-ink)]";
     case "neutral":
     default:
-      return "border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.05)] text-[var(--studio-ink-soft)]";
+      return "border-[var(--studio-line-strong)] bg-[var(--studio-fill-soft)] text-[var(--studio-ink-soft)]";
   }
 }
 
 export function toneToDot(tone: StatusTone): string {
   switch (tone) {
     case "info":
-      return "bg-[#7eb6ff]";
+      return "bg-[var(--studio-blue-ink)]";
     case "warn":
-      return "bg-[#f3d28a]";
+      return "bg-[var(--studio-amber-ink)]";
     case "success":
-      return "bg-[#8de8b3]";
+      return "bg-[var(--studio-green-ink)]";
     case "danger":
-      return "bg-[#ff8f8f]";
+      return "bg-[var(--studio-red-ink)]";
     case "accent":
-      return "bg-[#d9a86d]";
+      return "bg-[var(--studio-copper-ink)]";
     case "neutral":
     default:
       return "bg-[var(--studio-ink-soft)]";

@@ -101,7 +101,7 @@ export default async function StaffUserIntelligencePage({ params }: { params: Pr
         </OwnerPanel>
       ) : null}
 
-      <OwnerPanel title="Role & permissions" description="Changes save to the member’s HenryCo profile and are audited.">
+      <OwnerPanel title="Role & permissions" description="Changes save to the member’s Henry Onyx profile and are audited.">
         <StaffMemberCard member={member} showIntelligenceLink={false} showCardIdentityHeader={false} />
       </OwnerPanel>
     </div>

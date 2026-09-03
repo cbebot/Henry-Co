@@ -17,6 +17,7 @@ import {
   type AppLocale,
 } from "@henryco/i18n";
 import Link from "next/link";
+import { toBrandName } from "@henryco/config";
 import { Camera, LifeBuoy, Lock } from "lucide-react";
 import UserAvatar from "@/components/layout/UserAvatar";
 
@@ -163,16 +164,16 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
       : selectedAvailability === "limited"
         ? [
             t("Services may vary by region."),
-            t("Some HenryCo divisions are not yet available in this country."),
+            t(toBrandName("Some Henry Onyx divisions are not yet available in this country.")),
           ]
         : selectedAvailability === "coming_soon"
           ? [
-              t("Some HenryCo divisions are not yet available in this country."),
+              t(toBrandName("Some Henry Onyx divisions are not yet available in this country.")),
               t("Language preference does not guarantee local service availability."),
             ]
           : [
               t("Language preference does not guarantee local service availability."),
-              t("Some HenryCo divisions are not yet available in this country."),
+              t(toBrandName("Some Henry Onyx divisions are not yet available in this country.")),
             ];
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -322,7 +323,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
         >
           <p className="text-xs leading-5 text-[var(--acct-muted)] sm:flex-1">
             {t(
-              "Email changes go through identity-verified support so trust, KYC and wallet records stay aligned.",
+              "For your security, email changes are handled by our support team after we verify your identity.",
             )}
           </p>
           <Link
@@ -330,7 +331,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
               t("Email change request"),
             )}&message=${encodeURIComponent(
               [
-                t("Hi HenryCo Support,"),
+                t("Hi Henry Onyx Support,"),
                 "",
                 t("I'd like to change the email on my account."),
                 "",
@@ -391,7 +392,7 @@ export default function ProfileForm({ profile, email, effectiveLocale }: Props) 
         <span className="font-semibold text-[var(--acct-ink)]">{t("Regional defaults")}:</span>{" "}
         {selectedCountry.name} · {selectedCountry.currencyCode} display · {selectedCountry.timezone}.
         {selectedCountry.currencyCode === "NGN"
-          ? ` ${t("Wallet settlement also runs in NGN.")}`
+          ? ` ${t("You'll be paid out in Nigerian Naira (NGN).")}`
           : ` ${formatSurfaceTemplate(surfaceCopy.accountForms.regionalDefaultsNgnOnly, {
               currency: selectedCountry.currencyCode,
             })}`}

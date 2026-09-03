@@ -1,12 +1,18 @@
 import Link from "next/link";
+import { CheckSquare, Lock, RefreshCw, Unlock } from "lucide-react";
 import { requireStudioRoles } from "@/lib/studio/auth";
 import { pmNav } from "@/lib/studio/navigation";
 import { getStudioSnapshot } from "@/lib/studio/store";
+import { getPmProjectSignals } from "@/lib/studio/pm-signals";
 import { StudioWorkspaceShell } from "@/components/studio/workspace/shell";
 
 export default async function PmProjectsPage() {
   await requireStudioRoles(["studio_owner", "project_manager"], "/pm/projects");
   const snapshot = await getStudioSnapshot();
+
+  // V3-73 — augment the list with the client-side state mirror: deliverables
+  // awaiting approval, open change rounds, and the payment-unlock state.
+  const signals = await getPmProjectSignals(snapshot.projects.map((project) => project.id));
 
   return (
     <StudioWorkspaceShell
@@ -21,17 +27,44 @@ export default async function PmProjectsPage() {
           wave. Single-row detail surface at /project/[projectId] is
           already wrapped through the cached DeepL pipeline. */}
       <section className="space-y-4">
-        {snapshot.projects.map((project) => (
-          <article key={project.id} className="studio-panel rounded-[1.75rem] p-6">
-            <h3 className="text-2xl font-semibold text-[var(--studio-ink)]">{project.title}</h3>
-            <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{project.nextAction}</p>
-            <div className="mt-5">
-              <Link href={`/project/${project.id}?access=${project.accessKey}`} className="studio-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
-                Open workspace
-              </Link>
-            </div>
-          </article>
-        ))}
+        {snapshot.projects.map((project) => {
+          const signal = signals.get(project.id);
+          return (
+            <article key={project.id} className="studio-panel rounded-[1.75rem] p-6">
+              <h3 className="text-2xl font-semibold text-[var(--studio-ink)]">{project.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-[var(--studio-ink-soft)]">{project.nextAction}</p>
+
+              {/* V3-73 — client-side state mirror */}
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-[12px] font-semibold">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-fill-soft)] px-3 py-1.5 text-[var(--studio-ink-soft)]">
+                  <CheckSquare className="h-3.5 w-3.5" />
+                  {signal?.awaitingApproval ?? 0} awaiting approval
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-fill-soft)] px-3 py-1.5 text-[var(--studio-ink-soft)]">
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  {signal?.changeRoundsOpen ?? 0} change rounds
+                </span>
+                {signal?.finalsUnlocked ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-green-line)] bg-[var(--studio-green-soft)] px-3 py-1.5 text-[var(--studio-green-ink)]">
+                    <Unlock className="h-3.5 w-3.5" />
+                    Finals unlocked
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-amber-line)] bg-[var(--studio-amber-soft)] px-3 py-1.5 text-[var(--studio-amber-ink)]">
+                    <Lock className="h-3.5 w-3.5" />
+                    Finals locked
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-5">
+                <Link href={`/project/${project.id}?access=${project.accessKey}`} className="studio-button-secondary rounded-full px-5 py-3 text-sm font-semibold">
+                  Open workspace
+                </Link>
+              </div>
+            </article>
+          );
+        })}
       </section>
     </StudioWorkspaceShell>
   );

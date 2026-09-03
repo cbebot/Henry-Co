@@ -1,9 +1,16 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { detectAuthMethod } from "@henryco/auth";
-import { getAuthSessionCopy } from "@henryco/i18n";
-import { henrySubdomain, isRecoverableSupabaseAuthError, normalizeTrustedRedirect } from "@henryco/config";
+import { readReauthContext } from "@henryco/auth/server/reauth-context";
+import { getAuthCopy, getAuthSessionCopy, translateSurfaceLabel } from "@henryco/i18n";
+import {
+  COMPANY,
+  henrySubdomain,
+  isRecoverableSupabaseAuthError,
+  normalizeTrustedRedirect,
+} from "@henryco/config";
 
+import AuthShell from "@/components/auth/AuthShell";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
@@ -35,7 +42,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata() {
   const locale = await getAccountAppLocale();
   const copy = getAuthSessionCopy(locale);
-  return { title: `${copy.reauth.headingFallback} — Henry & Co.` };
+  return { title: `${copy.reauth.headingFallback} — Henry Onyx` };
 }
 
 type ReauthSearchParams = {
@@ -62,7 +69,10 @@ export default async function ReauthPage({
     }
   }
 
-  if (!user) {
+  const reauthContext = user ? null : await readReauthContext();
+  const viewerSubject = user ?? reauthContext;
+
+  if (!viewerSubject?.email) {
     // No JWT → can't reauth, fall back to /login with the same return.
     const returnPath = normalizeTrustedRedirect(params.return ?? "/");
     const loginUrl =
@@ -79,31 +89,49 @@ export default async function ReauthPage({
 
   const locale = await getAccountAppLocale();
   const copy = getAuthSessionCopy(locale);
-  const authMethod = detectAuthMethod(user);
+  const scene = getAuthCopy(locale).scene;
+  const authMethod = detectAuthMethod(viewerSubject);
 
-  const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const userMetadata = (viewerSubject.user_metadata ?? {}) as Record<string, unknown>;
   const displayName =
-    typeof userMetadata.full_name === "string"
+    reauthContext?.displayName ??
+    (typeof userMetadata.full_name === "string"
       ? userMetadata.full_name
       : typeof userMetadata.name === "string"
         ? userMetadata.name
-        : null;
+        : null);
   const avatarUrl =
-    typeof userMetadata.avatar_url === "string"
+    reauthContext?.avatarUrl ??
+    (typeof userMetadata.avatar_url === "string"
       ? userMetadata.avatar_url
       : typeof userMetadata.picture === "string"
         ? userMetadata.picture
-        : null;
+        : null);
 
   const returnPath = normalizeTrustedRedirect(params.return ?? "/");
   const intent: "form" | "page" = params.intent === "form" ? "form" : "page";
   const draftKey = params.drafts && params.drafts.length > 0 ? params.drafts : null;
 
+  // Localized shell heading: "Welcome back, {name}" when we know the first
+  // name, else the fallback. The reauth copy leaves route through Pattern B
+  // runtime translation (`translateSurfaceLabel`), matching auth-session-copy.
+  const firstName = displayName?.trim().match(/^([^\s]+)/)?.[1] ?? null;
+  const shellTitle = firstName
+    ? translateSurfaceLabel(locale, copy.reauth.headingWithName).replace("{name}", firstName)
+    : translateSurfaceLabel(locale, copy.reauth.headingFallback);
+  const shellSubtitle = translateSurfaceLabel(locale, copy.reauth.subheading);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--acct-bg)] px-4 py-12">
+    <AuthShell
+      wordmark={COMPANY.group.name}
+      brandEyebrow={scene.eyebrow}
+      brandLine={scene.line}
+      title={shellTitle}
+      subtitle={shellSubtitle}
+    >
       <ReauthClient
         viewer={{
-          email: user.email ?? "",
+          email: viewerSubject.email,
           displayName,
           avatarUrl,
         }}
@@ -114,6 +142,6 @@ export default async function ReauthPage({
         draftKey={draftKey}
         copy={copy}
       />
-    </div>
+    </AuthShell>
   );
 }

@@ -122,7 +122,7 @@ export function MarketplaceMatters({
       {showApplication && application ? (
         <a
           key="application"
-          href={`${marketplaceOrigin}/sell/status`}
+          href={`${marketplaceOrigin}/account/seller-application`}
           target="_blank"
           rel="noopener noreferrer"
           className="acct-mkt__matter"
@@ -153,7 +153,7 @@ export function MarketplaceMatters({
       {pendingPayouts.length > 0 ? (
         <a
           key="payouts"
-          href={`${marketplaceOrigin}/seller/payouts`}
+          href={`${marketplaceOrigin}/vendor/payouts`}
           target="_blank"
           rel="noopener noreferrer"
           className="acct-mkt__matter"

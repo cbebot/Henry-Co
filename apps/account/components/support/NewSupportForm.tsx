@@ -220,8 +220,12 @@ export default function NewSupportForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium">{t("Subject")}</label>
+          <label htmlFor="support-subject" className="mb-1.5 block text-sm font-medium">
+            {t("Subject")}
+          </label>
           <input
+            id="support-subject"
+            name="subject"
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
@@ -237,6 +241,7 @@ export default function NewSupportForm() {
             threadId={`new-support:${category}`}
             tone="account"
             ariaLabel={t("New support request")}
+            textareaName="message"
             placeholder={t("Describe your issue in detail...")}
             initialText={message}
             busy={loading}

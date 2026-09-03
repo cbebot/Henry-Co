@@ -1,0 +1,6 @@
+# V3-06 dead-link sweep — generated artefacts (regenerated on every
+# `pnpm run dead-link:scan` / `dead-link:check` run; the CI gate produces them
+# fresh and uploads them as short-retention artefacts, so they are never
+# committed — only run-to-run delta is the `generatedAt` timestamp).
+dead-link-catalog.json
+dead-link-classified.json

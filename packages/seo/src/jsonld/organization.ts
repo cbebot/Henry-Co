@@ -23,14 +23,16 @@ export function buildOrganizationLd(opts: OrganizationOptions): JsonLdNode {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": `${url}#organization`,
-    name: division.name,
-    legalName:
-      opts.key === "hub" ? COMPANY.group.legalName : `${COMPANY.group.legalName} — ${division.shortName}`,
+    name: COMPANY.group.name,
+    legalName: COMPANY.group.legalName,
+    alternateName: opts.key === "hub" ? undefined : division.name,
     description: division.description,
     url,
     logo,
     email: division.supportEmail,
-    telephone: division.supportPhone,
+    // NUMBER-PURGE (2026-07-10): NO telephone in structured data — Google was
+    // lifting the digits straight into the search snippet (owner screenshot).
+    // Email is the only published contact; WhatsApp rides masked wa.me links.
     sameAs: opts.sameAs,
     parentOrganization:
       opts.key === "hub"
@@ -38,7 +40,8 @@ export function buildOrganizationLd(opts: OrganizationOptions): JsonLdNode {
         : {
             "@type": "Organization",
             "@id": `https://${COMPANY.group.baseDomain}#organization`,
-            name: COMPANY.group.legalName,
+            name: COMPANY.group.name,
+            legalName: COMPANY.group.legalName,
             url: `https://${COMPANY.group.baseDomain}`,
           },
   };

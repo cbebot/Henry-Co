@@ -13,6 +13,15 @@ import type {
 } from "@henryco/payment-surface";
 
 import { getPaymentVerificationSnapshotForTrackingCode } from "@/lib/payments/verification";
+import {
+  getCareBookingIdentityForCard,
+  isCareBankTransferRetired,
+  isCareCardCheckoutReady,
+  reconcileCareCardPayment,
+} from "@/lib/payments/card-rail";
+import { signCareMediaUrl } from "@/lib/care-media-store";
+import { getCarePublicLocale } from "@/lib/locale-server";
+import { translateSurfaceLabel } from "@henryco/i18n";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -20,7 +29,7 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Care · Payment workspace",
   description:
-    "Send payment proof and track confirmation for your HenryCo Care booking.",
+    "Send payment proof and track confirmation for your Henry Onyx Care booking.",
   robots: { index: false, follow: false },
 };
 
@@ -63,8 +72,55 @@ export default async function CarePaymentWorkspace({
   }
   if (!snapshot) notFound();
 
+  // Card-rail reconcile on the payer's return (flag-gated; a no-op otherwise): a
+  // provider-confirmed intent settles through care's guarded RPC — refresh the
+  // snapshot when it lands so this render shows the paid truth.
+  if (isCareCardCheckoutReady() && snapshot.requestId) {
+    const booking = await getCareBookingIdentityForCard(code);
+    if (booking) {
+      const outcome = await reconcileCareCardPayment({
+        bookingId: booking.bookingId,
+        requestId: snapshot.requestId,
+        requestStatus: snapshot.requestStatus ?? "",
+        amountMajor: snapshot.balanceDue || snapshot.amountDue,
+        currency: snapshot.currency || "NGN",
+        customerId: booking.customerId,
+      }).catch(() => "unchanged" as const);
+      if (outcome === "paid") {
+        try {
+          snapshot = await getPaymentVerificationSnapshotForTrackingCode(code);
+        } catch {
+          /* keep the pre-reconcile snapshot; the next load shows paid */
+        }
+        if (!snapshot) notFound();
+      }
+    }
+  }
+
   const trackHref = `/track?code=${encodeURIComponent(code)}`;
   const accountHref = "/track";
+
+  // The receipt attachment is now a `media://private/...` reference (legacy
+  // rows are absolute URLs); sign it server-side before it reaches the client.
+  const proofUrl = await signCareMediaUrl(
+    snapshot.latestSubmission?.attachments?.[0]?.url ?? "",
+  );
+
+  // The card option rides beside transfer (flag-dark) — only for customer-linked
+  // bookings (the payment intent is user-owned); /card does the POST-only start.
+  const locale = await getCarePublicLocale();
+  const requestOpen =
+    Boolean(snapshot.requestId) &&
+    snapshot.requestStatus !== "paid" &&
+    snapshot.requestStatus !== "cancelled";
+  const cardIdentity = isCareCardCheckoutReady() && requestOpen ? await getCareBookingIdentityForCard(code) : null;
+  const cardCta =
+    cardIdentity?.customerId
+      ? {
+          label: translateSurfaceLabel(locale, "Pay with card"),
+          href: `/pay/${encodeURIComponent(code)}/card`,
+        }
+      : null;
 
   const ctx: PaymentSurfaceContext = buildPaymentSurfaceContext({
     payment: buildPaymentRecordView({
@@ -76,8 +132,9 @@ export default async function CarePaymentWorkspace({
       statusLabel: snapshot.verificationLabel,
       dueDate: null,
       proofName: snapshot.latestSubmission?.attachments?.[0]?.fileName ?? null,
-      proofUrl: snapshot.latestSubmission?.attachments?.[0]?.url ?? null,
+      proofUrl: proofUrl || null,
       updatedAt: snapshot.lastReviewedAt ?? snapshot.lastSubmittedAt,
+      reference: snapshot.requestNo ?? code,
     }),
     record: {
       title: snapshot.customerName || "Care booking",
@@ -115,6 +172,9 @@ export default async function CarePaymentWorkspace({
         "Confirmed on {date}.{proof} Your booking advanced to the next service stage automatically.",
     },
     theme: CARE_THEME,
+    cardCta,
+    // Card-first when transfer is retired (interlocked to a ready card rail).
+    cardOnly: isCareBankTransferRetired(),
   });
 
   return <PaymentSurface ctx={ctx} />;

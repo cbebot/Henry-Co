@@ -61,7 +61,7 @@ export default function MarketplaceHelpCentre({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search help — e.g. refund, missing item, payout"
-          className="h-14 w-full rounded-2xl border border-[var(--market-line)] bg-black/30 pl-11 pr-4 text-base text-[var(--market-paper-white)] outline-none placeholder:text-[var(--market-muted)]/70 focus:border-[var(--market-brass)]"
+          className="h-14 w-full rounded-2xl border border-[var(--market-line)] bg-[color:var(--home-surface-04)] pl-11 pr-4 text-base text-[var(--market-paper-white)] outline-none placeholder:text-[var(--market-muted)]/70 focus:border-[var(--market-brass)]"
           aria-label="Search the help centre"
         />
       </div>
@@ -82,7 +82,9 @@ export default function MarketplaceHelpCentre({
                   <p className="mt-2 text-base font-semibold tracking-tight text-[var(--market-paper-white)]">
                     {item.question}
                   </p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
+                  {/* READING-02: FAQ answers read in the serif face (hub
+                      home-faq precedent); ink stays host-owned. */}
+                  <p className="hc-font-reading text-pretty mt-2 max-w-prose text-sm leading-7 text-[var(--market-muted)]">
                     {item.answer}
                   </p>
                 </li>
@@ -154,7 +156,9 @@ export default function MarketplaceHelpCentre({
                         />
                       </button>
                       {isOpen ? (
-                        <p className="pb-5 pr-8 text-sm leading-7 text-[var(--market-muted)]">
+                        // READING-02: serif reading face + capped measure
+                        // (hub home-faq precedent).
+                        <p className="hc-font-reading text-pretty max-w-prose pb-5 pr-8 text-sm leading-7 text-[var(--market-muted)]">
                           {item.answer}
                         </p>
                       ) : null}

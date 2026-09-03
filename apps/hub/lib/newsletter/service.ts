@@ -20,17 +20,18 @@ import {
   type SubscriptionInput,
   resolveBrevoConfig,
   isBrevoEnabled,
-  brevoSendTransactional,
   brevoSyncContact,
   brevoRemoveContactFromLists,
   brevoBlocklistContact,
   renderDraftAsHtml,
   runVoiceGuard,
+  scopeMatchesCampaign,
   type NewsletterCampaignContent,
   type NewsletterCampaignClass,
 } from "@henryco/newsletter";
 
 import { henryWebRoot } from "@henryco/config";
+import { resolveProviderChain, sendTransactionalEmail } from "@henryco/email";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getOptionalEnv } from "@/lib/env";
 
@@ -54,6 +55,37 @@ function getHubPublicBase(): string {
   if (explicit && explicit.trim()) return explicit.trim().replace(/\/+$/, "");
   // V3-07(S2): env-aware via henryWebRoot() instead of literal.
   return henryWebRoot();
+}
+
+// ─── Newsletter dispatch (EMAIL-POSTMARK, 2026-07-14) ───────────────────────
+//
+// Campaign + test sends ride the shared @henryco/email router (Postmark) —
+// Brevo transactional send is permanently retired. The Brevo contact/blocklist
+// sync calls elsewhere in this service stay as guarded no-ops until the
+// local-suppression-store replacement lands (they skip without BREVO_API_KEY).
+
+type NewsletterDispatch =
+  | { ok: true; provider: string; messageId: string }
+  | { ok: false; provider: string; error: string };
+
+function newsletterMailReady(): boolean {
+  return resolveProviderChain("newsletter").length > 0;
+}
+
+async function sendNewsletterEmail(input: {
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<NewsletterDispatch> {
+  const result = await sendTransactionalEmail({ ...input, purpose: "newsletter" });
+  if (result.status === "sent") {
+    return { ok: true, provider: result.provider, messageId: result.messageId || "" };
+  }
+  return {
+    ok: false,
+    provider: result.provider,
+    error: result.safeError || result.skippedReason || "email_not_sent",
+  };
 }
 
 type SubscriberRow = {
@@ -127,7 +159,12 @@ async function isEmailSuppressed(email: string): Promise<boolean> {
   if (!data) return false;
   const now = Date.now();
   return data.some((row: { scope: string; expires_at: string | null }) => {
-    if (row.scope === "transactional_only") return false;
+    // Subscribing to the newsletter is a marketing (company_wide) action,
+    // so a transactional_only opt-down blocks it too (STAFF-6: don't treat
+    // transactional_only as "not suppressed" for a marketing subscribe).
+    if (!scopeMatchesCampaign(row.scope as NewsletterSuppressionScope, "company_wide")) {
+      return false;
+    }
     if (row.expires_at) {
       const exp = Date.parse(row.expires_at);
       if (!Number.isNaN(exp) && exp <= now) return false;
@@ -154,8 +191,10 @@ export async function subscribe(input: SubscriptionInput): Promise<SubscribeResu
       return {
         ok: false,
         code: "suppressed",
+        // Neutral, non-enumerating wording — do not reveal the internal
+        // suppression mechanics or confirm this address's prior state.
         message:
-          "This address is on our suppression list. We'll remove it only after a documented review.",
+          "We couldn't complete your subscription for this address. If you think this is a mistake, contact support.",
       };
     }
   } catch (err) {
@@ -320,7 +359,7 @@ export async function loadPreferencesByToken(token: string): Promise<LoadPrefere
       ok: false,
       code: "invalid_token",
       message:
-        "Preference links are not configured on this environment. Contact support to unsubscribe.",
+        "We couldn't open your preferences right now. Please contact support to update or unsubscribe.",
     };
   }
   const verified = verifyPreferenceToken({ secret, token });
@@ -580,23 +619,21 @@ export async function sendTestDraft(input: SendTestDraftInput): Promise<SendTest
     .replace("{{preferences_url}}", `${getHubPublicBase()}/newsletter/preferences`)
     .replace("{{unsubscribe_url}}", `${getHubPublicBase()}/newsletter/unsubscribe`);
 
-  const brevoConfig = resolveBrevoConfig();
-  if (!isBrevoEnabled(brevoConfig)) {
+  if (!newsletterMailReady()) {
     const admin = createAdminSupabase();
     await admin.from(NEWSLETTER_EDITORIAL_EVENTS_TABLE).insert({
       campaign_id: input.campaignId,
       actor_id: input.actorId ?? null,
       kind: "test_sent",
-      note: "Brevo disabled — test send simulated",
+      note: "Email transport not configured — test send simulated",
       payload: { to: email, provider: "disabled" },
     });
-    return { ok: false, reason: "brevo_not_configured" };
+    return { ok: false, reason: "email_not_configured" };
   }
-  const result = await brevoSendTransactional(brevoConfig, {
+  const result = await sendNewsletterEmail({
     to: email,
     subject: `[TEST] ${input.content.subject}`,
     html,
-    tags: ["newsletter-test"],
   });
   const admin = createAdminSupabase();
   await admin.from(NEWSLETTER_EDITORIAL_EVENTS_TABLE).insert({
@@ -841,8 +878,7 @@ export async function runCampaignSend(
     expires_at: string | null;
   }>;
 
-  const brevoConfig = resolveBrevoConfig();
-  const brevoReady = isBrevoEnabled(brevoConfig);
+  const mailReady = newsletterMailReady();
   const html = renderDraftAsHtml(campaign.content);
   const preferencesBase = `${getHubPublicBase()}/newsletter/preferences`;
   const unsubscribeBase = `${getHubPublicBase()}/newsletter/unsubscribe`;
@@ -860,7 +896,9 @@ export async function runCampaignSend(
     const scope = suppressionEntries
       .filter((e) => e.email.toLowerCase() === subscriber.email.toLowerCase())
       .find((e) => {
-        if (e.scope === "transactional_only") return false;
+        // Canonical scope semantics — a transactional_only opt-down still
+        // suppresses every marketing class (STAFF-6: never skip it wholesale).
+        if (!scopeMatchesCampaign(e.scope, campaign.campaign_class)) return false;
         if (e.expires_at) {
           const exp = Date.parse(e.expires_at);
           if (!Number.isNaN(exp) && exp <= Date.now()) return false;
@@ -892,7 +930,7 @@ export async function runCampaignSend(
       continue;
     }
 
-    if (!brevoReady) {
+    if (!mailReady) {
       failed++;
       await admin.from(NEWSLETTER_CAMPAIGN_SENDS_TABLE).insert({
         campaign_id: campaign.id,
@@ -900,10 +938,10 @@ export async function runCampaignSend(
         email: subscriber.email,
         status: "failed",
         provider: "disabled",
-        error_code: "brevo_not_configured",
-        error_message: "BREVO_API_KEY not configured",
+        error_code: "email_not_configured",
+        error_message: "No outbound email provider is configured",
       });
-      notes.push("brevo_not_configured");
+      notes.push("email_not_configured");
       continue;
     }
 
@@ -916,11 +954,10 @@ export async function runCampaignSend(
       .replace("{{preferences_url}}", `${preferencesBase}?token=${encodeURIComponent(token)}`)
       .replace("{{unsubscribe_url}}", `${unsubscribeBase}?token=${encodeURIComponent(token)}`);
 
-    const result = await brevoSendTransactional(brevoConfig, {
+    const result = await sendNewsletterEmail({
       to: subscriber.email,
       subject: campaign.content.subject,
       html: personalizedHtml,
-      tags: ["newsletter", campaign.division, ...topicKeys].slice(0, 10),
     });
     if (result.ok) {
       sent++;
@@ -929,7 +966,7 @@ export async function runCampaignSend(
         subscriber_id: subscriber.id,
         email: subscriber.email,
         status: "sent",
-        provider: "brevo",
+        provider: result.provider,
         provider_message_id: result.messageId,
         sent_at: new Date().toISOString(),
       });
@@ -940,8 +977,8 @@ export async function runCampaignSend(
         subscriber_id: subscriber.id,
         email: subscriber.email,
         status: "failed",
-        provider: "brevo",
-        error_code: `http_${result.status ?? "unknown"}`,
+        provider: result.provider,
+        error_code: "provider_error",
         error_message: result.error,
       });
     }

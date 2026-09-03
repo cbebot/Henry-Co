@@ -1,13 +1,14 @@
 "use client";
 
 /**
- * QuizEngine — interactive quiz with client-side preview grading.
+ * QuizEngine — interactive quiz, graded server-side on submit.
  *
  * V3 PASS 21 contract:
  *   • Question types: single_choice, multiple_choice, short_text (free-response)
- *   • Client-side preview grading; server-authoritative submission via
- *     parent action (server action signature compatible with submitQuizAttempt)
- *   • Explanation revealed after answering each question
+ *   • Grading is server-authoritative only — the answer key is NEVER shipped to
+ *     the client, so a learner cannot read the correct answers from the props
+ *     payload before submitting. Correctness is returned by the server after the
+ *     attempt is recorded (via the existing submitQuizAttempt path).
  *   • Keyboard navigation (Tab through controls; submission via form)
  *   • One question per screen on mobile (parent layout); grouped on desktop
  *
@@ -23,7 +24,8 @@ export type QuizQuestionInput = {
   prompt: string;
   questionType: "single_choice" | "multiple_choice" | "short_text";
   options: string[];
-  correctAnswer: string[];
+  // NOTE: the answer key is intentionally NOT part of the client prop shape.
+  // Grading happens server-side after the attempt is recorded.
   explanation: string;
 };
 
@@ -50,12 +52,6 @@ export type QuizEngineProps = {
     freeResponsePlaceholder: string;
   };
 };
-
-function arraysEqualIgnoringCase(a: string[], b: string[]): boolean {
-  const left = a.map((v) => v.trim().toLowerCase()).sort().join("|");
-  const right = b.map((v) => v.trim().toLowerCase()).sort().join("|");
-  return left === right;
-}
 
 export function QuizEngine({
   action,
@@ -95,19 +91,6 @@ export function QuizEngine({
     });
   };
 
-  const previewCorrect = questions.reduce((total, q) => {
-    const submitted = answers[q.id] ?? [];
-    if (submitted.length === 0) return total;
-    if (q.questionType === "short_text") {
-      // Client-side preview cannot grade free response; defer to server.
-      return total;
-    }
-    return total + (arraysEqualIgnoringCase(q.correctAnswer, submitted) ? 1 : 0);
-  }, 0);
-  const previewScore = questions.length
-    ? Math.round((previewCorrect / questions.length) * 100)
-    : 0;
-
   return (
     <form action={action} className="space-y-5">
       <input type="hidden" name="courseId" value={courseId} />
@@ -118,10 +101,6 @@ export function QuizEngine({
         const isMulti = question.questionType === "multiple_choice";
         const isShort = question.questionType === "short_text";
         const showExplanation = revealed.has(question.id);
-        const previewIsCorrect =
-          !isShort && submitted.length > 0
-            ? arraysEqualIgnoringCase(question.correctAnswer, submitted)
-            : null;
 
         return (
           <fieldset
@@ -177,22 +156,8 @@ export function QuizEngine({
               )}
             </div>
 
-            {/* Inline preview feedback + explanation toggle */}
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs">
-              {previewIsCorrect != null ? (
-                <span
-                  className={
-                    previewIsCorrect
-                      ? "rounded-full border border-emerald-200/30 bg-emerald-300/10 px-3 py-1 font-semibold text-emerald-100"
-                      : "rounded-full border border-amber-200/30 bg-amber-300/8 px-3 py-1 font-semibold text-amber-100"
-                  }
-                  role="status"
-                >
-                  {previewIsCorrect ? labels.correct : labels.incorrect}
-                </span>
-              ) : (
-                <span />
-              )}
+            {/* Explanation toggle — correctness is shown after server grading. */}
+            <div className="mt-4 flex flex-wrap items-center justify-end gap-3 text-xs">
               {question.explanation ? (
                 <button
                   type="button"
@@ -215,8 +180,6 @@ export function QuizEngine({
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.4rem] border border-[var(--learn-line)] bg-black/10 p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-          {labels.previewScore}: <span className="text-[var(--learn-ink)]">{previewScore}%</span>
-          {" · "}
           {labels.passScoreLabel}: {passScore}%
         </p>
         <PendingSubmitButton pendingLabel={labels.submitting}>

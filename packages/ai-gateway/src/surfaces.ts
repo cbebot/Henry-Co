@@ -1,0 +1,315 @@
+import type { AiModelTier } from "@henryco/pricing";
+
+/** A registered AI entry point. The FREE/METERED split is the owner's model: free for
+ *  company-critical tasks, metered for personal/business tasks. */
+export type AiSurfaceKey =
+  | "marketplace.listing.draft" // Pass 1 — METERED (a seller's business task)
+  | "marketplace.listing.verify" // Pass 2 — METERED, deep tier (the trust review; see docs/v3/ai/PASS-2-LISTING-VERIFY.md)
+  | "intelligence.chat" // V3-28 — METERED (the governed Henry Onyx Intelligence chat; a personal task)
+  | "support.message.assist" // later — FREE (company-critical)
+  | "account.check.assist" // later — FREE
+  | "studio.brief.staff" // later — FREE/internal (the existing staff copilot; NOT billed)
+  | "studio.brief.client" // later — METERED (client-end briefs)
+  | "studio.brief.coach" // V3-12 — FREE/internal: the multi-turn "talk it through" brief coach
+  | "business.message.assist" // later — METERED
+  // Company-wide metered surfaces (one brain, every division) — draft (standard tier) +
+  // the deep-tier trust review. The wallet + rail are shared; each division just mounts.
+  | "jobs.posting.draft" // METERED — an employer drafts a job post
+  | "jobs.posting.verify" // METERED, deep — anti-scam/fake-job trust review before a post goes live
+  | "learn.course.draft" // METERED — an educator drafts a course
+  | "learn.course.verify" // METERED, deep — verify a course is genuine, on-standard, safe
+  | "property.listing.draft" // METERED — an agent drafts a property listing
+  | "property.listing.verify" // METERED, deep — verify a property listing is honest, real, safe
+  // Intelligence Live L4 — CHARGEABLE deep-work capabilities. Free general support stays free
+  // (support.message.assist); these are the personalised, wallet-billed pieces the person
+  // confirms a price for before it runs. Deep tier (the premium the rate card already prices).
+  | "intelligence.deep.growth" // METERED, deep — a tailored growth plan for their business
+  | "intelligence.deep.marketing" // METERED, deep — a deep marketing analysis of their own store/listings
+  | "intelligence.deep.listing" // METERED, deep — a conversion review of their own listings/products
+  // Founder Intelligence F2 — the owner-only executive assistant inside the hub command
+  // center. FREE (the founder IS the company; no wallet interaction), deep tier (the
+  // strongest model — this is the one seat where quality beats cost by definition).
+  // Access model is INDEPENDENT of the customer support brain: the hub route gates on
+  // requireOwner BEFORE runAiTask, and its own flag (NEXT_PUBLIC_FOUNDER_INTELLIGENCE_LIVE)
+  // keeps it dark until activation.
+  | "hub.founder.assist"
+  // V3-36 (Phase E) — the cross-division recommendation RE-RANK. PLATFORM-INVOKED
+  // (the customer never asked): billable:false so it NEVER touches a wallet
+  // (E-D1 — a person cannot be charged for a suggestion they didn't request),
+  // fast tier, tiny output (it returns an ORDERING, not content), audit ON. Its
+  // cost is company COGS bounded by the shared free-AI daily ceiling; the engine
+  // treats a refusal/failure as "keep the deterministic order" — enhancement,
+  // never the floor.
+  | "intelligence.recommendations.rerank"
+  // V3-40 (Phase E) — the predictive-risk ADVISORY. PLATFORM-INVOKED (the scored
+  // party never asked and can never be billed for surveillance of themselves —
+  // E-D1): billable:false so no wallet is ever touched; runs with noBillingPort;
+  // spend is company COGS reserved BEFORE the call against the internal daily
+  // ledger (reserve-before-run, degrade-CLOSED). Output is a clamped score
+  // adjustment only — a freeze can never rest on it (engine rule). Fast tier,
+  // tiny output, audit ON. Dark behind `predictive_risk_assist` + `ai_gateway`.
+  | "risk.entity.assist"
+  // V3-41 (Phase E) — the staff-facing NARRATIVE for a predictive forecast.
+  // PLATFORM-INVOKED: nobody asked for it, so billable:false and it runs through
+  // noBillingPort — no wallet is touched, ever. It writes PROSE ABOUT an already-
+  // computed deterministic forecast; it cannot produce, alter or veto a number,
+  // so a dead gateway costs the operator a sentence, never a forecast. Spend is
+  // company COGS reserved BEFORE the call against the unified internal daily
+  // ledger (reserve-before-run, degrade-CLOSED). Fast tier, small output, audit
+  // ON. Dark behind `predictive_quality_narrative` + `ai_gateway`.
+  | "predictive.narrative";
+
+export interface AiSurfacePolicy {
+  surface: AiSurfaceKey;
+  /** false ⇒ company-critical/subsidised; no wallet interaction. */
+  billable: boolean;
+  /** → pricing_rule_books.rule_book_key (margin %, caps); ignored when !billable. */
+  ruleBookKey: string;
+  /** Default tier; an operation may escalate to a heavier tier server-side. */
+  modelTier: AiModelTier;
+  /** Hard per-call output cap — bounds the largest single charge. */
+  maxOutputTokens: number;
+  /** Upper bound on provider round-trips per task (the estimator uses this). */
+  maxCalls: number;
+  /** Rate-limit even FREE surfaces (the studio anti-abuse lesson). */
+  freeAllowancePerDay?: number;
+}
+
+const DEFAULT_RULE_BOOK_KEY = "ai-usage-rate-card-v1";
+
+/** The governed surface registry. Only `marketplace.listing.draft` is mounted on a UI
+ *  surface in Pass 1; the rest are declared for forward-compatibility (Pass 2 wires
+ *  them). Flipping a surface FREE↔METERED is data, not code. */
+export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
+  "marketplace.listing.draft": {
+    surface: "marketplace.listing.draft",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  // Pass 2 — opt-in "Henry Onyx Intelligence Review" before a listing goes live: deep
+  // tier (the strongest model, so nothing slips through), multimodal (images + copy),
+  // returns an honesty / not-AI-generated / standards / safety verdict that earns a
+  // "Henry Onyx Verified" trust badge. METERED — the seller pays for the review, for
+  // their own goods' credibility. Dark until the Pass-2 build wires the surface + the
+  // vision adapter path. The cross-division siblings (jobs/learn/property `*.listing.verify`)
+  // follow this exact shape. See docs/v3/ai/PASS-2-LISTING-VERIFY.md.
+  "marketplace.listing.verify": {
+    surface: "marketplace.listing.verify",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 1500,
+    maxCalls: 1,
+  },
+  // V3-28 — the governed Henry Onyx Intelligence chat. A personal conversational task, so
+  // METERED per turn at the standard tier; the topic guard (declines competing-brand /
+  // anti-company) lives in the system prompt. Dark until mounted.
+  "intelligence.chat": {
+    surface: "intelligence.chat",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 700,
+    maxCalls: 1,
+  },
+  // Intelligence Live — the FREE general-support brain behind the launcher on every
+  // division page. Conversational (multi-turn), emits the {reply, navigate, handoff}
+  // envelope. Fast tier so free support stays cheap; a generous daily allowance so a
+  // real conversation never hits the cap mid-thread.
+  "support.message.assist": {
+    surface: "support.message.assist",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 800,
+    maxCalls: 1,
+    freeAllowancePerDay: 120,
+  },
+  "account.check.assist": {
+    surface: "account.check.assist",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 512,
+    maxCalls: 1,
+    freeAllowancePerDay: 20,
+  },
+  "studio.brief.staff": {
+    surface: "studio.brief.staff",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+    // Gateway backstop behind studio's own 6-layer anti-abuse (per-session/account/IP/system caps).
+    freeAllowancePerDay: 40,
+  },
+  "studio.brief.client": {
+    surface: "studio.brief.client",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  "studio.brief.coach": {
+    surface: "studio.brief.coach",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 512,
+    maxCalls: 1,
+    // The cost guard now that the coach NEVER degrades to canned replies: per-session daily cap
+    // (the action passes a stable session-scoped actorId) on top of the 12-turn ceiling.
+    // Sized for enthusiastic REAL use (owner report: honest heavy testing was getting declined) —
+    // fast-tier 512-token turns are cheap; scripts are stopped by the burst/IP/system brakes.
+    freeAllowancePerDay: 200,
+  },
+  "business.message.assist": {
+    surface: "business.message.assist",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 600,
+    maxCalls: 1,
+  },
+  // ---- Company-wide draft + trust-review surfaces (METERED; mounted per division) ----
+  "jobs.posting.draft": {
+    surface: "jobs.posting.draft",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  "jobs.posting.verify": {
+    surface: "jobs.posting.verify",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 1500,
+    maxCalls: 1,
+  },
+  "learn.course.draft": {
+    surface: "learn.course.draft",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  "learn.course.verify": {
+    surface: "learn.course.verify",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 1500,
+    maxCalls: 1,
+  },
+  "property.listing.draft": {
+    surface: "property.listing.draft",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "standard",
+    maxOutputTokens: 1024,
+    maxCalls: 1,
+  },
+  "property.listing.verify": {
+    surface: "property.listing.verify",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 1500,
+    maxCalls: 1,
+  },
+  // Intelligence Live L4 — chargeable deep-work capabilities. Deep tier, billable, one call.
+  // A larger output budget than a verify verdict because these produce a real written plan or
+  // analysis the person paid for. The price is quoted and confirmed before any of this runs.
+  "intelligence.deep.growth": {
+    surface: "intelligence.deep.growth",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 2200,
+    maxCalls: 1,
+  },
+  "intelligence.deep.marketing": {
+    surface: "intelligence.deep.marketing",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 2200,
+    maxCalls: 1,
+  },
+  "intelligence.deep.listing": {
+    surface: "intelligence.deep.listing",
+    billable: true,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    maxOutputTokens: 2000,
+    maxCalls: 1,
+  },
+  "hub.founder.assist": {
+    surface: "hub.founder.assist",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "deep",
+    // The founder's working surface: enough headroom for a full structured
+    // report in one turn (it already runs the deep tier — depth, not tier,
+    // is the lever left).
+    maxOutputTokens: 2400,
+    maxCalls: 1,
+    // One person holds this surface, but the anti-abuse lesson still applies —
+    // a leaked owner session must not be able to burn unbounded provider spend.
+    freeAllowancePerDay: 400,
+  },
+  // V3-36 — the recommendation re-rank. NON-BILLABLE (no wallet, ever), fast
+  // tier, tiny cap (an ordering of ≤6 ids fits in well under 200 tokens), and a
+  // modest per-actor daily allowance so a busy home can never compound provider
+  // spend. The caller ALSO gates it on the company free-AI daily budget, so the
+  // platform-invoked cost is doubly bounded.
+  "intelligence.recommendations.rerank": {
+    surface: "intelligence.recommendations.rerank",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 200,
+    maxCalls: 1,
+    freeAllowancePerDay: 60,
+  },
+  // V3-40 — platform-invoked risk advisory. Never a wallet; bounded twice over
+  // (freeAllowancePerDay here + reserve-before-run against the internal daily
+  // spend ledger at the call site, RISK_ASSIST_MAX_PER_RUN per batch).
+  "risk.entity.assist": {
+    surface: "risk.entity.assist",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 120,
+    maxCalls: 1,
+    freeAllowancePerDay: 40,
+  },
+  // V3-41 — the predictive staff narrative. Never a wallet. Two bounds, and they
+  // are NOT equivalent: `freeAllowancePerDay` is enforced by the gateway's
+  // default IN-MEMORY rate limiter (server/index.ts), so it resets on a cold
+  // start and is only a per-process backstop. The DURABLE ceiling is the
+  // caller's reserve-before-run against `internal_ai_spend_ledger`
+  // (cross-process, cross-restart), plus a hard per-run call cap and the
+  // batch's single-flight lock.
+  "predictive.narrative": {
+    surface: "predictive.narrative",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 220,
+    maxCalls: 1,
+    freeAllowancePerDay: 30,
+  },
+};
+
+export function getSurfacePolicy(surface: AiSurfaceKey): AiSurfacePolicy | null {
+  return AI_SURFACES[surface] ?? null;
+}

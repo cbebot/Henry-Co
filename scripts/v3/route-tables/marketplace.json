@@ -1,0 +1,321 @@
+{
+  "app": "marketplace",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/account",
+      "api": false
+    },
+    {
+      "route": "/account/addresses",
+      "api": false
+    },
+    {
+      "route": "/account/disputes",
+      "api": false
+    },
+    {
+      "route": "/account/following",
+      "api": false
+    },
+    {
+      "route": "/account/notifications",
+      "api": false
+    },
+    {
+      "route": "/account/orders",
+      "api": false
+    },
+    {
+      "route": "/account/orders/:param",
+      "api": false
+    },
+    {
+      "route": "/account/payments",
+      "api": false
+    },
+    {
+      "route": "/account/reviews",
+      "api": false
+    },
+    {
+      "route": "/account/saved",
+      "api": false
+    },
+    {
+      "route": "/account/seller-application",
+      "api": false
+    },
+    {
+      "route": "/account/seller-application/review",
+      "api": false
+    },
+    {
+      "route": "/account/seller-application/start",
+      "api": false
+    },
+    {
+      "route": "/account/seller-application/verification",
+      "api": false
+    },
+    {
+      "route": "/account/support",
+      "api": false
+    },
+    {
+      "route": "/account/wallet",
+      "api": false
+    },
+    {
+      "route": "/account/wishlist",
+      "api": false
+    },
+    {
+      "route": "/admin",
+      "api": false
+    },
+    {
+      "route": "/admin/:param",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/cart",
+      "api": true
+    },
+    {
+      "route": "/api/checkout/payment-proof",
+      "api": true
+    },
+    {
+      "route": "/api/cron/marketplace-automation",
+      "api": true
+    },
+    {
+      "route": "/api/follows",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/api/marketplace",
+      "api": true
+    },
+    {
+      "route": "/api/orders",
+      "api": true
+    },
+    {
+      "route": "/api/products",
+      "api": true
+    },
+    {
+      "route": "/api/products/suggest",
+      "api": true
+    },
+    {
+      "route": "/api/readiness",
+      "api": true
+    },
+    {
+      "route": "/api/saved-items",
+      "api": true
+    },
+    {
+      "route": "/api/seller-applications",
+      "api": true
+    },
+    {
+      "route": "/api/seller-applications/documents",
+      "api": true
+    },
+    {
+      "route": "/api/shell",
+      "api": true
+    },
+    {
+      "route": "/api/version",
+      "api": true
+    },
+    {
+      "route": "/api/wishlist",
+      "api": true
+    },
+    {
+      "route": "/brand/:param",
+      "api": false
+    },
+    {
+      "route": "/cart",
+      "api": false
+    },
+    {
+      "route": "/category/:param",
+      "api": false
+    },
+    {
+      "route": "/checkout",
+      "api": false
+    },
+    {
+      "route": "/collections/:param",
+      "api": false
+    },
+    {
+      "route": "/deals",
+      "api": false
+    },
+    {
+      "route": "/finance",
+      "api": false
+    },
+    {
+      "route": "/finance/:param",
+      "api": false
+    },
+    {
+      "route": "/help",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/moderation",
+      "api": false
+    },
+    {
+      "route": "/moderation/:param",
+      "api": false
+    },
+    {
+      "route": "/operations",
+      "api": false
+    },
+    {
+      "route": "/operations/:param",
+      "api": false
+    },
+    {
+      "route": "/owner",
+      "api": false
+    },
+    {
+      "route": "/owner/:param",
+      "api": false
+    },
+    {
+      "route": "/pay/:param",
+      "api": false
+    },
+    {
+      "route": "/policies/:param",
+      "api": false
+    },
+    {
+      "route": "/product/:param",
+      "api": false
+    },
+    {
+      "route": "/search",
+      "api": false
+    },
+    {
+      "route": "/sell",
+      "api": false
+    },
+    {
+      "route": "/sell/pricing",
+      "api": false
+    },
+    {
+      "route": "/signup",
+      "api": false
+    },
+    {
+      "route": "/store/:param",
+      "api": false
+    },
+    {
+      "route": "/support",
+      "api": false
+    },
+    {
+      "route": "/support/:param",
+      "api": false
+    },
+    {
+      "route": "/track",
+      "api": false
+    },
+    {
+      "route": "/track/:param",
+      "api": false
+    },
+    {
+      "route": "/trust",
+      "api": false
+    },
+    {
+      "route": "/vendor",
+      "api": false
+    },
+    {
+      "route": "/vendor/analytics",
+      "api": false
+    },
+    {
+      "route": "/vendor/disputes",
+      "api": false
+    },
+    {
+      "route": "/vendor/onboarding",
+      "api": false
+    },
+    {
+      "route": "/vendor/orders",
+      "api": false
+    },
+    {
+      "route": "/vendor/orders/:param",
+      "api": false
+    },
+    {
+      "route": "/vendor/payouts",
+      "api": false
+    },
+    {
+      "route": "/vendor/products",
+      "api": false
+    },
+    {
+      "route": "/vendor/products/:param",
+      "api": false
+    },
+    {
+      "route": "/vendor/products/new",
+      "api": false
+    },
+    {
+      "route": "/vendor/settings",
+      "api": false
+    },
+    {
+      "route": "/vendor/store",
+      "api": false
+    }
+  ]
+}

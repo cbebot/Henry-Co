@@ -375,7 +375,7 @@ begin
       metadata
     ) values (
       new.id,
-      'HenryCo Studio',
+      'Henry & Co. Studio',
       'team',
       format(
         '%s is open in Studio. %sQuestions, updates, files, and decisions all live here in one organised place — ask anything any time.',

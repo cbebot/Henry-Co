@@ -1,0 +1,25 @@
+{
+  "name": "@henryco/command-contract",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./errors": "./src/errors.ts",
+    "./state-machine": "./src/state-machine.ts",
+    "./access": "./src/access.ts",
+    "./aggregate": "./src/aggregate.ts",
+    "./publish": "./src/publish.ts",
+    "./mock": "./src/mock/feed.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "tsx --test src/__tests__/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

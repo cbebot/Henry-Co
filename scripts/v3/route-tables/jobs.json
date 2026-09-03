@@ -1,0 +1,261 @@
+{
+  "app": "jobs",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/admin",
+      "api": false
+    },
+    {
+      "route": "/analytics",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/candidate/documents",
+      "api": true
+    },
+    {
+      "route": "/api/candidate/profile/draft",
+      "api": true
+    },
+    {
+      "route": "/api/cron/jobs-alerts",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/hiring/interviews",
+      "api": true
+    },
+    {
+      "route": "/api/hiring/messages",
+      "api": true
+    },
+    {
+      "route": "/api/hiring/messages/flag",
+      "api": true
+    },
+    {
+      "route": "/api/jobs/interviews/rooms/:param/notes",
+      "api": true
+    },
+    {
+      "route": "/api/jobs/offers",
+      "api": true
+    },
+    {
+      "route": "/api/jobs/pipeline/move",
+      "api": true
+    },
+    {
+      "route": "/api/jobs/salary/:param/:param",
+      "api": true
+    },
+    {
+      "route": "/api/jobs/verifications/skill",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/api/webhooks/daily",
+      "api": true
+    },
+    {
+      "route": "/auth/callback",
+      "api": false
+    },
+    {
+      "route": "/auth/session",
+      "api": true
+    },
+    {
+      "route": "/candidate",
+      "api": false
+    },
+    {
+      "route": "/candidate/alerts",
+      "api": false
+    },
+    {
+      "route": "/candidate/applications",
+      "api": false
+    },
+    {
+      "route": "/candidate/conversations",
+      "api": false
+    },
+    {
+      "route": "/candidate/conversations/:param",
+      "api": false
+    },
+    {
+      "route": "/candidate/files",
+      "api": false
+    },
+    {
+      "route": "/candidate/interviews",
+      "api": false
+    },
+    {
+      "route": "/candidate/profile",
+      "api": false
+    },
+    {
+      "route": "/candidate/saved-jobs",
+      "api": false
+    },
+    {
+      "route": "/candidate/settings",
+      "api": false
+    },
+    {
+      "route": "/careers",
+      "api": false
+    },
+    {
+      "route": "/categories/:param",
+      "api": false
+    },
+    {
+      "route": "/employer",
+      "api": false
+    },
+    {
+      "route": "/employer/analytics",
+      "api": false
+    },
+    {
+      "route": "/employer/applicants",
+      "api": false
+    },
+    {
+      "route": "/employer/applicants/:param",
+      "api": false
+    },
+    {
+      "route": "/employer/company",
+      "api": false
+    },
+    {
+      "route": "/employer/hiring",
+      "api": false
+    },
+    {
+      "route": "/employer/hiring/:param",
+      "api": false
+    },
+    {
+      "route": "/employer/hiring/:param/:param",
+      "api": false
+    },
+    {
+      "route": "/employer/jobs",
+      "api": false
+    },
+    {
+      "route": "/employer/jobs/:param",
+      "api": false
+    },
+    {
+      "route": "/employer/jobs/new",
+      "api": false
+    },
+    {
+      "route": "/employer/settings",
+      "api": false
+    },
+    {
+      "route": "/employers/:param",
+      "api": false
+    },
+    {
+      "route": "/help",
+      "api": false
+    },
+    {
+      "route": "/hire",
+      "api": false
+    },
+    {
+      "route": "/jobs",
+      "api": false
+    },
+    {
+      "route": "/jobs/:param",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/moderation",
+      "api": false
+    },
+    {
+      "route": "/owner",
+      "api": false
+    },
+    {
+      "route": "/pay/:param",
+      "api": false
+    },
+    {
+      "route": "/recruiter",
+      "api": false
+    },
+    {
+      "route": "/recruiter/candidates",
+      "api": false
+    },
+    {
+      "route": "/recruiter/candidates/:param",
+      "api": false
+    },
+    {
+      "route": "/recruiter/employers",
+      "api": false
+    },
+    {
+      "route": "/recruiter/history",
+      "api": false
+    },
+    {
+      "route": "/recruiter/jobs",
+      "api": false
+    },
+    {
+      "route": "/recruiter/pipeline",
+      "api": false
+    },
+    {
+      "route": "/recruiter/verification",
+      "api": false
+    },
+    {
+      "route": "/signup",
+      "api": false
+    },
+    {
+      "route": "/talent",
+      "api": false
+    },
+    {
+      "route": "/trust",
+      "api": false
+    }
+  ]
+}

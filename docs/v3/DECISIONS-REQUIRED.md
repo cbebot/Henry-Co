@@ -30,7 +30,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-14, V3-15, V3-16.
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — Paystack + Flutterwave first (Nigeria-native, handle Naira correctly, faster activation, lower domestic fees). Stripe added later when international expansion begins. Unblocks: V3-13, V3-15, V3-16; V3-14 (Stripe) deferred within Phase C.
 
 ---
 
@@ -47,7 +47,14 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-65, V3-66.
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — Defer gaming arena entirely from V3. Wallet-funded player-vs-player matches with company margin is gambling under Nigerian law and most jurisdictions; requires gaming license, age verification, deposit limits, responsible-play features, exclusion lists, audited fairness — months of legal work. Revisit in V4 only after a lawyer signs off per market. Blocks/defers: the gaming portions of Phase G (V3-66 and any gaming-gated pass).
+
+**Owner answer (2026-06-21) — REFINED to Option C (RATIFIED):** The 2026-05-28 reasoning is *entirely about the money layer* (staking, company margin, licensing, AML, deposit limits, exclusion lists) — none of which applies to **free, no-prize practice play**, where there is no *consideration* and no *prize* (two of the three elements of gambling are absent). Accordingly:
+
+- **Build & launch the FREE-PLAY foundation now** — original skill games, server-authoritative, provably fair, no stake/prize, decoupled from the gambling legal gate. This is the immediate build (Pass 1, refines V3-65). See `docs/v3/gaming/ARCHITECTURE.md §2.1`, `PHASED-PLAN.md`, `LEGAL-GATE-MAP.md`.
+- **The real-money match-escrow layer stays DEFERRED/dormant** — designed in full but built and activated per market only on a countersigned stakes-specific legal opinion (`L7`), AML review (`L15`), gaming insurance (`L8`), the net-new `over18` KYC signal, and FL2 live. The 2026-05-28 deferral **stands for the money layer**.
+
+The free foundation is **unblocked**. Stakes remain blocked behind the legal trio above per market. (Implemented by pass V3-GAMING-01.)
 
 ---
 
@@ -67,7 +74,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-26.
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — Anthropic primary + OpenAI fallback, with a tiered model strategy inside the provider router: routine tasks (draft replies, summarization, classification) use the cheapest capable model; medium reasoning uses a mid model; complex agentic work uses the top model. The router must never name the underlying provider in user-facing UI; it is "HenryCo Intelligence" only. Unblocks: V3-26 through V3-33 (Phase D).
 
 ---
 
@@ -85,7 +92,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-27.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-27 (Phase D usage-billing) can start.
 
 ---
 
@@ -104,7 +111,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-21.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-21 (Phase C tax engine) can start.
 
 ---
 
@@ -122,7 +129,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-24.
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — Smile Identity for African markets, Onfido for international. A KYC router dispatches by region. Unblocks: V3-24 (KYC) and any verification-gated pass.
 
 ---
 
@@ -139,7 +146,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-46, V3-48, V3-61 partially (operational, not blocker).
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-46, V3-48, V3-61 (Phase F + newsletter); operational, does not gate a phase.
 
 ---
 
@@ -157,7 +164,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-86 (the spike pass itself), partially V3-23 (native-app payments).
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-86 (mobile architecture decision); partial dependency on V3-23 (native-app payment compliance).
 
 ---
 
@@ -178,7 +185,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-20 partially, V3-69, V3-75, V3-22 dashboard granularity.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-20 (subscription lifecycle, partial), V3-69 (partner payouts), V3-75 (bulk invoicing + team roles), V3-22 (finance dashboard granularity).
 
 ---
 
@@ -196,7 +203,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-84.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-84 (global-localization maturity).
 
 ---
 
@@ -213,7 +220,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** Phase C start (every pass V3-13+).
 
-**Owner answer:** _____
+**Owner answer (2026-05-28):** ANSWERED — YES, hold the gate. No Phase C or later pass starts until Phase B (V3-01 through V3-12) closes with V3-12 acceptance. Non-negotiable.
 
 ---
 
@@ -230,7 +237,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** Cross-cuts all phases; informs V3-09 (mobile), V3-26 (AI router), V3-50 (provider model), V3-52 (marketplace ranking), V3-76 (API foundation).
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-09, V3-26, V3-50, V3-52, V3-76; cross-cuts all phases, does not hard-gate any single pass but informs scope.
 
 ---
 
@@ -247,7 +254,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** Coordination only — no specific pass.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — coordination only; no specific blocked pass.
 
 ---
 
@@ -264,7 +271,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** None directly; informs Phase G prioritization.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — no direct blocked pass; informs Phase G prioritization.
 
 ---
 
@@ -281,7 +288,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** Operational only.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — operational only; no blocked pass.
 
 ---
 
@@ -298,7 +305,7 @@ This is the single list of decisions only the owner can make. Recommendations ar
 
 **Blocks:** V3-60 scope.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-60 (coming-soon / public roadmap surface).
 
 ---
 
@@ -328,7 +335,66 @@ V3-07b is the prompt that operationalizes that bar. Two sub-decisions need ratif
 
 **Blocks:** V3-07b only. Does NOT block any phase.
 
-**Owner answer:** _____
+**Owner answer:** PENDING — owner to answer before V3-07b (operator-surface i18n wave); does NOT block any phase.
+
+---
+
+## D18 — International multi-currency (the close-blocker)
+
+**Question:** International multi-currency — customers worldwide see prices, pay, and get paid in their own currency — is the owner's stated requirement for what "finished" means. Confirm it as a **mandatory pre-close requirement** (V3 cannot close without it), commit to the non-code banking/regulatory buildout it needs, and set its timing.
+
+**Context (recorded verbatim in intent):** *"Launch NGN-first, but the project is NOT complete and must NOT be closed without this."* This spans (a) a global processor (Stripe — the deferred one), (b) a real multi-currency pricing engine (NOT FX approximations), (c) multi-currency settlement + international payouts, (d) multi-jurisdiction tax (EU VAT/OSS, US sales tax, etc.), AND (e) a non-code banking/regulatory buildout (forex accounts, cross-border licensing, per-market tax registration — owner/legal/banking, not a coding task). Full detail in `DEFERRED-STRATEGIC-WORKSTREAMS.md` §W1.
+
+**Options:**
+- **Option A (recommended):** YES — ratify W1 as a hard close-blocker gating `V3-95` (launch-readiness) and `V3-96` (showcase). Launch Nigeria-first in NGN; begin the banking/regulatory track (L19/L20) **early** because of its long lead time; schedule the engineering after NG-core launch is proven and likely after the intelligence phase (Phase D).
+- **Option B:** Treat multi-currency as a V4 program (formally move it out of V3 scope and allow V3 to close NGN-only). **Not recommended** — contradicts the owner's stated bar for "finished."
+- **Option C:** Partial — commit to a small market set (e.g. NGN + GBP + USD per D10 Option C) as the V3 close bar; full 12-market depth is V4.
+
+**Recommendation rationale:** The owner stated this as a hard rule. Option A honors it while preserving the disciplined NGN-first launch. The long-lead banking/regulatory work (L19/L20) is the real risk — it must start well before engineering or it blocks closure. Whichever market envelope is chosen flows from `D10`.
+
+**Blocks:** W1 (international multi-currency) → therefore blocks `V3-95`, `V3-96` close. Reads on `D1` (Stripe), `D10` (markets), `D5` (tax escalation).
+
+**Owner answer:** PENDING — owner to ratify before W1 is scheduled and before `V3-95`/`V3-96` close; begin the `L19`/`L20` banking/licensing track early (long lead time).
+
+---
+
+## D19 — Flutterwave payouts (money LEAVING)
+
+**Question:** Authorize the money-out rail (provider/seller payouts via Flutterwave Transfers/Payouts), and set its timing. The **same secret key** already in the estate authorizes payouts — no new credential. This is the highest-stakes money operation (money leaving is irrecoverable on error).
+
+**Context:** Needs money-grade rigor: balanced double-entry ledger posting, a guarded idempotent transfer RPC (no double-spend), webhook-confirmed transfer lifecycle (queued→processing→success/failed), balance + authorization checks, and reconciliation. Detail in `DEFERRED-STRATEGIC-WORKSTREAMS.md` §W2. Advances `V3-69 partner-payouts`.
+
+**Options:**
+- **Option A (recommended):** Authorize, but **sequence after** division checkout is live and real provider/seller revenue exists to distribute; require explicit owner money sign-off at activation (same bar as the inbound money spine).
+- **Option B:** Defer entirely to Phase H `V3-69` with no near-term Flutterwave-specific rail.
+- **Option C:** Build the rail now in TEST-mode ahead of revenue, soak it, leave it flag-off until revenue exists.
+
+**Recommendation rationale:** There is nothing to pay out until revenue exists, so Option A's sequencing is honest. The credential and ledger primitives already exist, so the build is tractable when scheduled. Money-out demands the same never-trust-an-unconfirmed-state rigor proven on the inbound path.
+
+**Blocks:** W2 (Flutterwave payouts). Advances `V3-69`.
+
+**Owner answer:** PENDING — owner to authorize before W2 is built; sequence after division checkout is live and real provider/seller revenue exists, with explicit money sign-off at activation.
+
+---
+
+## D20 — Owner's personal AI portal (Phase D+)
+
+**Question:** Authorize a private, owner-only AI command portal (most-capable Claude model) that advises the owner, assists with company work, drafts content, and helps manage the company's social presence — and ratify its **human-in-the-loop social** posture.
+
+**Context:** Distinct from the customer-facing "HenryCo Intelligence" surfaces (`V3-28`..`V3-33`) and from automated `V3-46` owner reports — this is an interactive, owner-private, higher-capability assistant. Detail in `DEFERRED-STRATEGIC-WORKSTREAMS.md` §W3.
+
+**CRITICAL CONSTRAINT (recommended as non-negotiable):** The AI **drafts/schedules/monitors/suggests**; the **owner approves** every outward-facing action. It does **NOT** autonomously post or reply — fully-autonomous posting risks platform-ToS violations (account bans) and brand damage. Social integration uses Business/Creator accounts via **official platform APIs**, within each platform's automation rules.
+
+**Options:**
+- **Option A (recommended):** Authorize, sequenced after core launch within/after the AI phase (Phase D); enforce human-in-the-loop social in the action path (not just UI); reuse the `V3-26` provider router; mint a dedicated `V3-NN` pass when scheduled.
+- **Option B:** Defer to V4.
+- **Option C:** Authorize the advisory/drafting half now (no social-automation surface) and defer social scheduling/monitoring to a later sub-pass.
+
+**Recommendation rationale:** High owner leverage, but it rides on the Phase D AI foundation and the company having a real operating surface to act on — hence after core launch. The human-in-the-loop constraint is the guardrail that keeps the company's own accounts safe; it must be structural, not advisory.
+
+**Blocks:** W3 (owner AI portal). Reads on `D3` (AI provider selection).
+
+**Owner answer:** PENDING — owner to authorize before W3 is scheduled (Phase D+); ratify the human-in-the-loop social posture as non-negotiable.
 
 ---
 
@@ -336,6 +402,7 @@ V3-07b is the prompt that operationalizes that bar. Two sub-decisions need ratif
 
 - [x] Every decision has options + recommendation + rationale + which Pass IDs blocked
 - [x] D1–D17 covers payment, gaming, AI provider, AI margin, tax, KYC, email senders, mobile stack, monetization, localization, foundation gate, anti-clone, prior-pass reconciliation, V6 placement, branch hygiene, roadmap surface, V3-07b scope envelope
+- [x] D18–D20 cover the deferred strategic workstreams: international multi-currency (close-blocker), Flutterwave payouts (money-out), owner's personal AI portal — cross-referenced to `DEFERRED-STRATEGIC-WORKSTREAMS.md`
 - [x] D17 quotes the owner's verbatim bar for V3-07b
 - [x] D17 splits into D17.a (scope) + D17.b (locale completeness) for granular ratification
 - [x] D17 explicitly notes `packages/search-ui/` is owner-reserved

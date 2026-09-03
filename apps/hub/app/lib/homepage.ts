@@ -99,10 +99,10 @@ export function createFallbackHubHomepageContent(): HubHomepageContent {
   return {
     page_key: "home",
     hero_badge: "Group Platform",
-    hero_title: "The operating gateway for Henry & Co.",
+    hero_title: "The operating gateway for Henry Onyx",
     hero_highlight: "Premium divisions. One standard.",
     hero_description:
-      "Henry & Co. brings together specialized business units under one disciplined company standard. This platform is designed to communicate structure, trust, and premium brand quality while guiding visitors to the right division.",
+      "Henry Onyx brings together specialized business units under one disciplined company standard. This platform is designed to communicate structure, trust, and premium brand quality while guiding visitors to the right division.",
     hero_image_url: null,
     primary_cta_label: "Explore divisions",
     primary_cta_href: "/#divisions",
@@ -110,7 +110,7 @@ export function createFallbackHubHomepageContent(): HubHomepageContent {
     secondary_cta_href: "/contact",
     operating_title: "Built for structured growth",
     operating_body:
-      "A serious company platform should communicate confidence, structure, and long-term operating discipline. The Henry & Co. hub is designed to function as the public-facing gateway to the wider ecosystem while remaining ready for future expansion.",
+      "A serious company platform should communicate confidence, structure, and long-term operating discipline. The Henry Onyx hub is designed to function as the public-facing gateway to the wider ecosystem while remaining ready for future expansion.",
     operating_points: [
       {
         id: "op-1",
@@ -139,7 +139,7 @@ export function createFallbackHubHomepageContent(): HubHomepageContent {
         id: "value-2",
         eyebrow: "Presentation",
         title: "Professional company narrative",
-        body: "The public experience reinforces the quality and seriousness of the Henry & Co. brand.",
+        body: "The public experience reinforces the quality and seriousness of the Henry Onyx brand.",
       },
       {
         id: "value-3",
@@ -150,7 +150,7 @@ export function createFallbackHubHomepageContent(): HubHomepageContent {
     ],
     featured_title: "Featured divisions",
     featured_body:
-      "These destinations represent important public-facing parts of the Henry & Co. operating ecosystem and should reflect the strongest brand standard.",
+      "These destinations represent important public-facing parts of the Henry Onyx operating ecosystem and should reflect the strongest brand standard.",
     directory_title: "Division directory",
     directory_body:
       "The directory is the primary discovery layer for the group. It should help visitors understand the breadth of the business and reach the correct destination efficiently.",
@@ -179,7 +179,7 @@ export function createFallbackHubHomepageContent(): HubHomepageContent {
     owner_name: "Company Owner",
     owner_role: "Founder / Group Principal",
     owner_message:
-      "Henry & Co. is being built with a long-term view: disciplined growth, premium presentation, and serious business credibility across every division.",
+      "Henry Onyx is being built with a long-term view: disciplined growth, premium presentation, and serious business credibility across every division.",
     owner_image_url: null,
     owner_signature: null,
     faq_title: "Frequently asked questions",
@@ -189,7 +189,7 @@ export function createFallbackHubHomepageContent(): HubHomepageContent {
       {
         id: "faq-1",
         q: "Can each division operate independently?",
-        a: "Yes. Each division can maintain its own services, pages, and workflows while remaining part of the wider Henry & Co. ecosystem.",
+        a: "Yes. Each division can maintain its own services, pages, and workflows while remaining part of the wider Henry Onyx ecosystem.",
       },
       {
         id: "faq-2",
@@ -208,7 +208,7 @@ export function createFallbackHubHomepageContent(): HubHomepageContent {
       },
     ],
     footer_blurb:
-      "Henry & Co. is a premium multi-division company ecosystem designed to communicate trust, structure, and long-term business quality.",
+      "Henry Onyx is a premium multi-division company ecosystem designed to communicate trust, structure, and long-term business quality.",
     is_published: true,
     created_at: null,
     updated_at: null,

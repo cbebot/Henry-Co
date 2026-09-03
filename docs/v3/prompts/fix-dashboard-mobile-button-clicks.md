@@ -1,25 +1,18 @@
-# FIX-MOBILE-CLICKS — Dashboard mobile button clickability regression
+# FIX-MOBILE-CLICKS — Foundation UX: Dashboard mobile button clickability
 
-**Pass ID:** FIX-MOBILE-CLICKS
-**Phase:** Bug-fix / regression
-**Pillar:** P12 (Global UX)
-**Dependencies:** #139 (useAndroidBackClose ref fix) already on main; #142 (BottomSheet viewport-anchor) in review
-**Effort:** S–M (1 session)
-**Parallel-safe:** YES
-**Owner gate:** Visual + tap-tested sign-off on mobile device
-**Risk class:** None
+> **STATUS: SHIPPED — PR #143.** The root-cause fix (`touch-action: manipulation` on the shared `.hc-modal-body` sheet body + the `.hc-bottom-action-bar` tap targets) landed on `main`. V3-CHROME-FIX-01 (PR #186) later hardened the sibling history-sentinel race on the public chromes via `suppressSentinelPop`. This file is the elevated canonical record of that fix plus a small residual-hardening scope; treat the "Mandatory scope" below as the verification/extension contract, not unbuilt work.
+
+**Pass ID:** FIX-MOBILE-CLICKS  ·  **Phase:** B (Foundation Lock — regression follow-up to V3-09)  ·  **Pillar:** P12 (Global UX)
+**Dependencies:** V3-09 (mobile consistency, merged) · V3-CHROME-FIX-01 #186 (mobile-nav navigation race, merged)  ·  **Effort:** S  ·  **Parallel-safe:** Y
+**Owner gate:** none (visual + tap-test sign-off on a real device before merge)  ·  **Risk class:** —
 
 ---
 
 ## Role
+You are the V3 Foundation-UX regression engineer for Henry Onyx. You execute exactly this one pass, then stop and report. This pass makes every button and link inside every dashboard mobile sheet/drawer register the first tap on real mobile devices — Settings and Help inside the `BottomActionBar` "More" sheet are the named regression, but the fix is the single class-level root cause, never per-button workarounds. The line you must not cross: no magic z-index bumps, no inline `style` tap hacks, no per-element `pointer-events: auto` overrides — one semantic CSS fix that holds across every sheet consumer.
 
-You are the V3 Regression engineer. Owner directive, verbatim:
-
+Owner directive, verbatim (the bar):
 > "The dashboard settings button and help button are not responding to clicks on mobile devices. please fix that too. make sure all buttons are clicking. do it with your max effort not just shallow work as we keep lamenting on. don't hardcode anything"
-
-**The bar:** every button + link in every dashboard surface (owner workspace + staff HQ — the surfaces THEME-01 wired) responds reliably to taps on real mobile devices. Settings + Help (in the `BottomActionBar`'s "More" sheet) are the named regression, but the audit must be comprehensive. No hardcoded fixes, no magic numbers, no per-button workarounds — find the root cause + fix the class of bug.
-
----
 
 ## Project
 
@@ -27,139 +20,92 @@ You are the V3 Regression engineer. Owner directive, verbatim:
 |---|---|
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
-| Working branch | `fix/dashboard-mobile-button-clicks` |
-| Worktree (absolute) | `C:/Users/HP VICTUS/HenryCo/.worktree/fix-mobile-clicks` |
-| Branch base | `main @ 1768a99d` (Wave B.1 + follow-up PRs all merged: #133–#141; #142 BottomSheet viewport-anchor is in review) |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Working branch | `v3/fix-mobile-clicks` (per pass) |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
-Use ABSOLUTE PATHS. For Bash, first call `cd "C:/Users/HP VICTUS/HenryCo/.worktree/fix-mobile-clicks"`. For git, prefer `git -C "<path>" <cmd>`. DO NOT touch the parent repo or sibling worktrees.
+## Audit summary
+The dashboard mobile shell lives in `@henryco/dashboard-shell`. The "More" tab of `packages/dashboard-shell/src/shell/bottom-action-bar.tsx` opens `packages/dashboard-shell/src/components/bottom-sheet.tsx`, and renders Settings + Help as `MoreLink` items (Next.js `<Link>` with an inline `onClick` that closes the sheet after navigation starts). That `BottomSheet` imports `emitModalBackdropTap` + `useAndroidBackClose` from `@henryco/ui/mobile`; its sheet body carries `className="hc-modal-body"` and `onClick={(e) => e.stopPropagation()}` (line 160), with two `position: fixed`, `pointerEvents: "none"` focus sentinels (lines 147–153, 257–263).
 
----
+V3-09 wired `useAndroidBackClose` and the backdrop telemetry tap into this sheet. After it shipped, the named regression appeared: on iOS Safari the first tap on Settings/Help was swallowed and navigation never started. The trace (recorded in `docs/v3/dashboard-mobile-click-audit.md`) found the root cause: the sheet body's default `touch-action: auto` keeps double-tap-zoom enabled, which gates the synthetic `click` behind a ~300 ms detection window; when iOS address-bar-collapse scroll deltas interleave that window, the `click` is suppressed and the Next.js `<Link>` `router.push` never fires. The gap this pass closes: the missing `touch-action: manipulation` on the shared sheet-body class — one rule that cascades through every descendant tap target via the hit-test model.
 
-## Reference (conductor-verified context)
-
-### The named buttons
-
-`packages/dashboard-shell/src/shell/bottom-action-bar.tsx`:
-- Line 562–567: Settings `MoreLink` (Next.js `<Link>` rendered via the `MoreSheetBody` inside a `BottomSheet`)
-- Line 568–573: Help `MoreLink` (same component, same pattern)
-- Both are inside the `BottomSheet` opened by the "More" tab in `BottomActionBar`
-
-The `MoreLink` is a Next.js `<Link>` (or `<a>` for external) with an inline `onClick={onPick}` where `onPick = onItemPick` = `() => setOpenSheet(null)` (closes the sheet after navigation starts).
-
-### The BottomSheet they live inside
-
-`packages/dashboard-shell/src/components/bottom-sheet.tsx` — the OLDER dashboard-shell BottomSheet (NOT DESIGN-01's new `@henryco/ui/mobile/BottomSheet`). V3-09 modified it to:
-- Import + call `useAndroidBackClose(open, onClose, { surface: telemetrySurface })` (line 105)
-- Wrap backdrop `onClick` in an `emitModalBackdropTap` + `onClose()` (line 131-135)
-
-After PR #139 the `useAndroidBackClose` hook is stable (no self-closing). So the sheet stays open.
-
-The render structure (line 128 onward):
-1. Outer backdrop `<div role="presentation" onClick={() => { emitModalBackdropTap(...); onClose(); }} style="position: fixed; inset: 0; z-index: 9000; ...">`
-2. Leading focus sentinel (1×1, `pointer-events: none`, top-left)
-3. Sheet body `<div ref={sheetRef} role="dialog" onClick={(e) => e.stopPropagation()} className="hc-modal-body" style="...">`
-4. Sticky-close header
-5. Children (MoreSheetBody → MoreLinks)
-6. Trailing focus sentinel
-
-The sheet body **uses `e.stopPropagation()` on its onClick** to prevent taps inside from bubbling to the backdrop.
-
-### Possible regression vectors (rank-ordered by likelihood)
-
-1. **iOS Safari 300ms click delay / double-tap zoom on `<a>` tags inside the sheet.** The `MoreLink` styles set `padding`, `minHeight: 44px`, `textDecoration: none` — but NO `touch-action`. Without `touch-action: manipulation`, mobile Safari can swallow / delay taps under specific conditions.
-2. **`onClick={(e) => e.stopPropagation()}` on the sheet body** interacts with React 19's event delegation in ways that can mask synthetic clicks on nested links if the link's onClick is in props (not on the DOM). Verify: when the user taps a Link, does the link's onClick fire? Does Next.js's internal router fire?
-3. **Focus sentinels at `position: fixed; top: 0; left: 0; pointer-events: none`** — should NOT capture taps. But verify `pointer-events: none` is actually preserved across all browsers + that no other CSS overrides it.
-4. **Stacked z-index / pointer-events conflict** — the BottomActionBar itself sits above content with z-index. If anything renders ABOVE the sheet's z-index 9000 (theme toggle, locale switcher, notification toast viewport), it could intercept taps.
-5. **iOS Safari's address-bar-collapse repaint** — when the address bar collapses on scroll, the viewport shifts. If the sheet's `position: fixed` re-layouts, taps mid-layout-shift can land on the wrong element.
-6. **`PointerEvent` vs `TouchEvent` listener mismatch** — if any V3-09 hook or BottomActionBar code listens on `touchstart` only (not `pointerdown`/`click`), iOS can preventDefault the click before the `<a>` handler runs.
-
-The investigation MUST verify each hypothesis with code-level evidence (not "I think it's X" — actually trace).
-
----
+This is distinct from the sibling bug V3-CHROME-FIX-01 (#186) fixed on the *public* chromes: there the `useAndroidBackClose` history sentinel raced `router.push` (history.back vs push), suppressed via `suppressSentinelPop`. Both are mobile-tap regressions; keep them mentally separate — this pass is the dashboard-shell `touch-action` fix.
 
 ## Mandatory scope
 
-### Phase 1 — Investigation (THIS IS WHERE THE THINKING HAPPENS)
+### S1 — Trace the event chain (investigation, code-level evidence)
+Walk the chain from a user tap on the Settings `MoreLink` to either successful navigation to `/settings` or the swallowed-click failure, in both `packages/dashboard-shell/src/shell/bottom-action-bar.tsx` and `packages/dashboard-shell/src/components/bottom-sheet.tsx`:
+- `<Link onClick={onPick}>` → `onPick()` runs → React onClick completes → Next.js Link internal handler calls `router.push` → `history.pushState` → `BottomSheet` re-renders `open=false` → effect cleanup runs.
+- Whether the sheet body's `e.stopPropagation()` (line 160) interferes with the Link's own onClick or Next's internal click handler under React 19 event delegation.
+- Whether `useAndroidBackClose` cleanup (history-sentinel pop on close) races the navigation `pushState`.
+- The CSS `pointer-events` / `touch-action` chain on the link and the `.hc-modal-body` body.
+Use `git log -p -- packages/dashboard-shell/src/components/bottom-sheet.tsx` to see exactly what V3-09 changed. Record the trace verbatim in the audit doc; do not assert a cause you cannot show in code.
 
-Open `packages/dashboard-shell/src/shell/bottom-action-bar.tsx` and `packages/dashboard-shell/src/components/bottom-sheet.tsx`. Walk the event chain from user tap on a Settings link to either:
-- (a) Successful navigation to `/settings`, OR
-- (b) The bug — link click swallowed, navigation never starts
+### S2 — Comprehensive sheet/drawer tap-target audit
+Beyond Settings + Help, sweep every `<button>` / `<a>` / `<Link>` rendered inside any sheet or drawer consumer:
+- `packages/dashboard-shell/src/shell/bottom-action-bar.tsx` (owner + staff bottom nav, the "More" sheet).
+- The `BottomSheet` consumers across the shell and the public chromes that migrated to it (`@henryco/ui` `PublicHeader` drawers — `c838f394`, `1f0b17d7`).
+- The owner workspace mobile chrome and staff HQ mobile chrome.
+- The command-palette host (uses the shell `BottomSheet`).
+Output `docs/v3/dashboard-mobile-click-audit.md`: per-surface table of surface · trigger pattern · suspected risk · code-reference evidence · fix.
 
-Trace the following in BOTH the success and failure paths:
-- The `onClick` chain: `<Link onClick={onPick}>` → `onPick()` runs → React's onClick handler completes → Next.js Link's internal click handler calls `router.push` → `history.pushState` mutates the URL → BottomSheet re-renders with `open=false` → cleanup runs.
-- Whether React's `stopPropagation` on the sheet body interferes with the Link's own onClick OR Next.js's internal click handler.
-- Whether `useAndroidBackClose`'s cleanup (which fires when the sheet closes) interacts with the navigation's `pushState` (e.g., does it call `history.back()` immediately AFTER Next.js's `pushState`?).
-- The CSS pointer-events / touch-action chain on the link.
+### S3 — Root-cause fix (ONE class-level change)
+Apply `touch-action: manipulation` to the shared `.hc-modal-body` class (the sheet body) and to the `.hc-bottom-action-bar a, .hc-bottom-action-bar button` tap targets, in the dashboard-shell global stylesheet that defines those classes — NOT inline. `manipulation` keeps panning + pinch-zoom alive and only suppresses the double-tap-zoom delay; because `touch-action` cascades through descendants via the hit-test model, this single rule fixes every link/button inside every `BottomSheet` and `Drawer` consumer at once. Do NOT remove the body's `e.stopPropagation()` unless the trace proves it swallows nested clicks (it does not — verify and record). Do NOT touch z-index or the focus sentinels' `pointer-events: none`.
 
-Use `git log -p` to see WHAT V3-09 changed in these files. Compare against the pre-V3-09 baseline behavior.
+### S4 — Confirm the sibling history-sentinel race is not also present here
+Verify the dashboard-shell `BottomSheet` does not exhibit the V3-CHROME-FIX-01 history race (push vs back). If `useAndroidBackClose` cleanup pops a sentinel after `router.push`, confirm the `MoreLink` close path (`setOpenSheet(null)` on next tick) does not interleave with it. If it does, defer the close with `queueMicrotask` so `pushState` settles first — record the decision; otherwise state explicitly that the race does not occur in this consumer.
 
-If the bug is reproducible at the code level, write the trace in the report. If reproducibility requires a mobile device, document the symptoms + the most likely root cause + the proposed fix with high confidence.
+## Out of scope
+- Public-chrome mobile-nav navigation race → V3-CHROME-FIX-01 (#186, shipped) owns it; do not duplicate `suppressSentinelPop` here.
+- `apps/account/**` customer dashboard interaction redesign → not this pass.
+- `packages/search-ui/**` → owner-reserved, never touch.
+- New mobile gestures / safe-area work → V3-09 owns it.
 
-### Phase 2 — Audit
+## Dependencies
+Depends on V3-09 (the sheet the regression lives in) and is informed by V3-CHROME-FIX-01. Blocks nothing downstream; it is a foundation-stability follow-up that keeps every dashboard tap target reliable before later phases add more sheet surfaces.
 
-Beyond Settings + Help, sweep:
-- Every `<button>` and `<a>` / `<Link>` rendered inside ANY `BottomSheet` consumer in the dashboard-shell (BottomActionBar, owner mobile nav, staff mobile nav, the new DESIGN-01 BottomSheet consumers in marketplace)
-- The owner workspace's mobile chrome (`apps/hub/components/owner/OwnerMobileNav.tsx`)
-- The staff HQ's mobile chrome (`apps/staff/components/StaffMobileNav.tsx`)
-- The OwnerSearchButton trigger (V3-09 touched it for size)
-- The OwnerPaletteHost's command palette (uses dashboard-shell BottomSheet)
+## Inheritance
+Builds on `@henryco/dashboard-shell` (`BottomSheet`, `BottomActionBar`, the `.hc-modal-body` / `.hc-bottom-action-bar` design-token classes), `@henryco/ui/mobile` (`useAndroidBackClose`, `emitModalBackdropTap`), and the V3-09 telemetry surface contract.
 
-Output: `docs/v3/dashboard-mobile-click-audit.md` — per-component table with: surface, trigger pattern, suspected risk, evidence (code reference), fix.
+## Implementation requirements
+### Files
+- `packages/dashboard-shell/src/components/bottom-sheet.tsx` (verify; no behavioural edit expected).
+- `packages/dashboard-shell/src/shell/bottom-action-bar.tsx` (verify the `MoreLink` close path).
+- The dashboard-shell global stylesheet defining `.hc-modal-body` + `.hc-bottom-action-bar` (the `touch-action: manipulation` rule lands here).
+- `docs/v3/dashboard-mobile-click-audit.md` (new — the trace + per-surface table).
 
-### Phase 3 — Fix
+### Trust / safety / compliance
+None — this is a presentation-layer interaction fix. No auth, RLS, money, or identity surface is touched. Do not alter any payment surface.
 
-Apply the root-cause fix. The most likely fixes:
-- Add `touch-action: manipulation` to `MoreLink` (and any sibling tap-target) to disable the iOS 300ms delay
-- Remove `onClick={(e) => e.stopPropagation()}` from the sheet body if it's swallowing nested clicks (alternative: keep stopPropagation but verify React 19 handles it correctly)
-- Add explicit `pointerEventsCheck` to ensure focus sentinels truly don't capture taps
-- Defer `setOpenSheet(null)` (the close action) to NEXT TICK using `queueMicrotask` or `setTimeout(..., 0)` so the navigation `pushState` runs first, before the BottomSheet cleanup runs
+### Mobile + desktop parity
+This pass is mobile-first by definition. Confirm the rule is inert on desktop (no pointer regression) and that touch panning + pinch-zoom still work on the sheet body. Web mobile is the target; Expo super-app uses its own native sheet — N/A there.
 
-Whatever the fix is, **it must be one root-cause fix, not 5 per-button workarounds**. The owner said "don't hardcode anything" — this means no magic z-index bumps, no per-element `pointer-events: auto` overrides, no inline style hacks. Use semantic CSS / Tailwind utility / shared helper.
+### i18n
+No new user-facing strings. If any string is added (e.g. an aria-label), it routes through `@henryco/i18n` in the existing dashboard-shell namespace (`surface:shell`) or is exempted in `exempt.json` with a reason; `pnpm i18n:check:strict` must stay green.
 
-### Phase 4 — Verify
+### Brand & design system
+No brand strings rendered. Tokens only — `touch-action: manipulation` is a behaviour utility, not a colour/type token, applied to the existing design-system classes; no ad-hoc hex, no new token system. Any URL referenced in docs uses `henryDomain()` / `henryWebRoot()` from `@henryco/config`; never the literal base domain.
 
-- Typecheck PASS for `@henryco/dashboard-shell`, `@henryco/hub`, `@henryco/staff`
-- Lint PASS
-- V3-07 strict `pnpm i18n:check:strict` PASS (no new GAPs)
-- Manual smoke documented (or, if device unreachable, the procedure to run on a real iPhone + Android)
+## Validation gates
+1. `pnpm -F @henryco/dashboard-shell typecheck` + `pnpm -F @henryco/hub typecheck` + `pnpm -F @henryco/staff typecheck` PASS.
+2. `pnpm lint` PASS for the touched packages.
+3. `pnpm i18n:check:strict` PASS — no new GAPs.
+4. Real-device smoke (iPhone Safari + Android Chrome): Settings + Help in the "More" sheet navigate on first tap; every audited sheet/drawer tap target navigates on first tap; pinch-zoom + panning unaffected. Record the procedure in the PR body for owner re-test.
+5. Desktop regression: pointer clicks unaffected; CLS ≈ 0 (no layout shift introduced).
 
-### Phase 5 — DRAFT PR
+## Deployment gate
+All gates green; owner tap-tests Settings + Help on a real device and signs off; squash-merge to `main`; Vercel autodeploys. No auto-merge before the device sign-off.
 
-Commit per logical chunk:
-- `FIX-MOBILE-CLICKS(P1): mobile click audit + investigation trace`
-- `FIX-MOBILE-CLICKS(P3): root-cause fix for dashboard mobile button clickability`
-- `FIX-MOBILE-CLICKS(P4): regression-test additions if applicable`
+## Final report contract
+`.codex-temp/fix-mobile-clicks/report.md` with the standard 9 sections (exec summary · files changed · migration/RLS/env [N/A] · validation evidence · smoke · live verification · telemetry baseline · deferred items · pass-closure assertion).
 
-Push branch + open DRAFT PR. Body lists: named buttons fixed, audit summary, before/after evidence, manual smoke procedure.
-
-Report at `.codex-temp/fix-dashboard-mobile-button-clicks/report.md`.
-
----
-
-## Anti-patterns (HARD stops)
-
-- **NO per-button workarounds.** Find the root cause that affects the class of bug.
-- **NO hardcoded inline-style hacks** (`style={{ touchAction: 'manipulation' }}` on every button is hardcoded). Use a shared utility or CSS class.
-- **NO magic z-index bumps** that mask the underlying issue.
-- **NO touching `packages/search-ui/`** (owner-reserved).
-- **NO touching `apps/account/**`** (customer dashboard, per existing memory).
-- **NO breaking V3-07 strict gate.** If you add new strings, they must localize or exempt with reason.
-- **NO `git push --force`** (use --force-with-lease only if necessary).
-- **NO PR auto-merge.** Owner needs to tap-test on real device.
-
----
-
-## Self-verification checklist
-
-- [ ] `docs/v3/dashboard-mobile-click-audit.md` lists every dashboard surface's mobile button pattern
-- [ ] Root cause identified with code-level evidence
-- [ ] Fix applied (semantic, not hardcoded)
-- [ ] Settings + Help clickable on the rebuilt component
-- [ ] Audit-listed adjacent surfaces verified or fixed
-- [ ] Typecheck + lint + i18n:check:strict all PASS
-- [ ] DRAFT PR opened with audit + before/after evidence
-
----
-
-You're Opus 4.7. The owner said "max effort, no shallow work". This isn't a one-line fix — it's a careful investigation of the mobile event chain. Trace the bug, find the root cause, fix the class. Make every dashboard tap-target reliable on every device.
+## Self-verification
+- [ ] S1: event chain traced with code-level evidence in `docs/v3/dashboard-mobile-click-audit.md`.
+- [ ] S2: every sheet/drawer tap-target surface enumerated with evidence + fix in the audit table.
+- [ ] S3: ONE class-level `touch-action: manipulation` rule on `.hc-modal-body` + `.hc-bottom-action-bar` tap targets — no per-button workaround, no inline hack, no z-index bump.
+- [ ] S4: history-sentinel race confirmed absent (or deferred-close documented) for this consumer.
+- [ ] Settings + Help navigate on first tap on iOS Safari + Android Chrome; panning + pinch-zoom intact.
+- [ ] Typecheck + lint + `i18n:check:strict` all PASS; CLS ≈ 0; no brand/domain hardcoding.
+- [ ] PR opened with audit, before/after evidence, and the real-device smoke procedure for owner sign-off.

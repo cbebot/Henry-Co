@@ -48,6 +48,8 @@ export type ModuleSlug =
   | "support"
   | "notifications"
   | "settings"
+  | "play" // Henry Onyx Live — gaming arena; flag-dark until launch
+  | "business" // Henry Onyx Business — seller/business workspace
   | "building" // hidden until V3 launch
   | "hotel"; // hidden until V3 launch
 
@@ -124,6 +126,39 @@ export type DashboardModule = {
 
   /** Where in the rail this module appears. */
   railSlot: RailSlot;
+
+  /**
+   * Optional canonical home route for this module.
+   *
+   * The rail, the mobile Modules drawer, and the Cmd+1..9 jump list
+   * normally link a module to its `/modules/<slug>` catch-all surface.
+   * When a module's real, primary surface already lives at a top-level
+   * route (e.g. the wallet at `/wallet`), set `homeHref` to that route
+   * so those entries open the actual surface in one tap — matching the
+   * desktop sidebar — instead of bouncing through the generic module
+   * summary. Falls back to `/modules/<slug>` when absent.
+   *
+   * MUST be a real, live route.
+   */
+  homeHref?: string;
+
+  /**
+   * V3-11 (one-job-per-card) — the module's single "exact next step".
+   *
+   * Per the owner's question — _"Does this open the exact next step, or
+   * does it just show more text?"_ — every module surface should make its
+   * primary action explicit rather than dumping the viewer onto a generic
+   * hub. When set, the shell renders this as the module card's primary CTA
+   * (the one job the card opens). When absent, the module's `getRoutes()`
+   * home entry is the implicit next step (entire-card-tap).
+   *
+   * `href` MUST be a real, live route (validated against the deep-link
+   * inventory at V3-04 merge time). `label` is the already-i18n'd CTA
+   * text — the contract carries NO copy of its own, so host apps pass a
+   * translated string through and the V3-07 strict hardcoded-text gate
+   * stays green.
+   */
+  nextStep?: { href: string; label: string };
 
   /**
    * Coarse eligibility check — used by the rail to decide whether to

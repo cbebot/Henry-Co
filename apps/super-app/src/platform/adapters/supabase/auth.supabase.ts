@@ -25,9 +25,15 @@ export class SupabaseAuthAdapter implements AuthAdapter {
 
   async signInWithPassword(email: string, password: string): Promise<AuthResult<AuthSession>> {
     const { data, error } = await this.client.auth.signInWithPassword({ email, password });
-    if (error) return { ok: false, error: error.message };
+    if (error) {
+      console.error("[super-app:auth] sign-in failed", error);
+      return {
+        ok: false,
+        error: "We couldn't sign you in. Check your email and password and try again.",
+      };
+    }
     const s = mapSession(data.session);
-    if (!s) return { ok: false, error: "No session returned." };
+    if (!s) return { ok: false, error: "We couldn't sign you in. Please try again." };
     return { ok: true, data: s };
   }
 

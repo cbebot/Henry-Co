@@ -36,7 +36,7 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from "node:fs";
-import { resolve, relative, join, dirname, sep } from "node:path";
+import { resolve, relative, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -62,7 +62,7 @@ const HARD_SKIP_DIRS = new Set([
 
 // search-ui is owner-reserved. SKIP entirely — do not even emit an EXEMPT entry.
 const OWNER_RESERVED_PREFIXES = [
-  ["packages", "search-ui"].join(sep),
+  "packages/search-ui",
 ];
 
 // File suffixes we DO scan. Everything else is silently ignored.
@@ -115,6 +115,8 @@ const I18N_MARKER_PATTERNS = [
 // overrides — this in-code allow-list is for universals only.
 const BUILTIN_EXEMPT_STRINGS = new Set([
   "HenryCo",
+  "Henry Onyx",
+  "Henry Onyx Limited",
   "Henry & Co.",
   "Henry & Co",
   "HENRYCO",
@@ -248,7 +250,9 @@ function walk(dirAbs, relSoFar, files) {
   for (const name of entries) {
     if (HARD_SKIP_DIRS.has(name)) continue;
     const childAbs = join(dirAbs, name);
-    const childRel = relSoFar ? `${relSoFar}${sep}${name}` : name;
+    // Always forward-slash so exempt.json filePrefixes + baseline fingerprints
+    // match identically on Windows and CI (Linux).
+    const childRel = relSoFar ? `${relSoFar}/${name}` : name;
 
     if (isOwnerReserved(childRel)) continue;
 

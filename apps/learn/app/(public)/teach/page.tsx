@@ -3,6 +3,7 @@ import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { submitTeacherApplicationAction } from "@/lib/learn/actions";
 import { getLearnViewer } from "@/lib/learn/auth";
 import { getTeacherApplicationForViewer } from "@/lib/learn/data";
+import { signLearnMediaUrl } from "@/lib/learn/media";
 import { getSharedAuthUrl } from "@/lib/learn/links";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import { getLearnSetting } from "@/lib/learn/store";
@@ -13,7 +14,7 @@ export async function generateMetadata() {
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  return { title: t("Teach with HenryCo") };
+  return { title: t("Teach with Henry Onyx") };
 }
 
 const COUNTRY_OPTIONS = [
@@ -37,6 +38,19 @@ export default async function TeachPage({
   const t = (text: string) => translateSurfaceLabel(locale, text);
   const viewer = await getLearnViewer();
   const application = viewer.user ? await getTeacherApplicationForViewer(viewer) : null;
+  // Sensitive proof docs are stored as private media refs; resolve each to a
+  // short-lived signed URL server-side before rendering (never expose a raw
+  // ref/private path to the client). Legacy absolute URLs pass through.
+  const supportingFileUrls = new Map<string, string>(
+    application
+      ? await Promise.all(
+          application.supportingFiles.map(
+            async (file) =>
+              [file.publicId, await signLearnMediaUrl(file.url)] as const,
+          ),
+        )
+      : [],
+  );
   const canEdit =
     !application ||
     application.status === "changes_requested" ||
@@ -63,7 +77,7 @@ export default async function TeachPage({
       icon: Sparkles,
       title: t("Quality expectations"),
       body: t(
-        "Outlines, outcomes, and respect for learners’ time matter as much as charisma. We decline proposals that look generic, thin, or misaligned with HenryCo audiences.",
+        "Outlines, outcomes, and respect for learners’ time matter as much as charisma. We decline proposals that look generic, thin, or misaligned with Henry Onyx audiences.",
       ),
     },
     {
@@ -92,13 +106,13 @@ export default async function TeachPage({
     {
       label: t("Verification & review"),
       body: t(
-        "We validate your identity against your HenryCo profile, read your credentials and samples, and assess whether your proposed course fits our learners and quality bar. Most applications receive a decision or a request for more detail—not instant approval.",
+        "We validate your identity against your Henry Onyx profile, read your credentials and samples, and assess whether your proposed course fits our learners and quality bar. Most applications receive a decision or a request for more detail—not instant approval.",
       ),
     },
     {
       label: t("Revenue & contracts"),
       body: t(
-        "Where a program is paid, HenryCo may offer revenue share or other instructor compensation. Terms are agreed in writing after approval—they are not promised on this page and vary by program. We never ask for payment to review your application.",
+        "Where a program is paid, Henry Onyx may offer revenue share or other instructor compensation. Terms are agreed in writing after approval—they are not promised on this page and vary by program. We never ask for payment to review your application.",
       ),
     },
   ];
@@ -108,7 +122,7 @@ export default async function TeachPage({
       step: "01",
       label: t("Submitted"),
       body: t(
-        "We store your answers, files, and proposal against your HenryCo identity so nothing is lost between systems.",
+        "We store your answers, files, and proposal against your Henry Onyx identity so nothing is lost between systems.",
       ),
     },
     {
@@ -122,7 +136,7 @@ export default async function TeachPage({
       step: "03",
       label: t("Decision"),
       body: t(
-        "We approve, ask for targeted changes with written notes, or decline. Silence is not a strategy—we aim to respond clearly.",
+        "We approve, ask for targeted changes with written notes, or decline. Silence is not a strategy—you always get a clear, written response.",
       ),
     },
     {
@@ -147,12 +161,12 @@ export default async function TeachPage({
         </h1>
         <p className="mt-5 max-w-3xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
           {t(
-            "HenryCo Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one HenryCo account so review, onboarding, and any future commercial relationship stay coherent.",
+            "Henry Onyx Learn is for practitioners who can design structured programs, explain ideas clearly, and show up professionally. We verify identity and fit before anyone goes live. Your application stays tied to one Henry Onyx account so review, onboarding, and any future commercial relationship stay coherent.",
           )}
         </p>
       </section>
 
-      <section className="mt-10 grid gap-6 rounded-[1.6rem] border border-[var(--learn-line)] bg-white/[0.04] p-6 sm:p-7 md:grid-cols-3">
+      <section className="mt-10 grid gap-6 rounded-[1.6rem] border border-[var(--learn-line)] bg-[color:var(--home-surface-04)] p-6 sm:p-7 md:grid-cols-3">
         <div>
           <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
             <BadgePercent className="h-3.5 w-3.5" aria-hidden />
@@ -162,7 +176,7 @@ export default async function TeachPage({
             {t("Apply at no cost")}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-            {t("HenryCo never charges instructors to submit, review, or appeal an application. We earn when learners pay — not before.")}
+            {t("Henry Onyx never charges instructors to submit, review, or appeal an application. We earn when learners pay — not before.")}
           </p>
         </div>
         <div>
@@ -186,14 +200,14 @@ export default async function TeachPage({
             {commissionLabel}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-            {t("Commission is deducted at sale and disclosed in the instructor agreement before publishing opens. Featured placement (paid promotion in search results) is coming soon — separate from the base commission.")}
+            {t("Commission is deducted at sale and disclosed in the instructor agreement before publishing opens.")}
           </p>
         </div>
       </section>
 
       <section className="mt-12">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
-          {t("How HenryCo Learn treats teaching")}
+          {t("How Henry Onyx Learn treats teaching")}
         </p>
         <ul className="mt-8 grid gap-10 md:grid-cols-3 md:divide-x md:divide-[var(--learn-line)]">
           {pillars.map((item, i) => {
@@ -211,7 +225,7 @@ export default async function TeachPage({
         </ul>
       </section>
 
-      <section className="mt-14 grid gap-12 xl:grid-cols-[0.95fr,1.05fr] xl:divide-x xl:divide-[var(--learn-line)]">
+      <section className="mt-14 grid gap-12 xl:grid-cols-[0.95fr_1.05fr] xl:divide-x xl:divide-[var(--learn-line)]">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Who should apply")}
@@ -255,7 +269,17 @@ export default async function TeachPage({
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <LearnStatusBadge
-                  label={`Status: ${application.status.replace(/_/g, " ")}`}
+                  label={`${t("Status")}: ${
+                    application.status === "approved"
+                      ? t("Approved")
+                      : application.status === "changes_requested"
+                        ? t("Changes requested")
+                        : application.status === "rejected"
+                          ? t("Not approved")
+                          : application.status === "under_review"
+                            ? t("Under review")
+                            : t("Submitted")
+                  }`}
                   tone={
                     application.status === "approved"
                       ? "success"
@@ -265,16 +289,13 @@ export default async function TeachPage({
                   }
                 />
                 <LearnStatusBadge label={application.expertiseArea} />
-                <LearnStatusBadge
-                  label={`Payout: ${application.payoutModel.replace(/_/g, " ")}`}
-                />
               </div>
               <h3 className="mt-5 text-balance text-[1.35rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.55rem]">
                 {t("Existing application")}
               </h3>
               <p className="mt-3 text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {t(
-                  "We keep your teaching application attached to the same HenryCo identity used across courses, certificates, and future academy operations.",
+                  "We keep your teaching application attached to the same Henry Onyx identity used across courses, certificates, and future academy operations.",
                 )}
               </p>
               <dl className="mt-5 divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
@@ -315,21 +336,25 @@ export default async function TeachPage({
                     {t("Supporting files")}
                   </p>
                   <ul className="mt-3 divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
-                    {application.supportingFiles.map((file) => (
-                      <li key={file.publicId}>
-                        <a
-                          href={file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between gap-3 py-3 text-sm text-[var(--learn-ink)] transition hover:text-[var(--learn-mint-soft)]"
-                        >
-                          <span>{file.name}</span>
-                          <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                            {t("Open")}
-                          </span>
-                        </a>
-                      </li>
-                    ))}
+                    {application.supportingFiles.map((file) => {
+                      const signedUrl = supportingFileUrls.get(file.publicId) || "";
+                      if (!signedUrl) return null;
+                      return (
+                        <li key={file.publicId}>
+                          <a
+                            href={signedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between gap-3 py-3 text-sm text-[var(--learn-ink)] transition hover:text-[var(--learn-mint-soft)]"
+                          >
+                            <span>{file.name}</span>
+                            <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
+                              {t("Open")}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ) : null}
@@ -352,7 +377,7 @@ export default async function TeachPage({
               {reviewStages.map((stage) => (
                 <li
                   key={stage.step}
-                  className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                  className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-mint-soft)]">
                     {stage.step}
@@ -376,11 +401,11 @@ export default async function TeachPage({
                 {t("Apply")}
               </p>
               <h3 className="mt-3 text-balance text-[1.35rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.55rem]">
-                {t("Sign in with your HenryCo account first.")}
+                {t("Sign in with your Henry Onyx account first.")}
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {t(
-                  "We only accept teaching applications from verified account holders. That protects applicants, learners, and HenryCo from impersonation—and keeps your status visible in one dashboard.",
+                  "We only accept teaching applications from verified account holders. That protects applicants, learners, and Henry Onyx from impersonation—and keeps your status visible in one dashboard.",
                 )}
               </p>
               <a
@@ -398,7 +423,7 @@ export default async function TeachPage({
               <h3 className="mt-3 text-balance text-[1.35rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--learn-ink)] sm:text-[1.55rem]">
                 {application
                   ? t("Update your teaching application")
-                  : t("Apply to teach with HenryCo")}
+                  : t("Apply to teach with Henry Onyx")}
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {t(
@@ -527,7 +552,7 @@ export default async function TeachPage({
                     rows={6}
                     className="learn-textarea mt-2 w-full rounded-2xl px-4 py-3"
                     placeholder={t(
-                      "Describe the course or topic you would teach, who it is for, what transformation it creates, and why HenryCo should trust you to lead it.",
+                      "Describe the course or topic you would teach, who it is for, what transformation it creates, and why Henry Onyx should trust you to lead it.",
                     )}
                   />
                 </div>
@@ -540,7 +565,7 @@ export default async function TeachPage({
                     name="supportingFiles"
                     multiple
                     accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
-                    className="learn-input mt-2 w-full rounded-2xl px-4 py-3 file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--learn-ink)]"
+                    className="learn-input mt-2 w-full rounded-2xl px-4 py-3 file:mr-3 file:rounded-full file:border-0 file:bg-[color:var(--home-surface-07)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--learn-ink)]"
                   />
                   <p className="mt-2 text-xs leading-6 text-[var(--learn-ink-soft)]">
                     {t(
@@ -558,7 +583,7 @@ export default async function TeachPage({
                     />
                     <span className="leading-7 text-[var(--learn-ink-soft)]">
                       {t(
-                        "I confirm that the information is accurate, that I can deliver the subject matter professionally, and that HenryCo may review the application for instructor onboarding, internal enablement, or future academy partnerships.",
+                        "I confirm that the information is accurate, that I can deliver the subject matter professionally, and that Henry Onyx may review the application for instructor onboarding, internal enablement, or future academy partnerships.",
                       )}
                     </span>
                   </label>

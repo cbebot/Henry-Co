@@ -1,11 +1,17 @@
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { addModuleLessonDefinitionAction, saveCourseDefinitionAction } from "@/lib/learn/actions";
+import { isAiSurfaceEnabled } from "@henryco/ai-gateway";
+import { DraftCoursePanel } from "@/components/ai/DraftCoursePanel";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import { instructorNav } from "@/lib/learn/navigation";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { LearnPanel, LearnSectionIntro, LearnWorkspaceShell } from "@/components/learn/ui";
+
+// Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
+// company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
+const LEARN_AI_COURSE_ASSIST = isAiSurfaceEnabled(process.env.LEARN_AI_COURSE_ASSIST, process.env);
 
 export default async function InstructorCoursesPage() {
   await requireLearnRoles(
@@ -20,7 +26,7 @@ export default async function InstructorCoursesPage() {
       kicker={t("Course authoring")}
       title={t("Create courses and assemble lesson sequences.")}
       description={t(
-        "Define the course metadata, then add modules + lessons. Lessons can be video (Cloudinary), reading (markdown), quiz (assessment), or assignment (file or free-text submission).",
+        "Define the course metadata, then add modules + lessons. Lessons can be video, reading (markdown), quiz (assessment), or assignment (file or free-text submission).",
       )}
       nav={instructorNav("/instructor/courses", t)}
     >
@@ -28,9 +34,22 @@ export default async function InstructorCoursesPage() {
         kicker={t("New course")}
         title={t("Define the syllabus")}
         body={t(
-          "Every field here is a server action — saving updates the live catalogue. Keep titles plain, descriptions outcome-focused, and the syllabus tight.",
+          "Saving publishes these changes to the live catalogue. Keep titles plain, descriptions outcome-focused, and the syllabus tight.",
         )}
       />
+      {LEARN_AI_COURSE_ASSIST ? (
+        <DraftCoursePanel
+          copy={{
+            heading: t("Draft with Henry Onyx Intelligence"),
+            intro: t("Henry Onyx Intelligence drafts a starting point from your idea — review and edit every field before you publish."),
+            draftButton: t("Draft with Henry Onyx Intelligence"),
+            drafting: t("Drafting…"),
+            needTitle: t("Add a title first, then let Henry Onyx Intelligence draft the rest."),
+            errorFallback: t("Henry Onyx Intelligence is unavailable right now."),
+            priceTemplate: t("Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}"),
+          }}
+        />
+      ) : null}
       <LearnPanel className="mt-6 rounded-[1.6rem]">
         <form
           action={saveCourseDefinitionAction}
@@ -155,7 +174,7 @@ export default async function InstructorCoursesPage() {
         kicker={t("Add lesson")}
         title={t("Lesson editor")}
         body={t(
-          "Pick a course, then add a module or extend an existing one with a new lesson. Lesson body uses markdown; video lessons reference a Cloudinary URL.",
+          "Pick a course, then add a module or extend an existing one with a new lesson. Lesson body uses markdown; for a video lesson, paste the video link.",
         )}
       />
       <LearnPanel className="mt-6 rounded-[1.6rem]">
@@ -238,7 +257,7 @@ export default async function InstructorCoursesPage() {
           return (
             <li
               key={course.id}
-              className="rounded-[1.4rem] border border-[var(--learn-line)] bg-white/5 p-5"
+              className="rounded-[1.4rem] border border-[var(--learn-line)] bg-[var(--learn-fill-faint)] p-5"
             >
               <p className="text-sm font-semibold text-[var(--learn-ink)]">{course.title}</p>
               <p className="mt-1 text-xs text-[var(--learn-ink-soft)]">

@@ -45,6 +45,10 @@ type OwnerAuthSuccess = {
     id: string;
     email?: string | null;
   };
+  /** HUB-4: whether the auth session's email is confirmed — the email-fallback
+   *  owner match is honored only when this is true. Exposed so wrappers stay
+   *  consistent without re-reading the session. */
+  emailVerified: boolean;
   supabase: OwnerSupabaseClient;
 };
 
@@ -75,6 +79,11 @@ export async function requireOwner(): Promise<OwnerAuthResult> {
   }
 
   const email = user.email?.trim().toLowerCase() || null;
+  // HUB-4: only an auth session with a CONFIRMED email may match an
+  // owner_profiles row by email. Without this, an unverified/attacker-set
+  // email that happens to equal a seeded owner row's email would grant owner
+  // access. The direct user_id match is unaffected.
+  const emailVerified = Boolean(user.email_confirmed_at);
 
   const { data: directProfile, error: directProfileError } = await supabase
     .from("owner_profiles")
@@ -83,7 +92,7 @@ export async function requireOwner(): Promise<OwnerAuthResult> {
     .maybeSingle();
 
   const { data: emailProfile, error: emailProfileError } =
-    !directProfile && email
+    !directProfile && email && emailVerified
       ? await supabase
           .from("owner_profiles")
           .select("user_id, email, role, is_active")
@@ -109,6 +118,7 @@ export async function requireOwner(): Promise<OwnerAuthResult> {
       id: user.id,
       email: user.email,
     },
+    emailVerified,
     supabase,
   };
 }

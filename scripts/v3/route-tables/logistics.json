@@ -1,0 +1,169 @@
+{
+  "app": "logistics",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/:splat",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/cron/logistics-automation",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/api/logistics/book",
+      "api": true
+    },
+    {
+      "route": "/api/logistics/claims",
+      "api": true
+    },
+    {
+      "route": "/api/logistics/dispatch/assign",
+      "api": true
+    },
+    {
+      "route": "/api/logistics/pod",
+      "api": true
+    },
+    {
+      "route": "/api/logistics/quote",
+      "api": true
+    },
+    {
+      "route": "/api/logistics/track/:param",
+      "api": true
+    },
+    {
+      "route": "/api/webhooks/whatsapp",
+      "api": true
+    },
+    {
+      "route": "/book",
+      "api": false
+    },
+    {
+      "route": "/business",
+      "api": false
+    },
+    {
+      "route": "/customer",
+      "api": false
+    },
+    {
+      "route": "/dispatcher",
+      "api": false
+    },
+    {
+      "route": "/dispatcher/exceptions",
+      "api": false
+    },
+    {
+      "route": "/dispatcher/fleet",
+      "api": false
+    },
+    {
+      "route": "/dispatcher/zones",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/manager",
+      "api": false
+    },
+    {
+      "route": "/manager/claims",
+      "api": false
+    },
+    {
+      "route": "/manager/finance",
+      "api": false
+    },
+    {
+      "route": "/manager/fleet",
+      "api": false
+    },
+    {
+      "route": "/manager/sla",
+      "api": false
+    },
+    {
+      "route": "/owner",
+      "api": false
+    },
+    {
+      "route": "/owner/business",
+      "api": false
+    },
+    {
+      "route": "/owner/calendar",
+      "api": false
+    },
+    {
+      "route": "/owner/staff",
+      "api": false
+    },
+    {
+      "route": "/pay/:param",
+      "api": false
+    },
+    {
+      "route": "/pricing",
+      "api": false
+    },
+    {
+      "route": "/quote",
+      "api": false
+    },
+    {
+      "route": "/rider",
+      "api": false
+    },
+    {
+      "route": "/rider/active",
+      "api": false
+    },
+    {
+      "route": "/rider/expenses",
+      "api": false
+    },
+    {
+      "route": "/rider/history",
+      "api": false
+    },
+    {
+      "route": "/rider/notifications",
+      "api": false
+    },
+    {
+      "route": "/services",
+      "api": false
+    },
+    {
+      "route": "/support",
+      "api": false
+    },
+    {
+      "route": "/track",
+      "api": false
+    }
+  ]
+}

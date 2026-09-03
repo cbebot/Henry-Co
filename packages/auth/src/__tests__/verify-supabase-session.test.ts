@@ -18,6 +18,10 @@ import {
   sessionStateFor,
   __setSupabaseClientFactoryForTests,
 } from "../server/verify-supabase-session";
+import {
+  decodeReauthContextCookieValue,
+  HC_REAUTH_CONTEXT_COOKIE,
+} from "../server/reauth-context";
 
 declare const __resetAuthTestState: () => void;
 
@@ -64,6 +68,24 @@ function validSessionCookieHeader(): string {
   return `sb-stub-auth-token=${encodeURIComponent(payload)}`;
 }
 
+function validSessionCookieHeaderWithUser(): string {
+  const payload = JSON.stringify({
+    access_token: "stub-access",
+    refresh_token: "stub-refresh",
+    expires_at: Date.now() / 1000 + 3600,
+    user: {
+      email: "fixture@example.com",
+      app_metadata: { provider: "email", role: "ignored" },
+      user_metadata: {
+        full_name: "Fixture User",
+        avatar_url: "https://example.com/avatar.png",
+        secret_note: "ignored",
+      },
+    },
+  });
+  return `sb-stub-auth-token=${encodeURIComponent(payload)}`;
+}
+
 function malformedSessionCookieHeader(): string {
   // Truncated JSON — fails the well-formed check.
   return "sb-stub-auth-token=not-json";
@@ -75,10 +97,11 @@ type StubOpts = {
   /**
    * Simulate the failure modes the helper distinguishes:
    *   "error"           → getUser resolves with { user: null, error: { recoverable } }
+   *   "refresh-token-invalid" → getUser resolves with Supabase's 400 refresh-token failure
    *   "throw-recoverable" → getUser throws a recoverable error
    *   "throw-fatal"     → getUser throws a non-recoverable error (should propagate)
    */
-  throwOn?: "error" | "throw-recoverable" | "throw-fatal";
+  throwOn?: "error" | "refresh-token-invalid" | "throw-recoverable" | "throw-fatal";
 };
 
 function stubSupabase(userId: string | null, opts: StubOpts = {}): void {
@@ -107,6 +130,17 @@ function stubSupabase(userId: string | null, opts: StubOpts = {}): void {
             return {
               data: { user: null },
               error: { name: "AuthSessionMissingError", message: "session missing", status: 401 },
+            };
+          }
+          if (opts.throwOn === "refresh-token-invalid") {
+            return {
+              data: { user: null },
+              error: {
+                name: "AuthApiError",
+                message: "Refresh token is not valid",
+                code: "validation_failed",
+                status: 400,
+              },
             };
           }
           if (userId === null) {
@@ -178,6 +212,42 @@ test("verifySupabaseSession: cookies present, recoverable error → reauth", asy
     assert.fail(`expected reauth, got ${result.status}`);
   }
   assert.equal(result.reason, "supabase_auth_error");
+});
+
+test("verifySupabaseSession: invalid refresh token API error → reauth", async () => {
+  stubSupabase(null, { throwOn: "refresh-token-invalid" });
+  const result = await verifySupabaseSession(makeReq(validSessionCookieHeader()), freshRes());
+  if (result.status !== "reauth") {
+    assert.fail(`expected reauth, got ${result.status}`);
+  }
+  assert.equal(result.reason, "supabase_auth_error");
+});
+
+test("verifySupabaseSession: recoverable error writes short-lived reauth context", async () => {
+  stubSupabase(null, { throwOn: "error" });
+  const res = freshRes();
+  const result = await verifySupabaseSession(
+    makeReq(validSessionCookieHeaderWithUser()),
+    res,
+  );
+  if (result.status !== "reauth") {
+    assert.fail(`expected reauth, got ${result.status}`);
+  }
+
+  const cookie = res.cookies.get(HC_REAUTH_CONTEXT_COOKIE);
+  assert.ok(cookie, "reauth context cookie should be set before auth cookies are cleared");
+  assert.equal(cookie.path, "/");
+  assert.equal(cookie.httpOnly, true);
+  assert.equal(cookie.maxAge, 300);
+
+  const context = decodeReauthContextCookieValue(cookie.value);
+  assert.equal(context?.email, "fixture@example.com");
+  assert.deepEqual(context?.app_metadata, { provider: "email" });
+  assert.deepEqual(context?.user_metadata, {
+    full_name: "Fixture User",
+    avatar_url: "https://example.com/avatar.png",
+  });
+  assert.equal(context?.displayName, "Fixture User");
 });
 
 test("verifySupabaseSession: cookies present, getUser throws recoverable → reauth", async () => {

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * SupportAssist — HenryCo's chrome-integrated help surface.
+ * SupportAssist — Henry Onyx's chrome-integrated help surface.
  *
  * The cross-division replacement for the old `SupportDock` / `AssistDock`
  * floating concierge. Two non-negotiables drove this redesign:
@@ -15,8 +15,8 @@
  *
  *   2. Surface quality matches the dashboard search palette. Same
  *      motion language (EASE_OUT cubic, FADE_MS = 200), same primitive
- *      pattern (BottomSheet on mobile, hairline-bordered popover on
- *      desktop), same combobox/listbox a11y contract. The dock should
+ *      pattern (full-screen mobile workspace, hairline-bordered popover
+ *      on desktop), same combobox/listbox a11y contract. The dock should
  *      read as a sibling of `<DashboardCommandPalette>`, not a chatbot
  *      bolted onto the side of every page.
  *
@@ -88,7 +88,7 @@ export type SupportAssistProps = {
   division: AssistDivision;
   /**
    * Optional accent for the trigger ring + contextual-row highlight.
-   * Defaults to the HenryCo gold (#C9A227). The dock no longer paints a
+   * Defaults to the Henry Onyx gold (#C9A227). The dock no longer paints a
    * gradient header — the accent only tints small focused surfaces.
    */
   accent?: string;
@@ -294,7 +294,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Buyer protection"),
-      description: t(locale, "Disputes, refunds, and HenryCo escrow review"),
+      description: t(locale, "Disputes, refunds, and Henry Onyx escrow review"),
       href: accountSupportHref({
         division: "marketplace",
         subject: "Marketplace buyer protection issue",
@@ -305,7 +305,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Open a support thread"),
-      description: t(locale, "Reach the HenryCo support team directly"),
+      description: t(locale, "Reach the Henry Onyx support team directly"),
       href: accountSupportHref({
         division: "marketplace",
         subject: "Marketplace support request",
@@ -350,7 +350,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Care support"),
-      description: t(locale, "Speak directly to the HenryCo Care team"),
+      description: t(locale, "Speak directly to the Henry Onyx Care team"),
       href: accountSupportHref({
         division: "care",
         subject: "Care booking support",
@@ -388,7 +388,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Jobs help"),
-      description: t(locale, "Reach the HenryCo Jobs support team"),
+      description: t(locale, "Reach the Henry Onyx Jobs support team"),
       href: divisionUrl("jobs", "/help"),
       external: false,
       icon: <IconMessage />,
@@ -422,7 +422,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Learning help"),
-      description: t(locale, "Reach the HenryCo Learn team"),
+      description: t(locale, "Reach the Henry Onyx Learn team"),
       href: divisionUrl("learn", "/help"),
       external: false,
       icon: <IconMessage />,
@@ -456,7 +456,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Logistics support"),
-      description: t(locale, "Reach the HenryCo Logistics team"),
+      description: t(locale, "Reach the Henry Onyx Logistics team"),
       href: "/support",
       external: false,
       icon: <IconMessage />,
@@ -490,7 +490,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
     },
     {
       label: t(locale, "Property support"),
-      description: t(locale, "Reach the HenryCo Property team"),
+      description: t(locale, "Reach the Henry Onyx Property team"),
       href: accountSupportHref({
         division: "property",
         subject: "Property support request",
@@ -565,7 +565,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
   account: (locale) => [
     {
       label: t(locale, "Open inbox"),
-      description: t(locale, "Notifications across HenryCo divisions"),
+      description: t(locale, "Notifications across Henry Onyx divisions"),
       href: "/notifications",
       external: false,
       icon: <IconBell />,
@@ -595,7 +595,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
   hub: (locale) => [
     {
       label: t(locale, "Explore divisions"),
-      description: t(locale, "All Henry & Co. divisions on one page"),
+      description: t(locale, "All Henry Onyx divisions on one page"),
       href: "/#divisions",
       external: false,
       icon: <IconCompass />,
@@ -608,7 +608,7 @@ const DIVISION_ACTIONS: Record<AssistDivision, ActionsByLocale> = {
       icon: <IconUser />,
     },
     {
-      label: t(locale, "Contact HenryCo"),
+      label: t(locale, "Contact Henry Onyx"),
       description: t(locale, "General support and enquiries"),
       href: hub("/contact"),
       external: false,
@@ -752,8 +752,8 @@ type AssistCopy = {
   assistTitle: string;
   assistBody: (query: string) => string;
   assistCta: string;
-  statusOnline: string;
-  statusReply: string;
+  openInbox: string;
+  openInboxHint: string;
   close: string;
   divisionLabel: string;
   divisions: Record<AssistDivision, string>;
@@ -769,7 +769,7 @@ function getAssistCopy(locale: string): AssistCopy {
     property: "Property",
     studio: "Studio",
     account: "Account",
-    hub: "Henry & Co.",
+    hub: "Henry Onyx",
   };
 
   if (locale === "fr") {
@@ -777,7 +777,7 @@ function getAssistCopy(locale: string): AssistCopy {
       trigger: "Aide",
       triggerHint: "Besoin d'aide ?",
       title: "Comment pouvons-nous vous aider ?",
-      subtitle: "L'équipe Henry & Co. est à votre écoute.",
+      subtitle: "L'équipe Henry Onyx est à votre écoute.",
       searchLabel: "Rechercher dans l'aide",
       searchPlaceholder: "Rechercher un sujet, un statut...",
       emptyTitle: "Aucun résultat",
@@ -786,8 +786,8 @@ function getAssistCopy(locale: string): AssistCopy {
       assistTitle: "Demander à l'équipe",
       assistBody: (q) => `Envoyer « ${q} » comme question — réponse rapide.`,
       assistCta: "Envoyer la question",
-      statusOnline: "Équipe disponible",
-      statusReply: "Réponse en moins d'1 h en moyenne",
+      openInbox: "Ouvrir le centre d'assistance",
+      openInboxHint: "Voir vos conversations et vos messages",
       close: "Fermer",
       divisionLabel: "Division",
       divisions,
@@ -798,7 +798,7 @@ function getAssistCopy(locale: string): AssistCopy {
       trigger: "Ayuda",
       triggerHint: "¿Necesitas ayuda?",
       title: "¿Cómo podemos ayudarte?",
-      subtitle: "El equipo de Henry & Co. está aquí para ti.",
+      subtitle: "El equipo de Henry Onyx está aquí para ti.",
       searchLabel: "Buscar en la ayuda",
       searchPlaceholder: "Buscar tema, estado...",
       emptyTitle: "Sin resultados",
@@ -807,8 +807,8 @@ function getAssistCopy(locale: string): AssistCopy {
       assistTitle: "Preguntar al equipo",
       assistBody: (q) => `Enviar «${q}» como consulta — respuesta rápida.`,
       assistCta: "Enviar consulta",
-      statusOnline: "Equipo disponible",
-      statusReply: "Respuesta en menos de 1 h en promedio",
+      openInbox: "Abrir el centro de soporte",
+      openInboxHint: "Ver tus conversaciones y mensajes",
       close: "Cerrar",
       divisionLabel: "División",
       divisions,
@@ -819,7 +819,7 @@ function getAssistCopy(locale: string): AssistCopy {
       trigger: "Ajuda",
       triggerHint: "Precisa de ajuda?",
       title: "Como podemos ajudar?",
-      subtitle: "A equipa Henry & Co. está aqui para si.",
+      subtitle: "A equipa Henry Onyx está aqui para si.",
       searchLabel: "Pesquisar ajuda",
       searchPlaceholder: "Pesquisar tópico, estado...",
       emptyTitle: "Sem resultados",
@@ -828,8 +828,8 @@ function getAssistCopy(locale: string): AssistCopy {
       assistTitle: "Perguntar à equipa",
       assistBody: (q) => `Enviar «${q}» como pergunta — resposta rápida.`,
       assistCta: "Enviar pergunta",
-      statusOnline: "Equipa disponível",
-      statusReply: "Resposta em menos de 1 h em média",
+      openInbox: "Abrir o centro de suporte",
+      openInboxHint: "Ver as suas conversas e mensagens",
       close: "Fechar",
       divisionLabel: "Divisão",
       divisions,
@@ -840,7 +840,7 @@ function getAssistCopy(locale: string): AssistCopy {
       trigger: "Hilfe",
       triggerHint: "Brauchen Sie Hilfe?",
       title: "Wie können wir helfen?",
-      subtitle: "Das Henry & Co. Team ist für Sie da.",
+      subtitle: "Das Henry Onyx Team ist für Sie da.",
       searchLabel: "Hilfe durchsuchen",
       searchPlaceholder: "Thema oder Status suchen...",
       emptyTitle: "Keine Treffer",
@@ -849,8 +849,8 @@ function getAssistCopy(locale: string): AssistCopy {
       assistTitle: "Team fragen",
       assistBody: (q) => `„${q}" als Frage senden — schnelle Antwort.`,
       assistCta: "Frage senden",
-      statusOnline: "Team verfügbar",
-      statusReply: "Antwort meist innerhalb 1 Std.",
+      openInbox: "Support-Center öffnen",
+      openInboxHint: "Unterhaltungen und Nachrichten ansehen",
       close: "Schließen",
       divisionLabel: "Bereich",
       divisions,
@@ -861,7 +861,7 @@ function getAssistCopy(locale: string): AssistCopy {
       trigger: "Aiuto",
       triggerHint: "Hai bisogno di aiuto?",
       title: "Come possiamo aiutarti?",
-      subtitle: "Il team Henry & Co. è qui per te.",
+      subtitle: "Il team Henry Onyx è qui per te.",
       searchLabel: "Cerca nell'aiuto",
       searchPlaceholder: "Cerca un tema, uno stato...",
       emptyTitle: "Nessun risultato",
@@ -870,8 +870,8 @@ function getAssistCopy(locale: string): AssistCopy {
       assistTitle: "Chiedi al team",
       assistBody: (q) => `Invia «${q}» come domanda — risposta rapida.`,
       assistCta: "Invia domanda",
-      statusOnline: "Team disponibile",
-      statusReply: "Risposta entro 1 h in media",
+      openInbox: "Apri il centro assistenza",
+      openInboxHint: "Visualizza conversazioni e messaggi",
       close: "Chiudi",
       divisionLabel: "Divisione",
       divisions,
@@ -882,7 +882,7 @@ function getAssistCopy(locale: string): AssistCopy {
       trigger: "مساعدة",
       triggerHint: "تحتاج مساعدة؟",
       title: "كيف يمكننا مساعدتك؟",
-      subtitle: "فريق Henry & Co. في خدمتك.",
+      subtitle: "فريق Henry Onyx في خدمتك.",
       searchLabel: "البحث في المساعدة",
       searchPlaceholder: "ابحث عن موضوع أو حالة...",
       emptyTitle: "لا توجد نتائج",
@@ -891,8 +891,8 @@ function getAssistCopy(locale: string): AssistCopy {
       assistTitle: "اسأل الفريق",
       assistBody: (q) => `أرسل «${q}» كسؤال — رد سريع.`,
       assistCta: "إرسال السؤال",
-      statusOnline: "الفريق متاح",
-      statusReply: "ردود خلال ساعة في المتوسط",
+      openInbox: "فتح مركز الدعم",
+      openInboxHint: "عرض محادثاتك ورسائلك",
       close: "إغلاق",
       divisionLabel: "القسم",
       divisions,
@@ -902,7 +902,7 @@ function getAssistCopy(locale: string): AssistCopy {
     trigger: "Help",
     triggerHint: "Need help?",
     title: "How can we help?",
-    subtitle: "The Henry & Co. concierge desk is right here.",
+    subtitle: "The Henry Onyx concierge desk is right here.",
     searchLabel: "Search support",
     searchPlaceholder: "Search a topic or status...",
     emptyTitle: "No matching topic",
@@ -911,8 +911,8 @@ function getAssistCopy(locale: string): AssistCopy {
     assistTitle: "Ask the team",
     assistBody: (q) => `Send "${q}" as a quick question — replies usually under an hour.`,
     assistCta: "Send the question",
-    statusOnline: "Team online",
-    statusReply: "Replies typically under 1 hour",
+    openInbox: "Open support centre",
+    openInboxHint: "View your conversations and messages",
     close: "Close",
     divisionLabel: "Division",
     divisions,
@@ -989,6 +989,7 @@ export function SupportAssist({
   const [query, setQuery] = useState("");
   const [highlight, setHighlight] = useState(-1);
   const [scrolledAway, setScrolledAway] = useState(false);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
   const pathname = usePathname() ?? "";
 
   const hidden = useMemo(
@@ -1004,6 +1005,19 @@ export function SupportAssist({
     () => detectContextualAction(division, pathname, locale),
     [division, pathname, locale],
   );
+
+  // A support workspace must not summon the virtual keyboard simply by
+  // opening. On compact screens we initially focus the close control (the
+  // first focusable element) instead of the search input. The user can then
+  // inspect the full support surface and opt into search deliberately.
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const media = window.matchMedia("(max-width: 640px)");
+    const sync = () => setIsCompactViewport(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
 
   // Route change → close. The render shell remains for the next route
   // so the panel state can come back without remounting the tree.
@@ -1151,7 +1165,7 @@ export function SupportAssist({
       setOpen(false);
       triggerRef.current?.focus();
     },
-    initialFocus: searchRef,
+    initialFocus: isCompactViewport ? undefined : searchRef,
   });
 
   // Filter + assist target.
@@ -1294,8 +1308,8 @@ export function SupportAssist({
         />
       ) : null}
 
-      {/* Panel — render tree only after first open. Mobile = bottom
-          sheet, desktop = anchored popover above the trigger. */}
+      {/* Panel — render tree only after first open. Mobile is a focused
+          support workspace; desktop remains an anchored popover. */}
       {hasOpened ? (
         <div
           ref={panelRef}
@@ -1307,9 +1321,8 @@ export function SupportAssist({
           style={panelStyle({ open, reduceMotion })}
           tabIndex={-1}
         >
-          {/* Drag-handle (mobile bottom-sheet affordance). Desktop hides
-              via CSS — kept in the tree so screen-reader announce stays
-              consistent. */}
+          {/* Retained as a harmless structural marker for older host CSS.
+              The standard mobile presentation is now full-screen. */}
           <span aria-hidden className="hc-assist-handle" />
 
           {/* Header. Quiet — no gradient, no monogram. Division label is
@@ -1512,17 +1525,28 @@ export function SupportAssist({
             ) : null}
           </ul>
 
-          {/* Footer status */}
+          {/* Persistent handoff to the dedicated support inbox. The inbox is
+              where durable customer threads and message history live; it
+              must remain one clear tap away from every global dock. */}
           <footer className="hc-assist-footer">
             <span className="hc-assist-status-dot" aria-hidden />
-            <span className="hc-assist-status-text">
-              <span className="hc-assist-status-title">
-                {copy.statusOnline}
+            <a
+              href={acct("/support")}
+              onClick={closePanel}
+              className="hc-assist-inbox-link"
+            >
+              <span className="hc-assist-status-text">
+                <span className="hc-assist-status-title">
+                  {copy.openInbox}
+                </span>
+                <span className="hc-assist-status-reply">
+                  {copy.openInboxHint}
+                </span>
               </span>
-              <span className="hc-assist-status-reply">
-                {copy.statusReply}
+              <span className="hc-assist-inbox-chevron" aria-hidden>
+                <IconChevron size={15} />
               </span>
-            </span>
+            </a>
           </footer>
         </div>
       ) : null}
@@ -1613,8 +1637,13 @@ function SupportAssistStyles() {
         height: 2.5rem;
         padding: 0 0.95rem 0 0.65rem;
         border-radius: 9999px;
-        background: var(--hc-surface, #ffffff);
-        color: var(--hc-ink, #0a0a0a);
+        /* Theme-aware: --site-* flip via [data-theme] on public pages (set by
+           the pre-paint blocking script), so the trigger is light on a light
+           page and dark on a dark page. Fall back to the dark-first --hc-*
+           dashboard tokens where --site-* isn't defined (app dashboards), so
+           those keep their existing dark trigger. */
+        background: var(--site-surface-strong, var(--hc-surface, #ffffff));
+        color: var(--site-text, var(--hc-ink, #0a0a0a));
         border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
         cursor: pointer;
         font: inherit;
@@ -1732,9 +1761,10 @@ function SupportAssistStyles() {
       }
 
       /* Panel — premium card. Hairline border, soft elevated shadow,
-         no gradient header. Mobile = bottom sheet (full width, sheet
-         radius at the top); desktop = floating popover anchored to the
-         trigger. */
+         no gradient header. Desktop is a floating popover. Compact
+         screens promote it into an app-like support workspace so neither
+         the page below nor the virtual keyboard competes for message
+         visibility. */
       .hc-assist-panel {
         background: var(--hc-surface, #ffffff);
         color: var(--hc-ink, #0a0a0a);
@@ -1761,23 +1791,25 @@ function SupportAssistStyles() {
 
       @media (max-width: 640px) {
         .hc-assist-panel {
+          top: 0 !important;
           right: 0 !important;
           left: 0 !important;
           bottom: 0 !important;
           width: 100% !important;
           max-width: 100% !important;
-          max-height: 88vh !important;
-          border-radius: 1.5rem 1.5rem 0 0 !important;
-          border-bottom: 0 !important;
-          padding-top: 0 !important;
+          height: 100vh !important;
+          height: 100dvh !important;
+          min-height: 100vh !important;
+          min-height: 100dvh !important;
+          max-height: none !important;
+          display: grid !important;
+          grid-template-rows: auto auto minmax(0, 1fr) auto;
+          border: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
         }
         .hc-assist-handle {
-          display: block;
-          width: 2.5rem;
-          height: 0.25rem;
-          border-radius: 9999px;
-          background: color-mix(in srgb, currentColor 18%, transparent);
-          margin: 0.6rem auto 0.25rem;
+          display: none;
         }
       }
 
@@ -1787,6 +1819,14 @@ function SupportAssistStyles() {
         align-items: start;
         gap: 0.75rem;
         padding: 0.95rem 1.05rem 0.55rem;
+      }
+      @media (max-width: 640px) {
+        .hc-assist-header {
+          padding:
+            max(1rem, calc(env(safe-area-inset-top, 0px) + 0.75rem))
+            1rem
+            0.75rem;
+        }
       }
       .hc-assist-header-text {
         min-width: 0;
@@ -1836,6 +1876,11 @@ function SupportAssistStyles() {
 
       .hc-assist-search-wrap {
         padding: 0.25rem 1.05rem 0.7rem;
+      }
+      @media (max-width: 640px) {
+        .hc-assist-search-wrap {
+          padding: 0.25rem 1rem 0.8rem;
+        }
       }
       .hc-assist-search {
         display: flex;
@@ -1900,6 +1945,7 @@ function SupportAssistStyles() {
         list-style: none;
         padding: 0;
         margin: 0;
+        min-height: 0;
         overflow-y: auto;
         overscroll-behavior: contain;
         scrollbar-gutter: stable;
@@ -1965,6 +2011,35 @@ function SupportAssistStyles() {
       .hc-assist-row[data-active] .hc-assist-row-chevron {
         opacity: 0.8;
         transform: translateX(2px);
+      }
+      @media (max-width: 640px) {
+        .hc-assist-list {
+          scrollbar-gutter: auto;
+          padding-bottom: 0.5rem;
+        }
+        .hc-assist-row {
+          min-height: 4.75rem;
+          gap: 0.8rem;
+          padding: 0.8rem 1rem;
+        }
+        .hc-assist-row-icon {
+          width: 2.25rem;
+          height: 2.25rem;
+          border-radius: 0.75rem;
+        }
+        .hc-assist-row-label {
+          white-space: normal;
+          font-size: 0.92rem;
+        }
+        .hc-assist-row-description {
+          display: -webkit-box;
+          overflow: hidden;
+          white-space: normal;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          font-size: 0.78rem;
+          line-height: 1.4;
+        }
       }
 
       .hc-assist-row--contextual {
@@ -2067,6 +2142,30 @@ function SupportAssistStyles() {
         box-shadow: 0 0 0 0 color-mix(in srgb, #22c55e 60%, transparent);
         animation: hc-assist-online 2.6s ${EASE_OUT} infinite;
       }
+      .hc-assist-inbox-link {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        flex: 1;
+        min-width: 0;
+        color: inherit;
+        text-decoration: none;
+        border-radius: 0.65rem;
+        outline: none;
+      }
+      .hc-assist-inbox-link:hover .hc-assist-inbox-chevron {
+        opacity: 0.9;
+        transform: translateX(2px);
+      }
+      .hc-assist-inbox-link:focus-visible {
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--hc-assist-accent, #c9a227) 32%, transparent);
+      }
+      .hc-assist-inbox-chevron {
+        display: inline-grid;
+        place-items: center;
+        opacity: 0.48;
+        transition: transform 140ms ${EASE_OUT}, opacity 140ms ${EASE_OUT};
+      }
       @keyframes hc-assist-online {
         0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, #22c55e 60%, transparent); }
         50% { box-shadow: 0 0 0 6px transparent; }
@@ -2086,6 +2185,22 @@ function SupportAssistStyles() {
       .hc-assist-status-reply {
         font-size: 0.74rem;
         color: color-mix(in srgb, currentColor 70%, transparent);
+      }
+      @media (max-width: 640px) {
+        .hc-assist-footer {
+          min-height: 4.5rem;
+          padding:
+            0.75rem
+            1rem
+            max(0.75rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem));
+        }
+        .hc-assist-status-title {
+          font-size: 0.7rem;
+        }
+        .hc-assist-status-reply {
+          margin-top: 0.1rem;
+          font-size: 0.8rem;
+        }
       }
 
       @keyframes hc-assist-fade-in {

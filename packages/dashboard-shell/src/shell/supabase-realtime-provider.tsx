@@ -337,7 +337,7 @@ function projectHydrationItem(
     source: source
       ? {
           key: typeof source.key === "string" ? source.key : "system",
-          label: typeof source.label === "string" ? source.label : "HenryCo",
+          label: typeof source.label === "string" ? source.label : "Henry Onyx",
           accent: typeof source.accent === "string" ? source.accent : "#111827",
           logoUrl: typeof source.logoUrl === "string" ? source.logoUrl : null,
         }
@@ -464,6 +464,10 @@ export function SupabaseRealtimeProvider({
           .then(async (r): Promise<Bucket> => {
             if (!r.ok) return { audience: "customer", items: [], ok: false };
             const p = (await r.json()) as HydrationPayload;
+            // A degraded hydration (read timeout/error → empty + 207) is
+            // untrusted: mergeSignals keeps the last-known signals instead of
+            // wiping the bell. Never let a transient read clear the inbox.
+            if (p?.degraded) return { audience: "customer", items: [], ok: false };
             const items = (p?.items ?? [])
               .map((it) => projectHydrationItem(it, "customer"))
               .filter((x): x is RealtimeSignal => x !== null);
@@ -477,6 +481,8 @@ export function SupabaseRealtimeProvider({
             .then(async (r): Promise<Bucket> => {
               if (!r.ok) return { audience: "staff", items: [], ok: false };
               const p = (await r.json()) as HydrationPayload;
+              // Degraded hydration → untrusted (see customer branch above).
+              if (p?.degraded) return { audience: "staff", items: [], ok: false };
               const items = (p?.items ?? [])
                 .map((it) => projectHydrationItem(it, "staff"))
                 .filter((x): x is RealtimeSignal => x !== null);
@@ -964,7 +970,13 @@ export function SupabaseRealtimeProvider({
     const supabase = supabaseRef.current ?? factory();
     if (!supabase) return;
     supabaseRef.current = supabase;
-    const authApi = supabase.auth?.onAuthStateChange;
+    // Bind to `supabase.auth` — supabase-js >=2.98 reads `this._debug` inside
+    // onAuthStateChange, so a DETACHED method reference (`= supabase.auth.x`)
+    // is invoked with `this === undefined` and throws
+    // "Cannot read properties of undefined (reading '_debug')", which the
+    // (account)/error.tsx boundary catches as "This page didn't load"
+    // (V3-DOMAIN-FIX-01 — surfaced on the new account.henryonyx.com build).
+    const authApi = supabase.auth?.onAuthStateChange?.bind(supabase.auth);
     if (typeof authApi !== "function") return;
 
     let unsubscribed = false;
@@ -981,7 +993,10 @@ export function SupabaseRealtimeProvider({
       //     channel-effect mount path (deps include viewer.user.id).
       //   - USER_UPDATED / PASSWORD_RECOVERY: no channel impact.
       handleSupabaseAuthEvent(event, session, {
-        setAuth: supabase.realtime?.setAuth,
+        // Bound for the same reason as onAuthStateChange above — realtime-js
+        // setAuth touches `this` in >=2.98, so a detached ref throws on
+        // TOKEN_REFRESHED.
+        setAuth: supabase.realtime?.setAuth?.bind(supabase.realtime),
         hasStaffAccess,
         userId,
         emit: emitConnectionEvent,

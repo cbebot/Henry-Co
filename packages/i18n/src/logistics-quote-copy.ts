@@ -60,7 +60,7 @@ export type LogisticsQuoteCopy = {
 
 const LOGISTICS_QUOTE_COPY_EN: LogisticsQuoteCopy = {
   metadata: {
-    title: "Request a quote | HenryCo Logistics",
+    title: "Request a quote | Henry Onyx Logistics",
     description: "Get an indicative logistics quote before you commit to a booking.",
   },
   hero: {
@@ -94,7 +94,7 @@ const LOGISTICS_QUOTE_COPY_EN: LogisticsQuoteCopy = {
     stepLabel: "Step",
     items: {
       returned: {
-        title: "Quote returned instantly",
+        title: "Quote returned in one step",
         body: "Indicative total and promise window appear in line — no follow-up email needed to see the price.",
       },
       reference: {
@@ -109,7 +109,7 @@ const LOGISTICS_QUOTE_COPY_EN: LogisticsQuoteCopy = {
   },
   volume: {
     eyebrow: "Need volume pricing?",
-    body: "Recurring B2B lanes, multi-stop dispatch, and contract pricing run through the business desk — not a quick public quote.",
+    body: "Recurring B2B lanes, multi-stop routes, and contract pricing are handled by our business team — not a quick public quote.",
     talkLink: "Talk to the business desk",
     compareLink: "Compare service tiers",
   },
@@ -124,7 +124,7 @@ const LOGISTICS_QUOTE_COPY_EN: LogisticsQuoteCopy = {
 
 const LOGISTICS_QUOTE_COPY_FR: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Demander un devis | HenryCo Logistics",
+    title: "Demander un devis | Henry Onyx Logistics",
     description: "Obtenez un devis logistique indicatif avant de vous engager sur une réservation.",
   },
   hero: {
@@ -158,7 +158,7 @@ const LOGISTICS_QUOTE_COPY_FR: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Étape",
     items: {
       returned: {
-        title: "Devis renvoyé instantanément",
+        title: "Devis renvoyé en une seule étape",
         body: "Le total indicatif et la fenêtre de promesse s’affichent en ligne — pas besoin d’un e-mail de suivi pour voir le prix.",
       },
       reference: {
@@ -173,7 +173,7 @@ const LOGISTICS_QUOTE_COPY_FR: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Besoin de tarifs en volume ?",
-    body: "Les trajets B2B récurrents, la répartition multi-arrêts et les tarifs contractuels passent par le bureau des entreprises — pas par un devis public rapide.",
+    body: "Les trajets B2B récurrents, les itinéraires multi-arrêts et les tarifs contractuels sont gérés par notre équipe entreprises — pas par un devis public rapide.",
     talkLink: "Parler au bureau des entreprises",
     compareLink: "Comparer les niveaux de service",
   },
@@ -188,7 +188,7 @@ const LOGISTICS_QUOTE_COPY_FR: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_ES: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Solicitar un presupuesto | HenryCo Logistics",
+    title: "Solicitar un presupuesto | Henry Onyx Logistics",
     description: "Obtén un presupuesto logístico indicativo antes de comprometerte con una reserva.",
   },
   hero: {
@@ -222,7 +222,7 @@ const LOGISTICS_QUOTE_COPY_ES: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Paso",
     items: {
       returned: {
-        title: "Presupuesto devuelto al instante",
+        title: "Presupuesto devuelto en un solo paso",
         body: "El total indicativo y la ventana de promesa aparecen en línea — no hace falta un correo de seguimiento para ver el precio.",
       },
       reference: {
@@ -237,7 +237,7 @@ const LOGISTICS_QUOTE_COPY_ES: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "¿Necesitas precios por volumen?",
-    body: "Los trayectos B2B recurrentes, el despacho multi-parada y los precios por contrato pasan por el escritorio empresarial — no por un presupuesto público rápido.",
+    body: "Los trayectos B2B recurrentes, las rutas multi-parada y los precios por contrato los gestiona nuestro equipo de empresas — no un presupuesto público rápido.",
     talkLink: "Habla con el escritorio empresarial",
     compareLink: "Comparar niveles de servicio",
   },
@@ -252,7 +252,7 @@ const LOGISTICS_QUOTE_COPY_ES: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_PT: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Solicitar um orçamento | HenryCo Logistics",
+    title: "Solicitar um orçamento | Henry Onyx Logistics",
     description: "Obtenha um orçamento logístico indicativo antes de se comprometer com uma reserva.",
   },
   hero: {
@@ -286,7 +286,7 @@ const LOGISTICS_QUOTE_COPY_PT: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Passo",
     items: {
       returned: {
-        title: "Orçamento devolvido instantaneamente",
+        title: "Orçamento devolvido num único passo",
         body: "Total indicativo e janela de promessa aparecem em linha — não é preciso e-mail de seguimento para ver o preço.",
       },
       reference: {
@@ -301,7 +301,7 @@ const LOGISTICS_QUOTE_COPY_PT: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Precisa de preços por volume?",
-    body: "Trajetos B2B recorrentes, despacho multi-paragem e preços contratuais passam pelo balcão empresarial — não por um orçamento público rápido.",
+    body: "Trajetos B2B recorrentes, rotas multi-paragem e preços contratuais são tratados pela nossa equipa de empresas — não por um orçamento público rápido.",
     talkLink: "Falar com o balcão empresarial",
     compareLink: "Comparar níveis de serviço",
   },
@@ -316,7 +316,7 @@ const LOGISTICS_QUOTE_COPY_PT: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_AR: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "طلب عرض سعر | HenryCo Logistics",
+    title: "طلب عرض سعر | Henry Onyx Logistics",
     description: "احصل على عرض سعر لوجستي إرشادي قبل الالتزام بالحجز.",
   },
   hero: {
@@ -350,7 +350,7 @@ const LOGISTICS_QUOTE_COPY_AR: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "الخطوة",
     items: {
       returned: {
-        title: "إعادة العرض فوراً",
+        title: "إعادة العرض في خطوة واحدة",
         body: "يظهر الإجمالي الإرشادي ونافذة الوعد في السطر مباشرة — دون الحاجة إلى رسالة متابعة لرؤية السعر.",
       },
       reference: {
@@ -365,7 +365,7 @@ const LOGISTICS_QUOTE_COPY_AR: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "تحتاج تسعيراً بالحجم؟",
-    body: "المسارات المتكرّرة بين الشركات، والإرسال متعدّد المحطات، والتسعير التعاقدي تمرّ عبر مكتب الأعمال — لا عبر عرض عام سريع.",
+    body: "المسارات المتكرّرة بين الشركات، والمسارات متعدّدة المحطات، والتسعير التعاقدي يتولّاها فريق الأعمال لدينا — لا عبر عرض عام سريع.",
     talkLink: "تحدّث مع مكتب الأعمال",
     compareLink: "قارن مستويات الخدمة",
   },
@@ -380,7 +380,7 @@ const LOGISTICS_QUOTE_COPY_AR: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_DE: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Angebot anfordern | HenryCo Logistics",
+    title: "Angebot anfordern | Henry Onyx Logistics",
     description: "Holen Sie sich vor der Buchung ein indikatives Logistikangebot.",
   },
   hero: {
@@ -414,7 +414,7 @@ const LOGISTICS_QUOTE_COPY_DE: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Schritt",
     items: {
       returned: {
-        title: "Angebot sofort zurückgegeben",
+        title: "Angebot in einem Schritt zurückgegeben",
         body: "Indikativer Gesamtbetrag und Versprechensfenster erscheinen direkt in der Zeile — keine Folge-E-Mail nötig, um den Preis zu sehen.",
       },
       reference: {
@@ -429,7 +429,7 @@ const LOGISTICS_QUOTE_COPY_DE: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Volumenpreise benötigt?",
-    body: "Wiederkehrende B2B-Strecken, Multi-Stopp-Dispatch und Vertragspreise laufen über den Business-Desk — nicht über ein schnelles öffentliches Angebot.",
+    body: "Wiederkehrende B2B-Strecken, Multi-Stopp-Routen und Vertragspreise werden von unserem Geschäftskunden-Team betreut — nicht über ein schnelles öffentliches Angebot.",
     talkLink: "Mit dem Business-Desk sprechen",
     compareLink: "Servicestufen vergleichen",
   },
@@ -444,7 +444,7 @@ const LOGISTICS_QUOTE_COPY_DE: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_IT: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Richiedi un preventivo | HenryCo Logistics",
+    title: "Richiedi un preventivo | Henry Onyx Logistics",
     description: "Ottieni un preventivo logistico indicativo prima di impegnarti in una prenotazione.",
   },
   hero: {
@@ -478,7 +478,7 @@ const LOGISTICS_QUOTE_COPY_IT: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Passo",
     items: {
       returned: {
-        title: "Preventivo restituito all’istante",
+        title: "Preventivo restituito in un solo passaggio",
         body: "Il totale indicativo e la finestra di promessa appaiono in linea — non serve un’e-mail di follow-up per vedere il prezzo.",
       },
       reference: {
@@ -493,7 +493,7 @@ const LOGISTICS_QUOTE_COPY_IT: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Servono prezzi a volume?",
-    body: "Tratte B2B ricorrenti, dispatch multi-fermata e prezzi a contratto passano per il business desk — non per un preventivo pubblico veloce.",
+    body: "Tratte B2B ricorrenti, percorsi multi-fermata e prezzi a contratto sono gestiti dal nostro team aziendale — non da un preventivo pubblico veloce.",
     talkLink: "Parla con il business desk",
     compareLink: "Confronta i livelli di servizio",
   },
@@ -508,7 +508,7 @@ const LOGISTICS_QUOTE_COPY_IT: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_ZH: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "申请报价 | HenryCo Logistics",
+    title: "申请报价 | Henry Onyx Logistics",
     description: "在确认预订之前先获取指示性物流报价。",
   },
   hero: {
@@ -542,7 +542,7 @@ const LOGISTICS_QUOTE_COPY_ZH: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "步骤",
     items: {
       returned: {
-        title: "即时返回报价",
+        title: "一步即可获取报价",
         body: "指示性总额与承诺时间窗口直接在页面中显示 — 无需后续邮件即可看到价格。",
       },
       reference: {
@@ -557,7 +557,7 @@ const LOGISTICS_QUOTE_COPY_ZH: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "需要大宗价格?",
-    body: "经常性的 B2B 线路、多点派送和合同定价由业务专席处理 — 而非快速公开报价。",
+    body: "经常性的 B2B 线路、多点路线和合同定价由我们的业务团队处理 — 而非快速公开报价。",
     talkLink: "联系业务专席",
     compareLink: "比较服务等级",
   },
@@ -572,7 +572,7 @@ const LOGISTICS_QUOTE_COPY_ZH: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_HI: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "कोटेशन का अनुरोध करें | HenryCo Logistics",
+    title: "कोटेशन का अनुरोध करें | Henry Onyx Logistics",
     description: "बुकिंग के लिए प्रतिबद्ध होने से पहले एक संकेतात्मक लॉजिस्टिक्स कोटेशन प्राप्त करें।",
   },
   hero: {
@@ -606,7 +606,7 @@ const LOGISTICS_QUOTE_COPY_HI: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "चरण",
     items: {
       returned: {
-        title: "तुरंत कोटेशन लौटाया गया",
+        title: "एक ही चरण में कोटेशन प्राप्त करें",
         body: "संकेतात्मक कुल और वादा खिड़की पंक्ति में ही दिखाई देती है — कीमत देखने के लिए अनुवर्ती ई-मेल की ज़रूरत नहीं।",
       },
       reference: {
@@ -621,7 +621,7 @@ const LOGISTICS_QUOTE_COPY_HI: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "वॉल्यूम मूल्य चाहिए?",
-    body: "आवर्ती B2B लेन, मल्टी-स्टॉप डिस्पैच और अनुबंध मूल्य व्यवसाय डेस्क से होकर जाते हैं — न कि एक त्वरित सार्वजनिक कोटेशन से।",
+    body: "आवर्ती B2B लेन, मल्टी-स्टॉप रूट और अनुबंध मूल्य हमारी व्यवसाय टीम संभालती है — न कि एक त्वरित सार्वजनिक कोटेशन।",
     talkLink: "व्यवसाय डेस्क से बात करें",
     compareLink: "सेवा स्तरों की तुलना करें",
   },
@@ -636,7 +636,7 @@ const LOGISTICS_QUOTE_COPY_HI: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_IG: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Rịọ ọnụego | HenryCo Logistics",
+    title: "Rịọ ọnụego | Henry Onyx Logistics",
     description: "Nweta ọnụego logistics ngosi tupu ị kwado nzọrọ.",
   },
   hero: {
@@ -670,7 +670,7 @@ const LOGISTICS_QUOTE_COPY_IG: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Nzọụkwụ",
     items: {
       returned: {
-        title: "E nyeghachiri ọnụego ozugbo",
+        title: "E nyeghachiri ọnụego n'otu nzọụkwụ",
         body: "Mkpokọta ngosi na windo nkwa na-apụta n’ahịrị ozugbo — ọ dịghị mkpa ozi e-mail soro ya iji hụ ọnụego.",
       },
       reference: {
@@ -685,7 +685,7 @@ const LOGISTICS_QUOTE_COPY_IG: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Ị chọrọ ọnụego olu?",
-    body: "Ụzọ B2B na-aga aga, mbufe ọtụtụ nkwụsị, na ọnụego nkwekọrịta na-agafe site na nkuku azụmaahịa — ọ bụghị site na ọnụego ọha ngwa ngwa.",
+    body: "Recurring B2B lanes, multi-stop routes, and contract pricing are handled by our business team — not a quick public quote.",
     talkLink: "Gwa nkuku azụmaahịa okwu",
     compareLink: "Tụlee ọkwa ọrụ",
   },
@@ -700,7 +700,7 @@ const LOGISTICS_QUOTE_COPY_IG: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_YO: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Béèrè ìpèsè iye | HenryCo Logistics",
+    title: "Béèrè ìpèsè iye | Henry Onyx Logistics",
     description: "Gba ìpèsè iye logistics tó ń tọ́ka kí o tó ṣe ìfọwọ́sí ìpamọ́.",
   },
   hero: {
@@ -734,7 +734,7 @@ const LOGISTICS_QUOTE_COPY_YO: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Ìṣísẹ̀",
     items: {
       returned: {
-        title: "A dá ìpèsè padà lẹ́sẹ̀kẹsẹ̀",
+        title: "A dá ìpèsè padà ní ìgbésẹ̀ kan",
         body: "Àpapọ̀ tí ń tọ́ka àti akoko ìlérí yóò hàn lẹ́sẹ̀kẹsẹ̀ — kò sí ìmélì àtẹ̀le tí ń béèrè kí o tó rí iye náà.",
       },
       reference: {
@@ -749,7 +749,7 @@ const LOGISTICS_QUOTE_COPY_YO: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Ṣé o nílò iye fún ìṣòfin tó pọ̀?",
-    body: "Àwọn ọ̀nà B2B tó ń tẹ̀síwájú, ìpín onírúurú-ìdúró, àti iye àdéhùn ń kọjá láti orí tábìlì iṣẹ́-òwò — kì í ṣe láti orí ìpèsè kíákíá ní gbangba.",
+    body: "Recurring B2B lanes, multi-stop routes, and contract pricing are handled by our business team — not a quick public quote.",
     talkLink: "Bá tábìlì iṣẹ́-òwò sọ̀rọ̀",
     compareLink: "Fi àwọn ipele iṣẹ́ wé ara wọn",
   },
@@ -764,7 +764,7 @@ const LOGISTICS_QUOTE_COPY_YO: DeepPartial<LogisticsQuoteCopy> = {
 
 const LOGISTICS_QUOTE_COPY_HA: DeepPartial<LogisticsQuoteCopy> = {
   metadata: {
-    title: "Nemi farashi | HenryCo Logistics",
+    title: "Nemi farashi | Henry Onyx Logistics",
     description: "Sami farashin logistics na ja-gora kafin ka tabbatar da yin rijista.",
   },
   hero: {
@@ -798,7 +798,7 @@ const LOGISTICS_QUOTE_COPY_HA: DeepPartial<LogisticsQuoteCopy> = {
     stepLabel: "Mataki",
     items: {
       returned: {
-        title: "An mayar da farashi nan da nan",
+        title: "An mayar da farashi a mataki ɗaya",
         body: "Jimilla ta ja-gora da tagar alkawari za su bayyana a layi kai tsaye — babu buƙatar imel ɗin bibiya don ganin farashin.",
       },
       reference: {
@@ -813,7 +813,7 @@ const LOGISTICS_QUOTE_COPY_HA: DeepPartial<LogisticsQuoteCopy> = {
   },
   volume: {
     eyebrow: "Kana buƙatar farashin kaya mai yawa?",
-    body: "Hanyoyin B2B masu maimaitawa, aikawa mai tasha-tasha, da farashin yarjejeniya suna ratsa ta tebur ɗin kasuwanci — ba ta wani farashi mai sauri na jama’a ba.",
+    body: "Recurring B2B lanes, multi-stop routes, and contract pricing are handled by our business team — not a quick public quote.",
     talkLink: "Yi magana da tebur ɗin kasuwanci",
     compareLink: "Kwatanta matakan sabis",
   },

@@ -15,7 +15,7 @@ export default async function MessagingAlertsPage() {
       <OwnerPageHeader
         eyebrow="Owner Alerts"
         title="Notification failures and skips"
-        description="The owner alert board surfaces delivery problems immediately, including the live invalid sender issue already present in marketplace email alerts."
+        description="The owner alert board surfaces delivery problems immediately — every row below is a live queue record, not a summary."
       />
 
       <OwnerPanel title="Failed or skipped owner alerts" description="These need configuration or data fixes.">

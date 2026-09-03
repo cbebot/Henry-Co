@@ -3,9 +3,14 @@ import Link from "next/link";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { notFound } from "next/navigation";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getSellerAcademyCopy } from "@henryco/i18n";
+import { SellerTierBadge } from "@henryco/ui";
 import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
+import { DeliveryPromiseBadge } from "@/components/marketplace/DeliveryPromiseBadge";
 import { StoreActionsClient } from "@/components/marketplace/store-actions-client";
 import { getMarketplaceVendorBySlug } from "@/lib/marketplace/data";
+import { getVendorDeliveryPromise } from "@/lib/marketplace/delivery-promises";
+import { resolveSellerTierForVendor } from "@/lib/marketplace/seller-tier-data";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
@@ -39,6 +44,12 @@ export default async function StorePage({
   const data = await getMarketplaceVendorBySlug(slug);
   if (!data) notFound();
 
+  // V3-58: public-facing seller tier (resolved via the owner→business bridge).
+  const sellerTier = await resolveSellerTierForVendor(data.vendor.id);
+  const sellerCopy = getSellerAcademyCopy(locale);
+  // V3-DELIVERY-COMPLETE-01 (T6): the store's active Delivery Promise (dormant-safe → null).
+  const deliveryPromise = await getVendorDeliveryPromise(data.vendor.id);
+
   // Store name is a proper noun and stays as-is; the marketing description is
   // the seller's story and is the field non-EN buyers most benefit from
   // having translated.
@@ -58,10 +69,22 @@ export default async function StorePage({
   return (
     <div className="mx-auto max-w-[1480px] space-y-14 px-4 py-10 sm:px-6 xl:px-8">
       {/* Editorial passport hero — eyebrow + display + body + CTA + ProofRail */}
-      <section className="grid gap-12 xl:grid-cols-[1.1fr,0.9fr]">
+      <section className="grid gap-12 xl:grid-cols-[1.1fr_0.9fr]">
         <article>
           <p className="market-kicker">{copy.store.hero.eyebrow}</p>
           <h1 className="market-display mt-5 max-w-3xl text-balance">{data.vendor.name}</h1>
+          {sellerTier !== "none" || deliveryPromise ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {sellerTier !== "none" ? (
+                <SellerTierBadge
+                  tier={sellerTier}
+                  label={sellerCopy.tierNames[sellerTier]}
+                  tooltip={sellerCopy.badge.tooltip[sellerTier]}
+                />
+              ) : null}
+              <DeliveryPromiseBadge promise={deliveryPromise} locale={locale} />
+            </div>
+          ) : null}
           <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)] sm:text-lg">
             {localizedVendorDescription || copy.store.hero.bodyFallback}
           </p>
@@ -97,16 +120,16 @@ export default async function StorePage({
           </dl>
         </article>
 
-        {/* Standards aside — noir gradient with editorial divided list */}
-        <aside className="rounded-[2.4rem] border border-[var(--market-line-strong)] bg-[linear-gradient(135deg,#0c0a09_0%,#1a1410_55%,#2a1f17_100%)] px-7 py-9 text-[var(--market-paper-white)] shadow-[0_36px_110px_rgba(17,13,9,0.3)] sm:px-9 sm:py-11">
+        {/* Standards aside — sunken editorial panel with divided list */}
+        <aside className="rounded-[2.4rem] border border-[var(--market-line-strong)] bg-[var(--home-canvas-deep)] px-7 py-9 text-[var(--market-paper-white)] shadow-[0_36px_110px_-60px_rgb(var(--home-ink-rgb)/0.22)] sm:px-9 sm:py-11">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--market-brass)]">
             {copy.store.standards.eyebrow}
           </p>
-          <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
+          <ul className="mt-6 divide-y divide-[var(--home-line-12)] border-y border-[var(--home-line-12)]">
             {data.vendor.badges.map((badge) => (
               <li
                 key={badge}
-                className="flex items-baseline gap-3 py-3 text-sm leading-7 text-white/82"
+                className="flex items-baseline gap-3 py-3 text-sm leading-7 text-[var(--home-ink-70)]"
               >
                 <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--market-brass)]" />
                 <span>{badge}</span>
@@ -114,13 +137,13 @@ export default async function StorePage({
             ))}
           </ul>
           <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-4">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
+            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--home-ink-50)]">
               {copy.store.support.eyebrow}
             </p>
-            <p className="mt-2 max-w-md text-sm leading-7 text-white/72">
+            <p className="mt-2 max-w-md text-sm leading-7 text-[var(--home-ink-70)]">
               <Link
                 href={helpHref}
-                className="font-semibold text-[var(--market-brass)] underline-offset-4 outline-none transition hover:underline focus-visible:underline focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
+                className="font-semibold text-[var(--market-brass)] underline-offset-4 outline-none transition hover:underline focus-visible:underline focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--home-canvas)] rounded-sm"
               >
                 {copy.store.support.contactLinkLabel}
               </Link>
@@ -128,7 +151,7 @@ export default async function StorePage({
             </p>
             <Link
               href={helpHref}
-              className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--market-paper-white)] transition hover:bg-white/[0.08] motion-safe:hover:-translate-y-[1px] motion-safe:hover:shadow-[0_12px_28px_rgba(178,134,59,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-[var(--home-line-15)] bg-[var(--home-surface-04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--market-paper-white)] transition hover:bg-[var(--home-surface-07)] motion-safe:hover:-translate-y-[1px] motion-safe:hover:shadow-[0_12px_28px_rgba(178,134,59,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--home-canvas)]"
             >
               <MessageSquare className="h-3.5 w-3.5 text-[var(--market-brass)]" aria-hidden />
               {copy.store.support.ctaLabel}
@@ -150,7 +173,7 @@ export default async function StorePage({
               buyer voice; translate per-row via client-side fetch on demand. */}
           <ul className="mt-6 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
             {data.reviews.slice(0, 4).map((review) => (
-              <li key={review.id} className="grid gap-5 py-6 lg:grid-cols-[0.3fr,0.7fr]">
+              <li key={review.id} className="grid gap-5 py-6 lg:grid-cols-[0.3fr_0.7fr]">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
                   {review.verifiedPurchase ? copy.store.reviews.verifiedPurchase : copy.store.reviews.review}
                 </p>
@@ -190,7 +213,12 @@ export default async function StorePage({
              and translating every row on hot routes blows up DeepL quota. */
           <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {data.products.map((product) => (
-              <ProductCard key={product.slug} product={product} />
+              <ProductCard
+                key={product.slug}
+                product={product}
+                sellerTier={sellerTier}
+                deliveryPromise={deliveryPromise}
+              />
             ))}
           </div>
         ) : (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RefreshCcw } from "lucide-react";
+import { henryDomain } from "@henryco/config";
 import { getAccountCopy } from "@henryco/i18n/server";
 import {
   HeroCard,
@@ -154,6 +154,10 @@ export default async function SubscriptionsPage() {
                 kicker={copy.hero.title}
                 title={copy.empty.title}
                 body={copy.empty.description}
+                cta={{
+                  label: copy.empty.ctaLabel,
+                  href: henryDomain("marketplace"),
+                }}
               />
             ) : (
               <TimelineCard ariaLabel={copy.hero.title}>
@@ -217,7 +221,7 @@ export default async function SubscriptionsPage() {
               margin: "8px 0 0",
             }}
           >
-            <RefreshCcw size={12} aria-hidden style={{ verticalAlign: "middle" }} />
+            {copy.empty.footnote}
           </p>
         ) : null
       }

@@ -1,47 +1,30 @@
-# ACCOUNT-PREMIUM-01 — Customer Account Dashboard Inner-Page Rebuild
+# ACCOUNT-PREMIUM-01 — Customer Surface: Account Dashboard Inner-Page Premium Rebuild
 
-**Pass ID:** ACCOUNT-PREMIUM-01
-**Phase:** Polish + capability rebuild
-**Pillar:** P3 (Personalization) + P12 (Global UX) + brand
-**Dependencies:** Wave B.1 + close-out merged (THEME-01 Light/Dark/System tokens, DESIGN-01 BottomSheet, V3-05 StructuredSkeleton + ListStates, V3-09 mobile primitives, V3-10 error boundaries + canonical surface:error i18n, V3-07 i18n strict gate, SEARCH-01 indexing + ranking, MODULES-01 viewerCanUseCustomerSurface helper, FIX-MOBILE-CLICKS touch-action: manipulation)
-**Effort:** XL (3–5 sessions to land the full set; this prompt covers a multi-session arc)
-**Parallel-safe:** YES (no overlap with active V3 surface owners)
-**Owner gate:** Visual sign-off after EACH session — this is a quality bar, not a velocity sprint
-**Risk class:** None
+> **STATUS: IN PROGRESS — legacy pre-numbered pass; foundation already landed, page-by-page rebuild arc remains.** The Phase-1 audit (`docs/v3/account-inner-page-audit-2026-05-23.md`), the shared interaction grammar (`docs/v3/account-design-language.md`), and the six surface primitives in `packages/dashboard-shell/src/surfaces/` (`HeroCard`, `NextStepRow`, `MetricStrip`, `TimelineCard`, `EmptyStateCard`, `DivisionLanding`) are SHIPPED. This prompt is the elevated canonical spec for the remaining arc: rebuild each account inner page onto those primitives, one curated slice per session, to a flagship bar. Do not re-author the audit or re-invent the primitives — consume them.
+
+**Pass ID:** ACCOUNT-PREMIUM-01  ·  **Phase:** B-adjacent (Foundation polish / customer-surface rebuild)  ·  **Pillar:** P3 (Personalization) + P12 (Global UX)
+**Dependencies:** V3-05 (StructuredSkeleton + ListStates), V3-09 (mobile primitives + safe-area), V3-10 (error boundaries + canonical `surface:error` i18n), V3-07 (i18n strict gate), V3-IDENTITY-01 (#188, brand truth = Henry Onyx)  ·  **Effort:** XL (multi-session arc; one curated page-slice per session)  ·  **Parallel-safe:** Y (no overlap with active V3 surface owners; one agent per page-slice)
+**Owner gate:** Visual sign-off after EACH session — this is a quality bar, not a velocity sprint  ·  **Risk class:** —
 
 ---
 
 ## Role
 
-You are the V3 Customer Surface engineer assigned to ACCOUNT-PREMIUM-01. The owner directive, paraphrased from a long-form ask:
+You are the V3 Customer Surface engineer for Henry Onyx. You execute exactly one curated page-slice of this rebuild arc, then stop and report. Each account inner page must, above the fold, answer "what's happening with my stuff?" and "what should I do next?" with the user's REAL data and a real next action — rebuilt onto the six shared `@henryco/dashboard-shell` surface primitives, never a bespoke per-page hero. The line you must not cross: no hardcoded mock data, no placeholder card grids, no hardcoded user-facing copy, no decorative-only modules that pretend to be real. The customer account dashboard is the face of Henry Onyx to every paying customer; every detail compounds.
 
-> "Audit, read, understand how the whole dashboard inner pages work — all of the customer account dashboard inner pages, all those large hero cards, etc. Everything looks and feels real and standardised, no shallow work or hardcoding objects. From scratch, well-engineered. All those pages will be rebuilt for good. First work through them and ask yourself questions: 'if I were the user, how best do I expect it to be to make the maximum satisfaction and the most premium expensive feel?' Thunderous, wonderful, efficient, magnificent, productive, real, well-grounded work. Second to none. Premium expensive feel. Wow me — I hired you to do the difficult task."
+The owner directive, paraphrased: "Audit, read, understand how all the customer account dashboard inner pages work — the large hero cards, everything. Everything looks and feels real and standardised, no shallow work or hardcoding objects. From scratch, well-engineered. Ask yourself: 'if I were the user, how best do I expect it to be for maximum satisfaction and the most premium expensive feel?' Thunderous, wonderful, efficient, magnificent, productive, real, well-grounded. Second to none. Wow me."
 
-**The owner's bar:**
-- "User knows what to do next" — every page surfaces the user's likely next action, not a static template
-- "Looks and feels real" — every number, every name, every image is real data the user owns
-- "Standardised" — a shared visual + interaction language across the whole inner-shell
-- "No shallow work or hardcoding objects" — no `const FAKE_USER = {...}`, no hard-coded copy that should read from `@henryco/i18n`, no placeholder card grids
-- "From scratch well-engineered" — when a page is rebuilt, its data layer is reviewed AND the JSX is rewritten against the new design language
-- "Most premium expensive feel" — the quality bar of Stripe, Linear, Notion, Apple Wallet, Things 3 — not a corporate dashboard template
-- "Maximum satisfaction" — every interaction is considered: when the user lands on a page, the first thing they see should answer "what's happening with my stuff?"; the second thing should answer "what should I do next?"
-
-**Quality questions the engineer asks themself BEFORE writing code (and re-asks AFTER):**
-
-1. If I were a returning customer landing on this page right now, what is the single most useful sentence I could read?
-2. What is the next clearest action they probably want to take? Is it surfaced above the fold?
-3. What metric, if any, would make them feel "this product knows me"?
-4. What part of this page currently looks like it was filled by a template — and what should replace it with something curated?
-5. What would I delete on this page that adds noise without adding signal?
-6. Where am I using "Loading…" / "Welcome…" / generic copy that could be replaced with their actual data + a personal next-step?
-7. Where am I assuming the user has filled a form / completed a setup / connected an account — and what's the graceful path if they haven't?
-8. Does this page work as well in dark mode as light mode? Does the active brand-gold accent sit cleanly on the page surface in both?
-9. Does this page feel cramped on a 360px-wide mobile, or breathable?
-10. If I had 8 seconds with this user before they got distracted, what would I want them to walk away with?
-
-These questions are NOT in a checklist; they're the lens. The agent must internalise them and use them on every surface they touch.
-
----
+The ten lens-questions to internalise on every surface you touch (not a checklist — a way of seeing):
+1. If I were a returning customer landing here, what is the single most useful sentence I could read?
+2. What is the next clearest action they want? Is it surfaced above the fold?
+3. What metric would make them feel "this product knows me"?
+4. What looks template-filled and should become curated?
+5. What would I delete that adds noise without signal?
+6. Where am I using "Loading…/Welcome…/generic" copy that could be their actual data + a personal next-step?
+7. Where am I assuming a form/setup/connection is done — and what's the graceful path if it isn't?
+8. Does this work as well in dark as light? Does the Henry Onyx division accent sit cleanly in both?
+9. Does this feel cramped on a 360px mobile, or breathable?
+10. If I had 8 seconds with this user before they got distracted, what should they walk away with?
 
 ## Project
 
@@ -49,233 +32,99 @@ These questions are NOT in a checklist; they're the lens. The agent must interna
 |---|---|
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
-| Working branch | `feat/account-dashboard-premium-rebuild` |
-| Worktree (absolute) | `C:/Users/HP VICTUS/HenryCo/.worktree/account-premium` |
-| Branch base | `main @ <latest>` — post Wave B.1 + close-out merges |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Working branch | `v3/account-premium-<page-slug>` (per page-slice) |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
-Use ABSOLUTE PATHS. For Bash, first call `cd "C:/Users/HP VICTUS/HenryCo/.worktree/account-premium"`. For git, prefer `git -C "<path>" <cmd>`. DO NOT touch the parent repo or sibling worktrees.
+Branch off `origin/main`. Use absolute paths. Do not auto-merge — owner reviews each session's deliverable visually before merge.
 
----
+## Audit summary
 
-## Surfaces in scope
+The customer dashboard lives in `apps/account/app/(account)/`. The shell (`layout.tsx` + `AccountLayoutInner.tsx`) is governed by V3-09/THEME tokens and is **not** in scope except where a page integration requires it. The Phase-1 inventory (`docs/v3/account-inner-page-audit-2026-05-23.md`) enumerated every page-file under `apps/account/app/(account)/**/page.tsx` — `page.tsx` (root home), `activity`, `addresses`, `calendar`, `care`, `documents`, `invoices` + `invoices/[invoiceId]`, `jobs`, `learn`, `logistics`, `marketplace`, `messages`, `modules`, `notifications`, `payments`, `property`, `referrals`, `saved-items`, `security`, `settings`, `studio`, `subscriptions`, `support`, `tasks`, `verification`, `wallet` — scored each on real-data integrity / next-step clarity / premium feel / mobile parity, and rank-ordered the rebuild.
 
-Every page under `apps/account/app/(account)/**/page.tsx`. The shell at `apps/account/app/(account)/layout.tsx` + `AccountLayoutInner.tsx` is in scope for what each page renders WITHIN — but the shell chrome itself (sidebar, topbar, theme toggle) is governed by THEME-01 / DESIGN-01 / V3-09 patterns and only edits if a surface integration requires it.
+The foundation has landed: `packages/dashboard-shell/src/surfaces/` ships `HeroCard` (solo/paired/compact variants; replaces ~15 independent per-division hero implementations), `NextStepRow`, `MetricStrip`, `TimelineCard`, `EmptyStateCard`, `DivisionLanding`, plus `surfaces.css`. The interaction grammar is documented in `docs/v3/account-design-language.md`. **The gap this pass closes:** the page-files still render their old bespoke heroes, ad-hoc empty states, and (in places) hardcoded objects/static counts. This pass migrates each page onto the shared primitives with real typed data fetchers, a real above-the-fold next-step, and honest empty/loading/error states — one curated slice per session.
 
-Mapped pages (incomplete — the agent's Phase 1 audit produces the canonical list):
+## Mandatory scope
 
-- `/` — root account home (high-traffic, hero card lives here)
-- `/activity` — cross-division activity stream
-- `/addresses` — saved addresses
-- `/calendar` — appointments + bookings
-- `/care/*` — care division landing + per-booking detail
-- `/documents` — files + invoices
-- `/invoices` + `/invoices/[invoiceId]` — billing
-- `/jobs/*` — jobs candidate surface + interview sessions
-- `/learn` — learn enrolment + progress
-- `/logistics` — shipments + tracking
-- `/marketplace` — shopping account
-- `/messages/*` — multi-source inbox (activity / notification / security threads)
-- `/modules/[...slug]` — catch-all module router (MODULES-01 already fixed the viewer-gate; the LANDING content per module is still in scope)
-- `/notifications` — full notification inbox
-- `/studio/*` — studio briefs + projects
-- `/wallet` — wallet balance + transactions
-- `/settings/*` — preferences, privacy, payment methods, notification preferences
+### S1 — Select and re-audit the page-slice (3 pages per session)
+Pick 3 pages that span the surface taxonomy and are highest on the audit's rebuild-priority rank and not yet migrated. The first reference slice is: **root home** (`apps/account/app/(account)/page.tsx`, overview type, hero lives here), **care landing** (`apps/account/app/(account)/care/page.tsx`, division overview), **messages inbox** (`apps/account/app/(account)/messages/page.tsx`, list type). Read each page end-to-end plus its primary data fetcher(s) before writing. Re-score against the four audit axes and capture the per-page "wow-bar gaps" you will close.
 
-The Phase 1 audit must enumerate every page-file, document its current render, classify it (overview / list / detail / form / empty-state-only / hybrid), and rank-order by user-traffic + business value.
+### S2 — Rebuild each page onto the shared primitives
+For each page in the slice, replace the bespoke hero/empty-state/card JSX with compositions of `HeroCard` / `NextStepRow` / `MetricStrip` / `TimelineCard` / `EmptyStateCard` / `DivisionLanding` from `@henryco/dashboard-shell`. The primitive owns geometry, motion, light/dark adaptation, and breakpoints; **the host page owns all copy (via `@henryco/i18n`) and all data**. Each rebuilt page must:
+- Replace every hardcoded object/static count with a typed server data fetcher (server-component first), OR document why the fetcher does not exist yet and propose its contract.
+- Surface exactly one real next-step the user can act on, above the fold, via `NextStepRow`.
+- Render an honest empty state via `EmptyStateCard` naming the actual missing thing + the actual next action (never "Nothing here yet.").
+- Render the V3-10 canonical `error.tsx` fallback for unhandled throws, and a calm not-found surface (with a real onward link) for "not your record / 404".
+- Render the V3-05 `StructuredSkeleton` shape (cards where cards will be — no generic spinner); transition to a "still loading — this is unusual" + retry affordance past ~3s.
+- Render clean on a 360px viewport with no horizontal scroll and no clipped content.
 
----
+After each rebuild, run the 10-question self-audit and record the answers in the report.
 
-## Hard out-of-scope (preserve, do NOT modify)
+### S3 — Extend the rebuild hand-off spec
+For each page NOT in this session's slice that you newly understood, append/refresh its mini-spec in `docs/v3/account-inner-page-rebuild-spec.md`: purpose (one sentence) · hero/anchor content algorithm (where the headline data comes from) · next-step picker (what action to surface) · primitive composition (which `HeroCard` variant + companions) · data-fetcher contract (server function → typed shape) · empty-state copy + CTA · error-state behaviour (→ V3-10 fallback). Successor agents execute one page at a time from this spec without redoing design work.
 
-- **`packages/search-ui/`** — owner-reserved. Quality reference renderer only.
-- **Brand identity** — gold accent, serif headlines (`Newsreader`/`Iowan Old Style` per existing config), monogram. Preserve in both modes.
-- **THEME-01 token system** — extend if a new token is truly needed; do NOT fork.
-- **Recent commits to mobile thread header (#114–#117)** — preserve.
-- **PERF-01 PublicRouteLoader + globals.css smooth-scroll** — preserve.
-- **i18n architecture (12 locales, Pattern A + Pattern B DeepL fallback)** — extend via existing utilities. No new locales.
-- **Mobile apps (Expo)** — `apps/super-app` + `apps/company-hub` separate stack.
+### S4 — New shared primitive (only if genuinely reusable)
+If a rebuild needs a NEW reusable surface (e.g. a `<SubscriptionStatusCard />` used by both `subscriptions` and `wallet`), ship it in `packages/dashboard-shell/src/surfaces/` with the same contract discipline as the existing six (THEME tokens, light+dark, single responsive component, i18n-driven copy, a11y, telemetry hooks) — never as a one-off inside `apps/account/components/`.
 
-If a rebuild requires a NEW primitive that's reusable across surfaces, ship it in `packages/dashboard-shell/` (already the design-system home for account chrome) — not as a one-off component inside `apps/account/components/`.
+## Out of scope
+- `packages/search-ui/` — owner-reserved (memory `feedback_dashboard_search_engine_no_touch.md`); quality reference only.
+- The account shell chrome (sidebar/topbar/theme toggle) — governed by V3-09 + chrome passes; edit only if a page integration strictly requires it.
+- Search backend/relevance — owned by SEARCH-01.
+- The marketplace mobile profile drawer — owned by DESIGN-01.
+- Mobile Expo apps (`apps/super-app`, `apps/company-hub`) — separate stack; web mobile only here.
+- Payment behaviour: `@henryco/payment-surface` primitives may be re-skinned for layout only; never change payment behaviour, amounts, or status logic.
 
----
+## Dependencies
+Depends on V3-05 (skeletons), V3-09 (mobile/safe-area), V3-10 (error + `surface:error`), V3-07 (i18n strict gate), V3-IDENTITY-01 (brand). This arc BLOCKS nothing downstream (it is customer-surface polish), but a clean, standardised account dashboard is the reference the personalization passes (V3-34 personalization-home) build their per-user layout on top of — coordinate primitive contracts with that pass.
 
-## Mandatory scope (multi-phase, owner-quality gates at each)
+## Inheritance
+`@henryco/dashboard-shell/surfaces` (the six primitives + `surfaces.css`), `@henryco/dashboard-shell` (loading-skeleton, empty-state, error-boundary, page-header), `@henryco/i18n` (typed copy + DeepL Pattern B), `@henryco/observability/emitEvent`, `@henryco/config` (`COMPANY`, division accents, URL helpers), V3-05 `StructuredSkeleton`/`ListStates`, V3-09 `@henryco/ui/mobile` + `@henryco/ui/a11y`, V3-10 canonical `error.tsx`.
 
-### Phase 1 — Inner-shell audit (this is the foundation; do not skip)
+## Implementation requirements
 
-For every page-file under `apps/account/app/(account)/**/page.tsx`:
+### Files
+- Per page-slice: `apps/account/app/(account)/<area>/page.tsx` (and its server fetcher module, typically a co-located `*.data.ts` or a `packages/*` query) rewritten onto the primitives.
+- `docs/v3/account-inner-page-rebuild-spec.md` (create/extend) — per-page mini-specs.
+- `packages/dashboard-shell/src/surfaces/*` — only if a genuinely reusable new primitive is required (+ its `index.ts` export + `surfaces.css` rule).
+- Report at `.codex-temp/account-dashboard-premium-rebuild/report.md`.
 
-1. Read the file end-to-end + its primary data fetcher(s).
-2. Classify the page (overview / list / detail / form / empty-state / hybrid).
-3. Score on 4 axes (1–5 scale):
-   - **Real-data integrity** — does the page actually render the user's data, or does it have placeholder/static sections that look like data but aren't?
-   - **Next-step clarity** — does the page tell the user what they likely want to do next?
-   - **Premium feel** — does it read as a $20/mo product or a free dashboard template?
-   - **Mobile parity** — does it feel as considered on a 360px viewport as on desktop?
-4. List 2–4 specific "Wow-bar gaps" — concrete things that would make a returning user say "this is the best dashboard I've used".
-5. Identify any hardcoded objects (placeholder arrays, mock fixtures, static counts) that should be data-fetched.
+### Trust / safety / compliance
+Every data fetcher is server-first (no `useEffect` data fetching in pages), returns a typed shape, and respects the caller's RLS-scoped Supabase session — a customer sees only their own records. No service-role reads from a page. Any surface that renders money (wallet/invoices/subscriptions/payments) reads provider-confirmed money-truth and uses `@henryco/payment-surface` primitives unchanged. Telemetry on engagement-worthy surfaces only; no PII in event payloads.
 
-Output: `docs/v3/account-inner-page-audit-2026-05-23.md` — per-page section with the 4-axis scores, current-state-summary, gap list, rebuild-priority rank.
+### Mobile + desktop parity
+Design for 360px first; desktop redistributes the same content with more breathing room (single responsive component, no per-viewport fork). Touch targets ≥44px (V3-09). The hero is the first thing on mobile — nothing eats the viewport above it. Safe-area insets via V3-09 helpers. Expo super-app is out of scope.
 
-**Quality bar for the audit itself:** the audit document IS the second deliverable of this session. The owner reads it; it shapes the rebuild phases. Write it like a Linear product-design doc — short headlines, evidence per claim, decisive recommendations. Not a bullet-list summary.
+### i18n
+All copy flows through `@henryco/i18n`. Page copy lives under the per-area surface namespace — `surface:account-home`, `surface:care`, `surface:messages`, etc. (Pattern A typed keys; Pattern B `translateSurfaceLabel` DeepL fallback). Empty-state copy, next-step labels, status pills, and error strings are all translated. Never introduce a new locale. `pnpm i18n:check:strict` must stay green.
 
-### Phase 2 — Design language (semantic + interaction tokens)
+### Brand & design system
+Brand strings are **Henry Onyx** (user-facing) sourced from `@henryco/config` (`COMPANY.group.name`, division `name = "Henry Onyx <Division>"`) — never hardcode the brand, never the retired "Henry & Co.". Per-division accent comes from `company.ts` (`accent`/`accentStrong`/`accentText`/`dark`) — the `HeroCard` eyebrow/CTA tint reads it, no ad-hoc hex. Fraunces/serif for editorial headlines per the locked design system; THEME semantic tokens only (`bg-surface-base`, `text-ink-muted`, `border-subtle` — never raw `bg-gray-100`/`text-zinc-400`). Light + dark equally polished. Zero hardcoded domains — onward links go through `getAccountUrl()` / `henryDomain(division)` / `henryWebRoot()`.
 
-After the audit reveals the actual patterns the customer dashboard uses, define a SHARED language. Two artifacts:
+## Validation gates
+1. `pnpm i18n:check:strict` PASS (V3-07 strict gate).
+2. Typecheck PASS across `@henryco/dashboard-shell` and `apps/account`; lint PASS.
+3. `pnpm a11y:contrast` not regressed; keyboard-navigable, SR announcements, prefers-reduced-motion respected on every rebuilt page.
+4. Each rebuilt page visually confirmed in BOTH modes on BOTH viewports (360px mobile + desktop), CLS ≈ 0, no horizontal scroll.
+5. Each rebuilt page's 10-question self-audit answered in the report.
+6. No new untyped fetcher, no `useEffect` data fetch, no hardcoded mock object remains on the rebuilt pages (grep-verified in the report).
 
-**a) Surface primitives** in `packages/dashboard-shell/src/surfaces/` (new folder):
+## Deployment gate
+All gates green. DRAFT PR opened, NOT auto-merged. Owner reviews the rebuilt pages visually (light + dark, mobile + desktop) before merge. One curated page-slice per session — resist rebuilding 15 pages at once; quality dies in bulk.
 
-- `<HeroCard />` — the canonical hero card. Composed of an eyebrow + greeting + status sentence + 1–2 primary CTAs + optional progress strip. Renders user's actual data; never hardcoded greeting copy. Three layout variants: `solo` (full-width, default), `paired` (with secondary metric tile), `compact` (when the page already has another anchor).
-- `<NextStepRow />` — a row component that surfaces a single "this is what you do next" action with context. Used on the root home + division landings.
-- `<MetricStrip />` — a horizontal strip of 3–5 metrics with optional sparkline. Reads from a typed data source; no static numbers.
-- `<TimelineCard />` — for activity / orders / messages. Composes existing primitives (avatar, status pill, copy line) into a consistent row.
-- `<EmptyStateCard />` — the canonical empty state. Eyebrow + headline + body + CTA + optional illustration slot. Replaces every ad-hoc empty state.
-- `<DivisionLanding />` — page-level composer that takes a division (care / marketplace / jobs / learn / logistics / property / studio / wallet) and renders a standardised layout (hero + metric strip + next-steps + recent timeline). Each division landing becomes a thin caller of this primitive with division-specific data.
+## Final report contract
+`.codex-temp/account-dashboard-premium-rebuild/report.md` with the standard 9 sections (exec summary · files changed · migration/RLS/env · validation evidence · smoke · live verification · telemetry baseline · deferred items · pass-closure assertion), plus: the page-slice rebuilt, the primitives consumed, the rebuild-spec link, the screenshots-needed list, and the 10-question self-audit answers per rebuilt page.
 
-Each primitive:
-- Consumes THEME-01 semantic tokens; no hardcoded hex
-- Light + Dark mode equally polished
-- Mobile + desktop responsive (single component, no per-viewport fork)
-- i18n via `@henryco/i18n` — strings flow through Pattern A typed copy + Pattern B DeepL fallback
-- Accessible: keyboard-navigable, screen-reader announcements, prefers-reduced-motion respected
-- Telemetry hooks via `@henryco/observability/emitEvent` where engagement matters
-
-**b) Interaction grammar** — a short doc (`docs/v3/account-design-language.md`) capturing:
-- The "next-step" surfacing pattern (where it lives on the page, how it picks its content)
-- The data-loading contract (when to use StructuredSkeleton from V3-05 vs server-rendered content vs optimistic optimism)
-- The "this-was-empty-yesterday" pattern (graceful empty states that don't shame the user)
-- The hero-card content algorithm: pick the most useful sentence per-user per-page
-
-### Phase 3 — Rebuild the canonical pages (this session)
-
-Pick 3 reference pages that span the surface taxonomy:
-1. **Root home** (`apps/account/app/(account)/page.tsx`) — overview type, hero card lives here
-2. **Care landing** (`apps/account/app/(account)/care/page.tsx`) — division overview, mid-traffic
-3. **Messages inbox** (`apps/account/app/(account)/messages/page.tsx`) — list type, real activity
-
-Rebuild each USING the Phase 2 primitives. Each rebuild:
-- Replaces every hardcoded object with a real data fetcher (or documents why a fetcher doesn't exist yet + proposes the contract).
-- Has a clear next-step the user can act on.
-- Looks magnificent in BOTH modes.
-- Has a clear empty state for first-time visitors.
-- Has a clear error state (V3-10 error.tsx canonical).
-- Has a clear loading state (V3-05 StructuredSkeleton primitive).
-- Renders correctly on a 360px mobile viewport WITHOUT horizontal scroll.
-
-After each rebuild, run the agent's own 10-question self-audit. Document the answers in the report.
-
-### Phase 4 — Hand-off spec for the remaining pages (this session)
-
-Author `docs/v3/account-inner-page-rebuild-spec.md` — a per-page mini-spec for every remaining page. Each mini-spec includes:
-- The page's purpose (one sentence)
-- The hero/anchor content algorithm (where the headline data comes from)
-- The next-step picker (what action to surface)
-- The primitive composition (which `<HeroCard />` variant + companions to use)
-- The data fetcher contract (what server function returns what shape)
-- The empty-state copy + CTA
-- The error-state behavior (default → V3-10 fallback)
-
-This spec is the foundation for sessions 2/3 — successor agents read it and execute one page at a time without re-doing the design work.
-
-### Phase 5 — Verify + ship (this session)
-
-- `pnpm i18n:check:strict` PASS (V3-07 strict gate)
-- Typecheck PASS across `@henryco/dashboard-shell`, `@henryco/account`
-- Lint PASS
-- All 3 canonical pages rendered + visually confirmed in BOTH modes on BOTH viewports
-- DRAFT PR opened, body lists: pages rebuilt this session, primitives shipped, audit doc link, rebuild-spec link, screenshots-needed list, the agent's self-audit answers for the 3 pages
-
-Report at `.codex-temp/account-dashboard-premium-rebuild/report.md`.
-
----
-
-## Design principles (owner-quality)
-
-### P1. Premium = restraint, not maximalism
-
-- Less but better. A single well-tuned metric strip with REAL numbers beats a 4×4 grid of "—" placeholders.
-- Whitespace is editorial. Don't fear empty space; fill it only when there's something true to say.
-- Type sizes settle at 5 tokens: caption, body-sm, body, h3, h2. Anything bigger is a special case, justified.
-
-### P2. Data is the design
-
-- Every numeric surface is real. If the data doesn't exist yet, the surface says "set up tracking → CTA" not "0.0".
-- Every name surface is real. If first name isn't available, show "Welcome back" not "Welcome USER_NAME".
-- Every empty state names the actual thing missing + the actual next action. Not "Nothing here yet."
-
-### P3. Brand quietly
-
-- Gold (HenryCo accent) appears on intentional surfaces: primary CTA, active state, brand mark. Not on every divider, not in the chrome.
-- Serif (Newsreader / Iowan Old Style) is for editorial headlines. The rest is the sans (Manrope / similar).
-- Don't recreate the brand on every page — let it rest, then strike at moments that matter.
-
-### P4. Motion is purposeful
-
-- Page-to-page navigation: instant for known transitions, choreographed for the hero card pivot.
-- Open/close: spring-eased, capped at 280ms (DESIGN-01 standard).
-- Reduced-motion: respected universally; the motion strips to opacity-only fades.
-
-### P5. Mobile is the primary canvas
-
-- Design for 360px first. Desktop is just "you have more room — distribute the same content with more breathing room".
-- Touch targets ≥44px (V3-09 enforced).
-- The hero card on mobile is the FIRST thing the user sees — no nav above it eating the viewport.
-
-### P6. Every page answers two questions before scroll
-
-1. "What's happening with my stuff?" (hero)
-2. "What should I do next?" (next-step row)
-
-Everything below the fold is secondary. Audit ruthlessly for content above the fold.
-
-### P7. Errors stay calm
-
-- V3-10 error.tsx handles unhandled throws.
-- For "404 / not found / not your record" — render a calm, brand-coherent surface with a clear next step ("Browse all your bookings"). Don't fail to a vague "Not found".
-
-### P8. Loading is honest
-
-- V3-05 StructuredSkeleton renders the shape the data will fill (cards where cards will be, not generic spinners).
-- If a query is slow (>3s), the skeleton transitions to "Still loading — this is unusual" + retry button.
-
----
-
-## Anti-patterns (HARD stops — owner-quality bar)
-
-- **NO hardcoded mock data** — every array literal of "fake user data", every static metric `value: 12,847`, every placeholder image must go. If real data isn't available, surface the truth: "Set up X to see this".
-- **NO Lorem-ipsum copy** anywhere. Even in dev-only comments.
-- **NO generic Tailwind palette colors** (`bg-gray-100`, `text-zinc-400`, `border-slate-200`) where a THEME-01 semantic token exists. Use `bg-surface-base`, `text-ink-muted`, `border-subtle` etc.
-- **NO new untyped data fetchers.** Every server function returns a typed shape; the page consumes it via that type.
-- **NO `useEffect` for data fetching** in pages — server-component first. Client only for true interactivity.
-- **NO touching `packages/search-ui/`.** Owner-reserved.
-- **NO touching mobile Expo apps** (`super-app`, `company-hub`).
-- **NO new locales** — extend via the existing 12-locale typed-copy + DeepL Pattern B.
-- **NO breaking the V3-07 strict `pnpm i18n:check:strict` gate** — every JSX string flows through `@henryco/i18n`.
-- **NO `git push --force`** — use `--force-with-lease` only when necessary (this is a fresh branch; plain push should work).
-- **NO PR auto-merge.** Owner reviews each session's deliverable visually before any merge.
-- **NO scope explosion** within a session. 3 reference pages this session, hand-off spec for the rest. Resist the urge to rebuild 15 pages in one go — quality dies.
-
----
-
-## Self-verification checklist
-
-- [ ] `docs/v3/account-inner-page-audit-2026-05-23.md` covers every page-file with 4-axis scores + gap list + rank
-- [ ] `packages/dashboard-shell/src/surfaces/` has the 6 primitives: HeroCard, NextStepRow, MetricStrip, TimelineCard, EmptyStateCard, DivisionLanding
-- [ ] `docs/v3/account-design-language.md` documents the interaction grammar
-- [ ] 3 canonical pages rebuilt: root home + care landing + messages inbox
-- [ ] Each rebuilt page passes the agent's own 10-question self-audit (documented in report)
-- [ ] `docs/v3/account-inner-page-rebuild-spec.md` covers every remaining page with a mini-spec
-- [ ] Light + Dark mode visual parity on the 3 rebuilt pages
-- [ ] 360px mobile viewport renders clean (no horizontal scroll, no clipped content)
-- [ ] `pnpm i18n:check:strict` PASS
-- [ ] Typecheck + lint PASS
-- [ ] DRAFT PR opened with screenshots-needed list
-
----
-
-You're Opus 4.7 max. The owner said "wow me, I hired you to do the difficult task". This is the difficult task. The customer dashboard is the face of the product to every paying customer — every detail compounds. Don't rush. Don't cheat with placeholder data. Don't ship "good enough". Ship what you'd want to use if you were the customer.
-
-If at any point you find yourself reaching for hardcoded data, stop and ask: "Is there a data fetcher I should build instead?" If the answer is yes, build the fetcher (server-component first, typed return). If the answer is "the data genuinely doesn't exist yet because the feature isn't shipped" — surface the truth in the empty state. Never lie with mocks.
-
-Session 1 closes when the audit + design language + 3 reference pages + hand-off spec are all landing-quality. Then stop, report, hand off to session 2.
+## Self-verification
+- [ ] Page-slice (3 pages) selected from the audit's rebuild-priority rank; re-scored against the 4 axes
+- [ ] Each page rebuilt onto `@henryco/dashboard-shell/surfaces` primitives (no bespoke hero/empty-state JSX remains)
+- [ ] Every hardcoded object/static count replaced by a typed server fetcher (or its contract documented)
+- [ ] Each page surfaces one real above-the-fold next-step via `NextStepRow`
+- [ ] Honest empty state (`EmptyStateCard`), calm not-found, V3-10 error fallback, V3-05 skeleton on each page
+- [ ] `docs/v3/account-inner-page-rebuild-spec.md` extended for the pages newly understood
+- [ ] Brand = Henry Onyx via `@henryco/config`; division accent from `company.ts`; THEME tokens only; zero hardcoded domains/strings
+- [ ] Light + dark, 360px + desktop, CLS ≈ 0, `pnpm a11y:contrast` not regressed
+- [ ] `pnpm i18n:check:strict` + typecheck + lint PASS
+- [ ] 10-question self-audit answered per page in the report
+- [ ] DRAFT PR opened, not auto-merged, with screenshots-needed list

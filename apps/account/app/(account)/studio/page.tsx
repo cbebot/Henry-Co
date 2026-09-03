@@ -1,6 +1,8 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import type { Metadata } from "next";
 
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import { getStudioDashboardData } from "@/lib/studio-module";
 import { getDivisionActivity } from "@/lib/division-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
@@ -311,7 +313,16 @@ export default async function StudioPage() {
           }}
         />
       }
-      nextStep={nextStep}
+      nextStep={
+        <>
+          {/* SP6: division-scoped resume chip — renders only when a REAL pending journey exists here. */}
+          <DivisionResumeChip division="studio" userId={user.id} />
+          {nextStep}
+        </>
+      }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={[
         {
           id: "studio-projects",

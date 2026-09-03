@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { applyVerificationTrustControls, normalizeVerificationStatus } from "@henryco/trust";
 import {
   resolveLocalizedDynamicField,
@@ -7,7 +8,9 @@ import {
   type AppLocale,
 } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { signJobsMediaUrl } from "@/lib/jobs/media";
 import { normalizeEmail } from "@/lib/env";
+import { ensureJobsBootstrap } from "@/lib/jobs/seed";
 import { DEFAULT_PIPELINE, JOBS_STAGE_ORDER, getJobsDifferentiators } from "@/lib/jobs/content";
 import { deriveJobTrustHighlights } from "@/lib/jobs/trust";
 
@@ -1008,20 +1011,14 @@ function buildApplication(row: Record<string, unknown>): JobApplication {
 
 async function buildDocument(
   row: Record<string, unknown>,
-  admin = createAdminSupabase()
 ): Promise<CandidateDocument> {
   const item = asObject(row);
   const metadata = asObject(item.metadata);
-  let fileUrl = asString(item.file_url);
-  const storageBucket = asNullableString(metadata.storageBucket);
-  const storagePath = asNullableString(metadata.storagePath || metadata.publicId);
-
-  if (storageBucket && storagePath) {
-    const signed = await admin.storage.from(storageBucket).createSignedUrl(storagePath, 60 * 60);
-    if (!signed.error && signed.data?.signedUrl) {
-      fileUrl = signed.data.signedUrl;
-    }
-  }
+  // `file_url` holds either a `media://private/jobs-documents/<key>` reference
+  // (current) or a legacy absolute Cloudinary URL. Resolve to a short-lived
+  // signed delivery URL before it reaches the client — a raw `media://` ref
+  // can't be dereferenced by the browser.
+  const fileUrl = await signJobsMediaUrl(asString(item.file_url));
 
   return {
     id: asString(item.id),
@@ -1190,7 +1187,7 @@ export async function getCandidateProfileByUserId(
   const profileRow = asObject(profileRes.data);
   const profile = asObject(profileRow.metadata);
   const documents = await Promise.all(
-    (docsRes.data ?? []).map((row) => buildDocument(row as Record<string, unknown>, admin))
+    (docsRes.data ?? []).map((row) => buildDocument(row as Record<string, unknown>))
   );
 
   if (!baseRes.data && !profileRes.data) {
@@ -1256,13 +1253,14 @@ export async function getCandidateDocuments(userId: string) {
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
-  return Promise.all((data ?? []).map((row) => buildDocument(row as Record<string, unknown>, admin)));
+  return Promise.all((data ?? []).map((row) => buildDocument(row as Record<string, unknown>)));
 }
 
 export async function getEmployerProfiles(options?: {
   includeUnpublished?: boolean;
   locale?: AppLocale;
 }) {
+  await ensureJobsBootstrap();
   const admin = createAdminSupabase();
   const [companiesRes, profileRowsRes, verificationRowsRes, jobsRes] = await Promise.all([
     admin.from("companies").select("*").order("sort_order", { ascending: true }).order("name"),
@@ -1381,6 +1379,7 @@ export async function getJobPosts(options?: {
   internalOnly?: boolean;
   locale?: AppLocale;
 }) {
+  await ensureJobsBootstrap();
   const admin = createAdminSupabase();
   const [rowsRes, applicationsRes, employers] = await Promise.all([
     admin
@@ -1429,10 +1428,22 @@ export async function getJobPosts(options?: {
     )
     .filter(({ job }) => (options?.internalOnly ? job.internal : true));
 
+  // Collapse duplicate postings for the same slug — rows arrive newest-first
+  // (created_at desc), so the first occurrence wins. This guards against a
+  // legacy random-id row co-existing with the deterministic seeded row (the
+  // postings read is the one path with no natural-key collapse, unlike
+  // `latestRowsByReference` on the employer side).
+  const seenSlugs = new Set<string>();
+  const deduped = built.filter(({ job }) => {
+    if (seenSlugs.has(job.slug)) return false;
+    seenSlugs.add(job.slug);
+    return true;
+  });
+
   // Wave 2 i18n — list scope keeps it cheap: title + summary only.
   // `getJobPostBySlug` upgrades to detail scope below.
   const localized = await Promise.all(
-    built.map(({ job, metadata }) => localizeJobPost(job, metadata, options?.locale, "list")),
+    deduped.map(({ job, metadata }) => localizeJobPost(job, metadata, options?.locale, "list")),
   );
 
   return localized.sort((a, b) => {
@@ -1518,7 +1529,7 @@ export async function searchJobs(
   });
 }
 
-export async function getJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
+async function computeJobsHomeData(locale?: AppLocale): Promise<JobsHomeData> {
   const t = makeT(locale);
   const [jobs, employers] = await Promise.all([
     getJobPosts({ locale }),
@@ -1547,7 +1558,7 @@ export async function getJobsHomeData(locale?: AppLocale): Promise<JobsHomeData>
       {
         label: t("Open roles"),
         value: String(jobs.length),
-        detail: t("Live roles published into the HenryCo hiring operating system."),
+        detail: t("Open roles accepting applications right now."),
       },
       {
         label: t("Verified employers"),
@@ -1557,11 +1568,24 @@ export async function getJobsHomeData(locale?: AppLocale): Promise<JobsHomeData>
       {
         label: t("Internal tracks"),
         value: String(jobs.filter((job) => job.internal).length),
-        detail: t("HenryCo internal openings running inside the same platform."),
+        detail: t("Henry Onyx internal openings running inside the same platform."),
       },
     ],
   };
 }
+
+// Public, non-personalized jobs homepage/catalog read, cached 60s and shared
+// across serverless instances so anonymous renders never hang on a saturated
+// DB. Reads ONLY service-role catalog data via createAdminSupabase (job posts +
+// employer profiles) — no cookies/headers/session/viewer. The public locale is
+// resolved SEPARATELY in the page via getJobsPublicLocale and passed in as a
+// plain argument (unstable_cache keys per-locale on it). Writes bust it via
+// revalidateTag("jobs-home").
+export const getJobsHomeData = unstable_cache(
+  computeJobsHomeData,
+  ["jobs-home-data"],
+  { revalidate: 60, tags: ["jobs-home"] },
+);
 
 export async function getCandidateApplications(userId: string) {
   const admin = createAdminSupabase();

@@ -83,10 +83,11 @@ export const NOTIFICATION_TOAST_DISMISS_MS = 6000;
 export const REALTIME_CONNECTING_THRESHOLD_MS = 2000;
 
 /** Maximum attachments per message. */
-export const MAX_ATTACHMENTS_PER_MESSAGE = 6;
+export const MAX_ATTACHMENTS_PER_MESSAGE = 20;
 
-/** Maximum attachment size in bytes (15MB — sane for project assets). */
-export const MAX_ATTACHMENT_BYTES = 15 * 1024 * 1024;
+/** Maximum attachment size in bytes (40MB — generous for studio project assets;
+ * uploads go direct-to-storage so this is bounded by storage, not a route body). */
+export const MAX_ATTACHMENT_BYTES = 40 * 1024 * 1024;
 
 export const ACCEPTED_ATTACHMENT_MIME_TYPES = [
   "image/jpeg",

@@ -23,19 +23,47 @@ export {
   getLogisticsStaffDispatcherCopy,
   type LogisticsStaffDispatcherCopy,
 } from "./logistics-staff-dispatcher-copy";
+export { getStaffPredictiveCopy, type StaffPredictiveCopy } from "./staff-predictive-copy";
 export {
   getLogisticsStaffOwnerCopy,
   type LogisticsStaffOwnerCopy,
 } from "./logistics-staff-owner-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
+export { getRiskStatusCopy, type RiskStatusCopy } from "./risk-status-copy";
+export { getStaffRiskCopy, type StaffRiskCopy } from "./staff-risk-copy";
+export {
+  getPersonalizationCopy,
+  formatPersonalizationTemplate,
+  type PersonalizationCopy,
+} from "./personalization-copy";
+export { getDealsCopy, formatDealsTemplate, type DealsCopy } from "./deals-copy";
+export {
+  getAvailabilityCopy,
+  formatAvailabilityTemplate,
+  type AvailabilityCopy,
+} from "./availability-copy";
+export {
+  getNextActionCopy,
+  type NextActionCopy,
+  type NextActionEntryCopy,
+} from "./next-action-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
 export { getErrorFallbackCopy, type ErrorFallbackCopy } from "./error-fallback-copy";
+export {
+  getRecoveryCopy,
+  RECOVERY_COPY_EN,
+  type RecoveryCopy,
+  type RecoveryTaskTypeKey,
+  type RecoveryTaskTypeCopy,
+} from "./recovery-copy";
 export { getMarketplaceCopy, type MarketplaceCopy } from "./marketplace-copy";
 export { getJobsCopy, type JobsCopy } from "./jobs-copy";
 export { getCareCopy, type CareCopy } from "./care-copy";
 export { getCarePricingCopy, type CarePricingCopy } from "./care-pricing-copy";
 export { getCareServicesCopy, type CareServicesCopy } from "./care-services-copy";
+export { getServicesCopy, type ServicesCopy } from "./services-copy";
+export { getLearnToEarnCopy, type LearnToEarnCopy } from "./learn-to-earn-copy";
 export { getCareAboutCopy, type CareAboutCopy } from "./care-about-copy";
 export { getCareContactCopy, type CareContactCopy } from "./care-contact-copy";
 export { getLearnTrustCopy, type LearnTrustCopy } from "./learn-trust-copy";
@@ -51,6 +79,8 @@ export {
   type LearnCertificationsCopy,
 } from "./learn-certifications-copy";
 export { getAccountCopy, formatAccountTemplate, type AccountCopy } from "./account-copy";
+export { getBusinessCopy, formatBusinessTemplate, type BusinessCopy } from "./business-copy";
+export { getMessagingCopy, type MessagingCopy } from "./messaging-copy";
 export {
   getSurfaceCopy,
   translateSurfaceLabel,

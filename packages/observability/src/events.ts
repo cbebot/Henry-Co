@@ -31,6 +31,11 @@ export type HenryEventName =
   | "henry.account.notification.read"
   | "henry.account.notification.unread"
   | "henry.account.notification.archived"
+  // V3-37 abandoned-journey recovery
+  | "henry.task.abandoned"
+  | "henry.task.recovery_sent"
+  | "henry.task.recovered"
+  | "henry.task.expired"
   | "henry.trust.verification.submitted"
   | "henry.trust.verification.resolved"
   // wallet
@@ -65,6 +70,10 @@ export type HenryEventName =
   | "henry.marketplace.profile_drawer.item_selected"
   // care
   | "henry.care.booking.updated"
+  // V3-49 services catalog (vertical/service slug + division only; no PII)
+  | "henry.services.catalog.viewed"
+  | "henry.services.service.viewed"
+  | "henry.services.booking.started"
   // jobs
   | "henry.jobs.profile.updated"
   | "henry.jobs.role.saved"
@@ -76,6 +85,10 @@ export type HenryEventName =
   | "henry.learn.progress.lesson_completed"
   | "henry.learn.certificate.issued"
   | "henry.learn.support.thread.created"
+  // learn-to-earn (V3-56): Learn completion → Jobs trust bridge
+  | "henry.learn.badge.issued"
+  | "henry.learn.candidate.listed"
+  | "henry.learn.employer.invited"
   // logistics
   | "henry.logistics.quote.requested"
   | "henry.logistics.booking.created"
@@ -93,12 +106,62 @@ export type HenryEventName =
   | "henry.studio.payment.updated"
   | "henry.studio.project.updated"
   | "henry.studio.message.added"
+  // studio project suite (V3-73) — client-facing project portal: portal view,
+  // a client change-request (one revision round), and a deliverable approval
+  // (payload carries `revision_number`). Final-file unlock + watermark export
+  // are audit-logged separately (Principle 5 export tracking).
+  | "henry.studio_project.client_viewed"
+  | "henry.studio_project.revision_requested"
+  | "henry.studio_project.deliverable_approved"
+  // studio agency build orchestration (SA-2/SA-3) — the autonomous build job
+  // lifecycle. Payloads carry job/project ids + stage/reason only; never the
+  // spec, never client PII, never provider/model, never money amounts. The
+  // generic `transitioned` fires on EVERY stage move (from/to/reason); the rest
+  // mark the milestones the owner reviews (created, deployed, escalated, a
+  // queued decision, a client review, aftercare).
+  | "henry.studio.build.job_created"
+  | "henry.studio.build.transitioned"
+  | "henry.studio.build.deployed"
+  | "henry.studio.build.escalated"
+  | "henry.studio.build.decision_queued"
+  | "henry.studio.build.client_reviewed"
+  | "henry.studio.build.aftercare_scheduled"
+  // studio Owner-AI operator (SA-4) — the digital-executive spine. The operator
+  // tick runs while the owner is offline: it reads durable job/decision state,
+  // raises consequential one-tap proposals into the founder inbox, and escalates
+  // urgent conditions. Payloads carry ids + counts + outcome only — never the
+  // spec, client PII, provider/model, or money amounts. `action` fires when an
+  // owner.studio.* one-tap executes (approve deploy, cancel, budget increase,
+  // send proposal, reply, pause/resume) with its outcome.
+  | "henry.studio.operator.tick"
+  | "henry.studio.operator.proposal_raised"
+  | "henry.studio.operator.escalated"
+  | "henry.studio.operator.action"
+  // gaming arena (V3-GAMING-01) — free-play match lifecycle. No money/PII in
+  // payloads: game id, hashed actor ids, and PII-free outcome only.
+  | "henry.gaming.match.created"
+  | "henry.gaming.match.started"
+  | "henry.gaming.match.completed"
+  | "henry.gaming.match.abandoned"
+  | "henry.gaming.session.started"
+  | "henry.gaming.session.completed"
+  | "henry.gaming.profile.updated"
   // auth/session — V3-01 foundation lock (session persistence)
   | "henry.auth.session.refreshed"
   | "henry.auth.session.refresh_failed"
   | "henry.auth.session.reauth_succeeded"
   | "henry.auth.session.draft_restored"
   | "henry.auth.session.multitab_broadcast"
+  // auth/reliability — V3-02 foundation lock
+  | "henry.auth.oauth.completed"
+  | "henry.auth.oauth.failed"
+  | "henry.auth.oauth.link_required"
+  | "henry.auth.oauth.linked"
+  | "henry.auth.logout.everywhere"
+  | "henry.auth.sensitive_action.reauth_required"
+  | "henry.auth.sensitive_action.reauth_succeeded"
+  | "henry.auth.sensitive_action.rate_limited"
+  | "henry.auth.role_chooser.viewed"
   // ui/mobile — V3-09 foundation lock (mobile consistency)
   | "henry.ui.mobile_keyboard.kept_visible"
   | "henry.ui.mobile_keyboard.obscured"
@@ -112,6 +175,13 @@ export type HenryEventName =
   | "henry.notification.delivered"
   | "henry.notification.read"
   | "henry.notification.failed"
+  // notification read-path resilience — emitted by /api/notifications/recent
+  // when the hydrate read times out or errors. The route returns a degraded
+  // empty payload + HTTP 207 instead of a 500/504 so the account shell renders
+  // an empty bell and navigation is never blocked (Directive 8). Distinct from
+  // `henry.notification.failed` (delivery-state) so this read-resilience signal
+  // stays out of the delivery-failure metric.
+  | "henry.notification.recent.degraded"
   | "henry.message.delivered"
   | "henry.message.read"
   | "henry.message.failed"
@@ -169,7 +239,190 @@ export type HenryEventName =
   | "henry.realtime.connection.connecting"
   | "henry.realtime.connection.live"
   | "henry.realtime.connection.reconnecting"
-  | "henry.realtime.connection.failed";
+  | "henry.realtime.connection.failed"
+  // ui/card — V3-11 foundation lock (one job per card). The audit asks
+  // of every card: "does it open the exact next step, or just show more
+  // text?" These events let the owner-workspace card-clickthrough tile
+  // answer that empirically AFTER deploy: a card that renders often but
+  // is rarely clicked is a candidate for demotion (its next step is not
+  // compelling, or it is informational and mis-styled as actionable).
+  //   - `rendered` — a classified card painted. Payload: { card_id,
+  //     classification ("A"|"B"|"C1"|"C2"|"C3"), division }.
+  //   - `clicked`  — the viewer activated the card's primary next step.
+  //     Payload: { card_id, target }.
+  //   - `demoted`  — fired DURING this pass (and any later audit) to log
+  //     a card that was demoted/removed. Payload: { card_id, from, to,
+  //     reason }. Lets the owner see the audit's churn over time.
+  | "henry.ui.card.rendered"
+  | "henry.ui.card.clicked"
+  | "henry.ui.card.demoted"
+  // deep links + share — V3-04 foundation lock (deep links).
+  // `arrived` fires when a user lands from a notification/email/share
+  // deep link (payload: `source`, `target`, `outcome`). `returned_after_auth`
+  // fires on the auth round-trip success path — an unauth user clicked a
+  // protected deep link, signed in, and landed back on the target.
+  // `dead_link` fires when a deep-link arrival 404s (payload: `source`,
+  // `target`, source-attribution token) and feeds the owner-workspace
+  // dead-deep-link tile. `share.clicked` fires when a ShareButton resolves
+  // (Web Share API or copy fallback); `share.attributed_install` fires when
+  // a shared link leads to a sign-up that credits the sharer in
+  // customer_referrals.
+  | "henry.deeplink.arrived"
+  | "henry.deeplink.returned_after_auth"
+  | "henry.deeplink.dead_link"
+  | "henry.share.clicked"
+  | "henry.share.attributed_install"
+  // dashboard module truth — V3-08 foundation lock (empty dashboard
+  // truth). `rendered` fires once per dashboard composition per module
+  // with the resolved `state` (real | empty_yet | empty_none | loading
+  // | error) and `source` (live | derived | aggregate | static) so the
+  // owner-workspace module-health tile can flag modules that have been
+  // empty for >7 days (candidates for removal or messaging fix).
+  // `refreshed` fires when a tile re-runs its query (manual refresh or
+  // route-live-refresh) carrying the freshness age in seconds.
+  // `empty_state.cta_clicked` fires when a viewer taps the CTA on an
+  // empty-state surface, carrying the cta_target so we can tell which
+  // empty states actually convert.
+  | "henry.dashboard.module.rendered"
+  | "henry.dashboard.module.refreshed"
+  | "henry.dashboard.empty_state.cta_clicked"
+  // V3-34 personalization-home (Phase E). `layout.computed` fires each time
+  // the deterministic projection is applied (owner tile: daily layouts). The
+  // module verbs track explicit user intent (pin/hide) and `layout.reset`
+  // clears overrides. `consent.granted|revoked` record the account-scoped
+  // personalization consent decision (NDPR ledger). Outcome axis: computed→
+  // completed, pinned/hidden→saved, reset→removed, consent→approved|rejected.
+  | "henry.personalization.layout.computed"
+  | "henry.personalization.layout.reset"
+  | "henry.personalization.module.pinned"
+  | "henry.personalization.module.hidden"
+  | "henry.personalization.consent.granted"
+  | "henry.personalization.consent.revoked"
+  // V3-36 — cross-division recommendation engine. Payload carries counts + the
+  // profiled/ai-applied booleans only; never per-item content, never a score,
+  // never a provider/model name.
+  | "henry.personalization.recommendations.computed"
+  // V3-35 deals & campaigns (Phase E). `campaign.created` fires on authoring;
+  // `status.changed` on every lifecycle transition (audit pairs it with the
+  // deal.status.changed audit-log row); `offer.impressed` per batched surface
+  // render (counts only — the durable per-deal rows live in deal_impressions);
+  // `offer.claimed` on claim-through; `fairness.alerted` when the impression
+  // audit finds a creator above the governed share cap. Outcome axis:
+  // created→started, status→completed, impressed→completed, claimed→completed,
+  // fairness→flagged.
+  | "henry.deal.campaign.created"
+  | "henry.deal.status.changed"
+  | "henry.deal.offer.impressed"
+  | "henry.deal.offer.claimed"
+  | "henry.deal.fairness.alerted"
+  // V3-38 local availability (Phase E). `batch.resolved` fires once per
+  // /api/availability batch with aggregate counts + the location source;
+  // `unavailable.shown` fires when an UnavailableState actually renders
+  // (coarse area codes only — the coverage-gap signal the owner soaks on);
+  // `find_similar.clicked` tracks the graceful-unavailable CTA. Payloads are
+  // location-keyed, never user-keyed: no user ids, no coordinates, no
+  // per-offering provider counts.
+  | "henry.availability.batch.resolved"
+  | "henry.availability.unavailable.shown"
+  | "henry.availability.find_similar.clicked"
+  // V3-39 smart next action (Phase E). `surfaced` fires when the resolver
+  // yields a floating chip for the page (system_state → completed); `clicked`
+  // (user_action → completed) and `dismissed` (user_action → removed) track
+  // the chip interactions; `stitched` fires ONLY when the surfaced action
+  // bridges INTO a sibling division from a completed action — distinct from a
+  // same-division surface so cross-division lift is measurable (BUILD-PLAN
+  // V3-39 delta). Payloads carry { context_kind, division, action_id,
+  // sensitive, placement, stitched } — ids and enums only, never PII.
+  | "henry.next_action.surfaced"
+  | "henry.next_action.clicked"
+  | "henry.next_action.dismissed"
+  | "henry.next_action.stitched"
+  // V3-40 predictive fraud & risk (Phase E, Wave E.3). Platform-invoked batch
+  // events ride actorless (system); staff actions carry the acting staff id.
+  // Payloads are entity ids + tiers + counts ONLY — never PII, never a raw
+  // score outside the staff surface, never a provider/model name. `entity.
+  // scored` fires once per batch with per-tier counts; enforcement verbs track
+  // the log rows (held/frozen are STAFF one-taps — the system can only flag);
+  // model verbs track the governed shadow→live lifecycle.
+  | "henry.auth.sensitive_action.risk_held"
+  | "henry.risk.entity.scored"
+  | "henry.risk.enforcement.held"
+  | "henry.risk.enforcement.frozen"
+  | "henry.risk.enforcement.released"
+  | "henry.risk.staff.overrode"
+  | "henry.risk.model.promoted"
+  | "henry.risk.model.rolled_back"
+  // V3-41 predictive quality & workload (Phase E, Wave E.4). Platform-invoked,
+  // ADVISORY-ONLY operator signals: they recommend a human intervention and can
+  // never auto-act on a customer. Payloads carry queue keys, unit/transaction ids,
+  // bands and counts ONLY — never PII, never a raw score, never a provider/model.
+  | "henry.predictive.workload.computed"
+  | "henry.predictive.quality.at_risk_flagged"
+  | "henry.predictive.dispute.high_likelihood"
+  // payments / provider router — V3-13 foundation lock (vendor-agnostic
+  // routing). `intent.*` track the money lifecycle of a payment_intent
+  // (created → succeeded | failed → refunded); the outcome axis maps
+  // created→started, succeeded→paid, failed→failed, refunded→completed
+  // so the owner finance tile rolls payments up on the same axis as
+  // every other domain. `webhook.*` track the provider callback path:
+  // `received` on raw delivery, `verified` after HMAC + dedup passes,
+  // `rejected` on a bad signature or replayed event. `no_suitable_provider`
+  // fires on the A5 manual-fallback path (no provider matches the
+  // country∩method); `illegal_transition` fires when a webhook implies a
+  // state move the machine forbids. None of these payloads name the
+  // chosen provider in any CLIENT-facing surface (ANTI-CLONE Principle 9)
+  // — the server-side audit row carries it for refunds/reconciliation.
+  | "henry.payment.intent.created"
+  | "henry.payment.intent.succeeded"
+  | "henry.payment.intent.failed"
+  | "henry.payment.intent.refunded"
+  | "henry.payment.webhook.received"
+  | "henry.payment.webhook.verified"
+  | "henry.payment.webhook.rejected"
+  | "henry.payment.no_suitable_provider"
+  | "henry.payment.illegal_transition"
+  // refunds (V3-19): `initiated` is the staff action; `processed`/`failed` fire
+  // exactly once per provider outcome (apply_refund_webhook's dedup gate);
+  // `orphaned` flags a provider refund event with NO internal record (e.g. a
+  // dashboard-side refund) — finance follows up, the books never guess.
+  | "henry.payment.refund.initiated"
+  | "henry.payment.refund.processed"
+  | "henry.payment.refund.failed"
+  | "henry.payment.refund.orphaned"
+  // payment documents (V3-18): receipt/invoice generation + retrieval. Like the
+  // payment events above, NO client-facing payload names the chosen processor
+  // (ANTI-CLONE Principle 9) — the document is from Henry Onyx, never the gateway.
+  | "henry.invoice.generated"
+  | "henry.invoice.downloaded"
+  | "henry.receipt.generated"
+  | "henry.receipt.downloaded"
+  // credit notes (V3-19): the legal face of a confirmed refund (HO-CRN-),
+  // issuer Henry Onyx Limited, processor never named.
+  | "henry.credit_note.generated"
+  // Henry Onyx Intelligence usage (V3-AI-01). `usage.estimated` fires pre-flight
+  // with the reserved upper-bound price; `usage.metered` on a settled charge;
+  // `usage.blocked` on a refusal (insufficient funds / cap / kill switch);
+  // `provider.failed` on a provider error. As with payments above, NO payload
+  // names the provider/source or the real model (ANTI-CLONE Principle 9 / the AI
+  // opacity rule) — only a capability tier label and kobo figures.
+  | "henry.ai.usage.estimated"
+  | "henry.ai.usage.metered"
+  | "henry.ai.usage.blocked"
+  | "henry.ai.provider.failed"
+  // v3 showcase closure (V3-96 S6). Mirrored in the doctrine's Part VI
+  // telemetry table (docs/v3/public-pages-interaction-principles.md) —
+  // additions land in both places in the same PR. All PII-redacted at
+  // ingest; sandbox journeys carry the v3_96_sandbox tag upstream so
+  // production metrics stay clean.
+  | "henry.v3.showcase.viewed"
+  | "henry.v3.journey.started"
+  | "henry.v3.journey.step_completed"
+  | "henry.v3.journey.completed"
+  | "henry.v3.journey.abandoned"
+  | "henry.v3.announcement.delivered"
+  | "henry.v3.announcement.engaged"
+  | "henry.v3.launch_window.metric_breach"
+  | "henry.v3.closure_certificate.signed";
 
 /**
  * Per `docs/event-taxonomy.md` — events split into actor-driven user

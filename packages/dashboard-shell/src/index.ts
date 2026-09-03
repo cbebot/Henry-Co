@@ -30,7 +30,14 @@ export * from "./surfaces";
 
 // Contracts (DASH-2+ consumption)
 export * from "./register";
+// V3-11 — module-contract is a re-export alias of ./register (the
+// DashboardModule.nextStep field lives there). Importing both is safe:
+// the symbols are identical, so the barrel does not double-define.
+export type { DashboardModule as DashboardModuleContract } from "./module-contract";
 export * from "./home-widget";
+// V3-08 — module-state taxonomy (real / empty_yet / empty_none /
+// loading / error) + hidden-when-empty decision helpers.
+export * from "./module-state-contract";
 export * from "./command-palette";
 export * from "./command-aggregator";
 export * from "./notification-categories";
@@ -41,3 +48,7 @@ export * from "./staff-register";
 
 // Track B (DASH-8) — owner dashboard registry.
 export * from "./owner-register";
+
+// V3-34 (Phase E) — the deterministic per-user home-layout projection.
+// Also importable via the explicit subpath `@henryco/dashboard-shell/personalization`.
+export * from "./personalization";

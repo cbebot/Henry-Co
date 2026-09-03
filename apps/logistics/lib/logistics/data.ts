@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import {
   DEFAULT_LOGISTICS_SETTINGS,
@@ -363,10 +364,12 @@ export async function getLogisticsSnapshot() {
   ] = await Promise.all([
     getLogisticsZones(),
     getLogisticsRateCards(),
+    // logistics_addresses has no created_at column; rows are grouped by
+    // shipment_id/kind downstream, so no ordering is applied here (ordering by
+    // created_at 500s — the column does not exist).
     safeSelect<Record<string, unknown>>(
       "logistics_addresses",
       "id, shipment_id, kind, label, contact_name, phone, email, line1, line2, city, region, country, landmark, instructions, latitude, longitude",
-      "created_at"
     ),
     safeSelect<Record<string, unknown>>(
       "logistics_shipments",
@@ -424,7 +427,7 @@ export async function getLogisticsSnapshot() {
   };
 }
 
-export async function getPublicLogisticsSnapshot() {
+async function computePublicLogisticsSnapshot() {
   try {
     const snapshot = await getLogisticsSnapshot();
     const shipmentCount = snapshot.shipments.length;
@@ -462,6 +465,18 @@ export async function getPublicLogisticsSnapshot() {
     };
   }
 }
+
+// Public, non-personalized homepage/catalog read, cached 60s and shared across
+// serverless instances so anonymous renders never hang on a saturated DB. Reads
+// ONLY service-role catalog data via createAdminSupabase — no cookies/session/
+// viewer. Per-user reads (the account chip) are resolved SEPARATELY in the layout
+// via getLogisticsPublicChipUser and stay live. Writes bust it via
+// revalidateTag("logistics-home").
+export const getPublicLogisticsSnapshot = unstable_cache(
+  computePublicLogisticsSnapshot,
+  ["logistics-home-data"],
+  { revalidate: 60, tags: ["logistics-home"] },
+);
 
 export async function getShipmentByTrackingLookup(input: {
   trackingCode?: string | null;

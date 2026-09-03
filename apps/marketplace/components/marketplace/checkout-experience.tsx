@@ -6,12 +6,12 @@ import { DivisionImage, ActionButton } from "@henryco/dashboard-shell/components
 import Link from "next/link";
 import {
   AlertCircle,
-  Banknote,
   Bookmark,
   Check,
   ChevronLeft,
   ChevronRight,
   Copy,
+  CreditCard,
   Loader2,
   Lock,
   RefreshCw,
@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
+import { NG_STATES } from "@henryco/config";
 import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { useKeyboardAvoidance } from "@henryco/ui/mobile";
 import type { UserAddressRecord } from "@henryco/address-selector";
@@ -29,7 +30,6 @@ import { formatCurrency } from "@/lib/utils";
 
 type CheckoutStep = "delivery" | "payment" | "confirm";
 
-const STEP_IDS: CheckoutStep[] = ["delivery", "payment", "confirm"];
 
 /**
  * Persisted user-input shape for the checkout draft.
@@ -76,7 +76,7 @@ function buildSteps(t: (s: string) => string): Array<{ id: CheckoutStep; label: 
   ];
 }
 
-type PaymentMethodId = "wallet_balance" | "bank_transfer" | "cod";
+type PaymentMethodId = "wallet_balance" | "bank_transfer" | "cod" | "card";
 
 /**
  * RELIABILITY-01 — payment-proof upload state machine.
@@ -109,29 +109,42 @@ export type ProofStatus =
         | "network";
     };
 
-function buildPaymentMethods(t: (s: string) => string): Array<{
+function buildPaymentMethods(
+  t: (s: string) => string,
+  cardEnabled = false,
+): Array<{
   id: PaymentMethodId;
   label: string;
   description: string;
   icon: typeof Wallet;
 }> {
   return [
+    // V3-DIVISION-CHECKOUT-01 — the instant card rail leads when it is enabled
+    // (test-mode flag). Confirmed the moment payment clears; no proof to upload.
+    ...(cardEnabled
+      ? [
+          {
+            id: "card" as const,
+            label: t("Card"),
+            description: t(
+              "Pay securely by card. Your order is confirmed the moment payment clears — nothing to upload.",
+            ),
+            icon: CreditCard,
+          },
+        ]
+      : []),
     {
       id: "wallet_balance",
-      label: t("HenryCo balance"),
+      label: t("Henry Onyx balance"),
       description: t(
-        "Use cleared HenryCo wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
+        "Use cleared Henry Onyx wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
       ),
       icon: Wallet,
     },
-    {
-      id: "bank_transfer",
-      label: t("Bank transfer"),
-      description: t(
-        "Pay by transfer, upload proof, and the payment team verifies. The order timeline updates in real time.",
-      ),
-      icon: Banknote,
-    },
+    // Bank transfer is RETIRED — no more manual transfer + proof. The buyer pays by the live
+    // card rail (confirmed the moment it clears) or with cleared wallet funds. Cash on
+    // delivery is kept for eligible orders. The persisted-draft guard below pulls any retired
+    // method back to a valid one, so bank_transfer can never be submitted.
     {
       id: "cod",
       label: t("Cash on delivery"),
@@ -192,6 +205,7 @@ export function CheckoutExperience({
   paymentReference,
   walletTopUpHref,
   buyer,
+  cardEnabled = false,
 }: {
   cart: CartShape;
   cartToken: string | null;
@@ -201,6 +215,8 @@ export function CheckoutExperience({
   paymentReference: string;
   walletTopUpHref: string;
   buyer: { fullName: string | null; email: string | null };
+  /** V3-DIVISION-CHECKOUT-01 test-mode flag — offers the instant card method. */
+  cardEnabled?: boolean;
 }) {
   const locale = useHenryCoLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -233,7 +249,9 @@ export function CheckoutExperience({
       },
       usingOneShot: addresses.length === 0,
       phoneOverride: "",
-      paymentMethod: walletCanPay ? "wallet_balance" : "bank_transfer",
+      // Card-ready leads with the real card rail; otherwise wallet (if funded) and
+      // the retired bank-transfer rail is the last fallback only while card is off.
+      paymentMethod: cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "cod",
       bankReference: "",
     }),
     // Initial value is captured once on mount; subsequent prop changes
@@ -342,13 +360,29 @@ export function CheckoutExperience({
   // selected method into a valid choice. Preserved verbatim from the
   // pre-draft version of this component.
   useEffect(() => {
+    // A PERSISTED checkout draft can restore a method that is no longer offered — e.g.
+    // a `bank_transfer` draft selected before the card rail went live. Pull any method
+    // that isn't a currently-VISIBLE option back to a valid one FIRST, so a hidden /
+    // retired method can never be submitted (the route would otherwise re-point it at
+    // the wallet and silently auto-debit the buyer). Sourced from buildPaymentMethods
+    // so it can never drift from what's actually shown. (V3-RETIRE-BANKTRANSFER.)
+    // Source the visible ids from buildPaymentMethods (identity translator — we only
+    // read `.id`, never the labels, so no unstable `t` enters the deps) so this can
+    // NEVER drift from what's actually rendered.
+    const visibleMethodIds = new Set(buildPaymentMethods((s) => s, cardEnabled).map((m) => m.id));
+    if (!visibleMethodIds.has(paymentMethod)) {
+      setPaymentMethod(cardEnabled ? "card" : walletCanPay ? "wallet_balance" : "cod");
+      return;
+    }
     if (paymentMethod === "wallet_balance" && !walletCanPay) {
-      setPaymentMethod("bank_transfer");
+      // Card-ready: lead with the live card rail; otherwise fall back to cash on delivery
+      // (bank transfer is retired).
+      setPaymentMethod(cardEnabled ? "card" : "cod");
     }
     if (paymentMethod === "bank_transfer" && !paymentRail.ready && walletCanPay) {
       setPaymentMethod("wallet_balance");
     }
-  }, [paymentMethod, paymentRail.ready, walletCanPay, setPaymentMethod]);
+  }, [paymentMethod, paymentRail.ready, walletCanPay, cardEnabled, setPaymentMethod]);
 
   // If the saved address from a restored draft is no longer in the
   // user's address book (deleted on another device, list refreshed
@@ -595,7 +629,7 @@ export function CheckoutExperience({
   const shippingLine1 = usingOneShot ? oneShot.line1 : selectedAddress?.street || "";
 
   return (
-    <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
+    <div className="mx-auto max-w-[1180px] space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="market-kicker">{t("Checkout")}</p>
@@ -608,17 +642,17 @@ export function CheckoutExperience({
         </div>
         <Link
           href="/cart"
-          className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] hover:text-[var(--market-paper-white)] sm:self-auto"
+          className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)] hover:text-[var(--market-paper-white)] sm:self-auto"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
           {t("Edit cart")}
         </Link>
       </header>
 
-      {/* Stepper — bespoke HenryCo brass-on-noir, motion-aware */}
+      {/* Stepper — bespoke Henry Onyx brass-on-noir, motion-aware */}
       <CheckoutStepper currentStep={step} />
 
-      <section className="grid gap-6 xl:grid-cols-[1fr,420px]">
+      <section className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <form
           ref={formRef}
           action="/api/marketplace"
@@ -694,6 +728,7 @@ export function CheckoutExperience({
             <PaymentStep
               method={paymentMethod}
               onSelect={setPaymentMethod}
+              cardEnabled={cardEnabled}
               cart={cart}
               shipping={shipping}
               total={total}
@@ -744,7 +779,7 @@ export function CheckoutExperience({
               <button
                 type="button"
                 onClick={back}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[rgba(255,255,255,0.07)]"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-5 py-3 text-sm font-semibold text-[var(--market-paper-white)] transition hover:bg-[var(--market-fill-soft)]"
               >
                 <ChevronLeft className="h-4 w-4" />
                 {t("Back")}
@@ -790,7 +825,9 @@ export function CheckoutExperience({
               {paymentMethod === "wallet_balance"
                 ? t("On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches.")
                 : paymentMethod === "bank_transfer"
-                ? t("On confirm, your transfer proof routes to finance. Verification typically completes within a few business hours and the timeline updates the moment it does.")
+                ? t("On confirm, your payment proof is submitted for review. Verification usually completes within a few business hours and the timeline updates automatically the moment it does.")
+                : paymentMethod === "card"
+                ? t("On confirm, you continue to a secure page to complete card payment. Your order is confirmed automatically the moment payment clears.")
                 : t("On confirm, the order opens for vendor acceptance. The rider collects payment when the order arrives.")}
             </p>
           ) : null}
@@ -851,7 +888,7 @@ function CheckoutStepper({ currentStep }: { currentStep: CheckoutStep }) {
                       ? "border-transparent bg-gradient-to-br from-[#f7edd9] via-[var(--market-brass)] to-[var(--market-aurora)] text-[#101114] shadow-[0_8px_22px_rgba(200,163,106,0.35)]"
                       : status === "active"
                       ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.16)] text-[var(--market-brass-soft)] shadow-[0_8px_22px_rgba(200,163,106,0.18)]"
-                      : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] text-[var(--market-muted)]"
+                      : "border-[var(--market-line)] bg-[var(--market-fill-faint)] text-[var(--market-muted)]"
                   }`}
                 >
                   {status === "done" ? <Check className="h-4 w-4" /> : index + 1}
@@ -937,7 +974,7 @@ function DeliveryStep({
                   className={`group relative flex cursor-pointer flex-col gap-2 rounded-[1.5rem] border p-4 transition ${
                     active
                       ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.08)] shadow-[0_18px_50px_rgba(200,163,106,0.18)]"
-                      : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] hover:border-[var(--market-line-strong)]"
+                      : "border-[var(--market-line)] bg-[var(--market-fill-faint)] hover:border-[var(--market-line-strong)]"
                   }`}
                 >
                   <input
@@ -1010,7 +1047,7 @@ function DeliveryStep({
           </button>
         </div>
       ) : (
-        <p className="mt-5 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-sm leading-6 text-[var(--market-muted)]">
+        <p className="mt-5 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-4 py-3 text-sm leading-6 text-[var(--market-muted)]">
           {t("You don't have any saved addresses yet. Enter delivery details below — we'll offer to save it to your address book after the order is placed.")}
         </p>
       )}
@@ -1045,12 +1082,22 @@ function DeliveryStep({
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
               {t("Region / state")}
             </span>
-            <input
+            {/* V3-DELIVERY-COMPLETE-01 (T6) — a clean state picker writing a canonical
+                code to shipping_region (the server's normalizeStateInput agrees), so a
+                seller Delivery Promise can match the buyer's state exactly. */}
+            <select
               className="market-input rounded-[1.2rem] px-4 py-3"
               value={oneShot.region}
               onChange={(event) => setOneShot({ ...oneShot, region: event.target.value })}
               required
-            />
+            >
+              <option value="">{t("Select your state")}</option>
+              {NG_STATES.map((s) => (
+                <option key={s.code} value={s.code}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="space-y-2 sm:col-span-2">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">
@@ -1083,6 +1130,7 @@ function DeliveryStep({
 function PaymentStep({
   method,
   onSelect,
+  cardEnabled,
   cart,
   total,
   currency,
@@ -1101,6 +1149,7 @@ function PaymentStep({
 }: {
   method: PaymentMethodId;
   onSelect: (id: PaymentMethodId) => void;
+  cardEnabled: boolean;
   cart: CartShape;
   shipping: number;
   total: number;
@@ -1162,12 +1211,12 @@ function PaymentStep({
 
       <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
         {t(
-          "Use cleared HenryCo balance first when it covers the total, or transfer the exact amount and upload proof before the order enters finance review.",
+          "Use your cleared Henry Onyx balance first when it covers the total, or transfer the exact amount and upload proof so we can confirm your payment.",
         )}
       </p>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-3">
-        {buildPaymentMethods(t).map((option) => {
+        {buildPaymentMethods(t, cardEnabled).map((option) => {
           const Icon = option.icon;
           const active = method === option.id;
           const disabled =
@@ -1185,6 +1234,8 @@ function PaymentStep({
               ? paymentRail.ready
                 ? `${paymentRail.bankName} ${t("ready")}`
                 : t("Payment rail unavailable")
+              : option.id === "card"
+              ? t("Secured payment · instant confirmation")
               : t("Seller acceptance still applies");
           return (
             <label
@@ -1194,7 +1245,7 @@ function PaymentStep({
                   ? "cursor-not-allowed border-dashed border-[var(--market-line)] opacity-50"
                   : active
                   ? "border-[var(--market-brass)] bg-[rgba(200,163,106,0.08)] shadow-[0_18px_50px_rgba(200,163,106,0.18)]"
-                  : "border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] hover:border-[var(--market-line-strong)]"
+                  : "border-[var(--market-line)] bg-[var(--market-fill-faint)] hover:border-[var(--market-line-strong)]"
               }`}
             >
               <input
@@ -1205,7 +1256,7 @@ function PaymentStep({
                 disabled={disabled}
               />
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-[var(--market-brass)]">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[var(--market-fill-soft)] text-[var(--market-brass)]">
                   <Icon className="h-4 w-4" />
                 </span>
                 <span className="text-base font-semibold text-[var(--market-paper-white)]">
@@ -1229,7 +1280,7 @@ function PaymentStep({
       </div>
 
       {method === "wallet_balance" ? (
-        <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <div className="grid gap-3 text-sm sm:grid-cols-3">
             <Metric label={t("Available balance")} value={formatCurrency(available, wallet.currency)} />
             <Metric label={t("Order total")} value={formatCurrency(total, currency)} />
@@ -1242,7 +1293,7 @@ function PaymentStep({
             <p className="mt-4 flex items-start gap-2 text-sm leading-7 text-[var(--market-muted)]">
               <Check className="mt-1 h-4 w-4 text-[var(--market-brass)]" />
               {t(
-                "Balance payment will debit your wallet and create the order as paid-held for fulfillment and escrow controls.",
+                "Your wallet is debited and the payment is held securely in escrow until the seller fulfils your order.",
               )}
             </p>
           ) : (
@@ -1265,7 +1316,7 @@ function PaymentStep({
       ) : null}
 
       {method === "bank_transfer" ? (
-        <section className="mt-5 space-y-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="mt-5 space-y-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
@@ -1303,7 +1354,7 @@ function PaymentStep({
               {bankDetails.map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4"
+                  className="rounded-[1.15rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4"
                 >
                   <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
                     {label}
@@ -1357,13 +1408,13 @@ function PaymentStep({
       ) : null}
 
       {method === "cod" ? (
-        <aside className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4 text-sm leading-7 text-[var(--market-muted)]">
+        <aside className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm leading-7 text-[var(--market-muted)]">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Cash on delivery
           </p>
           <p className="mt-2">
-            COD keeps payment pending for this {cart.count}-item order until delivery collection is
-            reconciled. Wallet or transfer remains faster when available.
+            With cash on delivery, payment stays pending for this {cart.count}-item order until the
+            rider collects it on delivery. Wallet or transfer is faster when available.
           </p>
         </aside>
       ) : null}
@@ -1425,7 +1476,7 @@ function ProofUploadField({
             ? "border-red-400/40 bg-red-400/5"
             : isBusy
             ? "border-[var(--market-brass)]/60 bg-[rgba(200,163,106,0.06)]"
-            : "border-dashed border-[var(--market-line)] bg-[rgba(255,255,255,0.03)]"
+            : "border-dashed border-[var(--market-line)] bg-[var(--market-fill-faint)]"
         }`}
       >
         <span
@@ -1492,7 +1543,7 @@ function ProofUploadField({
         >
           <span className="flex items-center gap-2 text-[var(--market-aurora)]">
             <Check className="h-3 w-3" aria-hidden="true" />
-            {t("Proof received. Finance will verify after submit.")}
+            {t("Proof received. We'll verify it after you submit.")}
           </span>
           <button
             type="button"
@@ -1546,7 +1597,7 @@ function ProofUploadField({
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4">
+    <div className="rounded-[1.15rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4">
       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--market-muted)]">
         {label}
       </p>
@@ -1609,7 +1660,7 @@ function ConfirmStep({
       </header>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Delivers to
           </p>
@@ -1644,7 +1695,7 @@ function ConfirmStep({
           ) : null}
         </section>
 
-        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+        <section className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Payment method
           </p>
@@ -1663,7 +1714,7 @@ function ConfirmStep({
         </section>
       </div>
 
-      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5">
+      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5">
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)]">
             Items ({cart.count})
@@ -1675,7 +1726,7 @@ function ConfirmStep({
             return (
               <li
                 key={item.id}
-                className="grid grid-cols-[64px,1fr,auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-3"
+                className="grid grid-cols-[64px_1fr_auto] items-center gap-4 rounded-[1.2rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-3"
               >
                 <div className="relative h-14 w-14 overflow-hidden rounded-[0.9rem] bg-[var(--market-soft-wash)]">
                   {item.image ? (
@@ -1712,7 +1763,7 @@ function ConfirmStep({
         </ul>
       </section>
 
-      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-5 text-sm">
+      <section className="mt-5 rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-5 text-sm">
         <div className="flex items-center justify-between text-[var(--market-muted)]">
           <span>Subtotal</span>
           <span className="font-semibold text-[var(--market-paper-white)]">{formatCurrency(subtotal, currency)}</span>
@@ -1731,7 +1782,7 @@ function ConfirmStep({
         </div>
       </section>
 
-      <label className="mt-5 flex items-start gap-3 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.03)] p-4 text-sm leading-7 text-[var(--market-muted)]">
+      <label className="mt-5 flex items-start gap-3 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-sm leading-7 text-[var(--market-muted)]">
         <input
           type="checkbox"
           checked={agreed}
@@ -1740,8 +1791,8 @@ function ConfirmStep({
         />
         <span>
           I agree to the{" "}
-          <Link href="/policies" className="font-semibold text-[var(--market-brass)]">
-            HenryCo marketplace policies
+          <Link href="/policies/buyer-protection" className="font-semibold text-[var(--market-brass)]">
+            Henry Onyx marketplace policies
           </Link>{" "}
           and confirm the delivery address and payment method are correct.
         </span>
@@ -1778,7 +1829,7 @@ function OrderSummaryRail({
         {cart.items.slice(0, 4).map((item) => {
           const moving = pendingSavedItemIds.includes(item.id);
           return (
-            <div key={item.id} className="grid grid-cols-[40px,1fr,auto] items-center gap-3 text-sm">
+            <div key={item.id} className="grid grid-cols-[40px_1fr_auto] items-center gap-3 text-sm">
               <div className="relative h-10 w-10 overflow-hidden rounded-md bg-[var(--market-soft-wash)]">
                 {item.image ? (
                   <DivisionImage src={item.image} alt={item.title} fill sizes="40px" className="object-cover" radius="0" />
@@ -1831,7 +1882,7 @@ function OrderSummaryRail({
         </div>
       </div>
 
-      <div className="mt-6 rounded-[1.4rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 text-xs leading-7 text-[var(--market-muted)]">
+      <div className="mt-6 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-xs leading-7 text-[var(--market-muted)]">
         <p className="font-semibold text-[var(--market-paper-white)]">
           Your basket waits for you
         </p>
@@ -1845,5 +1896,5 @@ function OrderSummaryRail({
 }
 
 function countVendors(cart: CartShape) {
-  return new Set(cart.items.map((item) => item.vendorName || "HenryCo")).size;
+  return new Set(cart.items.map((item) => item.vendorName || "Henry Onyx")).size;
 }

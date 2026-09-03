@@ -1,0 +1,76 @@
+/*
+ * @henryco/command-surface/tokens.css — the "Onyx operations console" design
+ * language for the Henry Onyx Command Center + Staff Workspace.
+ *
+ * Dark-first and dense: an instrument, not a marketing page. The token VALUES
+ * are the locked Henry Onyx family (gold #C9A227, warm graphite ink, the
+ * 12-division accent palette) so the console reads as the same family as the
+ * public surfaces. Imported by each staged app's globals.css.
+ */
+:root {
+  color-scheme: dark;
+
+  /* canvas */
+  --cc-bg: #0e0d0b;
+  --cc-panel: #16140f;
+  --cc-panel-2: #1b1813;
+  --cc-elevated: #211d16;
+  --cc-line: #2a261f;
+  --cc-line-strong: #39322a;
+
+  /* ink hierarchy (warm off-white on warm graphite) */
+  --cc-ink: #f4f1ea;
+  --cc-ink-soft: #d4cdbf;
+  --cc-muted: #9b9384;
+  --cc-faint: #6c6557;
+
+  /* brand anchor — Henry Onyx gold + copper */
+  --cc-gold: #c9a227;
+  --cc-gold-soft: rgba(201, 162, 39, 0.14);
+  --cc-gold-text: #e5c870; /* AA gold text on dark (7.6:1) */
+  --cc-copper: #c2722e;
+
+  /* priority ramp */
+  --cc-critical: #f0556a;
+  --cc-critical-soft: rgba(240, 85, 106, 0.13);
+  --cc-high: #f5a623;
+  --cc-high-soft: rgba(245, 166, 35, 0.13);
+  --cc-medium: #5b9bf0;
+  --cc-medium-soft: rgba(91, 155, 240, 0.13);
+  --cc-low: #8a8175;
+  --cc-low-soft: rgba(138, 129, 117, 0.12);
+
+  /* status */
+  --cc-open: #e5c870;
+  --cc-progress: #5b9bf0;
+  --cc-escalated: #f0556a;
+  --cc-resolved: #57c08a;
+  --cc-dismissed: #6c6557;
+
+  /* shape */
+  --cc-radius: 14px;
+  --cc-radius-sm: 9px;
+  --cc-radius-lg: 20px;
+  --cc-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset, 0 18px 50px rgba(0, 0, 0, 0.55);
+
+  /* type — Fraunces display (brand) over a refined system sans */
+  --cc-font-display: var(--font-display), "Iowan Old Style", Baskerville, "Times New Roman", serif;
+  --cc-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cc-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+}
+
+/* The console canvas: a near-black warm graphite with a faint gold/blue aurora
+   and a fine grain — depth without noise. */
+.cc-canvas {
+  background-color: var(--cc-bg);
+  background-image:
+    radial-gradient(ellipse 110% 70% at 50% -10%, rgba(201, 162, 39, 0.10), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(91, 155, 240, 0.05), transparent 45%);
+  color: var(--cc-ink);
+  font-family: var(--cc-font-sans);
+}
+
+.cc-display {
+  font-family: var(--cc-font-display);
+  font-optical-sizing: auto;
+}

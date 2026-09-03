@@ -71,7 +71,9 @@ export async function resolveUserRoles(
 
   if (supabase) {
     const [profile, marketplaceRoles, studioRoles, propertyRoles, learnRoles] = await Promise.all([
-      supabase.from("profiles").select("role").eq("user_id", user_id).maybeSingle(),
+      // `profiles` keys on `id` (= the auth user id), NOT `user_id` like the
+      // *_role_memberships tables below — `.eq("user_id")` 500s here (no such column).
+      supabase.from("profiles").select("role").eq("id", user_id).maybeSingle(),
       // The role-membership tables enforce RLS; service role should be used.
       supabase
         .from("marketplace_role_memberships")

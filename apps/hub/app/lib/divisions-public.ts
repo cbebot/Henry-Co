@@ -84,6 +84,10 @@ export async function getPublishedDivisions(): Promise<{
       `
       )
       .eq("is_published", true)
+      // Owner pause is LIVE: a paused division leaves every public list the
+      // moment the registry row flips. Null-safe (legacy rows without a status
+      // stay visible) — `neq` alone would silently drop status-null rows.
+      .or("status.is.null,status.neq.paused")
       .order("sort_order", { ascending: true })
       .order("updated_at", { ascending: false });
 

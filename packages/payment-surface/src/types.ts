@@ -28,6 +28,10 @@ export interface PaymentRecordView {
   updatedAt?: string | null;
   /** Optional "1 of 3" rank for projects with milestone-tied payments. */
   rank?: { index: number; total: number } | null;
+  /** Human-readable transaction reference (order no, invoice no). When absent,
+   *  a stable short reference is derived from `id` so the surface always reads
+   *  as a tracked transaction, never a bare UUID. */
+  reference?: string | null;
 }
 
 export interface PaymentSurfaceLink {
@@ -117,4 +121,28 @@ export interface PaymentSurfaceContext {
   upload?: PaymentProofUploadConfig;
   copy?: PaymentSurfaceCopy;
   theme?: PaymentSurfaceTheme;
+  /**
+   * V3-13 provider-router seam: an optional "pay by card" CTA that starts a
+   * card payment through @henryco/payment-router instead of bank transfer.
+   * `label` is already i18n-translated by the caller; `href` points at the
+   * app's card-payment route. Rendered only while the payment is open and
+   * awaiting action. Omit or pass null to keep the surface bank-transfer-only
+   * (the default until an app opts in). The live card route + provider land in
+   * V3-14/15/16 — V3-13 ships the seam, not a customer-facing card page.
+   */
+  cardCta?: { label: string; href: string } | null;
+  /**
+   * Optional "pay from wallet balance" CTA, shown beside the card option while the payment
+   * is open. `label`/`note` are already i18n-translated by the caller; `href` points at the
+   * wallet-checkout flow (which does the guarded debit + mark-paid). Omit/null to hide.
+   */
+  walletCta?: { label: string; href: string; note?: string } | null;
+  /**
+   * Card-first mode: the division has retired bank transfer. The card CTA becomes the
+   * ONLY open-payment action — the bank guide and proof upload never render (a proof
+   * already on file from the transfer era still shows its processing state until
+   * finance resolves it). Omit/false keeps today's bank-transfer surface (the default;
+   * no other division changes).
+   */
+  cardOnly?: boolean;
 }

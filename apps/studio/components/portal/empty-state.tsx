@@ -20,7 +20,7 @@ export function PortalEmptyState({
       }`}
     >
       {Icon ? (
-        <div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.06)] text-[var(--studio-signal)]">
+        <div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--studio-line-strong)] bg-[var(--studio-accent-soft)] text-[var(--studio-signal)]">
           <Icon className="h-5 w-5" />
         </div>
       ) : null}

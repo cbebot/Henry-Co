@@ -20,6 +20,13 @@ import type { RealtimePreferences, RealtimeSignal } from "./realtime-types";
 export type HydrationPayload = {
   unreadCount: number;
   items: ReadonlyArray<RealtimeSignal>;
+  /**
+   * Set by a host endpoint that degraded (read timeout / error) and returned an
+   * empty payload + HTTP 207 instead of failing. The realtime provider treats a
+   * degraded hydration as UNtrusted: existing signals are preserved rather than
+   * wiped by the empty set, so a transient read never blanks the bell.
+   */
+  degraded?: boolean;
 };
 
 /**

@@ -7,12 +7,16 @@ const csp = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com",
+  "img-src 'self' data: blob: https://*.supabase.co https://res.cloudinary.com https://images.unsplash.com",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "connect-src 'self' https://*.supabase.co https://api.cloudinary.com",
-  "media-src 'self' blob: https://res.cloudinary.com",
+  // wss://*.supabase.co is REQUIRED for the realtime WebSocket. Safari/WebKit
+  // (iOS) will not open a wss: socket under an https: source, so `new WebSocket()`
+  // throws synchronously and crashes the realtime provider into the error
+  // boundary (dashboard fails to open on iOS). Chrome derives wss: from https:.
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.cloudinary.com",
+  "media-src 'self' blob: https://*.supabase.co https://res.cloudinary.com",
   "object-src 'none'",
   "upgrade-insecure-requests",
 ].join("; ");
@@ -79,7 +83,10 @@ export function proxy(request: NextRequest) {
   const hasAuth = request.cookies
     .getAll()
     .some((cookie) => isSupabaseAuthTokenCookie(cookie.name));
-  writeSessionStateCookie(response, hasAuth ? "signed-in-stale" : "signed-out");
+  writeSessionStateCookie(response, hasAuth ? "signed-in-stale" : "signed-out", {
+    hostname: request.nextUrl.hostname,
+    secure: request.nextUrl.protocol === "https:",
+  });
 
   return response;
 }

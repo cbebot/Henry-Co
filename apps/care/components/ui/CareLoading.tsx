@@ -82,7 +82,7 @@ export function CareLoadingStage({
   className?: string;
 }) {
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const resolvedEyebrow = t(eyebrow || "Henry & Co. Care");
+  const resolvedEyebrow = t(eyebrow || "Henry Onyx Care");
   // FIX-LT-01: title + description warmup defaults dropped (theater copy).
   // Every CareLoadingStage call site passes explicit values; an omitted
   // prop now renders no text.

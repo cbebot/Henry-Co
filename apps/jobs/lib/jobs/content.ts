@@ -83,9 +83,9 @@ export const JOBS_DIFFERENTIATORS: Differentiator[] = [
     id: "internal-external-dual-mode",
     title: "Internal and External Dual Mode",
     summary:
-      "HenryCo internal hiring and external employer hiring coexist without forcing one compromise model onto both.",
+      "Henry Onyx internal hiring and external employer hiring coexist without forcing one compromise model onto both.",
     pros: [
-      "Lets HenryCo recruit itself inside the same operating surface",
+      "Lets Henry Onyx recruit itself inside the same operating surface",
       "Avoids duplicating pipeline tooling",
     ],
     cons: [

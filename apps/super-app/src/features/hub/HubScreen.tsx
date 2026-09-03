@@ -18,14 +18,14 @@ export function HubScreen() {
   return (
     <View style={styles.container} testID="hub-screen">
       <Image
-        accessibilityLabel="Henry and Co. logo"
+        accessibilityLabel="Henry Onyx logo"
         source={{ uri: logoUrl }}
         style={styles.logo}
         contentFit="contain"
       />
-      <Text variant="title">Henry &amp; Co. Company Hub</Text>
+      <Text variant="title">Henry Onyx Company Hub</Text>
       <Text variant="body" color="textSecondary">
-        Explore the businesses, services, and operating divisions of Henry &amp; Co. — now in one
+        Explore the businesses, services, and operating divisions of Henry Onyx — now in one
         connected mobile experience.
       </Text>
       <View style={styles.actions}>

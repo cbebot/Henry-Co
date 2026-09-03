@@ -13,7 +13,7 @@ const SUGGESTIONS = [
   { label: "Verified only", href: "/jobs?verified=1" },
   { label: "Full-time", href: "/jobs?type=full-time" },
   { label: "Lagos", href: "/jobs?loc=Lagos" },
-  { label: "Internal HenryCo", href: "/jobs?internal=1" },
+  { label: "Internal Henry Onyx", href: "/jobs?internal=1" },
 ];
 
 type Category = { slug: string; name: string; count: number };
@@ -93,7 +93,7 @@ export function JobsBrowsePanel({
         </label>
         <label className="jobs-soft-panel inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-3 text-sm font-medium">
           <input type="checkbox" name="internal" value="1" defaultChecked={internalOnly} />
-          {t("Internal HenryCo roles only")}
+          {t("Internal Henry Onyx roles only")}
         </label>
       </div>
     </>

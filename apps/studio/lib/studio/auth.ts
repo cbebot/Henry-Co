@@ -2,7 +2,11 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
-import { isRecoverableSupabaseAuthError, resolveUserAvatarFromSources } from "@henryco/config";
+import {
+  filterGrantedMemberships,
+  isRecoverableSupabaseAuthError,
+  resolveUserAvatarFromSources,
+} from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
 import { reconcileStudioSharedPendingSyncs } from "@/lib/studio/shared-account";
@@ -26,6 +30,12 @@ type MembershipRow = {
   role: string | null;
   scope_type: string | null;
   scope_id: string | null;
+};
+
+type StudioMembershipFetch = MembershipRow & {
+  user_id: string | null;
+  normalized_email: string | null;
+  is_active: boolean | null;
 };
 
 function uniqueRoles(roles: StudioRole[]) {
@@ -115,16 +125,24 @@ export async function getStudioViewer(): Promise<StudioViewer> {
     user.user_metadata as Record<string, unknown> | null
   );
 
-  const { data: membershipRows } = await admin
+  const { data: membershipCandidates } = await admin
     .from("studio_role_memberships")
-    .select("id, role, scope_type, scope_id")
+    .select("id, role, scope_type, scope_id, user_id, normalized_email, is_active")
     .eq("is_active", true)
     .or(
       normalized
         ? `user_id.eq.${user.id},normalized_email.eq.${normalized}`
         : `user_id.eq.${user.id}`
     )
-    .returns<MembershipRow[]>();
+    .returns<StudioMembershipFetch[]>();
+
+  // Shared grant rule: bound rows match only their owner; an unclaimed
+  // (user_id null) seed grants only to a verified, matching mailbox.
+  const membershipRows = filterGrantedMemberships(membershipCandidates ?? [], {
+    userId: user.id,
+    normalizedEmail: normalized,
+    emailVerified: Boolean(user.email_confirmed_at),
+  });
 
   const baseRoles = mapSharedRoleToStudioRoles(
     profile?.role ||

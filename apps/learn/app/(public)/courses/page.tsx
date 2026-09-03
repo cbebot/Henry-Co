@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return createDivisionMetadata("learn", {
     title: t("Course catalog"),
     description: t(
-      "Browse practical HenryCo courses you can finish, with clear progress and credentials employers can verify.",
+      "Browse practical Henry Onyx courses you can finish, with clear progress and credentials employers can verify.",
     ),
     path: "/courses",
   });
@@ -39,13 +39,13 @@ export default async function CoursesPage({
       <LearnSectionIntro
         kicker={t("Course catalog")}
         title={t("A program for your next step.")}
-        body={t("Filter by topic or level, open any course for full details, then sign in to enroll. Your progress syncs automatically in your HenryCo account.")}
+        body={t("Filter by topic or level, open any course for full details, then sign in to enroll. Your progress syncs automatically in your Henry Onyx account.")}
       />
 
       <div className="learn-panel mt-8 rounded-[2rem] p-5 sm:p-6">
         <p className="text-sm font-semibold text-[var(--learn-ink)]">{t("New here?")}</p>
         <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--learn-ink-soft)]">
-          {t("Create a free HenryCo account first—it takes a minute. Then return to any course and tap Start this course (or complete checkout if the program is paid).")}
+          {t("Create a free Henry Onyx account first—it takes a minute. Then return to any course and tap Start this course (or complete checkout if the program is paid).")}
         </p>
         <a
           href={getSharedAuthUrl("signup", "/courses")}
@@ -55,7 +55,7 @@ export default async function CoursesPage({
         </a>
       </div>
 
-      <form className="learn-panel mt-8 grid gap-4 rounded-[2rem] p-5 md:grid-cols-[1.4fr,1fr,1fr,auto]">
+      <form className="learn-panel mt-8 grid gap-4 rounded-[2rem] p-5 md:grid-cols-[1.4fr_1fr_1fr_auto]">
         <input name="q" defaultValue={params.q} placeholder={t("Search by title, skill, or tag")} className="learn-input rounded-2xl px-4 py-3" />
         <select name="category" defaultValue={params.category || ""} className="learn-select rounded-2xl px-4 py-3">
           <option value="">{t("All categories")}</option>

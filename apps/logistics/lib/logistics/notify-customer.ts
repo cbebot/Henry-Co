@@ -1,7 +1,11 @@
 import "server-only";
 
 import { getDivisionUrl } from "@henryco/config";
-import { sendTransactionalEmail } from "@henryco/email";
+import {
+  renderHenryCoEmail,
+  sendTransactionalEmail,
+  type HenryCoEmailLayout,
+} from "@henryco/email";
 import { getOptionalEnv } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendLogisticsWhatsAppText } from "@/lib/logistics/whatsapp";
@@ -67,8 +71,8 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
 
   const subjectBase =
     input.mode === "quote"
-      ? await tx("HenryCo Logistics quote")
-      : await tx("HenryCo Logistics booking");
+      ? await tx("Henry Onyx Logistics quote")
+      : await tx("Henry Onyx Logistics booking");
   const subject = `${subjectBase} — ${input.trackingCode}`;
 
   const greeting = await tx("Hi");
@@ -79,14 +83,17 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
   const trackingCodeLabel = await tx("Tracking code");
   const laneLabel = await tx("Lane");
   const indicativeTotalLabel = await tx("Indicative total");
-  const paymentReferenceLabel = input.mode === "book" ? await tx("Payment reference") : null;
+  // NO-PROOF (owner 2026-07-10): manual bank transfer is retired ecosystem-wide
+  // — payment rides the automated account rail, so the email no longer
+  // instructs a transfer reference.
+  const paymentReferenceLabel = null;
   const invoiceNote = input.mode === "book"
-    ? await tx("A HenryCo account invoice has been opened for this booking; use the tracking code as the transfer reference if paying by bank transfer.")
+    ? await tx("An invoice for this booking has been opened in your Henry Onyx account — settle it there in one step.")
     : null;
   const typicalWindowPrefix = await tx("Typical window");
   const hoursWord = await tx("hours (estimate, not a guarantee).");
   const trackPrefix = await tx("Track your shipment");
-  const signature = await tx("— HenryCo Logistics");
+  const signature = await tx("— Henry Onyx Logistics");
   const amountFormatted = new Intl.NumberFormat(locale, {
     maximumFractionDigits: 0,
   }).format(input.amountQuoted);
@@ -111,11 +118,44 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
   const email = cleanText(input.senderEmail);
   const templateKey = input.mode === "quote" ? "quote_created" : "booking_created";
 
+  // EMAIL-TPL-01: logistics was the last division sending PLAIN-TEXT-ONLY
+  // customer email. The branded shared layout (renderHenryCoEmail) now carries
+  // the same translated strings; `bodyText` stays as the text alternative and
+  // the WhatsApp body, so no channel loses content.
+  const emailTitle =
+    input.mode === "quote"
+      ? await tx("Your quote is ready.")
+      : await tx("Your booking is confirmed.");
+  const layout: HenryCoEmailLayout = {
+    purpose: "logistics",
+    subject,
+    title: emailTitle,
+    intro: `${greeting} ${input.senderName} — ${intro}`,
+    highlightLabel: trackingCodeLabel,
+    highlightValue: input.trackingCode,
+    sections: [
+      { label: laneLabel, value: input.zoneLabel },
+      { label: indicativeTotalLabel, value: `${input.currency} ${amountFormatted}` },
+      ...(paymentReferenceLabel
+        ? [{ label: paymentReferenceLabel, value: input.trackingCode }]
+        : []),
+      {
+        label: typicalWindowPrefix,
+        value: `${input.promiseWindowHours[0]}–${input.promiseWindowHours[1]} ${hoursWord}`,
+      },
+    ],
+    ...(invoiceNote ? { body: invoiceNote } : {}),
+    actionLabel: trackPrefix,
+    actionHref: input.trackingUrl,
+    locale,
+  };
+
   if (email) {
     const dispatch = await sendTransactionalEmail({
       to: email,
       purpose: "logistics",
       subject,
+      html: renderHenryCoEmail(layout),
       text: bodyText,
     });
 

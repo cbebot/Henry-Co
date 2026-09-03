@@ -114,21 +114,30 @@ export async function ensureAccountProfileRecords(user: User) {
 
     await admin.from("customer_profiles").update(updates as never).eq("id", user.id);
   } else {
-    await admin.from("customer_profiles").insert({
-      id: user.id,
-      email,
-      full_name: fullName,
-      phone,
-      avatar_url: avatarUrl,
-      country: country.code,
-      language,
-      currency: country.currencyCode,
-      timezone: country.timezone,
-      is_active: true,
-      onboarded_at: now,
-      last_seen_at: now,
-      updated_at: now,
-    } as never);
+    // STAB-01: upsert-ignore instead of bare INSERT. The on_auth_user_created_customer
+    // trigger (handle_new_customer) also seeds this row, and concurrent renders can
+    // race this branch — a plain INSERT loses that race with a duplicate-key error
+    // (the customer_profiles_pkey flood seen in prod logs). ignoreDuplicates makes it
+    // a no-throw INSERT ... ON CONFLICT DO NOTHING; if another writer already created
+    // the row, we leave their copy intact (the UPDATE branch above owns refreshes).
+    await admin.from("customer_profiles").upsert(
+      {
+        id: user.id,
+        email,
+        full_name: fullName,
+        phone,
+        avatar_url: avatarUrl,
+        country: country.code,
+        language,
+        currency: country.currencyCode,
+        timezone: country.timezone,
+        is_active: true,
+        onboarded_at: now,
+        last_seen_at: now,
+        updated_at: now,
+      } as never,
+      { onConflict: "id", ignoreDuplicates: true },
+    );
   }
 
   const { data: existingPreferences } = await admin
@@ -146,12 +155,21 @@ export async function ensureAccountProfileRecords(user: User) {
     //
     // First-pass attempt: full default shape (includes every column tracked
     // by the source-of-truth migration set).
+    //
+    // STAB-01: upsert-ignore instead of bare INSERT. handle_new_customer seeds
+    // this row on signup and concurrent renders race this branch, so a plain
+    // INSERT produced the customer_preferences_user_id_key duplicate-key flood.
+    // ignoreDuplicates → no-throw ON CONFLICT DO NOTHING; the existence check
+    // above already covers the common case, this just closes the race window.
     const { error } = await admin
       .from("customer_preferences")
-      .insert(defaultPreferences(user.id, now) as never);
+      .upsert(defaultPreferences(user.id, now) as never, {
+        onConflict: "user_id",
+        ignoreDuplicates: true,
+      });
 
     // If the schema is drifted (42703 undefined_column), fall back to the
-    // minimal viable insert — just `user_id` + the trigger / table defaults
+    // minimal viable upsert — just `user_id` + the trigger / table defaults
     // fill the rest. This guarantees first-login users ALWAYS get a row
     // regardless of which migration tier the prod DB is on. A drifted
     // preferences row missing 2-3 booleans is strictly better than no row
@@ -161,7 +179,10 @@ export async function ensureAccountProfileRecords(user: User) {
       if (code === "42703") {
         await admin
           .from("customer_preferences")
-          .insert({ user_id: user.id } as never)
+          .upsert({ user_id: user.id } as never, {
+            onConflict: "user_id",
+            ignoreDuplicates: true,
+          })
           .then(() => undefined);
       }
     }

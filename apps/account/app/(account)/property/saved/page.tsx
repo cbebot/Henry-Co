@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
-import { getDivisionUrl } from "@henryco/config";
+import { getDivisionUrl, toBrandName } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
@@ -24,7 +24,7 @@ export default async function SavedPropertiesPage() {
         tone={properties.length === 0 ? "empty" : "calm"}
         eyebrow={`${t("Property")} · ${t("Saved")}`}
         headline={t("Saved Properties")}
-        blurb={t("A premium shortlist view powered by HenryCo Property's live saved-listing truth, not a generic activity wrapper.")}
+        blurb={t("A premium shortlist view powered by Henry Onyx Property's live saved-listing truth, not a generic activity wrapper.")}
         ctaPrimary={{ label: t("Explore Property"), href: propertyOrigin, newTab: true }}
         ctaSecondary={{ label: t("Property overview"), href: "/property" }}
       />
@@ -51,7 +51,7 @@ export default async function SavedPropertiesPage() {
           </p>
         </div>
         <div className="acct-card p-5">
-          <p className="acct-kicker">{t("HenryCo managed")}</p>
+          <p className="acct-kicker">{t(toBrandName("Henry Onyx managed"))}</p>
           <p className="hc-h1 hc-mono mt-3 text-[var(--acct-ink)]">{managedCount}</p>
           <p className="mt-2 text-sm leading-7 text-[var(--acct-muted)]">
             {t("Listings with clearer operational support and more accountable follow-through.")}

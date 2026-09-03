@@ -15,8 +15,9 @@ import {
   PendingFundingCard,
   RecentTransactionsCard,
   PayoutMethodsCard,
+  VerificationNudgeCard,
 } from "./widgets";
-import { loadWalletSnapshot } from "./data";
+import { loadWalletSnapshot, loadNeedsVerificationNudge } from "./data";
 
 /**
  * The wallet module — slug `wallet`. Audit anchor §B.account-8.
@@ -51,6 +52,13 @@ export const walletModule: DashboardModule = {
   description: "Balance, funding, transactions, payout methods.",
   icon: () => <Wallet size={18} aria-hidden />,
   railSlot: "primary",
+  // The wallet's real surface is the top-level `/wallet` (the same
+  // route the desktop sidebar links to). Sending the rail / mobile
+  // Modules drawer / Cmd-jump straight there means tapping "Wallet"
+  // opens the wallet in one tap instead of the `/modules/wallet`
+  // summary, which fixes the reported "wallet never opens from the
+  // mobile Modules navigator" bug.
+  homeHref: "/wallet",
 
   getEligibleViewer(viewer) {
     return viewerCanUseCustomerSurface(viewer) ? "allowed" : "hidden";
@@ -62,12 +70,28 @@ export const walletModule: DashboardModule = {
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadWalletSnapshot(viewer);
+    const [snapshot, needsVerification] = await Promise.all([
+      loadWalletSnapshot(viewer),
+      loadNeedsVerificationNudge(viewer),
+    ]);
     if (!snapshot) return [];
 
     const userId = viewer.user.id;
 
     return [
+      // SMART (2026-07-10): trust-aware nudge — only for unverified viewers,
+      // stating the exact step that unlocks withdrawals. Real state, no theater.
+      ...(needsVerification
+        ? [{
+            id: "wallet.verification-nudge",
+            source: "wallet" as const,
+            title: "Enable withdrawals",
+            size: "sm" as const,
+            weight: 78,
+            href: "/security",
+            render: async () => <VerificationNudgeCard />,
+          }]
+        : []),
       {
         id: "wallet.balance",
         source: "wallet",
@@ -201,7 +225,7 @@ export const walletModule: DashboardModule = {
       return {
         kicker: "Money that moves with you",
         headline: "Fund your wallet to start.",
-        body: "Use one wallet to pay across Care, Marketplace, Studio, and the rest of HenryCo.",
+        body: "Use one wallet to pay across Care, Marketplace, Studio, and the rest of Henry Onyx.",
         action: { label: "Fund wallet", href: "/wallet/funding" },
       };
     }
@@ -213,7 +237,7 @@ export const walletModule: DashboardModule = {
       return {
         kicker: "Money that moves with you",
         headline: "Fund your wallet to start.",
-        body: "Add money once and pay everywhere across HenryCo without re-entering card details.",
+        body: "Add money once and pay everywhere across Henry Onyx without re-entering card details.",
         action: { label: "Fund wallet", href: "/wallet/funding" },
       };
     }

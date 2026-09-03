@@ -9,7 +9,8 @@ import {
 } from "@henryco/i18n/server";
 import { getCourseBySlug } from "@/lib/learn/data";
 import { getLearnViewer } from "@/lib/learn/auth";
-import { enrollInCourseAction, toggleSavedCourseAction } from "@/lib/learn/actions";
+import { enrollInCourseAction } from "@/lib/learn/actions";
+import { SaveCourseForm } from "@/components/learn/save-course-form";
 import { getAccountLearnUrl, getLearnCourseRoomUrl, getSharedAuthUrl } from "@/lib/learn/links";
 import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
@@ -331,7 +332,7 @@ export default async function CourseDetailPage({
           {courseSubtitle}
         </p>
 
-        <div className="mt-10 grid gap-12 lg:grid-cols-[1.2fr,0.8fr]">
+        <div className="mt-10 grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
           {/* Description + tags — editorial column */}
           <div>
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-copper)]">
@@ -411,7 +412,7 @@ export default async function CourseDetailPage({
               {viewer.user ? (
                 <ActionLink
                   href={getAccountLearnUrl(canStart ? "active" : "overview")}
-                  label={t("View in HenryCo account")}
+                  label={t("View in Henry Onyx account")}
                   variant="secondary"
                 />
               ) : null}
@@ -435,23 +436,13 @@ export default async function CourseDetailPage({
                 <ActionLink href={signInHref} label={t("Sign in to enroll")} variant="secondary" />
               ) : null}
               {viewer.user ? (
-                <form action={toggleSavedCourseAction}>
-                  <input type="hidden" name="courseId" value={course.id} />
-                  <PendingSubmitButton
-                    variant="secondary"
-                    pendingLabel={
-                      saved ? t("Updating saved list...") : t("Saving course...")
-                    }
-                  >
-                    {saved ? t("Saved") : t("Save course")}
-                  </PendingSubmitButton>
-                </form>
+                <SaveCourseForm courseId={course.id} saved={saved} />
               ) : null}
             </div>
             {enrollment?.status === "awaiting_payment" ? (
-              <p className="mt-4 border-l-2 border-amber-400/55 pl-4 text-sm leading-7 text-amber-200">
+              <p className="mt-4 border-l-2 border-amber-500/60 pl-4 text-sm leading-7 text-amber-700 dark:text-amber-300">
                 {t(
-                  "We're confirming your payment. Your seat is held—this page will unlock fully as soon as your HenryCo account shows a completed payment.",
+                  "We're confirming your payment. Your seat is held—this page will unlock fully as soon as your Henry Onyx account shows a completed payment.",
                 )}
               </p>
             ) : null}
@@ -463,9 +454,9 @@ export default async function CourseDetailPage({
       <section className="mt-16">
         <LearnSectionIntro
           kicker={t("What to expect")}
-          title={t("How this course works on HenryCo Learn")}
+          title={t("How this course works on Henry Onyx Learn")}
           body={t(
-            "Lessons are meant to be taken in order. When you're enrolled, each step unlocks as you finish the one before it. If this program includes a certificate, you'll see exactly what you must complete—including any final quiz and passing score—inside your learning room and in your HenryCo account.",
+            "Lessons are meant to be taken in order. When you're enrolled, each step unlocks as you finish the one before it. If this program includes a certificate, you'll see exactly what you must complete—including any final quiz and passing score—inside your learning room and in your Henry Onyx account.",
           )}
         />
         <ul className="mt-8 grid gap-8 sm:grid-cols-2 sm:divide-x sm:divide-[var(--learn-line)] lg:grid-cols-4">
@@ -473,7 +464,7 @@ export default async function CourseDetailPage({
             {
               label: t("Progress"),
               body: t(
-                "Saved automatically. Resume from this course page or from Learn in your HenryCo account.",
+                "Saved automatically. Resume from this course page or from Learn in your Henry Onyx account.",
               ),
             },
             {
@@ -503,7 +494,7 @@ export default async function CourseDetailPage({
                 ? t("Open your learning room to continue the next unlocked lesson.")
                 : viewer.user
                   ? t("Enroll to unlock the full sequence.")
-                  : t("Sign in with your HenryCo account, then enroll to begin."),
+                  : t("Sign in with your Henry Onyx account, then enroll to begin."),
             },
           ].map((item, i) => (
             <li key={item.label} className={i > 0 ? "sm:pl-6 lg:pl-8" : ""}>
@@ -517,7 +508,7 @@ export default async function CourseDetailPage({
       </section>
 
       {/* Modules + sidebar — editorial split */}
-      <section className="mt-16 grid gap-12 xl:grid-cols-[1.2fr,0.8fr]">
+      <section className="mt-16 grid gap-12 xl:grid-cols-[1.2fr_0.8fr]">
         <div>
           <LearnSectionIntro
             kicker={t("Course structure")}

@@ -35,7 +35,7 @@ export type LearnInstructorsCopy = {
 
 const LEARN_INSTRUCTORS_COPY_EN: LearnInstructorsCopy = {
   meta: {
-    title: "Instructors - HenryCo Learn",
+    title: "Instructors - Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Instructors",
@@ -60,7 +60,7 @@ const LEARN_INSTRUCTORS_COPY_EN: LearnInstructorsCopy = {
 
 const LEARN_INSTRUCTORS_COPY_FR: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "Formateurs — HenryCo Learn",
+    title: "Formateurs — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Formateurs",
@@ -85,7 +85,7 @@ const LEARN_INSTRUCTORS_COPY_FR: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_ES: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "Instructores — HenryCo Learn",
+    title: "Instructores — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Instructores",
@@ -110,7 +110,7 @@ const LEARN_INSTRUCTORS_COPY_ES: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_PT: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "Formadores — HenryCo Learn",
+    title: "Formadores — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Formadores",
@@ -135,7 +135,7 @@ const LEARN_INSTRUCTORS_COPY_PT: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_AR: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "المدرّبون — HenryCo Learn",
+    title: "المدرّبون — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "المدرّبون",
@@ -160,7 +160,7 @@ const LEARN_INSTRUCTORS_COPY_AR: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_DE: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "Dozent:innen — HenryCo Learn",
+    title: "Dozent:innen — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Dozent:innen",
@@ -185,7 +185,7 @@ const LEARN_INSTRUCTORS_COPY_DE: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_IT: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "Docenti — HenryCo Learn",
+    title: "Docenti — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Docenti",
@@ -210,7 +210,7 @@ const LEARN_INSTRUCTORS_COPY_IT: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_ZH: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "讲师 — HenryCo Learn",
+    title: "讲师 — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "讲师",
@@ -235,7 +235,7 @@ const LEARN_INSTRUCTORS_COPY_ZH: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_HI: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "प्रशिक्षक — HenryCo Learn",
+    title: "प्रशिक्षक — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "प्रशिक्षक",
@@ -260,7 +260,7 @@ const LEARN_INSTRUCTORS_COPY_HI: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_IG: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "Ndị nkuzi — HenryCo Learn",
+    title: "Ndị nkuzi — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Ndị nkuzi",
@@ -285,7 +285,7 @@ const LEARN_INSTRUCTORS_COPY_IG: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_YO: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "Àwọn olùkọ́ — HenryCo Learn",
+    title: "Àwọn olùkọ́ — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Àwọn olùkọ́",
@@ -310,7 +310,7 @@ const LEARN_INSTRUCTORS_COPY_YO: DeepPartial<LearnInstructorsCopy> = {
 
 const LEARN_INSTRUCTORS_COPY_HA: DeepPartial<LearnInstructorsCopy> = {
   meta: {
-    title: "Malamai — HenryCo Learn",
+    title: "Malamai — Henry Onyx Learn",
   },
   hero: {
     eyebrow: "Malamai",

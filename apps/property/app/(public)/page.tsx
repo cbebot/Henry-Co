@@ -13,6 +13,8 @@ import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyListingCard } from "@/components/property/ui";
 import { PropertyRecommendedForYou } from "@/components/property/property-recommended-for-you";
 import { PropertySearchBar } from "@/components/property/property-search-bar";
+import { PROPERTY_ROLE_VOCAB, resolveChromePlan, standingFromRoles } from "@henryco/aware";
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { getPropertyHomeData } from "@/lib/property/data";
 import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getPropertyPublicCopy } from "@/lib/public-copy";
@@ -65,6 +67,21 @@ export default async function PropertyHomePage() {
     getPropertyViewer(),
   ]);
   const copy = getPropertyPublicCopy(locale);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  // AWARE-SP5: never recruit someone who already lists — an agent's "submit a
+  // property" CTA becomes their workspace (the same tested matrix the chrome
+  // uses).
+  const standing = standingFromRoles(
+    { signedIn: Boolean(viewer.user), roles: viewer.roles },
+    PROPERTY_ROLE_VOCAB,
+  );
+  const plan = resolveChromePlan("property", standing);
+  const isAgent = standing.kind === "operator";
+  const submitCta = (fallbackLabel: string) =>
+    isAgent
+      ? { href: plan.recruit.href, label: t(plan.recruit.label) }
+      : { href: "/submit", label: fallbackLabel };
 
   const approvedListings = snapshot.listings.filter(
     (listing) => listing.status === "approved" || listing.status === "published"
@@ -334,7 +351,7 @@ export default async function PropertyHomePage() {
               search bar sits below it as a "go deeper" affordance,
               not a primary CTA. */}
           <aside className="lg:sticky lg:top-24">
-            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/15 p-6 sm:p-7">
+            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-sheet)] p-6 sm:p-7 shadow-[0_30px_90px_-55px_rgb(var(--home-ink-rgb)/0.18)]">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-accent-strong)]">
                 {copy.home.inventorySnapshot.title}
               </p>
@@ -437,7 +454,7 @@ export default async function PropertyHomePage() {
         ) : (
           // Empty state — designed, not "no items". Tells the visitor
           // exactly what's happening at the operator layer.
-          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-black/12 px-6 py-10 sm:px-10 sm:py-14">
+          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-6 py-10 sm:px-10 sm:py-14">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
               {copy.home.featuredEmpty.eyebrow}
             </p>
@@ -453,10 +470,10 @@ export default async function PropertyHomePage() {
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
               <Link
-                href="/submit"
+                href={submitCta(copy.home.featuredEmpty.submitCta).href}
                 className="inline-flex items-center gap-1.5 px-1 text-[13px] font-semibold text-[var(--property-accent-strong)] underline-offset-4 transition hover:underline"
               >
-                {copy.home.featuredEmpty.submitCta}
+                {submitCta(copy.home.featuredEmpty.submitCta).label}
               </Link>
             </div>
           </div>
@@ -483,7 +500,7 @@ export default async function PropertyHomePage() {
             <div className="overflow-hidden rounded-[1.4rem] border border-[var(--property-line)]">
               <table className="w-full table-fixed border-collapse">
                 <thead>
-                  <tr className="bg-black/15 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
+                  <tr className="bg-[color:var(--home-surface-07)] text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
                     <th scope="col" className="w-[44%] px-4 py-3 text-left sm:w-[42%] sm:px-6">
                       {copy.home.areasTable.headerArea}
                     </th>
@@ -502,7 +519,7 @@ export default async function PropertyHomePage() {
                   {localizedAreas.map((area) => (
                     <tr
                       key={area.id}
-                      className="group/area transition hover:bg-[rgba(232,184,148,0.05)]"
+                      className="group/area transition hover:bg-[color:color-mix(in_srgb,var(--home-accent)_6%,transparent)]"
                     >
                       <td className="px-4 py-4 align-top sm:px-6">
                         <Link
@@ -548,7 +565,7 @@ export default async function PropertyHomePage() {
               </table>
             </div>
           ) : (
-            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/12 p-8">
+            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] p-8">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
                 {copy.home.areasTable.emptyEyebrow}
               </p>
@@ -632,7 +649,7 @@ export default async function PropertyHomePage() {
                             {service.bullets.slice(0, 4).map((bullet) => (
                               <li
                                 key={bullet}
-                                className="rounded-full border border-[var(--property-line)] bg-black/10 px-2.5 py-1 text-[11px] font-medium text-[var(--property-ink-soft)]"
+                                className="rounded-full border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-2.5 py-1 text-[11px] font-medium text-[var(--property-ink-soft)]"
                               >
                                 {bullet}
                               </li>
@@ -649,8 +666,8 @@ export default async function PropertyHomePage() {
 
           {/* Numerical column — managed economics visible up front */}
           <aside className="lg:pt-20">
-            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-black/15 p-6 sm:p-7">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-sage-soft)]">
+            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-sheet)] p-6 sm:p-7 shadow-[0_30px_90px_-55px_rgb(var(--home-ink-rgb)/0.18)]">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--home-accent-text)]">
                 {copy.home.managedAside.title}
               </p>
               <dl className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
@@ -696,7 +713,7 @@ export default async function PropertyHomePage() {
           <ol className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
             {localizedAgents.map((agent) => (
               <li key={agent.id} className="group/agent">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[1rem] border border-[var(--property-line)] bg-black/20">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[1rem] border border-[var(--property-line)] bg-[color:var(--home-surface-07)]">
                   {agent.photoUrl ? (
                     <Image
                       src={agent.photoUrl}
@@ -708,7 +725,7 @@ export default async function PropertyHomePage() {
                   ) : (
                     // Empty image state — initials block in agent's
                     // territory tone. Looks intentional, not broken.
-                    <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-[rgba(232,184,148,0.18)] to-[rgba(152,179,154,0.18)]">
+                    <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-[color:color-mix(in_srgb,var(--home-accent)_18%,transparent)] to-[color:color-mix(in_srgb,var(--property-sage)_18%,transparent)]">
                       <span className="text-[2.4rem] font-semibold tracking-[-0.04em] text-[var(--property-ink-soft)]">
                         {agent.name
                           .split(/\s+/)
@@ -741,7 +758,7 @@ export default async function PropertyHomePage() {
           </ol>
         ) : (
           // Empty state — editorial. Operator-facing message.
-          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-black/12 p-8">
+          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] p-8">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
               {copy.home.agentsEmpty.eyebrow}
             </p>
@@ -754,7 +771,7 @@ export default async function PropertyHomePage() {
 
       {/* CLOSING CTA ─────────────────────────────────────────────────── */}
       <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="rounded-[1.6rem] border border-[var(--property-line-strong)] bg-gradient-to-br from-[rgba(232,184,148,0.08)] via-transparent to-[rgba(152,179,154,0.08)] p-7 sm:p-10">
+        <div className="rounded-[1.6rem] border border-[var(--property-line-strong)] bg-gradient-to-br from-[color:color-mix(in_srgb,var(--home-accent)_8%,transparent)] via-transparent to-[color:color-mix(in_srgb,var(--property-sage)_8%,transparent)] p-7 sm:p-10">
           <div className="grid gap-6 sm:grid-cols-[1.4fr_1fr] sm:items-center sm:gap-10">
             <div>
               <p className="property-kicker">{copy.home.closingCta.eyebrow}</p>
@@ -774,10 +791,10 @@ export default async function PropertyHomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/submit"
+                href={submitCta(copy.home.closingCta.submitCta).href}
                 className="property-button-secondary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-semibold sm:w-auto"
               >
-                {copy.home.closingCta.submitCta}
+                {submitCta(copy.home.closingCta.submitCta).label}
               </Link>
             </div>
           </div>

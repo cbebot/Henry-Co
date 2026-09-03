@@ -950,7 +950,7 @@ export async function createSupportThread(input: ContactSubmissionInput) {
     await sendAdminNotificationEmail(internalEmail, {
       heading: `New contact request • ${threadRef}`,
       summary:
-        "A customer submitted a new contact request through the HenryCo Care public support page.",
+        "A customer submitted a new contact request through the Henry Onyx Care public support page.",
       lines: [
         `Customer: ${input.fullName}`,
         `Subject: ${input.subject}`,
@@ -1463,6 +1463,10 @@ export async function ingestInboundSupportEmail(input: InboundSupportEmailInput)
   const customerName = sender.name || "Customer";
   const settings = await getCareSettings();
   const internalAddresses = [
+    // EMAIL-POSTMARK (2026-07-14): Postmark is the outbound rail; the legacy
+    // RESEND_* entries stay in this loop-detection list only while those env
+    // vars still exist on deployments (membership checks, not senders).
+    extractMailbox(process.env.POSTMARK_FROM_EMAIL).email,
     extractMailbox(process.env.RESEND_FROM_EMAIL).email,
     extractMailbox(process.env.RESEND_FROM).email,
     extractMailbox(settings.support_email).email,

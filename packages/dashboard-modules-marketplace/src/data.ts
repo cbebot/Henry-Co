@@ -1,9 +1,15 @@
 import "server-only";
 
 import type { UnifiedViewer } from "@henryco/auth";
-import { createDataAdminClient } from "@henryco/data";
+import { createDataAdminClient, listLiveDeals, loadOperatorMembership } from "@henryco/data";
+import { getDivisionUrl } from "@henryco/config";
 import { listSavedItems } from "@henryco/cart-saved-items/server";
 import type { SavedItemRecord } from "@henryco/cart-saved-items";
+
+/** The REAL vendor workspace — lives on the marketplace subdomain, not the
+ *  account shell (dashboard-vs-workspaces decision, 2026-07-09: the module is
+ *  a window; the workspace is the room). */
+export const MARKETPLACE_VENDOR_WORKSPACE_HREF = `${getDivisionUrl("marketplace").replace(/\/$/, "")}/vendor`;
 
 /**
  * Module-local data layer for the marketplace home widgets. Every
@@ -72,7 +78,7 @@ export async function loadMarketplaceSnapshot(
   const client = createDataAdminClient();
   const userId = viewer.user.id;
 
-  const [ordersRes, savedItems, dealsRes] = await Promise.all([
+  const [ordersRes, savedItems, curatedDeals] = await Promise.all([
     client
       .from("marketplace_orders")
       .select("id, order_no, status, payment_status, grand_total, display_currency, placed_at, archived_at")
@@ -85,12 +91,7 @@ export async function loadMarketplaceSnapshot(
       includeStatuses: ["active"],
       limit: 6,
     }).catch(() => [] as SavedItemRecord[]),
-    client
-      .from("marketplace_deals_curation")
-      .select("id, product_slug, slot, sort_order, starts_at, ends_at, note")
-      .eq("active", true)
-      .order("sort_order", { ascending: true })
-      .limit(6),
+    readCuratedDeals(client).catch(() => [] as MarketplaceCuratedDeal[]),
   ]);
 
   const ordersInFlight: MarketplaceOrderInFlight[] = (ordersRes.data ?? []).map((row) => ({
@@ -103,21 +104,11 @@ export async function loadMarketplaceSnapshot(
     placedAt: row.placed_at,
   }));
 
-  const curatedDeals: MarketplaceCuratedDeal[] = (dealsRes.data ?? []).map((row) => ({
-    id: row.id,
-    productSlug: row.product_slug,
-    slot: row.slot,
-    sortOrder: row.sort_order,
-    startsAt: row.starts_at,
-    endsAt: row.ends_at,
-    note: row.note,
-  }));
-
   const marketplaceSavedItems = savedItems.filter(
     (item) => item.division === "marketplace",
   );
 
-  const vendorStatus = await readVendorStatus(client, userId).catch(() => null);
+  const vendorStatus = await readVendorStatus(client, viewer).catch(() => null);
 
   return {
     ordersInFlight,
@@ -129,11 +120,36 @@ export async function loadMarketplaceSnapshot(
   };
 }
 
+/**
+ * Vendor standing, resolvable INDEPENDENTLY of the customer snapshot — a
+ * membership vendor is viewer.kind="staff", which nulls the snapshot, so the
+ * seller window must never depend on it.
+ */
+export async function loadVendorStatus(
+  viewer: UnifiedViewer,
+): Promise<MarketplaceVendorStatus | null> {
+  if (!viewer.user?.id) return null;
+  const client = createDataAdminClient();
+  return readVendorStatus(client, viewer).catch(() => null);
+}
+
 async function readVendorStatus(
   client: ReturnType<typeof createDataAdminClient>,
-  userId: string,
+  viewer: UnifiedViewer,
 ): Promise<MarketplaceVendorStatus | null> {
-  const [applicationRes, storeRes] = await Promise.all([
+  const userId = viewer.user.id;
+
+  // AWARE-FIX (owner report 2026-07-10): vendor TRUTH is the granted
+  // `marketplace_role_memberships` row — the SAME shared predicate the
+  // marketplace app and the aware chrome use. The previous check looked only
+  // at `marketplace_vendors.owner_user_id`, so a REAL vendor whose seat is a
+  // membership (team member / email-claimed) was shown "Become a seller".
+  const [membership, applicationRes, ownedStoreRes] = await Promise.all([
+    loadOperatorMembership(viewer, {
+      table: "marketplace_role_memberships",
+      division: "marketplace",
+      workspacePath: "/vendor",
+    }).catch(() => null),
     client
       .from("marketplace_vendor_applications")
       .select("status")
@@ -150,19 +166,36 @@ async function readVendorStatus(
       .maybeSingle(),
   ]);
 
-  const hasApplication = Boolean(applicationRes.data);
-  const store = storeRes.data;
+  const vendorMembership = membership?.roles.includes("vendor") ? membership : null;
 
-  if (!hasApplication && !store) {
+  // Enrich with the store the membership actually scopes to (scope_id = the
+  // vendor id) — falls back to the legacy owner_user_id lookup.
+  let store = ownedStoreRes.data as { slug: string; name: string; status: string } | null;
+  if (!store && vendorMembership && vendorMembership.scopeIds.length > 0) {
+    const scoped = await client
+      .from("marketplace_vendors")
+      .select("slug, name, status")
+      .in("id", vendorMembership.scopeIds)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    store = (scoped.data as { slug: string; name: string; status: string } | null) ?? null;
+  }
+
+  const hasApplication = Boolean(applicationRes.data);
+
+  if (!vendorMembership && !hasApplication && !store) {
     return null;
   }
 
   return {
-    hasApplication,
-    applicationStatus: applicationRes.data?.status ?? null,
+    hasApplication: hasApplication || Boolean(vendorMembership),
+    applicationStatus: applicationRes.data?.status ?? (vendorMembership ? "approved" : null),
     storeSlug: store?.slug ?? null,
     storeName: store?.name ?? null,
-    storeIsActive: store?.status === "active",
+    // A granted, active vendor membership IS active standing — even when the
+    // store row is keyed to a different owner (team seats, email claims).
+    storeIsActive: store?.status === "active" || Boolean(vendorMembership),
   };
 }
 
@@ -173,4 +206,54 @@ async function readVendorStatus(
  */
 export function isVendor(snapshot: MarketplaceSnapshot | null): boolean {
   return Boolean(snapshot?.vendorStatus);
+}
+
+/**
+ * V3-35 — ONE deal model. The module now prefers the ecosystem `deals` table
+ * (marketplace-scoped live rows; the old curation rows were migrated in by
+ * 20260724120000_v3_35_deals.sql) and falls back to the SUPERSEDED
+ * marketplace_deals_curation table ONLY while that migration is unapplied on
+ * the target database (the new-model read errors). Rows keep the legacy
+ * widget shape so DealsOfTheMomentCard renders unchanged; only rows with a
+ * product `target_ref` surface here (the widget deep-links to products).
+ */
+async function readCuratedDeals(
+  client: ReturnType<typeof createDataAdminClient>,
+): Promise<MarketplaceCuratedDeal[]> {
+  try {
+    const rows = await listLiveDeals(client, {
+      division: "marketplace",
+      visibility: "public",
+      limit: 6,
+    });
+    return rows
+      .filter((row) => Boolean(row.target_ref))
+      .map((row, index) => ({
+        id: row.id,
+        productSlug: row.target_ref as string,
+        slot: row.deal_type,
+        sortOrder: index,
+        startsAt: row.starts_at,
+        endsAt: row.ends_at,
+        note: row.description,
+      }));
+  } catch {
+    // Superseded-table fallback (pre-apply only). Supabase read errors return
+    // an error object, not a throw — an empty list is the safe floor.
+    const res = await client
+      .from("marketplace_deals_curation")
+      .select("id, product_slug, slot, sort_order, starts_at, ends_at, note")
+      .eq("active", true)
+      .order("sort_order", { ascending: true })
+      .limit(6);
+    return (res.data ?? []).map((row) => ({
+      id: row.id,
+      productSlug: row.product_slug,
+      slot: row.slot,
+      sortOrder: row.sort_order,
+      startsAt: row.starts_at,
+      endsAt: row.ends_at,
+      note: row.note,
+    }));
+  }
 }

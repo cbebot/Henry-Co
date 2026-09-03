@@ -1,28 +1,18 @@
-# MODULES-01 — Mobile module landings + catalog audit
+# MODULES-01 — Foundation UX: Mobile module landings + catalog truth
 
-**Pass ID:** MODULES-01
-**Phase:** Bug-fix + audit
-**Pillar:** P12 (Global UX), P3 (Personalization)
-**Dependencies:** Wave B.1 + close-out merged
-**Effort:** S–M (1 session)
-**Parallel-safe:** YES
-**Owner gate:** Visual sign-off on mobile (and recommendation review for catalogue expansion)
-**Risk class:** None
+> **STATUS: SHIPPED — PR #144.** Wallet is a registered first-class module (`@henryco/dashboard-modules-wallet`), the catch-all `/modules/[...slug]` router resolves slugs against the live registry (not a hardcoded list), and the Track A customer gates were widened from `viewer.kind === "customer"` to `viewerCanUseCustomerSurface(viewer)` so owners/staff using the customer surface no longer hit "not exists". This file is the elevated canonical record of that fix plus the catalog-truth contract; treat "Mandatory scope" as the verification/extension contract, not unbuilt work.
+
+**Pass ID:** MODULES-01  ·  **Phase:** B (Foundation Lock — regression follow-up)  ·  **Pillar:** P12 (Global UX), P3 (Personalization)
+**Dependencies:** dashboard-shell module registry + role-gate (merged)  ·  **Effort:** S  ·  **Parallel-safe:** Y
+**Owner gate:** none (visual sign-off on mobile + recommendation review for any catalog expansion)  ·  **Risk class:** —
 
 ---
 
 ## Role
+You are the V3 Foundation-UX modules engineer for Henry Onyx. You execute exactly this one pass, then stop and report. This pass guarantees every registered module resolves on mobile for an eligible viewer, that the catch-all module router reads the live registry rather than any static list, and that the customer-surface catalog is truthful (no module silently absent, no module the viewer can't actually use shown as available). The line you must not cross: never register a new module without explicit owner sign-off — you surface the recommendation; the owner authorizes each addition.
 
-You are the V3 Modules engineer. Owner directive, verbatim:
-
+Owner directive, verbatim (the bar):
 > "Also the modules landing pages shows as not exists on mobile check if it is an error or a problem from my own account. For the modules mobile marketplace, wallet, and I think there should be more? Just asking."
-
-**The bar:**
-- (a) Marketplace + Wallet module pages MUST resolve on mobile (no "not exists" / 404 / "module unavailable").
-- (b) Audit which modules are currently registered, which are exposed to the customer/account on mobile, which to the owner workspace, which to staff. Surface the catalog list for the owner with a recommendation on what's missing OR what should be promoted/demoted.
-- (c) Whatever is broken, fix the root cause — no per-module patches.
-
----
 
 ## Project
 
@@ -30,120 +20,83 @@ You are the V3 Modules engineer. Owner directive, verbatim:
 |---|---|
 | Repo | `github.com/cbebot/Henry-Co` |
 | Default branch | `main` |
-| Working branch | `fix/mobile-module-landings` |
-| Worktree | `C:/Users/HP VICTUS/HenryCo/.worktree/fix-mobile-modules` |
-| Branch base | `main @ 1768a99d` |
-| OS context | Windows + bash; pnpm 9.15.5; Node 24.x |
+| Working branch | `v3/fix-mobile-module-landings` (per pass) |
+| Deploy | Vercel |
+| Backend | Supabase (project ref `rzkbgwuznmdxnnhmjazy`) |
+| Package manager | pnpm 9.15.5 · Node 24.x |
+| OS context | Windows + bash |
 
-Use ABSOLUTE PATHS. For Bash, first call `cd "C:/Users/HP VICTUS/HenryCo/.worktree/fix-mobile-modules"`. For git, prefer `git -C "<path>" <cmd>`. DO NOT touch the parent repo or sibling worktrees.
+## Audit summary
+Modules are defined in per-division packages (`@henryco/dashboard-modules-account`, `-marketplace`, `-wallet`, `-building`, `-hotel`, plus `-owner` / `-staff` for the operator surfaces). Each exports a `DashboardModule` (`slug`, `title`, `description`, `icon`, `railSlot`, `getEligibleViewer(viewer)`, `getRoleGate(viewer): RoleDecision | null`, `getHomeWidgets(viewer)`). Modules register as an import side effect: `apps/account/app/(account)/_modules/index.ts` imports each package, which calls `registerModule()` against the shell registry (idempotent on slug). The customer catch-all `apps/account/app/(account)/modules/[...slug]/page.tsx` imports `_modules` once, then `getRegisteredModules().find(m => m.slug === moduleSlug)` and `targetModule.getRoleGate(viewer)` — `notFound()` (the "not exists" surface) fires when the slug is unregistered OR the gate denies.
 
----
-
-## Reference architecture (conductor-verified)
-
-### Module registry packages
-
-`packages/dashboard-modules-account`, `packages/dashboard-modules-building`, `packages/dashboard-modules-hotel`, `packages/dashboard-modules-marketplace` — verify the rest via `ls packages/dashboard-modules-*`. Each defines a module schema (id, label, icon, route, eligibility checks).
-
-### Eligibility resolvers
-
-Per the V3 conductor's earlier work + the owner-workspace layout, there are TRACKED resolvers:
-- `getEligibleModules(viewer)` — Track A (customer / account-facing)
-- `getEligibleOwnerModules(viewer)` — Track B (owner workspace)
-- `getEligibleStaffModules(viewer)` — Track C (staff workspace)
-
-`apps/hub/lib/owner-rail-from-registry.ts` and similar wire these into the dashboard rail.
-
-### Account modules entry-point
-
-`apps/account/app/(account)/modules/[...slug]/page.tsx` — catch-all module router for the customer dashboard. The "not exists" message likely lives here when the slug doesn't match a registered module.
-
-Also direct routes:
-- `apps/account/app/(account)/marketplace/page.tsx`
-- `apps/account/app/(account)/jobs/page.tsx`
-- `apps/account/app/(account)/learn/page.tsx`
-- … (each division has its own direct route)
-
-Possible bug vectors:
-
-1. **Catch-all `/modules/[...slug]` doesn't know about marketplace/wallet** — slug routing isn't keyed to the dashboard-modules-* registry, and rests on a hardcoded list that's stale.
-2. **`getEligibleModules(viewer)` returns a filtered list that EXCLUDES marketplace/wallet on mobile context** — possible if a mobile-context detection (user agent / viewport) is over-aggressive.
-3. **No `wallet` module registered yet** — wallet might exist as a feature but never registered in the dashboard-modules-* catalog.
-4. **Per-module mobile flag** — some modules might have `mobile: false` flag that hides them on the customer mobile shell.
-5. **Route guard rejects** — middleware or `requireCustomer()` style auth check fails on the mobile context.
-
----
+The "not exists on mobile" symptom had two real causes, both closed here: (1) `wallet` had no registered module package — it existed only as top-level `/wallet` routes, so `/modules/wallet` `notFound()`'d; (2) Track A customer gates keyed on `viewer.kind === "customer"`, so an owner/staff account browsing the customer surface failed the gate on otherwise-universal modules. The fix added `@henryco/dashboard-modules-wallet` (registered in `_modules/index.ts`) and widened the gate to `viewerCanUseCustomerSurface(viewer)` (defined in `packages/dashboard-shell/src/role-gate.ts`); the wallet *data* layer keeps `kind === "customer"` because the `customer_wallet_*` tables are customer-scoped. The router was confirmed registry-driven, never a hardcoded slug list.
 
 ## Mandatory scope
 
-### Phase 1 — Reproduce + diagnose
+### S1 — Reproduce + diagnose against the live registry
+Read `apps/account/app/(account)/modules/[...slug]/page.tsx`: confirm it resolves the slug via `getRegisteredModules()` and gates via `getRoleGate(viewer)`, and pinpoint exactly when `notFound()` renders. Enumerate every registered module by reading each `packages/dashboard-modules-*/src/module.tsx` (slug, title, `getEligibleViewer`, `getRoleGate`). Run the gate mentally for a typical customer viewer AND an owner/staff-on-customer-surface viewer requesting `/modules/marketplace` and `/modules/wallet`; identify any false-negative. Verify `wallet` is registered in `apps/account/app/(account)/_modules/index.ts`.
 
-1. Open `apps/account/app/(account)/modules/[...slug]/page.tsx` — what does the slug router do? When does it render "not exists"?
-2. List every module currently registered: read `packages/dashboard-modules-*/src/index.ts` files + any central registry (e.g., `packages/dashboard-modules-*/src/module.tsx`).
-3. Run the eligibility resolver mentally for a typical customer viewer accessing `/modules/marketplace` and `/modules/wallet`. Identify whether the resolver excludes them.
-4. Check whether `wallet` is even a registered module name. If not, that's part of the bug.
-5. Document in `docs/v3/module-catalog-audit-2026-05-23.md`:
-   - Full table: module id, division, registry package, customer-eligible?, owner-eligible?, staff-eligible?, direct-route status (where the page lives), notes
-   - The reproducing slug for the user's complaint
-   - The root cause of "not exists"
+### S2 — Catalog-truth document
+Write `docs/v3/module-catalog-audit.md`: a full table of module id · division · registry package · customer-eligible? · owner-eligible? · staff-eligible? · direct-route status (where the canonical detail page lives) · notes. Include the reproducing slug for the complaint and the root cause of "not exists". This is the durable catalog-truth artifact the owner reviews.
 
-### Phase 2 — Fix root cause
+### S3 — Registry-driven router + widened gate (the fix)
+- Confirm the catch-all router looks the slug up against the registry and never a static list; if any static list remains, replace it with the registry lookup.
+- Confirm Track A customer gates use `viewerCanUseCustomerSurface(viewer)` (not `viewer.kind === "customer"`) for modules every human can use; keep stricter gates where a module is genuinely customer-only, and keep customer-scoped data-layer gates (`kind === "customer"`) intact.
+- For a registered-but-ineligible viewer, the surface must read as a clear "module not enabled for your account" with a next-step CTA — never a raw 404 dead end where eligibility is the real story.
 
-Likely fixes (in rank of expected likelihood):
+### S4 — Catalog expansion recommendation (owner-authorized only)
+In the PR body, list: modules currently in the customer catalog; division-level products that exist but are not yet customer modules (care, jobs, learn, logistics, property, studio surfaces); and any natural module candidate (e.g. Documents, Subscriptions). Propose ownership per candidate. Register NOTHING new without explicit owner OK — `building` / `hotel` stay gated behind their `MODULE_ENABLED` constants until the owner flips them.
 
-- **Slug-router blind to registry:** make the catch-all route in `apps/account/app/(account)/modules/[...slug]/page.tsx` LOOK UP the slug against the registered modules registry, NOT a hardcoded list. If the module exists in registry + viewer is eligible, render the module's component (or redirect to its direct route if one exists). Otherwise, render a clear "module not enabled for your account" with a CTA.
-- **Eligibility resolver false-negative:** if a viewer flag (kyc_status, locale, role) is incorrectly disqualifying customers from marketplace/wallet, fix the resolver predicate.
-- **Wallet not registered:** if wallet isn't in the catalog yet, register it. Wallet is a first-class division per the V3 plan, so it should appear in the customer catalogue + module rail.
+## Out of scope
+- Registering new division modules → owner-authorized, future per-division passes own each.
+- Operator-surface module catalog depth (owner/staff workspaces) → `@henryco/dashboard-modules-owner` / `-staff` future work.
+- `packages/search-ui/**` → owner-reserved.
+- Destructive edits to `apps/account/lib/cloudinary.ts` → forbidden.
 
-### Phase 3 — Catalog audit + recommendation
+## Dependencies
+Depends on the dashboard-shell module registry + `role-gate.ts`. Blocks nothing; it stabilizes the module-resolution contract that every later module-adding pass relies on.
 
-After fixing, write a short recommendation in the PR body:
+## Inheritance
+Builds on `@henryco/dashboard-shell` (`getRegisteredModules`, `registerModule`, `viewerCanUseCustomerSurface`, `DashboardModule`/`RoleDecision` types, `WorkspaceSlot`/`DivisionLanding`/`HeroCard`/`EmptyStateCard` surfaces) and `@henryco/dashboard-modules-*` package modules. Uses `buildUnifiedViewer` from `@henryco/auth/server`.
 
-- **Currently in the customer dashboard catalog:** list all
-- **Currently MISSING but should likely be there:** based on the V3 plan + existing apps (care, jobs, learn, marketplace, logistics, property, studio, wallet are clearly division-level products), list which are exposed + which aren't.
-- **Suggest additions:** if any natural module is unregistered (e.g., "Documents", "Subscriptions", "Settings"), name it + propose ownership.
+## Implementation requirements
+### Files
+- `apps/account/app/(account)/modules/[...slug]/page.tsx` (verify registry-driven; no static list).
+- `apps/account/app/(account)/_modules/index.ts` (wallet registered).
+- `packages/dashboard-modules-wallet/src/module.tsx` + `data.ts` + `widgets/` (the registered module; data-layer gate intact).
+- `packages/dashboard-shell/src/role-gate.ts` (`viewerCanUseCustomerSurface`).
+- `docs/v3/module-catalog-audit.md` (new — the catalog-truth table).
 
-Owner will review the recommendation; don't auto-register new modules without explicit OK.
+### Trust / safety / compliance
+Gate widening must NOT widen *data* access: surface eligibility (`getRoleGate`) may broaden to `viewerCanUseCustomerSurface`, but every module's data loader keeps its scoped predicate so RLS-backed customer tables are never read for the wrong principal. Confirm `customer_wallet_*` reads stay `kind === "customer"`. No new mutating route; no payment-surface behaviour change.
 
-### Phase 4 — Verify
+### Mobile + desktop parity
+The defect was mobile-only in report but the cause is viewer-gate/registry logic, identical on both. Verify `/modules/marketplace` and `/modules/wallet` render (or redirect to canonical detail) on customer dashboard mobile + desktop. Expo super-app consumes the same registry contract — parity preserved.
 
-- Manual smoke: load `/modules/marketplace` and `/modules/wallet` on customer dashboard (mobile + desktop). Confirm landing renders or redirects appropriately.
-- Typecheck + lint + V3-07 strict `pnpm i18n:check:strict` PASS.
+### i18n
+All module landing copy routes through `@henryco/i18n` via `translateSurfaceLabel(locale, …)` (Pattern B) as the router already does; the catalog labels (`module.title` / `module.description`) flow through the same surface namespace. No raw strings; `pnpm i18n:check:strict` stays green.
 
-### Phase 5 — DRAFT PR
+### Brand & design system
+Module landings render inside the dashboard-shell design system (locked tokens, no ad-hoc hex). Any division/brand label is sourced from `@henryco/config` (`COMPANY` divisions = "Henry Onyx <Division>"), never hardcoded "Henry & Co.". Any URL uses `henryDomain()` / `getAccountUrl()` from `@henryco/config`.
 
-Commit per logical chunk:
-- `MODULES-01(P1): module catalog audit + slug-router diagnostic`
-- `MODULES-01(P2): fix slug router to honor module registry`
-- `MODULES-01(P3): register wallet module (if missing)`
+## Validation gates
+1. `pnpm -F @henryco/account typecheck` + `pnpm -F @henryco/dashboard-shell typecheck` + `pnpm -F @henryco/dashboard-modules-wallet typecheck` PASS.
+2. `pnpm lint` PASS for touched packages.
+3. `pnpm i18n:check:strict` PASS.
+4. Smoke: `/modules/marketplace` and `/modules/wallet` resolve for a customer viewer AND an owner/staff-on-customer-surface viewer (mobile + desktop); an ineligible viewer sees the clear not-enabled CTA, never a bare 404.
+5. RLS check: wallet data loader reads only customer-scoped rows; no cross-principal leakage when the surface gate is widened.
 
-Push + open DRAFT PR. Body lists fixed slugs + the catalog table + recommendation for missing modules.
+## Deployment gate
+All gates green; owner reviews `docs/v3/module-catalog-audit.md` + the expansion recommendation; squash-merge to `main`; Vercel autodeploys. No new module registered without owner sign-off.
 
-Report at `.codex-temp/fix-mobile-module-landings/report.md`.
+## Final report contract
+`.codex-temp/fix-mobile-module-landings/report.md` with the standard 9 sections (exec summary · files changed · migration/RLS/env · validation evidence · smoke · live verification · telemetry baseline · deferred items · pass-closure assertion).
 
----
-
-## Anti-patterns (HARD stops)
-
-- **NO hardcoded module slug lists.** The router must read from the registry.
-- **NO per-module patches.** Find the class-level bug.
-- **NO new modules registered without owner OK.** Author the recommendation; let the owner authorize each.
-- **NO touching `packages/search-ui/`** (owner-reserved).
-- **NO touching `apps/account/lib/cloudinary.ts`** destructively.
-- **NO breaking V3-07 strict gate.**
-- **NO `git push --force`** (use `--force-with-lease` if needed).
-- **NO PR auto-merge.**
-
----
-
-## Self-verification checklist
-
-- [ ] `docs/v3/module-catalog-audit-2026-05-23.md` with full module × eligibility table
-- [ ] Marketplace + Wallet load correctly on mobile customer dashboard
-- [ ] Slug router reads from registry, not hardcoded list
-- [ ] Wallet registered (if previously missing) with owner-OK note
-- [ ] Catalog expansion recommendations surfaced in PR body
-- [ ] Typecheck + lint + i18n:check:strict PASS
-- [ ] DRAFT PR opened
-
-You're Opus 4.7. Owner asked "if it's an error or a problem from my own account" — diagnose first, fix the root, then surface the catalogue so the owner can decide what else should exist.
+## Self-verification
+- [ ] S1: router confirmed registry-driven; `notFound()` trigger and the reproducing slug documented.
+- [ ] S2: `docs/v3/module-catalog-audit.md` has the full module × eligibility × direct-route table.
+- [ ] S3: marketplace + wallet resolve on mobile for customer + owner/staff-on-customer-surface viewers; registered-but-ineligible shows a clear CTA, not a 404.
+- [ ] Wallet registered in `_modules/index.ts`; surface gate `viewerCanUseCustomerSurface`, data gate `kind === "customer"` intact.
+- [ ] S4: catalog-expansion recommendation in PR body; zero new modules registered without owner OK.
+- [ ] Typecheck + lint + `i18n:check:strict` PASS; no brand/domain hardcoding; RLS not widened.
+- [ ] PR opened with the catalog table + recommendation.

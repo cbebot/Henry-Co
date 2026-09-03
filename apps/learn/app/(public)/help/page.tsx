@@ -9,7 +9,7 @@ export async function generateMetadata() {
   const locale = await getLearnPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
-  return { title: t("Help - HenryCo Learn") };
+  return { title: t("Help - Henry Onyx Learn") };
 }
 
 export default async function HelpPage({
@@ -30,9 +30,11 @@ export default async function HelpPage({
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
           {t("Stuck? We unblock fast.")}
         </h1>
-        <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
+        {/* READING-02: hero body in the editorial serif reading face
+            (--learn-ink-soft already maps to the ink-70 equivalent). */}
+        <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--learn-ink-soft)]">
           {t(
-            "Send a note about certificates, enrollment, assignments, or billing. Include your course name and account email so the academy team can help without back-and-forth.",
+            "Send a note about certificates, enrollment, assignments, or billing. Include your course name and account email so we can help without back-and-forth.",
           )}
         </p>
       </section>
@@ -43,12 +45,12 @@ export default async function HelpPage({
             {t("Sent")}
           </p>
           <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
-            {t("Message received. We’ll reply using the contact details on your HenryCo account.")}
+            {t("Message received. We’ll reply using the contact details on your Henry Onyx account.")}
           </p>
         </section>
       ) : null}
 
-      <section className="mt-12 grid gap-12 lg:grid-cols-[1fr,0.9fr] lg:divide-x lg:divide-[var(--learn-line)]">
+      <section className="mt-12 grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:divide-x lg:divide-[var(--learn-line)]">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--learn-mint-soft)]">
             {t("Send a message")}
@@ -94,7 +96,9 @@ export default async function HelpPage({
               <h3 className="text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                 {t("How do I continue a course?")}
               </h3>
-              <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
+              {/* READING-02: FAQ answers read in the serif face (hub
+                  home-faq precedent); ink stays host-owned. */}
+              <p className="hc-font-reading text-pretty mt-2 max-w-prose text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {t("Open")}{" "}
                 <a
                   href={getAccountLearnUrl("active")}
@@ -103,7 +107,7 @@ export default async function HelpPage({
                   {t("Learn → Active")}
                 </a>{" "}
                 {t(
-                  "in your HenryCo account, or go back to the course page and open your learning room.",
+                  "in your Henry Onyx account, or go back to the course page and open your learning room.",
                 )}
               </p>
             </li>
@@ -111,7 +115,8 @@ export default async function HelpPage({
               <h3 className="text-sm font-semibold tracking-tight text-[var(--learn-ink)]">
                 {t("When do I get a certificate?")}
               </h3>
-              <p className="mt-2 text-sm leading-7 text-[var(--learn-ink-soft)]">
+              {/* READING-02: FAQ answer in the serif reading face. */}
+              <p className="hc-font-reading text-pretty mt-2 max-w-prose text-sm leading-7 text-[var(--learn-ink-soft)]">
                 {t(
                   "Only some courses award one. Finish every required lesson and meet any quiz rules; your learning room shows a checklist. Then download from the room or view under",
                 )}{" "}

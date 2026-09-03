@@ -14,9 +14,9 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Messages · HenryCo Studio",
+  title: "Messages · Henry Onyx Studio",
   description:
-    "Every project conversation with the HenryCo Studio team in one place.",
+    "Every project conversation with the Henry Onyx Studio team in one place.",
   robots: { index: false, follow: false },
 };
 
@@ -70,7 +70,7 @@ export default async function MessagesCentrePage() {
   return (
     <main
       id="henryco-main"
-      className="flex h-[100svh] min-h-0 w-full flex-col bg-[#050816]"
+      className="flex h-[100svh] min-h-0 w-full flex-col bg-[var(--studio-bg)]"
     >
       <MessagesCentre
         summaries={summaries}

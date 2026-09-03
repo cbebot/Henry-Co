@@ -19,9 +19,11 @@ import "server-only";
  *         version: string | null,
  *         deploy: string | null,
  *         checkedAt: string,                    // ISO-8601
- *         missingEnv?: string[],                // populated on env: "fail"
- *         supabaseError?: string,               // populated on supabase: "fail"
  *       }
+ *
+ *   Failure detail (which env vars are missing, the raw probe error)
+ *   is logged server-side only — the wire body never names secrets or
+ *   echoes provider error text on this unauthenticated surface.
  *
  * Used by Vercel monitoring + future SLO tooling. The 503 signal is
  * what kicks off rollback-trigger evaluation (A1) during the 72-hour
@@ -49,10 +51,6 @@ export type HealthCheckBody = {
   deploy: string | null;
   /** ISO-8601 timestamp of the probe. */
   checkedAt: string;
-  /** Listed only when env check failed — names of missing required vars. */
-  missingEnv?: string[];
-  /** Listed only when supabase check failed — error message. */
-  supabaseError?: string;
 };
 
 /**
@@ -137,16 +135,16 @@ export async function buildHealthResponse(opts: {
 
   // If env is broken we skip the supabase probe — there's nothing
   // sensible to connect to. The body still reports both check states
-  // so the caller can see exactly which condition failed.
+  // so the caller can see exactly which condition failed. The names of
+  // the missing vars stay in server logs — never in the wire body.
   if (!envOk) {
+    console.error("[health] env check failed — missing:", missingEnv.join(", "));
     return {
       ok: false,
       checks: { supabase: "fail", env: "fail" },
       version,
       deploy,
       checkedAt,
-      missingEnv,
-      supabaseError: "skipped — env check failed",
     };
   }
 
@@ -162,6 +160,12 @@ export async function buildHealthResponse(opts: {
 
   const probe = await probeSupabase(client);
 
+  if (!probe.ok) {
+    // Raw probe error text (provider wording, table names) stays in
+    // server logs — the unauthenticated wire body only carries pass/fail.
+    console.error("[health] supabase probe failed:", probe.error);
+  }
+
   return {
     ok: probe.ok,
     checks: {
@@ -171,7 +175,6 @@ export async function buildHealthResponse(opts: {
     version,
     deploy,
     checkedAt,
-    ...(probe.ok ? {} : { supabaseError: probe.error }),
   };
 }
 

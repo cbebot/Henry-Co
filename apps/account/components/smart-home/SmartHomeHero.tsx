@@ -15,11 +15,12 @@ import { getAccountAppLocale } from "@/lib/locale-server";
  * ACCOUNT-PREMIUM-01 (session 1 reference rebuild).
  *
  * Sits above the SmartHome composition (`AttentionPanel`, `NextBestActions`,
- * `RankedMetricStrip`, `SignalFeed`, `ModuleWidgetGrid`). Replaces the
- * austere `SmartHomeHeader` for the visual hero role; the realtime status
- * orb + saved-items rail still mount via the existing SmartHomeHeader
- * BELOW the hero (so the realtime indicator stays near the live data it
- * indicates rather than competing for hero attention).
+ * `RankedMetricStrip`, `SignalFeed`, `ModuleWidgetGrid`). It is the single
+ * owner of the greeting + stat lead; the retired `SmartHomeHeader` used to
+ * re-render that same lead below the hero (a duplicate). The realtime
+ * status orb now mounts on a thin `.hc-smart-home-live-row` directly below
+ * the hero, so the live indicator stays near the data it describes without
+ * competing for hero attention.
  *
  * State tone:
  *   - "empty"     → no signals, no attention, no last activity

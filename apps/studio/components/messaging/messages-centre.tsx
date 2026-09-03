@@ -58,7 +58,7 @@ export function MessagesCentre({
 
   if (summaries.length === 0) {
     return (
-      <div className="flex h-full min-h-0 w-full items-center justify-center bg-[#050816] p-6">
+      <div className="flex h-full min-h-0 w-full items-center justify-center bg-[var(--studio-thread-canvas)] p-6">
         <EmptyThreadState
           projectName="your projects"
           teamLabel={null}
@@ -68,20 +68,20 @@ export function MessagesCentre({
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full overflow-hidden bg-[#050816]">
+    <div className="flex h-full min-h-0 w-full overflow-hidden bg-[var(--studio-thread-canvas)]">
       {/* List column */}
       <div
-        className={`flex min-w-0 flex-col border-r border-white/[0.06] bg-[#070B14] sm:w-[320px] sm:shrink-0 ${
+        className={`flex min-w-0 flex-col border-r border-[var(--studio-thread-line)] bg-[var(--studio-thread-rail)] sm:w-[320px] sm:shrink-0 ${
           openOnMobile ? "hidden sm:flex" : "flex w-full"
         }`}
       >
-        <header className="shrink-0 border-b border-white/[0.06] px-4 py-3">
-          <h1 className="text-[16px] font-semibold tracking-[-0.005em] text-[#F5F4EE]">
+        <header className="shrink-0 border-b border-[var(--studio-thread-line)] px-4 py-3">
+          <h1 className="text-[16px] font-semibold tracking-[-0.005em] text-[var(--studio-thread-ink)]">
             Messages
           </h1>
-          <p className="mt-0.5 text-[11px] text-white/45">
+          <p className="mt-0.5 text-[11px] text-[var(--studio-thread-ink-muted)]">
             {sorted.length} project{sorted.length === 1 ? "" : "s"} ·
-            <span className="ml-1 text-[#d4b14e]">
+            <span className="ml-1 text-[var(--studio-thread-accent-text)]">
               {sorted.reduce((acc, s) => acc + s.unreadCount, 0)} unread
             </span>
           </p>
@@ -97,17 +97,17 @@ export function MessagesCentre({
                     setSelectedProjectId(summary.projectId);
                     setOpenOnMobile(true);
                   }}
-                  className={`flex w-full items-start gap-3 border-b border-white/[0.04] px-4 py-3 text-left transition-colors ${
+                  className={`flex w-full items-start gap-3 border-b border-[var(--studio-thread-line-soft)] px-4 py-3 text-left transition-colors ${
                     isSelected
-                      ? "bg-[#0F1524]"
-                      : "hover:bg-white/[0.02]"
+                      ? "bg-[var(--studio-thread-inset)]"
+                      : "hover:bg-[var(--studio-thread-hover)]"
                   }`}
                   aria-current={isSelected ? "true" : undefined}
                 >
                   <span
                     className={`mt-1 flex h-2 w-2 shrink-0 items-center justify-center rounded-full ${
                       summary.unreadCount > 0
-                        ? "bg-[#d4b14e]"
+                        ? "bg-[var(--studio-thread-accent)]"
                         : "bg-transparent"
                     }`}
                     aria-hidden
@@ -117,15 +117,15 @@ export function MessagesCentre({
                       <h2
                         className={`truncate text-[13px] font-semibold ${
                           summary.unreadCount > 0
-                            ? "text-[#F5F4EE]"
-                            : "text-white/85"
+                            ? "text-[var(--studio-thread-ink)]"
+                            : "text-[var(--studio-thread-ink-soft)]"
                         }`}
                       >
                         {summary.projectTitle}
                       </h2>
                       {summary.lastMessage ? (
                         <time
-                          className="shrink-0 text-[10px] tabular-nums text-white/45"
+                          className="shrink-0 text-[10px] tabular-nums text-[var(--studio-thread-ink-muted)]"
                           dateTime={summary.lastMessage.createdAt}
                         >
                           {formatMessageTimestamp(
@@ -134,26 +134,26 @@ export function MessagesCentre({
                         </time>
                       ) : null}
                     </div>
-                    <p className="mt-0.5 line-clamp-1 text-[12px] text-white/55">
+                    <p className="mt-0.5 line-clamp-1 text-[12px] text-[var(--studio-thread-ink-muted)]">
                       {summary.lastMessage ? (
                         <>
-                          <span className="font-medium text-white/70">
+                          <span className="font-medium text-[var(--studio-thread-ink-soft)]">
                             {summary.lastMessage.senderName}:
                           </span>{" "}
                           {summary.lastMessage.bodyExcerpt || "(attachment)"}
                         </>
                       ) : (
-                        <span className="italic text-white/35">
+                        <span className="italic text-[var(--studio-thread-ink-faint)]">
                           No messages yet
                         </span>
                       )}
                     </p>
                     <div className="mt-1 flex items-center gap-2">
-                      <span className="rounded-full bg-white/[0.04] px-1.5 py-0.5 text-[9px] uppercase tracking-[0.08em] text-white/45">
+                      <span className="rounded-full bg-[var(--studio-thread-hover)] px-1.5 py-0.5 text-[9px] uppercase tracking-[0.08em] text-[var(--studio-thread-ink-muted)]">
                         {summary.projectStatus.replace("_", " ")}
                       </span>
                       {summary.unreadCount > 0 ? (
-                        <span className="rounded-full bg-[#d4b14e]/20 px-1.5 py-0.5 text-[9px] font-medium tabular-nums text-[#d4b14e]">
+                        <span className="rounded-full bg-[var(--studio-thread-accent-soft)] px-1.5 py-0.5 text-[9px] font-medium tabular-nums text-[var(--studio-thread-accent-text)]">
                           {summary.unreadCount} new
                         </span>
                       ) : null}
@@ -161,7 +161,7 @@ export function MessagesCentre({
                     {hrefForProject ? (
                       <Link
                         href={hrefForProject(summary.projectId)}
-                        className="mt-1 inline-flex items-center gap-1 text-[10px] font-medium text-[#d4b14e]/85 hover:text-[#d4b14e]"
+                        className="mt-1 inline-flex items-center gap-1 text-[10px] font-medium text-[var(--studio-thread-accent-text)] hover:text-[var(--studio-thread-accent-text)]"
                       >
                         Project workspace
                         <ArrowRight className="h-3 w-3" aria-hidden />
@@ -217,7 +217,7 @@ function ThreadColumnPlaceholder({
 }) {
   if (!projectId || !summary) {
     return (
-      <div className="flex h-full items-center justify-center px-6 text-center text-[13px] text-white/45">
+      <div className="flex h-full items-center justify-center px-6 text-center text-[13px] text-[var(--studio-thread-ink-muted)]">
         Select a project to open its conversation.
       </div>
     );
@@ -227,29 +227,29 @@ function ThreadColumnPlaceholder({
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex shrink-0 items-center gap-3 border-b border-white/[0.06] bg-[#070B14] px-3 py-2.5 sm:px-4">
+      <header className="flex shrink-0 items-center gap-3 border-b border-[var(--studio-thread-line)] bg-[var(--studio-thread-rail)] px-3 py-2.5 sm:px-4">
         <button
           type="button"
           onClick={onBack}
-          className="rounded-full p-1.5 text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white sm:hidden"
+          className="rounded-full p-1.5 text-[var(--studio-thread-ink-soft)] transition-colors hover:bg-[var(--studio-thread-hover)] hover:text-[var(--studio-thread-ink)] sm:hidden"
           aria-label="Back to message list"
         >
           ←
         </button>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-[14px] font-semibold tracking-[-0.005em] text-[#F5F4EE]">
+          <h1 className="truncate text-[14px] font-semibold tracking-[-0.005em] text-[var(--studio-thread-ink)]">
             {summary.projectTitle}
           </h1>
         </div>
       </header>
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-        <p className="max-w-md text-[13px] text-white/55">
+        <p className="max-w-md text-[13px] text-[var(--studio-thread-ink-muted)]">
           Open this project&apos;s full conversation, including history, files,
           and team context.
         </p>
         <Link
           href={href}
-          className="inline-flex items-center gap-2 rounded-full border border-[#d4b14e]/40 bg-[#d4b14e]/10 px-4 py-2 text-[12px] font-medium text-[#d4b14e] transition-colors hover:bg-[#d4b14e]/15"
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-thread-accent-line)] bg-[var(--studio-thread-accent-soft)] px-4 py-2 text-[12px] font-medium text-[var(--studio-thread-accent-text)] transition-colors hover:bg-[var(--studio-thread-accent-soft)]"
         >
           Open project conversation
           <ArrowRight className="h-3.5 w-3.5" aria-hidden />

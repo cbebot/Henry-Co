@@ -397,20 +397,20 @@ async function main() {
     userId: ownerUser.id,
     email: ownerUser.email.toLowerCase(),
     fullName:
-      String(ownerProfileRes.data?.full_name || ownerUser.user_metadata?.full_name || ownerUser.user_metadata?.name || "HenryCo Owner"),
+      String(ownerProfileRes.data?.full_name || ownerUser.user_metadata?.full_name || ownerUser.user_metadata?.name || "Henry Onyx Owner"),
     role: "owner",
   };
   const managerActor: Actor = {
     userId: managerUser.id,
     email: managerUser.email.toLowerCase(),
     fullName:
-      String(managerProfileRes.data?.full_name || managerUser.user_metadata?.full_name || managerUser.user_metadata?.name || "HenryCo Recruiter"),
+      String(managerProfileRes.data?.full_name || managerUser.user_metadata?.full_name || managerUser.user_metadata?.name || "Henry Onyx Recruiter"),
     role: "manager",
   };
   const candidateActor: Actor = {
     userId: candidateUser.id,
     email: candidateUser.email.toLowerCase(),
-    fullName: String(candidateUser.user_metadata?.full_name || candidateUser.user_metadata?.name || "HenryCo Candidate"),
+    fullName: String(candidateUser.user_metadata?.full_name || candidateUser.user_metadata?.name || "Henry Onyx Candidate"),
     role: null,
   };
 
@@ -426,7 +426,7 @@ async function main() {
 
   const profileForm = new FormData();
   profileForm.set("fullName", candidateActor.fullName);
-  profileForm.set("phone", "+2349133957084");
+  profileForm.set("phone", "+2340000000000");
   profileForm.set("headline", "Operations systems specialist");
   profileForm.set("summary", "I design clean hiring and operations flows with measurable discipline.");
   profileForm.set("location", "Lagos");
@@ -440,7 +440,7 @@ async function main() {
   profileForm.set("availability", "2 weeks");
   profileForm.set(
     "workHistory",
-    JSON.stringify([{ company: "HenryCo", title: "Operations Lead", years: "2024-2026" }])
+    JSON.stringify([{ company: "Henry Onyx", title: "Operations Lead", years: "2024-2026" }])
   );
   profileForm.set(
     "education",
@@ -455,12 +455,12 @@ async function main() {
     actor: candidateActor,
     email: candidateActor.email,
     fullName: candidateActor.fullName,
-    phone: "+2349133957084",
+    phone: "+2340000000000",
     avatarUrl: null,
     formData: profileForm,
   });
 
-  const resumeFile = new File([`HenryCo Jobs resume ${stamp}`], `henryco-resume-${stamp}.pdf`, {
+  const resumeFile = new File([`Henry Onyx Jobs resume ${stamp}`], `henryco-resume-${stamp}.pdf`, {
     type: "application/pdf",
   });
   await write.uploadCandidateAsset({
@@ -476,7 +476,7 @@ async function main() {
   employerForm.set("tagline", "Premium hiring for operations systems talent.");
   employerForm.set(
     "description",
-    "A verification sandbox employer used to validate HenryCo Jobs live employer onboarding and trust workflows."
+    "A verification sandbox employer used to validate Henry Onyx Jobs live employer onboarding and trust workflows."
   );
   employerForm.set("industry", "Operations Systems");
   employerForm.set("locations", "Lagos, Remote");

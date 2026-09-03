@@ -124,7 +124,7 @@ export const LIFECYCLE_STAGE_LABEL: Record<LifecycleStage, string> = {
   evaluating: "Evaluating",
   started: "Started",
   awaiting_user: "Awaiting you",
-  awaiting_business: "Awaiting HenryCo",
+  awaiting_business: "Awaiting Henry Onyx",
   blocked: "Blocked",
   in_progress: "In progress",
   completed: "Completed",

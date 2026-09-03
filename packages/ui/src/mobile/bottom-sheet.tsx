@@ -366,10 +366,14 @@ export function BottomSheet({
   const surfaceClassName = [
     "relative w-full max-w-[640px] flex flex-col",
     "rounded-t-[1.8rem] border-t",
-    "border-[rgba(196,171,130,0.18)]",
-    "bg-[rgba(8,12,20,0.96)]",
+    // Theme-aware on public pages (where --home-* is defined → light sheet in
+    // light theme, dark in dark) with the prior dark values as fallback so
+    // dashboard drawers (no --home-*) are unchanged. Fixes the "dark sheet in
+    // light theme → invisible text" public-drawer desync.
+    "border-[color:var(--home-line,rgba(196,171,130,0.18))]",
+    "bg-[color:var(--home-sheet,#080c14)]",
     "shadow-[0_-16px_48px_-16px_rgba(2,4,10,0.72)]",
-    "ring-1 ring-inset ring-white/[0.04]",
+    "ring-1 ring-inset ring-[color:var(--home-line-08,rgba(255,255,255,0.04))]",
     "outline-none",
     className,
   ]
@@ -419,7 +423,7 @@ export function BottomSheet({
           {showHandle ? (
             <div
               aria-hidden="true"
-              className="mx-auto mb-1 h-1 w-10 rounded-full bg-[rgba(246,240,222,0.22)]"
+              className="mx-auto mb-1 h-1 w-10 rounded-full bg-[color:var(--home-line-15,rgba(246,240,222,0.22))]"
             />
           ) : null}
         </div>

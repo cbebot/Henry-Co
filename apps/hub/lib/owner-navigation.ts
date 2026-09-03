@@ -15,6 +15,7 @@ import {
   UserPlus,
   KeyRound,
   Mail,
+  Inbox,
   Globe,
   Settings,
   ScrollText,
@@ -81,6 +82,12 @@ export const ownerNavItems: OwnerNavItem[] = [
       { href: "/owner/divisions/performance", label: "Division Ranking", icon: BarChart3 },
     ],
   },
+  {
+    href: "/owner/support",
+    label: "Support Command",
+    icon: MessageSquare,
+    section: "Operations",
+  },
 
   // ── Finance ──
   {
@@ -113,6 +120,16 @@ export const ownerNavItems: OwnerNavItem[] = [
 
   // ── Communications ──
   {
+    href: "/owner/inbox",
+    label: "Email Inbox",
+    icon: Inbox,
+    section: "Communications",
+    children: [
+      { href: "/owner/inbox", label: "All mail", icon: Mail },
+      { href: "/owner/inbox?view=archived", label: "Archived", icon: ScrollText },
+    ],
+  },
+  {
     href: "/owner/messaging",
     label: "Messaging Center",
     icon: MessageSquare,
@@ -140,15 +157,21 @@ export const ownerNavItems: OwnerNavItem[] = [
   },
 
   // ── Intelligence ──
+  // F1 truth pass (2026-07-10): this section stops claiming AI — the pages
+  // behind it are deterministic signal rules and evidence-triggered playbooks
+  // (lib/owner-data.ts). The name comes back when the REAL founder assistant
+  // ships (Founder Intelligence F2, its own gated surface).
   {
     href: "/owner/ai",
-    label: "AI & Helpers",
+    label: "Signals & Insights",
     icon: Bot,
     section: "Intelligence",
     children: [
-      { href: "/owner/ai", label: "Helper Dashboard", icon: CircuitBoard },
+      { href: "/owner/ai", label: "Executive Briefing", icon: CircuitBoard },
+      { href: "/owner/ai/conversations", label: "Conversations", icon: MessagesSquare },
       { href: "/owner/ai/signals", label: "Signals", icon: Network },
       { href: "/owner/ai/insights", label: "Insights", icon: Sparkles },
+      { href: "/owner/v3-launch/dashboard", label: "V3 Launch", icon: Network },
     ],
   },
 
@@ -219,6 +242,9 @@ export function getOwnerBreadcrumbs(pathname: string) {
   }
   if (parts[0] === "owner" && parts[1] === "messaging" && parts[2] === "alerts") {
     crumbs.push({ label: "Owner Alerts", href: pathname });
+  }
+  if (parts[0] === "owner" && parts[1] === "inbox" && parts[2]) {
+    crumbs.push({ label: "Message", href: pathname });
   }
   if (parts[0] === "owner" && parts[1] === "brand" && parts[2] === "subdomains") {
     crumbs.push({ label: "Subdomains", href: pathname });

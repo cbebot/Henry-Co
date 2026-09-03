@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { loadStudioThread } from "@/lib/studio/support-threads";
 
 export const runtime = "nodejs";
 
@@ -63,6 +64,15 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { ok: false, error: "Thread ID required" },
         { status: 400 },
+      );
+    }
+
+    // STU-a — only mute studio-division threads.
+    const thread = await loadStudioThread(admin, threadId);
+    if (!thread) {
+      return NextResponse.json(
+        { ok: false, error: "Thread not found" },
+        { status: 404 },
       );
     }
 

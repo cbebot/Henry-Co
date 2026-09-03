@@ -42,7 +42,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Manager Operations | Henry & Co. Fabric Care",
+  title: "Manager Operations | Henry Onyx Fabric Care",
   description:
     "Intake control room for booking lookup, garment registration, urgent handling, status movement, and payment recording.",
 };

@@ -1,99 +1,126 @@
 import { RouteLiveRefresh } from "@henryco/ui";
+import { getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 
 import { requireAccountUser } from "@/lib/auth";
-import { getWalletFundingContext } from "@/lib/account-data";
-import { getAccountCopy, translateSurfaceLabel } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
+import {
+  getWalletFundingContext,
+  getWithdrawalRequests,
+  getPendingWithdrawalHoldKobo,
+} from "@/lib/account-data";
+import { reconcileWalletTopupsForUser } from "@/lib/wallet-topup-port";
 
 import "@/components/wallet/styles.css";
-import FundingRequestForm from "@/components/wallet/FundingRequestForm";
-import { AccountDetailsCard } from "@/components/wallet/AccountDetailsCard";
-import { BackNav } from "@/components/wallet/BackNav";
+import WalletTopUpClient from "@/components/wallet/WalletTopUpClient";
+import WalletCreditedToast from "@/components/wallet/WalletCreditedToast";
+import { WalletPageHeader } from "@/components/wallet/WalletPageHeader";
+import { FundingBalanceHero } from "@/components/wallet/FundingBalanceHero";
 import { FundingRequestRow } from "@/components/wallet/FundingRequestRow";
-import {
-  HeroCard,
-  EmptyStateCard,
-  DivisionLanding,
-} from "@henryco/dashboard-shell/surfaces";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Wallet · Funding requests — detail flow.
+ * Wallet · Add money — the single instant top-up surface (Onyx Ledger).
  *
- * ACCOUNT-PREMIUM-01 (session 2, Phase 2F). Compact hero per the detail-page
- * pattern; inherits wallet parent grammar via the same `acct-wal` styles.
+ * One confident flow: lead with the available balance, then add money through
+ * the proven hosted-redirect rail (Card / Pay from bank app / USSD — the
+ * provider is never named, Principle 9). The manual "bank transfer with proof"
+ * section was retired from this surface; legacy in-flight requests are still
+ * served by /wallet/funding/[requestId].
+ *
+ * MONEY INVARIANT: the reconciler runs once on load so a buyer returning from
+ * hosted checkout sees their top-up credited (idempotent — never double-credits);
+ * every figure is read from server-confirmed kobo and nothing is mutated here.
  */
 export default async function WalletFundingPage() {
-  const locale = await getAccountAppLocale();
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
-  const accountCopy = getAccountCopy(locale);
-  const copy = accountCopy.wallet;
-  const user = await requireAccountUser();
-  const data = await getWalletFundingContext(user.id);
+  const copy = getAccountCopy(locale).wallet;
+
+  // Project any confirmed card/bank/USSD top-up onto the wallet before reading
+  // balance — idempotent, self-healing; a replay reports zero (→ no toast).
+  let creditedKobo = 0;
+  try {
+    const credited = await reconcileWalletTopupsForUser(user.id);
+    creditedKobo = credited.creditedCount > 0 ? credited.creditedKobo : 0;
+  } catch {
+    /* reconcile is self-healing; a transient failure retries on the next load */
+  }
+
+  // Resilience: barrier each read so one Supabase drop degrades a section, not the page.
+  const [fundingR, withdrawalR] = await Promise.allSettled([
+    getWalletFundingContext(user.id),
+    getWithdrawalRequests(user.id),
+  ]);
+
+  const funding = fundingR.status === "fulfilled" ? fundingR.value : null;
+  const withdrawalRequests = withdrawalR.status === "fulfilled" ? withdrawalR.value : [];
+
+  const walletRow = (funding?.wallet ?? null) as { balance_kobo?: number } | null;
+  const balanceKobo = Number(walletRow?.balance_kobo) || 0;
+  const heldKobo = getPendingWithdrawalHoldKobo(withdrawalRequests as never);
+  const availableKobo = Math.max(0, balanceKobo - heldKobo);
+  const arrivingKobo = funding?.pending_kobo ?? 0;
+
+  const requests = (funding?.requests ?? []) as Array<{
+    id: string;
+    amount_kobo: number;
+    status: string;
+    reference: string | null;
+    created_at: string;
+  }>;
 
   return (
     <div className="acct-wal acct-fade-in">
       <RouteLiveRefresh />
-      <BackNav href="/wallet" label={t("Back to wallet")} />
-      <DivisionLanding
-        hero={
-          <HeroCard
-            variant="compact"
-            tone="active"
-            eyebrow={t("Wallet · funding")}
-            headline={t("Add money to your HenryCo wallet")}
-            blurb={t(
-              "Send a bank transfer using the rail below, then upload proof. Finance confirms the amount and your balance moves into available funds.",
-            )}
-          />
-        }
-        sections={[
-          {
-            id: "wal-fund-rail",
-            title: t("Transfer to HenryCo"),
-            meta: t(
-              "Send your bank transfer to these details, then upload proof.",
-            ),
-            content: (
-              <div className="acct-wal__columns">
-                <AccountDetailsCard
-                  rail={data.rail}
-                  copyLabel={t("Copy")}
-                  copiedLabel={t("Copied")}
-                />
-                <FundingRequestForm />
-              </div>
-            ),
-          },
-          {
-            id: "wal-fund-list",
-            title: t("Funding requests"),
-            meta: t("{count} total").replace("{count}", String(data.requests.length)),
-            content:
-              data.requests.length === 0 ? (
-                <EmptyStateCard
-                  kicker={t("Funding · empty")}
-                  title={t("No funding requests yet")}
-                  body={t(
-                    "Start a funding request above. Once finance confirms the bank reference, your balance moves into available funds.",
-                  )}
-                />
-              ) : (
-                <div className="acct-wal__funding-list">
-                  {data.requests.map((request) => (
-                    <FundingRequestRow
-                      key={request.id}
-                      request={request}
-                      copy={copy.funding}
-                      statusLabels={copy.statusLabels}
-                    />
-                  ))}
-                </div>
-              ),
-          },
-        ]}
+      {creditedKobo > 0 ? (
+        <WalletCreditedToast creditedKobo={creditedKobo} nonce={crypto.randomUUID()} />
+      ) : null}
+
+      <WalletPageHeader
+        backHref="/wallet"
+        backLabel={t("Back to wallet")}
+        eyebrow={t("Wallet · Add money")}
+        title={t("Add money to wallet")}
+        blurb={t(
+          "Top up by card, your bank app, or USSD. Your balance updates the moment payment is confirmed.",
+        )}
       />
+
+      <FundingBalanceHero
+        availableKobo={availableKobo}
+        heldKobo={heldKobo}
+        arrivingKobo={arrivingKobo}
+        copy={{
+          availableLabel: t("Available balance"),
+          heldTemplate: t("{amount} on hold for withdrawals"),
+          settlementNote: t("Balances settle in Naira (NGN)."),
+          arrivingTemplate: t("{amount} arriving"),
+        }}
+      />
+
+      <WalletTopUpClient />
+
+      {requests.length > 0 ? (
+        <section className="acct-wal__section">
+          <div className="acct-wal__section-head">
+            <h2 className="acct-wal__section-title acct-display">{t("Top-up activity")}</h2>
+            <span className="acct-wal__section-meta">
+              {t("{count} total").replace("{count}", String(requests.length))}
+            </span>
+          </div>
+          <div className="acct-wal__funding-list">
+            {requests.slice(0, 6).map((request) => (
+              <FundingRequestRow
+                key={request.id}
+                request={request}
+                copy={copy.funding}
+                statusLabels={copy.statusLabels}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

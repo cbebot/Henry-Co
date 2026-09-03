@@ -112,7 +112,7 @@ const GARMENT_STEPS: CareTrackingStep[] = [
 const HOME_STEPS: CareTrackingStep[] = [
   {
     key: "booked",
-    label: "Booking confirmed",
+    label: "Booking received",
     description: "The service request has been received and opened for planning.",
     icon: "calendar",
   },
@@ -169,7 +169,7 @@ const HOME_STEPS: CareTrackingStep[] = [
 const OFFICE_STEPS: CareTrackingStep[] = [
   {
     key: "booked",
-    label: "Booking confirmed",
+    label: "Booking received",
     description: "The office or commercial booking has been created.",
     icon: "calendar",
   },

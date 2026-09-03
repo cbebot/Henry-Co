@@ -109,6 +109,10 @@ export function SavedItemsClient({
     }
     return list;
   }, [active, filterDivision, sort]);
+  const restorableFiltered = useMemo(
+    () => filtered.filter((item) => isCartRestorable(item)),
+    [filtered],
+  );
 
   const toggleSelect = (id: string) => {
     setSelected((current) => {
@@ -118,7 +122,7 @@ export function SavedItemsClient({
       return next;
     });
   };
-  const selectAll = () => setSelected(new Set(filtered.map((item) => item.id)));
+  const selectAll = () => setSelected(new Set(restorableFiltered.map((item) => item.id)));
   const clearSelection = () => setSelected(new Set());
 
   async function bulkRestore() {
@@ -283,7 +287,7 @@ export function SavedItemsClient({
                   : copy.selection.moveSelectedToCart}
               </button>
             </>
-          ) : filtered.length > 0 ? (
+          ) : restorableFiltered.length > 0 ? (
             <button
               type="button"
               onClick={selectAll}
@@ -341,6 +345,7 @@ export function SavedItemsClient({
               onRestore={() => void restoreOne(item)}
               onRemove={() => void removeOne(item)}
               busy={busy}
+              canRestore={isCartRestorable(item)}
               copy={copy.card}
             />
           ))}
@@ -368,6 +373,7 @@ export function SavedItemsClient({
                 onRemove={() => void removeOne(item)}
                 busy={busy}
                 expired
+                canRestore={isCartRestorable(item)}
                 copy={copy.card}
               />
             ))}
@@ -386,6 +392,7 @@ function SavedItemCard({
   onRestore,
   onRemove,
   busy,
+  canRestore,
   expired = false,
   copy,
 }: {
@@ -396,10 +403,13 @@ function SavedItemCard({
   onRestore: () => void;
   onRemove: () => void;
   busy: "none" | "restore" | "remove" | "bulk-restore";
+  canRestore: boolean;
   expired?: boolean;
   copy: SavedItemsCopy["card"];
 }) {
   const snapshot = item.itemSnapshot as SavedItemSnapshotCore;
+  const itemHref = resolveSavedItemHref(item, snapshot);
+  const isExternal = /^https?:\/\//i.test(itemHref);
   // Snapshot the "now" reference once on mount — avoids re-render churn and
   // satisfies React 19's purity rule for the lint pass.
   const [renderedAtMs] = useState<number>(() => Date.now());
@@ -418,7 +428,7 @@ function SavedItemCard({
           : "border-[var(--acct-line)] bg-[var(--acct-bg-elevated)]"
       } ${expired ? "opacity-80" : ""}`}
     >
-      {!expired ? (
+      {!expired && canRestore ? (
         <button
           type="button"
           onClick={onToggle}
@@ -478,15 +488,27 @@ function SavedItemCard({
       ) : null}
 
       <div className="mt-auto flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onRestore}
-          disabled={busy !== "none"}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--acct-ink)] px-3 py-2 text-xs font-semibold text-[var(--acct-bg)] hover:opacity-90 disabled:cursor-wait disabled:opacity-70"
-        >
-          {busy === "restore" ? copy.moving : copy.moveToCart}
-          <ChevronRight size={12} />
-        </button>
+        {canRestore ? (
+          <button
+            type="button"
+            onClick={onRestore}
+            disabled={busy !== "none"}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--acct-ink)] px-3 py-2 text-xs font-semibold text-[var(--acct-bg)] hover:opacity-90 disabled:cursor-wait disabled:opacity-70"
+          >
+            {busy === "restore" ? copy.moving : copy.moveToCart}
+            <ChevronRight size={12} />
+          </button>
+        ) : (
+          <Link
+            href={itemHref}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--acct-ink)] px-3 py-2 text-xs font-semibold text-[var(--acct-bg)] hover:opacity-90"
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+          >
+            {copy.openOriginal}
+            <ChevronRight size={12} />
+          </Link>
+        )}
         <button
           type="button"
           onClick={onRemove}
@@ -496,17 +518,13 @@ function SavedItemCard({
         >
           <Trash2 size={14} />
         </button>
-        {snapshot?.href ? (
+        {canRestore && snapshot?.href ? (
           <Link
-            href={
-              snapshot.href.startsWith("/")
-                ? DIVISION_HOME[item.division]?.replace(/\/[^/]*$/, "") + snapshot.href
-                : snapshot.href
-            }
+            href={itemHref}
             className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--acct-line)] text-[var(--acct-muted)] hover:text-[var(--acct-gold)]"
             aria-label={copy.openOriginal}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
           >
             <ChevronRight size={14} />
           </Link>
@@ -514,4 +532,16 @@ function SavedItemCard({
       </div>
     </article>
   );
+}
+
+function isCartRestorable(item: SavedItemRecord) {
+  return item.division === "marketplace" && !item.id.includes(":");
+}
+
+function resolveSavedItemHref(item: SavedItemRecord, snapshot: SavedItemSnapshotCore) {
+  const href = typeof snapshot?.href === "string" ? snapshot.href : "";
+  if (!href) return DIVISION_HOME[item.division] ?? "/";
+  if (/^https?:\/\//i.test(href)) return href;
+  const home = DIVISION_HOME[item.division] ?? "/";
+  return `${home.replace(/\/[^/]*$/, "")}${href.startsWith("/") ? href : `/${href}`}`;
 }

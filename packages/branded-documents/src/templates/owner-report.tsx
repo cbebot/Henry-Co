@@ -171,8 +171,8 @@ export function OwnerReportDocument({
   hqUrl,
 }: OwnerReportProps) {
   const title = kind === "monthly"
-    ? `HenryCo owner monthly report · ${periodLabel}`
-    : `HenryCo owner weekly report · ${periodLabel}`;
+    ? `Henry Onyx owner monthly report · ${periodLabel}`
+    : `Henry Onyx owner weekly report · ${periodLabel}`;
   const intro = kind === "monthly"
     ? "Richer monthly owner snapshot: money movement, pressure points, delivery health, and sensible executive next actions."
     : "Weekly owner report — the most important operational and financial truths visible without parsing raw tables.";
@@ -205,7 +205,7 @@ export function OwnerReportDocument({
       division="hub"
       footer={{
         legal:
-          "Generated from live HenryCo HQ surfaces. Numbers reconcile against the platform of record at the timestamp printed in the header.",
+          "Generated from live Henry Onyx HQ surfaces. Numbers reconcile against the platform of record at the timestamp printed in the header.",
       }}
     >
       <DocumentSection kicker="Executive headline">

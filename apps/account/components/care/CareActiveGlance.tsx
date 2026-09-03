@@ -27,7 +27,7 @@ type Props = {
   };
 };
 
-export function CareActiveGlance({ booking, locale: _locale, labels }: Props) {
+export function CareActiveGlance({ booking, labels }: Props) {
   const kind = statusKind(booking);
   const status = statusLabel(booking, labels.statusLabels);
   const when = formatBookingWhen(

@@ -13,10 +13,71 @@ export {
   buildExchangeRateSnapshot,
   buildFallbackExchangeRateSnapshot,
   assertNoAmbiguousCurrency,
+  resolvePayerCurrency,
+  parseChargeCurrencies,
+  computePayerChargeMinor,
   type CurrencyLayerSnapshot,
   type ExchangeRateSnapshot,
   type SettlementAvailabilityStatus,
+  type PayerCurrencyResolution,
+  type PayerCurrencySource,
+  type PayerChargeAmount,
 } from './currency-model';
+
+// Live FX access (Open Exchange Rates, 30-min cache). SERVER-ONLY — these read
+// server env (`OPENRATE_APP_ID`) and `fetch` rates; never import the resulting
+// symbols into a client bundle. They have no import-time side effects, so the
+// barrel stays client-safe for the currency-model exports above (tree-shaken out
+// of any client importer that doesn't call them).
+export {
+  getExchangeRateSnapshot,
+  convertMinorUnits,
+} from './exchange-rate';
+
+// V3-VAT-01 — VAT math (output VAT on sales, inclusive-split for processor fees).
+// V3-VAT-CLASSIFICATION-01 — inclusive output VAT (carved out of the full value).
+export {
+  splitVatInclusive,
+  computeOutputVat,
+  applyOutputVat,
+  carveInclusiveVat,
+  applyInclusiveVat,
+  applyInclusiveVatByLine,
+  buildSaleVatRecognition,
+  buildSaleVatRecognitionByLine,
+  type VatTreatment,
+  type VatRatePolicy,
+} from './vat';
+
+// V3-49 — services-catalog pricing model (display hint validator, not a quote engine).
+export {
+  normalizeServicePricingModel,
+  describeServicePrice,
+  type ServicePricingKind,
+  type ServicePricingModel,
+  type ServicePriceDescription,
+} from './service-catalog';
+
+// V3-58 — seller-tier platform-fee discount resolver. DORMANT (0% until D9 is
+// ratified AND Lane 1 wires it into the live fee breakdown); pure, no live caller.
+export {
+  sellerTierDiscount,
+  defaultSellerTierDiscountTable,
+  type SellerTierKey,
+  type SellerTierDiscountTable,
+} from './seller-tier-discount';
+
+// V3-AI-01 — governed AI usage margin engine (provider cost → + tier margin % → + VAT).
+// Pure, integer kobo; VAT policy is injected so this stays a dependency-free leaf.
+export {
+  meterAiCostKobo,
+  computeAiUsageBreakdown,
+  defaultAiUsageRules,
+  type AiModelTier,
+  type AiTierRate,
+  type AiUsageRuleSet,
+  type MeteredUsage,
+} from './ai-usage';
 
 export type PricingBreakdownLine = {
   code:
@@ -28,6 +89,18 @@ export type PricingBreakdownLine = {
     | "discount"
     | "hold_reserve"
     | "payout_fee"
+    // V3-AI-01: the governed AI usage engine. `ai_compute` = the provider cost
+    // (internal-only — never shown to a customer); `ai_margin` = the company's
+    // margin (incl. any per-call floor top-up). Both feed the ledger/analytics, not
+    // a client receipt (see packages/ai-gateway redaction). VAT still reuses `tax`.
+    | "ai_compute"
+    | "ai_margin"
+    // V3-18: the VAT/tax SEAM. No engine computes it yet (V3-21 owns that) and the
+    // rate is NEVER hardcoded — a breakdown only carries a `tax` line once a tax
+    // engine populates one. Receipts/invoices render a VAT line iff such a line is
+    // present (see extractTaxFromBreakdown). `meta.rate` (e.g. 0.075) is optional
+    // and informational only.
+    | "tax"
     | "other";
   label: string;
   amount: Money;
@@ -46,10 +119,30 @@ export type PricingBreakdown = {
   };
   /** Machine-friendly snapshot for auditability. */
   meta: {
-    division: "marketplace" | "property" | "logistics" | "shared";
+    division: "marketplace" | "property" | "logistics" | "shared" | "ai";
     ruleBookKey: string;
     ruleVersion: string;
     computedAt: string;
+    /** V3-AI-01 — the capability tier an AI usage call resolved to
+     *  (`fast`/`standard`/`deep`). A user-safe label, NEVER a model name. */
+    tier?: string;
+    /**
+     * V3-VAT-WIRING-01 — the AUTHORITATIVE output VAT for this sale, in whole KOBO,
+     * carved INCLUSIVE from the kobo gross under the per-line resolved treatment at
+     * checkout (where item→category data exists). The settlement reconcile reads this
+     * directly — it must NEVER re-derive VAT by ×100-ing a naira `tax` line (the
+     * V3-21 ~100× trap). `standardBaseMinor` is the kobo base the carve was taken
+     * from; `outputVatMinor + revenue === grossMinor` holds by construction.
+     */
+    vat?: {
+      outputVatMinor: number;
+      standardBaseMinor: number;
+      rateVersion: string;
+      jurisdiction: string;
+      /** `pending_review` flags the owner/accountant-confirmed treatment assumption
+       *  (incl. the composite delivery/fee rule) on a VATable sale; `confirmed` for 0. */
+      reviewStatus?: "pending_review" | "confirmed";
+    };
   };
 };
 
@@ -61,6 +154,61 @@ function roundInt(value: unknown) {
 
 function sumAmounts(lines: PricingBreakdownLine[]) {
   return lines.reduce((sum, line) => sum + roundInt(line.amount.amount), 0);
+}
+
+export type BreakdownTax = {
+  /** Total VAT/tax in minor units (kobo), summed across every `tax` line. */
+  taxMinor: number;
+  /** ISO 4217 currency of the breakdown the tax was extracted from. */
+  currency: string;
+  /** Optional fractional rate carried on a `tax` line's meta (e.g. 0.075), else null. */
+  rate: number | null;
+  /**
+   * V3-VAT-CLASSIFICATION-01: `true` when the `tax` line's `meta.inclusive` flags
+   * the VAT as carved-out-of-the-total (base = total − tax). `false`/absent → the
+   * legacy add-on-top model (base = total − fees − tax). Drives the receipt/invoice
+   * base computation so the structured triad reconciles for BOTH regimes.
+   */
+  inclusive: boolean;
+  /**
+   * The supply's VAT treatment as stamped on the `tax` line's `meta.treatment`
+   * (`standard` / `zero_rated` / `exempt` / `out_of_scope`), else null. A non-
+   * `standard` treatment renders a classification NOTE in place of a VAT amount.
+   */
+  treatment: string | null;
+};
+
+/**
+ * Extract the VAT/tax represented in a pricing breakdown, or `null` when there is
+ * none. This is the ONLY way a receipt/invoice learns its VAT — the rate is never
+ * hardcoded. Returns `null` (→ no VAT line) when the breakdown carries no `tax`
+ * line or the tax sums to ≤ 0, satisfying the V3-18 rule
+ * "no VAT in the breakdown → no VAT line". Amounts stay whole minor units.
+ */
+export function extractTaxFromBreakdown(
+  breakdown: PricingBreakdown | null | undefined,
+): BreakdownTax | null {
+  if (!breakdown || !Array.isArray(breakdown.lines)) return null;
+  const taxLines = breakdown.lines.filter((line) => line.code === "tax");
+  if (taxLines.length === 0) return null;
+  const taxMinor = taxLines.reduce((sum, line) => sum + roundInt(line.amount.amount), 0);
+  if (taxMinor <= 0) return null;
+  const rateMeta = taxLines
+    .map((line) => line.meta?.rate)
+    .find((rate): rate is number => typeof rate === "number" && Number.isFinite(rate));
+  // A breakdown is "inclusive" if ANY of its tax lines carries meta.inclusive===true
+  // (the V3-VAT-CLASSIFICATION-01 lines do; the legacy add-on-top lines do not).
+  const inclusive = taxLines.some((line) => line.meta?.inclusive === true);
+  const treatmentMeta = taxLines
+    .map((line) => line.meta?.treatment)
+    .find((t): t is string => typeof t === "string" && t.length > 0);
+  return {
+    taxMinor,
+    currency: breakdown.currency,
+    rate: typeof rateMeta === "number" ? rateMeta : null,
+    inclusive,
+    treatment: typeof treatmentMeta === "string" ? treatmentMeta : null,
+  };
 }
 
 export type MarketplacePricingRuleSet = {

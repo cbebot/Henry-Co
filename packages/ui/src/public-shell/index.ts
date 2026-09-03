@@ -1,7 +1,18 @@
 export { PublicHeader } from "./public-header";
 export type { PublicHeaderProps, PublicHeaderBrand, PublicNavItem } from "./public-header";
 
+export { PublicChrome } from "./public-chrome";
+export type {
+  PublicChromeProps,
+  PublicChromeBrand,
+  PublicChromeNavItem,
+  PublicChromeAccount,
+} from "./public-chrome";
+
 export { ConfiguredPublicHeader } from "./configured-public-header";
+
+export { createDivisionPublicThemeStyle } from "./division-public-theme";
+export type { DivisionPublicThemeOptions } from "./division-public-theme";
 
 export { PublicAccountChip } from "../public/public-account-chip";
 export { HenryCoPublicAccountPresets } from "../public/henryco-account-chip-presets";
@@ -16,6 +27,13 @@ export type {
 export { AccountDropdown } from "./account-dropdown";
 
 export { PublicRouteLoader } from "./public-route-loader";
+export { LaunchInterceptor } from "./launch-interceptor";
+export type { LaunchDivision } from "./launch-interceptor";
+export {
+  LaunchTransitionProvider,
+  useLaunchTransition,
+} from "./launch-transition";
+export type { LaunchTarget } from "./launch-transition";
 export { PublicPageSkeleton } from "./public-page-skeleton";
 export { PublicHomeSkeleton } from "./public-home-skeleton";
 export { PublicShellLayout } from "./public-shell-layout";
@@ -66,6 +84,8 @@ export type { PublicDesignTokensNamespace } from "./public-tokens";
 
 export { PublicCard, PublicCardGrid, PublicCardHeader } from "./public-card";
 export { PublicBadge, PublicStatusDot } from "./public-badge";
+export { SellerTierBadge } from "./seller-tier-badge";
+export type { SellerTier } from "./seller-tier-badge";
 export {
   PublicField,
   PublicLabel,
@@ -82,12 +102,17 @@ export { HenryCoHeroCard, HenryCoTactileCard } from "./henryco-hero-card";
 export type { HenryCoHeroCardProps } from "./henryco-hero-card";
 export { PublicProofRail } from "./public-proof-rail";
 export type { PublicProofRailProps, PublicProofItem } from "./public-proof-rail";
+// V3-FEEDBACK-01: the dormant PublicToastProvider is retired — the shared
+// action-feedback system lives at @henryco/ui/feedback (`toast.*` + the
+// FeedbackToastViewport that PublicThemeGuard mounts).
 export {
-  PublicToastProvider,
-  usePublicToast,
-  makePublicToastApi,
-} from "./public-toast";
-export type { PublicToastInput, PublicToastTone } from "./public-toast";
+  FeedbackToastViewport,
+  toast,
+  useInterfaceSoundsEnabled,
+  setInterfaceSoundsEnabled,
+  type FeedbackToastInput,
+  type FeedbackToastTone,
+} from "../feedback";
 export { PublicEyebrow, PublicDivider, PublicBrandMark, PublicTrustStrip } from "./public-micro";
 export { HenryCoBrandedSpinner } from "../loading/HenryCoBrandedSpinner";
 

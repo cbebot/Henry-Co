@@ -1,7 +1,12 @@
+import { dispatchPush } from "@henryco/push";
+
 import type { Division, PublishInput, PublishResult } from "./types";
 import { validatePublishInput } from "./validate";
 import { checkRate } from "./rate-limit";
 import { resolveAdminClient } from "./supabase-admin";
+
+/** Severities important enough to also reach the user's devices via push. */
+const PUSH_SEVERITIES = new Set(["urgent", "security"]);
 
 // Guard: this module performs service-role inserts and must never be imported
 // from client/browser code. Mirrors the `server-only` package's behavior
@@ -186,6 +191,30 @@ export async function publishNotification(input: PublishInput): Promise<PublishR
     requestId: validation.requestId,
     status: "sent",
   });
+
+  // V3-PUSH — push is a delivery channel on this spine. High-priority
+  // (urgent/security) notifications also fan out to the user's registered
+  // devices (web + native), so a security alert reaches you even if email is
+  // capped or the tab is closed. Best-effort + awaited so it completes within
+  // the serverless lifecycle; a push failure NEVER surfaces as a publish
+  // failure (the in-app record + audit already succeeded).
+  if (!muted && PUSH_SEVERITIES.has(validation.severity)) {
+    try {
+      await dispatchPush(
+        validation.userId,
+        {
+          title: validation.title,
+          body: validation.body ?? undefined,
+          url: validation.deepLink ?? undefined,
+          tag: validation.eventType,
+          data: { notificationId: insertedId, division: validation.division },
+        },
+        { notificationId: insertedId, division: validation.division },
+      );
+    } catch {
+      // swallow — push is redundant to the in-app + email channels.
+    }
+  }
 
   return { ok: true, id: insertedId, muted };
 }

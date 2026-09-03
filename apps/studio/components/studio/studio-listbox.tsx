@@ -13,7 +13,10 @@ export function StudioListbox({
   placeholder = "Choose…",
   className = "",
 }: {
-  name: string;
+  /** When provided, renders a hidden input so the value posts with the form.
+   * Omit for presentational pickers whose value is mirrored elsewhere (e.g.
+   * the Review team picker, carried by the shell's preferredTeamId mirror). */
+  name?: string;
   label: string;
   value: string;
   onChange: (next: string) => void;
@@ -87,7 +90,7 @@ export function StudioListbox({
       className={`relative ${open ? "z-[120]" : "z-0"} ${className}`}
       ref={rootRef}
     >
-      <input type="hidden" name={name} value={value} required={required} />
+      {name ? <input type="hidden" name={name} value={value} required={required} /> : null}
       <label htmlFor={id} className="sr-only">
         {label}
       </label>

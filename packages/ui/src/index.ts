@@ -26,6 +26,15 @@ export {
   type ListStatesProps,
   type ListStateKind,
 } from "./states/list-states";
+// V3-11 (S9) — card telemetry (one-job-per-card click-through).
+export {
+  CardTelemetry,
+  useCardRendered,
+  emitCardClicked,
+  emitCardDemoted,
+  type CardTelemetryProps,
+  type CardClassification,
+} from "./telemetry/card-telemetry";
 export * from "./live/RouteLiveRefresh";
 export * from "./public/public-account-chip";
 export { HenryCoPublicAccountPresets } from "./public/henryco-account-chip-presets";
@@ -75,6 +84,7 @@ export {
 } from "./public-shell/public-tokens";
 export { PublicCard, PublicCardGrid, PublicCardHeader } from "./public-shell/public-card";
 export { PublicBadge, PublicStatusDot } from "./public-shell/public-badge";
+export { SellerTierBadge, type SellerTier } from "./public-shell/seller-tier-badge";
 export {
   PublicField,
   PublicLabel,
@@ -90,13 +100,14 @@ export {
   HenryCoTactileCard,
   type HenryCoHeroCardProps,
 } from "./public-shell/henryco-hero-card";
+// V3-FEEDBACK-01: the dormant PublicToastProvider is retired — the shared
+// action-feedback system lives at @henryco/ui/feedback.
 export {
-  PublicToastProvider,
-  usePublicToast,
-  makePublicToastApi,
-  type PublicToastInput,
-  type PublicToastTone,
-} from "./public-shell/public-toast";
+  FeedbackToastViewport,
+  toast,
+  type FeedbackToastInput,
+  type FeedbackToastTone,
+} from "./feedback";
 export { PublicEyebrow, PublicDivider, PublicBrandMark, PublicTrustStrip } from "./public-shell/public-micro";
 export {
   PublicThemeProvider,

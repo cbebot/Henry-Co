@@ -13,11 +13,15 @@
     "./drafts": {
       "types": "./src/drafts/index.ts",
       "default": "./src/drafts/index.ts"
+    },
+    "./recovery": {
+      "types": "./src/recovery/index.ts",
+      "default": "./src/recovery/index.ts"
     }
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --import ./src/__tests__/setup.mjs --test src/__tests__/draft-storage.test.ts src/__tests__/relative-ago.test.ts"
+    "test": "tsx --import ./src/__tests__/setup.mjs --test src/__tests__/draft-storage.test.ts src/__tests__/relative-ago.test.ts src/recovery/__tests__/cadence.test.ts src/recovery/__tests__/detect.test.ts"
   },
   "peerDependencies": {
     "lucide-react": "^0.577.0",
@@ -33,5 +37,7 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@henryco/data": "workspace:^"
+  }
 }

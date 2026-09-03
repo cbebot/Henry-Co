@@ -206,7 +206,7 @@ export async function getWalletSummary(userId: string) {
   return wallet || { id: null, balance_kobo: 0, currency: "NGN", is_active: true };
 }
 
-export async function getWalletTransactions(userId: string, limit = 20) {
+export async function getWalletTransactions(userId: string, limit = 50) {
   const { data } = await admin()
     .from("customer_wallet_transactions")
     .select("*")
@@ -217,7 +217,7 @@ export async function getWalletTransactions(userId: string, limit = 20) {
   return data || [];
 }
 
-export async function getRecentActivity(userId: string, limit = 10, locale?: AppLocale) {
+export async function getRecentActivity(userId: string, limit = 40, locale?: AppLocale) {
   const { data } = await admin()
     .from("customer_activity")
     .select("*")
@@ -230,7 +230,7 @@ export async function getRecentActivity(userId: string, limit = 10, locale?: App
   return Promise.all(rows.map((row) => localizeActivityRow(row, locale)));
 }
 
-export async function getNotifications(userId: string, limit = 20) {
+export async function getNotifications(userId: string, limit = 50) {
   const { data } = await admin()
     .from("customer_notifications")
     .select("*")
@@ -316,7 +316,7 @@ export async function getNotificationFeed(
   );
 }
 
-export async function getNotificationBellFeed(userId: string, limit = 8, locale?: AppLocale) {
+export async function getNotificationBellFeed(userId: string, limit = 20, locale?: AppLocale) {
   const [items, unreadCount] = await Promise.all([
     getNotificationFeed(userId, limit, locale),
     getUnreadNotificationCount(userId),
@@ -506,13 +506,21 @@ export async function getCartRecoveryState(userId: string) {
 }
 
 export async function getProfile(userId: string) {
-  const { data } = await admin()
-    .from("customer_profiles")
-    .select("*")
-    .eq("id", userId)
-    .maybeSingle();
+  try {
+    const { data } = await admin()
+      .from("customer_profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
 
-  return data;
+    return data;
+  } catch {
+    // DASH-RESILIENCE: the profile is awaited by many dashboard pages. A
+    // rejected read (e.g. a Supabase connection drop under load) must degrade
+    // to null — callers already handle a missing profile — not crash the page
+    // into the V3-10 error boundary.
+    return null;
+  }
 }
 
 export async function getSupportThreads(userId: string) {
@@ -739,7 +747,7 @@ export async function getDocuments(userId: string) {
 export async function getPaymentMethods(userId: string) {
   const { data } = await admin()
     .from("customer_payment_methods")
-    .select("*")
+    .select("id, type, label, last_four, bank_name, is_default, provider, metadata, created_at")
     .eq("user_id", userId)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });

@@ -1,0 +1,309 @@
+{
+  "app": "hub",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/about",
+      "api": false
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/cron/owner-reporting/monthly",
+      "api": true
+    },
+    {
+      "route": "/api/cron/owner-reporting/weekly",
+      "api": true
+    },
+    {
+      "route": "/api/cron/owner-reports",
+      "api": true
+    },
+    {
+      "route": "/api/cron/search-index-worker",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/preferences",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/subscribe",
+      "api": true
+    },
+    {
+      "route": "/api/newsletter/unsubscribe",
+      "api": true
+    },
+    {
+      "route": "/api/owner/divisions",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/attachments/register",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/attachments/signed",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/dm",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/health",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/members",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/messages",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/pin",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/read",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/search",
+      "api": true
+    },
+    {
+      "route": "/api/owner/internal-comms/threads",
+      "api": true
+    },
+    {
+      "route": "/api/owner/pages",
+      "api": true
+    },
+    {
+      "route": "/api/owner/people",
+      "api": true
+    },
+    {
+      "route": "/api/owner/reconcile-trace",
+      "api": true
+    },
+    {
+      "route": "/api/owner/settings",
+      "api": true
+    },
+    {
+      "route": "/api/owner/upload",
+      "api": true
+    },
+    {
+      "route": "/api/profile/update",
+      "api": true
+    },
+    {
+      "route": "/api/runtime-error",
+      "api": true
+    },
+    {
+      "route": "/api/search",
+      "api": true
+    },
+    {
+      "route": "/contact",
+      "api": false
+    },
+    {
+      "route": "/newsletter",
+      "api": false
+    },
+    {
+      "route": "/newsletter/preferences",
+      "api": false
+    },
+    {
+      "route": "/newsletter/unsubscribe",
+      "api": false
+    },
+    {
+      "route": "/owner",
+      "api": false
+    },
+    {
+      "route": "/owner/ai",
+      "api": false
+    },
+    {
+      "route": "/owner/ai/insights",
+      "api": false
+    },
+    {
+      "route": "/owner/ai/signals",
+      "api": false
+    },
+    {
+      "route": "/owner/brand",
+      "api": false
+    },
+    {
+      "route": "/owner/brand/pages",
+      "api": false
+    },
+    {
+      "route": "/owner/brand/settings",
+      "api": false
+    },
+    {
+      "route": "/owner/brand/subdomains",
+      "api": false
+    },
+    {
+      "route": "/owner/divisions",
+      "api": false
+    },
+    {
+      "route": "/owner/divisions/:param",
+      "api": false
+    },
+    {
+      "route": "/owner/divisions/performance",
+      "api": false
+    },
+    {
+      "route": "/owner/finance",
+      "api": false
+    },
+    {
+      "route": "/owner/finance/expenses",
+      "api": false
+    },
+    {
+      "route": "/owner/finance/invoices",
+      "api": false
+    },
+    {
+      "route": "/owner/finance/revenue",
+      "api": false
+    },
+    {
+      "route": "/owner/login",
+      "api": false
+    },
+    {
+      "route": "/owner/messaging",
+      "api": false
+    },
+    {
+      "route": "/owner/messaging/alerts",
+      "api": false
+    },
+    {
+      "route": "/owner/messaging/queues",
+      "api": false
+    },
+    {
+      "route": "/owner/messaging/team",
+      "api": false
+    },
+    {
+      "route": "/owner/no-access",
+      "api": false
+    },
+    {
+      "route": "/owner/operations",
+      "api": false
+    },
+    {
+      "route": "/owner/operations/alerts",
+      "api": false
+    },
+    {
+      "route": "/owner/operations/analytics",
+      "api": false
+    },
+    {
+      "route": "/owner/operations/approvals",
+      "api": false
+    },
+    {
+      "route": "/owner/operations/queues",
+      "api": false
+    },
+    {
+      "route": "/owner/settings",
+      "api": false
+    },
+    {
+      "route": "/owner/settings/audit",
+      "api": false
+    },
+    {
+      "route": "/owner/settings/comms",
+      "api": false
+    },
+    {
+      "route": "/owner/settings/security",
+      "api": false
+    },
+    {
+      "route": "/owner/staff",
+      "api": false
+    },
+    {
+      "route": "/owner/staff/directory",
+      "api": false
+    },
+    {
+      "route": "/owner/staff/invite",
+      "api": false
+    },
+    {
+      "route": "/owner/staff/roles",
+      "api": false
+    },
+    {
+      "route": "/owner/staff/tree",
+      "api": false
+    },
+    {
+      "route": "/owner/staff/users/:param",
+      "api": false
+    },
+    {
+      "route": "/preferences",
+      "api": false
+    },
+    {
+      "route": "/privacy",
+      "api": false
+    },
+    {
+      "route": "/search",
+      "api": false
+    },
+    {
+      "route": "/terms",
+      "api": false
+    },
+    {
+      "route": "/workspace/:splat?",
+      "api": false
+    }
+  ]
+}

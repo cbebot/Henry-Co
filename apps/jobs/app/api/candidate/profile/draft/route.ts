@@ -66,30 +66,48 @@ export async function POST(request: Request) {
     const admin = createAdminSupabase();
     const now = new Date().toISOString();
 
-    // Upsert into customer_activity using a stable reference_id so a
-    // single draft row per user survives. We use the user_id as the
-    // reference so concurrent edits coalesce.
+    // One draft row per user, keyed by a stable reference_id. customer_activity
+    // has NO unique constraint on reference_id (prod-actual), so ON CONFLICT
+    // can't coalesce — look up the existing draft row and update it in place,
+    // else insert. (The table also has no updated_at/normalized_email columns
+    // and division is NOT NULL — the previous upsert failed on all three; the
+    // draft timestamp lives in metadata.savedAt.)
     const referenceId = `profile-draft:${viewer.user.id}`;
-    const { error } = await admin
+    const draftRow = {
+      user_id: viewer.user.id,
+      division: "jobs",
+      activity_type: DRAFT_ACTIVITY_TYPE,
+      reference_type: "jobs_candidate_profile",
+      reference_id: referenceId,
+      title: "Profile draft",
+      description: "Work-in-progress profile auto-save",
+      status: "draft",
+      metadata: { draft: payload, savedAt: now },
+      action_url: "/candidate/profile",
+    };
+
+    const { data: existing, error: lookupError } = await admin
       .from("customer_activity")
-      .upsert(
-        {
-          user_id: viewer.user.id,
-          normalized_email: viewer.normalizedEmail || null,
-          activity_type: DRAFT_ACTIVITY_TYPE,
-          reference_type: "jobs_candidate_profile",
-          reference_id: referenceId,
-          title: "Profile draft",
-          description: "Work-in-progress profile auto-save",
-          status: "draft",
-          metadata: { draft: payload, savedAt: now },
-          action_url: "/candidate/profile",
-          updated_at: now,
-        } as never,
-        {
-          onConflict: "reference_id",
-        },
+      .select("id")
+      .eq("reference_id", referenceId)
+      .eq("activity_type", DRAFT_ACTIVITY_TYPE)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (lookupError) {
+      console.error("[candidate/profile/draft] lookup error:", lookupError.message);
+      return NextResponse.json(
+        { error: "save_failed", message: "Couldn't save draft." },
+        { status: 500 },
       );
+    }
+
+    const { error } = existing
+      ? await admin
+          .from("customer_activity")
+          .update(draftRow as never)
+          .eq("id", existing.id)
+      : await admin.from("customer_activity").insert(draftRow as never);
 
     if (error) {
       console.error("[candidate/profile/draft] upsert error:", error.message);
@@ -121,11 +139,15 @@ export async function GET() {
 
     const admin = createAdminSupabase();
     const referenceId = `profile-draft:${viewer.user.id}`;
+    // No updated_at column on customer_activity — the draft timestamp lives in
+    // metadata.savedAt (created_at is the insert-time fallback).
     const { data, error } = await admin
       .from("customer_activity")
-      .select("metadata, updated_at")
+      .select("metadata, created_at")
       .eq("reference_id", referenceId)
       .eq("activity_type", DRAFT_ACTIVITY_TYPE)
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (error) {
@@ -145,7 +167,10 @@ export async function GET() {
         metadata.draft && typeof metadata.draft === "object"
           ? metadata.draft
           : null,
-      savedAt: data?.updated_at ?? null,
+      savedAt:
+        (typeof metadata.savedAt === "string" ? metadata.savedAt : null) ??
+        data?.created_at ??
+        null,
     });
   } catch (error) {
     console.error("[candidate/profile/draft] internal error:", error);

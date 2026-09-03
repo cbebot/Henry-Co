@@ -40,9 +40,9 @@ export type LogisticsCoverageCopy = {
 
 const LOGISTICS_COVERAGE_COPY_EN: LogisticsCoverageCopy = {
   metadata: {
-    title: "Coverage | HenryCo Logistics",
+    title: "Coverage | Henry Onyx Logistics",
     description:
-      "Service zones, ETAs, and base coverage we deliver across — published from the live logistics rate book.",
+      "Service zones, delivery windows, and base coverage across the areas we deliver.",
   },
   hero: {
     eyebrow: "Coverage",
@@ -65,9 +65,9 @@ const LOGISTICS_COVERAGE_COPY_EN: LogisticsCoverageCopy = {
 
 const LOGISTICS_COVERAGE_COPY_FR: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Zones de couverture | HenryCo Logistics",
+    title: "Zones de couverture | Henry Onyx Logistics",
     description:
-      "Zones de service, ETA et couverture de base — publiées à partir du barème logistique en direct.",
+      "Zones de service, fenêtres de livraison et couverture de base dans les zones où nous livrons.",
   },
   hero: {
     eyebrow: "Couverture",
@@ -90,9 +90,9 @@ const LOGISTICS_COVERAGE_COPY_FR: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_ES: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Cobertura | HenryCo Logistics",
+    title: "Cobertura | Henry Onyx Logistics",
     description:
-      "Zonas de servicio, ETAs y cobertura base donde entregamos — publicado desde el tarifario logístico en vivo.",
+      "Zonas de servicio, ventanas de entrega y cobertura base en las áreas donde entregamos.",
   },
   hero: {
     eyebrow: "Cobertura",
@@ -115,9 +115,9 @@ const LOGISTICS_COVERAGE_COPY_ES: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_PT: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Cobertura | HenryCo Logistics",
+    title: "Cobertura | Henry Onyx Logistics",
     description:
-      "Zonas de serviço, ETAs e cobertura base por onde entregamos — publicado a partir do tarifário logístico ao vivo.",
+      "Zonas de serviço, janelas de entrega e cobertura base nas áreas onde entregamos.",
   },
   hero: {
     eyebrow: "Cobertura",
@@ -140,9 +140,9 @@ const LOGISTICS_COVERAGE_COPY_PT: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_AR: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "نطاق التغطية | HenryCo Logistics",
+    title: "نطاق التغطية | Henry Onyx Logistics",
     description:
-      "مناطق الخدمة، الأوقات التقديرية، والتغطية الأساسية التي نوصل إليها — منشورة من دليل أسعار اللوجستيات الحي.",
+      "مناطق الخدمة، ونوافذ التسليم، والتغطية الأساسية في المناطق التي نوصل إليها.",
   },
   hero: {
     eyebrow: "التغطية",
@@ -164,9 +164,9 @@ const LOGISTICS_COVERAGE_COPY_AR: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_DE: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Liefergebiet | HenryCo Logistics",
+    title: "Liefergebiet | Henry Onyx Logistics",
     description:
-      "Servicezonen, ETAs und Grundabdeckung, in die wir liefern — veröffentlicht aus dem laufenden Logistik-Tarifbuch.",
+      "Servicezonen, Lieferfenster und Grundabdeckung in den Gebieten, in die wir liefern.",
   },
   hero: {
     eyebrow: "Liefergebiet",
@@ -189,9 +189,9 @@ const LOGISTICS_COVERAGE_COPY_DE: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_IT: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Copertura | HenryCo Logistics",
+    title: "Copertura | Henry Onyx Logistics",
     description:
-      "Zone di servizio, ETA e copertura di base in cui consegniamo — pubblicate dal listino logistico in tempo reale.",
+      "Zone di servizio, finestre di consegna e copertura di base nelle aree in cui consegniamo.",
   },
   hero: {
     eyebrow: "Copertura",
@@ -214,8 +214,8 @@ const LOGISTICS_COVERAGE_COPY_IT: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_ZH: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "服务范围 | HenryCo Logistics",
-    description: "我们覆盖的服务区域、预计送达时间与基础范围——发布自实时的物流计价手册。",
+    title: "服务范围 | Henry Onyx Logistics",
+    description: "我们送达区域内的服务区域、配送时段与基础覆盖范围。",
   },
   hero: {
     eyebrow: "服务范围",
@@ -237,9 +237,9 @@ const LOGISTICS_COVERAGE_COPY_ZH: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_HI: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "कवरेज | HenryCo Logistics",
+    title: "कवरेज | Henry Onyx Logistics",
     description:
-      "हम जहाँ डिलीवर करते हैं वहाँ की सेवा क्षेत्र, ETA और बेस कवरेज — लाइव लॉजिस्टिक्स रेट बुक से प्रकाशित।",
+      "हम जिन क्षेत्रों में डिलीवर करते हैं वहाँ की सेवा क्षेत्र, डिलीवरी विंडो और बेस कवरेज।",
   },
   hero: {
     eyebrow: "कवरेज",
@@ -262,9 +262,9 @@ const LOGISTICS_COVERAGE_COPY_HI: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_IG: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Mpaghara Ozi | HenryCo Logistics",
+    title: "Mpaghara Ozi | Henry Onyx Logistics",
     description:
-      "Mpaghara ọrụ, oge ETA, na nkwado mbụ ebe anyị na-ebuga — ebipụtara site na akwụkwọ ọnụahịa logistics dị ndụ.",
+      "Service zones, delivery windows, and base coverage across the areas we deliver.",
   },
   hero: {
     eyebrow: "Mpaghara Ozi",
@@ -287,9 +287,9 @@ const LOGISTICS_COVERAGE_COPY_IG: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_YO: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Agbègbè Ìfijíṣẹ́ | HenryCo Logistics",
+    title: "Agbègbè Ìfijíṣẹ́ | Henry Onyx Logistics",
     description:
-      "Agbègbè iṣẹ́, ETA, àti àgbègbè ìpìlẹ̀ tí a ń fi jíṣẹ́ — tí a tẹ̀jáde láti inú ìwé ọ̀já lójisíìkì gidi.",
+      "Service zones, delivery windows, and base coverage across the areas we deliver.",
   },
   hero: {
     eyebrow: "Agbègbè Ìfijíṣẹ́",
@@ -312,9 +312,9 @@ const LOGISTICS_COVERAGE_COPY_YO: DeepPartial<LogisticsCoverageCopy> = {
 
 const LOGISTICS_COVERAGE_COPY_HA: DeepPartial<LogisticsCoverageCopy> = {
   metadata: {
-    title: "Yankin Isarwa | HenryCo Logistics",
+    title: "Yankin Isarwa | Henry Onyx Logistics",
     description:
-      "Yankunan hidima, ETA, da yankin tushe da muke isarwa — wanda aka buga daga littafin farashin sufuri kai tsaye.",
+      "Service zones, delivery windows, and base coverage across the areas we deliver.",
   },
   hero: {
     eyebrow: "Yankin Isarwa",

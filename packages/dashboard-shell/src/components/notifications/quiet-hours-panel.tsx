@@ -28,15 +28,21 @@ export function QuietHoursPanel({
 }: QuietHoursPanelProps) {
   const tt = (key: string) => (typeof t === "function" ? t(key) : key);
   const { preferences, apply } = useNotificationPreferences();
-  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
+  // Optimistic + non-blocking (see PreferencesPanel): the form never globally
+  // disables itself while a save is in flight, and a failed/timed-out save
+  // rolls the value back instead of leaving the controls frozen.
   const persist = useCallback(
-    async (patch: Partial<typeof preferences>) => {
-      setPending(true);
+    async (
+      patch: Partial<typeof preferences>,
+      rollback: Partial<typeof preferences>,
+    ) => {
       setError(null);
       apply(patch);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
       try {
         const body: Record<string, unknown> = {};
         if ("quiet_hours_enabled" in patch) body.quiet_hours_enabled = patch.quiet_hours_enabled;
@@ -51,17 +57,20 @@ export function QuietHoursPanel({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
           credentials: "same-origin",
+          signal: controller.signal,
         });
         if (!res.ok) {
+          apply(rollback);
           setError(tt("Could not save preference."));
           return;
         }
         setSaved(true);
         window.setTimeout(() => setSaved(false), 1200);
       } catch {
+        apply(rollback);
         setError(tt("Could not save preference."));
       } finally {
-        setPending(false);
+        clearTimeout(timer);
       }
     },
     [apply, endpoint, tt],
@@ -119,8 +128,12 @@ export function QuietHoursPanel({
         <input
           type="checkbox"
           checked={preferences.quiet_hours_enabled}
-          onChange={(e) => persist({ quiet_hours_enabled: e.target.checked })}
-          disabled={pending}
+          onChange={(e) =>
+            persist(
+              { quiet_hours_enabled: e.target.checked },
+              { quiet_hours_enabled: preferences.quiet_hours_enabled },
+            )
+          }
           style={{ cursor: "pointer" }}
         />
       </label>
@@ -137,14 +150,22 @@ export function QuietHoursPanel({
           <TimeField
             label={tt("Start")}
             value={preferences.quiet_hours_start}
-            onChange={(v) => persist({ quiet_hours_start: v })}
-            disabled={pending}
+            onChange={(v) =>
+              persist(
+                { quiet_hours_start: v },
+                { quiet_hours_start: preferences.quiet_hours_start },
+              )
+            }
           />
           <TimeField
             label={tt("End")}
             value={preferences.quiet_hours_end}
-            onChange={(v) => persist({ quiet_hours_end: v })}
-            disabled={pending}
+            onChange={(v) =>
+              persist(
+                { quiet_hours_end: v },
+                { quiet_hours_end: preferences.quiet_hours_end },
+              )
+            }
           />
         </div>
       ) : null}

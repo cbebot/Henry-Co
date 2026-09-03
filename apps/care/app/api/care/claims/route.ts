@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
-import { uploadCareImage } from "@/lib/cloudinary";
+import {
+  signCareMediaUrl,
+  uploadCareClaimEvidence,
+} from "@/lib/care-media-store";
 
 /**
  * V3 PASS 21 — POST /api/care/claims
@@ -49,6 +52,20 @@ function cleanUrlArray(value: unknown): string[] {
   return value
     .map((entry) => cleanText(entry))
     .filter((entry) => entry.length > 0 && entry.length < 1024);
+}
+
+/**
+ * Resolve the stored `evidence_urls` (now `media://private/...` references for
+ * new claims, legacy absolute URLs for older rows) to renderable, short-lived
+ * signed URLs before returning them to the client. Private refs must be signed
+ * server-side — a raw ref would be unusable in an <img>/<a>.
+ */
+async function signEvidenceUrls(value: unknown): Promise<string[]> {
+  if (!Array.isArray(value)) return [];
+  const signed = await Promise.all(
+    value.map((entry) => signCareMediaUrl(typeof entry === "string" ? entry : "")),
+  );
+  return signed.filter((url) => url.length > 0);
 }
 
 export async function POST(request: NextRequest) {
@@ -145,20 +162,18 @@ export async function POST(request: NextRequest) {
   if (uploadedFiles.length > 0) {
     try {
       for (const file of uploadedFiles) {
-        const uploaded = await uploadCareImage(file, {
-          folderSuffix: "claims",
-          publicIdPrefix: `claim-${user.id.slice(0, 8)}`,
-        });
-        evidenceUrls.push(uploaded.secureUrl);
+        // SENSITIVE: claim-evidence photos now land in the RLS-private
+        // care-documents bucket as a `media://private/...` reference (signed at
+        // read time) instead of a publicly dereferenceable CDN URL.
+        const ref = await uploadCareClaimEvidence(file, `claim-${user.id.slice(0, 8)}`);
+        evidenceUrls.push(ref);
       }
     } catch (error) {
+      console.error("[care:claims] evidence upload failed", error);
       return NextResponse.json(
         {
           ok: false,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Evidence upload failed. Please try again.",
+          error: "Evidence upload failed. Please try again.",
         },
         { status: 400 },
       );
@@ -184,10 +199,11 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
+    console.error("[care:claims] insert failed", error);
     return NextResponse.json(
       {
         ok: false,
-        error: error.message || "Claim could not be filed.",
+        error: "Claim could not be filed. Please try again.",
       },
       { status: 400 },
     );
@@ -215,7 +231,10 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     ok: true,
-    claim: data,
+    claim: {
+      ...data,
+      evidence_urls: await signEvidenceUrls(data.evidence_urls),
+    },
   });
 }
 
@@ -248,11 +267,19 @@ export async function GET(request: NextRequest) {
     .limit(limit);
 
   if (error) {
+    console.error("[care:claims] query failed", error);
     return NextResponse.json(
-      { ok: false, error: error.message || "Claims query failed." },
+      { ok: false, error: "Claims could not be loaded. Please try again." },
       { status: 400 },
     );
   }
 
-  return NextResponse.json({ ok: true, claims: data ?? [] });
+  const claims = await Promise.all(
+    (data ?? []).map(async (claim) => ({
+      ...claim,
+      evidence_urls: await signEvidenceUrls(claim.evidence_urls),
+    })),
+  );
+
+  return NextResponse.json({ ok: true, claims });
 }

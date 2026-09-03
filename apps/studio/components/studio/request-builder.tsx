@@ -1,7 +1,9 @@
 "use client";
 
 import { ArrowLeft, ArrowRight, Check, LoaderCircle } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useFormDraft } from "@henryco/lifecycle/drafts";
 import { requestSteps } from "@/components/studio/request-builder-data";
 import { StudioRequestActivationStep } from "@/components/studio/request-activation-step";
@@ -16,54 +18,18 @@ import {
   filterPricedOptions,
   type StudioRequestConfig,
 } from "@/lib/studio/request-config";
-import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-action";
+import {
+  STEP_ORDER,
+  STUDIO_BRIEF_DRAFT_KEY,
+  STUDIO_BRIEF_DRAFT_VERSION,
+  emptyStudioBriefDraft,
+  structuredToDraft,
+  validateStep,
+  type StudioBriefDraft,
+} from "@/lib/studio/request-fields";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-structured";
 import type { StudioRequestPresetResult } from "@/lib/studio/request-presets";
 import type { StudioPackage, StudioService, StudioTeamProfile } from "@/lib/studio/types";
-
-/**
- * Persisted user-input shape for the studio brief draft.
- *
- * Captures every field the user types or selects across the 4-step
- * builder (Path / Scope / Commercial / Activation), plus the current
- * step index so a mid-flow reauth lands the user back on the right
- * step instead of step 1. Excluded from the envelope:
- *
- *   - `services`, `packages`, `teams`, `requestConfig`, `presetHint`
- *     and `copilotSeed` — all server- or runtime-supplied (props).
- *   - `isStepTransitioning`, `progressHint` — UI animation state.
- *   - Derived memos (effective*, filteredPackages, pricingPreview,
- *     readinessScore) — computed from the persisted fields above.
- *   - DOM refs (`topRef`).
- *
- * The studio brief has no payment / KYC / password fields, so no
- * sensitive-data exclusion is needed beyond the categories above.
- */
-type StudioBriefDraft = {
-  stepIndex: number;
-  serviceKind: StudioService["kind"];
-  pathway: "package" | "custom";
-  selectedPackageId: string;
-  selectedTeamId: string;
-  selectedProjectType: string;
-  selectedPlatform: string;
-  selectedDesign: string;
-  preferredLanguage: string;
-  selectedPages: string[];
-  selectedModules: string[];
-  selectedAddOns: string[];
-  selectedTech: string[];
-  selectedProgrammingLanguage: string;
-  selectedFramework: string;
-  selectedBackend: string;
-  selectedHosting: string;
-  businessType: string;
-  budgetBand: string;
-  urgency: string;
-  timeline: string;
-  goals: string;
-  scopeNotes: string;
-  inspirationSummary: string;
-};
 
 type Props = {
   services: StudioService[];
@@ -98,78 +64,41 @@ export function StudioRequestBuilder({
   initialStepIndex = 0,
   initialPathway,
 }: Props) {
-  const resolvedKind =
-    presetHint?.serviceKind && services.some((s) => s.kind === presetHint.serviceKind)
-      ? presetHint.serviceKind
-      : (services[0]?.kind ?? "website");
-  const initialServiceKind = resolvedKind;
-  const initialProjectType =
-    copilotSeed?.projectType ||
-    presetHint?.projectTypeLabel ||
-    filterPricedOptions(requestConfig.projectTypes, initialServiceKind)[0]?.label ||
-    "Custom digital program";
-  const initialPlatform =
-    copilotSeed?.platformPreference ||
-    filterPricedOptions(requestConfig.platformOptions, initialServiceKind)[0]?.label ||
-    "Best-fit recommendation";
-  const initialDesign =
-    copilotSeed?.designDirection ||
-    requestConfig.designOptions[0] ||
-    "Quiet luxury and high-trust";
-  const initialTimeline =
-    copilotSeed?.timeline ||
-    filterModifierOptions(requestConfig.timelineOptions, initialServiceKind)[0]?.label ||
-    "";
-  const initialUrgency =
-    copilotSeed?.urgency ||
-    filterModifierOptions(requestConfig.urgencyOptions, initialServiceKind)[0]?.label ||
-    "";
-  const initialProgrammingLanguage =
-    requestConfig.programmingLanguageOptions[0] || "HenryCo's recommendation";
-  const initialFramework =
-    copilotSeed?.frameworkPreference ||
-    filterPricedOptions(requestConfig.frameworkOptions, initialServiceKind)[0]?.label ||
-    "HenryCo's framework recommendation";
-  const initialBackend =
-    copilotSeed?.backendPreference ||
-    filterPricedOptions(requestConfig.backendOptions, initialServiceKind)[0]?.label ||
-    "HenryCo recommends the backend";
-  const initialHosting =
-    copilotSeed?.hostingPreference ||
-    requestConfig.hostingOptions[0] ||
-    "HenryCo recommends the host";
-  // Initial draft envelope — mirrors the prior useState defaults so
-  // first-paint behaviour is identical when no persisted draft exists.
-  // The hook restores any saved envelope on mount; when a fresh
-  // `copilotSeed` is delivered (the parent re-mounts this component
-  // with a new `key`), we skip restoration so the seed wins.
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  // Initial draft envelope — delegates default + co-pilot-seed derivation
+  // to the shared `request-fields` contract so the manual builder, guided
+  // interview, and chat on-ramps all start from one source of truth. The
+  // hook restores any saved envelope on mount; when a fresh `copilotSeed`
+  // is delivered (the parent re-mounts this component with a new `key`),
+  // we skip restoration so the seed wins.
   const initialDraft = useMemo<StudioBriefDraft>(
-    () => ({
-      stepIndex: Math.min(Math.max(0, initialStepIndex), 3),
-      serviceKind: initialServiceKind,
-      pathway: initialPathway ?? presetHint?.pathway ?? "custom",
-      selectedPackageId: "",
-      selectedTeamId: preferredTeamId ?? "",
-      selectedProjectType: initialProjectType,
-      selectedPlatform: initialPlatform,
-      selectedDesign: initialDesign,
-      preferredLanguage: copilotSeed?.preferredLanguage || "English",
-      selectedPages: copilotSeed?.pageRequirements ?? [],
-      selectedModules: copilotSeed?.requiredFeatures ?? [],
-      selectedAddOns: copilotSeed?.addonServices ?? [],
-      selectedTech: copilotSeed?.techPreferences ?? [],
-      selectedProgrammingLanguage: initialProgrammingLanguage,
-      selectedFramework: initialFramework,
-      selectedBackend: initialBackend,
-      selectedHosting: initialHosting,
-      businessType: copilotSeed?.businessType ?? "",
-      budgetBand: copilotSeed?.budgetBand ?? "",
-      urgency: initialUrgency,
-      timeline: initialTimeline,
-      goals: copilotSeed?.goals ?? "",
-      scopeNotes: copilotSeed?.scopeNotes ?? "",
-      inspirationSummary: "",
-    }),
+    () => {
+      const seedInput = {
+        config: requestConfig,
+        services,
+        serviceKind: presetHint?.serviceKind,
+        preferredTeamId,
+      };
+      const base = copilotSeed
+        ? structuredToDraft(copilotSeed, seedInput)
+        : emptyStudioBriefDraft(seedInput);
+      return {
+        ...base,
+        // Step + pathway overrides — the path may have been chosen
+        // upstream (/pick → /request?path=custom, or a preset hint), so
+        // we honour the explicit initial values exactly as before.
+        stepIndex: Math.min(Math.max(0, initialStepIndex), 3),
+        pathway: initialPathway ?? presetHint?.pathway ?? "custom",
+        // Preset project-type hint — only meaningful on the non-seeded
+        // path. When a co-pilot seed is present its projectType already
+        // won inside structuredToDraft, so we leave `base` untouched.
+        selectedProjectType:
+          !copilotSeed && presetHint?.projectTypeLabel
+            ? presetHint.projectTypeLabel
+            : base.selectedProjectType,
+      };
+    },
     // The initial value is captured once on mount. Parent re-mounts
     // with a new `key` when a fresh copilot seed arrives, so this
     // closure picks up the new seed each mount. Subsequent prop
@@ -182,8 +111,9 @@ export function StudioRequestBuilder({
   // builder via a new `key`. In that case, the user explicitly asked
   // for a freshly drafted brief and any older saved draft should NOT
   // resurrect over the seed values. Skip restore on seeded mounts.
-  const draft = useFormDraft<StudioBriefDraft>("studio-brief-new", initialDraft, {
+  const draft = useFormDraft<StudioBriefDraft>(STUDIO_BRIEF_DRAFT_KEY, initialDraft, {
     skipRestore: Boolean(copilotSeed),
+    version: STUDIO_BRIEF_DRAFT_VERSION,
   });
   const {
     stepIndex,
@@ -210,6 +140,7 @@ export function StudioRequestBuilder({
     goals,
     scopeNotes,
     inspirationSummary,
+    domainIntentJson,
   } = draft.value;
 
   // Per-field setters update the single envelope. Each matches the
@@ -384,10 +315,20 @@ export function StudioRequestBuilder({
       ),
     [draft],
   );
+  const setDomainIntentJson = useCallback(
+    (next: string) =>
+      draft.setValue((prev) =>
+        prev.domainIntentJson === next ? prev : { ...prev, domainIntentJson: next },
+      ),
+    [draft],
+  );
 
   // UI / animation state — not user input, not persisted.
   const [isStepTransitioning, setIsStepTransitioning] = useState(false);
   const [progressHint, setProgressHint] = useState<string | null>(null);
+  // Inline validation messages keyed by field anchor (`data-field`). Set
+  // by a blocked Continue / Submit, cleared on any step navigation.
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const topRef = useRef<HTMLDivElement | null>(null);
 
   const filteredPackages = useMemo(
@@ -454,11 +395,11 @@ export function StudioRequestBuilder({
       selectedFramework &&
       !validFrameworks.find((option) => option.label === selectedFramework)
     ) {
-      setSelectedFramework(validFrameworks[0]?.label ?? "HenryCo's framework recommendation");
+      setSelectedFramework(validFrameworks[0]?.label ?? "Henry Onyx's framework recommendation");
     }
     const validBackends = filterPricedOptions(requestConfig.backendOptions, serviceKind);
     if (selectedBackend && !validBackends.find((option) => option.label === selectedBackend)) {
-      setSelectedBackend(validBackends[0]?.label ?? "HenryCo recommends the backend");
+      setSelectedBackend(validBackends[0]?.label ?? "Henry Onyx recommends the backend");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceKind]);
@@ -518,12 +459,12 @@ export function StudioRequestBuilder({
     if (selectedAddOns.length >= 2) score += 6;
     if (selectedTech.length >= 1) score += 4;
     // Tech-stack picks signal a serious operator; the score reflects that.
-    if (selectedProgrammingLanguage && selectedProgrammingLanguage !== "HenryCo's recommendation")
+    if (selectedProgrammingLanguage && selectedProgrammingLanguage !== "Henry Onyx's recommendation")
       score += 3;
-    if (selectedFramework && selectedFramework !== "HenryCo's framework recommendation")
+    if (selectedFramework && selectedFramework !== "Henry Onyx's framework recommendation")
       score += 3;
-    if (selectedBackend && selectedBackend !== "HenryCo recommends the backend") score += 3;
-    if (selectedHosting && selectedHosting !== "HenryCo recommends the host") score += 2;
+    if (selectedBackend && selectedBackend !== "Henry Onyx recommends the backend") score += 3;
+    if (selectedHosting && selectedHosting !== "Henry Onyx recommends the host") score += 2;
     if (businessType) score += 4;
     if (budgetBand) score += 4;
     if (effectiveUrgency) score += 4;
@@ -559,9 +500,12 @@ export function StudioRequestBuilder({
 
   function goToStep(nextIndex: number) {
     if (nextIndex === stepIndex) return;
+    // Errors belong to the step that raised them; drop them the moment we
+    // move so a commercial error never lingers over the path step.
+    setErrors({});
     setIsStepTransitioning(true);
     setStepIndex(nextIndex);
-    setProgressHint("Progress saved — you can leave and return any time while signed in.");
+    setProgressHint(t("Progress saved — you can leave and return any time while signed in."));
     if (typeof window !== "undefined") {
       window.setTimeout(() => setProgressHint(null), 6000);
       window.requestAnimationFrame(() => {
@@ -574,25 +518,112 @@ export function StudioRequestBuilder({
     }
   }
 
+  /**
+   * Scroll the first errored field into view. The FieldError components
+   * expose a `[data-field="…"]` anchor that only mounts once its message is
+   * present, so we defer the lookup to the next frame (after React flushes
+   * the error state) and pick the topmost anchor in document order.
+   */
+  const scrollToFirstError = useCallback((errs: Record<string, string>) => {
+    if (typeof window === "undefined") return;
+    const keys = Object.keys(errs);
+    if (keys.length === 0) return;
+    window.requestAnimationFrame(() => {
+      const node = keys
+        .map((key) => document.querySelector<HTMLElement>(`[data-field="${key}"]`))
+        .filter((el): el is HTMLElement => el !== null)
+        .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
+      if (!node) return;
+      const targetTop = node.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: Math.max(targetTop, 0), behavior: "smooth" });
+    });
+  }, []);
+
+  /**
+   * Per-step gate for Continue. Validates only the current draft-backed
+   * step (path / scope / commercial); on failure it surfaces the inline
+   * errors and scrolls to the first one instead of advancing.
+   */
+  function handleContinue() {
+    const v = validateStep(STEP_ORDER[stepIndex], draft.value);
+    if (!v.ok) {
+      setErrors(v.errors);
+      scrollToFirstError(v.errors);
+      return;
+    }
+    setErrors({});
+    goToStep(Math.min(stepIndex + 1, requestSteps.length - 1));
+  }
+
+  /**
+   * Full-draft gate for Submit. The activation step owns the submit button
+   * but every prior step is unmounted, so a user who jumped to Review via
+   * the step rail could otherwise post an incomplete brief through the
+   * hidden-input mirror — re-pricing the deposit from defaults. We re-run
+   * every draft-backed step here; the first failure cancels the server
+   * action (`preventDefault`), jumps back to that step, and surfaces the
+   * errors. Activation's name / email / phone are natively gated by their
+   * HTML5 `required` + `type="email"` inputs, which fire before this.
+   */
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    // The brief may only be posted from the final (activation) step, which
+    // owns the real submit button and the required name / email / phone
+    // inputs. A stray Enter in the budget text field on an earlier step
+    // would otherwise implicitly submit a contact-less brief — swallow it.
+    if (stepIndex !== STEP_ORDER.length - 1) {
+      event.preventDefault();
+      return;
+    }
+    for (let i = 0; i < STEP_ORDER.length - 1; i++) {
+      const v = validateStep(STEP_ORDER[i], draft.value);
+      if (!v.ok) {
+        event.preventDefault();
+        // goToStep clears errors on navigation, so set them AFTER it —
+        // both batch into one render and the later write must win.
+        goToStep(i);
+        setErrors(v.errors);
+        scrollToFirstError(v.errors);
+        return;
+      }
+    }
+    // V3-01: the server action redirects to /pay, /project, or /proposals
+    // on success; there is no JS success callback, so we clear the draft
+    // synchronously now. The localStorage write completes before the
+    // request begins. If the action throws server-side validation the user
+    // returns without the draft, but the gating above catches every
+    // client-side failure case before the submit fires.
+    draft.clear();
+  }
+
+  /**
+   * On the custom lane, the first package that fits the current service
+   * kind is offered in the side panel as a calm "lock this in instead"
+   * shortcut. Null on the package lane (the lane toggle is canonical there)
+   * or when no package matches the current service kind.
+   */
+  const recommendedPackage =
+    pathway === "custom" && filteredPackages[0]
+      ? { name: filteredPackages[0].name, price: filteredPackages[0].price }
+      : null;
+  const lockInRecommendedPackage = useCallback(() => {
+    const pkg = filteredPackages[0];
+    if (!pkg) return;
+    setPathway("package");
+    setSelectedPackageId(pkg.id);
+  }, [filteredPackages, setPathway, setSelectedPackageId]);
+
   const totalSteps = requestSteps.length;
   const progressPct = Math.round(((stepIndex + 1) / totalSteps) * 100);
   const currentStep = requestSteps[stepIndex];
+  // Drives Continue's muted look + aria-disabled. The button stays
+  // clickable so a blocked click still teaches *why* via inline errors.
+  const currentStepValid = validateStep(STEP_ORDER[stepIndex], draft.value).ok;
 
   return (
     <form
       action={submitStudioBriefAction}
       className="space-y-10"
-      onSubmit={() => {
-        // V3-01: server action redirects to /pay, /project, or
-        // /proposals on success. No JS-level success callback exists,
-        // so we clear the draft synchronously at submit time — the
-        // localStorage write completes before the request begins.
-        // If the action throws server-side validation, the user
-        // would land back on this page without the saved draft;
-        // client-side gating in the step controls catches almost
-        // every failure case before the submit fires.
-        draft.clear();
-      }}
+      onSubmit={handleSubmit}
     >
       <div ref={topRef} />
       <input type="hidden" name="preferredTeamId" value={selectedTeamId} />
@@ -609,23 +640,57 @@ export function StudioRequestBuilder({
       <input type="hidden" name="frameworkPreference" value={selectedFramework} />
       <input type="hidden" name="backendPreference" value={selectedBackend} />
       <input type="hidden" name="hostingPreference" value={selectedHosting} />
+      {/* The step panels below are conditionally mounted — only the active
+        step is in the DOM. At submit time that step is Activation (it owns
+        the submit button), so every other step's named inputs are absent
+        from the posted FormData. The shell therefore mirrors every contract
+        field as an always-mounted hidden input; without this the user's
+        project type, scope, budget, timeline, and feature choices are
+        silently dropped, and the server re-prices the deposit from an
+        incomplete brief. Multi-value fields emit one hidden input per
+        selection so the action's getAll(...) reads the full list. */}
+      <input type="hidden" name="projectType" value={effectiveProjectType} />
+      <input type="hidden" name="platformPreference" value={effectivePlatform} />
+      <input type="hidden" name="businessType" value={businessType} />
+      <input type="hidden" name="budgetBand" value={budgetBand} />
+      <input type="hidden" name="urgency" value={effectiveUrgency} />
+      <input type="hidden" name="timeline" value={effectiveTimeline} />
+      <input type="hidden" name="goals" value={goals} />
+      <input type="hidden" name="scopeNotes" value={scopeNotes} />
+      <input type="hidden" name="inspirationSummary" value={inspirationSummary} />
+      {/* Domain intent is built inside the (unmounted-at-submit) domain
+        section; the section lifts its serialized intent up via
+        onIntentChange so this always-mounted mirror carries it. */}
+      <input type="hidden" name="domainIntentJson" value={domainIntentJson} />
+      {selectedPages.map((value) => (
+        <input key={`page-${value}`} type="hidden" name="pageRequirements" value={value} />
+      ))}
+      {selectedModules.map((value) => (
+        <input key={`feature-${value}`} type="hidden" name="requiredFeatures" value={value} />
+      ))}
+      {selectedAddOns.map((value) => (
+        <input key={`addon-${value}`} type="hidden" name="addonServices" value={value} />
+      ))}
+      {selectedTech.map((value) => (
+        <input key={`tech-${value}`} type="hidden" name="techPreferences" value={value} />
+      ))}
 
       {/* Editorial brief header — no panel chrome, magazine progress strip */}
       <section>
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
           <div>
             <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--studio-signal)]">
-              Project brief
+              {t("Project brief")}
               <span className="mx-2 opacity-40">·</span>
               <span className="text-[var(--studio-ink-soft)]">
-                Step {String(stepIndex + 1).padStart(2, "0")} / {String(totalSteps).padStart(2, "0")}
+                {t("Step")} {String(stepIndex + 1).padStart(2, "0")} / {String(totalSteps).padStart(2, "0")}
               </span>
             </p>
             <h2 className="mt-3 max-w-3xl text-balance text-[1.7rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--studio-ink)] sm:text-[2.1rem] md:text-[2.4rem]">
-              {currentStep.title}
+              {t(currentStep.title)}
             </h2>
             <p className="mt-3 max-w-2xl text-pretty text-sm leading-7 text-[var(--studio-ink-soft)] sm:text-base">
-              {currentStep.body}
+              {t(currentStep.body)}
             </p>
           </div>
 
@@ -633,10 +698,10 @@ export function StudioRequestBuilder({
             {isStepTransitioning ? (
               <span className="inline-flex items-center gap-1.5 text-[var(--studio-signal)]">
                 <LoaderCircle className="h-3 w-3 animate-spin" />
-                Loading
+                {t("Loading")}
               </span>
             ) : (
-              <span className="text-[var(--studio-ink-soft)]">{progressPct}% complete</span>
+              <span className="text-[var(--studio-ink-soft)]">{progressPct}% {t("complete")}</span>
             )}
           </div>
         </div>
@@ -646,7 +711,7 @@ export function StudioRequestBuilder({
          * repeat it inside each card (the prior "long cards" issue:
          * the same paragraph rendered four times stacked on mobile,
          * pushing the actual brief fields below the fold). */}
-        <nav aria-label="Brief steps" className="mt-7">
+        <nav aria-label={t("Brief steps")} className="mt-7">
           <div className="relative">
             <div className="absolute left-0 right-0 top-[18px] h-px bg-[var(--studio-line)]" />
             <div
@@ -669,10 +734,10 @@ export function StudioRequestBuilder({
                       <span
                         className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-[11px] font-mono font-semibold tracking-tight transition ${
                           isActive
-                            ? "border-[var(--studio-signal)] bg-[var(--studio-signal)] text-[#031318] shadow-[0_0_0_4px_rgba(73,192,197,0.18)]"
+                            ? "border-[var(--studio-signal)] bg-[var(--studio-signal)] text-[color:var(--home-accent-ink)]"
                             : isComplete
                               ? "border-[var(--studio-signal)]/55 bg-transparent text-[var(--studio-signal)]"
-                              : "border-[var(--studio-line)] bg-[rgba(0,0,0,0.04)] text-[var(--studio-ink-soft)] group-hover:border-[var(--studio-signal)]/40 group-hover:text-[var(--studio-ink)]"
+                              : "border-[var(--studio-line)] bg-[color:var(--home-surface-04)] text-[var(--studio-ink-soft)] group-hover:border-[var(--studio-signal)]/40 group-hover:text-[var(--studio-ink)]"
                         }`}
                       >
                         {isComplete ? <Check className="h-4 w-4" /> : `0${index + 1}`}
@@ -684,7 +749,7 @@ export function StudioRequestBuilder({
                             : "text-[var(--studio-ink-soft)] group-hover:text-[var(--studio-ink)]"
                         }`}
                       >
-                        {step.label}
+                        {t(step.label)}
                       </p>
                     </button>
                   </li>
@@ -731,6 +796,7 @@ export function StudioRequestBuilder({
               setSelectedDesign={setSelectedDesign}
               preferredLanguage={preferredLanguage}
               setPreferredLanguage={setPreferredLanguage}
+              errors={errors}
             />
           ) : null}
           {stepIndex === 1 ? (
@@ -755,6 +821,7 @@ export function StudioRequestBuilder({
               setSelectedBackend={setSelectedBackend}
               selectedHosting={selectedHosting}
               setSelectedHosting={setSelectedHosting}
+              errors={errors}
             />
           ) : null}
           {stepIndex === 2 ? (
@@ -774,6 +841,8 @@ export function StudioRequestBuilder({
               setScopeNotes={setScopeNotes}
               inspirationSummary={inspirationSummary}
               setInspirationSummary={setInspirationSummary}
+              setDomainIntentJson={setDomainIntentJson}
+              errors={errors}
             />
           ) : null}
           {stepIndex === 3 ? (
@@ -781,6 +850,32 @@ export function StudioRequestBuilder({
               teams={teams}
               selectedTeamId={selectedTeamId}
               setSelectedTeamId={setSelectedTeamId}
+              review={{
+                pathway,
+                packageName: selectedPackage?.name ?? null,
+                projectType: effectiveProjectType,
+                platform: effectivePlatform,
+                design: selectedDesign,
+                preferredLanguage,
+                pages: selectedPages,
+                modules: selectedModules,
+                addOns: selectedAddOns,
+                tech: selectedTech,
+                programmingLanguage: selectedProgrammingLanguage,
+                framework: selectedFramework,
+                backend: selectedBackend,
+                hosting: selectedHosting,
+                businessType,
+                budgetBand,
+                urgency: effectiveUrgency,
+                timeline: effectiveTimeline,
+                goals,
+                scopeNotes,
+                inspirationSummary,
+                domainIntentJson,
+                readinessScore,
+                pricing: pricingPreview,
+              }}
             />
           ) : null}
 
@@ -793,23 +888,25 @@ export function StudioRequestBuilder({
               className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition ${
                 stepIndex === 0
                   ? "cursor-not-allowed border-[var(--studio-line)] text-[var(--studio-ink-soft)] opacity-40"
-                  : "border-[var(--studio-line)] text-[var(--studio-ink)] hover:border-[var(--studio-signal)]/40 hover:bg-[rgba(0,0,0,0.04)]"
+                  : "border-[var(--studio-line)] text-[var(--studio-ink)] hover:border-[var(--studio-signal)]/40 hover:bg-[color:var(--home-surface-04)]"
               }`}
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Back
+              {t("Back")}
             </button>
             {stepIndex < requestSteps.length - 1 ? (
               <button
                 type="button"
-                onClick={() => goToStep(Math.min(stepIndex + 1, requestSteps.length - 1))}
-                disabled={pathway === "package" && filteredPackages.length === 0}
-                className="studio-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={handleContinue}
+                aria-disabled={!currentStepValid}
+                className={`bg-[color:var(--home-accent)] text-[color:var(--home-accent-ink)] hover:bg-[color:var(--home-accent-strong)] transition-colors inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition ${
+                  currentStepValid ? "" : "opacity-60"
+                }`}
               >
                 {isStepTransitioning ? (
                   <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
                 ) : null}
-                {isStepTransitioning ? "Loading next step" : "Continue"}
+                {isStepTransitioning ? t("Loading next step") : t("Continue")}
                 {!isStepTransitioning ? <ArrowRight className="h-3.5 w-3.5" /> : null}
               </button>
             ) : null}
@@ -820,7 +917,9 @@ export function StudioRequestBuilder({
           pathway={pathway}
           readinessScore={readinessScore}
           pricingPreview={pricingPreview}
-          recommendedTeamName={recommendedTeam?.name || "HenryCo team recommendation"}
+          recommendedTeamName={recommendedTeam?.name || t("Henry Onyx team recommendation")}
+          recommendedPackage={recommendedPackage}
+          onLockPackage={lockInRecommendedPackage}
         />
       </div>
     </form>

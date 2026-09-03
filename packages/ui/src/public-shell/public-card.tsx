@@ -25,7 +25,7 @@ const INTERACTIVE =
   "transition duration-200 ease-out hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-[0_26px_64px_-32px_rgba(15,23,42,0.38),0_8px_18px_rgba(15,23,42,0.08)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:hover:border-white/15 dark:hover:bg-[#0b1018]/95";
 
 const FOCUS_RING =
-  "outline-none focus-visible:ring-2 focus-visible:ring-amber-500/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-amber-400/50 dark:focus-visible:ring-offset-[#0a0f14]";
+  "outline-none focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_55%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0a0f14]";
 
 /**
  * Shared public card — the single surface primitive all divisions should use for
@@ -134,13 +134,13 @@ export function PublicCardHeader({
   return (
     <div className={cn("flex items-start gap-4", className)}>
       {icon ? (
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_10%,transparent)] text-[color:var(--hc-accent-text,#A88718)]">
           {icon}
         </div>
       ) : null}
       <div className="min-w-0">
         {eyebrow ? (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-600/90 dark:text-amber-300/80">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--hc-accent-text,#A88718)]">
             {eyebrow}
           </p>
         ) : null}

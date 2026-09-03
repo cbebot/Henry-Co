@@ -183,6 +183,11 @@ export const MOTION_KEYFRAMES_CSS = `
   to { transform: scale(0.96); }
 }
 
+@keyframes henrycoLinkPulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.72); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   @keyframes henrycoSurfaceEntry {
     0% { opacity: 0; transform: none; }
@@ -199,6 +204,10 @@ export const MOTION_KEYFRAMES_CSS = `
   @keyframes henrycoBarPressIn {
     from { transform: none; }
     to { transform: none; }
+  }
+  @keyframes henrycoLinkPulse {
+    0%, 100% { opacity: 0.5; transform: none; }
+    50% { opacity: 1; transform: none; }
   }
 }
 ` as const;

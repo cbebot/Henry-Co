@@ -17,10 +17,13 @@ function cleanText(value: unknown) {
 function parseKinds(request: Request): OwnerReportKind[] {
   const url = new URL(request.url);
   const kind = cleanText(url.searchParams.get("kind")).toLowerCase();
-  if (kind === "weekly" || kind === "monthly") {
+  if (kind === "daily" || kind === "weekly" || kind === "monthly") {
     return [kind];
   }
-  return ["weekly", "monthly"];
+  // The cron fires once a day (vercel.json 07:05 UTC): the DAILY morning brief
+  // always runs; weekly/monthly gate themselves to Mondays / the 1st inside
+  // shouldRunReport.
+  return ["daily", "weekly", "monthly"];
 }
 
 export async function GET(request: Request) {
@@ -45,11 +48,9 @@ export async function GET(request: Request) {
       executedAt: new Date().toISOString(),
     });
   } catch (error) {
+    console.error("[owner-reports]", error);
     return NextResponse.json(
-      {
-        ok: false,
-        error: error instanceof Error ? error.message : "Owner report run failed.",
-      },
+      { ok: false, error: "Owner report run failed." },
       { status: 500 }
     );
   }

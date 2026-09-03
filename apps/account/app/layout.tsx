@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 // ACCOUNT-PREMIUM-01 — mount the surface-primitives stylesheet once at
 // the layout root so any page that renders <HeroCard /> et al. picks up
@@ -7,12 +8,36 @@ import "./globals.css";
 import "@henryco/dashboard-shell/surfaces.css";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { HenryCoThemeBlocking, ThemeProvider } from "@henryco/ui";
+import { FeedbackToastViewport } from "@henryco/ui/feedback";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import { ConsentNotice, ThirdPartyRuntimeProviders } from "@henryco/ui/public-shell";
 import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
-import { henrySubdomain } from "@henryco/config";
+import { createSurfaceMetadata } from "@henryco/config";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getAccountAppLocale } from "@/lib/locale-server";
+import { ACCOUNT_CHROME_MOBILE_LIFT } from "@/lib/chrome";
+
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
+});
+
+// The company body sans. The account app previously loaded no sans, so
+// --acct-font-sans fell through to system-ui — bodies + inputs rendered in a
+// system font, breaking the company-type rule. Manrope is the interim company
+// sans already paired with Fraunces across the public sites; when the owned
+// Onyx type flips live, --acct-font-sans routes to the bespoke sans instead
+// (see auth.css [data-onyx-type=live]).
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope",
+});
 
 /**
  * Resolve the time-of-day bucket for the ambient canvas tint.
@@ -43,33 +68,17 @@ function resolveTimeOfDayBucket(timezone: string): string {
   return "night";
 }
 
-export const metadata: Metadata = {
-  title: "My Account — Henry & Co.",
-  description:
-    "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
-  robots: { index: false, follow: false },
-  metadataBase: new URL(
-    process.env.NODE_ENV === "production"
-      ? henrySubdomain("account")
-      : "http://localhost:3003"
-  ),
-  openGraph: {
-    title: "My Account — Henry & Co.",
-    description:
-      "Manage your HenryCo account, wallet, payments, orders, and preferences across all divisions.",
-    siteName: "Henry & Co. Account",
-    type: "website",
-  },
-  icons: {
-    apple: [
-      {
-        url: "/brand/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-    ],
-  },
-};
+// OG-SOCIAL-METADATA — account is a non-division, customer-facing surface
+// (authenticated, so noindex), but a shared account link still needs a proper
+// Facebook/X/LinkedIn/WhatsApp preview. It now flows through the same shared
+// helper as the public division sites: complete Open Graph + Twitter
+// (summary_large_image) tag set, canonical og:url, and og:image served by the
+// sibling `opengraph-image` / `twitter-image` routes. `noIndex` is applied
+// automatically from the SURFACES registry entry.
+export const metadata: Metadata = createSurfaceMetadata("account", {
+  title: "My Account — Henry Onyx",
+  path: "/",
+});
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getAccountAppLocale();
@@ -80,18 +89,34 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const todBucket = resolveTimeOfDayBucket(timezone);
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
+    <html lang={locale} dir={dir} suppressHydrationWarning className={brandFontVariables} data-onyx-type={onyxTypeAttr()}>
       <body
-        className="min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased"
+        className={`${reading.variable} ${manrope.variable} min-h-screen bg-[var(--acct-bg)] text-[var(--acct-ink)] antialiased`}
         data-hc-tod={todBucket}
       >
         <HenryCoThemeBlocking />
         <ThemeProvider>
           <ScrollToTopOnNavigation />
           <ThirdPartyRuntimeProviders>
-            <LocaleProvider locale={locale}>{children}</LocaleProvider>
+            <LocaleProvider locale={locale}>
+              {children}
+              {/* V3-FEEDBACK-01 — app-wide action-feedback toasts. Inside the
+                  (account) shell the dashboard's merged viewport claims the
+                  bus (renderer election) and this one stands down, so thin
+                  route groups like /payments/callback and /auth get feedback
+                  without ever double-rendering a toast. */}
+              <FeedbackToastViewport />
+            </LocaleProvider>
           </ThirdPartyRuntimeProviders>
-          <SupportAssist division="account" />
+          {/* Intelligence Live (flag-dark): the company AI launcher replaces the static "?"
+              only where NEXT_PUBLIC_INTELLIGENCE_LIVE is on; otherwise the concierge stands. */}
+          {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+            // Lift the launcher above the mobile bottom action bar (3.5rem) + a 1rem gap, so
+            // the AI support button is never hidden behind it on the dashboard.
+            <IntelligenceLauncher division="account" bottomOffset={ACCOUNT_CHROME_MOBILE_LIFT} />
+          ) : (
+            <SupportAssist division="account" />
+          )}
           <ConsentNotice preferencesHref="/settings#privacy-controls" locale={locale} />
         </ThemeProvider>
       </body>

@@ -39,6 +39,10 @@ export type {
   ThreadChannelLike,
 } from "./types";
 
+// Safe markdown-subset renderer, shared with @henryco/chat-thread hosts so
+// the XSS-audited pipeline stays single-sourced (additive re-export).
+export { renderBody as renderMessageMarkdown } from "./markdown";
+
 // V3-03 — WhatsApp-style delivery state pip
 export { DeliveryStatePip } from "./delivery-pip";
 export type {

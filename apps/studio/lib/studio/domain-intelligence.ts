@@ -1,5 +1,7 @@
 import "server-only";
 
+import { resolveDomainLookupMode } from "@/lib/studio/domain-lookup-mode";
+
 /** Reserved / high-risk labels — we avoid suggesting these as new brands */
 const BRANDISH_SLUGS = new Set(
   [
@@ -87,12 +89,18 @@ export function normalizeFqdnForLookup(input: string): string | null {
   return noProto;
 }
 
-export type DomainLookupMode = "off" | "rdap_com";
+export type { DomainLookupMode } from "@/lib/studio/domain-lookup-mode";
 
-export function getDomainLookupMode(): DomainLookupMode {
-  const v = String(process.env.STUDIO_DOMAIN_RDAP_ENABLED || "").toLowerCase();
-  if (v === "1" || v === "true" || v === "yes") return "rdap_com";
-  return "off";
+/**
+ * SA-1 — the single env read for the live-lookup flag. The resolution rule
+ * itself is pure (domain-lookup-mode.ts) so it is unit-tested; server pages
+ * plumb `getDomainLookupMode() !== "off"` down as a boolean prop, and the
+ * check affordance is NOT RENDERED while the flag is unset (the seam for a
+ * future working lookup — set STUDIO_DOMAIN_RDAP_ENABLED in the studio
+ * Vercel project to light it up).
+ */
+export function getDomainLookupMode() {
+  return resolveDomainLookupMode(process.env.STUDIO_DOMAIN_RDAP_ENABLED);
 }
 
 /**

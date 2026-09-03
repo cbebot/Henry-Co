@@ -16,7 +16,11 @@ import {
   SellerStatusCard,
   DealsOfTheMomentCard,
 } from "./widgets";
-import { loadMarketplaceSnapshot, isVendor } from "./data";
+import {
+  loadMarketplaceSnapshot,
+  loadVendorStatus,
+  MARKETPLACE_VENDOR_WORKSPACE_HREF,
+} from "./data";
 
 /**
  * The marketplace module — slug `marketplace`.
@@ -48,6 +52,13 @@ export const marketplaceModule: DashboardModule = {
   description: "Orders in flight, saved items, curated deals, vendor controls.",
   icon: () => <ShoppingBag size={18} aria-hidden />,
   railSlot: "primary",
+  // The REAL surface is the live top-level `/marketplace` route (the same
+  // rich page the desktop sidebar opens). Without this, the rail / mobile
+  // Modules drawer / Cmd-jump sent marketplace to the sparse
+  // `/modules/marketplace` catch-all — the "module not opening" report.
+  // Every other division module declares its homeHref; marketplace was the
+  // lone omission.
+  homeHref: "/marketplace",
 
   getEligibleViewer(viewer) {
     return viewerCanUseCustomerSurface(viewer) ? "allowed" : "hidden";
@@ -59,10 +70,39 @@ export const marketplaceModule: DashboardModule = {
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadMarketplaceSnapshot(viewer);
-    if (!snapshot) return [];
+    // AWARE-FIX (owner report 2026-07-10): the vendor WINDOW loads
+    // INDEPENDENTLY of the customer snapshot. A membership vendor resolves as
+    // viewer.kind="staff", which nulls the customer snapshot — previously that
+    // hid the ENTIRE module (including their seller card) and real vendors saw
+    // "apply to sell" surfaces elsewhere. Same person-can-be-both pattern as
+    // jobs/learn/property/studio.
+    const [snapshot, vendorStatus] = await Promise.all([
+      loadMarketplaceSnapshot(viewer),
+      loadVendorStatus(viewer),
+    ]);
 
-    const widgets: HomeWidget[] = [
+    const widgets: HomeWidget[] = [];
+
+    // Vendor WINDOW (dashboard-vs-workspaces decision, 2026-07-09) — gated on
+    // vendor standing via the SHARED grant predicate. Ranks ABOVE the customer
+    // widgets (84 > orders' 80): a seller's morning question is "any orders to
+    // fulfil?", not "what did I buy?". The card-tap opens the REAL vendor
+    // workspace on the marketplace subdomain.
+    if (vendorStatus) {
+      widgets.push({
+        id: "marketplace.seller-status",
+        source: "marketplace",
+        title: "Seller status",
+        size: "md",
+        weight: 84,
+        href: MARKETPLACE_VENDOR_WORKSPACE_HREF,
+        render: async () => <SellerStatusCard vendorStatus={vendorStatus} />,
+      });
+    }
+
+    if (!snapshot) return widgets;
+
+    widgets.push(
       {
         id: "marketplace.orders-in-flight",
         source: "marketplace",
@@ -99,23 +139,7 @@ export const marketplaceModule: DashboardModule = {
         href: "/marketplace",
         render: async () => <DealsOfTheMomentCard snapshot={snapshot} />,
       },
-    ];
-
-    // Vendor-only — gated on snapshot.vendorStatus presence.
-    if (isVendor(snapshot)) {
-      widgets.push({
-        id: "marketplace.seller-status",
-        source: "marketplace",
-        title: "Seller status",
-        size: "md",
-        weight: 70,
-        // No `/marketplace/vendor` page exists in the account shell yet.
-        href: "/marketplace",
-        render: async () => (
-          <SellerStatusCard vendorStatus={snapshot.vendorStatus} />
-        ),
-      });
-    }
+    );
 
     return widgets;
   },
@@ -140,8 +164,15 @@ export const marketplaceModule: DashboardModule = {
   },
 
   async getCommandPaletteEntries(viewer): Promise<ReadonlyArray<PaletteEntry>> {
-    const snapshot = await loadMarketplaceSnapshot(viewer).catch(() => null);
-    const vendor = isVendor(snapshot);
+    // AWARE-FIX (2026-07-10): vendor standing resolves via the shared grant
+    // predicate, independent of the customer snapshot (staff-kind vendors).
+    // SMART (2026-07-10): the palette also proposes the viewer's OWN in-flight
+    // orders — real rows, freshest first — not just generic actions.
+    const [vendorStatus, snapshot] = await Promise.all([
+      loadVendorStatus(viewer),
+      loadMarketplaceSnapshot(viewer).catch(() => null),
+    ]);
+    const vendor = Boolean(vendorStatus);
 
     // PASS 22 issue #1 — every `/marketplace/<sub>` palette entry below
     // pointed at routes the account shell never implemented. We collapse
@@ -211,8 +242,24 @@ export const marketplaceModule: DashboardModule = {
         label: "Manage store",
         kicker: "Vendor",
         groupLabel: "Open",
-        href: "/marketplace",
+        // Vendor WINDOW → the REAL workspace on the marketplace subdomain.
+        href: MARKETPLACE_VENDOR_WORKSPACE_HREF,
         keywords: ["vendor", "store", "manage", "products"],
+      });
+    }
+
+    // The viewer's OWN in-flight orders, freshest first (capped at 3) — typing
+    // an order number in the palette jumps straight to it. Real rows only;
+    // no orders → no entries.
+    for (const order of (snapshot?.ordersInFlight ?? []).slice(0, 3)) {
+      entries.push({
+        id: `marketplace.order.${order.id}`,
+        source: "marketplace",
+        label: `Track ${order.orderNo}`,
+        kicker: "Your orders",
+        groupLabel: "Open",
+        href: "/marketplace",
+        keywords: [order.orderNo, "order", "track", order.status],
       });
     }
 

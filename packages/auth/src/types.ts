@@ -74,6 +74,13 @@ export type UnifiedViewer = {
     avatarUrl: string | null;
     appMetadata: Record<string, unknown>;
     userMetadata: Record<string, unknown>;
+    /**
+     * Whether the viewer's email is verified (Supabase `email_confirmed_at`).
+     * Gates email-only role-membership grants — an unclaimed seed is claimable
+     * only by a viewer who provably controls that mailbox. Optional for
+     * back-compat; absent is treated as unverified (deny).
+     */
+    emailVerified?: boolean;
   };
   access: AccessSnapshot;
   /**
@@ -191,3 +198,21 @@ export const SESSION_STATE_VALUES = [
 ] as const;
 
 export type SessionState = (typeof SESSION_STATE_VALUES)[number];
+
+/**
+ * V3-57 — acting-context: which identity a member is acting as.
+ *
+ * Pure type (no runtime, no server-only) so client components can import it for
+ * props. The authority behind a `business` context is resolved + re-verified
+ * server-side in `@henryco/auth/server/acting-context`; this type carries the
+ * already-verified shape only. The cookie never stores `role` — it is always
+ * re-derived from `business_members`.
+ */
+export type ActingContext =
+  | { kind: "personal"; userId: string }
+  | {
+      kind: "business";
+      userId: string;
+      businessId: string;
+      role: "owner" | "admin" | "member";
+    };

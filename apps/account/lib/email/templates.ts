@@ -36,13 +36,13 @@ function getEmailCopy(locale: AppLocale) {
   if (locale === "fr") {
     return {
       footerManage: "Gerer le compte",
-      footerReason: "Vous recevez ceci parce que vous avez un compte HenryCo.",
-      welcomeSubject: "Bienvenue chez HenryCo",
-      welcomeTitle: (name: string) => `Bienvenue chez Henry & Co., ${name || "vous"} !`,
-      welcomeIntro: "Votre compte HenryCo unifie est pret. Depuis ici, vous pouvez tout gerer sur Care, Marketplace, Studio et les autres services.",
+      footerReason: "Vous recevez ceci parce que vous avez un compte Henry Onyx.",
+      welcomeSubject: "Bienvenue chez Henry Onyx",
+      welcomeTitle: (name: string) => `Bienvenue chez Henry Onyx, ${name || "vous"} !`,
+      welcomeIntro: "Votre compte Henry Onyx unifie est pret. Depuis ici, vous pouvez tout gerer sur Care, Marketplace, Studio et les autres services.",
       welcomeListIntro: "Voici ce que vous pouvez faire :",
       welcomeList: [
-        "Approvisionner votre portefeuille HenryCo pour des paiements rapides",
+        "Approvisionner votre portefeuille Henry Onyx pour des paiements rapides",
         "Suivre les commandes, reservations et projets",
         "Gerer vos adresses et moyens de paiement",
         "Obtenir un support unifie sur tous les services",
@@ -50,29 +50,45 @@ function getEmailCopy(locale: AppLocale) {
       welcomeButton: "Ouvrir votre tableau de bord",
       securitySubject: (event: string) => `Alerte securite : ${event}`,
       securityTitle: "Alerte securite",
-      securityIntro: "Nous avons detecte un evenement de securite sur votre compte HenryCo :",
+      securityIntro: "Nous avons detecte un evenement de securite sur votre compte Henry Onyx :",
       securityEvent: "Evenement",
       securityAction: "Si ce n'etait pas vous, changez votre mot de passe immediatement et contactez le support.",
       securityButton: "Verifier la securite",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} ajoutes a votre portefeuille`,
       walletTitle: "Portefeuille approvisionne",
-      walletIntro: (name: string) => `Bonjour ${name || "vous"}, des fonds ont ete ajoutes a votre portefeuille HenryCo.`,
+      walletIntro: (name: string) => `Bonjour ${name || "vous"}, des fonds ont ete ajoutes a votre portefeuille Henry Onyx.`,
       walletAmount: "Montant ajoute",
       walletBalance: "Nouveau solde",
       walletButton: "Voir le portefeuille",
+      withdrawalRequestedSubject: (amount: number) => `Demande de retrait recue — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Demande de retrait recue",
+      withdrawalRequestedIntro: (name: string) => `Bonjour ${name || "vous"}, votre demande de retrait est enregistree. Chaque paiement est verifie par la finance avant d'etre regle.`,
+      withdrawalAmount: "Montant demande",
+      withdrawalRequestedNote: "Aucune action n'est requise — vous recevrez un autre e-mail une fois le paiement effectue.",
+      withdrawalPaidSubject: (amount: number) => `Retrait paye — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Retrait paye",
+      withdrawalPaidIntro: (name: string) => `Bonjour ${name || "vous"}, votre retrait a ete verse sur votre compte bancaire.`,
+      withdrawalPaidAmount: "Montant paye",
+      withdrawalButton: "Voir les retraits",
+      refundSubject: (amount: number) => `Remboursement effectue — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Remboursement effectue",
+      refundIntro: (name: string) => `Bonjour ${name || "vous"}, votre remboursement a ete traite.`,
+      refundAmount: "Montant rembourse",
+      refundNote: "Les remboursements arrivent generalement sur le moyen de paiement d'origine sous quelques jours ouvres, selon votre banque.",
+      refundButton: "Voir les paiements",
     };
   }
 
   if (locale === "es") {
     return {
       footerManage: "Gestionar cuenta",
-      footerReason: "Recibes esto porque tienes una cuenta con HenryCo.",
-      welcomeSubject: "Bienvenido a HenryCo",
-      welcomeTitle: (name: string) => `Bienvenido a Henry & Co., ${name || "alli"}!`,
-      welcomeIntro: "Tu cuenta unificada de HenryCo ya esta lista. Desde aqui puedes gestionar Care, Marketplace, Studio y mas.",
+      footerReason: "Recibes esto porque tienes una cuenta con Henry Onyx.",
+      welcomeSubject: "Bienvenido a Henry Onyx",
+      welcomeTitle: (name: string) => `Bienvenido a Henry Onyx, ${name || "alli"}!`,
+      welcomeIntro: "Tu cuenta unificada de Henry Onyx ya esta lista. Desde aqui puedes gestionar Care, Marketplace, Studio y mas.",
       welcomeListIntro: "Esto es lo que puedes hacer:",
       welcomeList: [
-        "Recargar tu billetera HenryCo para pagos rapidos",
+        "Recargar tu billetera Henry Onyx para pagos rapidos",
         "Seguir pedidos, reservas y proyectos",
         "Gestionar direcciones y metodos de pago",
         "Recibir soporte unificado en todos los servicios",
@@ -80,29 +96,45 @@ function getEmailCopy(locale: AppLocale) {
       welcomeButton: "Ir al panel",
       securitySubject: (event: string) => `Alerta de seguridad: ${event}`,
       securityTitle: "Alerta de seguridad",
-      securityIntro: "Detectamos un evento de seguridad en tu cuenta HenryCo:",
+      securityIntro: "Detectamos un evento de seguridad en tu cuenta Henry Onyx:",
       securityEvent: "Evento",
       securityAction: "Si no fuiste tu, cambia tu contrasena de inmediato y contacta con soporte.",
       securityButton: "Revisar seguridad",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} agregados a tu billetera`,
       walletTitle: "Billetera recargada",
-      walletIntro: (name: string) => `Hola ${name || "alli"}, se agrego dinero a tu billetera HenryCo.`,
+      walletIntro: (name: string) => `Hola ${name || "alli"}, se agrego dinero a tu billetera Henry Onyx.`,
       walletAmount: "Monto agregado",
       walletBalance: "Nuevo saldo",
       walletButton: "Ver billetera",
+      withdrawalRequestedSubject: (amount: number) => `Solicitud de retiro recibida — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Solicitud de retiro recibida",
+      withdrawalRequestedIntro: (name: string) => `Hola ${name || "alli"}, recibimos tu solicitud de retiro. Finanzas revisa cada pago antes de liquidarlo.`,
+      withdrawalAmount: "Monto solicitado",
+      withdrawalRequestedNote: "No necesitas hacer nada mas — recibiras otro correo cuando se pague.",
+      withdrawalPaidSubject: (amount: number) => `Retiro pagado — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Retiro pagado",
+      withdrawalPaidIntro: (name: string) => `Hola ${name || "alli"}, tu retiro fue pagado a tu cuenta bancaria.`,
+      withdrawalPaidAmount: "Monto pagado",
+      withdrawalButton: "Ver retiros",
+      refundSubject: (amount: number) => `Reembolso procesado — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Reembolso procesado",
+      refundIntro: (name: string) => `Hola ${name || "alli"}, tu reembolso fue procesado.`,
+      refundAmount: "Monto reembolsado",
+      refundNote: "Los reembolsos suelen llegar al metodo de pago original en unos dias habiles, segun tu banco.",
+      refundButton: "Ver pagos",
     };
   }
 
   if (locale === "pt") {
     return {
       footerManage: "Gerir conta",
-      footerReason: "Recebeu isto porque tem uma conta HenryCo.",
-      welcomeSubject: "Bem-vindo a HenryCo",
-      welcomeTitle: (name: string) => `Bem-vindo a Henry & Co., ${name || "voce"}!`,
-      welcomeIntro: "A sua conta unificada HenryCo esta pronta. A partir daqui pode gerir Care, Marketplace, Studio e muito mais.",
+      footerReason: "Recebeu isto porque tem uma conta Henry Onyx.",
+      welcomeSubject: "Bem-vindo a Henry Onyx",
+      welcomeTitle: (name: string) => `Bem-vindo a Henry Onyx, ${name || "voce"}!`,
+      welcomeIntro: "A sua conta unificada Henry Onyx esta pronta. A partir daqui pode gerir Care, Marketplace, Studio e muito mais.",
       welcomeListIntro: "Veja o que pode fazer:",
       welcomeList: [
-        "Carregar a carteira HenryCo para pagamentos rapidos",
+        "Carregar a carteira Henry Onyx para pagamentos rapidos",
         "Acompanhar pedidos, reservas e projetos",
         "Gerir moradas e metodos de pagamento",
         "Receber suporte unificado em todos os servicos",
@@ -110,13 +142,29 @@ function getEmailCopy(locale: AppLocale) {
       welcomeButton: "Ir para o painel",
       securitySubject: (event: string) => `Alerta de seguranca: ${event}`,
       securityTitle: "Alerta de seguranca",
-      securityIntro: "Detetamos um evento de seguranca na sua conta HenryCo:",
+      securityIntro: "Detetamos um evento de seguranca na sua conta Henry Onyx:",
       securityEvent: "Evento",
       securityAction: "Se nao foi voce, altere a sua palavra-passe imediatamente e contacte o suporte.",
       securityButton: "Rever seguranca",
+      withdrawalRequestedSubject: (amount: number) => `Pedido de levantamento recebido — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Pedido de levantamento recebido",
+      withdrawalRequestedIntro: (name: string) => `Ola ${name || "voce"}, recebemos o seu pedido de levantamento. A equipa financeira reve cada pagamento antes de o liquidar.`,
+      withdrawalAmount: "Montante solicitado",
+      withdrawalRequestedNote: "Nao precisa de fazer mais nada — recebera outro e-mail quando for pago.",
+      withdrawalPaidSubject: (amount: number) => `Levantamento pago — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Levantamento pago",
+      withdrawalPaidIntro: (name: string) => `Ola ${name || "voce"}, o seu levantamento foi pago na sua conta bancaria.`,
+      withdrawalPaidAmount: "Montante pago",
+      withdrawalButton: "Ver levantamentos",
+      refundSubject: (amount: number) => `Reembolso processado — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Reembolso processado",
+      refundIntro: (name: string) => `Ola ${name || "voce"}, o seu reembolso foi processado.`,
+      refundAmount: "Montante reembolsado",
+      refundNote: "Os reembolsos costumam chegar ao metodo de pagamento original em poucos dias uteis, consoante o seu banco.",
+      refundButton: "Ver pagamentos",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} adicionados a sua carteira`,
       walletTitle: "Carteira carregada",
-      walletIntro: (name: string) => `Ola ${name || "voce"}, foi adicionado dinheiro a sua carteira HenryCo.`,
+      walletIntro: (name: string) => `Ola ${name || "voce"}, foi adicionado dinheiro a sua carteira Henry Onyx.`,
       walletAmount: "Montante adicionado",
       walletBalance: "Novo saldo",
       walletButton: "Ver carteira",
@@ -126,13 +174,13 @@ function getEmailCopy(locale: AppLocale) {
   if (locale === "ar") {
     return {
       footerManage: "إدارة الحساب",
-      footerReason: "وصلتك هذه الرسالة لأن لديك حسابًا لدى HenryCo.",
-      welcomeSubject: "مرحبًا بك في HenryCo",
-      welcomeTitle: (name: string) => `مرحبًا بك في Henry & Co.، ${name || "هناك"}!`,
-      welcomeIntro: "حسابك الموحد في HenryCo جاهز الآن. من هنا يمكنك إدارة Care وMarketplace وStudio والمزيد.",
+      footerReason: "وصلتك هذه الرسالة لأن لديك حسابًا لدى Henry Onyx.",
+      welcomeSubject: "مرحبًا بك في Henry Onyx",
+      welcomeTitle: (name: string) => `مرحبًا بك في Henry Onyx، ${name || "هناك"}!`,
+      welcomeIntro: "حسابك الموحد في Henry Onyx جاهز الآن. من هنا يمكنك إدارة Care وMarketplace وStudio والمزيد.",
       welcomeListIntro: "يمكنك الآن القيام بما يلي:",
       welcomeList: [
-        "تمويل محفظة HenryCo لمدفوعات أسرع",
+        "تمويل محفظة Henry Onyx لمدفوعات أسرع",
         "متابعة الطلبات والحجوزات والمشاريع",
         "إدارة العناوين ووسائل الدفع",
         "الحصول على دعم موحد عبر كل الخدمات",
@@ -140,13 +188,29 @@ function getEmailCopy(locale: AppLocale) {
       welcomeButton: "الذهاب إلى لوحتك",
       securitySubject: (event: string) => `تنبيه أمني: ${event}`,
       securityTitle: "تنبيه أمني",
-      securityIntro: "رصدنا حدثًا أمنيًا على حسابك في HenryCo:",
+      securityIntro: "رصدنا حدثًا أمنيًا على حسابك في Henry Onyx:",
       securityEvent: "الحدث",
       securityAction: "إذا لم تكن أنت، فغيّر كلمة المرور فورًا وتواصل مع الدعم.",
       securityButton: "مراجعة الأمان",
+      withdrawalRequestedSubject: (amount: number) => `تم استلام طلب السحب — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "تم استلام طلب السحب",
+      withdrawalRequestedIntro: (name: string) => `مرحبًا ${name || "هناك"}، استلمنا طلب السحب الخاص بك. تراجع الإدارة المالية كل عملية دفع قبل تسويتها.`,
+      withdrawalAmount: "المبلغ المطلوب",
+      withdrawalRequestedNote: "لا حاجة لأي إجراء إضافي — ستصلك رسالة أخرى عند إتمام الدفع.",
+      withdrawalPaidSubject: (amount: number) => `تم دفع السحب — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "تم دفع السحب",
+      withdrawalPaidIntro: (name: string) => `مرحبًا ${name || "هناك"}، تم تحويل مبلغ السحب إلى حسابك البنكي.`,
+      withdrawalPaidAmount: "المبلغ المدفوع",
+      withdrawalButton: "عرض السحوبات",
+      refundSubject: (amount: number) => `تمت معالجة الاسترداد — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "تمت معالجة الاسترداد",
+      refundIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت معالجة استرداد أموالك.`,
+      refundAmount: "المبلغ المسترد",
+      refundNote: "عادةً ما يصل المبلغ المسترد إلى وسيلة الدفع الأصلية خلال أيام عمل قليلة حسب البنك.",
+      refundButton: "عرض المدفوعات",
       walletSubject: (amount: number) => `تمت إضافة NGN ${formatNaira(amount, locale)} إلى محفظتك`,
       walletTitle: "تم تمويل المحفظة",
-      walletIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت إضافة أموال إلى محفظة HenryCo الخاصة بك.`,
+      walletIntro: (name: string) => `مرحبًا ${name || "هناك"}، تمت إضافة أموال إلى محفظة Henry Onyx الخاصة بك.`,
       walletAmount: "المبلغ المضاف",
       walletBalance: "الرصيد الجديد",
       walletButton: "عرض المحفظة",
@@ -156,13 +220,13 @@ function getEmailCopy(locale: AppLocale) {
   if (locale === "de") {
     return {
       footerManage: "Konto verwalten",
-      footerReason: "Sie erhalten diese Nachricht, weil Sie ein HenryCo-Konto besitzen.",
-      welcomeSubject: "Willkommen bei HenryCo",
-      welcomeTitle: (name: string) => `Willkommen bei Henry & Co., ${name || "da"}!`,
-      welcomeIntro: "Ihr einheitliches HenryCo-Konto ist bereit. Von hier aus verwalten Sie Care, Marketplace, Studio und mehr.",
+      footerReason: "Sie erhalten diese Nachricht, weil Sie ein Henry Onyx-Konto besitzen.",
+      welcomeSubject: "Willkommen bei Henry Onyx",
+      welcomeTitle: (name: string) => `Willkommen bei Henry Onyx, ${name || "da"}!`,
+      welcomeIntro: "Ihr einheitliches Henry Onyx-Konto ist bereit. Von hier aus verwalten Sie Care, Marketplace, Studio und mehr.",
       welcomeListIntro: "Das koennen Sie jetzt tun:",
       welcomeList: [
-        "Ihre HenryCo Wallet fuer schnelle Zahlungen aufladen",
+        "Ihre Henry Onyx Wallet fuer schnelle Zahlungen aufladen",
         "Bestellungen, Buchungen und Projekte verfolgen",
         "Adressen und Zahlungsmethoden verwalten",
         "Einheitlichen Support ueber alle Services erhalten",
@@ -170,13 +234,29 @@ function getEmailCopy(locale: AppLocale) {
       welcomeButton: "Zum Dashboard",
       securitySubject: (event: string) => `Sicherheitswarnung: ${event}`,
       securityTitle: "Sicherheitswarnung",
-      securityIntro: "Wir haben ein Sicherheitsereignis in Ihrem HenryCo-Konto erkannt:",
+      securityIntro: "Wir haben ein Sicherheitsereignis in Ihrem Henry Onyx-Konto erkannt:",
       securityEvent: "Ereignis",
       securityAction: "Wenn Sie das nicht waren, aendern Sie sofort Ihr Passwort und kontaktieren Sie den Support.",
       securityButton: "Sicherheit pruefen",
+      withdrawalRequestedSubject: (amount: number) => `Auszahlungsanfrage erhalten — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Auszahlungsanfrage erhalten",
+      withdrawalRequestedIntro: (name: string) => `Hallo ${name || "da"}, Ihre Auszahlungsanfrage ist eingegangen. Die Finanzabteilung prueft jede Auszahlung vor der Abwicklung.`,
+      withdrawalAmount: "Angeforderter Betrag",
+      withdrawalRequestedNote: "Es ist nichts weiter zu tun — Sie erhalten eine weitere E-Mail, sobald die Auszahlung erfolgt ist.",
+      withdrawalPaidSubject: (amount: number) => `Auszahlung erfolgt — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Auszahlung erfolgt",
+      withdrawalPaidIntro: (name: string) => `Hallo ${name || "da"}, Ihre Auszahlung wurde auf Ihr Bankkonto ueberwiesen.`,
+      withdrawalPaidAmount: "Ausgezahlter Betrag",
+      withdrawalButton: "Auszahlungen ansehen",
+      refundSubject: (amount: number) => `Rueckerstattung verarbeitet — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Rueckerstattung verarbeitet",
+      refundIntro: (name: string) => `Hallo ${name || "da"}, Ihre Rueckerstattung wurde verarbeitet.`,
+      refundAmount: "Erstatteter Betrag",
+      refundNote: "Rueckerstattungen erreichen die urspruengliche Zahlungsmethode in der Regel innerhalb weniger Werktage, abhaengig von Ihrer Bank.",
+      refundButton: "Zahlungen ansehen",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} wurden Ihrer Wallet gutgeschrieben`,
       walletTitle: "Wallet aufgeladen",
-      walletIntro: (name: string) => `Hallo ${name || "da"}, Ihrem HenryCo Wallet wurden Mittel gutgeschrieben.`,
+      walletIntro: (name: string) => `Hallo ${name || "da"}, Ihrem Henry Onyx Wallet wurden Mittel gutgeschrieben.`,
       walletAmount: "Hinzugefuegter Betrag",
       walletBalance: "Neuer Kontostand",
       walletButton: "Wallet ansehen",
@@ -186,13 +266,13 @@ function getEmailCopy(locale: AppLocale) {
   if (locale === "it") {
     return {
       footerManage: "Gestisci account",
-      footerReason: "Hai ricevuto questo messaggio perche hai un account HenryCo.",
-      welcomeSubject: "Benvenuto in HenryCo",
-      welcomeTitle: (name: string) => `Benvenuto in Henry & Co., ${name || "li"}!`,
-      welcomeIntro: "Il tuo account HenryCo unificato e pronto. Da qui puoi gestire Care, Marketplace, Studio e altro ancora.",
+      footerReason: "Hai ricevuto questo messaggio perche hai un account Henry Onyx.",
+      welcomeSubject: "Benvenuto in Henry Onyx",
+      welcomeTitle: (name: string) => `Benvenuto in Henry Onyx, ${name || "li"}!`,
+      welcomeIntro: "Il tuo account Henry Onyx unificato e pronto. Da qui puoi gestire Care, Marketplace, Studio e altro ancora.",
       welcomeListIntro: "Ecco cosa puoi fare:",
       welcomeList: [
-        "Ricaricare il tuo HenryCo Wallet per pagamenti rapidi",
+        "Ricaricare il tuo Henry Onyx Wallet per pagamenti rapidi",
         "Monitorare ordini, prenotazioni e progetti",
         "Gestire indirizzi e metodi di pagamento",
         "Ottenere supporto unificato su tutti i servizi",
@@ -200,13 +280,29 @@ function getEmailCopy(locale: AppLocale) {
       welcomeButton: "Vai alla dashboard",
       securitySubject: (event: string) => `Avviso di sicurezza: ${event}`,
       securityTitle: "Avviso di sicurezza",
-      securityIntro: "Abbiamo rilevato un evento di sicurezza sul tuo account HenryCo:",
+      securityIntro: "Abbiamo rilevato un evento di sicurezza sul tuo account Henry Onyx:",
       securityEvent: "Evento",
       securityAction: "Se non eri tu, cambia subito la password e contatta il supporto.",
       securityButton: "Controlla sicurezza",
+      withdrawalRequestedSubject: (amount: number) => `Richiesta di prelievo ricevuta — NGN ${formatNaira(amount, locale)}`,
+      withdrawalRequestedTitle: "Richiesta di prelievo ricevuta",
+      withdrawalRequestedIntro: (name: string) => `Ciao ${name || "li"}, abbiamo ricevuto la tua richiesta di prelievo. La finanza verifica ogni pagamento prima della liquidazione.`,
+      withdrawalAmount: "Importo richiesto",
+      withdrawalRequestedNote: "Non devi fare altro — riceverai un'altra e-mail quando sara pagato.",
+      withdrawalPaidSubject: (amount: number) => `Prelievo pagato — NGN ${formatNaira(amount, locale)}`,
+      withdrawalPaidTitle: "Prelievo pagato",
+      withdrawalPaidIntro: (name: string) => `Ciao ${name || "li"}, il tuo prelievo e stato versato sul tuo conto bancario.`,
+      withdrawalPaidAmount: "Importo pagato",
+      withdrawalButton: "Vedi prelievi",
+      refundSubject: (amount: number) => `Rimborso elaborato — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Rimborso elaborato",
+      refundIntro: (name: string) => `Ciao ${name || "li"}, il tuo rimborso e stato elaborato.`,
+      refundAmount: "Importo rimborsato",
+      refundNote: "I rimborsi arrivano di solito sul metodo di pagamento originale entro pochi giorni lavorativi, a seconda della banca.",
+      refundButton: "Vedi pagamenti",
       walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} aggiunti al tuo wallet`,
       walletTitle: "Wallet ricaricato",
-      walletIntro: (name: string) => `Ciao ${name || "li"}, del denaro e stato aggiunto al tuo HenryCo Wallet.`,
+      walletIntro: (name: string) => `Ciao ${name || "li"}, del denaro e stato aggiunto al tuo Henry Onyx Wallet.`,
       walletAmount: "Importo aggiunto",
       walletBalance: "Nuovo saldo",
       walletButton: "Visualizza wallet",
@@ -215,13 +311,13 @@ function getEmailCopy(locale: AppLocale) {
 
   return {
     footerManage: "Manage account",
-    footerReason: "You received this because you have an account with HenryCo.",
-    welcomeSubject: "Your HenryCo account is ready",
-    welcomeTitle: (name: string) => `Your HenryCo account is ready${name ? `, ${name}` : ""}.`,
-    welcomeIntro: "The unified HenryCo account is set up. From here, manage everything across Care, Marketplace, Studio, and more.",
+    footerReason: "You received this because you have an account with Henry Onyx.",
+    welcomeSubject: "Your Henry Onyx account is ready",
+    welcomeTitle: (name: string) => `Your Henry Onyx account is ready${name ? `, ${name}` : ""}.`,
+    welcomeIntro: "The unified Henry Onyx account is set up. From here, manage everything across Care, Marketplace, Studio, and more.",
     welcomeListIntro: "What lives in this account:",
     welcomeList: [
-      "Fund your HenryCo Wallet for quick payments",
+      "Fund your Henry Onyx Wallet for quick payments",
       "Track orders, bookings, and projects",
       "Manage addresses and payment methods",
       "Get unified support across all services",
@@ -229,16 +325,32 @@ function getEmailCopy(locale: AppLocale) {
     welcomeButton: "Open the dashboard",
     securitySubject: (event: string) => `Security alert: ${event}`,
     securityTitle: "Security alert",
-    securityIntro: "A security event was detected on your HenryCo account:",
+    securityIntro: "A security event was detected on your Henry Onyx account:",
     securityEvent: "Event",
     securityAction: "If this wasn't you, change your password immediately and contact support.",
     securityButton: "Review security",
     walletSubject: (amount: number) => `NGN ${formatNaira(amount, locale)} added to your wallet`,
     walletTitle: "Wallet funded",
-    walletIntro: (name: string) => `${name ? `${name}, money` : "Money"} has been added to your HenryCo Wallet.`,
+    walletIntro: (name: string) => `${name ? `${name}, money` : "Money"} has been added to your Henry Onyx Wallet.`,
     walletAmount: "Amount added",
     walletBalance: "New balance",
     walletButton: "View wallet",
+    withdrawalRequestedSubject: (amount: number) => `Withdrawal request received — NGN ${formatNaira(amount, locale)}`,
+    withdrawalRequestedTitle: "Withdrawal request received",
+    withdrawalRequestedIntro: (name: string) => `${name ? `${name}, your` : "Your"} withdrawal request is in. Finance reviews every payout before it settles.`,
+    withdrawalAmount: "Amount requested",
+    withdrawalRequestedNote: "No further action is needed — you will get another email once it is paid.",
+    withdrawalPaidSubject: (amount: number) => `Withdrawal paid — NGN ${formatNaira(amount, locale)}`,
+    withdrawalPaidTitle: "Withdrawal paid",
+    withdrawalPaidIntro: (name: string) => `${name ? `${name}, your` : "Your"} withdrawal has been paid to your bank account.`,
+    withdrawalPaidAmount: "Amount paid",
+    withdrawalButton: "View withdrawals",
+      refundSubject: (amount: number) => `Refund processed — NGN ${formatNaira(amount, locale)}`,
+      refundTitle: "Refund processed",
+      refundIntro: (name: string) => `${name ? `${name}, your` : "Your"} refund has been processed.`,
+      refundAmount: "Amount refunded",
+      refundNote: "Refunds usually arrive back on the original payment method within a few business days, depending on your bank.",
+      refundButton: "View payments",
   };
 }
 
@@ -261,7 +373,7 @@ function layout(content: string, locale: AppLocale = "en") {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark">
-<title>HenryCo</title>
+<title>Henry Onyx</title>
 <style>
   :root { color-scheme: light dark; }
   body { margin: 0; padding: 0; background: ${t.outerBg}; font-family: ${t.bodyFont}; color: ${DARK_TEXT}; -webkit-font-smoothing: antialiased; }
@@ -361,6 +473,93 @@ export function walletFundedEmail(
   };
 }
 
+/**
+ * EMAIL-TPL-01 — withdrawal request acknowledgement. Sent best-effort AFTER
+ * the withdrawal request row is committed (never inside the money path); the
+ * amount shown is the requested figure, and the copy states plainly that
+ * finance reviews every payout before it settles.
+ */
+export function withdrawalRequestedEmail(
+  name: string,
+  amountNaira: number,
+  locale: AppLocale = "en",
+) {
+  const copy = getEmailCopy(locale);
+  return {
+    subject: copy.withdrawalRequestedSubject(amountNaira),
+    html: layout(`
+      <h1>${copy.withdrawalRequestedTitle}</h1>
+      <p>${copy.withdrawalRequestedIntro(name)}</p>
+      <div class="metric">
+        <div class="metric-label">${copy.withdrawalAmount}</div>
+        <div class="metric-value">NGN ${formatNaira(amountNaira, locale)}</div>
+      </div>
+      <p>${copy.withdrawalRequestedNote}</p>
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${ACCOUNT_ORIGIN}/wallet/withdrawals" class="btn">${copy.withdrawalButton}</a>
+      </p>
+    `, locale),
+  };
+}
+
+/**
+ * EMAIL-TPL-02 — refund receipt. Dispatched by the payment webhook AFTER
+ * `apply_refund_webhook` commits the reversing entries and reports
+ * outcome=processed — best-effort, never inside the money path.
+ */
+export function refundProcessedEmail(
+  name: string,
+  amountNaira: number,
+  locale: AppLocale = "en",
+) {
+  const copy = getEmailCopy(locale);
+  return {
+    subject: copy.refundSubject(amountNaira),
+    html: layout(`
+      <h1>${copy.refundTitle}</h1>
+      <p>${copy.refundIntro(name)}</p>
+      <div class="metric">
+        <div class="metric-label">${copy.refundAmount}</div>
+        <div class="metric-value" style="color:#10B981;">NGN ${formatNaira(amountNaira, locale)}</div>
+      </div>
+      <p>${copy.refundNote}</p>
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${ACCOUNT_ORIGIN}/payments" class="btn">${copy.refundButton}</a>
+      </p>
+    `, locale),
+  };
+}
+
+/**
+ * EMAIL-TPL-01 — withdrawal settlement receipt. NOT yet dispatched anywhere:
+ * the automatic payout rail (docs/v3/money/2026-07-06-automatic-withdrawal-
+ * payout-rail-design.md, stage W3) is design-stage, so there is no settlement
+ * transition to hook today. The template ships ready so the rail's webhook
+ * (after `post_withdrawal_settlement` commits and status flips to `paid`)
+ * only has to call it — mirroring the wallet.funded webhook pattern.
+ */
+export function withdrawalPaidEmail(
+  name: string,
+  amountNaira: number,
+  locale: AppLocale = "en",
+) {
+  const copy = getEmailCopy(locale);
+  return {
+    subject: copy.withdrawalPaidSubject(amountNaira),
+    html: layout(`
+      <h1>${copy.withdrawalPaidTitle}</h1>
+      <p>${copy.withdrawalPaidIntro(name)}</p>
+      <div class="metric">
+        <div class="metric-label">${copy.withdrawalPaidAmount}</div>
+        <div class="metric-value">NGN ${formatNaira(amountNaira, locale)}</div>
+      </div>
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${ACCOUNT_ORIGIN}/wallet/withdrawals" class="btn">${copy.withdrawalButton}</a>
+      </p>
+    `, locale),
+  };
+}
+
 // PASS 18C — extended copy for the previously English-only templates. Each
 // locale provides production-tier translations for fr/es/pt/ar/de/it; zh/hi/
 // ig/yo/ha fall back to the English source via the runtime autoTranslate
@@ -391,8 +590,8 @@ function getExtendedEmailCopy(locale: AppLocale) {
       subscriptionPhraseRenewed: "a été renouvelé",
       subscriptionPhrasePaused: "a été suspendu",
       subscriptionManageCta: "Gérer les abonnements",
-      digestSubject: "Votre récapitulatif HenryCo de la semaine",
-      digestTitle: "Votre semaine chez HenryCo",
+      digestSubject: "Votre récapitulatif Henry Onyx de la semaine",
+      digestTitle: "Votre semaine chez Henry Onyx",
       digestIntro: (name: string) => `Bonjour ${name || "vous"}, voici un aperçu de votre compte cette semaine.`,
       digestActivityLabel: "Activités",
       digestNotificationsLabel: "Notifications",
@@ -426,8 +625,8 @@ function getExtendedEmailCopy(locale: AppLocale) {
       subscriptionPhraseRenewed: "se ha renovado",
       subscriptionPhrasePaused: "se ha pausado",
       subscriptionManageCta: "Gestionar suscripciones",
-      digestSubject: "Tu resumen semanal de HenryCo",
-      digestTitle: "Tu semana en HenryCo",
+      digestSubject: "Tu resumen semanal de Henry Onyx",
+      digestTitle: "Tu semana en Henry Onyx",
       digestIntro: (name: string) => `Hola ${name || "allí"}, aquí va un vistazo rápido a tu cuenta esta semana.`,
       digestActivityLabel: "Actividades",
       digestNotificationsLabel: "Notificaciones",
@@ -461,8 +660,8 @@ function getExtendedEmailCopy(locale: AppLocale) {
       subscriptionPhraseRenewed: "foi renovada",
       subscriptionPhrasePaused: "foi pausada",
       subscriptionManageCta: "Gerir subscrições",
-      digestSubject: "O seu resumo semanal HenryCo",
-      digestTitle: "A sua semana na HenryCo",
+      digestSubject: "O seu resumo semanal Henry Onyx",
+      digestTitle: "A sua semana na Henry Onyx",
       digestIntro: (name: string) => `Olá ${name || "você"}, aqui fica um olhar rápido sobre a sua conta esta semana.`,
       digestActivityLabel: "Atividades",
       digestNotificationsLabel: "Notificações",
@@ -496,8 +695,8 @@ function getExtendedEmailCopy(locale: AppLocale) {
       subscriptionPhraseRenewed: "تم تجديده",
       subscriptionPhrasePaused: "تم إيقافه",
       subscriptionManageCta: "إدارة الاشتراكات",
-      digestSubject: "ملخصك الأسبوعي من HenryCo",
-      digestTitle: "أسبوعك في HenryCo",
+      digestSubject: "ملخصك الأسبوعي من Henry Onyx",
+      digestTitle: "أسبوعك في Henry Onyx",
       digestIntro: (name: string) => `مرحبًا ${name || "هناك"}، إليك لمحة سريعة عن حسابك هذا الأسبوع.`,
       digestActivityLabel: "الأنشطة",
       digestNotificationsLabel: "الإشعارات",
@@ -531,8 +730,8 @@ function getExtendedEmailCopy(locale: AppLocale) {
       subscriptionPhraseRenewed: "wurde verlängert",
       subscriptionPhrasePaused: "wurde pausiert",
       subscriptionManageCta: "Abonnements verwalten",
-      digestSubject: "Ihre HenryCo-Wochenzusammenfassung",
-      digestTitle: "Ihre Woche bei HenryCo",
+      digestSubject: "Ihre Henry Onyx-Wochenzusammenfassung",
+      digestTitle: "Ihre Woche bei Henry Onyx",
       digestIntro: (name: string) => `Hallo ${name || "da"}, hier ist ein schneller Blick auf Ihr Konto diese Woche.`,
       digestActivityLabel: "Aktivitäten",
       digestNotificationsLabel: "Benachrichtigungen",
@@ -566,8 +765,8 @@ function getExtendedEmailCopy(locale: AppLocale) {
       subscriptionPhraseRenewed: "è stato rinnovato",
       subscriptionPhrasePaused: "è stato sospeso",
       subscriptionManageCta: "Gestisci abbonamenti",
-      digestSubject: "Il tuo riepilogo settimanale HenryCo",
-      digestTitle: "La tua settimana in HenryCo",
+      digestSubject: "Il tuo riepilogo settimanale Henry Onyx",
+      digestTitle: "La tua settimana in Henry Onyx",
       digestIntro: (name: string) => `Ciao ${name || "lì"}, ecco uno sguardo rapido al tuo account questa settimana.`,
       digestActivityLabel: "Attività",
       digestNotificationsLabel: "Notifiche",
@@ -600,8 +799,8 @@ function getExtendedEmailCopy(locale: AppLocale) {
     subscriptionPhraseRenewed: "has been renewed",
     subscriptionPhrasePaused: "has been paused",
     subscriptionManageCta: "Manage subscriptions",
-    digestSubject: "Your weekly HenryCo summary",
-    digestTitle: "Your week at HenryCo",
+    digestSubject: "Your weekly Henry Onyx summary",
+    digestTitle: "Your week at Henry Onyx",
     digestIntro: (name: string) => `Hi ${name || "there"}, here's a quick look at your account this week.`,
     digestActivityLabel: "Activities",
     digestNotificationsLabel: "Notifications",

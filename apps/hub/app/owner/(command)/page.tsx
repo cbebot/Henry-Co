@@ -8,28 +8,51 @@ import {
   MessageSquare,
   MessagesSquare,
   Shield,
+  UserPlus,
   Users,
 } from "lucide-react";
 import { RouteLiveRefresh } from "@henryco/ui";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import MetricCard from "@/components/owner/MetricCard";
 import DivisionBadge from "@/components/owner/DivisionBadge";
+import OwnerMoneyStrip from "@/components/owner/OwnerMoneyStrip";
+import SinceLastLooked from "@/components/owner/SinceLastLooked";
 import { OwnerPageHeader, OwnerPanel, OwnerNotice, OwnerQuickLink } from "@/components/owner/OwnerPrimitives";
 import SessionHealthTile from "@/components/owner/SessionHealthTile";
 import ObservabilityTile from "./dashboard/observability-tile";
+import CardClickThroughTile from "./dashboard/card-clickthrough-tile";
+import ModuleHealthTile from "./dashboard/module-health-tile";
+import DeepLinkHealthTile from "./dashboard/deep-link-health-tile";
 import { getOwnerOverviewData } from "@/lib/owner-data";
+import { getSignupsSnapshot } from "@/lib/owner-command/signups";
 import { getSessionHealthMetrics } from "@/lib/owner-session-health";
 import { getObservabilityMetrics } from "@/lib/owner-observability";
+import { getCardClickThroughMetrics } from "@/lib/owner-card-clickthrough";
+import { getModuleHealthMetrics } from "@/lib/owner-module-health";
+import { getDeepLinkHealthMetrics } from "@/lib/owner-deeplink-health";
 import { formatCurrencyAmount, formatCompactNumber, timeAgo } from "@/lib/format";
 import { getHubPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function OwnerOverviewPage() {
-  const [data, sessionHealth, observability, locale] = await Promise.all([
+  const [
+    data,
+    signups,
+    sessionHealth,
+    observability,
+    cardClickThrough,
+    moduleHealth,
+    deepLinkHealth,
+    locale,
+  ] = await Promise.all([
     getOwnerOverviewData(),
+    getSignupsSnapshot(),
     getSessionHealthMetrics(),
     getObservabilityMetrics(),
+    getCardClickThroughMetrics(),
+    getModuleHealthMetrics(),
+    getDeepLinkHealthMetrics(),
     getHubPublicLocale(),
   ]);
   const t = (text: string) => translateSurfaceLabel(locale, text);
@@ -40,7 +63,7 @@ export default async function OwnerOverviewPage() {
       <OwnerPageHeader
         eyebrow={t("Central Owner Command Center")}
         title={`${data.companyTitle} ${t("company brain")}`}
-        description={t("Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one HenryCo HQ surface.")}
+        description={t("Company-wide operations, finance, staffing, brand, delivery health, and owner guidance in one Henry Onyx HQ surface.")}
         actions={
           <>
             <Link href="/owner/staff/invite" className="acct-button-primary">
@@ -52,6 +75,10 @@ export default async function OwnerOverviewPage() {
           </>
         }
       />
+
+      <SinceLastLooked locale={locale} />
+
+      <OwnerMoneyStrip locale={locale} />
 
       <OwnerNotice tone="info" title={t("Data freshness")} body={data.dataHealthNote} />
       <OwnerPanel title={t("Executive situation room")} description={t("Fast owner read for what matters now.")}>
@@ -97,11 +124,14 @@ export default async function OwnerOverviewPage() {
           traceId="overview.divisions-live"
         />
         <MetricCard
-          label={t("Recognized revenue")}
-          value={formatCurrencyAmount(data.metrics.totalRevenueNaira)}
-          subtitle={t("Care, marketplace, and paid shared invoices")}
-          icon={DollarSign}
-          traceId="overview.recognized-revenue"
+          label={t("New signups this week")}
+          value={signups.ok ? formatCompactNumber(signups.last7d) : "—"}
+          subtitle={
+            signups.ok
+              ? `${formatCompactNumber(signups.totalProfiles)} ${t("total accounts")}`
+              : t("Signup count unavailable this load")
+          }
+          icon={UserPlus}
         />
         <MetricCard
           label={t("Open support pressure")}
@@ -166,14 +196,14 @@ export default async function OwnerOverviewPage() {
         </OwnerPanel>
       </div>
 
-      <OwnerPanel title={t("Division control center")} description={t("One health map for every live or future HenryCo division.")} action={<Link href="/owner/divisions" className="acct-button-ghost">{t("View all divisions")}</Link>}>
+      <OwnerPanel title={t("Division control center")} description={t("One health map for every live or future Henry Onyx division.")} action={<Link href="/owner/divisions" className="acct-button-ghost">{t("View all divisions")}</Link>}>
         <div className="grid gap-4 lg:grid-cols-2">
           {data.divisions.map((division) => (
             <Link key={division.slug} href={`/owner/divisions/${division.slug}`} className="rounded-[1.5rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft)] p-4 transition-all hover:border-[var(--owner-accent)]/30 hover:shadow-[var(--acct-shadow)]">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold text-[var(--acct-ink)]">{division.displayName}</div>
-                  <p className="mt-1 text-xs text-[var(--acct-muted)]">{division.healthLabel} {t("health")} · {division.alertCount} {t("alerts")} · {division.workOpen} {t("open items")}</p>
+                  <p className="mt-1 text-xs text-[var(--acct-muted)]">{division.healthLabel} {t("stability")} · {division.alertCount} {t("alerts")} · {division.workOpen} {t("open items")}</p>
                 </div>
                 <DivisionBadge division={division.slug} />
               </div>
@@ -220,6 +250,12 @@ export default async function OwnerOverviewPage() {
       <SessionHealthTile metrics={sessionHealth} locale={locale} />
 
       <ObservabilityTile metrics={observability} locale={locale} />
+
+      <CardClickThroughTile metrics={cardClickThrough} locale={locale} />
+
+      <ModuleHealthTile metrics={moduleHealth} locale={locale} />
+
+      <DeepLinkHealthTile metrics={deepLinkHealth} locale={locale} />
     </div>
   );
 }

@@ -70,11 +70,17 @@ export const getObservabilityMetrics = cache(
     const since24hISO = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
 
     // Pull two windows in parallel:
-    //   - All `*.failed` outcome events (errorEvents24h + topErrorEvents)
+    //   - All failure events (errorEvents24h + topErrorEvents)
     //   - All degraded events: `*_fallback` OR names ending `.degraded`
     //
-    // The henry_events table indexes `(name, created_at)` per V3-01
-    // slice 5b; both queries hit the index range and stay cheap.
+    // Failure is encoded in the canonical event NAME (`*.failed` /
+    // `*_failed` per docs/event-taxonomy.md), NOT in a column. The
+    // `henry_events` sink intentionally stores only `name`/`actor_id`/
+    // `payload` (see the V3-01 slice 5b migration + persistEvent), so
+    // there is no `outcome` column to filter on — both queries match by
+    // name, mirroring how the sibling degraded query already works.
+    // The table indexes `(name, created_at)` so each query hits the
+    // index range and stays cheap.
     let errorRows: { name: string }[] = [];
     let degradedRows: { name: string }[] = [];
 
@@ -83,7 +89,7 @@ export const getObservabilityMetrics = cache(
         client
           .from("henry_events")
           .select("name")
-          .eq("outcome", "failed")
+          .or("name.ilike.%.failed,name.ilike.%_failed")
           .gte("created_at", since24hISO)
           .limit(5000),
         client

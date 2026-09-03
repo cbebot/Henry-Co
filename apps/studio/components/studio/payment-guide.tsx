@@ -1,12 +1,13 @@
 import { Mail, ShieldCheck, Smartphone } from "lucide-react";
+import { COMPANY, getSupportWhatsAppHref } from "@henryco/config";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
 import { formatCurrency } from "@/lib/env";
 import { StudioCopyButton } from "@/components/studio/copy-button";
 
 function supportWhatsappHref(value: string | null) {
-  if (!value) return null;
-  const digits = value.replace(/[^\d]/g, "");
-  return digits ? `https://wa.me/${digits}` : null;
+  // SINGLE-SOURCE (owner 2026-07-08): the one wa.me builder lives in config.
+  if (!value || !value.replace(/[^0-9]/g, "")) return null;
+  return getSupportWhatsAppHref(value);
 }
 
 /**
@@ -48,12 +49,13 @@ export function StudioPaymentGuide({
 }) {
   const whatsappHref = supportWhatsappHref(supportWhatsApp);
   const formattedAmount = formatCurrency(amount, currency);
+  const legalEntity = COMPANY.group.legalName;
 
   return (
     <section className="space-y-5">
       <HenryCoHeroCard
         tone="contrast"
-        accentVar="var(--studio-signal, #97f4f3)"
+        accentVar="var(--studio-signal, #1F7375)"
         eyebrow={statusLabel}
         title={title}
         body={instructions}
@@ -78,13 +80,13 @@ export function StudioPaymentGuide({
       />
 
       {/* Bank details — divided list, no nested cards. */}
-      <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
+      <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5 sm:p-6">
         <div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
           <ShieldCheck className="h-3.5 w-3.5" />
           Verified company payee
         </div>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
-          Transfer only to the HenryCo company account shown below. Each detail has a copy
+          Transfer only to the {legalEntity} company account shown below. Each detail has a copy
           button so nothing has to be retyped.
         </p>
         <dl className="mt-4 divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
@@ -102,7 +104,7 @@ export function StudioPaymentGuide({
               </dt>
               <dd className="flex min-w-0 flex-1 items-center justify-between gap-3 sm:justify-end">
                 <span className="min-w-0 flex-1 truncate font-mono text-sm font-semibold text-[var(--studio-ink)] sm:flex-initial sm:text-right">
-                  {item.value || "Awaiting finance configuration"}
+                  {item.value || "We'll share these details with you shortly."}
                 </span>
                 {item.value ? (
                   <StudioCopyButton value={item.value} label={item.copyLabel} />
@@ -115,7 +117,7 @@ export function StudioPaymentGuide({
 
       {/* Step-by-step — single divided list with numbered prefixes, no
           nested cards, no oversized chrome. */}
-      <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
+      <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5 sm:p-6">
         <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
           What happens, step by step
         </div>
@@ -123,7 +125,7 @@ export function StudioPaymentGuide({
           {[
             "Copy the amount and account details from the section above.",
             "Transfer from your bank or company account using your project name as reference.",
-            "Upload your receipt or proof below — finance reviews and confirms within one business day.",
+            "Upload your receipt or proof below — we review and confirm it within one business day.",
             "Once confirmed, your project moves forward and you receive an update by email.",
           ].map((step, index) => (
             <li key={step} className="flex items-start gap-3 py-3 text-sm leading-6 text-[var(--studio-ink-soft)]">
@@ -142,7 +144,7 @@ export function StudioPaymentGuide({
 
       {/* Support — quiet two-line list with hairline rule. */}
       {supportEmail || (supportWhatsApp && whatsappHref) ? (
-        <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-black/10 p-5 sm:p-6">
+        <div className="rounded-[1.4rem] border border-[var(--studio-line)] bg-[var(--studio-fill-soft)] p-5 sm:p-6">
           <div className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
             Need help before or after payment
           </div>
@@ -151,7 +153,7 @@ export function StudioPaymentGuide({
               <li>
                 <a
                   href={`mailto:${supportEmail}`}
-                  className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-[var(--studio-ink)] transition outline-none active:translate-y-[0.5px] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 [@media(hover:hover)]:hover:text-[var(--studio-signal)]"
+                  className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-[var(--studio-ink)] transition outline-none active:translate-y-[0.5px] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--studio-bg-soft)] [@media(hover:hover)]:hover:text-[var(--studio-signal)]"
                 >
                   <span className="flex items-center gap-3">
                     <Mail className="h-4 w-4 text-[var(--studio-signal)]" />
@@ -169,7 +171,7 @@ export function StudioPaymentGuide({
                   href={whatsappHref}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-[var(--studio-ink)] transition outline-none active:translate-y-[0.5px] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 [@media(hover:hover)]:hover:text-[var(--studio-signal)]"
+                  className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-[var(--studio-ink)] transition outline-none active:translate-y-[0.5px] focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--studio-bg-soft)] [@media(hover:hover)]:hover:text-[var(--studio-signal)]"
                 >
                   <span className="flex items-center gap-3">
                     <Smartphone className="h-4 w-4 text-[var(--studio-signal)]" />

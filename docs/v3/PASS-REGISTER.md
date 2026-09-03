@@ -72,14 +72,29 @@ The owner's #1 demand. No new feature pillar (Phase C+) starts until Phase B clo
 
 | ID | Slug | Pillar | Deps | Eff | Par | Own | Risk | One-line |
 |---|---|---|---|---|---|---|---|---|
+| V3-02b | public-shell-logout-everywhere-completion | P12, P7 | V3-02 | S | Y | — | I | Wire `onSignOut` prop on shared `PublicAccountChip` + `AccountDropdown` across the 6 remaining public-shell apps (care, jobs, learn, logistics, property, studio); marketplace already wired as template; ~2 hours; source: `.codex-temp/v3-02-auth-reliability/report.md` §8 item 2 |
 | V3-07b | operator-surface-i18n | P12 | V3-07, V3-12 | L | N | D17 | — | Close ~1,305 operator-surface i18n GAPs (staff dashboards, admin workspaces, server messages, emails, PDFs, structured data, A11y); raise scanner from baseline to "no ambiguity"; 3–4 sessions |
 | V3-07c | henrycogroup-domain-sweep | P12 | V3-07 | S | Y | — | — | Mechanical replace of remaining ~156 `henrycogroup.com` literals with `henryDomain(division)` / `henryWebRoot()` helper across `apps/` + `packages/` (excl. `packages/search-ui/`); 1–2 sessions |
+| V3-DELIVERY-01 | notification-delivery-classification-fix | P3, P12 | V3-03 (merged) | S | Y | — | — | Add `email_dispatched_at IS NOT NULL` guard to V3-03 redelivery cron Stage 2 + optional 1-statement UPDATE to re-classify 1,408 misclassified `customer_notifications` rows (benign, 13 distinct users); see `docs/v3/notification-delivery-incident.md`; ~6-line fix |
 
-**Hardening posture (V3-07b, V3-07c):**
-- These are HARDENING passes surfaced by the Wave B.1 conductor as deferred work after V3-07 closed. They do NOT block Phase B closure (D11) and they do NOT block Phase C start.
-- Pattern B (runtime DeepL fallback) handles user-facing translation today; these passes deliver Pattern A typed-copy completeness and operator-surface coverage.
+**Hardening posture (V3-02b, V3-07b, V3-07c, V3-DELIVERY-01):**
+- These are HARDENING / CLEANUP passes surfaced by Wave B.1/B.2 conductors as deferred work after their parent passes closed. With one named exception, none block Phase B closure (D11) and none block Phase C start.
+- **Exception — V3-02b blocks Phase B closure (V3-12 acceptance).** V3-12 red-teams "no dead logout paths"; the 6 public-shell apps still routing through the legacy fetch path are a foundation-lock gap until wired. Schedule V3-02b in the same window as V3-02's merge.
+- Pattern B (runtime DeepL fallback) handles user-facing translation today; V3-07b/c deliver Pattern A typed-copy completeness and operator-surface coverage.
 - V3-07b runs sequentially across modules within itself (3–4 agent sessions are expected, each closing a module slice). V3-07c is parallel-safe and mechanical.
-- Either may execute during Phase C or later. Recommendation: schedule V3-07c immediately after V3-07 merges (it's a 1–2 session sweep); schedule V3-07b after Phase B closes, before Phase C wave 2.
+- V3-DELIVERY-01 is benign — see `docs/v3/notification-delivery-incident.md`. Ship within the same window as the cron-guard PR.
+- Either V3-07b/c may execute during Phase C or later. Recommendation: schedule V3-07c immediately after V3-07 merges (1–2 session sweep); schedule V3-07b after Phase B closes, before Phase C wave 2.
+
+### Infrastructure tail (NOT phase blockers; sit between Phase B closure and Phase C)
+
+| ID | Slug | Pillar | Deps | Eff | Par | Own | Risk | One-line |
+|---|---|---|---|---|---|---|---|---|
+| V3-DOMAIN-01 | henry-holdings-domain-migration | P12 | Wave B.1 merged + henry.holdings purchased + CAC certificate + corporate bank account | M | N | — | I | Migrate production from `henrycogroup.com` to `henry.holdings` — DNS, SSO domain, OAuth callbacks, Vercel project domains, email sender domains, hardcoded references via `henryDomain()` helper; see `docs/v3/domain-decision.md` + `docs/v3/infrastructure-decisions.md` ID-2 |
+
+**Infrastructure posture (V3-DOMAIN-01):**
+- Domain `henry.holdings` is selected (per `docs/v3/domain-decision.md`) but not yet acquired. Trigger to buy: Wave B.1 fully merged + CAC certificate received + corporate bank account opened.
+- Cross-references with infrastructure ID-1 (Cloudflare reverse-proxy, see `docs/v3/infrastructure-decisions.md`) — sequence Cloudflare cutover BEFORE the domain migration where possible to minimize compounding DNS churn.
+- Does NOT block any V3 numbered pass; clean public launch (V3-96) benefits from the migration but does not strictly require it.
 
 ---
 
@@ -89,7 +104,7 @@ Payments and identity are the highest-stakes work in V3. Every pass in this phas
 
 | ID | Slug | Pillar | Deps | Eff | Par | Own | Risk | One-line |
 |---|---|---|---|---|---|---|---|---|
-| V3-13 | payments-provider-router | P2 | V3-12 | M | N | — | M | Vendor-agnostic `PaymentProviderRouter` interface + capability registry + deterministic routing rules + per-country defaults |
+| V3-13 | payments-provider-router | P2 | V3-12 | M | N | — | M | Vendor-agnostic `@henryco/payment-router` (capability registry + deterministic country routing) built + proven against MockProvider; A1/A2/A3 (idempotent create / legal transitions / webhook dedup) enforced at DB + mirrored TS reference; client never sees provider (Principle 9). See `docs/v3/payment-router-architecture.md` |
 | V3-14 | payments-stripe-activation | P2 | V3-13 | L | Y | D1 | M | Stripe SDK wired + Apple/Google Pay + Stripe Connect for payouts + webhook handler signed-and-idempotent |
 | V3-15 | payments-paystack-activation | P2 | V3-13 | L | Y | D1 | M | Paystack SDK wired + card + bank + USSD + webhook reconciliation |
 | V3-16 | payments-flutterwave-activation | P2 | V3-13 | L | Y | D1 | M | Flutterwave SDK wired + mobile money rails + multi-currency + webhook reconciliation |
@@ -104,6 +119,10 @@ Payments and identity are the highest-stakes work in V3. Every pass in this phas
 | V3-25 | identity-content-moderation-framework | P7 | V3-12 | L | Y | — | C | Cross-division content moderation: marketplace listings, jobs posts, studio briefs, services profiles; LLM-assisted but human-gated |
 
 **Phase C parallelism plan:** V3-13 first (provider router). Then V3-14, V3-15, V3-16 in parallel (per-provider integrations). V3-17 ledger in parallel with provider work. V3-18, V3-20, V3-21, V3-22, V3-23 fan out after their deps. V3-19 (refunds) waits for all providers + ledger.
+
+**V3-13 card-CTA rollout (Q2 deliverable):** the `cardCta` seam shipped on `PaymentSurfaceContext` (+ `buildPaymentSurfaceContext` passthrough) in `@henryco/payment-surface`, wired once as a reference in marketplace `/pay/[orderNo]` — gated on `MOCK_PAYMENT=1` so production ships no dead link until the live card route exists. Remaining pay surfaces to adopt the same seam (tracked, NOT yet wired): logistics, studio, jobs, property, care. Each adopts via one call-site addition — `buildPaymentSurfaceContext({ …, cardCta: { label: translateSurfaceLabel(locale, "Pay with card"), href } })` — when its checkout surface and a live card route are ready. No live provider until V3-14/15/16.
+
+**V3-15 checkout-entry + callback + USSD surface (follow-up — REQUIRED before rails carry traffic):** V3-15 activated the Paystack rail end-to-end at the server boundary (`POST /api/payments/intents` → hosted-redirect `clientAction`, webhook reconciliation, Q3 refund lifecycle) but deliberately deferred scope item 4 — the buyer-facing checkout *entry* UI and the `/payments/callback` landing page. The callback URL is already computed (`getAccountUrl("/payments/callback")`, G7 config-driven) and threaded into Paystack's `transaction/initialize`, but **the page itself is not built** — a buyer redirected back lands on a 404 today. This follow-up is the first real card/USSD entry point and is tied to the 6-app CTA rollout above: it MUST exist before any live checkout. Scope: (a) a checkout-entry surface that calls the intents route and forwards the opaque `clientAction.redirect` (never names Paystack — Principle 9); (b) the `/payments/callback` page that reads back intent status (money truth comes from the webhook, NOT this redirect — callback is display-only); (c) **USSD** for NG buyers via Paystack's hosted `channels:['ussd']` — no bespoke USSD UI (Principle 9 keeps the provider invisible; the hosted page renders the USSD code). USSD especially matters for NG users without cards. Until this ships, V3-15 is functionally closed at the API boundary (Finish Line 1) but cannot carry real buyers.
 
 ---
 
@@ -284,6 +303,44 @@ Cross-reference DECISIONS-REQUIRED.md.
 - D10 (per-market localization commitment): blocks V3-84
 - D11 (Foundation Lock acceptance): blocks Phase C start
 - D17 (V3-07b operator-surface i18n scope sign-off): blocks V3-07b only; does NOT block any phase
+- **D18 (international multi-currency close-blocker): blocks W1 → therefore blocks V3-95 + V3-96 CLOSE** (see Deferred strategic workstreams below)
+- **D19 (Flutterwave payouts authorization): blocks W2; advances V3-69**
+- **D20 (owner's personal AI portal authorization): blocks W3**
+
+---
+
+## V3-COMMAND track — Owner Command Center
+
+A **named track**, distinct from the numbered `V3-NN` global plan and the older `V3 PASS NN` design-rebuild cycle (same convention rationale as the hardening suffixes). It builds the owner's company-wide operations brain on the same **mock-first, de-risked discipline** as the payment rail (V3-13): prove the architecture against mocks before any live wiring. Blueprint: `docs/v3/command-center-architecture.md`.
+
+| ID | Slug | Deps | Eff | Risk | Status | One-line |
+|---|---|---|---|---|---|---|
+| V3-COMMAND-01 | command-center-architecture | — | S | — | DONE | Audit (10 divisions + owner/staff surfaces + predicates) + three-surface architecture + publish-to-command contract blueprint (`docs/v3/command-center-architecture.md`) |
+| V3-COMMAND-02 | command-foundation-staged | V3-COMMAND-01 | M | I | STAGED | `@henryco/command-contract` (typed `AttentionItem` + state machine + access gating + mock feed, `node:test`-gated) + Owner Command Center (`apps/command`) + Staff Workspace (`apps/work`) on Vercel free domains, against mocks. ZERO live data. |
+| V3-COMMAND-03 | command-live-wiring | V3-COMMAND-02, V3-22 | L | M/I | BLOCKED | Supabase-backed `command_attention_items` store + SQL transition trigger + per-division publishers (replace the `apps/hub` pull model) + real `UnifiedViewer`/SQL predicates + flip to `henrySubdomain('command'|'work')` real hosts. |
+
+**Hard lines preserved by V3-COMMAND-02:** the real owner surface (`apps/hub/app/owner/(command)`) and staff surface (`apps/staff`) are left running **untouched** — live extraction is V3-COMMAND-03. No payment surface, design token, or public site is touched. Zero hardcoded domains (`henryDomain()` / `henrySubdomain()` only). Zero code-identifier changes (`@henryco/*` unchanged).
+
+**V3-COMMAND-03 gate:** the finance spine (V3-22) — so money-at-stake totals are authoritative — plus the real `henryonyx.com` subdomains.
+
+---
+
+## Deferred strategic workstreams (W1–W5)
+
+A **named track** of strategic scope the owner has deliberately deferred past the Nigeria-first core launch. These do **not** renumber the 96 passes — they either refine/expand existing passes or earn a `V3-NN` number only when scheduled. Full record (deps, gates, sequencing): **`DEFERRED-STRATEGIC-WORKSTREAMS.md`**.
+
+> ### ⚠️ W1 is a CLOSE-BLOCKER
+> **International multi-currency — customers worldwide see prices, pay, and get paid in their own currency — is the owner's hard rule for "finished." Launch NGN-first, but `V3-95` (launch-readiness) and `V3-96` (showcase) CANNOT close until W1 is done.** It spans a global processor (Stripe), a real multi-currency pricing engine (not FX approximations), multi-currency settlement + international payouts, multi-jurisdiction tax (EU VAT/OSS, US sales tax…), **and** a non-code banking/regulatory buildout (forex accounts, cross-border licensing, per-market tax registration — `L19`/`L20`). The banking/licensing track is the longest pole — start it early.
+
+| ID | Workstream | Class | Gates on | Maps to | Owner decision |
+|---|---|---|---|---|---|
+| W1 | International multi-currency | **⚠️ CLOSE-BLOCKER** | NG-core proven; likely after Phase D | V3-14, V3-16, V3-21, V3-69, V3-84, V3-85 + L1/L2/L3/L12 + L19/L20 | **D18** + D1 + D10 |
+| W2 | Flutterwave payouts (money-out) | Money-grade | Division checkout live + revenue to distribute | advances V3-69; V3-17, V3-19 | **D19** |
+| W3 | Owner's personal AI portal | New (Phase D+) | Core launch; V3-26 foundation | new pass; reuses V3-26; ≠ V3-28..33 / V3-46 | **D20** + D3 |
+| W4 | Marketplace-LIVE VAT gate | Money gate | V3-21 output-VAT | V3-21; blocks TEST→LIVE flip | (covered by D5) |
+| W5 | Per-division checkout-activation pattern | Playbook | per-division: W4 + soak | V3-13, V3-15, V3-16 | per-division operational |
+
+**Ground-truth note:** the proven rail (`packages/payment-router/` V3-13, the double-entry ledger + VAT settlement seam, the clearing→revenue RPCs) is on `origin/main`. The per-division `cardCta` ignition seam + feature flags (W5) are in-flight (worktree), not yet on main.
 
 ---
 
@@ -313,3 +370,71 @@ V3-07b and V3-07c do NOT touch money, identity, or compliance — they are surfa
 - [x] Naming convention deliberately distinct from "V3 PASS 21" cycle
 - [x] Phase B placement preserves "finish the base before chasing brilliance"
 - [x] Hardening posture explicit: Pattern B DeepL fallback handles user-facing translation today; V3-07b/c deliver Pattern A typed-copy completeness and operator-surface coverage
+
+---
+
+## Appendix — SCHEMA-TRUTH-01 drift-debt tickets (2026-06-11)
+
+SCHEMA-TRUTH-01 regenerated `packages/data/src/database.types.ts` from PROD-ACTUAL
++ the FL2 set (see `docs/v3/fl2-apply-manifest.md`) and burned the schema-drift
+baseline 33 → 21. The 21 residual entries (`scripts/ci/schema-drift-baseline.json`)
+are NOT fixable by a read-side rename — each needs either its unapplied feature
+family or a design decision. Burn-down tickets:
+
+| Ticket | Baseline entries | What it needs |
+|---|---|---|
+| SD-1 profiles.email | learn templates/people/shared-account, logistics + studio shared-account (5×) | `profiles` has no email (it lives on `customer_profiles`); rewire the shared-account readers to the right table — behavioral, verify each consumer |
+| SD-2 security risk_level | jobs posting-eligibility, staff intelligence-data (2×) | `customer_security_log` has no risk_level; define the risk signal (column at a future migration, or derive from metadata/event_type) |
+| SD-3 studio wave | milestones.completed_at, automation reminder_sent_at, proposals.signed_pdf_url, revisions.requested_by_user_id (4×) | the 2026-05-14 studio feature wave (manifest §4) — ship the wave with a prod-shape rehearsal, or park the routes |
+| SD-4 jobs wave | salary period/status, interview_rooms.status, offer_letters.status (4×) | the 2026-05-15 jobs feature wave (manifest §4) |
+| SD-5 rooms wave | rooms_sessions.kind/.status (2×) | the rooms family (manifest §4); also unblocks the realtime backfill thirds |
+| SD-6 staff review queue | review_due_at ×3 + property rental_price_kobo (4×) | the staff review-queue concept never landed in prod; staff dashboard modules read it — design decision |
+| SD-7 hq nonce scope | (not in baseline — manifest §3) | the unapplied index swap in 20260407193000 (global → per author+thread client_nonce); messaging dedupe correctness |
+| SD-8 workspace reads | (not in baseline — guard blind spot) | hub internal-comms access + owner DM/members routes read absent workspace_* tables today; live-risk triage (ship workspace platform or guard the reads) |
+| SD-9 wave routes live-risk | (not in baseline) | division API routes per manifest §4 read absent tables and 500-if-hit (care pod/track/recurring/claims, logistics quote/book/dispatch/pod/fleet pages, jobs verifications, studio asset-packs/proposals-sign); per-family: ship wave or add read-resilience |
+
+Guard upgrade candidate: the drift guard cannot flag a TABLE that exists in
+migration files but not in prod (it trusts the types ∪ migration-DDL union).
+With `supabase/prod-actual/schema.sql` now committed as the declared baseline,
+a table-existence check against prod-actual + the FL2 manifest set would close
+SD-8/SD-9-class blind spots in CI.
+
+---
+
+## REPO-RECONCILE-01 — captured follow-ups (2026-06-16)
+
+Repo-hygiene/consolidation pass. Estate reconciled; unmerged-but-done work captured into PRs; confirmed-dead worktrees cleaned. The durable, still-open follow-ups below were harvested from `.codex-temp` reports + live prod checks and **reconciled against current `origin/main`** (items already merged/applied were dropped: STAB-01 migration #282, SEC-HARDEN-02/03/04 #270/#287/#290, V3-VAT-CLASSIFICATION #297, V3-DIVISION-CHECKOUT #298 — all live).
+
+### Captured this pass (in PR, owner-gated for merge — DO NOT auto-merge)
+- **PR #299** (draft) — SEC-HARDEN-05: Care manual-payment guarded RPC + balanced ledger. Carries an owner-gated prod money migration (not applied).
+- **PR #300** (draft) — V3-OWNER-INBOX-01: owner email inbox (Cloudflare Email Routing inbound). Owner prereq: enable Email Routing + **merge** SPF.
+- **PR #301** — SCHEMA-TRUTH-01: types from prod-actual+FL2 + apply manifest + drift baseline (was 6 commits stranded local-only).
+
+### Open follow-ups to schedule
+
+| # | Title | What remains | Gate / dep | Class |
+|---|---|---|---|---|
+| RR-1 | **"Henry Holdings" → "Henry Onyx Limited" legal-name closure** | `packages/config/legal.ts` still sets `entity.name = "Henry Holdings Limited"` with `rcNumber: "[OWNER-TO-CONFIRM]"`; ~19 files carry the legacy name (incl. branded-documents receipt/invoice, /privacy, /terms, email layout, payment-surface). Replace with grounded CAC identity **Henry Onyx Limited, RC 9594234, TIN 2621481857689**. Supersedes the older `v3/legal-rename-01` (which renamed *to* the now-wrong "Henry Holdings"). | Owner confirm final legal entity; touches financial/legal surfaces | Compliance |
+| RR-2 | **FL2 pending-intent verify-sweep (reconciler gap)** | Reconciler only sweeps `succeeded`; it never re-verifies `pending` against the provider → paid-but-pending strands. Live evidence: `payment_attempts` rows can read `status='succeeded'` with NO real Flutterwave txn id while the intent stays `pending` (17 such on prod 2026-06-16). Build a pending-intent verify-by-reference sweep. | — (systemic) | Money |
+| RR-3 | **Cancel 17 stale/abandoned test payment_intents** | 17 `pending` FLW intents from 2 test accounts; ₦0 recognized (0 receipts/wallet/funding). Guarded, idempotent plan ready (`.codex-temp/repo-reconcile-01/stale-intent-cancellation-plan.sql`): per-intent provider verify → trigger-guarded `pending→cancelled`. | Owner money sign-off (no prod write done) | Money |
+| RR-4 | **FL2 rail activation + 48h soak** | Live-key cutover, one owner controlled real-card test charge end-to-end, then 48h soak monitoring (ledger Δ0, none stuck in `processing`). | Owner-gated (live key) | Money |
+| RR-5 | **FL2 — 7 original live-key stuck intents re-drive** | Swap to live key, verify-by-reference classify, re-drive via idempotent `advance`+`apply_payment_webhook`. | Needs live key; after soak | Money |
+| RR-6 | **23 wallet-proof assets still publicly exposed** | Financial-PII proofs still served from public CDN (V3-MEDIA-REMEDIATE remainder). Re-home → RLS-private + restrict; ~7yr legal hold means restrict-not-delete. | Owner money sign-off; money-frozen | Compliance/Money |
+| RR-7 | **Bank-transfer retirement Phase-2** | Account wallet-proof manual flow removal once FL2 soak clears + in-flight queue drains; per-division card-rail ignition (studio/marketplace/care `cardCta` still dormant). | FL2 soak + drain + division ignition | Money |
+| RR-8 | **Marketplace LIVE VAT wiring (activation)** | #297 (VAT classification) + #298 (division checkout) are merged but **DORMANT**. Live activation = per-item `buildSaleVatRecognitionByLine` wiring + `MARKETPLACE_CARD_CHECKOUT` flag + `PAYMENTS_DATABASE_URL` + accountant VAT sign-off. Cross-ref DEFERRED-STRATEGIC-WORKSTREAMS W4/W5. | Owner + accountant | Money/Compliance |
+| RR-9 | **Support PDF re-home (minor)** | 1 support PDF never publicly served (Cloudinary blocks PDF delivery); owner console download→upload to private storage. | Manual console | Low |
+| RR-10 | **Branch/worktree estate prune (deferred)** | 138 local branches fully merged to `origin/main` remain as refs; many `.codex/worktrees/*` (codex-CLI-managed) + locked agent worktrees remain. Propose a guarded branch-prune sweep + codex-side worktree cleanup, owner-gated. | Owner-gated; re-check shared-repo state first | Hygiene |
+
+---
+
+## V3-FREESHIP — marketplace free shipping (2026-06-19)
+
+A **named** money-adjacent capability track (distinct from the numbered `V3-NN` plan), born when a per-product free-shipping waiver entered via a one-off VAT live-test and is now being closed out + built into a real product.
+
+| ID | Slug | Risk | Status | One-line |
+|---|---|---|---|---|
+| **V3-FREESHIP-CLOSE-01** | freeship-close-foundation | **M** (money) | ✅ this pass | Promote the per-product free-shipping waiver from test-artifact to a clean, money-safe, **DORMANT** capability: named flag contract (`lib/checkout/free-delivery.ts`), strict `=== true` guard, every-line-flagged + fail-closed checkout, VAT composition proven (₦1,075→₦75.00, exempt→0), unit + VAT tests, documented (`docs/marketplace/free-shipping-capability.md`). No live caller; nothing flagged in prod. |
+| **V3-FREESHIP-02** | freeship-seller-zones | **M** (money) + **pricing** | ✅ backend (T1–T4); UIs (T5/T6) → **V3-DELIVERY-COMPLETE-01** | **Seller-controlled, location-aware** free shipping ("Delivery Promises"): tier-earned reach (bronze=own state / silver=zone / gold=nationwide via KYC `verification_level`), store-wide. **Built + tested + committed-NOT-applied:** NG geography module (`@henryco/config`), tier-clamped reach (`delivery-reach.ts`), `marketplace_delivery_promises` table + ownership-gated RPC, location-aware checkout waiver (re-clamps to current tier — the money guarantee). Spec `docs/superpowers/specs/2026-06-19-marketplace-delivery-promises-design.md`; plan `docs/superpowers/plans/2026-06-20-marketplace-delivery-promises.md`. This pass IS the Lane-1 review activating CLOSE-01's dormant waiver. |
+| **V3-DELIVERY-COMPLETE-01** | delivery-complete | **M** (money) + **pricing** | ✅ this pass — reconcile + T5/T6, DORMANT | Reconciled the **two** delivery-zeroing mechanisms (per-product `filter_data.free_delivery` #309/CLOSE-01 + seller Delivery Promise #314) into **one** coherent VAT-correct model: OR per line, AND across the cart → one delivery line, one boolean, no double-zero; VAT carve correct in all four combos (proven end-to-end in `delivery-vat-combination.test.ts`). Unified model documented in `docs/marketplace/free-shipping-capability.md`. Built **T5** (seller Delivery Promise card in `/vendor/settings` — tier-gated reach, dispatch-state, min-order, live preview, smart-state; new `vendor_delivery_promise_upsert` intent → ownership-checked RPC on the caller's session) and **T6** (checkout NG state picker replacing free-text region; quiet "Free delivery…" badge on product/store cards + PDP, reach re-clamped for display). Flag `MARKETPLACE_DELIVERY_PROMISES` (mirrors card-rail); migration committed-NOT-applied; RLS/RPC proof run on PGlite (fixed a never-run proof-script ordering bug). All ten apps typecheck; checkout tests + i18n strict green. |
+
+**Posture:** V3-FREESHIP-CLOSE-01 is the money-safe FOUNDATION (dormant — flagging a product is owner/Lane-1-gated). V3-FREESHIP-02 makes it a real seller product. Any LIVE free-shipping offer activates only through V3-FREESHIP-02's reviewed seller+zone rule — never by hand-flagging `filter_data` in prod.

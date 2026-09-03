@@ -84,7 +84,7 @@ export function KycSummaryDocument({ user, status, submittedAt, reviewedAt, revi
       <View style={styles.notice}>
         <Text style={styles.noticeKicker}>Privacy posture</Text>
         <Text style={styles.noticeBody}>
-          This summary records what was submitted and how the HenryCo trust team has reviewed it. The underlying ID
+          This summary records what was submitted and how the Henry Onyx trust team has reviewed it. The underlying ID
           documents are never embedded in this PDF — only the metadata you see below.
         </Text>
       </View>
@@ -114,8 +114,8 @@ export function KycSummaryDocument({ user, status, submittedAt, reviewedAt, revi
 
       <LegalFooter
         lines={[
-          "HenryCo retains identity documents only as long as required by Nigerian law and applicable KYC obligations. This summary is your audit-trail copy and does not include the document images themselves.",
-          "If you need to update an ID, do so from your HenryCo account verification page; the original record will then move to historical state and a new entry will replace it in this view.",
+          "Henry Onyx Limited retains identity documents only as long as required by Nigerian law and applicable KYC obligations. This summary is your audit-trail copy and does not include the document images themselves.",
+          "If you need to update an ID, do so from your Henry Onyx account verification page; the original record will then move to historical state and a new entry will replace it in this view.",
         ]}
       />
     </BrandedDocument>

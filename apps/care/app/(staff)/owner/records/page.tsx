@@ -18,7 +18,7 @@ import { createOrderItemAction } from "../actions";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Owner Records | Henry & Co. Fabric Care",
+  title: "Owner Records | Henry Onyx Fabric Care",
   description: "Every cloth recorded online, searchable, archived cleanly, and structured for accountability.",
 };
 

@@ -16,6 +16,7 @@ export const ROUTE_MANIFEST = [
     routes: [
       { path: "/", name: "home", auth: true },
       { path: "/activity", name: "activity", auth: true },
+      { path: "/messages", name: "messages", auth: true },
       { path: "/notifications", name: "notifications", auth: true },
       { path: "/payments", name: "payments", auth: true },
       { path: "/settings", name: "settings", auth: true },

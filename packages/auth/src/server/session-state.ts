@@ -2,7 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import type { NextResponse } from "next/server";
-import { COMPANY } from "@henryco/config";
+import { COMPANY, getSharedCookieDomain } from "@henryco/config";
 
 import {
   HC_SESSION_STATE_COOKIE,
@@ -19,7 +19,15 @@ import {
  */
 const SESSION_STATE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 
-function cookieDomain(): string | undefined {
+export type SessionStateCookieOptions = {
+  hostname?: string | null;
+  secure?: boolean;
+};
+
+function cookieDomain(hostname?: string | null): string | undefined {
+  if (hostname) {
+    return getSharedCookieDomain(hostname);
+  }
   // Addendum A9: in non-production environments (NODE_ENV !== "production")
   // fall back to the request hostname rather than `.henrycogroup.com`.
   // This mirrors the convention `@henryco/auth/cookies` already uses for
@@ -42,8 +50,10 @@ function cookieDomain(): string | undefined {
 export function writeSessionStateCookie(
   res: NextResponse,
   state: SessionState,
+  options: SessionStateCookieOptions = {},
 ): void {
   const isClear = state === "signed-out";
+  const domain = cookieDomain(options.hostname);
   res.cookies.set({
     name: HC_SESSION_STATE_COOKIE,
     value: state,
@@ -51,8 +61,8 @@ export function writeSessionStateCookie(
     maxAge: isClear ? 0 : SESSION_STATE_MAX_AGE_SECONDS,
     httpOnly: false,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    domain: cookieDomain(),
+    secure: options.secure ?? Boolean(domain),
+    domain,
   });
 }
 

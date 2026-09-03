@@ -26,7 +26,7 @@ export default async function TrustPage() {
     {
       icon: UserCheck,
       title: t("Your account & data"),
-      body: t("Saving and applying require a HenryCo account so your shortlist and applications are not floating in a cookie somewhere. You control your profile, documents, and what you send with each application."),
+      body: t("Saving and applying require a Henry Onyx account so your shortlist and applications are not floating in a cookie somewhere. You control your profile, documents, and what you send with each application."),
     },
   ] as const;
 
@@ -37,19 +37,20 @@ export default async function TrustPage() {
     >
       <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 lg:px-8">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{t("Trust & safety")}</p>
               <h1 className="mt-4 jobs-display max-w-3xl text-balance">
                 {t("Slow the bad listings. Let the good ones shine.")}
               </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
+              {/* READING-02: hero body in the editorial serif reading face. */}
+              <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-8 text-[var(--jobs-muted)]">
                 {t("Real companies, real candidates, and a hiring process you can follow. Verification, moderation, and visible stages keep this from turning into an anonymous job dump.")}
               </p>
               <div className="mt-8 flex flex-wrap gap-3 text-sm">
                 <Link
                   href="/jobs"
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                  className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
                 >
                   {t("Browse all jobs")}
                   <ArrowRight className="h-4 w-4" />
@@ -126,20 +127,21 @@ export default async function TrustPage() {
         </section>
 
         <section className="border-t border-black/10 pt-10 dark:border-white/10">
-          <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-end">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div>
               <p className="jobs-kicker">{t("Where to from here")}</p>
               <h2 className="mt-3 jobs-heading max-w-2xl text-balance">
                 {t("Browse with the verified filter, or read the FAQ first.")}
               </h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--jobs-muted)]">
+              {/* READING-02: section intro in the serif reading face. */}
+              <p className="hc-font-reading text-pretty mt-4 max-w-2xl text-sm leading-7 text-[var(--jobs-muted)]">
                 {t("The verified filter on the jobs board narrows to employers who have cleared review. If something looks off, the help page tells you exactly how to flag it.")}
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href="/jobs?verified=1"
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--jobs-brass)] px-6 py-3 text-sm font-semibold text-[var(--jobs-paper)] transition hover:-translate-y-0.5"
+                className="jobs-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
               >
                 {t("Verified employers")}
                 <ArrowRight className="h-4 w-4" />

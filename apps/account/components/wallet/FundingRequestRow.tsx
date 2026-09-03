@@ -11,7 +11,6 @@ type FundingRequest = {
   amount_kobo: number;
   status: string;
   reference: string | null;
-  proof_url?: string | null;
   created_at: string;
 };
 
@@ -64,15 +63,6 @@ export function FundingRequestRow({ request, copy, statusLabels }: Props) {
           <span className="acct-wal__chip" data-tone={tone}>
             {label}
           </span>
-          {request.proof_url ? (
-            <span className="acct-wal__chip" data-tone="success">
-              {copy.proofUploaded}
-            </span>
-          ) : (
-            <span className="acct-wal__chip" data-tone="warn">
-              {copy.awaitingProof}
-            </span>
-          )}
         </div>
         <span className="acct-wal__funding-amount">₦{formatKoboMajor(request.amount_kobo)}</span>
         <span className="acct-wal__funding-ref">

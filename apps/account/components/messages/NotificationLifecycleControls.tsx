@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { translateSurfaceLabel, useHenryCoLocale } from "@henryco/i18n";
 import { ButtonPendingContent } from "@henryco/ui";
+import { toast } from "@henryco/ui/feedback";
 import { Archive, CheckCheck, MailOpen, Trash2 } from "lucide-react";
 
 type NotificationLifecycleControlsProps = {
@@ -84,6 +85,19 @@ export default function NotificationLifecycleControls({
         throw new Error(localizeError(payload?.error));
       }
 
+      // V3-DASH-TOAST-02: a clean action-feedback popup (the marketplace
+      // "Saved to wishlist" pattern) — NOT a feed notification. Stable id per
+      // action so a rapid double-tap replaces in place instead of stacking.
+      const confirmation =
+        action === "read"
+          ? t("Marked as read")
+          : action === "unread"
+            ? t("Marked as unread")
+            : action === "archive"
+              ? t("Notification archived")
+              : t("Notification deleted");
+      toast.success(confirmation, { id: `notif-${action}` });
+
       if (action === "delete" && redirectOnDelete) {
         router.push(redirectOnDelete);
         return;
@@ -91,7 +105,9 @@ export default function NotificationLifecycleControls({
 
       router.refresh();
     } catch (requestError) {
-      setError(localizeError(requestError instanceof Error ? requestError.message : null));
+      const message = localizeError(requestError instanceof Error ? requestError.message : null);
+      setError(message);
+      toast.error(message, { id: "notif-action-error" });
     } finally {
       setPendingAction(null);
     }

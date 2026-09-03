@@ -1,3 +1,4 @@
+import { RouteLiveRefresh } from "@henryco/ui";
 import { Truck } from "lucide-react";
 
 import { formatAccountTemplate, getAccountCopy } from "@henryco/i18n/server";
@@ -10,6 +11,7 @@ import {
 } from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import { getAccountAppLocale } from "@/lib/locale-server";
 import {
   getLogisticsSnapshotForAccountUser,
@@ -252,7 +254,16 @@ export default async function LogisticsPage() {
           }}
         />
       }
-      nextStep={nextStep}
+      nextStep={
+        <>
+          {/* SP6: division-scoped resume chip — renders only when a REAL pending journey exists here. */}
+          <DivisionResumeChip division="logistics" userId={user.id} />
+          {nextStep}
+        </>
+      }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
       sections={[
         {
           id: "acct-log-map",
