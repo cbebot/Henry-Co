@@ -254,34 +254,6 @@ export async function applySellerDecision(input: {
     return { ok: false, error: "Audit logging failed; seller application was not changed." };
   }
 
-  // The application status update — matches the marketplace route's columns
-  // exactly (status, review_note, reviewed_at, reviewed_by).
-  //
-  // Its result is CHECKED, which it previously was not. The activation below
-  // grants a store and a vendor role membership; running that off an update
-  // whose outcome nobody looked at means a failed or lost write still ends with
-  // the applicant holding seller access while their application says otherwise.
-  let statusUpdate = admin
-    .from("marketplace_vendor_applications")
-    .update({
-      status: decision,
-      review_note: note.trim() || null,
-      reviewed_at: now,
-      reviewed_by: actorId,
-    } as never)
-    .eq("id", applicationId);
-  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
-  const { data: statusUpdated, error: statusError } = await statusUpdate.select("id");
-  if (statusError) {
-    console.error("[seller-decision-write] status update failed", statusError.message);
-    return { ok: false, error: "That application could not be updated." };
-  }
-  if (!Array.isArray(statusUpdated) || statusUpdated.length !== 1) {
-    return {
-      ok: false,
-      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
-    };
-  }
 
   // On approval, actually activate the seller: upsert the vendor store record
   // and grant the vendor role membership (marketplace route parity).
@@ -416,6 +388,58 @@ export async function applySellerDecision(input: {
       );
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
+  }
+
+  // THE STATUS FLIP IS THE LAST STATE WRITE, and the ordering is the fix.
+  //
+  // It used to run FIRST, before the activation below. That is a two-phase write
+  // with no shared transaction, and its failure mode is unrecoverable rather than
+  // merely untidy: the application commits `approved`, then the vendor upsert or
+  // the role grant fails, and the function returns ok:false. The route settles
+  // the ledger row `failed` — correctly — but the application row is already
+  // terminal. `SELLER_APPLICATION_PENDING` deliberately excludes `approved`, so
+  // step 4 of the route now 409s every retry of the approve action forever, and
+  // the claim's idempotency key is spent. The console cannot heal the record it
+  // just broke, and the applicant is left with a store that was never created.
+  //
+  // Running it last makes every failure retryable and convergent instead:
+  //   vendor upsert fails  -> status still pending, nothing orphaned, retry works
+  //   role grant fails     -> status still pending, retry re-runs an idempotent
+  //                           upsert and completes the grant
+  //   status flip fails    -> store and grant exist, application still pending;
+  //                           retry is idempotent on both and lands the flip
+  // In every branch the queue still shows the row, which is the property that
+  // matters: the owner can always finish what the console started.
+  //
+  // Concurrency is still closed by the compare-and-set below. Two racing
+  // approvals may both perform the idempotent activation, but only one wins the
+  // `.eq("status", expectedStatus)` filter; the loser is told the record moved.
+  //
+  // `vendor-status-write.ts` solves the same problem the stronger way — one
+  // guarded RPC doing SELECT FOR UPDATE + both writes in a single transaction.
+  // That is the better shape and the right target for these cores too; ordering
+  // is the change that removes the unrecoverable state without moving slug
+  // resolution and role-grant logic into plpgsql in this pass.
+  let statusUpdate = admin
+    .from("marketplace_vendor_applications")
+    .update({
+      status: decision,
+      review_note: note.trim() || null,
+      reviewed_at: now,
+      reviewed_by: actorId,
+    } as never)
+    .eq("id", applicationId);
+  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
+  const { data: statusUpdated, error: statusError } = await statusUpdate.select("id");
+  if (statusError) {
+    console.error("[seller-decision-write] status update failed", statusError.message);
+    return { ok: false, error: "That application could not be updated." };
+  }
+  if (!Array.isArray(statusUpdated) || statusUpdated.length !== 1) {
+    return {
+      ok: false,
+      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
+    };
   }
 
   const reviewerBody =

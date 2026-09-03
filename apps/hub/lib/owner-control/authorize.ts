@@ -129,6 +129,42 @@ function refuse(): NextResponse {
   return NextResponse.json({ error: "Not available." }, { status: 403 });
 }
 
+/**
+ * Gate 2 on its own, for callers that already hold a `requireOwner()` result and
+ * need the SQL half without re-running the app half.
+ *
+ * IT EXISTS BECAUSE OF A SECOND DOOR. Three of the six write cores — seller
+ * decisions, KYC review, product review — are also reachable through
+ * `lib/founder-intelligence/action-catalog.ts`, driven by
+ * `/api/owner/intelligence/chat` (propose) and
+ * `/api/owner/intelligence/actions/confirm` (execute). Those routes ran
+ * `requireOwner()` and stopped there, so for those three cores the authorization
+ * was exactly what this module's own docstring forbids: a TS mirror alone.
+ *
+ * Two concrete consequences, neither exploitable on today's data but both real:
+ * that path inherited `requireOwner()`'s email fallback, which matches an
+ * owner_profiles row by EMAIL when no user_id row exists — the binding the rail
+ * deliberately refuses — so an email-only-seeded owner could have approved
+ * sellers and reviewed KYC through chat while being correctly refused at
+ * `/api/owner/control`. And a posture that holds on one door and not the other
+ * is one someone will later "simplify" toward the weaker side.
+ *
+ * Fail-closed on every branch, same as the composite gate.
+ */
+export async function assertSqlOwner(supabase: OwnerScopedClient): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc("owner_control_is_owner");
+    if (error) {
+      console.error("[owner-control] SQL owner gate failed", error.message);
+      return false;
+    }
+    return data === true;
+  } catch (error) {
+    console.error("[owner-control] SQL owner gate threw", error);
+    return false;
+  }
+}
+
 export async function authorizeOwnerControl(): Promise<OwnerControlAuthz> {
   // Gate 1 — app gate. Non-redirecting variant: a route handler must answer
   // with a status code, never a redirect to a login page.

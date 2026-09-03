@@ -143,31 +143,6 @@ export async function applyLearnTeacherDecision(input: {
     return { ok: false, error: "Audit logging failed; the application was not changed." };
   }
 
-  let statusUpdate = admin
-    .from("learn_teacher_applications")
-    .update({
-      status: decision,
-      review_notes: note.trim() || null,
-      reviewed_at: now,
-      reviewed_by_user_id: actorId,
-      updated_at: now,
-    } as never)
-    .eq("id", applicationId);
-  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
-  const { data: updated, error: updateError } = await statusUpdate.select("id");
-  if (updateError) {
-    console.error("[learn-teacher-decision-write] status update failed", updateError.message);
-    return { ok: false, error: "That application could not be updated." };
-  }
-  const changed = Array.isArray(updated) && updated.length === 1;
-  if (!changed) {
-    // CAS lost: somebody else decided this application first. Stop here rather
-    // than granting the teacher role off a decision that never applied.
-    return {
-      ok: false,
-      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
-    };
-  }
 
   // Approval is what actually makes someone a teacher: without the membership
   // the status says "approved" while every instructor surface still refuses
@@ -240,6 +215,48 @@ export async function applyLearnTeacherDecision(input: {
       );
       return { ok: false, error: GRANT_FAILED_MESSAGE };
     }
+  }
+
+  // THE STATUS FLIP IS THE LAST STATE WRITE — same ordering fix as
+  // seller-decision-write.ts, for the same reason and the same failure.
+  //
+  // Running it first meant the application could commit `approved` and THEN have
+  // the instructor grant or the membership link-back fail, returning ok:false
+  // over a row that is already terminal. `TEACHER_APPLICATION_PENDING` excludes
+  // `approved`, so the route's legality gate would 409 every retry forever while
+  // `/teach` still refused the applicant — an approval that cannot be completed
+  // and cannot be redone.
+  //
+  // Last, every failure leaves the row pending and therefore retryable: the
+  // membership read/grant is idempotent (read-then-write on an expression index
+  // PostgREST cannot name in onConflict), and the link-back simply re-runs.
+  //
+  // The compare-and-set still closes the concurrency case — of two racing
+  // approvals only one matches `.eq("status", expectedStatus)`.
+  let statusUpdate = admin
+    .from("learn_teacher_applications")
+    .update({
+      status: decision,
+      review_notes: note.trim() || null,
+      reviewed_at: now,
+      reviewed_by_user_id: actorId,
+      updated_at: now,
+    } as never)
+    .eq("id", applicationId);
+  if (expectedStatus) statusUpdate = statusUpdate.eq("status", expectedStatus);
+  const { data: updated, error: updateError } = await statusUpdate.select("id");
+  if (updateError) {
+    console.error("[learn-teacher-decision-write] status update failed", updateError.message);
+    return { ok: false, error: "That application could not be updated." };
+  }
+  const changed = Array.isArray(updated) && updated.length === 1;
+  if (!changed) {
+    // CAS lost: somebody else decided this application first. Stop here rather
+    // than granting the teacher role off a decision that never applied.
+    return {
+      ok: false,
+      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
+    };
   }
 
   const body =

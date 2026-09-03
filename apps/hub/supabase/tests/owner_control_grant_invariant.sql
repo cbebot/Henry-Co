@@ -51,6 +51,7 @@ declare
   fn_claim      text := 'public.owner_control_claim_action(uuid,text,text,text,text,text,text,text,text,text,boolean)';
   fn_settle     text := 'public.owner_control_settle_action(uuid,uuid,text,uuid,text)';
   fn_vendor     text := 'public.owner_set_vendor_active(uuid,uuid,boolean)';
+  fn_spend      text := 'public.owner_control_spend_reauth(uuid,bigint,text)';
   service_only  text[] := array[]::text[];
   fn            text;
   policy_count  int;
@@ -58,7 +59,13 @@ declare
   offender      text;
   violations    int := 0;
 begin
-  service_only := array[fn_assert, fn_claim, fn_settle, fn_vendor];
+  -- fn_spend was MISSING from this array when it was first added, which is
+  -- exactly the failure this file's header warns about: the migration's revoke
+  -- was correct, so nothing was exposed, but a future regression on that one
+  -- function's grants would have sailed past CI while its four siblings were
+  -- watched. An invariant that silently covers less than it claims is worse than
+  -- no invariant, because it is read as coverage.
+  service_only := array[fn_assert, fn_claim, fn_settle, fn_vendor, fn_spend];
 
   raise notice '--- owner-control rail grant invariant ---';
 
@@ -128,6 +135,29 @@ begin
 
   if offender is not null then
     raise warning 'VIOLATION: owner_control_actions reachable by request roles [%]', offender;
+    violations := violations + 1;
+  end if;
+
+  -- The reauth-spend ledger is the same class of lockbox. If a request role
+  -- could DELETE from it, "one password, one action" would be undone by simply
+  -- removing the row that records the password was spent.
+  select relrowsecurity into rls_on
+    from pg_class where oid = 'public.owner_control_reauth_spends'::regclass;
+  if not rls_on then
+    raise warning 'VIOLATION: owner_control_reauth_spends has RLS DISABLED';
+    violations := violations + 1;
+  end if;
+
+  select string_agg(format('%s:%s', r.rolname, p.priv), ', ' order by r.rolname, p.priv)
+    into offender
+  from (values ('anon'), ('authenticated')) as r(rolname)
+  cross join (values ('SELECT'), ('INSERT'), ('UPDATE'), ('DELETE')) as p(priv)
+  where has_table_privilege(r.rolname, 'public.owner_control_reauth_spends', p.priv);
+
+  if offender is not null then
+    raise warning
+      'VIOLATION: owner_control_reauth_spends reachable by request roles [%] — a '
+      'deletable spend ledger is not a spend ledger', offender;
     violations := violations + 1;
   end if;
 

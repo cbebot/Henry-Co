@@ -158,7 +158,17 @@ export async function applyKycReview(input: {
         .map((r: Record<string, unknown>) => String(r.document_type))
     );
     if (approved.has("government_id") || approved.has("selfie")) {
-      await admin
+      // CHECKED — it previously was not, not even logged. This write is what
+      // makes the person actually verified everywhere else in the ecosystem;
+      // the submission row alone changes nothing outside this queue. A silent
+      // failure here leaves the console reporting "approved" over an account
+      // that every other surface still treats as unverified.
+      //
+      // It does NOT abort: the submission verdict has already landed and is
+      // audited, and the derivation is self-healing — the next reviewed
+      // submission for this user recomputes it from all submissions. Logging
+      // loudly is the correct weight for a recoverable inconsistency.
+      const { error: profileError } = await admin
         .from("customer_profiles")
         .update({
           verification_status: "verified",
@@ -167,6 +177,12 @@ export async function applyKycReview(input: {
           verification_note: note.trim() || "Identity verified via document review.",
         })
         .eq("id", userId);
+      if (profileError) {
+        console.error(
+          "[kyc-review-write] customer_profiles verification write failed; the submission is approved but the profile still reads unverified",
+          { userId, error: profileError.message },
+        );
+      }
       profileStatus = "verified";
     } else {
       profileStatus = "pending";
@@ -182,7 +198,9 @@ export async function applyKycReview(input: {
       .neq("id", submissionId)
       .limit(1);
     if (!pendingOthers || pendingOthers.length === 0) {
-      await admin
+      // CHECKED, same reasoning as the verified branch above: logged loudly,
+      // never aborting, because the derivation recomputes on the next review.
+      const { error: profileError } = await admin
         .from("customer_profiles")
         .update({
           verification_status: "rejected",
@@ -191,6 +209,12 @@ export async function applyKycReview(input: {
           verification_note: note.trim() || "Documents rejected.",
         })
         .eq("id", userId);
+      if (profileError) {
+        console.error(
+          "[kyc-review-write] customer_profiles rejection write failed; the submission is rejected but the profile still reads otherwise",
+          { userId, error: profileError.message },
+        );
+      }
       profileStatus = "rejected";
     } else {
       profileStatus = "pending";

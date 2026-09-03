@@ -234,6 +234,34 @@ begin
       raise exception 'owner_control: idempotency key belongs to another actor'
         using errcode = '42501';
     end if;
+
+    -- A FAILED attempt does not burn the key. Idempotency exists to stop one
+    -- physical action happening twice; an action that demonstrably did not
+    -- happen has nothing to protect. Treating 'failed' as terminal made the key
+    -- unusable forever, which — combined with the entity being left in a state
+    -- the action no longer accepts — was the second half of a record the console
+    -- could neither complete nor retry.
+    --
+    -- The reset is a CONDITIONAL update, so it is atomic: of two concurrent
+    -- retries only the one whose `where outcome = 'failed'` still matches gets
+    -- the row back: the loser falls through and is told it was replayed.
+    if v_existing.outcome = 'failed' then
+      update public.owner_control_actions
+         set outcome = 'claimed',
+             failure_reason = null,
+             settled_at = null,
+             audit_id = null
+       where id = v_existing.id
+         and outcome = 'failed'
+      returning id into v_id;
+
+      if v_id is not null then
+        return jsonb_build_object('id', v_id, 'replayed', false, 'outcome', 'claimed');
+      end if;
+
+      return jsonb_build_object('id', v_existing.id, 'replayed', true, 'outcome', 'claimed');
+    end if;
+
     return jsonb_build_object('id', v_existing.id, 'replayed', true, 'outcome', v_existing.outcome);
   end if;
 
