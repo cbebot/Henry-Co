@@ -41,6 +41,14 @@ export type AiSurfaceKey =
   // treats a refusal/failure as "keep the deterministic order" — enhancement,
   // never the floor.
   | "intelligence.recommendations.rerank"
+  // V3-40 (Phase E) — the predictive-risk ADVISORY. PLATFORM-INVOKED (the scored
+  // party never asked and can never be billed for surveillance of themselves —
+  // E-D1): billable:false so no wallet is ever touched; runs with noBillingPort;
+  // spend is company COGS reserved BEFORE the call against the internal daily
+  // ledger (reserve-before-run, degrade-CLOSED). Output is a clamped score
+  // adjustment only — a freeze can never rest on it (engine rule). Fast tier,
+  // tiny output, audit ON. Dark behind `predictive_risk_assist` + `ai_gateway`.
+  | "risk.entity.assist"
   // V3-41 (Phase E) — the staff-facing NARRATIVE for a predictive forecast.
   // PLATFORM-INVOKED: nobody asked for it, so billable:false and it runs through
   // noBillingPort — no wallet is touched, ever. It writes PROSE ABOUT an already-
@@ -271,6 +279,18 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     maxOutputTokens: 200,
     maxCalls: 1,
     freeAllowancePerDay: 60,
+  },
+  // V3-40 — platform-invoked risk advisory. Never a wallet; bounded twice over
+  // (freeAllowancePerDay here + reserve-before-run against the internal daily
+  // spend ledger at the call site, RISK_ASSIST_MAX_PER_RUN per batch).
+  "risk.entity.assist": {
+    surface: "risk.entity.assist",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 120,
+    maxCalls: 1,
+    freeAllowancePerDay: 40,
   },
   // V3-41 — the predictive staff narrative. Never a wallet. Two bounds, and they
   // are NOT equivalent: `freeAllowancePerDay` is enforced by the gateway's

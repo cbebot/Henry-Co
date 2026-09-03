@@ -215,6 +215,38 @@ export async function handleStaffModerationBulkAction(
   revalidatePath("/modules/staff-moderation");
 }
 
+/**
+ * staff-risk bulk-action server action (V3-40).
+ *
+ * UNLIKE the DASH-9 no-op stubs above, the risk actions perform REAL state
+ * changes — writing the enforcement log IS this module's purpose. Order:
+ *   1. re-derive the caller's roles (requireSecurityStaffActor throws unless
+ *      security-division staff — a direct POST cannot bypass the page gate);
+ *   2. applyRiskEnforcementAction routes through assertEnforcementAllowed
+ *      (staff actor of record; reason required for release/override) and the
+ *      DB CHECK backs it at the data layer;
+ *   3. the shared audit rows record the same intent under one correlation id.
+ */
+export async function handleStaffRiskBulkAction(
+  actionId: string,
+  selectedIds: string[],
+  reason: string | null,
+): Promise<void> {
+  const { requireSecurityStaffActor } = await import("@/lib/risk/actor");
+  const { applyRiskEnforcementAction } = await import("@/lib/risk/enforcement-write");
+  const actor = await requireSecurityStaffActor();
+  await applyRiskEnforcementAction({ actionId, selectedIds, reason, actor });
+  await recordBulkAction({
+    module: "staff-risk",
+    actionId,
+    selectedIds,
+    reason,
+    division: null,
+    entityType: "risk_entity",
+  });
+  revalidatePath("/modules/staff-risk");
+}
+
 export async function handleStaffFinanceOperatorBulkAction(
   actionId: string,
   selectedIds: string[],

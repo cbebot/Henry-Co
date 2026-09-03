@@ -17,6 +17,10 @@
       "schedule": "*/30 * * * *"
     },
     {
+      "path": "/api/cron/risk-score",
+      "schedule": "23 3 * * *"
+    },
+    {
       "path": "/api/cron/predictive-tick",
       "schedule": "47 2 * * *"
     }

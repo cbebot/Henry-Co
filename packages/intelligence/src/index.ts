@@ -4,6 +4,9 @@ export * from "./analytics";
 export * from "./search";
 export * from "./recommendations";
 export * from "./deals";
+export * from "./availability";
+export * from "./next-action";
+export * from "./risk/index";
 export * from "./predictive/index";
 
 export const henryDivisionSchema = z.enum([
@@ -112,6 +115,25 @@ export const HenryEventNames = {
   AI_USAGE_METERED: "henry.ai.usage.metered",
   AI_USAGE_BLOCKED: "henry.ai.usage.blocked",
   AI_PROVIDER_FAILED: "henry.ai.provider.failed",
+  // V3-38 local availability (Phase E). Envelope division = the resolving
+  // division app. Payloads carry aggregate counts + coarse location codes
+  // (country/region) only — never a user id key, never provider counts per
+  // offering, never coordinates.
+  AVAILABILITY_BATCH_RESOLVED: "henry.availability.batch.resolved",
+  AVAILABILITY_UNAVAILABLE_SHOWN: "henry.availability.unavailable.shown",
+  AVAILABILITY_FIND_SIMILAR_CLICKED: "henry.availability.find_similar.clicked",
+  // Predictive fraud & risk (V3-40). Division 'system' (platform-invoked batch) except
+  // staff actions, which ride division 'staff'. Properties carry entity ids + tiers ONLY —
+  // never PII, never a raw score outside the staff surface, never a provider/model name.
+  // (The pass spec's two-segment names, e.g. "henry.risk.scored", fail the registered
+  // henry.<domain>.<object>.<verb> schema — these are the schema-valid forms.)
+  RISK_ENTITY_SCORED: "henry.risk.entity.scored",
+  RISK_ENFORCEMENT_HELD: "henry.risk.enforcement.held",
+  RISK_ENFORCEMENT_FROZEN: "henry.risk.enforcement.frozen",
+  RISK_ENFORCEMENT_RELEASED: "henry.risk.enforcement.released",
+  RISK_STAFF_OVERRIDE: "henry.risk.staff.overrode",
+  RISK_MODEL_PROMOTED: "henry.risk.model.promoted",
+  RISK_MODEL_ROLLED_BACK: "henry.risk.model.rolled_back",
   // Predictive quality & workload (V3-41, Phase E Wave E.4). Platform-invoked
   // batch events ride actorless (division 'system'). Properties carry queue keys,
   // unit/transaction ids, bands and COUNTS only — never PII, never a raw score,
@@ -336,6 +358,25 @@ export type HenryFeatureFlagName =
   // OFF: the deal pages/actions do not activate; the legacy marketplace
   // curation fallback keeps serving its widget. Deterministic + AI-free.
   | "personalization_deals"
+  // V3-38 (Phase E) — local-availability badges/states. Default OFF: catalog
+  // surfaces render exactly as before (no badge, no fetch). Stays dark until
+  // `service_area_coverage` seeding is verified on prod (the soak note: a flood
+  // of unavailable_shown means missing rows, not a broken resolver).
+  | "personalization_availability"
+  // V3-39 (Phase E) — kill switch for the per-page "do this next" chip + resolver.
+  // Default OFF (dark launch): with the flag unset nothing mounts, nothing reads,
+  // nothing emits. Deterministic + AI-free; the stitch inside is additionally
+  // consent-gated at runtime (E-D2) — the flag gates the whole surface.
+  | "personalization_next_action"
+  // V3-40 (Phase E) — the predictive risk batch scorer, shadow-first. Default OFF:
+  // no batch runs, no rows written, the staff risk queue renders its empty state.
+  // Deterministic + AI-free; enforcement additionally requires a LIVE model version
+  // (owner-promoted) and a STAFF-applied action — this flag alone affects no user.
+  | "predictive_shadow"
+  // V3-40 — the OPTIONAL LLM-advisory slice on top of the deterministic risk floor
+  // (E-D1-A). Default OFF. Also requires `ai_gateway` + `predictive_shadow`; spend is
+  // platform COGS under the internal daily ledger, reserve-before-run, degrade-CLOSED.
+  | "predictive_risk_assist"
   // V3-41 (Phase E) — the predictive quality & workload batch. Default OFF: no
   // batch runs, no rows written, the staff panels render their empty state. The
   // engines are deterministic + AI-free, and every output is ADVISORY (a
@@ -403,6 +444,27 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_DEALS) ||
       list.has("personalization_deals") ||
       list.has("deals"),
+    // V3-38 local-availability kill switch — default OFF (dark until seeded).
+    personalization_availability:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_AVAILABILITY) ||
+      list.has("personalization_availability") ||
+      list.has("availability"),
+    // V3-39 next-action kill switch — default OFF (dark launch). Deliberately
+    // NOT covered by the broad "personalization" alias: the chip is a new
+    // chrome affordance and turns on only by its own explicit name.
+    personalization_next_action:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_NEXT_ACTION) ||
+      list.has("personalization_next_action"),
+    // V3-40 predictive risk batch (shadow-first) — default OFF (dark launch).
+    predictive_shadow:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_SHADOW) ||
+      list.has("predictive_shadow") ||
+      list.has("predictive"),
+    // V3-40 LLM-advisory slice — default OFF; deterministic floor never needs it.
+    predictive_risk_assist:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_RISK_ASSIST) ||
+      list.has("predictive_risk_assist") ||
+      list.has("risk_assist"),
     // V3-41 predictive operations batch — default OFF (dark launch).
     predictive_operations:
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_OPERATIONS) ||

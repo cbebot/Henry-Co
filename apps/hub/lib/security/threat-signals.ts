@@ -76,6 +76,13 @@ export type ThreatSignal = {
   evidenceCount: number;
   /** Human labels for the accounts / IPs involved (capped for display). */
   subjects: string[];
+  /**
+   * The REAL account ids involved (V3-40 addition) — so the risk batch can
+   * attribute a fleet-level signal to the accounts it concerns without
+   * re-deriving detection logic (one threat vocabulary, one engine). Capped
+   * wider than the display list: attribution must not lose accounts.
+   */
+  subjectUserIds: string[];
 };
 
 export type ThreatPosture = "calm" | "watch" | "elevated" | "critical";
@@ -138,6 +145,9 @@ function capSubjects(values: Iterable<string>, cap = 6): string[] {
   return seen;
 }
 
+/** Attribution cap — wide enough that a real fraud ring is never truncated away. */
+const SUBJECT_ID_CAP = 50;
+
 /**
  * Assess the recorded security telemetry for attacker fingerprints.
  * Deterministic: same inputs → same output (used by both the console and AI).
@@ -182,6 +192,7 @@ export function assessThreats(
       detail: `Source ${ip} produced sign-in activity across ${users.size} different accounts in the window — a shared network, account farm, or credential-stuffing source. Worth a look.`,
       evidenceCount: users.size,
       subjects: capSubjects([ip, ...users.values()]),
+      subjectUserIds: capSubjects(users.keys(), SUBJECT_ID_CAP),
     });
   }
 
@@ -205,6 +216,7 @@ export function assessThreats(
       detail: `One physical device is registered to ${users.size} accounts — the classic duplicate-account / account-farming pattern. A single browser rarely holds this many real people.`,
       evidenceCount: users.size,
       subjects: capSubjects(users.values()),
+      subjectUserIds: capSubjects(users.keys(), SUBJECT_ID_CAP),
     });
   }
 
@@ -217,7 +229,7 @@ export function assessThreats(
     byUser.set(row.userId, list);
   }
   let impossibleTravelAccounts = 0;
-  for (const [, rows] of byUser) {
+  for (const [travelUserId, rows] of byUser) {
     const geo = rows
       .map((row) => ({ country: countryOf(row), t: ms(row.createdAt), label: labelOf(row) }))
       .filter((g) => g.country && Number.isFinite(g.t))
@@ -243,6 +255,7 @@ export function assessThreats(
       detail: `${hit.label} appears in ${hit.a} then ${hit.b} only ${hit.gapMin} minutes apart — either a hijacked session, a VPN, or two people on one account. Confirm with the owner of that account.`,
       evidenceCount: 2,
       subjects: [hit.label],
+      subjectUserIds: [travelUserId],
     });
   }
 
@@ -254,7 +267,7 @@ export function assessThreats(
     entry.count += 1;
     alertsByUser.set(row.userId, entry);
   }
-  for (const [, entry] of alertsByUser) {
+  for (const [alertUserId, entry] of alertsByUser) {
     if (entry.count < 3) continue;
     signals.push({
       id: `newdevice-${entry.label}`,
@@ -264,6 +277,7 @@ export function assessThreats(
       detail: `${entry.label} tripped the new-device / new-country alert ${entry.count} times — repeated unfamiliar sign-ins are what an account under attack looks like.`,
       evidenceCount: entry.count,
       subjects: [entry.label],
+      subjectUserIds: [alertUserId],
     });
   }
 
@@ -283,6 +297,7 @@ export function assessThreats(
         detail: `${labelOf(row)} has a device that was revoked, then seen again afterwards — a killed/compromised device should never come back. Investigate immediately.`,
         evidenceCount: 1,
         subjects: [labelOf(row)],
+        subjectUserIds: [row.userId],
       });
     }
   }
@@ -297,7 +312,7 @@ export function assessThreats(
     resetByUser.set(row.userId, entry);
     if (row.ip.trim()) resetByIp.set(row.ip.trim(), (resetByIp.get(row.ip.trim()) ?? 0) + 1);
   }
-  for (const [, entry] of resetByUser) {
+  for (const [resetUserId, entry] of resetByUser) {
     if (entry.count < 3) continue;
     signals.push({
       id: `reset-${entry.label}`,
@@ -307,6 +322,7 @@ export function assessThreats(
       detail: `${entry.label} requested a password reset ${entry.count} times in the window — either a locked-out user or someone probing account recovery.`,
       evidenceCount: entry.count,
       subjects: [entry.label],
+      subjectUserIds: [resetUserId],
     });
   }
 
@@ -324,6 +340,7 @@ export function assessThreats(
       detail: `${highRisk.length} events were classed high-risk or alert-grade in the last ${windowDays} days across ${users.length}+ accounts — elevated background pressure worth watching.`,
       evidenceCount: highRisk.length,
       subjects: users,
+      subjectUserIds: capSubjects(highRisk.map((row) => row.userId), SUBJECT_ID_CAP),
     });
   }
 

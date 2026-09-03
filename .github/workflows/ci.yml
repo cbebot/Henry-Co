@@ -398,6 +398,53 @@ jobs:
 
       - name: Prove deals RLS at runtime (drafts/unlisted invisible; no request-role writes; curation rows reconciled)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/deals_rls_behaviour.sql
+      # V3-38 LOCAL AVAILABILITY (Phase E) — public location-keyed coverage +
+      # aggregate coverage-gap counters. Location-keyed, never user-keyed; NO
+      # money path. min.sql pre-creates the tables with the prod standing ACL
+      # so the migration's revokes are load-bearing, then apply-then-assert.
+      - name: Seed V3-38 prod-standing table ACL (so the migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_min.sql
+
+      - name: Apply V3-38 service-area-coverage migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_38_service_area_coverage.sql
+
+      - name: Assert availability grant invariant (coverage public-read/service-curated; gap counters fn-only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_grant_invariant.sql
+
+      - name: Prove availability RLS at runtime (anon reads coverage; request roles never write; gap fn service-only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/availability_rls_behaviour.sql
+      # V3-39 NEXT ACTION (Phase E) — per-prompt dismissals + opt-out control.
+      # Net-new owner-only table (NO service_role path), default-deny RLS, NO
+      # money path. The customer_preferences ALTER is table-guarded (skips on
+      # the fresh DB), so seed-apply-assert on the same fresh DB.
+      - name: Seed V3-39 prod-standing table ACL (so the migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_min.sql
+
+      - name: Apply V3-39 next-action migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260724120000_v3_39_next_action_prompts.sql
+
+      - name: Assert next-action grant invariant (dismissals owner-only; service_role has NO path)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_grant_invariant.sql
+
+      - name: Prove next-action RLS at runtime (user B never reads/writes user A's dismissals — 0 rows)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/next_action_rls_behaviour.sql
+      # V3-40 PREDICTIVE FRAUD & RISK (Phase E, Wave E.3) — versioned scores +
+      # governed models + enforcement log. Staff-only visibility, service-role
+      # writes, and the NO-AUTO-PUNISHMENT CHECK proven at the database layer.
+      - name: Seed V3-40 prod-standing default table ACL (so the risk migration grant-revokes are load-bearing on CI)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_min.sql
+
+      - name: Apply V3-40 risk scores + models migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260725120000_v3_40_risk_scores_and_models.sql
+
+      - name: Assert risk grant invariant (staff-only reads, service-role writes, doctrine CHECKs present)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_grant_invariant.sql
+
+      - name: Prove risk RLS + doctrine at runtime (scored party sees nothing; DB rejects system-actor hold/freeze)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_rls_behaviour.sql
+
+      - name: Prove risk model lifecycle RPCs (transactional promote/rollback, shadow window, single-live, set-based release)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/risk_lifecycle_rpc.sql
 
       # V3-43 WORKFLOW RAIL — applied here for the first time so V3-41 can compose
       # with the REAL unified primitives (workflow_locks + internal_ai_spend_ledger)

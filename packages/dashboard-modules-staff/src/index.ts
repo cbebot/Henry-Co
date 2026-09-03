@@ -117,3 +117,12 @@ export {
   StaffSettingsPageServer,
   type StaffSettingsPageProps,
 } from "./staff-settings";
+
+export {
+  staffRiskModule,
+  StaffRiskPageServer,
+  loadRiskQueueSnapshot,
+  type StaffRiskPageProps,
+  type RiskQueueRow,
+  type RiskSupabaseClient,
+} from "./staff-risk";

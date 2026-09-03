@@ -315,6 +315,43 @@ export type HenryEventName =
   | "henry.deal.offer.impressed"
   | "henry.deal.offer.claimed"
   | "henry.deal.fairness.alerted"
+  // V3-38 local availability (Phase E). `batch.resolved` fires once per
+  // /api/availability batch with aggregate counts + the location source;
+  // `unavailable.shown` fires when an UnavailableState actually renders
+  // (coarse area codes only — the coverage-gap signal the owner soaks on);
+  // `find_similar.clicked` tracks the graceful-unavailable CTA. Payloads are
+  // location-keyed, never user-keyed: no user ids, no coordinates, no
+  // per-offering provider counts.
+  | "henry.availability.batch.resolved"
+  | "henry.availability.unavailable.shown"
+  | "henry.availability.find_similar.clicked"
+  // V3-39 smart next action (Phase E). `surfaced` fires when the resolver
+  // yields a floating chip for the page (system_state → completed); `clicked`
+  // (user_action → completed) and `dismissed` (user_action → removed) track
+  // the chip interactions; `stitched` fires ONLY when the surfaced action
+  // bridges INTO a sibling division from a completed action — distinct from a
+  // same-division surface so cross-division lift is measurable (BUILD-PLAN
+  // V3-39 delta). Payloads carry { context_kind, division, action_id,
+  // sensitive, placement, stitched } — ids and enums only, never PII.
+  | "henry.next_action.surfaced"
+  | "henry.next_action.clicked"
+  | "henry.next_action.dismissed"
+  | "henry.next_action.stitched"
+  // V3-40 predictive fraud & risk (Phase E, Wave E.3). Platform-invoked batch
+  // events ride actorless (system); staff actions carry the acting staff id.
+  // Payloads are entity ids + tiers + counts ONLY — never PII, never a raw
+  // score outside the staff surface, never a provider/model name. `entity.
+  // scored` fires once per batch with per-tier counts; enforcement verbs track
+  // the log rows (held/frozen are STAFF one-taps — the system can only flag);
+  // model verbs track the governed shadow→live lifecycle.
+  | "henry.auth.sensitive_action.risk_held"
+  | "henry.risk.entity.scored"
+  | "henry.risk.enforcement.held"
+  | "henry.risk.enforcement.frozen"
+  | "henry.risk.enforcement.released"
+  | "henry.risk.staff.overrode"
+  | "henry.risk.model.promoted"
+  | "henry.risk.model.rolled_back"
   // V3-41 predictive quality & workload (Phase E, Wave E.4). Platform-invoked,
   // ADVISORY-ONLY operator signals: they recommend a human intervention and can
   // never auto-act on a customer. Payloads carry queue keys, unit/transaction ids,

@@ -18,7 +18,8 @@
     "./staff-support": "./src/staff-support/index.tsx",
     "./staff-moderation": "./src/staff-moderation/index.tsx",
     "./staff-finance-operator": "./src/staff-finance-operator/index.tsx",
-    "./staff-settings": "./src/staff-settings/index.tsx"
+    "./staff-settings": "./src/staff-settings/index.tsx",
+    "./staff-risk": "./src/staff-risk/index.tsx"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"
@@ -42,6 +43,7 @@
     "@types/react-dom": "^19.2.3",
     "lucide-react": "^0.577.0",
     "next": "^16.1.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@henryco/i18n": "workspace:^"
   }
 }

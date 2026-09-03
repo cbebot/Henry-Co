@@ -29,12 +29,24 @@ export {
   type LogisticsStaffOwnerCopy,
 } from "./logistics-staff-owner-copy";
 export { getConsentCopy, type EcosystemConsentCopy } from "./consent-copy";
+export { getRiskStatusCopy, type RiskStatusCopy } from "./risk-status-copy";
+export { getStaffRiskCopy, type StaffRiskCopy } from "./staff-risk-copy";
 export {
   getPersonalizationCopy,
   formatPersonalizationTemplate,
   type PersonalizationCopy,
 } from "./personalization-copy";
 export { getDealsCopy, formatDealsTemplate, type DealsCopy } from "./deals-copy";
+export {
+  getAvailabilityCopy,
+  formatAvailabilityTemplate,
+  type AvailabilityCopy,
+} from "./availability-copy";
+export {
+  getNextActionCopy,
+  type NextActionCopy,
+  type NextActionEntryCopy,
+} from "./next-action-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
 export { getErrorFallbackCopy, type ErrorFallbackCopy } from "./error-fallback-copy";

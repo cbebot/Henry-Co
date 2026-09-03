@@ -84,7 +84,31 @@ export type SensitiveActionGuardOptions<TUser> = {
    * Optional override for the now() timestamp; injectable for tests.
    */
   now?: () => number;
+  /**
+   * V3-40 — optional risk-enforcement gate, consulted only AFTER re-auth
+   * succeeds. The implementation must report ONLY a STAFF-APPLIED hold/freeze
+   * under a LIVE risk model (a score alone never gates — no auto-punishment).
+   * Contract: `{ gated: true }` → the action is refused with a neutral 423 and
+   * the caller-supplied copy (never the word "fraud", never a score);
+   * `{ gated: false }` / `null` / a THROW → the action proceeds (fail-open:
+   * a broken risk reader must never lock a customer out).
+   */
+  riskGate?: SensitiveActionRiskGate;
 };
+
+/**
+ * Discriminated so `message` is REQUIRED whenever `gated` is true — the neutral,
+ * localized customer copy is supplied by the gate (from typed i18n copy), never a
+ * hardcoded fallback in this shared guard.
+ */
+export type SensitiveActionRiskVerdict =
+  | { gated: false }
+  | { gated: true; message: string };
+
+export type SensitiveActionRiskGate = (ctx: {
+  userId: string;
+  action: string;
+}) => Promise<SensitiveActionRiskVerdict | null>;
 
 type GuardResult<TUser> =
   | { ok: true; context: SensitiveActionGuardContext<TUser> }
@@ -154,6 +178,38 @@ export async function evaluateSensitiveActionGuard<TUser>(
       String(rate.ok ? rate.remaining : 0),
     );
     return { ok: false, response };
+  }
+
+  // V3-40 — staff-applied risk hold (post-reauth so the challenge order is
+  // unchanged for every caller without a gate). Fail-open by contract.
+  if (options.riskGate) {
+    let verdict: Awaited<ReturnType<SensitiveActionRiskGate>> = null;
+    try {
+      verdict = await options.riskGate({ userId, action: options.action });
+    } catch {
+      verdict = null;
+    }
+    if (verdict?.gated) {
+      emitEvent({
+        name: "henry.auth.sensitive_action.risk_held",
+        classification: "system_state",
+        outcome: "blocked",
+        actorId: userId,
+        payload: { action: options.action },
+      });
+      const response = NextResponse.json(
+        {
+          // Localized neutral copy is supplied by the gate (typed i18n) — the type
+          // makes `message` required when gated, so there is no hardcoded fallback here.
+          error: verdict.message,
+          code: "sensitive_action_hold",
+          intent: options.action,
+        },
+        { status: 423 },
+      );
+      response.headers.set("X-HenryCo-Reauth-Intent", options.action);
+      return { ok: false, response };
+    }
   }
 
   if (options.auditClient) {
