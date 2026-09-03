@@ -39,6 +39,7 @@ export {
   formatAvailabilityTemplate,
   type AvailabilityCopy,
 } from "./availability-copy";
+export {
   getNextActionCopy,
   type NextActionCopy,
   type NextActionEntryCopy,
