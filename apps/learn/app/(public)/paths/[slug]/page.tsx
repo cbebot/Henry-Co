@@ -80,10 +80,20 @@ export default async function PathDetailPage({
       <section>
         <div className="flex flex-wrap items-center gap-2">
           <LearnStatusBadge
-            label={data.path.visibility}
+            label={data.path.visibility === "public" ? t("Public path") : t("Assigned path")}
             tone={data.path.visibility === "public" ? "signal" : "warning"}
           />
-          <LearnStatusBadge label={data.path.accessModel} />
+          <LearnStatusBadge
+            label={
+              data.path.accessModel === "free"
+                ? t("Free")
+                : data.path.accessModel === "paid"
+                  ? t("Paid")
+                  : data.path.accessModel === "internal"
+                    ? t("Internal")
+                    : t("Sponsored")
+            }
+          />
         </div>
         <h1 className="mt-6 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--learn-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
           {pathTitle}
@@ -114,7 +124,7 @@ export default async function PathDetailPage({
 
         <ol className="mt-8 divide-y divide-[var(--learn-line)] border-y border-[var(--learn-line)]">
           {itemsLocalized.map((item, index) => (
-            <li key={item.id} className="grid gap-5 py-6 md:grid-cols-[0.32fr,0.68fr]">
+            <li key={item.id} className="grid gap-5 py-6 md:grid-cols-[0.32fr_0.68fr]">
               <div>
                 <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
                   {t("Step")} {String(index + 1).padStart(2, "0")}

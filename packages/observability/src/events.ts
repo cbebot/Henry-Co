@@ -298,6 +298,10 @@ export type HenryEventName =
   | "henry.personalization.module.hidden"
   | "henry.personalization.consent.granted"
   | "henry.personalization.consent.revoked"
+  // V3-36 — cross-division recommendation engine. Payload carries counts + the
+  // profiled/ai-applied booleans only; never per-item content, never a score,
+  // never a provider/model name.
+  | "henry.personalization.recommendations.computed"
   // V3-39 smart next action (Phase E). `surfaced` fires when the resolver
   // yields a floating chip for the page (system_state → completed); `clicked`
   // (user_action → completed) and `dismissed` (user_action → removed) track

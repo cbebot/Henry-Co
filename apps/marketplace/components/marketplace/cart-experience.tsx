@@ -31,7 +31,7 @@ export function CartExperience() {
   );
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[1fr,380px]">
+    <section className="grid gap-6 xl:grid-cols-[1fr_380px]">
       <div className="space-y-5">
         {grouped.map(([groupName, items]) => (
           <article
@@ -61,7 +61,7 @@ export function CartExperience() {
                 return (
                   <div
                     key={item.id}
-                    className="grid gap-4 rounded-[1.7rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] p-4 sm:grid-cols-[148px,1fr]"
+                    className="grid gap-4 rounded-[1.7rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] p-4 sm:grid-cols-[148px_1fr]"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem] bg-[var(--market-soft-wash)]">
                       {item.image ? (

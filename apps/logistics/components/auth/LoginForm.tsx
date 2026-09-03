@@ -32,7 +32,7 @@ export default function LoginForm() {
       });
 
       if (authError) {
-        setError(t(authError.message));
+        setError(t("That email and password did not match. Check your details and try again."));
         return;
       }
 

@@ -33,7 +33,7 @@ const SLIDES: Slide[] = [
     icon: "view-grid-outline",
     title: "Discover\nDivisions",
     description:
-      "Browse 8+ divisions with detailed profiles, status indicators, and direct links. Each division operates with autonomy while sharing the group's commitment to premium execution.",
+      "Browse every division with detailed profiles, status indicators, and direct links. Each division operates with autonomy while sharing the group's commitment to premium execution.",
   },
   {
     icon: "connection",

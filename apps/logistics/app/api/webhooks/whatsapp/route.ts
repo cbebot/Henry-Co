@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
             recipient: message.from ?? "unknown",
             subject: `Inbound lookup ${code}`,
             status: shipment ? "sent" : "skipped",
-            reason: shipment ? null : "tracking_code_not_found",
+            reason: shipment ? null : "No shipment matched this tracking code.",
             meta: {
               tracking_code: code,
               lifecycle_status: shipment?.lifecycle_status ?? null,

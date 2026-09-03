@@ -38,9 +38,10 @@ export const dynamic = "force-dynamic";
 
 /**
  * Marketplace home — the calmer-commerce showcase, on the locked --home-* public
- * design system. Narrative arc, one breath per section, one climax:
- *   Hook (the calm-commerce promise) → The one reason (trust on one record) →
- *   Real proof (honest counts) → Featured discovery (image cards) → Invitation.
+ * design system. Narrative arc, one breath per section, shopping first:
+ *   Hook (the calm-commerce promise) → Browse (find your shelf) → Featured
+ *   discovery (image cards) → Curated → Stores → Trust (compressed, links to
+ *   /trust for the full story) → Invitation.
  *
  * Server component; sources the SAME catalog as before (getMarketplaceHomeData /
  * getMarketplacePublicCopy) and re-presents it. Surface labels run through
@@ -79,7 +80,10 @@ export default async function MarketplaceHomePage() {
   const discoveryProducts = (featuredProducts.length >= 3 ? featuredProducts : data.products).slice(0, 6);
   const featuredCollections = data.collections.slice(0, 3);
   const featuredVendors = data.vendors.slice(0, 4);
-  const featuredCategories = data.categories.filter((item) => item.featured).slice(0, 5);
+  // Same graceful fallback as discoveryProducts: if curation hasn't flagged
+  // featured categories yet, browse still opens with the live shelves.
+  const flaggedCategories = data.categories.filter((item) => item.featured);
+  const featuredCategories = (flaggedCategories.length ? flaggedCategories : data.categories).slice(0, 5);
   const hasCatalog = data.products.length > 0;
 
   return (
@@ -135,90 +139,20 @@ export default async function MarketplaceHomePage() {
         </div>
       </section>
 
-      {/* ── THE ONE REASON — the climax: trust, visible before payment ── */}
-      <Section rhythm="hero" tone="sunken">
-        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1fr_0.85fr] lg:items-center">
-          <div>
-            <Eyebrow>{t("Why it feels different")}</Eyebrow>
-            <DisplayHeading level={2} size="display" className="mt-4">
-              {t("Trust, visible")}{" "}
-              <span className="italic text-[color:var(--home-accent-text)]">{t("before you pay.")}</span>
-            </DisplayHeading>
-            <Lede className="mt-5 max-w-lg">
-              {t(
-                "Verification, delivery promises, and dispute history sit beside the buy button — and orders, payments, and support stay on one account.",
-              )}
-            </Lede>
-          </div>
-          <EditorialList>
-            <EditorialRow
-              index="01"
-              title={t("Verified, not crowded")}
-              body={t("Curated stores with seller passports — quality over catalogue sprawl.")}
-            />
-            <EditorialRow
-              index="02"
-              title={t("Honest split orders")}
-              body={t("Items from different sellers stay clearly segmented through delivery.")}
-            />
-            <EditorialRow
-              index="03"
-              title={t("One record")}
-              body={t("Orders, payments, reviews, and support live in one Henry Onyx account.")}
-            />
-          </EditorialList>
-        </div>
-      </Section>
-
-      {/* ── REAL PROOF + FEATURED DISCOVERY — products as the heart ── */}
-      {hasCatalog ? (
-        <Section>
+      {/* ── BROWSE FIRST — find your shelf before anything is pitched ── */}
+      {featuredCategories.length > 0 ? (
+        <Section rhythm="tight">
           <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
             <SectionHeader
               level={2}
-              size="display"
-              eyebrow={t("Featured")}
-              title={t("Worth a closer look.")}
-              lede={t("Hand-picked listings from verified Henry Onyx sellers.")}
+              size="headline"
+              eyebrow={t("Browse")}
+              title={t("Find your shelf.")}
             />
             <PublicCTA href="/search" variant="ghost" trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}>
-              {copy.home.browseAll}
+              {t("All categories")}
             </PublicCTA>
           </div>
-          <PublicProofRail
-            className="mt-9"
-            items={[
-              { value: proof(data.vendors.length), label: copy.kpiLabels.verifiedStores },
-              { value: proof(data.products.length), label: copy.kpiLabels.activeListings },
-              { value: proof(data.collections.length), label: t("Collections") },
-            ]}
-          />
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {discoveryProducts.map((product) => (
-              <ProductCard key={product.slug} product={product} />
-            ))}
-          </div>
-        </Section>
-      ) : (
-        <Section>
-          <EmptyState
-            title={copy.home.emptyTitle}
-            body={copy.home.emptyBody}
-            ctaHref="/help"
-            ctaLabel={copy.home.emptyCta}
-          />
-        </Section>
-      )}
-
-      {/* ── DISCOVER BY CATEGORY — hairline list, no card-wall ── */}
-      {featuredCategories.length > 0 ? (
-        <Section rhythm="tight">
-          <SectionHeader
-            level={2}
-            size="headline"
-            eyebrow={t("Browse")}
-            title={t("Find your shelf.")}
-          />
           <EditorialList className="mt-9">
             {featuredCategories.map((category) => (
               <EditorialRow
@@ -236,6 +170,38 @@ export default async function MarketplaceHomePage() {
           </EditorialList>
         </Section>
       ) : null}
+
+      {/* ── FEATURED DISCOVERY — products as the heart ── */}
+      {hasCatalog ? (
+        <Section>
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+            <SectionHeader
+              level={2}
+              size="display"
+              eyebrow={t("Featured")}
+              title={t("Worth a closer look.")}
+              lede={t("Hand-picked listings from verified Henry Onyx sellers.")}
+            />
+            <PublicCTA href="/search" variant="ghost" trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}>
+              {copy.home.browseAll}
+            </PublicCTA>
+          </div>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {discoveryProducts.map((product) => (
+              <ProductCard key={product.slug} product={product} />
+            ))}
+          </div>
+        </Section>
+      ) : (
+        <Section>
+          <EmptyState
+            title={copy.home.emptyTitle}
+            body={copy.home.emptyBody}
+            ctaHref="/help"
+            ctaLabel={copy.home.emptyCta}
+          />
+        </Section>
+      )}
 
       {/* ── CURATED COLLECTIONS — tasteful Card moment (true tiles) ── */}
       {featuredCollections.length > 0 ? (
@@ -276,6 +242,51 @@ export default async function MarketplaceHomePage() {
           </div>
         </Section>
       ) : null}
+
+      {/* ── TRUST, COMPRESSED — the reason to relax, after the shopping;
+             the full story lives on /trust, not on the landing path ── */}
+      <Section rhythm="tight" tone="sunken">
+        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1fr_0.85fr] lg:items-center">
+          <div>
+            <Eyebrow>{t("Why it feels different")}</Eyebrow>
+            <DisplayHeading level={2} size="headline" className="mt-4">
+              {t("Trust, visible")}{" "}
+              <span className="italic text-[color:var(--home-accent-text)]">{t("before you pay.")}</span>
+            </DisplayHeading>
+            <Lede className="mt-5 max-w-lg">
+              {t(
+                "Verification, delivery promises, and dispute history sit beside the buy button — and orders, payments, and support stay on one account.",
+              )}
+            </Lede>
+            <div className="mt-7">
+              <PublicCTA
+                href="/trust"
+                variant="ghost"
+                trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}
+              >
+                {t("How trust works")}
+              </PublicCTA>
+            </div>
+          </div>
+          <EditorialList>
+            <EditorialRow
+              index="01"
+              title={t("Verified, not crowded")}
+              body={t("Curated stores with seller passports — quality over catalogue sprawl.")}
+            />
+            <EditorialRow
+              index="02"
+              title={t("Honest split orders")}
+              body={t("Items from different sellers stay clearly segmented through delivery.")}
+            />
+            <EditorialRow
+              index="03"
+              title={t("One record")}
+              body={t("Orders, payments, reviews, and support live in one Henry Onyx account.")}
+            />
+          </EditorialList>
+        </div>
+      </Section>
 
       {/* ── INVITATION — one dominant primary ── */}
       <Section>

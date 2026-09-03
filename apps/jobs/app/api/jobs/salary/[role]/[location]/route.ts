@@ -81,16 +81,14 @@ export async function GET(
     }
 
     if (!data) {
-      return notFound(
-        `No active salary benchmark for ${role} in ${location} (${currency}/${period}).`,
-      );
+      return notFound("No salary benchmark available for this role and location.");
     }
 
+    // Public endpoint — expose only the benchmark facts callers need.
+    // Internal row id, slug key, and sourcing timestamp stay server-side.
     return NextResponse.json(
       {
         benchmark: {
-          id: data.id,
-          roleSlug: data.role_slug,
           location: data.location,
           currency: data.currency,
           period: data.period,
@@ -99,7 +97,6 @@ export async function GET(
           p75: Number(data.p75_minor),
           sampleSize: Number(data.sample_size),
           sourceLabel: data.source_label,
-          sourcedAt: data.sourced_at,
         },
       },
       {

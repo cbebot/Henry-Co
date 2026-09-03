@@ -521,7 +521,7 @@ export default async function CareHomePage() {
 
       {/* Service journeys + Client profiles — editorial 2-col split, divided lists, no inner panels */}
       <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-12 xl:grid-cols-[0.9fr,1.1fr]">
+        <div className="grid gap-12 xl:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="care-kicker">{t("Service journeys")}</p>
             <h2 className="mt-4 max-w-md text-balance care-section-title text-[color:var(--home-ink)]">
@@ -621,7 +621,7 @@ export default async function CareHomePage() {
 
       {/* Pricing + Reviews — editorial 2-col, divided pricing rows, divided reviews */}
       <section id="pricing" className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-12 xl:grid-cols-[1.05fr,0.95fr]">
+        <div className="grid gap-12 xl:grid-cols-[1.05fr_0.95fr]">
           <div>
             <p className="care-kicker">{t("Current garment pricing")}</p>
             <h2 className="mt-4 max-w-md text-balance care-section-title text-[color:var(--home-ink)]">

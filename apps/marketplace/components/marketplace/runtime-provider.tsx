@@ -142,6 +142,12 @@ export function MarketplaceRuntimeProvider({
   const locale = useOptionalHenryCoLocale() ?? "en";
   const broadcastRef = useRef<BroadcastChannel | null>(null);
   const refreshShellRef = useRef<(silent?: boolean) => Promise<void>>(async () => undefined);
+  // Same render-scoped-function-in-a-ref idiom as refreshShellRef: the
+  // post-auth resume effect toasts without taking the (per-render) pushToast
+  // identity into its dependency array.
+  const pushToastRef = useRef<
+    (title: string, tone: ToastTone, body?: string, opts?: { chime?: boolean }) => void
+  >(() => undefined);
   const postAuthResumeRef = useRef(false);
   /** Synchronous guard so double-clicks cannot enqueue overlapping POST /api/cart calls. */
   const cartRequestSlugsRef = useRef<Set<string>>(new Set());
@@ -192,6 +198,7 @@ export function MarketplaceRuntimeProvider({
   }
 
   refreshShellRef.current = refreshShell;
+  pushToastRef.current = pushToast;
 
   useEffect(() => {
     startTransition(() => {
@@ -321,7 +328,7 @@ export function MarketplaceRuntimeProvider({
           if (response.ok) {
             const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
             startTransition(() => setShell(payload.shell));
-            pushToast(
+            pushToastRef.current(
               payload.active ? "Saved to wishlist" : "Removed from wishlist",
               "success",
               undefined,
@@ -349,7 +356,7 @@ export function MarketplaceRuntimeProvider({
           if (response.ok) {
             const payload = (await response.json()) as { shell: MarketplaceShellState; active: boolean };
             startTransition(() => setShell(payload.shell));
-            pushToast(payload.active ? "Store followed" : "Store unfollowed", "success");
+            pushToastRef.current(payload.active ? "Store followed" : "Store unfollowed", "success");
             emitCrossTabRefresh("follow", intent.vendorSlug);
           } else if (response.status === 401) {
             stashMarketplacePostAuthIntent({ action: "follow", vendorSlug: intent.vendorSlug });

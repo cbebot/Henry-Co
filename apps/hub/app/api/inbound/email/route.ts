@@ -29,10 +29,9 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const secret = clean(process.env[INBOUND_EMAIL_WEBHOOK_SECRET_ENV]);
     if (!secret) {
-      return NextResponse.json(
-        { error: "inbound email webhook secret not configured" },
-        { status: 503 },
-      );
+      // Do not reveal secret-configuration state to unauthenticated callers.
+      console.error("[henryco/hub-api] inbound/email: webhook secret not configured");
+      return NextResponse.json({ error: "unavailable" }, { status: 503 });
     }
 
     // DoS guard: reject an oversized declared body BEFORE buffering it in memory
@@ -49,7 +48,10 @@ export async function POST(request: Request): Promise<Response> {
 
     const verify = verifyInboundSignature({ secret, timestamp, signature, rawBody });
     if (!verify.ok) {
-      return NextResponse.json({ error: "unauthorized", reason: verify.reason }, { status: 401 });
+      // Never echo which verification step failed — that is an HMAC forgery
+      // oracle. Keep the specific reason in server logs only.
+      console.error("[henryco/hub-api] inbound/email: signature rejected —", verify.reason);
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
     let json: unknown;

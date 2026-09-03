@@ -112,7 +112,7 @@ export function PipelineKanban({
       }
     } catch (err) {
       console.error("[PipelineKanban] move failed:", err);
-      setError(err instanceof Error ? err.message : "Move failed");
+      setError("Couldn't move this applicant. Please try again.");
       // Rollback.
       setBuckets((prev) => {
         const next: StageBucket = {};

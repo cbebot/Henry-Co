@@ -263,7 +263,7 @@ export default async function HomePage() {
 
       {/* Differentiators — divided list, no 2-up panel grid */}
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-[0.85fr,1.15fr]">
+        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <p className="jobs-kicker">{copy.home.differentiators}</p>
             <h2 className="mt-3 jobs-heading max-w-sm text-balance">{copy.home.ready}</h2>

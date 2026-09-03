@@ -75,3 +75,32 @@ select
      where table_schema='public' and table_name='studio_projects'
        and column_name='client_business_id')               as v373_client_business_id;  -- expect 1
 ```
+
+---
+
+## V3-43 — durable-job rail + primitive consolidation (SA-4 prerequisite)
+
+**Added 2026-07-24.** V3-43 generalizes the shipped outbox idiom into ONE rail and **consolidates the per-division locks + spend ledgers into ONE primitive each**, BEFORE SA-4's operator migration would land a second of each (architect's "never two", prod-verified 2026-07-23: only `studio_agency_tick_lock` + `ai_free_spend_ledger` exist; SA-4 `20260723130000` is un-applied).
+
+**Two hub migrations, applied in timestamp order (SA-4 first, then the rail):**
+
+| # | Pass | Migration file | Does |
+|---|---|---|---|
+| A | **SA-4 (retargeted)** | `apps/hub/supabase/migrations/20260723130000_founder_operator_spine.sql` | ONLY adds `founder_action_proposals.origin` + re-states `customer_notifications_category_check`. **No longer creates** `ai_operator_tick_lock` / `ai_operator_spend_ledger` — those are removed; the operator reuses the rail primitives below. Self-contained (touches only `founder_action_proposals` + `customer_notifications`), so order vs the rail is safe either way. |
+| B | **V3-43 rail** | `apps/hub/supabase/migrations/20260724120000_v3_43_workflow_rail.sql` | Creates `workflow_jobs` / `workflow_runs` / `workflow_locks` + the `workflow_enqueue` / `workflow_claim_job` RPCs; creates `internal_ai_spend_ledger` + `internal_ai_spend_today` / `internal_ai_spend_add`. **Folds** `studio_agency_tick_lock` → `workflow_locks('studio.agency.tick')` and **drops** it; **folds** `ai_free_spend_ledger` rows → `internal_ai_spend_ledger('free_ai')`, redefines `ai_free_spend_today()`/`ai_free_spend_add(bigint)` as delegating wrappers (signatures preserved — `apps/account` untouched), and **drops** `ai_free_spend_ledger`. |
+
+**End state:** exactly ONE lock primitive (`workflow_locks`, keyed) and ONE internal-spend primitive (`internal_ai_spend_ledger`, keyed `free_ai`/`operator`/`automation`). Studio's `dailyAgencySpendKobo` stays a DERIVED sum over `studio_build_jobs` (not a ledger). All new tables deny-RLS/service-role-only; all new RPCs SECURITY DEFINER, search_path pinned, EXECUTE granted to `service_role` only.
+
+**App flag:** the rail engine is dark under `WORKFLOW_RAIL_LIVE` (unset ⇒ the studio/operator ticks run their exact pre-rail direct path; the primitive swap is behavior-identical CAS/upsert). Money spine untouched. The fold assumes `studio_agency_tick_lock` + `ai_free_spend_ledger` are applied (they are — SA-3 chain + `20260705`); `to_regclass` guards make it safe otherwise.
+
+```sql
+-- V3-43 post-apply verification (expect: ONE lock table, ONE spend ledger)
+select
+  to_regclass('public.workflow_jobs')            as rail_jobs,          -- non-null
+  to_regclass('public.workflow_locks')           as rail_locks,         -- non-null
+  to_regclass('public.internal_ai_spend_ledger') as rail_spend,         -- non-null
+  to_regclass('public.studio_agency_tick_lock')  as folded_studio_lock, -- expect NULL (dropped)
+  to_regclass('public.ai_free_spend_ledger')     as folded_free_ledger, -- expect NULL (dropped)
+  to_regclass('public.ai_operator_tick_lock')    as never_created_lock,  -- expect NULL
+  to_regclass('public.ai_operator_spend_ledger') as never_created_spend; -- expect NULL
+```

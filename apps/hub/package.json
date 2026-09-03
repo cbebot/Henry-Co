@@ -36,6 +36,7 @@
     "@henryco/search-ui": "workspace:^",
     "@henryco/seo": "workspace:^",
     "@henryco/ui": "workspace:^",
+    "@henryco/workflow": "workspace:^",
     "@hookform/resolvers": "^5.2.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",

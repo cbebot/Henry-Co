@@ -20,10 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLogisticsPublicLocale();
   const t = (text: string) => translateSurfaceLabel(locale, text);
   return {
-    title: t("Logistics · Payment workspace"),
-    description: t(
-      "Track logistics dispatch payments once the finance pipeline goes live.",
-    ),
+    title: t("Logistics · Payments"),
+    description: t("Logistics payments."),
     robots: { index: false, follow: false },
   };
 }

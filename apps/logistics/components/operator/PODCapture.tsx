@@ -79,8 +79,8 @@ export function PODCapture({
           accuracy: pos.coords.accuracy,
         });
       },
-      (err) => {
-        setGpsError(err.message || t("Location permission denied."));
+      () => {
+        setGpsError(t("Could not read your location. Enable location access and tap again."));
       },
       { enableHighAccuracy: true, timeout: 10000 },
     );
@@ -128,7 +128,7 @@ export function PODCapture({
         error?: string;
       };
       if (!response.ok || !body?.ok || !body.pod_id) {
-        setSubmitError(body?.error || t("Could not save proof of delivery."));
+        setSubmitError(t("Could not save proof of delivery. Check your connection and try again."));
         setState({ status: "previewing", dataUrl: state.dataUrl, file: state.file });
         return;
       }
@@ -162,7 +162,7 @@ export function PODCapture({
           {t("Proof of delivery captured")}
         </div>
         <p className="mt-1 text-xs text-emerald-100/75">
-          {t("Record id")} <span className="font-mono">{state.podId}</span> — {t("visible to dispatch and the customer.")}
+          {t("Saved — the customer will see it once delivery is verified.")}
         </p>
       </div>
     );

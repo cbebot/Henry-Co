@@ -16,7 +16,7 @@ The super app is an **Expo (React Native) + TypeScript** client that follows **f
 
 - **Tabs:** Hub, Directory, Divisions, Account.
 - **Stacks:** `legal/*` for global pages, `module/[slug]` for division detail surfaces.
-- **Deep links:** `henryco://` scheme plus staging universal links (`https://staging.henrycogroup.com/app/...`).
+- **Deep links:** `henryco://` scheme plus staging universal links (`https://staging.henryonyx.com/app/...`).
 
 ## Backend
 
