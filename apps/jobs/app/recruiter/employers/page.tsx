@@ -1,7 +1,9 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { updateEmployerVerificationAction } from "@/app/actions";
 import { requireJobsRoles } from "@/lib/auth";
 import { getRecruiterOverviewData } from "@/lib/jobs/data";
 import { recruiterNav } from "@/lib/jobs/navigation";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { EmptyState, InlineNotice } from "@/components/feedback";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 import { SectionCard, StatusPill, WorkspaceShell } from "@/components/workspace-shell";
@@ -20,29 +22,31 @@ export default async function RecruiterEmployersPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   await requireJobsRoles(["recruiter", "admin", "owner", "moderator"], "/recruiter/employers");
+  const locale = await getJobsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [data, params] = await Promise.all([
-    getRecruiterOverviewData(),
+    getRecruiterOverviewData(locale),
     searchParams ?? Promise.resolve({} as Record<string, string | string[] | undefined>),
   ]);
   const updated = typeof params.updated === "string" ? params.updated : null;
 
   return (
-    <WorkspaceShell area="recruiter" title="Employers" subtitle="Review and manage employer verification status." nav={recruiterNav} activeHref="/recruiter/employers" accent="linear-gradient(135deg,#1d3f6f 0%,#3266b4 55%,#6db7ff 100%)">
+    <WorkspaceShell area="recruiter" title={t("Employers")} subtitle={t("Review and manage employer verification status.")} nav={recruiterNav} activeHref="/recruiter/employers" accent="linear-gradient(135deg,#1d3f6f 0%,#3266b4 55%,#6db7ff 100%)">
       <div className="space-y-4">
         {updated ? (
           <InlineNotice
             tone="success"
-            title="Verification updated"
-            body={`${updated} has been updated in the live employer verification queue and audit history.`}
+            title={t("Verification updated")}
+            body={`${updated} ${t("has been updated in the live employer verification queue and audit history.")}`}
           />
         ) : null}
 
-        <SectionCard title="Employer verification">
+        <SectionCard title={t("Employer verification")}>
           {data.employers.length === 0 ? (
             <EmptyState
-              kicker="Queue is clear"
-              title="No employer profiles are waiting here right now."
-              body="New employer profiles will appear here when companies register and need verification."
+              kicker={t("Queue is clear")}
+              title={t("No employer profiles are waiting here right now.")}
+              body={t("New employer profiles will appear here when companies register and need verification.")}
             />
           ) : (
             <div className="space-y-3">
@@ -54,7 +58,7 @@ export default async function RecruiterEmployersPage({
                         <div className="font-semibold">{employer.name}</div>
                         <StatusPill label={employer.verificationStatus} tone={toneForVerification(employer.verificationStatus)} />
                       </div>
-                      <div className="mt-1 text-sm text-[var(--jobs-muted)]">{employer.industry} · Profile strength {employer.trustScore}%</div>
+                      <div className="mt-1 text-sm text-[var(--jobs-muted)]">{employer.industry} · {t("Profile strength")} {employer.trustScore}%</div>
                     </div>
                     <form action={updateEmployerVerificationAction} className="grid gap-3 sm:grid-cols-[minmax(0,150px)_minmax(0,220px)_auto]">
                       <input type="hidden" name="employerSlug" value={employer.slug} />
@@ -64,9 +68,9 @@ export default async function RecruiterEmployersPage({
                           <option key={status} value={status}>{status}</option>
                         ))}
                       </select>
-                      <input name="reason" className="jobs-input" placeholder="Reason or review note" />
-                      <PendingSubmitButton tone="secondary" pendingLabel="Saving..." className="w-full sm:w-auto">
-                        Save
+                      <input name="reason" className="jobs-input" placeholder={t("Reason or review note")} />
+                      <PendingSubmitButton tone="secondary" pendingLabel={t("Saving...")} className="w-full sm:w-auto">
+                        {t("Save")}
                       </PendingSubmitButton>
                     </form>
                   </div>

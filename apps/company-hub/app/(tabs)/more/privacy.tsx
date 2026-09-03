@@ -55,8 +55,8 @@ export default function PrivacyScreen() {
         </Text>
 
         <Text className="mt-4 text-sm leading-6" style={{ color: palette.textBody }}>
-          Henry &amp; Co. Group (&quot;we&quot;, &quot;us&quot;, or
-          &quot;our&quot;) operates the Henry &amp; Co. Hub mobile application
+          Henry Onyx Limited (&quot;we&quot;, &quot;us&quot;, or
+          &quot;our&quot;) operates the Henry Onyx Hub mobile application
           (the &quot;App&quot;). This Privacy Policy explains how we collect,
           use, disclose, and safeguard your information when you use the App.
         </Text>
@@ -148,7 +148,7 @@ export default function PrivacyScreen() {
         <Section title="8. Contact Us">
           <Body>
             If you have questions about this Privacy Policy, please contact us
-            at {`${BRAND_EMAILS.privacy} `}or visit henrycogroup.com.
+            at {`${BRAND_EMAILS.privacy} `}or visit henryonyx.com.
           </Body>
         </Section>
       </View>

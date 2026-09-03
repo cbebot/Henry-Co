@@ -1,41 +1,31 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
-@source "../../../packages/ui/src";
+@import "../../../packages/ui/src/theme/account-tokens.css";
+@import "../../../packages/ui/src/styles/public-design.css";
 
-/* HenryCo Hub — shared account surface tokens + HQ command center */
+/* Bind Tailwind v4 `dark:` to the .dark class (next-themes toggle), not the OS
+   media query — without this, the toggled theme and `dark:` utilities decouple. */
+@custom-variant dark (&:where(.dark, .dark *));
+@source "../../../packages/ui/src";
+/* The interaction Engines package styles with Tailwind utilities; every app
+   that consumes @henryco/interactions must scan it or the engine chrome
+   silently drops (transparent CTAs). */
+@source "../../../packages/interactions/src";
+
+/* Henry Onyx Hub — shared account surface tokens + HQ command center */
 :root {
-  --acct-bg: #fafaf8;
-  --acct-bg-soft: #ffffff;
-  --acct-bg-elevated: #ffffff;
-  --acct-surface: #f5f3ef;
-  --acct-line: #e8e4dd;
-  --acct-ink: #1a1814;
-  --acct-muted: #6b6560;
-  --acct-gold: #c9a227;
-  --acct-gold-soft: #f7f0d8;
-  --acct-green: #10b981;
-  --acct-green-soft: #d1fae5;
-  --acct-red: #ef4444;
-  --acct-red-soft: #fee2e2;
-  --acct-blue: #3b82f6;
-  --acct-blue-soft: #dbeafe;
-  --acct-purple: #8b5cf6;
-  --acct-purple-soft: #ede9fe;
-  --acct-orange: #f59e0b;
-  --acct-orange-soft: #fef3c7;
-  --acct-radius: 1.25rem;
-  --acct-radius-lg: 1.75rem;
-  --acct-radius-sm: 0.75rem;
-  --acct-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --acct-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --acct-font-display: "Iowan Old Style", "Baskerville", "Palatino Linotype", "Times New Roman", serif;
-  --acct-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --acct-sidebar-width: 260px;
+  /* Slice B (2026-07-10): the --acct-* tree now comes from the canonical
+     packages/ui/src/theme/account-tokens.css import above. Hub also GAINS
+     --acct-gold-strong/--acct-gold-text (it never defined them; the PASS 20
+     remap below hardcodes those hexes — values identical). This block keeps
+     hub-local chrome only. */
   --owner-sidebar-width: 288px;
-  --owner-accent: #d4af37;
-  --owner-accent-soft: rgba(212, 175, 55, 0.12);
-  --owner-navy: #0f172a;
-  --owner-navy-soft: rgba(15, 23, 42, 0.06);
+  /* OCC-1: accent-as-text must hold AA on BOTH canvases. Canonical light
+     gold-text (#8A6F00) reaches only 4.23:1 on the gold-soft tint the active
+     nav row uses, so the light owner accent is one step darker (4.86:1 on
+     gold-soft, 5.5:1 on white); dark chains to canonical. */
+  --owner-accent: #7e6600;
+  --owner-accent-soft: var(--acct-gold-soft);
 
   /* PASS 20 — canonical --hc-* mapping (owner / hub).
      Premium HenryCo gold pairs with the navy accent for owner chrome. */
@@ -62,27 +52,11 @@
 
 /* next-themes applies `class="dark"` on <html> — mirror account tokens for readable dark surfaces */
 .dark {
-  --acct-bg: #0b0f14;
-  --acct-bg-soft: #141920;
-  --acct-bg-elevated: #1a2028;
-  --acct-surface: #1e252e;
-  --acct-line: #2a3140;
-  --acct-ink: #f0ede8;
-  --acct-muted: #8e8a84;
-  --acct-gold: #d4af37;
+  /* Slice B: dark --acct-* values come from the canonical file. Hub keeps
+     its historical gold-soft alpha (0.12; canonical is 0.16) so the owner
+     chrome tint is pixel-identical — fold into canon in its own visual pass. */
   --acct-gold-soft: rgba(212, 175, 55, 0.12);
-  --acct-green: #34d399;
-  --acct-green-soft: rgba(52, 211, 153, 0.12);
-  --acct-red: #f87171;
-  --acct-red-soft: rgba(248, 113, 113, 0.12);
-  --acct-blue: #60a5fa;
-  --acct-blue-soft: rgba(96, 165, 250, 0.12);
-  --acct-purple: #a78bfa;
-  --acct-purple-soft: rgba(167, 139, 250, 0.12);
-  --acct-orange: #fbbf24;
-  --acct-orange-soft: rgba(251, 191, 36, 0.12);
-  --acct-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --acct-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --owner-accent: var(--acct-gold-text);
 
   /* PASS 20 — dark mapping (owner / hub). */
   --hc-bg: var(--acct-bg);
@@ -106,6 +80,16 @@
   --hc-ink-on-accent: #1A1814;
   --hc-focus-ring: #D4AF37;
 }
+
+/*
+ * Homepage (company landing) --home-* tokens now live in the shared design system:
+ *   packages/ui/src/styles/public-design.css  (imported at the top of this file).
+ * V3-PUBLIC-DESIGN-01 promoted them to packages/ui so every public site shares one
+ * source of truth, and added the accent ramp + type scale + section-rhythm + motion
+ * tokens the homepage was missing. See docs/v3/design-system.md. Do NOT redefine
+ * --home-* here — set the division accent (--accent / --accent-text) on the public
+ * subtree instead (the hub does this in app/(site)/layout.tsx).
+ */
 
 body {
   font-family: var(--acct-font-sans);
@@ -153,7 +137,8 @@ body {
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #ffffff;
+  /* Ink-on-gold in both themes (house AA rule — never white-on-gold). */
+  color: var(--hc-ink-on-accent, #1a1814);
   background: var(--acct-gold);
   border-radius: var(--acct-radius);
   transition: all 0.15s ease;
@@ -162,7 +147,7 @@ body {
 }
 .acct-button-primary:hover {
   filter: brightness(1.08);
-  box-shadow: 0 2px 8px rgba(201, 162, 39, 0.35);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--acct-gold) 35%, transparent);
 }
 .acct-button-primary:disabled {
   cursor: wait;
@@ -273,32 +258,45 @@ body {
   font-weight: 600;
   border-radius: 9999px;
 }
+/* Chip ink rides the tone-as-text tokens (account-tokens.css): the strong
+   tone colours are AA on the dark tints but not on the pale light ones. */
 .acct-chip-gold {
   background: var(--acct-gold-soft);
-  color: var(--acct-gold);
+  color: var(--owner-accent);
 }
 .acct-chip-green {
   background: var(--acct-green-soft);
-  color: var(--acct-green);
+  color: var(--acct-green-text);
 }
 .acct-chip-red {
   background: var(--acct-red-soft);
-  color: var(--acct-red);
+  color: var(--acct-red-text);
 }
 .acct-chip-blue {
   background: var(--acct-blue-soft);
-  color: var(--acct-blue);
+  color: var(--acct-blue-text);
 }
 .acct-chip-purple {
   background: var(--acct-purple-soft);
-  color: var(--acct-purple);
+  color: var(--acct-purple-text);
 }
 .acct-chip-orange {
   background: var(--acct-orange-soft);
-  color: var(--acct-orange);
+  color: var(--acct-orange-text);
 }
 
 .acct-metric {
+  padding: 1.25rem 1.5rem;
+  background: var(--acct-bg-elevated);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius-lg);
+  box-shadow: var(--acct-shadow);
+}
+
+/* MetricCard chrome (the component wraps its content in .owner-metric). This was
+   only defined in the account app, so hub owner MetricCards rendered chrome-less;
+   defining it here gives every owner metric tile the same card surface. */
+.owner-metric {
   padding: 1.25rem 1.5rem;
   background: var(--acct-bg-elevated);
   border: 1px solid var(--acct-line);
@@ -390,43 +388,34 @@ body {
   }
 }
 
-/* Executive HQ — premium dark command surface */
-.owner-command-root {
-  --acct-bg: #06080d;
-  --acct-bg-soft: #0a0d14;
-  --acct-bg-elevated: #101520;
-  --acct-surface: #141b26;
-  --acct-line: rgba(148, 163, 184, 0.14);
-  --acct-ink: #f1f5f9;
-  --acct-muted: #94a3b8;
-  --acct-gold: #d4af37;
-  --acct-gold-soft: rgba(212, 175, 55, 0.14);
-  --acct-green: #34d399;
-  --acct-green-soft: rgba(52, 211, 153, 0.12);
-  --acct-red: #f87171;
-  --acct-red-soft: rgba(248, 113, 113, 0.12);
-  --acct-blue: #60a5fa;
-  --acct-blue-soft: rgba(96, 165, 250, 0.12);
-  --acct-purple: #a78bfa;
-  --acct-purple-soft: rgba(167, 139, 250, 0.12);
-  --acct-orange: #fbbf24;
-  --acct-orange-soft: rgba(251, 191, 36, 0.12);
+/* Executive HQ — OCC-1 (2026-07-11): the palette pin is retired. The owner
+   shell now rides the canonical --acct-* theme (light + .dark from
+   account-tokens.css) like every other account-register surface, so the
+   theme toggle genuinely flips it. Only dark-mode surface FLOURISHES remain
+   scoped here — never token values. */
+.dark .owner-command-root {
   --acct-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 50px rgba(0, 0, 0, 0.35);
   --acct-shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.45);
-  --owner-accent: #e8c547;
-  --owner-accent-soft: rgba(232, 197, 71, 0.12);
-  color-scheme: dark;
 }
 
-.owner-command-root .acct-card {
-  box-shadow: var(--acct-shadow);
-  border-color: var(--acct-line);
+.dark .owner-command-root .acct-card,
+.dark .owner-command-root .owner-metric {
   background: linear-gradient(165deg, rgba(255, 255, 255, 0.03) 0%, var(--acct-bg-elevated) 40%);
 }
 
-.owner-command-root .owner-sidebar-bg {
-  background: linear-gradient(180deg, #0c1018 0%, #06080d 100%);
-  border-color: var(--acct-line);
+/* Ambient backdrop for the command surface: soft gold aura in light, the
+   fuller gold + cool counter-glow in dark. */
+.owner-command-backdrop {
+  background: radial-gradient(
+    ellipse 120% 80% at 50% -20%,
+    color-mix(in srgb, var(--acct-gold) 7%, transparent),
+    transparent 55%
+  );
+}
+.dark .owner-command-backdrop {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(201, 162, 39, 0.14), transparent 55%),
+    radial-gradient(ellipse 80% 50% at 100% 0%, rgba(59, 130, 246, 0.06), transparent 45%);
 }
 
 @media (pointer: coarse) {
@@ -454,9 +443,12 @@ body {
 main button:focus-visible,
 main a[role="button"]:focus-visible,
 main a.inline-flex:focus-visible {
-  outline: 2px solid var(--accent, #f3c97a);
+  /* --accent is the public-site division accent; the owner subtree never sets
+     it, so fall through to the theme-split focus ring before the last-resort
+     pale gold. */
+  outline: 2px solid var(--accent, var(--hc-focus-ring, #f3c97a));
   outline-offset: 3px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, #f3c97a) 22%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, var(--hc-focus-ring, #f3c97a)) 22%, transparent);
   border-radius: 0.85rem;
 }
 

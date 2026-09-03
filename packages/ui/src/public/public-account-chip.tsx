@@ -8,6 +8,7 @@ import {
   ExternalLink,
   Globe,
   LayoutDashboard,
+  LayoutGrid,
   LogIn,
   LogOut,
   Settings2,
@@ -75,22 +76,24 @@ function dropdownShellClass(tone: DropdownTone) {
 function identityBlockClass(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "border-b border-zinc-800 bg-[#10131c]";
+      return "relative border-b border-zinc-800 bg-[#10131c] overflow-hidden";
     case "solidLight":
-      return "border-b border-zinc-200 bg-zinc-50";
+      return "relative border-b border-zinc-200 bg-zinc-50 overflow-hidden";
     default:
-      return "border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-[#10131c]";
+      return "relative border-b border-zinc-200 bg-zinc-50 overflow-hidden dark:border-zinc-800 dark:bg-[#10131c]";
   }
 }
 
+// Focus rings are accent-governed (CHROME-64 amber retirement) — --hc-accent
+// flips per theme; the solid* tones sit on fixed surfaces so one mix serves.
 function menuRowClass(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "text-zinc-200 hover:bg-zinc-800/90 focus-visible:bg-zinc-800/90 focus-visible:ring-2 focus-visible:ring-amber-400/30";
+      return "text-zinc-200 hover:bg-zinc-800/90 focus-visible:bg-zinc-800/90 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_30%,transparent)]";
     case "solidLight":
-      return "text-zinc-800 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-600/25";
+      return "text-zinc-800 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_25%,transparent)]";
     default:
-      return "text-zinc-700 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-500/30 dark:text-zinc-200 dark:hover:bg-zinc-800/80 dark:focus-visible:bg-zinc-800/80 dark:focus-visible:ring-amber-400/28";
+      return "text-zinc-700 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_30%,transparent)] dark:text-zinc-200 dark:hover:bg-zinc-800/80 dark:focus-visible:bg-zinc-800/80";
   }
 }
 
@@ -142,6 +145,8 @@ export function PublicAccountChip({
   user,
   loginHref,
   accountHref,
+  workspaceHref,
+  workspaceLabel,
   signupHref,
   signupLabel = "Get started",
   menuItems = [],
@@ -150,6 +155,7 @@ export function PublicAccountChip({
   showSignOut = false,
   signOutApiPath = "/api/auth/logout",
   signOutRedirectHref,
+  onSignOut,
   dropdownTone = "theme",
   chipSurface = "theme",
   className,
@@ -160,6 +166,15 @@ export function PublicAccountChip({
   user: PublicAccountUser | null;
   loginHref: string;
   accountHref: string;
+  /**
+   * AWARE-SP5: role-aware workspace entry, rendered FIRST in the signed-in
+   * menu. Division shells pass the viewer's plan.workspace (e.g. "Your vendor
+   * workspace" → /vendor). Omit to render no workspace entry — the chip's
+   * "Profile & account" already covers the account itself. Mirrors the
+   * standalone AccountDropdown's workspaceHref/workspaceLabel contract.
+   */
+  workspaceHref?: string;
+  workspaceLabel?: string;
   signupHref?: string;
   signupLabel?: string;
   menuItems?: PublicAccountMenuItem[];
@@ -169,6 +184,13 @@ export function PublicAccountChip({
   showSignOut?: boolean;
   signOutApiPath?: string;
   signOutRedirectHref?: string;
+  /**
+   * V3-02 S2 — when provided, replaces the built-in fetch+redirect
+   * with the host app's logout orchestrator (e.g. `logoutEverywhere`
+   * from `@henryco/auth/client`). The host is responsible for the
+   * post-sign-out redirect when this prop is used.
+   */
+  onSignOut?: () => Promise<void> | void;
   /** Menu panel colors: follow site theme, or force solid dark/light surfaces. */
   dropdownTone?: DropdownTone;
   /** Chip (signed-in and signed-out controls) for dark headers vs standard adaptive styling. */
@@ -275,6 +297,19 @@ export function PublicAccountChip({
   async function handleSignOut() {
     if (signingOut) return;
     setSigningOut(true);
+    if (onSignOut) {
+      try {
+        await onSignOut();
+      } catch {
+        // Host's orchestrator failed — fall back to redirect so the
+        // user isn't stranded mid-action.
+        const next =
+          signOutRedirectHref ||
+          (typeof window !== "undefined" ? `${window.location.origin}/` : "/");
+        window.location.assign(next);
+      }
+      return;
+    }
     try {
       await fetch(signOutApiPath, {
         method: "POST",
@@ -302,7 +337,13 @@ export function PublicAccountChip({
     "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.97]",
     chipSurface === "onDark"
       ? "border-transparent bg-[var(--market-brass,#d4a853)] font-bold text-[var(--market-noir,#0a0a0a)] shadow-[0_10px_36px_rgba(201,162,39,0.42)] ring-2 ring-[rgba(255,255,255,0.18)] hover:brightness-105"
-      : "border-amber-600/20 bg-amber-600 text-white hover:bg-amber-700 dark:border-amber-400/30 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400"
+      : // Accent-governed CTA (redesign 2026-07-08): the old hardcoded
+        // amber-600 sat OFF every division's palette (Phase 0 audit — the
+        // "orange Get started"). --hc-accent is the canonical accent each
+        // app already maps to its division colour, and the token family
+        // flips per theme; fallbacks reproduce brand gold if a token is
+        // somehow absent. AA: --hc-ink-on-accent is designed dark-on-accent.
+        "border-transparent bg-[color:var(--hc-accent,#C9A227)] text-[color:var(--hc-ink-on-accent,#1A1814)] hover:bg-[color:var(--hc-accent-strong,#A88718)]"
   );
 
   /* ── Signed-out state ── */
@@ -338,7 +379,8 @@ export function PublicAccountChip({
   }
 
   /* ── Signed-in state ── */
-  const { primaryLabel, emailLine, initialsSource } = resolvePublicAccountIdentity(user);
+  const { primaryLabel, chipLabel, emailLine, initialsSource } =
+    resolvePublicAccountIdentity(user);
 
   const triggerClass = cn(
     "flex max-w-[min(200px,calc(100vw-8rem))] min-h-[40px] items-center gap-2 rounded-full border py-1 pl-1 pr-2.5 text-left shadow-sm transition active:scale-[0.98]",
@@ -461,7 +503,9 @@ export function PublicAccountChip({
               "ring-2 ring-zinc-600/90 dark:from-amber-500 dark:to-teal-600"
           )}
         />
-        <span className={labelClass}>{primaryLabel}</span>
+        {/* Single name part only — a full name overflows the ≤64px mobile
+            chrome; the dropdown identity header carries full name + email. */}
+        <span className={labelClass}>{chipLabel}</span>
         <ChevronDown
           className={cn(chevronClass, open && "rotate-180")}
           aria-hidden
@@ -483,9 +527,9 @@ export function PublicAccountChip({
             // viewport's right edge, with `top` measured from the
             // trigger's actual bottom-Y. On sm+, revert to the chip-
             // anchored absolute position.
-            "z-[60] origin-top-right animate-[hc-dropdown-in_150ms_ease-out] overflow-hidden rounded-xl border",
-            "fixed right-3 w-[min(320px,calc(100vw-1.5rem))]",
-            "sm:absolute sm:right-0 sm:top-auto sm:mt-2.5 sm:w-[min(320px,calc(100vw-1rem))]",
+            "z-[60] origin-top-right animate-[hc-dropdown-in_200ms_cubic-bezier(0.16,1,0.3,1)] overflow-hidden rounded-2xl border",
+            "fixed right-3 w-[min(340px,calc(100vw-1.5rem))]",
+            "sm:absolute sm:right-0 sm:top-auto sm:mt-2 sm:w-[min(340px,calc(100vw-1rem))]",
             dropdownShellClass(resolvedTone),
             dropdownClassName
           )}
@@ -495,21 +539,34 @@ export function PublicAccountChip({
               : undefined
           }
         >
-          <div className={cn("px-4 py-4", identityBlockClass(resolvedTone))}>
-            <div className="flex items-start gap-3.5">
+          <div className={cn("px-5 py-5", identityBlockClass(resolvedTone))}>
+            {/* Subtle gold aurora behind avatar — brand warmth without noise */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  resolvedTone === "solidLight"
+                    ? "radial-gradient(65% 90% at -5% 50%, rgba(201,162,39,0.10) 0%, transparent 70%)"
+                    : "radial-gradient(65% 90% at -5% 50%, rgba(201,162,39,0.18) 0%, transparent 70%)",
+              }}
+            />
+            <div className="relative flex items-center gap-4">
               <AvatarFallback
                 src={user.avatarUrl}
                 displayName={initialsSource}
-                size="md"
+                size="lg"
                 className={cn(
-                  resolvedTone === "solidDark" &&
-                    "ring-2 ring-zinc-700 from-amber-500 to-teal-600"
+                  "ring-2",
+                  resolvedTone === "solidDark"
+                    ? "ring-zinc-700/80 from-amber-500 to-teal-600"
+                    : "ring-zinc-200 dark:ring-zinc-700/80 from-amber-500 to-teal-600"
                 )}
               />
-              <div className="min-w-0 flex-1 pt-0.5">
+              <div className="min-w-0 flex-1">
                 <p
                   className={cn(
-                    "truncate text-[15px] font-semibold leading-snug tracking-[-0.015em]",
+                    "truncate text-[16px] font-semibold leading-snug tracking-[-0.02em]",
                     identityPrimaryClass(resolvedTone)
                   )}
                 >
@@ -530,6 +587,27 @@ export function PublicAccountChip({
           </div>
 
           <div className="py-1.5">
+            {workspaceHref ? (
+              // AWARE-SP5: the operator's workspace leads the menu — the one
+              // place they most likely mean to go.
+              <Link
+                href={workspaceHref}
+                role="menuitem"
+                tabIndex={0}
+                className={rowBase}
+                onClick={close}
+              >
+                <LayoutGrid
+                  className={cn(
+                    "h-4 w-4 shrink-0",
+                    resolvedTone === "solidDark" ? "text-zinc-500" : "text-zinc-400 dark:text-zinc-500"
+                  )}
+                  aria-hidden
+                />
+                {localize(workspaceLabel || "Your workspace")}
+              </Link>
+            ) : null}
+
             <Link
               href={accountHref}
               role="menuitem"
@@ -604,9 +682,12 @@ export function PublicAccountChip({
                   tabIndex={0}
                   disabled={signingOut}
                   className={cn(
-                    "mx-1.5 flex w-[calc(100%-0.75rem)] min-h-[40px] items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 outline-none transition-colors hover:bg-red-50 focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-500/40 disabled:cursor-wait disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-500/12 dark:focus-visible:bg-red-500/12 dark:focus-visible:ring-red-400/35",
+                    "mx-2 flex w-[calc(100%-1rem)] min-h-[42px] items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold outline-none transition-all duration-150",
+                    "text-red-600 hover:bg-red-500/8 hover:text-red-700 focus-visible:bg-red-500/8 focus-visible:ring-2 focus-visible:ring-red-500/35",
+                    "dark:text-red-400 dark:hover:bg-red-500/14 dark:hover:text-red-300 dark:focus-visible:bg-red-500/14 dark:focus-visible:ring-red-400/30",
+                    "disabled:cursor-wait disabled:opacity-50",
                     resolvedTone === "solidDark" &&
-                      "text-red-400 hover:bg-red-500/12 focus-visible:bg-red-500/12"
+                      "text-red-400 hover:bg-red-500/14 hover:text-red-300 focus-visible:bg-red-500/14"
                   )}
                   onClick={() => {
                     close();
@@ -619,7 +700,7 @@ export function PublicAccountChip({
                     spinnerLabel={surfaceCopy.publicAccount.signOut}
                   >
                     <>
-                      <LogOut className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+                      <LogOut className="h-4 w-4 shrink-0 opacity-75" aria-hidden />
                       {surfaceCopy.publicAccount.signOut}
                     </>
                   </ButtonPendingContent>

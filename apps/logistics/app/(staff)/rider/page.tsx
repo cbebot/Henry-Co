@@ -5,6 +5,8 @@ import {
   MetricCard,
   EmptyState,
 } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { getLogisticsViewer } from "@/lib/logistics/auth";
 import { getRiderDashboardData } from "@/lib/logistics/data";
 import { formatCurrency } from "@/lib/env";
@@ -15,6 +17,8 @@ import { formatCurrency } from "@/lib/env";
 export const dynamic = "force-dynamic";
 
 export default async function RiderHomePage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const viewer = await getLogisticsViewer();
   const data = await getRiderDashboardData(viewer);
 
@@ -33,24 +37,23 @@ export default async function RiderHomePage() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-            Today
+            {t("Today")}
           </p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-            Your queue
+            {t("Your queue")}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-            Assigned pickups and drop-offs in the order dispatch booked them.
-            Tap any shipment to open the active-leg view.
+            {t("Assigned pickups and drop-offs in the order dispatch booked them. Tap any shipment to open the active-leg view.")}
           </p>
         </div>
       </header>
 
       <section
         className="grid gap-3 sm:grid-cols-3"
-        aria-label="Today metrics"
+        aria-label={t("Today metrics")}
       >
         <MetricCard
-          label="Pending"
+          label={t("Pending")}
           value={String(pendingCount)}
           icon={<Package className="h-4 w-4" aria-hidden />}
           context={{
@@ -58,12 +61,12 @@ export default async function RiderHomePage() {
             direction: pendingCount === 0 ? "flat" : "up",
             magnitude:
               pendingCount === 0
-                ? "Queue clear"
-                : `${pendingCount} ${pendingCount === 1 ? "shipment" : "shipments"} in progress`,
+                ? t("Queue clear")
+                : `${pendingCount} ${pendingCount === 1 ? t("shipment") : t("shipments")} ${t("in progress")}`,
           }}
         />
         <MetricCard
-          label="Delivered today"
+          label={t("Delivered today")}
           value={String(deliveredToday)}
           icon={<CheckCircle2 className="h-4 w-4" aria-hidden />}
           context={{
@@ -71,18 +74,18 @@ export default async function RiderHomePage() {
             direction: deliveredToday > 0 ? "up" : "flat",
             magnitude:
               deliveredToday > 0
-                ? `${deliveredToday} closed since shift start`
-                : "No closes yet this shift",
+                ? `${deliveredToday} ${t("closed since shift start")}`
+                : t("No closes yet this shift"),
           }}
         />
         <MetricCard
-          label="Manifest value"
+          label={t("Manifest value")}
           value={formatCurrency(totalValue, "NGN")}
           icon={<Truck className="h-4 w-4" aria-hidden />}
           context={{
             kind: "comparison",
-            vs: "today's manifest",
-            delta: `${queue.length} ${queue.length === 1 ? "leg" : "legs"}`,
+            vs: t("today's manifest"),
+            delta: `${queue.length} ${queue.length === 1 ? t("leg") : t("legs")}`,
           }}
         />
       </section>
@@ -91,26 +94,26 @@ export default async function RiderHomePage() {
         <header className="flex items-baseline justify-between gap-4 border-b border-[var(--logistics-line)] pb-3">
           <div>
             <h2 className="text-base font-semibold tracking-tight text-white">
-              Queue
+              {t("Queue")}
             </h2>
             <p className="mt-1 text-xs text-[var(--logistics-muted)]">
               {queue.length === 0
-                ? "Nothing assigned right now. The dispatcher will surface new pickups here."
-                : `${queue.length} ${queue.length === 1 ? "shipment" : "shipments"} on your manifest.`}
+                ? t("Nothing assigned right now. The dispatcher will surface new pickups here.")
+                : `${queue.length} ${queue.length === 1 ? t("shipment") : t("shipments")} ${t("on your manifest.")}`}
             </p>
           </div>
         </header>
         {queue.length === 0 ? (
           <EmptyState
-            kicker="No assignments yet"
-            headline="Queue is clear"
-            body="When dispatch assigns a leg you'll see it here. Keep an ear on the alerts tab — assignments push there first."
+            kicker={t("No assignments yet")}
+            headline={t("Queue is clear")}
+            body={t("When dispatch assigns a leg you'll see it here. Keep an ear on the alerts tab — assignments push there first.")}
             action={
               <Link
                 href="/rider/notifications"
                 className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.08]"
               >
-                Open alerts
+                {t("Open alerts")}
               </Link>
             }
           />
@@ -134,20 +137,20 @@ export default async function RiderHomePage() {
                         className="h-3.5 w-3.5 text-[var(--logistics-accent)]"
                         aria-hidden
                       />
-                      {shipment.zoneLabel || "Lane TBD"} ·{" "}
+                      {shipment.zoneLabel || t("Lane TBD")} ·{" "}
                       {shipment.urgency} ·{" "}
                       {shipment.serviceType.replaceAll("_", " ")}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                      Status
+                      {t("Status")}
                     </p>
                     <p className="mt-1 text-sm font-semibold capitalize tracking-tight text-white">
                       {shipment.lifecycleStatus.replaceAll("_", " ")}
                     </p>
                     <p className="mt-1 text-xs text-[var(--logistics-accent-soft)]">
-                      Tap to open
+                      {t("Tap to open")}
                     </p>
                   </div>
                 </Link>

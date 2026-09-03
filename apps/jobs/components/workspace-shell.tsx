@@ -113,7 +113,7 @@ export async function WorkspaceShell({
   // "HenryCo / Jobs" header, and the area badge renders below it via
   // the sidebarTopSlot.
   const brand: WorkspaceBrand = {
-    shortName: "HenryCo Jobs",
+    shortName: "Henry Onyx Jobs",
     kicker: areaMeta.label,
     href: nav[0]?.href ?? activeHref,
     icon: Icon,

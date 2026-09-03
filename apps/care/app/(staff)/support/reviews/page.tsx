@@ -20,7 +20,7 @@ import { getReviewSupportContext } from "@/lib/support/data";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Support Reviews | Henry & Co. Fabric Care",
+  title: "Support Reviews | Henry Onyx Fabric Care",
   description:
     "Review moderation workspace for customer trust content and public approval decisions.",
 };

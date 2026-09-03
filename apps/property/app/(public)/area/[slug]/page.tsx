@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyListingCard, PropertySectionIntro } from "@/components/property/ui";
 import { getAreaBySlug } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -12,27 +15,56 @@ export default async function AreaPage({
 }) {
   const { slug } = await params;
   const data = await getAreaBySlug(slug);
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   if (!data) {
     notFound();
   }
 
+  // Single-row header — wrap area name + hero + marketNote so non-EN
+  // locales translate per row. Listing cards on the same page are wrapped
+  // inside PropertyListingCard (title only) to keep DeepL fan-out flat.
+  const [areaName, areaHero, areaMarketNote] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: data.area as unknown as Record<string, unknown>,
+      field: "name",
+      locale,
+      fallback: data.area.name ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.area as unknown as Record<string, unknown>,
+      field: "hero",
+      locale,
+      fallback: data.area.hero ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.area as unknown as Record<string, unknown>,
+      field: "marketNote",
+      locale,
+      fallback: data.area.marketNote ?? "",
+      machineTranslate: locale !== "en",
+    }),
+  ]);
+
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker={data.area.city}
-        title={`${data.area.name}: context before commitment.`}
-        description={data.area.hero}
+        title={`${areaName || data.area.name}: ${t("context before commitment.")}`}
+        description={areaHero || data.area.hero}
       />
 
       <section className="mt-12">
         <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-          Market snapshot
+          {t("Market snapshot")}
         </p>
         <dl className="mt-5 grid gap-x-6 gap-y-5 border-y border-[var(--property-line)] py-5 sm:flex sm:flex-wrap sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-              Average rent
+              {t("Average rent")}
             </dt>
             <dd className="text-2xl font-semibold tracking-tight text-[var(--property-ink)] sm:text-[1.7rem]">
               {formatCurrency(data.area.averageRent)}
@@ -40,7 +72,7 @@ export default async function AreaPage({
           </div>
           <div className="flex flex-col gap-1">
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-              Average sale
+              {t("Average sale")}
             </dt>
             <dd className="text-2xl font-semibold tracking-tight text-[var(--property-ink)] sm:text-[1.7rem]">
               {formatCurrency(data.area.averageSale)}
@@ -48,7 +80,7 @@ export default async function AreaPage({
           </div>
           <div className="flex flex-col gap-1">
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-              Live listings
+              {t("Live listings")}
             </dt>
             <dd className="text-2xl font-semibold tracking-tight text-[var(--property-ink)] sm:text-[1.7rem]">
               {data.listings.length}
@@ -57,14 +89,14 @@ export default async function AreaPage({
         </dl>
         {data.area.marketNote ? (
           <p className="mt-5 max-w-3xl text-sm leading-8 text-[var(--property-ink-soft)]">
-            {data.area.marketNote}
+            {areaMarketNote || data.area.marketNote}
           </p>
         ) : null}
       </section>
 
       <section className="mt-12 grid gap-12 md:grid-cols-2 md:divide-x md:divide-[var(--property-line)]">
         <div>
-          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">Hotspots</p>
+          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">{t("Hotspots")}</p>
           <ul className="mt-5 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
             {data.area.hotspots.map((item) => (
               <li key={item} className="flex gap-3">
@@ -75,7 +107,7 @@ export default async function AreaPage({
           </ul>
         </div>
         <div className="md:pl-12">
-          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">Trust notes</p>
+          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">{t("Trust notes")}</p>
           <ul className="mt-5 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
             {data.area.trustNotes.map((item) => (
               <li key={item} className="flex gap-3">
@@ -90,10 +122,10 @@ export default async function AreaPage({
       <section className="mt-14">
         <div className="flex items-end justify-between gap-4 border-b border-[var(--property-line)] pb-4">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.22em]">
-            Live in {data.area.name}
+            {t("Live in")} {areaName || data.area.name}
           </p>
           <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-            {data.listings.length} {data.listings.length === 1 ? "listing" : "listings"}
+            {data.listings.length} {data.listings.length === 1 ? t("listing") : t("listings")}
           </span>
         </div>
         <div className="mt-6 grid gap-5 xl:grid-cols-3">

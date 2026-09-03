@@ -130,9 +130,24 @@ export function createSeverityResolver(
       return buildStyle(normalizeSeverity(priority, category));
     },
     autoDismissMs(severity) {
-      if (severity === "security") return null;
-      if (severity === "urgent") return 12_000;
-      return 6_000;
+      // Standardized dwell ladder — calm, not lingering. A toast is an
+      // ambient signal, not a modal: it should acknowledge and recede.
+      // security never auto-dismisses (a "Was this you?" alert must be
+      // seen — it stays until dismissed); everything else recedes on a
+      // severity-weighted timer the progress bar makes legible.
+      switch (severity) {
+        case "security":
+          return null;
+        case "urgent":
+          return 7_000;
+        case "warning":
+          return 5_500;
+        case "success":
+          return 4_500;
+        case "info":
+        default:
+          return 4_000;
+      }
     },
     badgeColorVar(highest) {
       if (!highest) return tokens.badge;
@@ -166,6 +181,16 @@ export function createSeverityResolver(
     },
     tokens,
   };
+}
+
+/**
+ * Map a resolved severity to the canonical chime variant
+ * (`@henryco/notifications-ui/chime`). urgent + security get the brighter,
+ * more present "high" voicing; everything else gets the calm "default".
+ * Kept here so the toast viewport derives sound + style from one source.
+ */
+export function soundVariantFor(severity: SignalSeverity): "default" | "high" {
+  return severity === "urgent" || severity === "security" ? "high" : "default";
 }
 
 export type { Division, SignalSeverity };

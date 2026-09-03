@@ -13,7 +13,8 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import Link from "next/link";
-import { ExternalLink, LayoutDashboard, Globe, LogOut, Settings2 } from "lucide-react";
+import { ExternalLink, LayoutDashboard, LayoutGrid, Globe, LogOut, Settings2 } from "lucide-react";
+import { getAccountUrl } from "@henryco/config";
 import { getSurfaceCopy, translateSurfaceLabel } from "@henryco/i18n";
 import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn } from "../lib/cn";
@@ -47,14 +48,16 @@ function toneIdentity(tone: DropdownTone) {
   }
 }
 
+// Focus rings are accent-governed (CHROME-64 amber retirement) — --hc-accent
+// flips per theme; the solid* tones sit on fixed surfaces so one mix serves.
 function toneRow(tone: DropdownTone) {
   switch (tone) {
     case "solidDark":
-      return "text-zinc-200 hover:bg-zinc-800/90 focus-visible:bg-zinc-800/90 focus-visible:ring-2 focus-visible:ring-amber-400/30";
+      return "text-zinc-200 hover:bg-zinc-800/90 focus-visible:bg-zinc-800/90 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_30%,transparent)]";
     case "solidLight":
-      return "text-zinc-800 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-600/25";
+      return "text-zinc-800 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_25%,transparent)]";
     default:
-      return "text-zinc-700 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-500/30 dark:text-zinc-200 dark:hover:bg-zinc-800/80 dark:focus-visible:bg-zinc-800/80 dark:focus-visible:ring-amber-400/28";
+      return "text-zinc-700 hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--hc-accent,#C9A227)_30%,transparent)] dark:text-zinc-200 dark:hover:bg-zinc-800/80 dark:focus-visible:bg-zinc-800/80";
   }
 }
 
@@ -100,12 +103,15 @@ function isAction(item: PublicAccountMenuItem): item is { label: string; onClick
 export function AccountDropdown({
   user,
   accountHref,
+  workspaceHref,
+  workspaceLabel,
   preferencesHref,
   settingsHref,
   menuItems = [],
   showSignOut = false,
   signOutApiPath = "/api/auth/logout",
   signOutRedirectHref,
+  onSignOut,
   tone = "theme",
   open,
   onClose,
@@ -113,12 +119,33 @@ export function AccountDropdown({
 }: {
   user: PublicAccountUser;
   accountHref: string;
+  /**
+   * Signed-in workspace destination. Defaults to the cross-division account
+   * dashboard so EVERY division's chrome offers a path to the user's
+   * workspace (the ecosystem-wide gap fixed 2026-07-08). Pass a division
+   * workspace URL to point somewhere more specific, or `null` to suppress
+   * (e.g. on the account app itself, where it would duplicate accountHref).
+   */
+  workspaceHref?: string | null;
+  /**
+   * AWARE-SP1: label override for the workspace item — role-aware chrome
+   * passes "Your vendor workspace" / "Your employer workspace" here.
+   * Defaults to the generic "Your workspace".
+   */
+  workspaceLabel?: string;
   preferencesHref?: string;
   settingsHref?: string;
   menuItems?: PublicAccountMenuItem[];
   showSignOut?: boolean;
   signOutApiPath?: string;
   signOutRedirectHref?: string;
+  /**
+   * V3-02 S2 — when provided, replaces the built-in fetch+redirect
+   * with the host app's logout orchestrator (e.g. `logoutEverywhere`
+   * from `@henryco/auth/client`). The host is responsible for the
+   * post-sign-out redirect when this prop is used.
+   */
+  onSignOut?: () => Promise<void> | void;
   tone?: DropdownTone;
   open: boolean;
   onClose: () => void;
@@ -159,6 +186,16 @@ export function AccountDropdown({
   async function handleSignOut() {
     if (signingOut) return;
     setSigningOut(true);
+    if (onSignOut) {
+      try {
+        await onSignOut();
+      } catch {
+        window.location.assign(
+          signOutRedirectHref || (typeof window !== "undefined" ? `${window.location.origin}/` : "/"),
+        );
+      }
+      return;
+    }
     try { await fetch(signOutApiPath, { method: "POST", credentials: "include", headers: { Accept: "application/json" } }); } catch { /* still redirect */ }
     finally { window.location.assign(signOutRedirectHref || (typeof window !== "undefined" ? `${window.location.origin}/` : "/")); }
   }
@@ -250,6 +287,17 @@ export function AccountDropdown({
         </div>
       </div>
       <div className="py-1.5">
+        {workspaceHref !== null ? (
+          <Link
+            href={workspaceHref ?? getAccountUrl("/dashboard")}
+            role="menuitem"
+            tabIndex={0}
+            className={rowBase}
+            onClick={close}
+          >
+            <LayoutGrid className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize(workspaceLabel || "Your workspace")}
+          </Link>
+        ) : null}
         <Link href={accountHref} role="menuitem" tabIndex={0} className={rowBase} onClick={close}>
           <LayoutDashboard className={cn("h-4 w-4 shrink-0", iconDim)} aria-hidden /> {localize("Profile & account")}
         </Link>

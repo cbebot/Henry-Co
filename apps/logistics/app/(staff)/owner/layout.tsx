@@ -2,11 +2,12 @@ import { headers } from "next/headers";
 import { WorkspaceShell } from "@henryco/workspace-shell";
 import { NotificationsToastViewport } from "@henryco/dashboard-shell";
 import { getAccountUrl } from "@henryco/config";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { requireLogisticsRoles } from "@/lib/logistics/auth";
 import {
-  OWNER_BRAND,
-  OWNER_MOBILE_NAV,
-  ownerNavItems,
+  getOwnerBrand,
+  getOwnerMobileNav,
+  getOwnerNavItems,
 } from "@/lib/logistics/operator-navigation";
 
 export const dynamic = "force-dynamic";
@@ -33,19 +34,20 @@ export default async function OwnerLayout({
 }) {
   const viewer = await requireLogisticsRoles(["logistics_owner"], "/owner");
   const pathname = await currentPathname();
+  const locale = await getLogisticsPublicLocale();
 
   return (
     <>
       <WorkspaceShell
         division="logistics-business"
-        brand={OWNER_BRAND}
+        brand={getOwnerBrand(locale)}
         viewer={{
           fullName: viewer.user?.fullName ?? null,
           email: viewer.user?.email ?? null,
           avatarUrl: null,
         }}
-        navigation={ownerNavItems}
-        mobileNavigation={OWNER_MOBILE_NAV}
+        navigation={getOwnerNavItems(locale)}
+        mobileNavigation={getOwnerMobileNav(locale)}
         notificationsHref="/owner"
         profileHref={getAccountUrl("/security")}
         accountSettingsUrl={getAccountUrl("/")}

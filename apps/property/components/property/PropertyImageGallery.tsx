@@ -3,6 +3,8 @@
 import * as React from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 
 /**
  * PropertyImageGallery — premium lightbox gallery for the property
@@ -21,6 +23,8 @@ export type PropertyImageGalleryProps = {
 };
 
 export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGalleryProps) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   // Combine hero with the rest of the gallery, dedupe, keep order.
   const all = React.useMemo(() => {
     const out: string[] = [];
@@ -69,6 +73,17 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
     setOpen(true);
   }
 
+  // Honest empty state — never render a broken <Image src="">.
+  if (all.length === 0) {
+    return (
+      <div className="property-paper flex aspect-[16/10] w-full items-center justify-center rounded-[2.2rem] text-center">
+        <p className="px-6 text-sm font-medium text-[var(--property-ink-soft)]">
+          {t("Photos for this listing are being prepared.")}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Inline gallery surface (the page-level layout). Click anywhere
@@ -78,7 +93,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
           type="button"
           onClick={() => openAt(0)}
           aria-label={`Open photo viewer for ${title}`}
-          className="group relative block aspect-[16/10] w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent,_#C9A227)]"
+          className="group relative block aspect-[16/10] w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent,_var(--home-accent))]"
         >
           <Image
             src={all[0] ?? hero}
@@ -101,7 +116,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
                 type="button"
                 onClick={() => openAt(i + 1)}
                 aria-label={`Open photo ${i + 2} of ${all.length}`}
-                className="group relative aspect-[4/3] overflow-hidden rounded-[1.4rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent,_#C9A227)]"
+                className="group relative aspect-[4/3] overflow-hidden rounded-[1.4rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent,_var(--home-accent))]"
               >
                 <Image
                   src={image}
@@ -139,7 +154,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
               type="button"
               onClick={close}
               className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-              aria-label="Close photo viewer"
+              aria-label={t("Close photo viewer")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -165,7 +180,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
                 <button
                   type="button"
                   onClick={prev}
-                  aria-label="Previous photo"
+                  aria-label={t("Previous photo")}
                   className="absolute left-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 sm:left-6"
                 >
                   <ChevronLeft className="h-6 w-6" />
@@ -173,7 +188,7 @@ export function PropertyImageGallery({ title, hero, gallery }: PropertyImageGall
                 <button
                   type="button"
                   onClick={next}
-                  aria-label="Next photo"
+                  aria-label={t("Next photo")}
                   className="absolute right-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/25 sm:right-6"
                 >
                   <ChevronRight className="h-6 w-6" />

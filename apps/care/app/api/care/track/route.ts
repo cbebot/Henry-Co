@@ -90,15 +90,142 @@ export async function GET(req: NextRequest) {
     const booking = await applyEffectiveBookingStatus(bookingByCode);
     const resolvedBooking = booking ?? bookingByCode;
 
-    const payment = await getPaymentVerificationSnapshotForBooking(resolvedBooking.id);
+    const paymentSnapshot = await getPaymentVerificationSnapshotForBooking(resolvedBooking.id);
+    // Public tracking exposes only the payment fields the tracking UI needs —
+    // never the payer email/phone, internal request IDs, or the raw proof
+    // submission (payer name, bank reference, attachments).
+    const payment = paymentSnapshot
+      ? {
+          verificationStatus: paymentSnapshot.verificationStatus,
+          verificationLabel: paymentSnapshot.verificationLabel,
+          verificationMessage: paymentSnapshot.verificationMessage,
+          amountDue: paymentSnapshot.amountDue,
+          amountPaidRecorded: paymentSnapshot.amountPaidRecorded,
+          balanceDue: paymentSnapshot.balanceDue,
+          paymentStatus: paymentSnapshot.paymentStatus,
+          supportEmail: paymentSnapshot.supportEmail,
+          supportWhatsApp: paymentSnapshot.supportWhatsApp,
+          canSubmitReceipt: paymentSnapshot.canSubmitReceipt,
+        }
+      : null;
+
+    // V3 PASS 21 — stage photos: garment intake + completion, plus
+    // per-leg POD captures. Best-effort: tables may not exist on
+    // older environments, so we tolerate query failures.
+    // Public tracking response intentionally excludes operational POD
+    // metadata (GPS coordinates of the customer's location, delivery
+    // recipient name) — a code-only lookup must not expose it.
+    const stagePhotos: Array<{
+      id: string;
+      url: string;
+      caption: string;
+      stage: "intake" | "completion" | "pickup_pod" | "delivery_pod";
+      captured_at: string;
+    }> = [];
+
+    try {
+      const { data: garments } = await supabase
+        .from("care_booking_garments")
+        .select(
+          "id, garment_label, intake_photo_url, completion_photo_url, updated_at",
+        )
+        .eq("booking_id", resolvedBooking.id);
+
+      for (const garment of garments ?? []) {
+        const label = (garment as { garment_label?: string }).garment_label || "Garment";
+        const intakeUrl = (garment as { intake_photo_url?: string }).intake_photo_url;
+        const completionUrl = (garment as { completion_photo_url?: string }).completion_photo_url;
+        const updatedAt =
+          (garment as { updated_at?: string }).updated_at || resolvedBooking.created_at;
+        if (intakeUrl) {
+          stagePhotos.push({
+            id: `${(garment as { id: string }).id}-intake`,
+            url: intakeUrl,
+            caption: `${label} — intake`,
+            stage: "intake",
+            captured_at: updatedAt,
+          });
+        }
+        if (completionUrl) {
+          stagePhotos.push({
+            id: `${(garment as { id: string }).id}-completion`,
+            url: completionUrl,
+            caption: `${label} — completion`,
+            stage: "completion",
+            captured_at: updatedAt,
+          });
+        }
+      }
+    } catch {
+      // care_booking_garments table absent — leave aggregate empty
+    }
+
+    try {
+      const { data: pods } = await supabase
+        .from("care_pod_records")
+        .select("id, leg, photo_url, captured_at")
+        .eq("booking_id", resolvedBooking.id)
+        .not("photo_url", "is", null);
+
+      for (const pod of pods ?? []) {
+        const podRow = pod as {
+          id: string;
+          leg: string;
+          photo_url: string;
+          captured_at: string;
+        };
+        const isPickup = podRow.leg === "pickup";
+        stagePhotos.push({
+          id: `${podRow.id}-pod`,
+          url: podRow.photo_url,
+          caption: isPickup ? "Pickup confirmation" : "Delivery confirmation",
+          stage: isPickup ? "pickup_pod" : "delivery_pod",
+          captured_at: podRow.captured_at,
+        });
+      }
+    } catch {
+      // care_pod_records table absent
+    }
+
+    // Drop the internal booking UUID from the public payload — the tracking
+    // UI keys off tracking_code, never the row id.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _internalBookingId, ...bookingPublic } = resolvedBooking;
+
+    // special_instructions stores internal ops annotations and duplicated
+    // structured fields (payment path, property label, and the site-contact
+    // NAME — third-party PII) alongside the customer's own text. Strip those
+    // internal segments from the public tracking view; keep the customer's
+    // free-text note and their own "Return address:" (which the UI parses).
+    const INTERNAL_INSTRUCTION_PREFIXES = ["payment path:", "property label:", "site contact:"];
+    const publicSpecialInstructions =
+      String(bookingPublic.special_instructions || "")
+        .split(" | ")
+        .map((segment) => segment.trim())
+        .filter((segment) => {
+          if (!segment) return false;
+          const lower = segment.toLowerCase();
+          return !INTERNAL_INSTRUCTION_PREFIXES.some((prefix) => lower.startsWith(prefix));
+        })
+        .join(" | ") || null;
+
+    // service_summary is parsed from item_summary, which also embeds the
+    // site-contact NAME (third-party PII) — drop it from the public view
+    // (same reason the "Site contact:" special_instructions segment is stripped).
+    const serviceSummary = parseServiceBookingSummary(resolvedBooking.item_summary);
+    if (serviceSummary) {
+      serviceSummary.siteContactName = null;
+    }
 
     return NextResponse.json({
       ok: true,
       booking: {
-        ...resolvedBooking,
+        ...bookingPublic,
+        special_instructions: publicSpecialInstructions,
         family: inferCareServiceFamily(resolvedBooking),
-        service_summary: parseServiceBookingSummary(resolvedBooking.item_summary),
+        service_summary: serviceSummary,
         payment,
+        stage_photos: stagePhotos,
       },
     });
   } catch (error) {

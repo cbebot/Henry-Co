@@ -14,104 +14,105 @@ import {
   Truck,
 } from "lucide-react";
 import { BRAND_EMAILS, getDivisionConfig } from "@henryco/config";
+import { getCareAboutCopy, resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { getCareBookingCatalog, getCareSettings } from "@/lib/care-data";
 import { CARE_ACCENT, CARE_ACCENT_SECONDARY } from "@/lib/care-theme";
+import { getCarePublicLocale } from "@/lib/locale-server";
 
 const care = getDivisionConfig("care");
 
-export const metadata: Metadata = {
-  title: "About HenryCo Care",
-  description:
-    "Learn how HenryCo Care delivers premium garment care, home cleaning, office cleaning, and dependable service follow-through.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getCarePublicLocale();
+  const copy = getCareAboutCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
 
 export default async function AboutPage() {
+  const locale = await getCarePublicLocale();
+  const copy = getCareAboutCopy(locale);
+
   const [settings, catalog] = await Promise.all([
     getCareSettings(),
     getCareBookingCatalog(),
   ]);
 
   const supportEmail = settings.support_email || care.supportEmail || BRAND_EMAILS.care;
-  const supportPhone = settings.support_phone || care.supportPhone;
-  const pickupHours = settings.pickup_hours || "Mon - Sat • 8:00 AM to 7:00 PM";
-  const heroTitle = settings.about_title || "Trust. Timing. Service quality.";
-  const heroBody =
-    settings.about_body ||
-    "HenryCo Care provides garment care, pickup and delivery, home cleaning, office cleaning, and recurring service plans through one polished customer experience — dependable execution, respectful handling, a finish clients are happy to invite back.";
+  const pickupHours = settings.pickup_hours || copy.heroFacts.pickupHoursFallback;
+  const [heroTitle, heroBody] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "about_title",
+      locale,
+      fallback: copy.hero.title,
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: settings as unknown as Record<string, unknown>,
+      field: "about_body",
+      locale,
+      fallback: copy.hero.body,
+      machineTranslate: locale !== "en",
+    }),
+  ]);
+
+  const linesPackagesValue = copy.heroFacts.linesPackagesTemplate
+    .replace("{lines}", String(catalog.serviceTypes.length))
+    .replace("{packages}", String(catalog.packages.length));
 
   const heroFacts = [
-    { icon: Clock3, label: "Service hours", value: pickupHours },
-    { icon: Mail, label: "Care desk", value: supportEmail },
+    { icon: Clock3, label: copy.heroFacts.serviceHoursLabel, value: pickupHours },
+    { icon: Mail, label: copy.heroFacts.careDeskLabel, value: supportEmail },
     {
       icon: Sparkles,
-      label: "Service options",
-      value: `${catalog.serviceTypes.length} lines · ${catalog.packages.length} package plans`,
+      label: copy.heroFacts.serviceOptionsLabel,
+      value: linesPackagesValue,
     },
   ] as const;
 
   const lanes = [
     {
       icon: Package2,
-      title: "Garment care",
-      body: "From daily wardrobe essentials to delicate pieces — cleaning, stain treatment, pressing, finishing, and return delivery handled with precision.",
+      title: copy.lanes.garmentCare.title,
+      body: copy.lanes.garmentCare.body,
     },
     {
       icon: Home,
-      title: "Home cleaning",
-      body: "Homes are cared for with clear arrival windows, thoughtful service notes, and a finish designed to feel calm, fresh, and genuinely complete.",
+      title: copy.lanes.homeCleaning.title,
+      body: copy.lanes.homeCleaning.body,
     },
     {
       icon: Building2,
-      title: "Office cleaning",
-      body: "Workplaces receive reliable cleaning support with professional timing, organised site handling, and continuity businesses can count on.",
+      title: copy.lanes.officeCleaning.title,
+      body: copy.lanes.officeCleaning.body,
     },
   ] as const;
 
-  const standards = [
-    "Clear communication before pickup, before arrival, and during every important update.",
-    "Professional handling for garments, homes, and workplaces with the right context for each service type.",
-    "Recurring service options that make long-term care easier to manage and easier to trust.",
-    "One care desk that keeps follow-up documented instead of scattered across channels.",
-  ];
+  const standards = copy.standards.bullets;
 
-  const flow = [
-    {
-      step: "01",
-      title: "Book the right service",
-      body: "Choose garment care, home cleaning, or office cleaning and share the timing, address, and service notes that matter.",
-    },
-    {
-      step: "02",
-      title: "Receive clear confirmation",
-      body: "You receive confirmation, booking details, payment guidance where relevant, and a tracking code for follow-up.",
-    },
-    {
-      step: "03",
-      title: "Service is carried out professionally",
-      body: "Garments move through pickup and delivery. Homes and offices move through arrival, on-site work, and completion.",
-    },
-    {
-      step: "04",
-      title: "Stay informed until the end",
-      body: "Tracking and email updates keep the next step clear, whether that means return delivery or a completed visit.",
-    },
-  ] as const;
+  const flow = copy.flow.steps.map((step, idx) => ({
+    step: String(idx + 1).padStart(2, "0"),
+    title: step.title,
+    body: step.body,
+  }));
 
   const reasons = [
     {
       icon: Truck,
-      title: "Pickup and delivery",
-      body: "Garment care includes controlled pickup, treatment, finishing, and return delivery so customers can follow the order from start to finish.",
+      title: copy.reasons.pickupDelivery.title,
+      body: copy.reasons.pickupDelivery.body,
     },
     {
       icon: ShieldCheck,
-      title: "Quality standards",
-      body: "Whether the service happens in a wardrobe, a home, or a workplace, the result should feel consistent, careful, and professionally finished.",
+      title: copy.reasons.qualityStandards.title,
+      body: copy.reasons.qualityStandards.body,
     },
     {
       icon: Sparkles,
-      title: "Convenience without compromise",
-      body: "Recurring plans, clear updates, and premium support make it easier to keep garments, homes, and workplaces in excellent condition.",
+      title: copy.reasons.convenience.title,
+      body: copy.reasons.convenience.body,
     },
   ] as const;
 
@@ -127,18 +128,20 @@ export default async function AboutPage() {
         } as CSSProperties
       }
     >
-      <div className="mx-auto max-w-[88rem] space-y-16">
+      <div className="mx-auto max-w-[92rem] space-y-16">
         <section>
-          <div className="grid gap-10 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--accent)]">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[color:var(--home-accent-text)]">
                 <Sparkles className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
-                About HenryCo Care
+                {copy.hero.eyebrow}
               </p>
-              <h1 className="mt-5 max-w-3xl text-balance care-display text-zinc-950 dark:text-white">
+              <h1 className="mt-5 max-w-3xl text-balance care-display text-[color:var(--home-ink)]">
                 {heroTitle}
               </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-zinc-600 sm:text-lg dark:text-white/68">
+              {/* READING-02: hero body in the editorial serif reading face;
+                  ink lifted 65 → 70 (serif reads lighter than sans). */}
+              <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-70)] sm:text-lg">
                 {heroBody}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -146,31 +149,30 @@ export default async function AboutPage() {
                   href="/book"
                   className="care-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
                 >
-                  Book a service
+                  {copy.hero.bookCta}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 rounded-full border border-black/10 px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 dark:border-white/15 dark:text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line)] px-6 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition hover:border-[color:var(--accent)]/50"
                 >
-                  Contact the team
+                  {copy.hero.contactCta}
                 </Link>
               </div>
-              <p className="mt-7 text-[11px] font-medium uppercase tracking-[0.22em] text-zinc-500 dark:text-white/45">
-                {supportPhone}
-              </p>
+              {/* NUMBER-PURGE (owner 2026-07-08): the visible support number
+               * is gone — contact routes are the CTA above and /contact. */}
             </div>
             <ul className="grid gap-3 text-sm">
               {heroFacts.map(({ icon: Icon, label, value }) => (
                 <li
                   key={label}
-                  className="flex items-baseline gap-3 border-b border-black/10 py-3 last:border-b-0 dark:border-white/10"
+                  className="flex items-baseline gap-3 border-b border-[color:var(--home-line)] py-3 last:border-b-0"
                 >
-                  <Icon className="h-3.5 w-3.5 text-[color:var(--accent)]" aria-hidden />
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-white/55">
+                  <Icon className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
                     {label}
                   </span>
-                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {value}
                   </span>
                 </li>
@@ -180,19 +182,16 @@ export default async function AboutPage() {
         </section>
 
         <section>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-            Three service lanes
-          </p>
-          <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-black/10 dark:lg:divide-white/10">
+          <ul className="grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[color:var(--home-line)]">
             {lanes.map((item, i) => {
               const Icon = item.icon;
               return (
                 <li key={item.title} className={i > 0 ? "lg:pl-10" : ""}>
-                  <Icon className="h-5 w-5 text-[color:var(--accent)]" aria-hidden />
-                  <h3 className="mt-4 text-[1.2rem] font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <Icon className="h-5 w-5 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <h3 className="mt-4 text-[1.2rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                  <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-65)]">
                     {item.body}
                   </p>
                 </li>
@@ -202,44 +201,38 @@ export default async function AboutPage() {
         </section>
 
         <section>
-          <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-black/10 dark:xl:divide-white/10">
+          <div className="grid gap-12 xl:grid-cols-2 xl:divide-x xl:divide-[color:var(--home-line)]">
             <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                Why clients trust HenryCo Care
-              </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
-                Reliable service comes from standards clients can actually feel.
+              <h2 className="text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
+                {copy.standards.title}
               </h2>
-              <ul className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+              <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
                 {standards.map((item) => (
                   <li key={item} className="flex gap-3 py-4">
-                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
-                    <p className="text-sm leading-7 text-zinc-600 dark:text-white/68">{item}</p>
+                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--home-accent-text)]" />
+                    <p className="text-sm leading-7 text-[color:var(--home-ink-65)]">{item}</p>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="xl:pl-12">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                How the experience works
-              </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
-                Smooth for the client, disciplined behind the scenes.
+              <h2 className="text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
+                {copy.flow.title}
               </h2>
-              <ol className="mt-6 divide-y divide-black/10 border-y border-black/10 dark:divide-white/10 dark:border-white/10">
+              <ol className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
                 {flow.map((item) => (
                   <li
                     key={item.step}
-                    className="grid gap-3 py-4 sm:grid-cols-[auto,1fr] sm:gap-6"
+                    className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
                   >
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
-                      Step {item.step}
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
+                      {copy.flow.stepLabel} {item.step}
                     </span>
                     <div>
-                      <h3 className="text-sm font-semibold tracking-tight text-zinc-950 dark:text-white">
+                      <h3 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
                         {item.title}
                       </h3>
-                      <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-white/68">
+                      <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-65)]">
                         {item.body}
                       </p>
                     </div>
@@ -251,19 +244,16 @@ export default async function AboutPage() {
         </section>
 
         <section>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-            What you can expect
-          </p>
-          <ul className="mt-8 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-black/10 dark:lg:divide-white/10">
+          <ul className="grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[color:var(--home-line)]">
             {reasons.map((item, i) => {
               const Icon = item.icon;
               return (
                 <li key={item.title} className={i > 0 ? "lg:pl-10" : ""}>
-                  <Icon className="h-5 w-5 text-[color:var(--accent)]" aria-hidden />
-                  <h3 className="mt-4 text-[1.2rem] font-semibold tracking-tight text-zinc-950 dark:text-white">
+                  <Icon className="h-5 w-5 text-[color:var(--home-accent-text)]" aria-hidden />
+                  <h3 className="mt-4 text-[1.2rem] font-semibold tracking-tight text-[color:var(--home-ink)]">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/68">
+                  <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-65)]">
                     {item.body}
                   </p>
                 </li>
@@ -272,18 +262,17 @@ export default async function AboutPage() {
           </ul>
         </section>
 
-        <section className="border-t border-black/10 pt-10 dark:border-white/10">
+        <section className="border-t border-[color:var(--home-line)] pt-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--accent)]">
-                Ready to experience HenryCo Care?
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
+                {copy.closingCta.eyebrow}
               </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-zinc-950 sm:text-[1.85rem] dark:text-white">
-                Book a premium care service with timing, clarity, and follow-through built in.
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
+                {copy.closingCta.title}
               </h2>
-              <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/68">
-                From garment pickup and delivery to recurring home and office cleaning, HenryCo Care
-                is built to make dependable service feel easy.
+              <p className="mt-3 text-sm leading-7 text-[color:var(--home-ink-65)]">
+                {copy.closingCta.body}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -291,14 +280,14 @@ export default async function AboutPage() {
                 href="/book"
                 className="care-button-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
-                Book a service
+                {copy.closingCta.bookCta}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/services"
-                className="inline-flex items-center gap-2 rounded-full border border-black/10 px-6 py-3 text-sm font-semibold text-zinc-900 transition hover:border-[color:var(--accent)]/50 dark:border-white/15 dark:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-line)] px-6 py-3 text-sm font-semibold text-[color:var(--home-ink)] transition hover:border-[color:var(--accent)]/50"
               >
-                Explore services
+                {copy.closingCta.exploreCta}
               </Link>
             </div>
           </div>

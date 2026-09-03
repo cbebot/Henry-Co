@@ -1,7 +1,8 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { BRAND_EMAILS } from "@henryco/config";
+import { unstable_cache } from "next/cache";
+import { BRAND_EMAILS, COMPANY } from "@henryco/config";
 import { getOptionalEnv } from "@/lib/env";
 import {
   computePayoutBalance,
@@ -9,9 +10,13 @@ import {
   titleCaseMarketplaceValue,
 } from "@/lib/marketplace/governance";
 import { createAdminSupabase } from "@/lib/supabase";
+import { isMarketplaceOrderOwner, type OwnershipViewer } from "@/lib/marketplace/authorization";
 import {
   demoHomeData,
 } from "@/lib/marketplace/demo";
+import { ensureMarketplaceBootstrap } from "@/lib/marketplace/seed";
+import { signMarketplaceMediaUrl } from "@/lib/marketplace/media";
+import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
 import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import type {
   MarketplaceAddress,
@@ -28,6 +33,7 @@ import type {
   MarketplacePaymentRecord,
   MarketplacePayoutRequest,
   MarketplaceProduct,
+  MarketplaceProductVariant,
   MarketplaceReview,
   MarketplaceSellerDocumentRecord,
   MarketplaceShellCartItem,
@@ -104,7 +110,7 @@ function buildKpis(input: Pick<MarketplaceHomeData, "vendors" | "products" | "re
     {
       label: "Verified stores",
       value: String(input.vendors.length),
-      hint: "Curated sellers and HenryCo-owned inventory with clearer accountability.",
+      hint: "Curated sellers and Henry Onyx-owned inventory with clearer accountability.",
     },
     {
       label: "Active listings",
@@ -184,6 +190,52 @@ function normalizeSellerDocuments(input: unknown): Record<string, MarketplaceSel
   );
 }
 
+/**
+ * Sign every seller document for client display without losing the canonical
+ * persisted reference.
+ *
+ * Seller KYC / business-registration / payout-proof files now live in an
+ * RLS-PRIVATE bucket as `media://private/...` refs (V3-MEDIA-SWEEP-01). A
+ * private ref is NOT renderable in a browser (resolveMediaUrl throws on it), so
+ * we attach a short-lived SIGNED `previewUrl` for the wizard's "Review file"
+ * link while leaving `fileUrl` as the raw ref — that is the value the wizard
+ * round-trips back on draft save, so we must never overwrite it with the
+ * (expiring) signed URL. Legacy absolute URLs sign as a pass-through.
+ */
+async function signSellerDocuments(
+  documents: Record<string, MarketplaceSellerDocumentRecord>
+): Promise<Record<string, MarketplaceSellerDocumentRecord>> {
+  const entries = await Promise.all(
+    Object.entries(documents).map(async ([key, document]) => {
+      const previewUrl = document.fileUrl ? await signMarketplaceMediaUrl(document.fileUrl) : "";
+      return [key, { ...document, previewUrl: previewUrl || null }] as const;
+    })
+  );
+  return Object.fromEntries(entries);
+}
+
+/**
+ * Re-sign the `documents` carried inside a stored `draft_payload`.
+ *
+ * The wizard hydrates from `draftPayload.documents` with priority over
+ * `application.documents`, so the draft copy of each `fileUrl` (a private
+ * `media://` ref) must also be signed for display — otherwise the preview link
+ * resolves an un-renderable private ref. The canonical ref is preserved in
+ * `fileUrl`; only `previewUrl` is added.
+ */
+async function signDraftPayloadDocuments(
+  draftPayload: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const rawDocuments = draftPayload.documents;
+  if (!rawDocuments || typeof rawDocuments !== "object" || Array.isArray(rawDocuments)) {
+    return draftPayload;
+  }
+  return {
+    ...draftPayload,
+    documents: await signSellerDocuments(normalizeSellerDocuments(rawDocuments)),
+  };
+}
+
 function filterValue(value: string) {
   return `"${value.replace(/"/g, '\\"')}"`;
 }
@@ -228,14 +280,14 @@ function buildPlaceholderVendor(scopeId?: string | null): MarketplaceVendor {
     badges: ["Setup in progress"],
     ownerType: "vendor",
     supportEmail: BRAND_EMAILS.marketplace,
-    supportPhone: "+2349133957084",
+    supportPhone: COMPANY.group.supportPhone,
   };
 }
 
-async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issue: string | null }> {
+async function computeDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issue: string | null }> {
   try {
     const admin = createAdminSupabase();
-    const [categoriesRes, brandsRes, vendorsRes, productsRes, mediaRes, collectionsRes, collectionItemsRes, campaignsRes, reviewsRes] =
+    const [categoriesRes, brandsRes, vendorsRes, productsRes, mediaRes, collectionsRes, collectionItemsRes, campaignsRes, reviewsRes, variantsRes] =
       await Promise.all([
         admin.from("marketplace_categories").select("*").order("sort_order", { ascending: true }),
         admin.from("marketplace_brands").select("*").order("name", { ascending: true }),
@@ -251,6 +303,14 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
         admin.from("marketplace_collection_items").select("*").order("sort_order", { ascending: true }),
         admin.from("marketplace_campaigns").select("*").eq("status", "active").order("updated_at", { ascending: false }),
         admin.from("marketplace_reviews").select("*").eq("status", "published").order("created_at", { ascending: false }),
+        // V3 PASS 21 — variant matrix join (color × size × material).
+        // Soft-fail tolerated: legacy environments without the V3 PASS 21
+        // migration row simply render the product page without <VariantMatrix>.
+        admin
+          .from("marketplace_product_variants")
+          .select("*")
+          .in("status", ["active", "out_of_stock"])
+          .order("sort_order", { ascending: true }),
       ]);
 
     if (
@@ -264,22 +324,22 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
       campaignsRes.error ||
       reviewsRes.error
     ) {
+      // Keep raw driver/PostgREST errors (table/column/policy names) in server
+      // logs only — never concatenate them into a user-visible field.
+      console.error("[marketplace] catalog snapshot query error", {
+        categories: categoriesRes.error?.message,
+        brands: brandsRes.error?.message,
+        vendors: vendorsRes.error?.message,
+        products: productsRes.error?.message,
+        media: mediaRes.error?.message,
+        collections: collectionsRes.error?.message,
+        collectionItems: collectionItemsRes.error?.message,
+        campaigns: campaignsRes.error?.message,
+        reviews: reviewsRes.error?.message,
+      });
       return {
         snapshot: null,
-        issue:
-          [
-            categoriesRes.error?.message,
-            brandsRes.error?.message,
-            vendorsRes.error?.message,
-            productsRes.error?.message,
-            mediaRes.error?.message,
-            collectionsRes.error?.message,
-            collectionItemsRes.error?.message,
-            campaignsRes.error?.message,
-            reviewsRes.error?.message,
-          ]
-            .filter(Boolean)
-            .join(" | ") || "Marketplace catalog tables are unavailable.",
+        issue: "Some products can't load right now. Please refresh in a moment.",
       };
     }
 
@@ -292,6 +352,7 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
     const collectionItemRows = collectionItemsRes.data ?? [];
     const campaignRows = campaignsRes.data ?? [];
     const reviewRows = reviewsRes.data ?? [];
+    const variantRows = variantsRes.error ? [] : (variantsRes.data ?? []);
 
     const categories: MarketplaceCategory[] = categoryRows.map((row: Record<string, unknown>) => ({
       id: String(row.id),
@@ -328,23 +389,68 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
       reviewScore: Number(row.review_score || 0),
       followersCount: Number(row.followers_count || 0),
       accent: String(row.accent || "#B2863B"),
-      heroImage: String(row.hero_image_url || ""),
+      // READ BOUNDARY: hero uploads store `media://` refs; legacy rows store
+      // absolute URLs. Resolve once so VendorCard and the storefront render both.
+      heroImage: resolveMarketplaceImageUrl(row.hero_image_url ? String(row.hero_image_url) : null) ?? "",
       badges: Array.isArray(row.badges) ? row.badges.map(String) : [],
       ownerType: String(row.owner_type || "vendor") as MarketplaceVendor["ownerType"],
       supportEmail: String(row.support_email || BRAND_EMAILS.marketplace),
-      supportPhone: String(row.support_phone || "+2349133957084"),
+      supportPhone: String(row.support_phone || COMPANY.group.supportPhone),
     }));
 
     const categoryMap = new Map(categories.map((item) => [item.id, item]));
     const brandMap = new Map(brands.map((item) => [item.id, item]));
     const vendorMap = new Map(vendors.map((item) => [item.id, item]));
     const mediaByProduct = new Map<string, string[]>();
+    const mediaUrlById = new Map<string, string>();
 
     for (const row of mediaRows as Array<Record<string, unknown>>) {
       const key = String(row.product_id);
       const existing = mediaByProduct.get(key) ?? [];
-      if (row.url) existing.push(String(row.url));
+      // READ BOUNDARY: stored values are either `media://` refs (direct uploads)
+      // or legacy absolute URLs. Resolve ONCE here so every downstream consumer
+      // (product cards, detail gallery, cart/checkout lines, saved items,
+      // search, JSON-LD, vendor workspace) renders a real URL — junk resolves
+      // to null and is dropped instead of becoming a broken src.
+      const url = resolveMarketplaceImageUrl(row.url ? String(row.url) : null);
+      if (url) existing.push(url);
       mediaByProduct.set(key, existing);
+      if (row.id && url) mediaUrlById.set(String(row.id), url);
+    }
+
+    // V3 PASS 21 — variant matrix lookup. Pre-bucket the variants by
+    // product_id so the products .map below can attach without re-walking.
+    const variantsByProduct = new Map<string, MarketplaceProductVariant[]>();
+    for (const row of variantRows as Array<Record<string, unknown>>) {
+      const key = String(row.product_id);
+      const existing = variantsByProduct.get(key) ?? [];
+      const rawOptions =
+        row.options && typeof row.options === "object" && !Array.isArray(row.options)
+          ? (row.options as Record<string, unknown>)
+          : {};
+      const options = Object.entries(rawOptions).reduce<Record<string, string>>(
+        (accumulator, [optionKey, optionValue]) => {
+          if (typeof optionValue === "string" && optionValue.trim()) {
+            accumulator[optionKey] = optionValue.trim();
+          }
+          return accumulator;
+        },
+        {}
+      );
+      existing.push({
+        id: String(row.id),
+        sku: String(row.sku || ""),
+        options,
+        price: Number(row.price || 0),
+        compareAtPrice: row.compare_at_price == null ? null : Number(row.compare_at_price),
+        currency: String(row.currency || "NGN"),
+        stock: Number(row.stock || 0),
+        status: String(row.status || "active") as MarketplaceProductVariant["status"],
+        imageUrl: row.media_id ? mediaUrlById.get(String(row.media_id)) ?? null : null,
+        lowStockThreshold: Number(row.low_stock_threshold || 0),
+        sortOrder: Number(row.sort_order || 0),
+      });
+      variantsByProduct.set(key, existing);
     }
 
     const products: MarketplaceProduct[] = productRows.map((row: Record<string, unknown>) => ({
@@ -367,6 +473,7 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
       featured: Boolean(row.featured),
       approvalStatus: String(row.approval_status || "approved") as MarketplaceProduct["approvalStatus"],
       trustBadges: Array.isArray(row.trust_badges) ? row.trust_badges.map(String) : [],
+      henryOnyxVerified: Boolean(row.henry_onyx_verified),
       gallery: mediaByProduct.get(String(row.id)) ?? [],
       specifications:
         row.specifications && typeof row.specifications === "object"
@@ -379,6 +486,7 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
       deliveryNote: String(row.delivery_note || ""),
       leadTime: String(row.lead_time || ""),
       codEligible: Boolean(row.cod_eligible),
+      variants: variantsByProduct.get(String(row.id)) ?? undefined,
     }));
 
     const productMap = new Map(products.map((item) => [item.id, item]));
@@ -446,19 +554,56 @@ async function loadDatabaseSnapshot(): Promise<{ snapshot: Snapshot | null; issu
           : null,
     };
   } catch (error) {
+    console.error("[marketplace] catalog snapshot failed", error);
     return {
       snapshot: null,
-      issue: error instanceof Error ? error.message : "Marketplace catalog failed to load.",
+      issue: "Marketplace catalog failed to load.",
     };
   }
 }
 
-export async function getMarketplaceHomeData(): Promise<Snapshot> {
+/**
+ * HOTFIX (DB-saturation): cache the heavy 10-table catalog snapshot at the
+ * SOURCE so BOTH the page (getMarketplaceHomeData) and the root-layout shell
+ * (getMarketplaceReadiness → getMarketplaceShellState) serve from one 60s
+ * cache. Without this, the uncached readiness read in the layout still hung the
+ * marketplace shell on a saturated DB (the 0-bytes outage). Public,
+ * service-role admin client — no cookies/headers/session/viewer.
+ */
+const loadDatabaseSnapshot = unstable_cache(
+  computeDatabaseSnapshot,
+  ["marketplace-snapshot"],
+  { revalidate: 60, tags: ["marketplace-home"] },
+);
+
+async function computeMarketplaceHomeData(): Promise<Snapshot> {
+  // Populate the company's curated catalog on first read (idempotent,
+  // version-gated, service-role-guarded). No-ops once seeded; runs before the
+  // cached snapshot load so the first snapshot reflects the seeded catalog.
+  await ensureMarketplaceBootstrap();
   const { snapshot } = await loadDatabaseSnapshot();
   return snapshot ?? getFallbackSnapshot();
 }
 
+/**
+ * Public marketplace catalog data, cached in Next's data cache for 60s and
+ * shared across serverless instances. loadDatabaseSnapshot() fans out ~10
+ * Supabase reads per cold request, so during a DB-saturation event every
+ * anonymous home render hung on the live database. This data is public and
+ * non-personalized (it reads ONLY approved/published catalog rows via the
+ * service-role admin client — no cookies, headers, session, or viewer), so a
+ * short cross-instance revalidate is safe. The signed-in rail (cart, wishlist,
+ * notifications) is resolved separately in getMarketplaceShellState and stays
+ * live; writes can bust this via revalidateTag("marketplace-home").
+ */
+export const getMarketplaceHomeData = unstable_cache(
+  computeMarketplaceHomeData,
+  ["marketplace-home-data"],
+  { revalidate: 60, tags: ["marketplace-home"] }
+);
+
 export async function getMarketplaceReadiness() {
+  await ensureMarketplaceBootstrap();
   const { snapshot, issue } = await loadDatabaseSnapshot();
   return {
     schemaReady: Boolean(snapshot),
@@ -517,6 +662,10 @@ export async function searchMarketplace(query: URLSearchParams | Record<string, 
   const category = String(getValue("category") || "").trim().toLowerCase();
   const brand = String(getValue("brand") || "").trim().toLowerCase();
   const verifiedOnly = String(getValue("verified") || "") === "1";
+  // Listing-level Henry Onyx Verified: the paid AI vision review confirmed the
+  // photo is real, present, and error-free. Distinct from seller verification
+  // above — a verified seller can still list an unchecked item, and vice versa.
+  const onyxVerifiedOnly = String(getValue("onyxverified") || "") === "1";
   const codOnly = String(getValue("cod") || "") === "1";
 
   return snapshot.products.filter((product) => {
@@ -526,6 +675,7 @@ export async function searchMarketplace(query: URLSearchParams | Record<string, 
       const vendor = snapshot.vendors.find((item) => item.slug === product.vendorSlug);
       if (!vendor || vendor.verificationLevel === "bronze") return false;
     }
+    if (onyxVerifiedOnly && !product.henryOnyxVerified) return false;
     if (codOnly && !product.codEligible) return false;
     if (!search) return true;
 
@@ -779,11 +929,15 @@ export async function getBuyerDashboardData() {
         latestApplicationQuery,
         applyIdentityScope(admin.from("marketplace_wishlists").select("product_id"), viewer, "user_id"),
         applyIdentityScope(admin.from("marketplace_vendor_follows").select("vendor_id"), viewer, "user_id"),
-        applyIdentityScope(
-          admin.from("marketplace_reviews").select("*").order("created_at", { ascending: false }),
-          viewer,
-          "user_id"
-        ),
+        // Fix-the-read (schema drift): marketplace_reviews has no
+        // normalized_email column in the live store, and review_submit
+        // writes user_id only — scope by user_id so this read cannot
+        // fail the whole buyer dashboard.
+        admin
+          .from("marketplace_reviews")
+          .select("*")
+          .eq("user_id", viewer.user.id)
+          .order("created_at", { ascending: false }),
         applyIdentityScope(
           admin.from("marketplace_support_threads").select("*").order("updated_at", { ascending: false }),
           viewer,
@@ -828,6 +982,7 @@ export async function getBuyerDashboardData() {
         .map((group: Record<string, unknown>) => ({
           id: String(group.id),
           vendorSlug: vendorById.get(String(group.vendor_id))?.slug || null,
+          vendorId: group.vendor_id ? String(group.vendor_id) : null,
           ownerType: String(group.owner_type || "vendor") as MarketplaceOrder["groups"][number]["ownerType"],
           fulfillmentStatus: String(group.fulfillment_status || "awaiting_acceptance") as MarketplaceOrder["groups"][number]["fulfillmentStatus"],
           paymentStatus: String(group.payment_status || "pending") as MarketplaceOrder["groups"][number]["paymentStatus"],
@@ -940,6 +1095,19 @@ export async function getBuyerDashboardData() {
     const wishlistIds = new Set((wishlistRes.data ?? []).map((row: Record<string, unknown>) => String(row.product_id)));
     const followIds = new Set((followsRes.data ?? []).map((row: Record<string, unknown>) => String(row.vendor_id)));
 
+    // Sign sensitive seller documents for client display. Both the canonical
+    // `documents_json` and the wizard-priority `draft_payload.documents` carry
+    // private `media://` refs that the browser cannot render directly, so we
+    // attach a short-lived signed `previewUrl` to each while preserving the ref
+    // in `fileUrl` (the value the wizard round-trips on save). (V3-MEDIA-SWEEP-01)
+    const signedApplicationDocuments = applicationRes.data
+      ? await signSellerDocuments(normalizeSellerDocuments(applicationRes.data.documents_json))
+      : {};
+    const signedDraftPayload =
+      applicationRes.data?.draft_payload && typeof applicationRes.data.draft_payload === "object"
+        ? await signDraftPayloadDocuments(applicationRes.data.draft_payload as Record<string, unknown>)
+        : {};
+
     return {
       viewer,
       addresses,
@@ -964,11 +1132,8 @@ export async function getBuyerDashboardData() {
             progressStep: String(applicationRes.data.progress_step || "start"),
             submittedAt: String(applicationRes.data.submitted_at || new Date().toISOString()),
             reviewNote: applicationRes.data.review_note ? String(applicationRes.data.review_note) : null,
-            documents: normalizeSellerDocuments(applicationRes.data.documents_json),
-            draftPayload:
-              applicationRes.data.draft_payload && typeof applicationRes.data.draft_payload === "object"
-                ? (applicationRes.data.draft_payload as Record<string, unknown>)
-                : {},
+            documents: signedApplicationDocuments,
+            draftPayload: signedDraftPayload,
             agreementAcceptedAt: applicationRes.data.agreement_accepted_at
               ? String(applicationRes.data.agreement_accepted_at)
               : null,
@@ -998,7 +1163,7 @@ export function toMarketplaceOrderFeed(orders: MarketplaceOrder[]): MarketplaceO
     const stalled = ["placed", "awaiting_payment", "paid_held", "processing", "awaiting_auto_release"].includes(order.status);
     const headline =
       order.status === "payout_released"
-        ? `${order.orderNo} has completed HenryCo payout settlement`
+        ? `${order.orderNo} has completed payout settlement`
         : order.status === "payout_frozen"
           ? `${order.orderNo} is under trust and payout review`
           : order.paymentStatus === "verified"
@@ -1160,6 +1325,9 @@ export async function getVendorWorkspaceData() {
             subtotal: Number(row.subtotal || 0),
             netVendorAmount: Number(row.net_vendor_amount || 0),
             placedAt: String(order?.placed_at || order?.created_at || new Date().toISOString()),
+            deliveredAt: row.delivered_at ? String(row.delivered_at) : null,
+            shipmentCarrier: row.shipment_carrier ? String(row.shipment_carrier) : "",
+            shipmentTrackingCode: row.shipment_tracking_code ? String(row.shipment_tracking_code) : "",
           };
         }) ?? [],
     };
@@ -1183,6 +1351,9 @@ export async function getVendorWorkspaceData() {
         subtotal: number;
         netVendorAmount: number;
         placedAt: string;
+        deliveredAt: string | null;
+        shipmentCarrier: string;
+        shipmentTrackingCode: string;
       }>,
       issue: "Vendor workspace data is unavailable right now.",
     };
@@ -1351,6 +1522,7 @@ export async function getOrderByNumber(orderNo: string) {
       groups: (groupsRes.data ?? []).map((group: Record<string, unknown>) => ({
         id: String(group.id),
         vendorSlug: vendorById.get(String(group.vendor_id))?.slug || null,
+        vendorId: group.vendor_id ? String(group.vendor_id) : null,
         ownerType: String(group.owner_type || "vendor") as MarketplaceOrder["groups"][number]["ownerType"],
         fulfillmentStatus: String(group.fulfillment_status || "awaiting_acceptance") as MarketplaceOrder["groups"][number]["fulfillmentStatus"],
         paymentStatus: String(group.payment_status || "pending") as MarketplaceOrder["groups"][number]["paymentStatus"],
@@ -1378,4 +1550,34 @@ export async function getOrderByNumber(orderNo: string) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Owner-scoped order fetch for the force-dynamic public surfaces (`/track`,
+ * `/pay`). `getOrderByNumber` reads via `service_role` (RLS-bypassing) keyed
+ * only on the brute-forceable `order_no` (`MKT-ORD-YYYYMMDD-{100..999}`), so
+ * exposing its result to an unauthenticated caller leaks buyer PII + the
+ * bank-receipt proof for every order (finding F-01). This wrapper proves the
+ * caller owns the order BEFORE any order data is returned: an unauthenticated
+ * or non-owning viewer always gets `null` (→ the page's `notFound()`), so
+ * enumeration discloses nothing. Owners see exactly what they saw before.
+ */
+export async function getOrderForViewer(orderNo: string, viewer: OwnershipViewer) {
+  if (!viewer?.user) return null;
+  try {
+    const admin = createAdminSupabase();
+    const { data: ownerRow } = await admin
+      .from("marketplace_orders")
+      .select("user_id, normalized_email")
+      .eq("order_no", orderNo)
+      .maybeSingle();
+    // Identical ownership shape to the dispute_create / order_confirm_completion
+    // write gates (user_id OR normalized_email) so a viewer who can read an order
+    // here can also act on it. Every checkout binds both columns, so this is
+    // fail-closed without locking out any real owner.
+    if (!isMarketplaceOrderOwner(ownerRow, viewer)) return null;
+  } catch {
+    return null;
+  }
+  return getOrderByNumber(orderNo);
 }

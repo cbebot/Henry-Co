@@ -1,9 +1,17 @@
 import "server-only";
 
+import { createSupabaseMediaStore, type MediaStore } from "@henryco/media/server";
+
 import { createAdminSupabase } from "@/lib/supabase";
-import { normalizeEmail, normalizePhone } from "@/lib/env";
+import { normalizeEmail, normalizePhone, getOptionalEnv } from "@/lib/env";
 import { slugify } from "@/lib/utils";
 import { demoPropertySnapshot } from "@/lib/property/demo";
+import { isPropertyDbListingsEnabled, listListingsFromDb, writeListingToDb } from "@/lib/property/db";
+import {
+  PROPERTY_DOCUMENT_RULE,
+  PROPERTY_IMAGE_RULE,
+  PROPERTY_PLACEHOLDER_IMAGE,
+} from "@/lib/property/media";
 import type {
   PropertyAgent,
   PropertyArea,
@@ -14,10 +22,13 @@ import type {
   PropertyListing,
   PropertyListingApplication,
   PropertyListingInspection,
+  PropertyMaintenanceTicket,
   PropertyManagedRecord,
   PropertyNotificationRecord,
   PropertyPolicyEvent,
+  PropertyRentPayment,
   PropertySavedListing,
+  PropertySavedSearch,
   PropertyService,
   PropertySnapshot,
   PropertyViewingRequest,
@@ -26,8 +37,6 @@ import type {
 export const PROPERTY_RUNTIME_BUCKET = "property-runtime";
 export const PROPERTY_MEDIA_BUCKET = "property-media";
 export const PROPERTY_DOCUMENT_BUCKET = "property-documents";
-const PROPERTY_PLACEHOLDER_IMAGE =
-  "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1600&q=80";
 
 let bucketsEnsured = false;
 let propertySnapshotCache:
@@ -63,12 +72,12 @@ function buildRuntimeMetrics(input: Omit<PropertySnapshot, "metrics">): Property
     {
       label: "Live listings",
       value: String(approvedListings),
-      hint: "Public inventory currently available on HenryCo Property.",
+      hint: "Public inventory currently available on Henry Onyx Property.",
     },
     {
       label: "Managed portfolio",
       value: String(managedPortfolio),
-      hint: "Active managed-property records tracked in HenryCo operations.",
+      hint: "Active managed-property records tracked in Henry Onyx operations.",
     },
     {
       label: "Viewing pipeline",
@@ -165,81 +174,116 @@ async function removeJsonRecord(folder: string, id: string) {
   invalidatePropertySnapshotCache();
 }
 
-export async function uploadPropertyMedia(listingId: string, file: File) {
-  return uploadToCloudinary(file, {
-    folderSuffix: `media/${slugify(listingId) || "listing"}`,
-    publicIdPrefix: "property-media",
-    resourcePath: cloudinaryResourceForFile(file),
+/**
+ * Listing media + documents flow through @henryco/media (Supabase-first, a
+ * swappable seam). Each upload rides the property service-role client (the
+ * correct factory path under the RLS/grant lockdown) and returns a
+ * backend-neutral `media://` reference persisted in place of a raw URL:
+ *  - PHOTOS  -> the PUBLIC `property-media` bucket (rendered on browse/detail)
+ *  - DOCUMENTS -> the RLS-PRIVATE `property-documents` bucket (signed-URL only,
+ *    never a public CDN)
+ */
+function getPropertyMediaStore(): MediaStore {
+  // Fresh service-role client per call (repo convention: admin clients are not
+  // module-cached), injected so the media layer never reads credentials itself.
+  return createSupabaseMediaStore({ client: createAdminSupabase() });
+}
+
+export async function uploadPropertyMedia(listingId: string, file: File): Promise<string> {
+  await ensurePropertyBuckets();
+  return getPropertyMediaStore().upload({
+    file,
+    visibility: "public",
+    bucket: PROPERTY_MEDIA_BUCKET,
+    pathPrefix: `listings/${slugify(listingId) || "listing"}`,
+    rule: PROPERTY_IMAGE_RULE,
   });
 }
 
-export async function uploadPropertyDocument(entityId: string, file: File) {
-  return uploadToCloudinary(file, {
-    folderSuffix: `documents/${slugify(entityId) || "document"}`,
-    publicIdPrefix: "property-doc",
-    resourcePath: cloudinaryResourceForFile(file),
+export async function uploadPropertyDocument(entityId: string, file: File): Promise<string> {
+  await ensurePropertyBuckets();
+  return getPropertyMediaStore().upload({
+    file,
+    visibility: "private",
+    bucket: PROPERTY_DOCUMENT_BUCKET,
+    pathPrefix: `documents/${slugify(entityId) || "document"}`,
+    rule: PROPERTY_DOCUMENT_RULE,
   });
 }
 
-function cloudinaryResourceForFile(file: File): "image/upload" | "raw/upload" {
-  return String(file.type || "").toLowerCase().startsWith("image/")
-    ? "image/upload"
-    : "raw/upload";
+// ─── Curated-catalog auto-seed ───────────────────────────────────────────
+/**
+ * Populate the property runtime bucket with the curated company catalog
+ * (areas, agents, listings, managed records, campaigns, services, FAQs,
+ * differentiators) on first read. Without this the bucket is empty in
+ * production and the public site shows no listings.
+ *
+ * Mirrors the marketplace/learn bootstrap: idempotent (writeJsonRecord
+ * upserts by id), version-gated (a `meta/bootstrap.json` marker), service-
+ * role-guarded (no-ops without the key so a misconfigured deploy still
+ * renders empty rather than 500-ing), memoized single-flight. Content only —
+ * no inquiries/viewings/applications are seeded. Additive/refresh-only: a
+ * version bump re-writes the curated records but never auto-retires
+ * agent-managed listings.
+ */
+export const PROPERTY_SEED_VERSION = "2026-06-10-henry-onyx-property-v1";
+const PROPERTY_SEED_META_FOLDER = "meta";
+const PROPERTY_SEED_MARKER_ID = "bootstrap";
+
+let propertyBootstrapVerified = false;
+let propertyBootstrapPromise: Promise<void> | null = null;
+
+function hasPropertyServiceRole() {
+  return Boolean(getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY"));
 }
 
-async function uploadToCloudinary(
-  file: File,
-  options: {
-    folderSuffix: string;
-    publicIdPrefix: string;
-    resourcePath: "image/upload" | "raw/upload";
-  }
-): Promise<string> {
-  if (!(file instanceof File) || file.size <= 0) {
-    throw new Error("No file provided.");
-  }
-
-  const cloudName = String(process.env.CLOUDINARY_CLOUD_NAME || "").trim();
-  const apiKey = String(process.env.CLOUDINARY_API_KEY || "").trim();
-  const apiSecret = String(process.env.CLOUDINARY_API_SECRET || "").trim();
-  const baseFolder = String(process.env.CLOUDINARY_FOLDER || "henryco/property").trim();
-
-  if (!cloudName || !apiKey || !apiSecret) {
-    throw new Error("Cloudinary is not configured for this environment.");
-  }
-
-  const folder = [baseFolder, options.folderSuffix].filter(Boolean).join("/");
-  const publicId = `${options.publicIdPrefix}-${Date.now()}-${slugify(file.name || "asset").slice(0, 24)}`;
-  const timestamp = Math.floor(Date.now() / 1000);
-  const signaturePayload = `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
-  const { createHash } = await import("crypto");
-  const signature = createHash("sha1").update(signaturePayload).digest("hex");
-
-  const form = new FormData();
-  form.set("file", file, file.name);
-  form.set("api_key", apiKey);
-  form.set("timestamp", String(timestamp));
-  form.set("signature", signature);
-  form.set("folder", folder);
-  form.set("public_id", publicId);
-
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/${options.resourcePath}`,
-    { method: "POST", body: form }
+async function readPropertySeedVersion(): Promise<string | null> {
+  const records = await listJsonCollection<{ id?: string; version?: string }>(
+    PROPERTY_SEED_META_FOLDER
   );
+  const marker =
+    records.find((record) => cleanText(record?.id) === PROPERTY_SEED_MARKER_ID) ?? records[0] ?? null;
+  return marker ? cleanText(marker.version) || null : null;
+}
 
-  const payload = (await response.json().catch(() => null)) as
-    | { secure_url?: string; error?: { message?: string } }
-    | null;
+/**
+ * Ensure the curated catalog exists before the runtime snapshot is read.
+ * Cheap and safe to call on every read: short-circuits once the current
+ * version is confirmed, memoizes the in-flight seed, and swallows failures
+ * (logged) so the property site never 500s on a seeding hiccup.
+ */
+export async function ensurePropertyBootstrap(): Promise<void> {
+  if (propertyBootstrapVerified) return;
+  if (!hasPropertyServiceRole()) return;
 
-  if (!response.ok || !payload?.secure_url) {
-    throw new Error(payload?.error?.message || "Property upload failed. Please try again.");
+  const version = await readPropertySeedVersion();
+  if (version === PROPERTY_SEED_VERSION) {
+    propertyBootstrapVerified = true;
+    return;
   }
 
-  return payload.secure_url;
+  if (!propertyBootstrapPromise) {
+    propertyBootstrapPromise = (async () => {
+      try {
+        await seedPropertyRuntimeSnapshot(demoPropertySnapshot);
+        await writeJsonRecord(PROPERTY_SEED_META_FOLDER, PROPERTY_SEED_MARKER_ID, {
+          id: PROPERTY_SEED_MARKER_ID,
+          version: PROPERTY_SEED_VERSION,
+          seededAt: new Date().toISOString(),
+        });
+        propertyBootstrapVerified = true;
+      } catch (err) {
+        console.error("[henryco/property] catalog bootstrap failed:", err);
+      } finally {
+        propertyBootstrapPromise = null;
+      }
+    })();
+  }
+  await propertyBootstrapPromise;
 }
 
 export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
+  await ensurePropertyBootstrap();
   const now = Date.now();
   if (propertySnapshotCache && propertySnapshotCache.expiresAt > now) {
     return propertySnapshotCache.value;
@@ -263,6 +307,9 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     campaigns,
     notifications,
     savedListings,
+    savedSearches,
+    rentPayments,
+    maintenanceTickets,
     services,
     faqs,
     differentiators,
@@ -279,17 +326,43 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     listJsonCollection<PropertyFeaturedCampaign>("campaigns"),
     listJsonCollection<PropertyNotificationRecord>("notifications"),
     listJsonCollection<PropertySavedListing>("saved-listings"),
+    listJsonCollection<PropertySavedSearch>("saved-searches"),
+    listJsonCollection<PropertyRentPayment>("rent-payments"),
+    listJsonCollection<PropertyMaintenanceTicket>("maintenance-tickets"),
     listJsonCollection<PropertyService>("services"),
     listJsonCollection<PropertyFaq>("faqs"),
     listJsonCollection<PropertyDifferentiator>("differentiators"),
   ]);
 
+  // Hydrate legacy viewing rows with the V3 PASS 21 reminder/waitlist
+  // fields. JSON records written before the schema bump won't carry
+  // these keys; the rest of the system reads them via PropertyViewingRequest.
+  const hydratedViewings: PropertyViewingRequest[] = viewingRequests.map((viewing) => {
+    const row = viewing as Partial<PropertyViewingRequest> & PropertyViewingRequest;
+    return {
+      ...row,
+      reminder24hAt: row.reminder24hAt ?? null,
+      reminder24hSentAt: row.reminder24hSentAt ?? null,
+      reminder1hAt: row.reminder1hAt ?? null,
+      reminder1hSentAt: row.reminder1hSentAt ?? null,
+      confirmedAt: row.confirmedAt ?? null,
+      waitlistPosition: row.waitlistPosition ?? null,
+      cancellationReason: row.cancellationReason ?? null,
+    };
+  });
+
+  // Stage 1 — DB-backed listings (flag-gated, non-breaking). When PROPERTY_DB_LISTINGS is on and
+  // the property_listings table has rows, they are the source of truth; otherwise fall back to the
+  // Storage snapshot so the live site is identical to today.
+  const dbListings = isPropertyDbListingsEnabled() ? await listListingsFromDb() : [];
+  const effectiveListings = dbListings.length > 0 ? dbListings : listings;
+
   const snapshot = {
     areas: dedupeById(areas),
     agents: dedupeById(agents),
-    listings: dedupeById(listings),
+    listings: dedupeById(effectiveListings),
     inquiries,
-    viewingRequests,
+    viewingRequests: hydratedViewings,
     applications,
     inspections,
     policyEvents,
@@ -297,6 +370,9 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
     campaigns: dedupeById(campaigns),
     notifications,
     savedListings,
+    savedSearches,
+    rentPayments,
+    maintenanceTickets,
     services: services.length ? services : demoPropertySnapshot.services,
     faqs: faqs.length ? faqs : demoPropertySnapshot.faqs,
     differentiators: differentiators.length ? differentiators : demoPropertySnapshot.differentiators,
@@ -309,8 +385,13 @@ export async function readPropertyRuntimeSnapshot(): Promise<PropertySnapshot> {
 
     propertySnapshotCache = {
       value,
-      // Avoid serving stale listing state across worker processes after mutations.
-      expiresAt: Date.now(),
+      // Cache the catalog snapshot in-process for 60s. Reading it means a
+      // fan-out of per-file Supabase Storage downloads across ~18 folders, so
+      // re-running it on every request made cold public loads take ~15s. Every
+      // mutation calls invalidatePropertySnapshotCache(), so writes are still
+      // reflected immediately within this worker; the short TTL only bounds
+      // cross-worker staleness for read-only public traffic.
+      expiresAt: Date.now() + 60_000,
     };
 
     return value;
@@ -341,13 +422,16 @@ export async function seedPropertyRuntimeSnapshot(snapshot: PropertySnapshot = d
 }
 
 export async function upsertPropertyListing(listing: PropertyListing) {
-  await writeJsonRecord("listings", listing.id, {
+  const record: PropertyListing = {
     ...listing,
     normalizedEmail: normalizeEmail(listing.normalizedEmail || listing.ownerEmail),
     ownerPhone: normalizePhone(listing.ownerPhone),
     ownerEmail: normalizeEmail(listing.ownerEmail),
     updatedAt: new Date().toISOString(),
-  } satisfies PropertyListing);
+  };
+  await writeJsonRecord("listings", listing.id, record);
+  // Stage 2 — dual-write the DB row (flag-gated, best-effort; never touches henry_onyx_verified).
+  await writeListingToDb(record);
 }
 
 export async function upsertPropertyInspection(inspection: PropertyListingInspection) {
@@ -432,6 +516,54 @@ export async function removeSavedPropertyForUser(userId: string, listingId: stri
   await removeJsonRecord("saved-listings", `${userId}--${listingId}`);
 }
 
+/* ──────────────────────────────────────────────────────────────────
+ * V3 PASS 21 — saved-search storage helpers.
+ * The `property-saved-searches` bucket subfolder mirrors the SQL
+ * `property_saved_searches` table for environments running on JSON
+ * runtime storage. Migrating to direct Supabase queries is a
+ * follow-on once the storage runtime is retired.
+ * ────────────────────────────────────────────────────────────────── */
+export async function upsertPropertySavedSearch(saved: PropertySavedSearch) {
+  await writeJsonRecord("saved-searches", saved.id, {
+    ...saved,
+    normalizedEmail: normalizeEmail(saved.normalizedEmail),
+    updatedAt: new Date().toISOString(),
+  } satisfies PropertySavedSearch);
+}
+
+export async function removePropertySavedSearch(id: string) {
+  await removeJsonRecord("saved-searches", id);
+}
+
+export async function listPropertySavedSearchesForUser(userId: string) {
+  const snapshot = await readPropertyRuntimeSnapshot();
+  return snapshot.savedSearches.filter((row) => row.userId === userId);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+ * V3 PASS 21 — managed rent payment storage helpers.
+ * Tracks the rent ledger for managed-property statements.
+ * ────────────────────────────────────────────────────────────────── */
+export async function upsertPropertyRentPayment(payment: PropertyRentPayment) {
+  await writeJsonRecord("rent-payments", payment.id, {
+    ...payment,
+    normalizedEmail: normalizeEmail(payment.normalizedEmail),
+    updatedAt: new Date().toISOString(),
+  } satisfies PropertyRentPayment);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+ * V3 PASS 21 — managed maintenance ticket helpers.
+ * Tracks tickets reported by managed-property owners.
+ * ────────────────────────────────────────────────────────────────── */
+export async function upsertPropertyMaintenanceTicket(ticket: PropertyMaintenanceTicket) {
+  await writeJsonRecord("maintenance-tickets", ticket.id, {
+    ...ticket,
+    normalizedEmail: normalizeEmail(ticket.normalizedEmail),
+    updatedAt: new Date().toISOString(),
+  } satisfies PropertyMaintenanceTicket);
+}
+
 export async function createListingFromSubmission(input: {
   title: string;
   summary: string;
@@ -502,7 +634,7 @@ export async function createListingFromSubmission(input: {
     floorPlanUrl: null,
     amenities: input.amenities ?? [],
     trustBadges: [
-      Boolean(input.managedByHenryCo) ? "Managed by HenryCo" : "Submission under review",
+      Boolean(input.managedByHenryCo) ? "Managed by Henry Onyx" : "Submission under review",
       "Owner verification pending",
     ],
     headlineMetrics: [

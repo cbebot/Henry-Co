@@ -23,7 +23,7 @@ export const sellerTrustTierRules = [
     payoutWindow: "2-day payout reserve, 2-day auto-release after verified delivery.",
   },
   {
-    tier: "HenryCo verified partner",
+    tier: "Henry Onyx verified partner",
     privileges: "Partner inventory terms, direct placement controls, lowest payout friction, top trust passport treatment.",
     payoutWindow: "1-day payout reserve, 1-day auto-release after verified delivery.",
   },
@@ -32,7 +32,7 @@ export const sellerTrustTierRules = [
 export const ecosystemOffers = [
   {
     title: "Studio launch services",
-    body: "Sellers can buy HenryCo Studio help for storefront setup, product photography, creative assets, conversion copy, and merchandising refreshes.",
+    body: "Sellers can buy Henry Onyx Studio help for storefront setup, product photography, creative assets, conversion copy, and merchandising refreshes.",
     href: `${getDivisionUrl("studio")}/services`,
   },
   {
@@ -42,17 +42,17 @@ export const ecosystemOffers = [
   },
   {
     title: "Logistics verification",
-    body: "Delivery proof, tracking confidence, and payout-release evidence can route through HenryCo Logistics where supported.",
+    body: "Delivery proof, tracking confidence, and payout-release evidence can route through Henry Onyx Logistics where supported.",
     href: `${getDivisionUrl("logistics")}/track`,
   },
   {
     title: "HQ operator controls",
-    body: "Moderation, finance, payout review, and trust operations can escalate into HenryCo HQ and Workspace operating surfaces.",
+    body: "Moderation, finance, payout review, and trust operations can escalate into Henry Onyx HQ and Workspace operating surfaces.",
     href: getHqUrl("/"),
   },
   {
     title: "Shared account continuity",
-    body: "Orders, disputes, seller application state, and marketplace notifications follow the shared HenryCo account instead of a competing auth silo.",
+    body: "Orders, disputes, seller application state, and marketplace notifications follow the shared Henry Onyx account instead of a competing auth silo.",
     href: getAccountUrl("/marketplace"),
   },
 ];
@@ -62,10 +62,10 @@ export const policyPages = [
     slug: "buyer-protection",
     title: "Buyer Protection Policy",
     kicker: "Protected commerce",
-    summary: "HenryCo receives buyer payment first, holds funds through fulfillment, and can freeze seller payout when delivery proof or dispute posture is weak.",
+    summary: "Henry Onyx receives your payment first, holds it through fulfillment, and can hold the seller's payout when delivery proof is missing or a dispute is open.",
     bullets: [
-      "Buyer payment is held by HenryCo until verified delivery and completion logic clears the payout segment.",
-      "Open disputes freeze payout release on affected order groups.",
+      "Henry Onyx holds your payment until your order is delivered and confirmed.",
+      "An open dispute holds the seller's payout on the affected order until it is resolved.",
       "Verified delivery plus timeout can trigger payout release when buyers do not confirm promptly and no dispute exists.",
     ],
   },
@@ -77,7 +77,7 @@ export const policyPages = [
     bullets: [
       "Seller trust is not cosmetic; it changes listing limits, high-risk category access, featured eligibility, and payout reserve windows.",
       "Off-platform payment steering, duplicate spam listings, and suspicious media reuse can block submission or trigger moderation cases.",
-      "Seller payouts stay server-controlled and can be delayed, frozen, or rejected after trust review.",
+      "Seller payouts can be delayed, held, or declined following a review.",
     ],
   },
   {
@@ -98,7 +98,7 @@ export const policyPages = [
     summary: "Counterfeit goods, unsafe products, deceptive services, and content designed to route payments off-platform are not allowed.",
     bullets: [
       "Counterfeit, stolen, deceptive, or unsafe products are prohibited.",
-      "Listings asking buyers to pay directly on WhatsApp, Telegram, crypto, or outside HenryCo checkout can be blocked automatically.",
+      "Listings asking buyers to pay directly on WhatsApp, Telegram, crypto, or outside Henry Onyx checkout can be blocked automatically.",
       "Higher-risk categories require stronger seller trust before listing access opens.",
     ],
   },
@@ -117,10 +117,10 @@ export const policyPages = [
     slug: "dispute-resolution",
     title: "Dispute Resolution Policy",
     kicker: "Evidence-led resolution",
-    summary: "Disputes create a formal case, freeze affected payout segments, and route into support and moderation queues.",
+    summary: "Disputes open a formal case, pause the affected payout, and are reviewed by our team.",
     bullets: [
-      "Evidence capture, notes, and decision trail are stored server-side.",
-      "Resolved disputes can return funds to auto-release monitoring or mark affected segments as refunded.",
+      "Evidence, notes, and the decision trail are recorded securely.",
+      "Once resolved, a dispute either returns the order to normal processing or marks it refunded.",
       "False buyer or seller behavior can degrade future trust posture.",
     ],
   },
@@ -128,18 +128,18 @@ export const policyPages = [
     slug: "payout-policy",
     title: "Payout Policy",
     kicker: "Controlled payout release",
-    summary: "Seller funds move through held, releasable, requested, approved, released, or frozen states with audit trail and finance review.",
+    summary: "Seller funds are held until orders clear, then become available to withdraw. Every payout is reviewed and tracked so balances stay accurate.",
     bullets: [
       "Payout requests can only draw from releasable balances calculated from order-group truth.",
       "Newer or weaker-trust sellers face longer reserve windows before funds become releasable.",
-      "Finance can approve, reject, freeze, or release payout requests; client-side balance mutation is not allowed.",
+      "Payout requests are reviewed before release and can be approved, held, or declined. Your balance is always calculated from your actual settled orders and cannot be changed manually.",
     ],
   },
   {
     slug: "seller-verification",
     title: "Seller Verification Policy",
     kicker: "Trust ladder",
-    summary: "Seller verification combines account identity, delivery reliability, dispute posture, and staff review into real privilege changes.",
+    summary: "Seller verification combines account identity, delivery reliability, dispute history, and staff review into real privilege changes.",
     bullets: [
       "Verification levels influence listing limits, payout speed, category access, and featured placement rights.",
       "Stronger seller history can shorten payout reserve and auto-release windows.",

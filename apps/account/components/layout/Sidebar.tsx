@@ -5,16 +5,21 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Search } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
+import { translateSurfaceLabel, DEFAULT_LOCALE } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
+import { logoutEverywhere } from "@henryco/auth/client";
+import { toBrandName } from "@henryco/config";
 import { getNavSections, type NavItem } from "@/lib/navigation";
 import Logo from "@/components/brand/Logo";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import UserAvatar from "@/components/layout/UserAvatar";
+import { createSupabaseBrowser } from "@/lib/supabase/browser";
 
 type SidebarProps = {
   user: { fullName: string | null; email: string | null; avatarUrl: string | null };
 };
 
-function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+function NavLink({ item, active, t }: { item: NavItem; active: boolean; t: (text: string) => string }) {
   const Icon = item.icon;
   return (
     <Link
@@ -27,7 +32,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       }`}
     >
       <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
-      <span className="flex-1 truncate">{item.label}</span>
+      <span className="flex-1 truncate">{t(item.label)}</span>
     </Link>
   );
 }
@@ -35,6 +40,11 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  // Resilient to a missing LocaleProvider during a hydration interruption on a
+  // fresh origin (V3-DOMAIN-FIX-01 / DIAG-IOS-01) — the throwing hook here took
+  // the whole authenticated dashboard chrome down on account.henryonyx.com.
+  const locale = useOptionalHenryCoLocale() ?? DEFAULT_LOCALE;
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const sections = getNavSections();
   const [signingOut, setSigningOut] = useState(false);
 
@@ -47,13 +57,12 @@ export default function Sidebar({ user }: SidebarProps) {
     if (signingOut) return;
     setSigningOut(true);
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        cache: "no-store",
+      const supabase = createSupabaseBrowser();
+      await logoutEverywhere({
+        supabase,
+        redirectTo: "/login",
       });
     } finally {
-      router.replace("/login");
       router.refresh();
     }
   };
@@ -64,14 +73,14 @@ export default function Sidebar({ user }: SidebarProps) {
       <div className="flex h-16 items-center gap-3 border-b border-[var(--acct-line)] px-5">
         <Logo size={32} />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">Henry & Co.</p>
-          <p className="text-[0.65rem] text-[var(--acct-muted)]">My Account</p>
+          <p className="truncate text-sm font-semibold text-[var(--acct-ink)]">Henry Onyx</p>
+          <p className="text-[0.65rem] text-[var(--acct-muted)]">{t("My Account")}</p>
         </div>
         <Link
           href="/search"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
-          aria-label="Search account and HenryCo routes"
-          title="Search account and HenryCo routes"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)]"
+          aria-label={t(toBrandName("Search account and Henry Onyx routes"))}
+          title={t(toBrandName("Search account and Henry Onyx routes"))}
         >
           <Search size={17} />
         </Link>
@@ -82,13 +91,14 @@ export default function Sidebar({ user }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto px-3 py-4 acct-scrollbar">
         {Object.entries(sections).map(([section, items]) => (
           <div key={section} className="mb-4">
-            <p className="acct-kicker mb-1.5 px-3">{section}</p>
+            <p className="acct-kicker mb-1.5 px-3">{t(section)}</p>
             <div className="space-y-0.5">
               {items.map((item) => (
                 <NavLink
                   key={item.href}
                   item={item}
                   active={isActive(item.href)}
+                  t={t}
                 />
               ))}
             </div>
@@ -107,7 +117,7 @@ export default function Sidebar({ user }: SidebarProps) {
           />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-[var(--acct-ink)]">
-              {user.fullName || "Account"}
+              {user.fullName || t("Account")}
             </p>
             <p className="truncate text-xs text-[var(--acct-muted)]">{user.email}</p>
           </div>
@@ -115,13 +125,14 @@ export default function Sidebar({ user }: SidebarProps) {
             type="button"
             disabled={signingOut}
             onClick={() => void handleSignOut()}
-            className="rounded-lg p-1.5 text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-red-soft)] hover:text-[var(--acct-red)] disabled:cursor-wait disabled:opacity-60"
-            title="Sign out"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-[var(--acct-muted)] transition-colors hover:bg-[var(--acct-red-soft)] hover:text-[var(--acct-red)] disabled:cursor-wait disabled:opacity-60"
+            title={t("Sign out")}
+            aria-label={t("Sign out")}
             aria-busy={signingOut}
           >
             {signingOut ? (
               <span className="inline-flex h-4 w-4 items-center justify-center">
-                <HenryCoActivityIndicator size="sm" label="Signing out" />
+                <HenryCoActivityIndicator size="sm" label={t("Signing out")} />
               </span>
             ) : (
               <LogOut size={16} />

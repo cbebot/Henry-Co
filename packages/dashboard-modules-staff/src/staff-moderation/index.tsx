@@ -21,7 +21,11 @@ import {
   deriveSLABucket,
   DEFAULT_STAFF_QUEUE_FILTERS,
   formatRelative,
+  loadPredictiveSnapshot,
+  PredictiveQueuePanel,
 } from "../shared";
+import { getStaffPredictiveCopy } from "@henryco/i18n";
+import type { AppLocale } from "@henryco/i18n";
 
 export type ModerationSupabaseClient = {
   from: (table: string) => {
@@ -77,6 +81,41 @@ export async function loadModerationQueueSnapshot(supabase: ModerationSupabaseCl
     }
   } catch {
     // empty
+  }
+
+  // V3-25: merge the unified cross-division user reports into the same queue.
+  // RLS gates these to staff (is_staff_in_any); maps into the shared row shape
+  // so they render in the existing queue with no generics changes.
+  try {
+    const { data: reportData } = await supabase
+      .from("moderation_reports")
+      .select("id,content_type,content_id,reason_code,status,reporter_id,created_at")
+      .order("created_at", { ascending: false })
+      .limit(150);
+    if (reportData) {
+      const HIGH = new Set(["prohibited_item", "offensive_content", "scam_or_fraud"]);
+      const reportRows: ModerationCaseRow[] = reportData.map((r) => {
+        const reasonCode = String(r.reason_code ?? "other");
+        const status = String(r.status ?? "open");
+        return {
+          id: `report:${String(r.id ?? "")}`,
+          division: String(r.content_type ?? "unknown"),
+          entityType: String(r.content_type ?? "—"),
+          entityId: String(r.content_id ?? ""),
+          reason: reasonCode,
+          severity: HIGH.has(reasonCode) ? "high" : "normal",
+          // dismissed reports are terminal — treat as resolved for SLA counting.
+          status: status === "dismissed" ? "resolved" : status === "reviewing" ? "in_review" : status,
+          flaggedBy: r.reporter_id ? String(r.reporter_id) : null,
+          assignedTo: null,
+          createdAt: String(r.created_at ?? ""),
+          resolvedAt: status === "resolved" || status === "dismissed" ? String(r.created_at ?? "") : null,
+        };
+      });
+      rows = [...rows, ...reportRows];
+    }
+  } catch {
+    // moderation_reports not applied yet (committed-NOT-applied) — degrade quietly.
   }
   let pending = 0,
     warn = 0,
@@ -260,6 +299,8 @@ export const staffModerationModule: StaffDashboardModule = {
 };
 
 export type StaffModerationPageProps = {
+  /** Operator locale for the V3-41 predictive panel. Defaults to English. */
+  locale?: AppLocale;
   viewer: StaffViewer;
   supabase: ModerationSupabaseClient;
   bulkActionHandler: (id: string, ids: string[], reason: string | null) => Promise<void>;
@@ -270,13 +311,17 @@ export type StaffModerationPageProps = {
   ) => Promise<void>;
 };
 
-export async function StaffModerationPageServer({ supabase, bulkActionHandler, exportHandler }: StaffModerationPageProps) {
+export async function StaffModerationPageServer({ supabase, bulkActionHandler, exportHandler, locale }: StaffModerationPageProps) {
   const snapshot = await loadModerationQueueSnapshot(supabase);
+  const predictive = await loadPredictiveSnapshot(supabase as never, "staff-moderation");
   return (
     <GenericStaffQueueClient<ModerationCaseRow>
       kicker="Moderation · cross-division"
       title="Content moderation & ToS"
       snapshot={snapshot}
+      forecastPanel={
+        <PredictiveQueuePanel snapshot={predictive} copy={getStaffPredictiveCopy(locale ?? "en")} />
+      }
       filterFields={FILTERS}
       rowAdapter={(r) => {
         const slaMinutes = r.severity === "high" ? 30 : r.severity === "low" ? 60 * 24 : 240;

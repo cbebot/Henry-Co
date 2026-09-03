@@ -23,12 +23,15 @@ export type MobileChromeBridgeProps = {
   modules: ReadonlyArray<ModuleNavEntry>;
   onSignOut?: () => void;
   inboxBody?: ReactNode;
+  /** "Browse all pages" navigator, rendered at the top of the More sheet. */
+  navigatorSlot?: ReactNode;
 };
 
 export function MobileChromeBridge({
   modules,
   onSignOut,
   inboxBody,
+  navigatorSlot,
 }: MobileChromeBridgeProps) {
   return (
     <BottomActionBar
@@ -46,6 +49,7 @@ export function MobileChromeBridge({
       settingsHref="/settings"
       helpHref="/support"
       onSignOut={onSignOut}
+      navigatorSlot={navigatorSlot}
     />
   );
 }

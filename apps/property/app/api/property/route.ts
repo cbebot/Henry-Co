@@ -24,10 +24,16 @@ import {
   upsertPropertyInspection,
   appendPropertyPolicyEvent,
   upsertPropertyManagedRecord,
+  upsertPropertyMaintenanceTicket,
   upsertPropertyViewingRequest,
   uploadPropertyDocument,
   uploadPropertyMedia,
 } from "@/lib/property/store";
+import {
+  createSavedSearch,
+  deleteSavedSearch,
+  setSavedSearchCadence,
+} from "@/lib/property/saved-searches";
 import {
   PROPERTY_POLICY_VERSION,
   evaluatePropertySubmissionPolicy,
@@ -149,6 +155,31 @@ function redirectToAccountSignIn(request: Request, returnPath: string) {
     propertyOrigin: origin,
   });
   return NextResponse.redirect(loginUrl, { status: 303 });
+}
+
+/**
+ * V3-ACTIONS-01 — auth gate honouring the dual-mode contract: async
+ * submissions get 401 + loginUrl JSON (the client surfaces the reauth flow
+ * itself, with any typed draft already preserved client-side); native posts
+ * keep the legacy 303 redirect to shared sign-in.
+ */
+function respondAuthRequired(request: Request, returnPath: string) {
+  if (wantsJson(request)) {
+    const origin = new URL(request.url).origin;
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Sign in to continue.",
+        code: "auth_required",
+        loginUrl: getSharedAccountLoginUrl({
+          nextPath: returnPath.startsWith("/") ? returnPath : `/${returnPath}`,
+          propertyOrigin: origin,
+        }).toString(),
+      },
+      { status: 401 }
+    );
+  }
+  return redirectToAccountSignIn(request, returnPath);
 }
 
 function withQuery(target: string, key: string, value: string) {
@@ -549,12 +580,18 @@ export async function POST(request: Request) {
     switch (intent) {
       case "wishlist_toggle": {
         if (!viewer.user) {
-          return redirectToAccountSignIn(request, returnTo);
+          return respondAuthRequired(request, returnTo);
         }
 
         const listingId = text(formData, "listing_id");
         const listing = snapshot.listings.find((item) => item.id === listingId);
-        if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
+        if (!listing) {
+          return respondError(request, returnTo, {
+            message: "This listing is no longer available.",
+            code: "missing-listing",
+            status: 404,
+          });
+        }
 
         const exists = snapshot.savedListings.some(
           (item) => item.userId === viewer.user?.id && item.listingId === listingId
@@ -578,21 +615,36 @@ export async function POST(request: Request) {
         });
 
         revalidatePropertyRoutes(listing.slug);
-        return redirectTo(request, withQuery(returnTo, exists ? "removed" : "saved", "1"));
+        return respondSuccess(
+          request,
+          withQuery(returnTo, exists ? "removed" : "saved", "1"),
+          { saved: !exists, listingId: listing.id }
+        );
       }
 
       case "inquiry_submit": {
         if (!viewer.user) {
-          return redirectToAccountSignIn(request, returnTo);
+          return respondAuthRequired(request, returnTo);
         }
 
         const listingId = text(formData, "listing_id");
         const listing = snapshot.listings.find((item) => item.id === listingId);
-        if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
+        if (!listing) {
+          return respondError(request, returnTo, {
+            message: "This listing is no longer available.",
+            code: "missing-listing",
+            status: 404,
+          });
+        }
 
         const name = text(formData, "name") || viewer.user?.fullName || "Property prospect";
         const email = normalizeEmail(text(formData, "email") || viewer.user?.email);
-        if (!email) return redirectTo(request, withQuery(returnTo, "error", "missing-email"));
+        if (!email) {
+          return respondError(request, returnTo, {
+            message: "An email address is required so replies can reach you.",
+            code: "missing-email",
+          });
+        }
 
         const phone = text(formData, "phone");
         const message = text(formData, "message");
@@ -687,28 +739,47 @@ export async function POST(request: Request) {
         }
 
         revalidatePropertyRoutes(listing.slug);
-        return redirectTo(request, withQuery(returnTo, "inquiry", "sent"));
+        return respondSuccess(request, withQuery(returnTo, "inquiry", "sent"), {
+          inquiryId,
+          listingId: listing.id,
+        });
       }
 
       case "viewing_request": {
         if (!viewer.user) {
-          return redirectToAccountSignIn(request, returnTo);
+          return respondAuthRequired(request, returnTo);
         }
 
         const listingId = text(formData, "listing_id");
         const listing = snapshot.listings.find((item) => item.id === listingId);
-        if (!listing) return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
+        if (!listing) {
+          return respondError(request, returnTo, {
+            message: "This listing is no longer available.",
+            code: "missing-listing",
+            status: 404,
+          });
+        }
 
         const attendeeName =
           text(formData, "attendee_name") || viewer.user?.fullName || "Property visitor";
         const attendeeEmail = normalizeEmail(
           text(formData, "attendee_email") || viewer.user?.email
         );
-        if (!attendeeEmail) return redirectTo(request, withQuery(returnTo, "error", "missing-email"));
+        if (!attendeeEmail) {
+          return respondError(request, returnTo, {
+            message: "An email address is required so the confirmation can reach you.",
+            code: "missing-email",
+          });
+        }
 
         const attendeePhone = text(formData, "attendee_phone");
         const preferredDate = localToIso(text(formData, "preferred_date"));
-        if (!preferredDate) return redirectTo(request, withQuery(returnTo, "error", "missing-date"));
+        if (!preferredDate) {
+          return respondError(request, returnTo, {
+            message: "A preferred time is required before the viewing can be scheduled.",
+            code: "missing-date",
+          });
+        }
 
         const backupDate = localToIso(text(formData, "backup_date"));
         const notes = text(formData, "notes");
@@ -728,6 +799,16 @@ export async function POST(request: Request) {
           backupDate,
           scheduledFor: null,
           reminderAt: null,
+          // V3 PASS 21 — reminder cycle + waitlist columns. The cron
+          // populates reminder_24h_at + reminder_1h_at when the viewing
+          // moves into `scheduled` / `confirmed`.
+          reminder24hAt: null,
+          reminder24hSentAt: null,
+          reminder1hAt: null,
+          reminder1hSentAt: null,
+          confirmedAt: null,
+          waitlistPosition: null,
+          cancellationReason: null,
           notes,
           status: "requested",
           assignedAgentId: listing.agentId,
@@ -792,7 +873,10 @@ export async function POST(request: Request) {
         });
 
         revalidatePropertyRoutes(listing.slug);
-        return redirectTo(request, withQuery(returnTo, "viewing", "requested"));
+        return respondSuccess(request, withQuery(returnTo, "viewing", "requested"), {
+          viewingId,
+          listingId: listing.id,
+        });
       }
 
       case "listing_submit": {
@@ -858,7 +942,7 @@ export async function POST(request: Request) {
         ];
 
         if (!ownerPhone) {
-          validationErrors.push("Phone is required so HenryCo can coordinate trust review and inspection.");
+          validationErrors.push("Phone is required so Henry Onyx can coordinate trust review and inspection.");
         }
         if (!title) validationErrors.push("Listing title is required.");
         if (!summary) validationErrors.push("Short summary is required.");
@@ -1147,7 +1231,7 @@ export async function POST(request: Request) {
         }
         return respondSuccess(request, submitRedirect, {
           message:
-            "Listing submitted. HenryCo Property queued policy review, moderation, and follow-up notifications.",
+            "Listing submitted. Henry Onyx Property queued policy review, moderation, and follow-up notifications.",
           submission: {
             listingId: listing.id,
             listingSlug: listing.slug,
@@ -1357,7 +1441,7 @@ export async function POST(request: Request) {
           email: viewer.user.email,
           activityType: "property_listing_updated",
           title: `Updated ${listing.title}`,
-          description: "Listing details were revised inside HenryCo Property.",
+          description: "Listing details were revised inside Henry Onyx Property.",
           status: nextStatus,
           referenceType: "property_listing",
           referenceId: listing.id,
@@ -1383,7 +1467,7 @@ export async function POST(request: Request) {
 
         revalidatePropertyRoutes(listing.slug);
         return respondSuccess(request, withQuery(returnTo, "updated", "1"), {
-          message: "Listing updated and re-evaluated against HenryCo Property trust rules.",
+          message: "Listing updated and re-evaluated against Henry Onyx Property trust rules.",
           listing: {
             listingId: listing.id,
             status: nextStatus,
@@ -1460,7 +1544,7 @@ export async function POST(request: Request) {
           agentId: text(formData, "agent_id") || listing.agentId,
           trustBadges:
             status === "published" || status === "approved"
-              ? dedupe([...listing.trustBadges, "HenryCo reviewed", "Publication cleared"])
+              ? dedupe([...listing.trustBadges, "Henry Onyx reviewed", "Publication cleared"])
               : listing.trustBadges,
           verificationNotes: note
             ? dedupe([note, ...listing.verificationNotes]).slice(0, 6)
@@ -1609,7 +1693,7 @@ export async function POST(request: Request) {
             status: nextListingStatus,
             visibility: isPropertyListingPublicStatus(nextListingStatus) ? "public" : "private",
             verificationNotes: dedupe([
-              `${getInspectionStatusSummary(nextInspectionStatus)} by HenryCo Property`,
+              `${getInspectionStatusSummary(nextInspectionStatus)} by Henry Onyx Property`,
               ...listing.verificationNotes,
             ]).slice(0, 8),
           });
@@ -1780,6 +1864,153 @@ export async function POST(request: Request) {
 
         revalidatePropertyRoutes();
         return redirectTo(request, withQuery(returnTo, "updated", "1"));
+      }
+
+      /* V3 PASS 21 — saved-search intents. */
+      case "saved_search_create": {
+        if (!viewer.user) {
+          return respondAuthRequired(request, returnTo);
+        }
+        const minBedsRaw = numberValue(formData, "min_beds");
+        const maxBedsRaw = numberValue(formData, "max_beds");
+        const minPriceRaw = numberValue(formData, "min_price");
+        const maxPriceRaw = numberValue(formData, "max_price");
+        const cadenceRaw = text(formData, "alert_cadence");
+        const cadence: "instant" | "daily" | "weekly" | "off" =
+          cadenceRaw === "instant" || cadenceRaw === "weekly" || cadenceRaw === "off"
+            ? cadenceRaw
+            : "daily";
+
+        await createSavedSearch({
+          userId: viewer.user.id,
+          email: viewer.user.email,
+          name: text(formData, "name"),
+          criteria: {
+            q: text(formData, "q") || null,
+            kind: text(formData, "kind") || null,
+            area: text(formData, "area") || null,
+            managed: bool(formData, "managed") ? "1" : null,
+            furnished: bool(formData, "furnished") ? "1" : null,
+            minBeds: minBedsRaw !== null && minBedsRaw > 0 ? minBedsRaw : null,
+            maxBeds: maxBedsRaw !== null && maxBedsRaw > 0 ? maxBedsRaw : null,
+            minPrice: minPriceRaw !== null && minPriceRaw > 0 ? minPriceRaw : null,
+            maxPrice: maxPriceRaw !== null && maxPriceRaw > 0 ? maxPriceRaw : null,
+            verifiedOnly: bool(formData, "verified_only") || null,
+          },
+          alertCadence: cadence,
+        });
+
+        return respondSuccess(request, withQuery(returnTo, "saved_search", "created"), {
+          savedSearch: "created",
+        });
+      }
+
+      case "saved_search_delete": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+        const id = text(formData, "saved_search_id");
+        if (!id) return redirectTo(request, withQuery(returnTo, "error", "missing-id"));
+        await deleteSavedSearch(id);
+        return redirectTo(request, withQuery(returnTo, "saved_search", "deleted"));
+      }
+
+      case "saved_search_cadence": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+        const id = text(formData, "saved_search_id");
+        const cadenceRaw = text(formData, "alert_cadence");
+        const cadence: "instant" | "daily" | "weekly" | "off" =
+          cadenceRaw === "instant" ||
+          cadenceRaw === "weekly" ||
+          cadenceRaw === "off" ||
+          cadenceRaw === "daily"
+            ? cadenceRaw
+            : "daily";
+        if (!id) return redirectTo(request, withQuery(returnTo, "error", "missing-id"));
+        await setSavedSearchCadence(id, cadence);
+        return redirectTo(request, withQuery(returnTo, "saved_search", "updated"));
+      }
+
+      /* V3 PASS 21 — maintenance ticket submission (managed-property
+       * owner-side filing). */
+      case "maintenance_ticket_submit": {
+        if (!viewer.user) {
+          return redirectToAccountSignIn(request, returnTo);
+        }
+        const listingId = text(formData, "listing_id");
+        const listing = snapshot.listings.find((item) => item.id === listingId);
+        if (!listing) {
+          return redirectTo(request, withQuery(returnTo, "error", "missing-listing"));
+        }
+        const summary = text(formData, "summary");
+        const body = text(formData, "body");
+        if (!summary) return redirectTo(request, withQuery(returnTo, "error", "missing-summary"));
+
+        const categoryRaw = text(formData, "category") || "general";
+        const category =
+          (
+            [
+              "plumbing",
+              "electrical",
+              "hvac",
+              "pest",
+              "structural",
+              "security",
+              "appliance",
+              "general",
+            ] as const
+          ).find((entry) => entry === categoryRaw) ?? "general";
+
+        const severityRaw = text(formData, "severity") || "medium";
+        const severity =
+          (["low", "medium", "high", "critical"] as const).find(
+            (entry) => entry === severityRaw,
+          ) ?? "medium";
+
+        const ticketId = randomUUID();
+        const now = new Date().toISOString();
+        const slaHours = severity === "critical" ? 4 : severity === "high" ? 12 : severity === "medium" ? 48 : 168;
+        const slaDueAt = new Date(Date.now() + slaHours * 60 * 60 * 1000).toISOString();
+
+        await upsertPropertyMaintenanceTicket({
+          id: ticketId,
+          listingId,
+          managedRecordId: null,
+          reportedByUserId: viewer.user.id,
+          normalizedEmail: normalizeEmail(viewer.user.email),
+          reporterName: viewer.user.fullName || "Managed owner",
+          reporterEmail: viewer.user.email || "",
+          reporterPhone: text(formData, "phone") || null,
+          category,
+          severity,
+          summary,
+          body,
+          status: "open",
+          attachments: [],
+          scheduledFor: null,
+          resolvedAt: null,
+          assignedAgentId: listing.agentId,
+          resolutionNotes: "",
+          slaDueAt,
+          slaBreach: false,
+          createdAt: now,
+          updatedAt: now,
+        });
+
+        await sendPropertyEvent({
+          event: "owner_alert",
+          recipientEmail: operatorInbox,
+          entityType: "property_maintenance_ticket",
+          entityId: ticketId,
+          payload: {
+            listingTitle: listing.title,
+            note: `Maintenance ticket filed (${severity}): ${summary}`,
+          },
+        });
+
+        return redirectTo(request, withQuery(returnTo, "maintenance", "submitted"));
       }
 
       default:

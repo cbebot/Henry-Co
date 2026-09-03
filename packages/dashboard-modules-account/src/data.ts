@@ -30,6 +30,10 @@ export type CustomerOverviewSnapshot = {
   trustLabel: string;
   /** Whether the user has any documents on file (gates the next-tier copy). */
   hasDocuments: boolean;
+  /** SMART (2026-07-10): the year the account was created — set ONLY when the
+   *  viewer has been with Henry Onyx for a full year or more (an honest
+   *  milestone line, not filler for new accounts). */
+  memberSinceYear: number | null;
 };
 
 export type TrustTier = "unverified" | "verified" | "trusted" | "premium";
@@ -101,7 +105,7 @@ export async function loadCustomerOverviewSnapshot(
       .eq("status", "active"),
     client
       .from("customer_profiles")
-      .select("verification_status, is_verified")
+      .select("verification_status, is_verified, created_at")
       .eq("id", userId)
       .maybeSingle(),
     client
@@ -128,6 +132,14 @@ export async function loadCustomerOverviewSnapshot(
     hasOrders: summary.recentInvoices.length > 0,
   });
 
+  const createdAtIso =
+    (profileRes.data as { created_at?: string | null } | null)?.created_at ?? null;
+  const createdMs = createdAtIso ? Date.parse(createdAtIso) : Number.NaN;
+  const memberSinceYear =
+    Number.isFinite(createdMs) && Date.now() - createdMs >= 365 * 24 * 60 * 60 * 1000
+      ? new Date(createdMs).getUTCFullYear()
+      : null;
+
   return {
     summary,
     pendingFundingKobo,
@@ -136,5 +148,6 @@ export async function loadCustomerOverviewSnapshot(
     trustScore: score,
     trustLabel: TRUST_LABELS[tier],
     hasDocuments: documentCount > 0,
+    memberSinceYear,
   };
 }

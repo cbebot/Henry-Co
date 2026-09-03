@@ -22,7 +22,7 @@ const DIVISION_PALETTE: Record<string, { color: string; label: string }> = {
 };
 
 export function divisionForKey(key: string | null | undefined) {
-  if (!key) return { color: "#6B6560", label: "HenryCo" };
+  if (!key) return { color: "#6B6560", label: "Henry Onyx" };
   return DIVISION_PALETTE[key] ?? { color: "#6B6560", label: key };
 }
 
@@ -90,7 +90,7 @@ export function buildBlurb(state: HeroState): string {
     return "Your account is in order — verification, payouts, and review-sensitive lanes are all clear. We'll surface the next move here automatically when it shows up.";
   }
   if (state === "risk") {
-    return "These items gate higher-trust actions across HenryCo — wallet withdrawals, marketplace seller approval, employer verification. Clearing them unblocks each lane.";
+    return "These items gate higher-trust actions across Henry Onyx — wallet withdrawals, marketplace seller approval, employer verification. Clearing them unblocks each lane.";
   }
-  return "Each row routes you to the next action with one tap. Filters, priority chips, and deeplinks are kept consistent across every HenryCo division.";
+  return "Each row routes you to the next action with one tap. Filters, priority chips, and deeplinks are kept consistent across every Henry Onyx division.";
 }

@@ -313,7 +313,7 @@ export function AccountAddressesClient({ initialAddresses }: AccountAddressesCli
         <section className="market-soft rounded-[1.7rem] p-6 text-center">
           <p className="text-xl font-semibold text-[var(--market-paper-white)]">No saved addresses yet.</p>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-            Save a destination once and HenryCo will keep it ready for future checkout, support, and order-follow-up flows.
+            Save a destination once and Henry Onyx will keep it ready for future checkout, support, and order-follow-up flows.
           </p>
         </section>
       ) : (

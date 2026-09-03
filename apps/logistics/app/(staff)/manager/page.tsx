@@ -8,6 +8,8 @@ import {
   TrendingUp,
   Truck,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import {
   getFinanceDashboardData,
   getDispatchDashboardData,
@@ -23,9 +25,11 @@ import { formatCurrency } from "@/lib/env";
 export const dynamic = "force-dynamic";
 
 export default async function ManagerHomePage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [finance, dispatch] = await Promise.all([
     getFinanceDashboardData(),
-    getDispatchDashboardData(),
+    getDispatchDashboardData(locale),
   ]);
 
   const totalShipments = dispatch.shipments.length;
@@ -41,57 +45,56 @@ export default async function ManagerHomePage() {
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          Operations
+          {t("Operations")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Today
+          {t("Today")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          Volume, on-time %, exceptions, revenue, and fleet utilisation. Click
-          a metric for the per-corridor breakdown.
+          {t("Volume, on-time %, exceptions, revenue, and fleet utilisation. Click a metric for the per-corridor breakdown.")}
         </p>
       </header>
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
-          label="Volume"
+          label={t("Volume")}
           value={String(totalShipments)}
           icon={<Truck className="h-4 w-4" aria-hidden />}
           context={{
             kind: "trend",
             direction: totalShipments > 0 ? "up" : "flat",
-            magnitude: `${totalShipments} ${totalShipments === 1 ? "shipment" : "shipments"}`,
+            magnitude: `${totalShipments} ${totalShipments === 1 ? t("shipment") : t("shipments")}`,
           }}
         />
         <MetricCard
-          label="On-time"
+          label={t("On-time")}
           value={`${onTimePct}%`}
           icon={<TrendingUp className="h-4 w-4" aria-hidden />}
           context={{
             kind: "comparison",
-            vs: "delivered / total",
-            delta: `${delivered} delivered`,
+            vs: t("delivered / total"),
+            delta: `${delivered} ${t("delivered")}`,
           }}
         />
         <MetricCard
-          label="Exceptions"
+          label={t("Exceptions")}
           value={String(exceptions)}
           icon={<ClipboardCheck className="h-4 w-4" aria-hidden />}
           context={{
             kind: "trend",
             direction: exceptions > 0 ? "down" : "flat",
             magnitude:
-              exceptions > 0 ? "Investigate" : "Clean run",
+              exceptions > 0 ? t("Investigate") : t("Clean run"),
           }}
         />
         <MetricCard
-          label="Revenue"
+          label={t("Revenue")}
           value={formatCurrency(finance.totals.paid, "NGN")}
           icon={<Banknote className="h-4 w-4" aria-hidden />}
           context={{
             kind: "comparison",
-            vs: "settled total",
-            delta: `Quoted ${formatCurrency(finance.totals.quoted, "NGN")}`,
+            vs: t("settled total"),
+            delta: `${t("Quoted")} ${formatCurrency(finance.totals.quoted, "NGN")}`,
           }}
         />
       </section>
@@ -99,13 +102,13 @@ export default async function ManagerHomePage() {
       <Panel tone="flat">
         <header className="border-b border-[var(--logistics-line)] pb-3">
           <h2 className="text-base font-semibold tracking-tight text-white">
-            Margin posture
+            {t("Margin posture")}
           </h2>
         </header>
         <dl className="mt-4 grid gap-4 sm:grid-cols-3">
           <div>
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-              Quoted
+              {t("Quoted")}
             </dt>
             <dd className="mt-1 text-lg font-semibold tracking-tight text-white">
               {formatCurrency(finance.totals.quoted, "NGN")}
@@ -113,7 +116,7 @@ export default async function ManagerHomePage() {
           </div>
           <div>
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-              Paid
+              {t("Paid")}
             </dt>
             <dd className="mt-1 text-lg font-semibold tracking-tight text-white">
               {formatCurrency(finance.totals.paid, "NGN")}
@@ -121,7 +124,7 @@ export default async function ManagerHomePage() {
           </div>
           <div>
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-              Margin
+              {t("Margin")}
             </dt>
             <dd className="mt-1 text-lg font-semibold tracking-tight text-white">
               {formatCurrency(finance.totals.margin, "NGN")}

@@ -10,7 +10,7 @@ import type {
  * Studio-side adapter that wires the support thread engine to the
  * `support_messages` table + the studio /api/support/* fetch endpoints.
  *
- * The studio viewer is always a HenryCo staff member (studio_owner or
+ * The studio viewer is always a Henry Onyx staff member (studio_owner or
  * client_success). Customer messages render left-aligned (`team`),
  * messages from the current viewer render right-aligned (`viewer`), and
  * messages from any other staff member also render left-aligned (`team`)
@@ -161,8 +161,8 @@ export function mapRowToMessage(
       : senderType === "customer"
         ? (row.customer_name as string | null) || "Customer"
         : senderType === "system"
-          ? "HenryCo"
-          : "HenryCo Studio");
+          ? "Henry Onyx"
+          : "Henry Onyx Studio");
 
   const attachments = Array.isArray(row.attachments)
     ? (row.attachments as Array<Record<string, unknown>>).map(

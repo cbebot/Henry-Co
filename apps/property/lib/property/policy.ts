@@ -1,6 +1,12 @@
 import "server-only";
 
 import { getVerificationGateCopy } from "@henryco/trust";
+import {
+  evaluateInspectionRules,
+  PROPERTY_INSPECTION_RULES,
+  type PropertyInspectionRule,
+  type PropertyInspectionRuleDecision,
+} from "@/lib/property/inspection-rules";
 import type {
   PropertyListing,
   PropertyListingIntent,
@@ -67,6 +73,17 @@ export type PropertyPolicyDecision = {
     bullets: string[];
     nextStepLabel: string;
   };
+  /**
+   * V3 PASS 21 — inspection rules engine output. `decision.matchedRules`
+   * is the canonical record of which inspection trigger fired, ranked
+   * by priority. `topRuleKey` is the highest-priority matched rule.
+   * `null` for clean low-risk paths.
+   */
+  inspectionRules: {
+    topRuleKey: string | null;
+    matchedRuleKeys: string[];
+    reason: string;
+  };
 };
 
 function clampScore(value: number) {
@@ -124,7 +141,10 @@ function isHighValue(price: number) {
   return price >= 50_000_000 || (price > 0 && price >= 1_500_000 && price <= 5_000_000);
 }
 
-export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): PropertyPolicyDecision {
+export function evaluatePropertySubmissionPolicy(
+  ctx: PropertyPolicyContext,
+  inspectionRulesOverride?: PropertyInspectionRule[]
+): PropertyPolicyDecision {
   const baseDocs = requiredDocsForService(ctx.submission.serviceType);
 
   const flags: string[] = [];
@@ -224,12 +244,24 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
     ctx.submission.serviceType === "land" ||
     (requiresIdentityApproval && ctx.trust.signals.verificationStatus !== "verified" && risk >= 78);
 
-  const requiresInspection =
-    ctx.submission.intent === "inspection_request" ||
-    ctx.submission.serviceType === "managed_property" ||
-    ctx.submission.serviceType === "verified_property" ||
-    ctx.submission.serviceType === "land" ||
-    risk >= 76;
+  // V3 PASS 21 — delegate "should this submission inspect?" to the
+  // documented rules engine. The engine produces the same boolean today
+  // as the previous hard-coded condition; routing through the engine
+  // means moderation can tune thresholds in the DB rules table without
+  // touching this file. `inspectionRulesOverride` is the seam tests use.
+  const inspectionRuleDecision: PropertyInspectionRuleDecision = evaluateInspectionRules(
+    {
+      serviceType: String(ctx.submission.serviceType),
+      intent: String(ctx.submission.intent),
+      kind: String(ctx.submission.kind),
+      price: Number(ctx.submission.price || 0),
+      riskScore: risk,
+      requiresAuthorityProof,
+      requiresManagementAuthorization,
+    },
+    inspectionRulesOverride ?? PROPERTY_INSPECTION_RULES
+  );
+  const requiresInspection = inspectionRuleDecision.requiresInspection;
 
   const identityGateSatisfied = ctx.trust.signals.verificationStatus === "verified";
   const documentGateSatisfied =
@@ -256,7 +288,7 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
   ].join(" · ");
 
   const bullets: string[] = [];
-  bullets.push("Your submission is private until HenryCo approves it for publication.");
+  bullets.push("Your submission is private until Henry Onyx approves it for publication.");
   if (requiresIdentityApproval && !identityGateSatisfied) {
     bullets.push(
       `${verificationGate.detail} Open account verification before expecting publication review to continue.`
@@ -269,16 +301,16 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
   }
   if (requiresAuthorityProof && ctx.submission.authorityProofCount === 0) {
     bullets.push(
-      "Authority proof: broker or agent-led submissions stay held until HenryCo can see a mandate or equivalent approval."
+      "Authority proof: broker or agent-led submissions stay held until Henry Onyx can see a mandate or equivalent approval."
     );
   }
   if (requiresManagementAuthorization && ctx.submission.managementAuthorizationCount === 0) {
     bullets.push(
-      "Managed listing authorization: HenryCo needs a management instruction or equivalent written authority before this can move as a managed listing."
+      "Managed listing authorization: Henry Onyx needs a management instruction or equivalent written authority before this can move as a managed listing."
     );
   }
   if (requiresInspection) {
-    bullets.push("Inspection: HenryCo may send an agent to verify the property and location before it goes live.");
+    bullets.push("Inspection: Henry Onyx may send an agent to verify the property and location before it goes live.");
   }
   if (ctx.trust.signals.duplicateEmailMatches > 0 || ctx.trust.signals.duplicatePhoneMatches > 0) {
     bullets.push("Contact review: shared contact details keep the submission in manual review until ownership is confirmed.");
@@ -287,7 +319,7 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
     bullets.push("Enhanced verification: higher-risk listings may require extra identity or ownership proof.");
   }
   if (ctx.submission.serviceType === "managed_property") {
-    bullets.push("Managed vs non-managed: managed listings only move forward when HenryCo can support the operating handoff, not just publish the listing.");
+    bullets.push("Managed vs non-managed: managed listings only move forward when Henry Onyx can support the operating handoff, not just publish the listing.");
   }
 
   const headline =
@@ -330,6 +362,11 @@ export function evaluatePropertySubmissionPolicy(ctx: PropertyPolicyContext): Pr
       headline,
       bullets,
       nextStepLabel,
+    },
+    inspectionRules: {
+      topRuleKey: inspectionRuleDecision.topRuleKey,
+      matchedRuleKeys: inspectionRuleDecision.matchedRules.map((m) => m.rule.key),
+      reason: inspectionRuleDecision.reason,
     },
   };
 }

@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { buildSecurityHeaders } from "@henryco/config";
+import { buildSecurityHeaders, isSupabaseAuthTokenCookie } from "@henryco/config";
+import { writeSessionStateCookie } from "@henryco/auth/server/session-state";
 
 const csp = [
   "default-src 'self'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com",
+  "img-src 'self' data: blob: https://*.supabase.co https://res.cloudinary.com https://images.unsplash.com",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "connect-src 'self' https://*.supabase.co https://api.cloudinary.com",
-  "media-src 'self' blob: https://res.cloudinary.com",
+  // wss://*.supabase.co is REQUIRED for the realtime WebSocket. Safari/WebKit
+  // (iOS) will not open a wss: socket under an https: source, so `new WebSocket()`
+  // throws synchronously and crashes the realtime provider into the error
+  // boundary (dashboard fails to open on iOS). Chrome derives wss: from https:.
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.cloudinary.com",
+  "media-src 'self' blob: https://*.supabase.co https://res.cloudinary.com",
   "object-src 'none'",
   "upgrade-insecure-requests",
 ].join("; ");
@@ -35,6 +40,15 @@ function normalizeProto(value?: string | null) {
   return proto === "http" || proto === "https" ? proto : "https";
 }
 
+/**
+ * Staff proxy — V3-01 wired.
+ *
+ * Staff does not run a full Supabase verify here (auth is gated at
+ * the page layout via `requireStaffViewer`). V3-01 adds a passive
+ * `hc_session_state` cookie tag based on the presence of Supabase auth
+ * cookies in the incoming request, so SSR + the client
+ * `subscribeSessionState` helper see the lifecycle state.
+ */
 export function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   const host =
@@ -65,6 +79,14 @@ export function proxy(request: NextRequest) {
   );
   response.headers.set("Pragma", "no-cache");
   response.headers.set("Expires", "0");
+
+  const hasAuth = request.cookies
+    .getAll()
+    .some((cookie) => isSupabaseAuthTokenCookie(cookie.name));
+  writeSessionStateCookie(response, hasAuth ? "signed-in-stale" : "signed-out", {
+    hostname: request.nextUrl.hostname,
+    secure: request.nextUrl.protocol === "https:",
+  });
 
   return response;
 }

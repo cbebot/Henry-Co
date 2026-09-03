@@ -1,8 +1,6 @@
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { RouteLiveRefresh } from "@henryco/ui";
-import { ThreadAppearanceProvider, type ThreadParticipant } from "@henryco/messaging-thread";
 import { requireAccountUser } from "@/lib/auth";
 import {
   getSupportMessages,
@@ -11,9 +9,10 @@ import {
   markNotificationsReadByReference,
   markSupportThreadRead,
 } from "@/lib/account-data";
+import { signAccountMediaUrl } from "@/lib/account/media";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import SupportThreadHeader from "@/components/support/SupportThreadHeader";
-import SupportThreadRoom from "@/components/support/SupportThreadRoom";
+import "@/components/support/editorial.css";
+import SupportChatScreen from "@/components/support/SupportChatScreen";
 
 export const dynamic = "force-dynamic";
 
@@ -110,9 +109,17 @@ export default async function SupportThreadPage({ params }: Props) {
     markNotificationsReadByActionUrl(user.id, `/support/${threadId}`),
     markSupportThreadRead(user.id, threadId),
   ]);
-  const messages = (await getSupportMessages(threadId)) as Array<
+  const rawMessages = (await getSupportMessages(threadId)) as Array<
     Record<string, unknown>
   >;
+  // Sign attachment refs server-side before they reach the client thread
+  // engine. Attachments are persisted as `media://private/...` refs (RLS-
+  // private bucket); the engine renders `attachment.url` directly as an
+  // <img src>/<a href>, which a private ref cannot satisfy. We swap each ref
+  // for a short-lived SIGNED URL here (legacy absolute URLs pass through; an
+  // unsignable value collapses to "" and is dropped by the renderer).
+  // (V3-MEDIA-SWEEP-01)
+  const messages = await signSupportMessageAttachments(rawMessages);
   const status = String(thread.status || "open");
   const subject = String(thread.subject || t("Support conversation"));
   const category = String(thread.category || "general");
@@ -121,105 +128,62 @@ export default async function SupportThreadPage({ params }: Props) {
   const categoryLabelText = supportCategoryLabel(t, category);
   const divisionLabelText = divisionLabel(t, division);
   const initialMuted = Boolean(thread.customer_muted_at);
-  const participants = deriveAccountParticipants({
-    viewerUserId: user.id,
-    viewerName: user.fullName || user.email || "You",
-    divisionLabel: divisionLabelText,
-    messages,
-    teamLabel: t("HenryCo"),
-    customerLabel: t("You"),
-    teamRoleLabel: t("Support"),
-  });
 
+  // The chat screen is a fixed full-viewport surface (only the messages pane
+  // scrolls). The category still reads through the status line; the hero
+  // banner and the large thread header no longer live inside the chat screen.
   return (
-    <div className="space-y-6 acct-fade-in">
+    <div className="acct-chat-stage">
       <RouteLiveRefresh intervalMs={10000} />
-      <div className="flex items-center gap-3">
-        <Link
-          href="/support"
-          className="acct-button-ghost rounded-xl"
-          aria-label={t("Back to support")}
-          title={t("Back to support")}
-        >
-          <ArrowLeft size={16} />
-        </Link>
-        <span className="hc-body-sm text-[var(--acct-muted)]">
-          {t("Back to support")}
-        </span>
-      </div>
-      <ThreadAppearanceProvider>
-        <SupportThreadHeader
-          threadId={threadId}
-          subject={subject}
-          divisionLabel={divisionLabelText}
-          categoryLabel={categoryLabelText}
-          status={status}
-          statusLabel={statusLabel}
-          initialMuted={initialMuted}
-          participants={participants}
-          download={{
-            endpoint: `/api/documents/support-thread/${threadId}`,
-            filename: `HenryCo-SupportThread-${threadId.slice(0, 8)}.pdf`,
-            shareTitle: `HenryCo Support Thread — ${subject}`,
-            label: t("Download thread"),
-          }}
-        />
-        <SupportThreadRoom
-          threadId={threadId}
-          messages={messages}
-          threadStatus={status}
-          viewer={{
-            userId: user.id,
-            fullName: user.fullName || user.email || "You",
-            email: user.email,
-          }}
-        />
-      </ThreadAppearanceProvider>
+      <SupportChatScreen
+        threadId={threadId}
+        rows={messages}
+        threadStatus={status}
+        subject={subject}
+        statusLine={`${statusLabel} · ${categoryLabelText} · ${divisionLabelText}`}
+        initialMuted={initialMuted}
+        download={{
+          endpoint: `/api/documents/support-thread/${threadId}`,
+          filename: `Henry Onyx-SupportThread-${threadId.slice(0, 8)}.pdf`,
+          shareTitle: `Henry Onyx Support Thread — ${subject}`,
+          label: t("Download thread"),
+        }}
+        viewer={{
+          userId: user.id,
+          fullName: user.fullName || user.email || "You",
+        }}
+      />
     </div>
   );
 }
 
-function deriveAccountParticipants({
-  viewerUserId,
-  viewerName,
-  divisionLabel,
-  messages,
-  teamLabel,
-  customerLabel,
-  teamRoleLabel,
-}: {
-  viewerUserId: string;
-  viewerName: string;
-  divisionLabel: string;
-  messages: Array<Record<string, unknown>>;
-  teamLabel: string;
-  customerLabel: string;
-  teamRoleLabel: string;
-}): ThreadParticipant[] {
-  const seen = new Map<string, ThreadParticipant>();
-  seen.set(viewerUserId, {
-    id: viewerUserId,
-    name: viewerName,
-    role: customerLabel,
-    isSelf: true,
-  });
-  for (const row of messages) {
-    const senderType = String(
-      (row as { sender_type?: unknown }).sender_type || "",
-    ).toLowerCase();
-    if (senderType === "system") continue;
-    const senderId =
-      String((row as { sender_id?: unknown }).sender_id || "") ||
-      `team-${senderType || "agent"}`;
-    if (seen.has(senderId)) continue;
-    if (senderType === "customer") continue; // already covered by viewer
-    seen.set(senderId, {
-      id: senderId,
-      name:
-        String((row as { sender_name?: unknown }).sender_name || "") ||
-        `${teamLabel} ${divisionLabel}`,
-      role: teamRoleLabel,
-    });
-  }
-  return Array.from(seen.values());
+/**
+ * Resolve every persisted attachment ref on a set of support_messages rows to
+ * a client-renderable URL. Runs server-side (signing needs the privileged
+ * client) and returns NEW row objects so the original cached read is untouched.
+ * Each `attachments[].url` is replaced by its signed/resolved URL; entries that
+ * cannot be resolved (expired/missing) get an empty url and are filtered so the
+ * client never renders a broken/throwing asset. (V3-MEDIA-SWEEP-01)
+ */
+async function signSupportMessageAttachments(
+  messages: Array<Record<string, unknown>>,
+): Promise<Array<Record<string, unknown>>> {
+  return Promise.all(
+    messages.map(async (row) => {
+      const attachments = row.attachments;
+      if (!Array.isArray(attachments) || attachments.length === 0) return row;
+      const signed = await Promise.all(
+        (attachments as Array<Record<string, unknown>>).map(async (attachment) => {
+          const url = typeof attachment.url === "string" ? attachment.url : "";
+          if (!url) return attachment;
+          return { ...attachment, url: await signAccountMediaUrl(url) };
+        }),
+      );
+      const renderable = signed.filter(
+        (attachment) => typeof attachment.url === "string" && attachment.url.length > 0,
+      );
+      return { ...row, attachments: renderable };
+    }),
+  );
 }
+

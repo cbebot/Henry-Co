@@ -1,8 +1,11 @@
 import { BellRing } from "lucide-react";
+import { toBrandName } from "@henryco/config";
 import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
 import PageHeader from "@/components/layout/PageHeader";
 import NotificationPreferencesForm from "@/components/settings/notification-preferences/NotificationPreferencesForm";
+import NextActionPreferenceToggle from "@/components/settings/NextActionPreferenceToggle";
+import { nextActionEnabled } from "@/lib/next-action/flag";
 
 export const dynamic = "force-dynamic";
 
@@ -22,11 +25,25 @@ export default async function NotificationsSettingsPage() {
     <div className="space-y-6 acct-fade-in">
       <PageHeader
         title="Notifications"
-        description="Choose how HenryCo reaches you. Mute the noise, keep the signal — preferences sync instantly across every division."
+        description={toBrandName(
+          "Choose how Henry Onyx reaches you. Mute the noise, keep the signal — preferences sync instantly across every division.",
+        )}
         icon={BellRing}
       />
 
       <NotificationPreferencesForm initialPreferences={preferences} />
+
+      {/* V3-39 (flag-gated) — the "do this next" suggestion control. Hidden
+          while personalization_next_action is dark so it is never a dead
+          affordance. Only a persisted FALSE suppresses; absent = default ON. */}
+      {nextActionEnabled() ? (
+        <NextActionPreferenceToggle
+          initialEnabled={
+            (preferences as { next_action_prompts_enabled?: boolean | null } | null)
+              ?.next_action_prompts_enabled !== false
+          }
+        />
+      ) : null}
     </div>
   );
 }

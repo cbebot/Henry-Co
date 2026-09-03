@@ -16,6 +16,19 @@ import "@henryco/dashboard-modules-account";
 import "@henryco/dashboard-modules-marketplace";
 import "@henryco/dashboard-modules-wallet";
 
+// Division modules — each registers its slot so the rail, Smart Home
+// grid, command palette, and module router surface it for eligible
+// viewers. Each canonical surface is the live top-level division route
+// (e.g. `/care`, `/jobs`) which the module's `homeHref` deep-links to.
+import "@henryco/dashboard-modules-care";
+import "@henryco/dashboard-modules-jobs";
+import "@henryco/dashboard-modules-learn";
+import "@henryco/dashboard-modules-logistics";
+import "@henryco/dashboard-modules-property";
+import "@henryco/dashboard-modules-play";
+import "@henryco/dashboard-modules-studio";
+import "@henryco/dashboard-modules-business";
+
 // Hidden future modules — register their slots so the rail surfaces
 // them automatically once each division flips its `MODULE_ENABLED`
 // constant in `packages/dashboard-modules-{building,hotel}/src/module.tsx`.

@@ -4,6 +4,7 @@ import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { sellerPlans } from "@/lib/marketplace/governance";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default async function SellerApplicationStartPage({
 }: {
   searchParams?: Promise<{ plan?: string }>;
 }) {
+  const locale = await getMarketplacePublicLocale();
   const sp = (await searchParams) ?? {};
   const requestedPlan =
     sp.plan && VALID_PLAN_IDS.has(sp.plan as never) ? sp.plan : null;
@@ -27,7 +29,7 @@ export default async function SellerApplicationStartPage({
     <WorkspaceShell
       title="Seller application"
       description="Step 1 focuses on store identity, business basics, and category focus before moderation work begins."
-      {...accountWorkspaceNav("/account/seller-application")}
+      {...accountWorkspaceNav("/account/seller-application", locale)}
     >
       <SellerApplicationWizard
         step="start"

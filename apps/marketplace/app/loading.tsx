@@ -1,11 +1,7 @@
 import { PublicRouteLoader } from "@henryco/ui/public-shell";
 
-export default function MarketplaceLoading() {
-  return (
-    <PublicRouteLoader
-      eyebrow="HenryCo Marketplace"
-      title="Loading marketplace"
-      subtitle="Preparing products, stores, and your personalized experience."
-    />
-  );
+// The shared Onyx route loader (V3-LOADER) — one world-class, brand-aware,
+// theme-aware loading experience across every public surface.
+export default function Loading() {
+  return <PublicRouteLoader />;
 }

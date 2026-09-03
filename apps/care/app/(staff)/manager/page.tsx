@@ -12,6 +12,7 @@ import {
   Sparkles,
   Wallet,
 } from "lucide-react";
+import { getCareCopy } from "@henryco/i18n/server";
 import { requireRoles } from "@/lib/auth/server";
 import {
   getAdminBookings,
@@ -22,22 +23,26 @@ import {
   getUrgentBookings,
 } from "@/lib/admin/care-admin";
 import { isServiceBookingRecord } from "@/lib/care-booking-shared";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import { logProtectedPageAccess } from "@/lib/security/logger";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Manager Dashboard | Henry & Co. Fabric Care",
-  description:
-    "Manager command dashboard for intake, live operations, inflow, and expense control.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getCarePublicLocale();
+  const copy = getCareCopy(locale);
+  return {
+    title: copy.staffManager.metadata.title,
+    description: copy.staffManager.metadata.description,
+  };
+}
 
 function formatMoney(value: number | string) {
   return `₦${Number(value || 0).toLocaleString()}`;
 }
 
-function formatDate(value?: string | null) {
-  if (!value) return "—";
+function formatDate(value: string | null | undefined, dash: string) {
+  if (!value) return dash;
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
   return d.toLocaleDateString("en-NG", {
@@ -50,6 +55,10 @@ function formatDate(value?: string | null) {
 export default async function ManagerPage() {
   await requireRoles(["owner", "manager"]);
   await logProtectedPageAccess("/manager");
+
+  const locale = await getCarePublicLocale();
+  const copy = getCareCopy(locale);
+  const sm = copy.staffManager;
 
   const [bookings, urgentBookings, orderItems, payments, expenses, finance] = await Promise.all([
     getAdminBookings({ scope: "active", limit: 500 }),
@@ -83,67 +92,67 @@ export default async function ManagerPage() {
       !orderItems.some((item) => item.booking_id === booking.id)
   );
 
+  const balanceNote = sm.pressurePanel.overallBalance.flowTemplate
+    .replace("{inflow}", formatMoney(finance.total_inflow))
+    .replace("{outflow}", formatMoney(finance.total_outflow));
+
   return (
     <div className="space-y-8">
       <section className="rounded-[38px] border border-white/10 bg-white/[0.04] p-8 shadow-[0_22px_80px_rgba(0,0,0,0.20)]">
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-          Manager operations room
+          {sm.hero.eyebrow}
         </div>
         <h2 className="mt-2 text-4xl font-semibold text-white sm:text-5xl">
-          Run the day. Keep the records truthful.
+          {sm.hero.title}
         </h2>
-        <p className="mt-4 max-w-3xl text-white/65">
-          This is the manager’s live control layer. Intake, pricing-backed registration,
-          status movement, payment capture, and daily expenses should all be handled from here
-          without confusion.
-        </p>
+        <p className="mt-4 max-w-3xl text-white/65">{sm.hero.body}</p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <QuickLink href="/manager/operations">Open operations</QuickLink>
-          <QuickLink href="/manager/expenses">Open expenses</QuickLink>
-          <QuickLink href="/track">Tracking page</QuickLink>
-          <QuickLink href="/book">Create walk-in booking</QuickLink>
+          <QuickLink href="/manager/operations">{sm.quickLinks.openOperations}</QuickLink>
+          <QuickLink href="/manager/expenses">{sm.quickLinks.openExpenses}</QuickLink>
+          <QuickLink href="/track">{sm.quickLinks.trackingPage}</QuickLink>
+          <QuickLink href="/book">{sm.quickLinks.createWalkIn}</QuickLink>
         </div>
       </section>
 
       <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
         <MetricCard
           icon={ClipboardList}
-          label="Active bookings"
+          label={sm.metrics.activeBookings.label}
           value={String(activeBookings.length)}
-          note="Current live workload"
+          note={sm.metrics.activeBookings.note}
         />
         <MetricCard
           icon={AlertTriangle}
-          label="Urgent queue"
+          label={sm.metrics.urgentQueue.label}
           value={String(urgentBookings.length)}
-          note="Needs quick attention"
+          note={sm.metrics.urgentQueue.note}
         />
         <MetricCard
           icon={Sparkles}
-          label="Registered pieces"
+          label={sm.metrics.registeredPieces.label}
           value={String(totalRegisteredPieces)}
-          note="Pricing-backed item records"
+          note={sm.metrics.registeredPieces.note}
         />
         <MetricCard
           icon={Wallet}
-          label="Recorded inflow"
+          label={sm.metrics.recordedInflow.label}
           value={formatMoney(totalInflow)}
-          note="Money logged against bookings"
+          note={sm.metrics.recordedInflow.note}
         />
         <MetricCard
           icon={CreditCard}
-          label="Pending expenses"
+          label={sm.metrics.pendingExpenses.label}
           value={String(pendingExpenses.length)}
-          note="Awaiting owner review"
+          note={sm.metrics.pendingExpenses.note}
         />
       </section>
 
       <section className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
         <Panel
-          eyebrow="Priority"
-          title="Urgent bookings"
-          subtitle="These are the jobs the manager should not ignore."
+          eyebrow={sm.urgentPanel.eyebrow}
+          title={sm.urgentPanel.title}
+          subtitle={sm.urgentPanel.subtitle}
         >
           <div className="grid gap-4">
             {urgentBookings.length > 0 ? (
@@ -162,7 +171,8 @@ export default async function ManagerPage() {
                     {booking.service_type} • {booking.status}
                   </div>
                   <div className="mt-1 text-sm text-white/45">
-                    {formatDate(booking.pickup_date)} • {booking.pickup_slot || "No slot"}
+                    {formatDate(booking.pickup_date, sm.dash)} •{" "}
+                    {booking.pickup_slot || sm.urgentPanel.noSlot}
                   </div>
 
                   <div className="mt-4">
@@ -172,43 +182,41 @@ export default async function ManagerPage() {
                       )}`}
                       className="care-button-primary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold"
                     >
-                      Open booking
+                      {sm.urgentPanel.openBooking}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
                 </article>
               ))
             ) : (
-              <EmptyState text="No urgent bookings right now." />
+              <EmptyState text={sm.urgentPanel.empty} />
             )}
           </div>
         </Panel>
 
         <Panel
-          eyebrow="Manager truth checks"
-          title="Operational pressure points"
-          subtitle="These indicators help the manager stop hidden mistakes before they become company problems."
+          eyebrow={sm.pressurePanel.eyebrow}
+          title={sm.pressurePanel.title}
+          subtitle={sm.pressurePanel.subtitle}
         >
           <div className="grid gap-4">
             <InfoTile
               icon={ShieldCheck}
-              label="Garment bookings missing intake"
+              label={sm.pressurePanel.missingIntake.label}
               value={String(bookingsWithoutItems.length)}
-              note="Only garment bookings should be flagged here. Service bookings are tracked separately."
+              note={sm.pressurePanel.missingIntake.note}
             />
             <InfoTile
               icon={ReceiptText}
-              label="Approved expenses"
+              label={sm.pressurePanel.approvedExpenses.label}
               value={String(approvedExpenses.length)}
-              note="These costs have already been accepted by owner review."
+              note={sm.pressurePanel.approvedExpenses.note}
             />
             <InfoTile
               icon={BadgeCheck}
-              label="Overall balance"
+              label={sm.pressurePanel.overallBalance.label}
               value={formatMoney(finance.balance)}
-              note={`${formatMoney(finance.total_inflow)} in • ${formatMoney(
-                finance.total_outflow
-              )} out`}
+              note={balanceNote}
             />
           </div>
         </Panel>

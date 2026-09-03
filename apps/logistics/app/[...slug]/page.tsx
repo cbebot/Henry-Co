@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getDivisionConfig, getStaffHqUrl } from "@henryco/config";
 import { redirect } from "next/navigation";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +21,8 @@ export default async function LogisticsCatchAllPage({
     redirect(getStaffHqUrl("/logistics"));
   }
 
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const logistics = getDivisionConfig("logistics");
   const requestedPath = `/${slug.join("/")}`;
 
@@ -28,23 +32,23 @@ export default async function LogisticsCatchAllPage({
         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
           {logistics.name}
         </p>
-        <h1 className="mt-4 text-2xl font-semibold text-white">Page not found</h1>
+        <h1 className="mt-4 text-2xl font-semibold text-white">{t("Page not found")}</h1>
         <p className="mt-3 text-sm text-[var(--logistics-muted)]">
-          We could not find <span className="font-mono text-white/80">{requestedPath}</span>. Try the home page, book a
-          delivery, or track an existing shipment.
+          {t("We could not find")} <span className="font-mono text-white/80">{requestedPath}</span>.{" "}
+          {t("Try the home page, book a delivery, or track an existing shipment.")}
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             href="/"
             className="rounded-full bg-[linear-gradient(135deg,#f6e2d0_0%,var(--logistics-accent)_52%,#9f8b7d_100%)] px-5 py-2.5 text-sm font-semibold text-[#170f12]"
           >
-            Home
+            {t("Home")}
           </Link>
           <Link href="/book" className="rounded-full border border-[var(--logistics-line)] px-5 py-2.5 text-sm font-semibold text-white/90">
-            Book
+            {t("Book")}
           </Link>
           <Link href="/track" className="rounded-full border border-[var(--logistics-line)] px-5 py-2.5 text-sm font-semibold text-white/90">
-            Track
+            {t("Track")}
           </Link>
         </div>
       </div>

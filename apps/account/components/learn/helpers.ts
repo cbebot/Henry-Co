@@ -165,20 +165,24 @@ export type HeroCopy = {
   ctaSecondary: { label: string; href: string };
 };
 
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+
 export function buildHeroCopy(
   state: HeroState,
   stats: LearnStats,
   learnOrigin: string,
   locale: LearnLocale,
+  appLocale?: AppLocale,
 ): HeroCopy {
   const teachHref = `${learnOrigin}/teach`;
+  const t = (text: string) => (appLocale ? translateSurfaceLabel(appLocale, text) : text);
 
   if (locale === "fr") {
     if (state === "empty") {
       return {
-        headline: "Commencez votre parcours HenryCo Learn.",
+        headline: "Commencez votre parcours Henry Onyx Learn.",
         blurb: "Parcourez le catalogue, inscrivez-vous à un cours, et chaque module, quiz et certificat se synchronisera ici automatiquement.",
-        ctaPrimary: { label: "Ouvrir HenryCo Learn", href: learnOrigin },
+        ctaPrimary: { label: "Ouvrir Henry Onyx Learn", href: learnOrigin },
         ctaSecondary: { label: "Postuler pour enseigner", href: teachHref },
       };
     }
@@ -186,41 +190,41 @@ export function buildHeroCopy(
       const n = stats.metrics.activeCourses;
       return {
         headline: `${n} cours en cours.`,
-        blurb: "Reprenez là où vous vous êtes arrêté — leçons, quiz, certificats et formations assignées sont synchronisés depuis HenryCo Learn.",
-        ctaPrimary: { label: "Ouvrir HenryCo Learn", href: learnOrigin },
+        blurb: "Reprenez là où vous vous êtes arrêté — leçons, quiz, certificats et formations assignées sont synchronisés depuis Henry Onyx Learn.",
+        ctaPrimary: { label: "Ouvrir Henry Onyx Learn", href: learnOrigin },
         ctaSecondary: { label: "Postuler pour enseigner", href: teachHref },
       };
     }
     return {
       headline: `${stats.metrics.completedCourses} cours terminé${stats.metrics.completedCourses === 1 ? "" : "s"}.`,
       blurb: "Vos certifications et historique d’apprentissage restent ici, prêts pour le CV, les rapports internes, ou simplement vos archives.",
-      ctaPrimary: { label: "Ouvrir HenryCo Learn", href: learnOrigin },
+      ctaPrimary: { label: "Ouvrir Henry Onyx Learn", href: learnOrigin },
       ctaSecondary: { label: "Postuler pour enseigner", href: teachHref },
     };
   }
 
   if (state === "empty") {
     return {
-      headline: "Start your HenryCo Learn journey.",
-      blurb: "Browse the catalog, enroll in a course, and every lesson, quiz, and certificate will sync into this room automatically.",
-      ctaPrimary: { label: "Open HenryCo Learn", href: learnOrigin },
-      ctaSecondary: { label: "Apply to teach", href: teachHref },
+      headline: t("Start your Henry Onyx Learn journey."),
+      blurb: t("Browse the catalog, enroll in a course, and every lesson, quiz, and certificate will sync into this room automatically."),
+      ctaPrimary: { label: t("Open Henry Onyx Learn"), href: learnOrigin },
+      ctaSecondary: { label: t("Apply to teach"), href: teachHref },
     };
   }
   if (state === "active") {
     const n = stats.metrics.activeCourses;
     return {
-      headline: `${n} course${n === 1 ? "" : "s"} in progress.`,
-      blurb: "Pick up where you left off — lessons, quizzes, certificates, and assigned training all sync from HenryCo Learn into this room.",
-      ctaPrimary: { label: "Open HenryCo Learn", href: learnOrigin },
-      ctaSecondary: { label: "Apply to teach", href: teachHref },
+      headline: `${n} ${n === 1 ? t("course") : t("courses")} ${t("in progress.")}`,
+      blurb: t("Pick up where you left off — lessons, quizzes, certificates, and assigned training all sync from Henry Onyx Learn into this room."),
+      ctaPrimary: { label: t("Open Henry Onyx Learn"), href: learnOrigin },
+      ctaSecondary: { label: t("Apply to teach"), href: teachHref },
     };
   }
   return {
-    headline: `${stats.metrics.completedCourses} course${stats.metrics.completedCourses === 1 ? "" : "s"} completed.`,
-    blurb: "Your credentials and learning history stay here, handy for CVs, internal reporting, or your own records.",
-    ctaPrimary: { label: "Open HenryCo Learn", href: learnOrigin },
-    ctaSecondary: { label: "Apply to teach", href: teachHref },
+    headline: `${stats.metrics.completedCourses} ${stats.metrics.completedCourses === 1 ? t("course") : t("courses")} ${t("completed.")}`,
+    blurb: t("Your credentials and learning history stay here, handy for CVs, internal reporting, or your own records."),
+    ctaPrimary: { label: t("Open Henry Onyx Learn"), href: learnOrigin },
+    ctaSecondary: { label: t("Apply to teach"), href: teachHref },
   };
 }
 

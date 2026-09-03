@@ -1,14 +1,18 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 /**
- * V2-DASH-01 G7 — `/dashboard` 308 redirect to `/`.
+ * V3 Wave A1 — `/dashboard` permanent 308 redirect to `/`.
  *
- * Per audit §A.4 + master orchestration: the unified shell lives at
- * `account.henrycogroup.com/` (Track A canonical). Any legacy
- * `/dashboard` deep-link is permanently redirected to the new
- * canonical path. 308 preserves the request method + body, ensuring
- * any POST that accidentally targets `/dashboard` still lands on the
- * canonical route.
+ * Per audit §1.2 + §8.1 + master orchestration §A.4: the unified shell
+ * lives at `account.henrycogroup.com/` (Track A canonical). Any legacy
+ * `/dashboard` deep-link is permanently redirected to the new canonical
+ * path.
+ *
+ * Implementation note: `next/navigation`'s `permanentRedirect()` emits
+ * HTTP **308 Permanent Redirect** (vs. `redirect()` which emits 307
+ * Temporary Redirect). 308 preserves the request method + body AND
+ * tells crawlers / clients to update their bookmarks — exactly what we
+ * want for a permanent move.
  *
  * The redirect is a route handler (not a `<Link>` page) so that
  * external linkers (emails, search engines, mobile deep-links) get
@@ -18,13 +22,13 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-static";
 
 export function GET(): Response {
-  redirect("/");
+  permanentRedirect("/");
 }
 
 export function HEAD(): Response {
-  redirect("/");
+  permanentRedirect("/");
 }
 
 export function POST(): Response {
-  redirect("/");
+  permanentRedirect("/");
 }

@@ -1,21 +1,16 @@
 import { ArrowUpRight } from "lucide-react";
 
-import {
-  buildHeroCopy,
-  heroState,
-  type CareLocale,
-  type CareStats,
-} from "./helpers";
+import { heroState, type CareStats } from "./helpers";
 
 type Props = {
   stats: CareStats;
-  locale: CareLocale;
   labels: {
     eyebrow: string;
     sideKicker: string;
     sideTitle: string;
     sideBody: string;
     breakdownLabel: string;
+    tilesAriaLabel: string;
     tileLabels: {
       total: string;
       inFlight: string;
@@ -32,18 +27,27 @@ type Props = {
       completedEmpty: string;
       completedWith: string;
     };
+    breakdownLabels: {
+      inFlight: string;
+      scheduled: string;
+      payment: string;
+      completed: string;
+    };
+    headline: string;
+    blurb: string;
+    ctaPrimary: { label: string; href: string };
+    ctaSecondary: { label: string; href: string };
   };
 };
 
-export function CareHero({ stats, locale, labels }: Props) {
+export function CareHero({ stats, labels }: Props) {
   const state = heroState(stats);
-  const copy = buildHeroCopy(state, stats, locale);
 
   const breakdown = [
-    { key: "inFlight",   label: labels.tileLabels.inFlight,  count: stats.inFlight,    color: "var(--acct-gold)" },
-    { key: "scheduled",  label: locale === "fr" ? "Planifiées" : "Scheduled", count: stats.scheduled, color: "var(--acct-blue)" },
-    { key: "payment",    label: labels.tileLabels.payment,   count: stats.needsPayment, color: "var(--acct-red)" },
-    { key: "completed",  label: labels.tileLabels.completed, count: stats.completed,    color: "var(--acct-green)" },
+    { key: "inFlight",  label: labels.breakdownLabels.inFlight,  count: stats.inFlight,    color: "var(--acct-gold)" },
+    { key: "scheduled", label: labels.breakdownLabels.scheduled, count: stats.scheduled,   color: "var(--acct-blue)" },
+    { key: "payment",   label: labels.breakdownLabels.payment,   count: stats.needsPayment, color: "var(--acct-red)" },
+    { key: "completed", label: labels.breakdownLabels.completed, count: stats.completed,    color: "var(--acct-green)" },
   ].filter((row) => row.count > 0);
 
   return (
@@ -54,27 +58,27 @@ export function CareHero({ stats, locale, labels }: Props) {
             <span className="acct-care__eyebrow-dot" aria-hidden />
             {labels.eyebrow}
           </span>
-          <h1 className="acct-care__headline">{copy.headline}</h1>
-          <p className="acct-care__blurb">{copy.blurb}</p>
+          <h1 className="acct-care__headline">{labels.headline}</h1>
+          <p className="acct-care__blurb">{labels.blurb}</p>
           <div className="acct-care__hero-ctas">
             <a
               className="acct-care__cta acct-care__cta--primary"
-              href={copy.ctaPrimary.href}
-              target={copy.ctaPrimary.href.startsWith("#") ? undefined : "_blank"}
-              rel={copy.ctaPrimary.href.startsWith("#") ? undefined : "noopener noreferrer"}
+              href={labels.ctaPrimary.href}
+              target={labels.ctaPrimary.href.startsWith("#") ? undefined : "_blank"}
+              rel={labels.ctaPrimary.href.startsWith("#") ? undefined : "noopener noreferrer"}
             >
-              {copy.ctaPrimary.label} <ArrowUpRight size={14} aria-hidden />
+              {labels.ctaPrimary.label} <ArrowUpRight size={14} aria-hidden />
             </a>
             <a
               className="acct-care__cta acct-care__cta--ghost"
-              href={copy.ctaSecondary.href}
-              target={copy.ctaSecondary.href.startsWith("#") ? undefined : "_blank"}
-              rel={copy.ctaSecondary.href.startsWith("#") ? undefined : "noopener noreferrer"}
+              href={labels.ctaSecondary.href}
+              target={labels.ctaSecondary.href.startsWith("#") ? undefined : "_blank"}
+              rel={labels.ctaSecondary.href.startsWith("#") ? undefined : "noopener noreferrer"}
             >
-              {copy.ctaSecondary.label} <ArrowUpRight size={14} aria-hidden />
+              {labels.ctaSecondary.label} <ArrowUpRight size={14} aria-hidden />
             </a>
           </div>
-          <div className="acct-care__hero-tiles" role="list" aria-label={labels.eyebrow}>
+          <div className="acct-care__hero-tiles" role="list" aria-label={labels.tilesAriaLabel}>
             <div className="acct-care__hero-tile" role="listitem">
               <span className="acct-care__hero-tile-label">{labels.tileLabels.total}</span>
               <span className="acct-care__hero-tile-value">{stats.total}</span>

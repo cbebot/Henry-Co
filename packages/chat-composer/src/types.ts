@@ -63,9 +63,23 @@ export type ComposerLabels = {
   retryUploadLabel?: string;
   fullScreenTitleLabel?: string;
   shortcutHint?: string;
-  attachmentCarouselLabel?: string;
-  emptyAttachmentLabel?: string;
   failedSendLabel?: string;
+  /** Group aria-label on the inline composer shell ("Message composer"). */
+  composerAriaLabel?: string;
+  /** Textarea aria-label ("Message body"). */
+  bodyAriaLabel?: string;
+  /** Drag-over overlay copy ("Drop to attach"). */
+  dropToAttachLabel?: string;
+  /** SR-only live-region announcement while sending ("Sending message"). */
+  srSendingLabel?: string;
+  /** Attachment chip in-progress copy ("Uploading…"). */
+  uploadingLabel?: string;
+  /** Attachment chip failed-upload copy ("Failed"). */
+  attachmentFailedLabel?: string;
+  /** Attachment list aria-label ("Attached files"). */
+  attachmentListLabel?: string;
+  /** Draft indicator saving copy ("Saving…"). */
+  savingLabel?: string;
 };
 
 export type ComposerExtrasContext = {
@@ -80,6 +94,13 @@ export type ComposerProps = {
   onSend: ComposerSendHandler;
   placeholder?: string;
   tone?: ComposerTone;
+  /**
+   * Raw accent override (any CSS colour). When set, it drives the composer's accent
+   * (`--composer-accent` + a computed deep) instead of the `tone` map — so a host with an
+   * arbitrary division colour (the Intelligence launcher passes its `accent`) matches its
+   * surroundings, even for divisions the `ComposerTone` enum can't express.
+   */
+  accent?: string;
   disabled?: boolean;
   busy?: boolean;
   maxAttachments?: number;
@@ -99,6 +120,27 @@ export type ComposerProps = {
   belowInputSlot?: ReactNode;
   initialText?: string;
   ariaLabel?: string;
+  textareaName?: string;
+  /**
+   * Focus the textarea on mount. Useful for chat surfaces where the
+   * thread is the entire screen — the keyboard opens immediately on
+   * mobile (subject to host browser allowing programmatic focus from a
+   * navigation gesture). Defaults to false.
+   */
+  autoFocus?: boolean;
+  /**
+   * Opt-in WhatsApp / iMessage parity on mobile (max-width: 767px):
+   * the composer shell goes flush to the viewport edge — no outer
+   * radius, no side border, no side padding, hairline top border,
+   * safe-area-inset on the bottom. Use on chat-first surfaces where
+   * the composer should read as device chrome (studio messaging
+   * centre, jobs hiring conversation). MessageThread mounts always
+   * get edge-to-edge via the `.mt-composer-host` parent selector so
+   * they do not need to pass this. Form-embedded composers
+   * (NewSupportForm, care ReplyComposer) should leave it off so the
+   * composer keeps its rounded card chrome inside the form.
+   */
+  edgeToEdgeMobile?: boolean;
   /**
    * Extra controls rendered in the actions row, before Send. Receives the
    * live `text` and a `setText` callback so extras can both read AND mutate
@@ -109,10 +151,24 @@ export type ComposerProps = {
    * without forcing the engine to expose its internal state via context.
    */
   composerExtras?: (ctx: ComposerExtrasContext) => ReactNode;
+  /**
+   * Enter-key contract. "newline" (default) is the historical behavior:
+   * plain Enter inserts a newline, Cmd/Ctrl+Enter sends. "send" is
+   * chat-app parity: plain Enter sends, Shift+Enter inserts a newline
+   * (Cmd/Ctrl+Enter still sends). Existing surfaces are unaffected
+   * unless they opt in.
+   */
+  enterKeyBehavior?: "newline" | "send";
+  /**
+   * Auto-grow ceiling for the inline textarea, in lines. Defaults to 6
+   * (the historical value). Chat-first surfaces that want tighter
+   * vertical rhythm can lower it.
+   */
+  maxRows?: number;
 };
 
-export const DEFAULT_MAX_ATTACHMENTS = 10;
-export const DEFAULT_MAX_FILE_BYTES = 20 * 1024 * 1024;
+export const DEFAULT_MAX_ATTACHMENTS = 25;
+export const DEFAULT_MAX_FILE_BYTES = 50 * 1024 * 1024;
 export const DEFAULT_ACCEPTED_MIME_TYPES = [
   "image/jpeg",
   "image/png",

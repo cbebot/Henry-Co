@@ -121,6 +121,22 @@ export type MarketplaceVendor = {
   supportPhone: string;
 };
 
+export type MarketplaceProductVariant = {
+  id: string;
+  sku: string;
+  /** Free-form option keys → values, e.g. { color: "Cobalt", size: "M", material: "Linen" } */
+  options: Record<string, string>;
+  price: number;
+  compareAtPrice: number | null;
+  currency: string;
+  stock: number;
+  status: "active" | "draft" | "archived" | "out_of_stock";
+  /** Optional override image URL — falls back to product.gallery[0]. */
+  imageUrl: string | null;
+  lowStockThreshold: number;
+  sortOrder: number;
+};
+
 export type MarketplaceProduct = {
   id: string;
   slug: string;
@@ -141,12 +157,17 @@ export type MarketplaceProduct = {
   featured: boolean;
   approvalStatus: ProductApprovalStatus;
   trustBadges: string[];
+  /** The durable "Henry Onyx Verified" trust badge — awarded by the paid AI review, buyer-visible.
+   *  Optional: absent/false on a product that has not earned it. */
+  henryOnyxVerified?: boolean;
   gallery: string[];
   specifications: Record<string, string>;
   filterData: Record<string, string | string[] | boolean>;
   deliveryNote: string;
   leadTime: string;
   codEligible: boolean;
+  /** V3 PASS 21 — variant matrix (color × size × material…). */
+  variants?: MarketplaceProductVariant[];
 };
 
 export type MarketplaceCollection = {
@@ -187,7 +208,20 @@ export type MarketplaceReview = {
 export type MarketplaceSellerDocumentRecord = {
   kind: "businessRegistration" | "founderIdentity" | "payoutProof" | "other";
   name: string;
+  /**
+   * Canonical persisted reference. For documents uploaded after the media sweep
+   * this is a backend-neutral `media://private/...` ref (RLS-private bucket);
+   * legacy rows carry an absolute URL. This value is what round-trips back to
+   * the server on draft save — NEVER overwrite it with a signed URL.
+   */
   fileUrl: string;
+  /**
+   * Short-lived SIGNED URL safe to render in the browser. Populated server-side
+   * at read time from {@link fileUrl} (a private `media://` ref is not directly
+   * renderable). `null` when there is nothing to display. Display-only — never
+   * persisted (it expires).
+   */
+  previewUrl?: string | null;
   mimeType: string | null;
   size: number | null;
   publicId: string | null;
@@ -216,6 +250,10 @@ export type MarketplaceOrderItem = {
 export type MarketplaceOrderGroup = {
   id: string;
   vendorSlug: string | null;
+  /** Vendor UUID (marketplace_order_groups.vendor_id) — the vendor's id, not
+   * buyer PII. Lets the "Message seller" CTA anchor an Onyx Line thread to a
+   * specific vendor on a multi-vendor order. */
+  vendorId: string | null;
   ownerType: "company" | "vendor";
   fulfillmentStatus: FulfillmentStatus;
   paymentStatus: PaymentStatus;

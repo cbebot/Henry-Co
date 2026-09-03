@@ -9,6 +9,7 @@
    ────────────────────────────────────────────────────────────────── */
 
 .mt-thread {
+  position: relative;
   display: flex;
   height: 28rem;
   flex-direction: column;
@@ -430,6 +431,53 @@
   border-bottom: 1px solid color-mix(in srgb, var(--ws-warning, #f5d27a) 24%, transparent);
 }
 
+/* Positive live indicator — sits at the top-right corner of the
+   thread surface, signals "realtime is connected" with a soft green
+   pulse. Hosts can restyle via .mt-live-pill / .mt-live-pill-dot if
+   their brand uses a different success token. */
+.mt-live-pill {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.7rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  padding: 0.18rem 0.55rem 0.18rem 0.45rem;
+  border-radius: 9999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ws-success, #7be0a2);
+  background: color-mix(in srgb, var(--ws-success, #7be0a2) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ws-success, #7be0a2) 36%, transparent);
+}
+
+.mt-live-pill-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 9999px;
+  background: var(--ws-success, #7be0a2);
+  box-shadow: 0 0 0 0 var(--ws-success, #7be0a2);
+  animation: mt-live-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes mt-live-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ws-success, #7be0a2) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 0.4rem color-mix(in srgb, var(--ws-success, #7be0a2) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-live-pill-dot {
+    animation: none;
+  }
+}
+
 .mt-live-dot {
   width: 0.45rem;
   height: 0.45rem;
@@ -486,6 +534,21 @@
 @media (min-width: 640px) {
   .mt-composer-host {
     padding: 1rem;
+  }
+}
+
+/* Mobile (<= 767px): go edge-to-edge so the engine composer's own
+   edge-to-edge rule in @henryco/chat-composer isn't undone by host
+   wrapper padding. The bottom safe-area inset is owned by the engine
+   composer shell (its mobile rule ships padding-bottom:
+   env(safe-area-inset-bottom)); we drop our wrapper's horizontal
+   padding entirely and trim the top border so we don't double up
+   against the engine's new hairline. */
+@media (max-width: 767px) {
+  .mt-composer-host {
+    padding: 0;
+    border-top: 0;
+    background: transparent;
   }
 }
 
@@ -947,3 +1010,47 @@
   color: var(--ws-ink-soft, rgba(245, 244, 238, 0.65));
   padding: 0 0.2rem;
 }
+
+/* V3-03 — "New" divider rendered above the first unread inbound
+   message. Host can re-skin via the same --mt-* tokens used by the
+   thread package. */
+.mt-unread-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem 0 0.6rem;
+  padding: 0 0.4rem;
+}
+
+.mt-unread-divider::before,
+.mt-unread-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--mt-link, #2563eb);
+  opacity: 0.55;
+}
+
+.mt-unread-divider > span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mt-link, #2563eb);
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mt-link, #2563eb) 12%, transparent);
+}
+
+/* V3-03 — Delivery pip visual rhythm. The pip swaps in for the
+   text status label; we tighten the row's status slot so the pip
+   doesn't visually crowd the timestamp. */
+.mt-bubble-status [data-delivery-state] {
+  margin-left: 0.05rem;
+}
+.mt-bubble-status [data-delivery-state="seen"] {
+  /* Slight emphasis when the message lands as "read" so the user
+     notices the state change without animation. */
+  filter: saturate(1.1);
+}
+

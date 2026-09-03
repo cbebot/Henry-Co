@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Svg, Path, G, Text, Rect } from "@react-pdf/renderer";
+import { COMPANY } from "@henryco/config";
 import { palette } from "../tokens";
 
 type WordmarkProps = {
@@ -9,39 +10,28 @@ type WordmarkProps = {
   fontFamily?: string;
 };
 
+/**
+ * The engineered Henry Onyx wordmark for branded documents. The brand text is
+ * sourced from `COMPANY.group.name` (never hardcoded, never the retired
+ * "Henry & Co." / "HenryCo" shorthand) — this masthead appears on every receipt,
+ * invoice, and statement, so a stale literal here brands the legal artifact wrong.
+ */
 export function BrandedWordmark({
   variant = "full",
   height = 22,
   color = palette.ink,
   fontFamily = "HenryCoSerif",
 }: WordmarkProps) {
-  const viewWidth = variant === "full" ? 320 : 200;
+  const viewWidth = variant === "full" ? 360 : 280;
   const viewHeight = 64;
   const width = (viewWidth / viewHeight) * height;
-
-  if (variant === "full") {
-    return (
-      <Svg viewBox={`0 0 ${viewWidth} ${viewHeight}`} width={width} height={height}>
-        <G>
-          <Text x={0} y={46} style={{ fontFamily, fontWeight: 500, fontSize: 48, fill: color, letterSpacing: -1.4 }}>
-            Henry
-          </Text>
-          <Text x={148} y={42} style={{ fontFamily, fontStyle: "italic", fontWeight: 400, fontSize: 36, fill: color, opacity: 0.92 }}>
-            &amp;
-          </Text>
-          <Text x={186} y={46} style={{ fontFamily, fontWeight: 500, fontSize: 48, fill: color, letterSpacing: -1.4 }}>
-            Co.
-          </Text>
-        </G>
-      </Svg>
-    );
-  }
+  const fontSize = variant === "full" ? 44 : 40;
 
   return (
     <Svg viewBox={`0 0 ${viewWidth} ${viewHeight}`} width={width} height={height}>
       <G>
-        <Text x={0} y={46} style={{ fontFamily, fontWeight: 600, fontSize: 48, fill: color, letterSpacing: -1.9 }}>
-          HenryCo
+        <Text x={0} y={46} style={{ fontFamily, fontWeight: 600, fontSize, fill: color, letterSpacing: -1.2 }}>
+          {COMPANY.group.name}
         </Text>
       </G>
     </Svg>

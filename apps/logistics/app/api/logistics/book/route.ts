@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createLogisticsRequest } from "@/lib/logistics/write";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import type { LogisticsServiceType, LogisticsUrgency } from "@/lib/logistics/types";
 
 /**
@@ -59,6 +60,7 @@ type QuoteRow = {
 };
 
 export async function POST(request: NextRequest) {
+  const locale = await getLogisticsPublicLocale();
   let body: BookFromQuotePayload;
   try {
     body = (await request.json()) as BookFromQuotePayload;
@@ -148,6 +150,7 @@ export async function POST(request: NextRequest) {
     dropLandmark: body.dropLandmark ?? null,
     dropInstructions: body.dropInstructions ?? null,
     customerUserId: viewerUserId,
+    locale,
   });
 
   if (!result.ok) {

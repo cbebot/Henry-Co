@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Receipt } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { formatSurfaceTemplate, translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getInvoiceById } from "@/lib/account-data";
 import { getInvoiceWorkspaceHref } from "@/lib/account-links";
 import { divisionLabel, formatDate, formatDateTime, formatNaira } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
 import { DownloadDocumentButton } from "@/components/branded-documents/DownloadDocumentButton";
 
 export const dynamic = "force-dynamic";
@@ -48,33 +48,33 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="space-y-6 acct-fade-in">
       <Link href="/invoices" className="acct-button-ghost w-fit rounded-xl"><ArrowLeft size={16} /> {t("Back to invoices")}</Link>
-      <PageHeader
-        title={String(invoice.description || invoice.invoice_no || t("Invoice"))}
-        description={t("Shared invoice record with status, payment references, and whatever structured receipt data is currently available.")}
-        icon={Receipt}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <DownloadDocumentButton
-              endpoint={`/api/documents/invoice/${invoiceId}`}
-              suggestedFilename={`HenryCo-Invoice-${String(invoice.invoice_no || invoiceId)}.pdf`}
-              shareTitle={`HenryCo Invoice ${String(invoice.invoice_no || invoiceId)}`}
-              label={t("Download invoice")}
-            />
-            <DownloadDocumentButton
-              endpoint={`/api/documents/receipt/${invoiceId}`}
-              suggestedFilename={`HenryCo-Receipt-${String(invoice.invoice_no || invoiceId)}.pdf`}
-              shareTitle={`HenryCo Receipt ${String(invoice.invoice_no || invoiceId)}`}
-              variant="secondary"
-              label={t("Download receipt")}
-            />
-            {workspaceHref ? (
-              <a href={workspaceHref} target="_blank" rel="noopener noreferrer" className="acct-button-ghost rounded-xl">
-                {t("Open division workspace")} <ExternalLink size={14} />
-              </a>
-            ) : null}
-          </div>
-        }
+      <HeroCard
+        variant="compact"
+        tone={String(invoice.status || "") === "overdue" ? "attention" : String(invoice.status || "") === "paid" ? "calm" : "active"}
+        eyebrow={`${t("Invoices")} · ${divisionLabel(String(invoice.division || "service"))}`}
+        headline={String(invoice.description || invoice.invoice_no || t("Invoice"))}
+        blurb={t("Your invoice — status, payment details, and any itemized breakdown we have on file.")}
       />
+      <div className="flex flex-wrap items-center gap-2">
+        <DownloadDocumentButton
+          endpoint={`/api/documents/invoice/${invoiceId}`}
+          suggestedFilename={`Henry Onyx-Invoice-${String(invoice.invoice_no || invoiceId)}.pdf`}
+          shareTitle={`Henry Onyx Invoice ${String(invoice.invoice_no || invoiceId)}`}
+          label={t("Download invoice")}
+        />
+        <DownloadDocumentButton
+          endpoint={`/api/documents/receipt/${invoiceId}`}
+          suggestedFilename={`Henry Onyx-Receipt-${String(invoice.invoice_no || invoiceId)}.pdf`}
+          shareTitle={`Henry Onyx Receipt ${String(invoice.invoice_no || invoiceId)}`}
+          variant="secondary"
+          label={t("Download receipt")}
+        />
+        {workspaceHref ? (
+          <a href={workspaceHref} target="_blank" rel="noopener noreferrer" className="acct-button-ghost rounded-xl">
+            {t("Open division workspace")} <ExternalLink size={14} />
+          </a>
+        ) : null}
+      </div>
       <div className="acct-card p-6">
         <div className="flex flex-wrap items-center gap-3"><span className={`acct-chip ${statusChip[String(invoice.status || "")] || "acct-chip-gold"}`}>{String(invoice.status || "Unknown")}</span><span className="text-sm text-[var(--acct-muted)]">{divisionLabel(String(invoice.division || "service"))}</span><span className="text-sm text-[var(--acct-muted)]">{String(invoice.invoice_no || "No invoice number")}</span></div>
         <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -85,13 +85,13 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="acct-card p-5"><p className="acct-kicker">{t("Payment truth")}</p><div className="mt-4 space-y-3 text-sm text-[var(--acct-ink)]"><div><span className="font-semibold">{t("Created")}:</span> {invoice.created_at ? formatDateTime(String(invoice.created_at)) : "—"}</div><div><span className="font-semibold">{t("Paid at")}:</span> {invoice.paid_at ? formatDateTime(String(invoice.paid_at)) : "—"}</div><div><span className="font-semibold">{t("Payment method")}:</span> {String(invoice.payment_method || "—")}</div><div><span className="font-semibold">{t("Payment reference")}:</span> {String(invoice.payment_reference || "—")}</div></div></div>
-        <div className="acct-card p-5"><p className="acct-kicker">{t("Reference linkage")}</p><div className="mt-4 space-y-3 text-sm text-[var(--acct-ink)]"><div><span className="font-semibold">{t("Reference type")}:</span> {String(invoice.reference_type || "—")}</div><div><span className="font-semibold">{t("Reference ID")}:</span> {String(invoice.reference_id || "—")}</div><p className="pt-2 text-sm leading-7 text-[var(--acct-muted)]">{t("Downloadable receipt files are not attached in the shared ledger yet unless a division publishes them explicitly. When none is attached here, the remaining work is division-side receipt publishing rather than account rendering.")}</p></div></div>
+        <div className="acct-card p-5"><p className="acct-kicker">{t("Payment details")}</p><div className="mt-4 space-y-3 text-sm text-[var(--acct-ink)]"><div><span className="font-semibold">{t("Created")}:</span> {invoice.created_at ? formatDateTime(String(invoice.created_at)) : "—"}</div><div><span className="font-semibold">{t("Paid at")}:</span> {invoice.paid_at ? formatDateTime(String(invoice.paid_at)) : "—"}</div><div><span className="font-semibold">{t("Payment method")}:</span> {String(invoice.payment_method || "—")}</div><div><span className="font-semibold">{t("Payment reference")}:</span> {String(invoice.payment_reference || "—")}</div></div></div>
+        <div className="acct-card p-5"><p className="acct-kicker">{t("Receipt")}</p><div className="mt-4 space-y-3 text-sm text-[var(--acct-ink)]"><p className="text-sm leading-7 text-[var(--acct-muted)]">{t("No downloadable receipt is available for this invoice yet. If you need one, contact support and we'll help.")}</p></div></div>
       </div>
       <div className="acct-card p-5">
         <p className="acct-kicker">{t("Line items")}</p>
         {lineItems.length === 0 ? (
-          <p className="mt-4 text-sm text-[var(--acct-muted)]">{t("No structured line items were published into the shared ledger for this invoice.")}</p>
+          <p className="mt-4 text-sm text-[var(--acct-muted)]">{t("This invoice doesn't have an itemized breakdown.")}</p>
         ) : (
           <div className="mt-4 space-y-3">
             {lineItems.map((item) => (

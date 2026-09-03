@@ -44,6 +44,11 @@ export default async function PricingPage() {
           <p className="studio-kicker">Packages</p>
           <span className="h-px flex-1 bg-[var(--studio-line)]" />
         </div>
+        {/* TODO(wave1): multi-row packages list. pkg.name / pkg.summary /
+            pkg.bestFor are Supabase-row text fields — translate each via
+            Promise.all + resolveLocalizedDynamicField in a follow-up wave.
+            Per-package detail surfaces under /services/[slug] resolve the
+            package summary via the cached DeepL pipeline. */}
         <ol className="mt-6 grid gap-5 xl:grid-cols-3">
           {catalog.packages.map((pkg) => {
             const service = catalog.services.find((item) => item.id === pkg.serviceId);
@@ -101,7 +106,7 @@ export default async function PricingPage() {
                 </ul>
                 <Link
                   href={`/request?package=${pkg.id}`}
-                  className="studio-button-primary group mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#041117] active:translate-y-[0.5px]"
+                  className="studio-button-primary group mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--studio-signal)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px]"
                 >
                   Start with this package
                   <ArrowRight className="h-3.5 w-3.5 transition motion-safe:group-hover:translate-x-0.5" aria-hidden />
@@ -124,7 +129,7 @@ export default async function PricingPage() {
               "You need a multi-role portal, client workspace, dashboard, or workflow-specific software system.",
               "The project combines web, admin, payments, operations, and automation into one platform.",
               "The product needs mobile, integrations, or a more deliberate architecture path than a package allows.",
-              "You want HenryCo to scope the exact experience rather than retrofit your needs into a predefined template.",
+              "You want Henry Onyx to scope the exact experience rather than retrofit your needs into a predefined template.",
             ].map((item) => (
               <li
                 key={item}

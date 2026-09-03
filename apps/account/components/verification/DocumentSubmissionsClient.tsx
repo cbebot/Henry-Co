@@ -37,11 +37,11 @@ const DOC_DESC: Record<string, string> = {
   government_id:
     "National ID, passport, or driver's licence — the page with your full name + photo + document number visible.",
   selfie:
-    "A selfie holding the same ID. Lets reviewers confirm liveness and document ownership in one shot.",
+    "A photo of yourself holding the same ID, with your face and the ID both clearly visible.",
   address_proof:
     "Utility bill, bank statement, or official letter from the last three months that matches your saved address.",
   business_cert:
-    "CAC certificate, business registration, or equivalent operating proof — used for seller and employer review lanes.",
+    "CAC certificate, business registration, or equivalent operating proof — add this if you sell or hire on Henry Onyx.",
 };
 
 const DOC_ICON: Record<string, LucideIcon> = {

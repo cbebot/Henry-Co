@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Filter, FilterX } from "lucide-react";
+import type { AccountCopy } from "@henryco/i18n/server";
 import { DownloadDocumentButton } from "./DownloadDocumentButton";
 
 /**
@@ -14,14 +15,31 @@ import { DownloadDocumentButton } from "./DownloadDocumentButton";
  * filter spec re-runs server-side in /api/documents/transaction-history.
  */
 
-const TYPES = ["payment", "wallet_credit", "wallet_debit", "refund", "withdrawal", "fee"];
-const STATUSES = ["completed", "pending", "failed", "refunded"];
+const TYPES: ReadonlyArray<keyof AccountCopy["activity"]["filters"]["typeLabels"]> = [
+  "payment",
+  "wallet_credit",
+  "wallet_debit",
+  "refund",
+  "withdrawal",
+  "fee",
+];
+const STATUSES: ReadonlyArray<"completed" | "pending" | "failed" | "refunded"> = [
+  "completed",
+  "pending",
+  "failed",
+  "refunded",
+];
+
+type FiltersCopy = AccountCopy["activity"]["filters"];
+type StatusLabels = AccountCopy["activity"]["statusLabels"];
 
 type Props = {
   availableDivisions: string[];
+  copy: FiltersCopy;
+  statusLabels: StatusLabels;
 };
 
-export function ActivityFiltersClient({ availableDivisions }: Props) {
+export function ActivityFiltersClient({ availableDivisions, copy, statusLabels }: Props) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [divisions, setDivisions] = useState<Set<string>>(new Set());
@@ -65,16 +83,16 @@ export function ActivityFiltersClient({ availableDivisions }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-[var(--acct-ink)]">
           <Filter size={16} />
-          <h2 className="text-sm font-semibold">Filter & download</h2>
+          <h2 className="text-sm font-semibold">{copy.heading}</h2>
         </div>
         <button onClick={reset} className="acct-button-ghost rounded-xl text-xs">
-          <FilterX size={14} /> Reset
+          <FilterX size={14} /> {copy.reset}
         </button>
       </div>
 
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <label className="text-xs font-medium text-[var(--acct-muted)]">
-          <span className="block uppercase tracking-[0.16em]">From</span>
+          <span className="block uppercase tracking-[0.16em]">{copy.fromLabel}</span>
           <input
             type="date"
             value={from}
@@ -83,7 +101,7 @@ export function ActivityFiltersClient({ availableDivisions }: Props) {
           />
         </label>
         <label className="text-xs font-medium text-[var(--acct-muted)]">
-          <span className="block uppercase tracking-[0.16em]">To</span>
+          <span className="block uppercase tracking-[0.16em]">{copy.toLabel}</span>
           <input
             type="date"
             value={to}
@@ -92,7 +110,7 @@ export function ActivityFiltersClient({ availableDivisions }: Props) {
           />
         </label>
         <label className="text-xs font-medium text-[var(--acct-muted)]">
-          <span className="block uppercase tracking-[0.16em]">Amount from (₦)</span>
+          <span className="block uppercase tracking-[0.16em]">{copy.amountFromLabel}</span>
           <input
             type="number"
             inputMode="decimal"
@@ -103,7 +121,7 @@ export function ActivityFiltersClient({ availableDivisions }: Props) {
           />
         </label>
         <label className="text-xs font-medium text-[var(--acct-muted)]">
-          <span className="block uppercase tracking-[0.16em]">Amount to (₦)</span>
+          <span className="block uppercase tracking-[0.16em]">{copy.amountToLabel}</span>
           <input
             type="number"
             inputMode="decimal"
@@ -117,7 +135,9 @@ export function ActivityFiltersClient({ availableDivisions }: Props) {
 
       {availableDivisions.length > 0 ? (
         <div>
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Division</p>
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">
+            {copy.divisionEyebrow}
+          </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {availableDivisions.map((d) => (
               <button
@@ -136,7 +156,9 @@ export function ActivityFiltersClient({ availableDivisions }: Props) {
       ) : null}
 
       <div>
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Type</p>
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">
+          {copy.typeEyebrow}
+        </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {TYPES.map((t) => (
             <button
@@ -147,14 +169,16 @@ export function ActivityFiltersClient({ availableDivisions }: Props) {
                 types.has(t) ? "acct-chip-blue" : "acct-chip-ghost"
               }`}
             >
-              {t.replace(/_/g, " ")}
+              {copy.typeLabels[t]}
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">Status</p>
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[var(--acct-muted)]">
+          {copy.statusEyebrow}
+        </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {STATUSES.map((s) => (
             <button
@@ -165,21 +189,19 @@ export function ActivityFiltersClient({ availableDivisions }: Props) {
                 statuses.has(s) ? "acct-chip-green" : "acct-chip-ghost"
               }`}
             >
-              {s}
+              {statusLabels[s]}
             </button>
           ))}
         </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--acct-line)] pt-4">
-        <p className="text-xs text-[var(--acct-muted)]">
-          The PDF carries every filter you set above as part of the document header — what you see is what you download.
-        </p>
+        <p className="text-xs text-[var(--acct-muted)]">{copy.pdfNote}</p>
         <DownloadDocumentButton
           endpoint={endpoint}
-          suggestedFilename="HenryCo-Transaction-History.pdf"
-          shareTitle="HenryCo Transaction History"
-          label="Download statement"
+          suggestedFilename={copy.downloadFilename}
+          shareTitle={copy.shareTitle}
+          label={copy.downloadLabel}
         />
       </div>
     </section>

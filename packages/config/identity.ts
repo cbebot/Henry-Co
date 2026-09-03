@@ -119,6 +119,7 @@ export function isRecoverableSupabaseAuthError(error: unknown) {
     message.includes("auth session missing") ||
     message.includes("refresh token not found") ||
     message.includes("refresh token already used") ||
+    message.includes("refresh token is not valid") ||
     message.includes("invalid refresh token") ||
     message.includes("cannot create property 'user' on string") ||
     message.includes("jwt expired") ||

@@ -1,6 +1,8 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { getLogisticsViewer } from "@/lib/logistics/auth";
 import { getRiderDashboardData } from "@/lib/logistics/data";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 
 /**
  * V3 PASS 21 — Rider workspace: fuel + maintenance expense log.
@@ -8,6 +10,8 @@ import { getRiderDashboardData } from "@/lib/logistics/data";
 export const dynamic = "force-dynamic";
 
 export default async function RiderExpensesPage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const viewer = await getLogisticsViewer();
   const data = await getRiderDashboardData(viewer);
   const expenses = data.expenses.filter(
@@ -18,23 +22,22 @@ export default async function RiderExpensesPage() {
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          Expenses
+          {t("Expenses")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Fuel + maintenance
+          {t("Fuel + maintenance")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          Log work-related spend so finance can reimburse on the next payout
-          cycle.
+          {t("Log work-related spend so finance can reimburse on the next payout cycle.")}
         </p>
       </header>
 
       <Panel tone="flat">
         {expenses.length === 0 ? (
           <EmptyState
-            kicker="No entries"
-            headline="Nothing logged yet this period"
-            body="Add fuel and maintenance entries as you incur them; finance settles weekly."
+            kicker={t("No entries")}
+            headline={t("Nothing logged yet this period")}
+            body={t("Add fuel and maintenance entries as you incur them; finance settles weekly.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -45,11 +48,11 @@ export default async function RiderExpensesPage() {
               >
                 <div>
                   <p className="font-semibold tracking-tight text-white">
-                    {expense.category}
+                    {t(expense.category)}
                   </p>
                   <p className="text-xs text-[var(--logistics-muted)]">
-                    {new Date(expense.createdAt).toLocaleDateString()} · status{" "}
-                    {expense.status}
+                    {new Date(expense.createdAt).toLocaleDateString(locale)} · {t("status")}{" "}
+                    {t(expense.status)}
                   </p>
                 </div>
                 <p className="font-semibold tracking-tight text-white">

@@ -18,6 +18,7 @@ import {
   formatDate,
   timeAgoLocalized,
 } from "@/lib/format";
+import { formatAccountTemplate } from "@henryco/i18n";
 
 function toneChipClasses(tone: LinkedCareBooking["nextAction"]["tone"]) {
   if (tone === "success") {
@@ -91,42 +92,97 @@ function matchesCareFilter(booking: LinkedCareBooking, filter: CareBookingFilter
 
 export { matchesCareFilter, FILTER_OPTIONS as CARE_BOOKING_FILTER_OPTIONS };
 
-function getStatusLabel(locale: string, value?: string | null, fallback = "Booked") {
+type StatusValueLabels = {
+  booked: string;
+  awaiting_payment: string;
+  receipt_submitted: string;
+  under_review: string;
+  delivered: string;
+  customer_confirmed: string;
+  inspection_completed: string;
+  service_completed: string;
+  cancelled: string;
+  issue: string;
+  exception: string;
+  rejected: string;
+};
+
+function getStatusLabel(
+  statusValueLabels: StatusValueLabels,
+  value?: string | null,
+  fallback?: string,
+) {
   const normalized = String(value || "").trim().toLowerCase();
-  if (!normalized) return fallback;
-
-  const english: Record<string, string> = {
-    booked: "Booked",
-    awaiting_payment: "Awaiting payment",
-    receipt_submitted: "Receipt submitted",
-    under_review: "Under review",
-    delivered: "Delivered",
-    customer_confirmed: "Customer confirmed",
-    inspection_completed: "Inspection completed",
-    service_completed: "Service completed",
-    cancelled: "Cancelled",
-    issue: "Issue",
-    exception: "Exception",
-    rejected: "Rejected",
-  };
-
-  const french: Record<string, string> = {
-    booked: "Réservé",
-    awaiting_payment: "Paiement attendu",
-    receipt_submitted: "Reçu envoyé",
-    under_review: "En revue",
-    delivered: "Livré",
-    customer_confirmed: "Confirmé par le client",
-    inspection_completed: "Inspection terminée",
-    service_completed: "Service terminé",
-    cancelled: "Annulé",
-    issue: "Incident",
-    exception: "Exception",
-    rejected: "Rejeté",
-  };
-
-  return (locale === "fr" ? french : english)[normalized] || normalized.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  if (!normalized) return fallback ?? statusValueLabels.booked;
+  const map = statusValueLabels as unknown as Record<string, string | undefined>;
+  return (
+    map[normalized] ||
+    normalized.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())
+  );
 }
+
+export type CareDashboardCopy = {
+  filters: {
+    all: string;
+    unpaid: string;
+    receipt: string;
+    active: string;
+    completed: string;
+    issue: string;
+  };
+  filtered: string;
+  bookingSingular: string;
+  bookingPlural: string;
+  metrics: {
+    visible: string;
+    visibleHint: string;
+    balance: string;
+    balanceHintSomeTemplate: string;
+    balanceHintNone: string;
+    receiptQueue: string;
+    receiptQueueHintSome: string;
+    receiptQueueHintNone: string;
+    completed: string;
+    completedHintSome: string;
+    completedHintNone: string;
+  };
+  linkedBookings: string;
+  linkedBookingsDescription: string;
+  onThisPage: string;
+  selectedBooking: string;
+  paymentSnapshot: string;
+  receiptVisibility: string;
+  nextBestAction: string;
+  serviceSummary: string;
+  serviceFallback: string;
+  addressPending: string;
+  updated: string;
+  balanceDue: string;
+  nextMove: string;
+  paginationLabel: string;
+  pageLabel: string;
+  of: string;
+  perPage: string;
+  previous: string;
+  next: string;
+  customerFallback: string;
+  scheduledDate: string;
+  notScheduled: string;
+  timeWindow: string;
+  windowPending: string;
+  pickupAddress: string;
+  returnAddress: string;
+  returnAddressFallback: string;
+  trackingCode: string;
+  quotedTotal: string;
+  amountRecorded: string;
+  receiptState: string;
+  receiptsSubmitted: string;
+  lastSubmission: string;
+  noReceiptYet: string;
+  openLiveBooking: string;
+  leaveReview: string;
+};
 
 export default function CareBookingsDashboard({
   locale,
@@ -138,6 +194,8 @@ export default function CareBookingsDashboard({
   totalPages,
   pageSize,
   totalFiltered,
+  copy,
+  statusValueLabels,
 }: {
   locale: string;
   bookings: LinkedCareBooking[];
@@ -148,134 +206,9 @@ export default function CareBookingsDashboard({
   totalPages: number;
   pageSize: number;
   totalFiltered: number;
+  copy: CareDashboardCopy;
+  statusValueLabels: StatusValueLabels;
 }) {
-  const copy =
-    locale === "fr"
-      ? {
-          filters: {
-            all: "Tout",
-            unpaid: "Solde dû",
-            receipt: "Reçu / revue",
-            active: "En cours",
-            completed: "Terminées",
-            issue: "Incidents",
-          },
-          filtered: "filtré",
-          bookingSingular: "réservation",
-          bookingPlural: "réservations",
-          metrics: {
-            visible: "Réservations visibles",
-            visibleHint: "Vraies réservations Care liées à ce compte.",
-            balance: "Solde restant",
-            balanceHintSome: "{count} réservation(s) demandent encore un suivi de paiement.",
-            balanceHintNone: "Aucun solde Care impayé n’est ouvert pour le moment.",
-            receiptQueue: "File des reçus",
-            receiptQueueHintSome: "Des réservations avec reçu envoyé attendent encore une vérification.",
-            receiptQueueHintNone: "Aucun retard de vérification de reçu n’est lié à ce compte.",
-            completed: "Terminées",
-            completedHintSome: "Des réservations terminées peuvent maintenant passer au suivi d’avis.",
-            completedHintNone: "Les réservations Care terminées apparaîtront ici à la fin du service.",
-          },
-          linkedBookings: "Réservations Care liées",
-          linkedBookingsDescription: "Vos réservations Care, leur statut de paiement et les prochaines actions.",
-          onThisPage: "sur cette page",
-          selectedBooking: "Réservation sélectionnée",
-          paymentSnapshot: "Aperçu du paiement",
-          receiptVisibility: "Visibilité du reçu",
-          nextBestAction: "Meilleure action suivante",
-          serviceSummary: "Résumé du service",
-          serviceFallback: "Service Care",
-          addressPending: "Adresse en attente",
-          updated: "Mis à jour",
-          balanceDue: "Solde dû",
-          nextMove: "Prochaine action",
-          paginationLabel: "Pagination des réservations Care",
-          pageLabel: "Page",
-          of: "sur",
-          perPage: "par page",
-          previous: "Précédent",
-          next: "Suivant",
-          customerFallback: "Client",
-          scheduledDate: "Date prévue",
-          notScheduled: "Pas encore planifié",
-          timeWindow: "Créneau horaire",
-          windowPending: "Créneau en attente",
-          pickupAddress: "Adresse de collecte",
-          returnAddress: "Adresse de retour / livraison",
-          returnAddressFallback: "Utilise l’adresse de collecte sauf modification pendant la réservation",
-          trackingCode: "Code de suivi",
-          quotedTotal: "Total estimé",
-          amountRecorded: "Montant enregistré",
-          receiptState: "État du reçu",
-          receiptsSubmitted: "Reçus envoyés",
-          lastSubmission: "Dernier envoi",
-          noReceiptYet: "Aucun reçu pour le moment",
-          openLiveBooking: "Ouvrir la réservation en direct",
-          leaveReview: "Laisser un avis",
-        }
-      : {
-          filters: {
-            all: "All",
-            unpaid: "Balance due",
-            receipt: "Receipt / review",
-            active: "In progress",
-            completed: "Completed",
-            issue: "Issues",
-          },
-          filtered: "filtered",
-          bookingSingular: "booking",
-          bookingPlural: "bookings",
-          metrics: {
-            visible: "Visible bookings",
-            visibleHint: "Real Care bookings linked to this account.",
-            balance: "Outstanding balance",
-            balanceHintSome: "{count} booking(s) still need payment follow-up.",
-            balanceHintNone: "No unpaid Care balance is currently open.",
-            receiptQueue: "Receipt queue",
-            receiptQueueHintSome: "Bookings with submitted receipts still waiting for verification.",
-            receiptQueueHintNone: "No receipt-verification backlog is linked to this account.",
-            completed: "Completed",
-            completedHintSome: "Completed bookings that can move into review follow-up.",
-            completedHintNone: "Completed Care bookings will appear here once service closes.",
-          },
-          linkedBookings: "Linked Care bookings",
-          linkedBookingsDescription: "Your Care bookings, payment status, and upcoming actions.",
-          onThisPage: "on this page",
-          selectedBooking: "Selected booking",
-          paymentSnapshot: "Payment snapshot",
-          receiptVisibility: "Receipt visibility",
-          nextBestAction: "Next best action",
-          serviceSummary: "Service summary",
-          serviceFallback: "Care service",
-          addressPending: "Address pending",
-          updated: "Updated",
-          balanceDue: "Balance due",
-          nextMove: "Next move",
-          paginationLabel: "Care bookings pagination",
-          pageLabel: "Page",
-          of: "of",
-          perPage: "per page",
-          previous: "Previous",
-          next: "Next",
-          customerFallback: "Customer",
-          scheduledDate: "Scheduled date",
-          notScheduled: "Not scheduled yet",
-          timeWindow: "Time window",
-          windowPending: "Window pending",
-          pickupAddress: "Pickup address",
-          returnAddress: "Return / delivery address",
-          returnAddressFallback: "Uses pickup address unless changed during booking",
-          trackingCode: "Tracking code",
-          quotedTotal: "Quoted total",
-          amountRecorded: "Amount recorded",
-          receiptState: "Receipt state",
-          receiptsSubmitted: "Receipts submitted",
-          lastSubmission: "Last submission",
-          noReceiptYet: "No receipt yet",
-          openLiveBooking: "Open live booking",
-          leaveReview: "Leave review",
-        };
-
   const accent = divisionColor("care");
   const moneyLocale = locale === "fr" ? "fr-FR" : "en-NG";
   const filterOptions = FILTER_OPTIONS.map((option) => ({
@@ -305,7 +238,7 @@ export default function CareBookingsDashboard({
       copy.metrics.balance,
       formatCurrencyAmount(outstandingBalance, "NGN", { unit: "naira", locale: moneyLocale }),
       unpaidBookings.length > 0
-        ? copy.metrics.balanceHintSome.replace("{count}", String(unpaidBookings.length))
+        ? formatAccountTemplate(copy.metrics.balanceHintSomeTemplate, { count: unpaidBookings.length })
         : copy.metrics.balanceHintNone,
       unpaidBookings.length > 0 ? "warning" : "success"
     ),
@@ -414,7 +347,7 @@ export default function CareBookingsDashboard({
                       {booking.tracking_code}
                     </span>
                     <span className={`rounded-full border px-2.5 py-1 text-[0.65rem] font-semibold ${statusChipClasses(booking.status)}`}>
-                      {getStatusLabel(locale, booking.status)}
+                      {getStatusLabel(statusValueLabels, booking.status)}
                     </span>
                     <span className={`rounded-full border px-2.5 py-1 text-[0.65rem] font-semibold ${toneChipClasses(booking.nextAction.tone)}`}>
                       {booking.payment.verificationLabel}
@@ -486,7 +419,7 @@ export default function CareBookingsDashboard({
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${statusChipClasses(selectedBooking.status)}`}>
-                  {getStatusLabel(locale, selectedBooking.status)}
+                  {getStatusLabel(statusValueLabels, selectedBooking.status)}
                 </span>
                 <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${toneChipClasses(selectedBooking.nextAction.tone)}`}>
                   {selectedBooking.payment.verificationLabel}

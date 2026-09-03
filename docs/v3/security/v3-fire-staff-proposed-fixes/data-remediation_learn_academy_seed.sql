@@ -1,0 +1,37 @@
+-- V3-FIRE-STAFF · HELD DATA REMEDIATION (STAFF-5)
+-- The email-OR membership reader (`.or(user_id.eq.X, normalized_email.eq.Y)`) grants a
+-- staff role when EITHER user_id OR normalized_email matches. Live census shows exactly
+-- ONE active user_id-null, email-claimable seed remaining across all 5 role-membership
+-- tables: learn.academy_owner bound to academy@henryonyx.com. (Every marketplace
+-- user_id-null seed is already is_active = 0 — the henrycogroup neutralization.)
+--
+-- henryonyx.com is company-controlled, so risk is lower than a public domain, but this is
+-- still a claimable active staff seed: whoever provisions/controls that mailbox and
+-- registers would inherit learn academy_owner via the email-OR path.
+--
+-- This is a DATA fix (owner-gated), NOT a schema migration. Pair it with the code fix
+-- in README.md (STAFF-5: match user_id only). Apply EXACTLY ONE of the options below
+-- after architect + owner review.
+--
+-- POSTURE: READ-ONLY audit deliverable. DO NOT APPLY until architect re-verification.
+
+-- First, inspect the seed (read-only):
+--   select id, role, user_id, normalized_email, is_active
+--   from public.learn_role_memberships
+--   where user_id is null and normalized_email is not null;
+
+-- OPTION A (preferred) — bind the seed to the real owning user_id, then it no longer
+-- depends on the email-OR path:
+--   update public.learn_role_memberships
+--     set user_id = '<REAL_AUTH_USER_UUID_FOR_academy@henryonyx.com>'
+--   where user_id is null
+--     and lower(normalized_email) = 'academy@henryonyx.com'
+--     and is_active = true;
+
+-- OPTION B — if no real user should hold it yet, deactivate it (mirrors the
+-- henrycogroup neutralization; the readers filter is_active = true):
+--   update public.learn_role_memberships
+--     set is_active = false
+--   where user_id is null
+--     and lower(normalized_email) = 'academy@henryonyx.com'
+--     and is_active = true;

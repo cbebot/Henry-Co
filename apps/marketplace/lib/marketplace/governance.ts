@@ -140,7 +140,7 @@ export const sellerPlans: SellerPlanDefinition[] = [
     commissionRate: 0,
     payoutFeeRate: 0,
     payoutFeeFlat: 0,
-    summary: "HenryCo-managed or strategic partner inventory.",
+    summary: "Henry Onyx-managed or strategic partner inventory.",
     benefits: ["Custom terms", "Direct placement control", "Lowest reserve pressure"],
   },
 ];
@@ -207,7 +207,7 @@ export function deriveSellerTrustProfile(input: {
   const planId: SellerPlanId =
     tier === "henryco_verified_partner" ? "partner" : tier === "trusted_seller" || tier === "premium_verified_business" ? "scale" : tier === "basic_verified" ? "growth" : "launch";
   const badge =
-    tier === "henryco_verified_partner" ? "HenryCo verified partner" : tier === "premium_verified_business" ? "Premium verified business" : tier === "trusted_seller" ? "Trusted seller" : tier === "basic_verified" ? "Basic verified" : "Verification pending";
+    tier === "henryco_verified_partner" ? "Henry Onyx verified partner" : tier === "premium_verified_business" ? "Premium verified business" : tier === "trusted_seller" ? "Trusted seller" : tier === "basic_verified" ? "Basic verified" : "Verification pending";
 
   return {
     tier,
@@ -312,7 +312,7 @@ export function evaluateListingSubmission(input: {
   }
   if (Number(input.recentSubmissionCount || 0) > Math.max(3, Math.floor(trust.listingLimit / 10))) {
     riskScore += 18;
-    moderationReasons.push("Listing velocity is unusually high for this seller trust tier.");
+    moderationReasons.push("You're publishing new listings faster than your account currently allows. Please wait a bit before adding more, or contact support if you think this is a mistake.");
   }
   if (Number(input.currentProductCount || 0) >= trust.listingLimit) {
     riskScore += 40;
@@ -336,6 +336,11 @@ export function evaluateListingSubmission(input: {
     filterData: {
       qualityScore,
       riskScore,
+      // Whether a primary image is actually present, so downstream guidance never tells a
+      // seller to "add a photo" when they already have one (it was previously inferred from
+      // the score alone, which is wrong whenever a listing has a photo but scores low for
+      // other reasons — a thin title, short description, missing SKU).
+      hasPrimaryImage: cleanText(input.imageUrl).length > 12,
       externalPaymentRisk: riskScore >= 60,
       duplicateImageRisk: Boolean(input.duplicateImageDetected),
       featuredPlacementRequested: Boolean(input.requestFeaturedPlacement),

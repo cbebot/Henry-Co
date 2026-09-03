@@ -1,6 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import { ErrorBoundary, LoadingSkeleton, Section } from "@henryco/dashboard-shell";
 import { type AnnotatedHomeWidget } from "@/lib/smart-home/widgets";
+import { WidgetOpenOverlay } from "./WidgetOpenOverlay";
 
 /**
  * ModuleWidgetGrid — composes the remaining home widgets (those not
@@ -51,7 +52,11 @@ export function ModuleWidgetGrid({ widgets }: ModuleWidgetGridProps) {
               label={widget.title}
               fallback={renderWidgetError(widget.error)}
             >
-              <div className={cellClass}>
+              {/* `hc-widget-linkable` + the stretched WidgetOpenOverlay make
+                  the whole card open `widget.href` (HomeWidget contract)
+                  without nesting the card's own ActionButtons inside a
+                  <Link>. */}
+              <div className={`${cellClass} hc-widget-linkable`}>
                 <Suspense
                   fallback={
                     widget.loading ?? (
@@ -61,6 +66,9 @@ export function ModuleWidgetGrid({ widgets }: ModuleWidgetGridProps) {
                 >
                   <RenderedWidget widget={widget} />
                 </Suspense>
+                {widget.href ? (
+                  <WidgetOpenOverlay href={widget.href} label={widget.title} />
+                ) : null}
               </div>
             </ErrorBoundary>
           );

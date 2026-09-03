@@ -1,11 +1,16 @@
 import "server-only";
 
 import { getDivisionUrl } from "@henryco/config";
-import { sendTransactionalEmail } from "@henryco/email";
+import {
+  renderHenryCoEmail,
+  sendTransactionalEmail,
+  type HenryCoEmailLayout,
+} from "@henryco/email";
 import { getOptionalEnv } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 import { sendLogisticsWhatsAppText } from "@/lib/logistics/whatsapp";
 import { appendCustomerNotification } from "@/lib/logistics/shared-account";
+import { autoTranslate } from "@/lib/i18n/auto-translate";
 
 function cleanText(value?: string | null) {
   return String(value || "").trim();
@@ -28,6 +33,8 @@ type NotifyRequestCreatedInput = {
   promiseWindowHours: [number, number];
   trackingUrl: string;
   customerUserId?: string | null;
+  /** Recipient locale — used for email/WhatsApp content + customer action label. */
+  locale?: string;
 };
 
 async function logNotificationRow(input: {
@@ -59,40 +66,96 @@ async function logNotificationRow(input: {
 }
 
 export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedInput) {
-  const subject =
+  const locale = input.locale || "en";
+  const tx = (text: string) => autoTranslate(text, locale);
+
+  const subjectBase =
     input.mode === "quote"
-      ? `HenryCo Logistics quote — ${input.trackingCode}`
-      : `HenryCo Logistics booking — ${input.trackingCode}`;
+      ? await tx("Henry Onyx Logistics quote")
+      : await tx("Henry Onyx Logistics booking");
+  const subject = `${subjectBase} — ${input.trackingCode}`;
+
+  const greeting = await tx("Hi");
+  const intro =
+    input.mode === "quote"
+      ? await tx("We received your logistics quote request.")
+      : await tx("We received your delivery booking.");
+  const trackingCodeLabel = await tx("Tracking code");
+  const laneLabel = await tx("Lane");
+  const indicativeTotalLabel = await tx("Indicative total");
+  // NO-PROOF (owner 2026-07-10): manual bank transfer is retired ecosystem-wide
+  // — payment rides the automated account rail, so the email no longer
+  // instructs a transfer reference.
+  const paymentReferenceLabel = null;
+  const invoiceNote = input.mode === "book"
+    ? await tx("An invoice for this booking has been opened in your Henry Onyx account — settle it there in one step.")
+    : null;
+  const typicalWindowPrefix = await tx("Typical window");
+  const hoursWord = await tx("hours (estimate, not a guarantee).");
+  const trackPrefix = await tx("Track your shipment");
+  const signature = await tx("— Henry Onyx Logistics");
+  const amountFormatted = new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 0,
+  }).format(input.amountQuoted);
 
   const bodyText = [
-    `Hi ${input.senderName},`,
+    `${greeting} ${input.senderName},`,
     "",
-    input.mode === "quote"
-      ? "We received your logistics quote request."
-      : "We received your delivery booking.",
+    intro,
     "",
-    `Tracking code: ${input.trackingCode}`,
-    `Lane: ${input.zoneLabel}`,
-    `Indicative total: ${input.currency} ${input.amountQuoted.toLocaleString("en-NG")}`,
-    input.mode === "book" ? `Payment reference: ${input.trackingCode}` : null,
-    input.mode === "book"
-      ? "A HenryCo account invoice has been opened for this booking; use the tracking code as the transfer reference if paying by bank transfer."
-      : null,
-    `Typical window: ${input.promiseWindowHours[0]}–${input.promiseWindowHours[1]} hours (estimate, not a guarantee).`,
+    `${trackingCodeLabel}: ${input.trackingCode}`,
+    `${laneLabel}: ${input.zoneLabel}`,
+    `${indicativeTotalLabel}: ${input.currency} ${amountFormatted}`,
+    paymentReferenceLabel ? `${paymentReferenceLabel}: ${input.trackingCode}` : null,
+    invoiceNote,
+    `${typicalWindowPrefix}: ${input.promiseWindowHours[0]}–${input.promiseWindowHours[1]} ${hoursWord}`,
     "",
-    `Track your shipment: ${input.trackingUrl}`,
+    `${trackPrefix}: ${input.trackingUrl}`,
     "",
-    "— HenryCo Logistics",
+    signature,
   ].filter(Boolean).join("\n");
 
   const email = cleanText(input.senderEmail);
   const templateKey = input.mode === "quote" ? "quote_created" : "booking_created";
+
+  // EMAIL-TPL-01: logistics was the last division sending PLAIN-TEXT-ONLY
+  // customer email. The branded shared layout (renderHenryCoEmail) now carries
+  // the same translated strings; `bodyText` stays as the text alternative and
+  // the WhatsApp body, so no channel loses content.
+  const emailTitle =
+    input.mode === "quote"
+      ? await tx("Your quote is ready.")
+      : await tx("Your booking is confirmed.");
+  const layout: HenryCoEmailLayout = {
+    purpose: "logistics",
+    subject,
+    title: emailTitle,
+    intro: `${greeting} ${input.senderName} — ${intro}`,
+    highlightLabel: trackingCodeLabel,
+    highlightValue: input.trackingCode,
+    sections: [
+      { label: laneLabel, value: input.zoneLabel },
+      { label: indicativeTotalLabel, value: `${input.currency} ${amountFormatted}` },
+      ...(paymentReferenceLabel
+        ? [{ label: paymentReferenceLabel, value: input.trackingCode }]
+        : []),
+      {
+        label: typicalWindowPrefix,
+        value: `${input.promiseWindowHours[0]}–${input.promiseWindowHours[1]} ${hoursWord}`,
+      },
+    ],
+    ...(invoiceNote ? { body: invoiceNote } : {}),
+    actionLabel: trackPrefix,
+    actionHref: input.trackingUrl,
+    locale,
+  };
 
   if (email) {
     const dispatch = await sendTransactionalEmail({
       to: email,
       purpose: "logistics",
       subject,
+      html: renderHenryCoEmail(layout),
       text: bodyText,
     });
 
@@ -150,7 +213,7 @@ export async function notifyLogisticsRequestCreated(input: NotifyRequestCreatedI
     category: "logistics",
     priority: "normal",
     actionUrl: input.trackingUrl,
-    actionLabel: "Track shipment",
+    actionLabel: await tx("Track shipment"),
     referenceType: "logistics_shipment",
     referenceId: input.shipmentId,
   });

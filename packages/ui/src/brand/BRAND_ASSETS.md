@@ -28,7 +28,7 @@ their wrapper. Pass `accent` to override the rule under the monogram's
 
 `packages/ui/src/brand/static/` contains:
 
-- `wordmark-full.svg` — heritage "Henry & Co." form
+- `wordmark-full.svg` — heritage "Henry Onyx" form
 - `wordmark-compact.svg` — modern "HenryCo" form
 - `monogram.svg` — path-based "H&Co" lockup with the copper accent rule
 

@@ -1,5 +1,4 @@
-import { getBrevoApiKey, sendBrevoEmail } from "./providers/brevo";
-import { getResendApiKey, sendResendEmail } from "./providers/resend";
+import { getPostmarkServerToken, sendPostmarkEmail } from "./providers/postmark";
 import { resolveSenderIdentity } from "./sender-identity";
 import type {
   EmailDispatchResult,
@@ -9,68 +8,41 @@ import type {
 } from "./types";
 
 export type ResolvedEmailProvider =
-  | { provider: "brevo"; reason: "explicit" | "fallback" | "purpose" }
-  | { provider: "resend"; reason: "default" | "explicit" | "fallback" | "purpose" }
+  | { provider: "postmark"; reason: "default" }
   | { provider: "none"; reason: "no_provider_configured" };
 
-function readPreference(): EmailProviderId | null {
-  const raw = process.env.EMAIL_PROVIDER?.trim().toLowerCase();
-  if (raw === "brevo" || raw === "resend") return raw;
-  return null;
-}
-
-function readFallback(): EmailProviderId | null {
-  const raw = process.env.EMAIL_FALLBACK_PROVIDER?.trim().toLowerCase();
-  if (raw === "brevo" || raw === "resend") return raw;
-  return null;
+/**
+ * EMAIL-POSTMARK (2026-07-14) — Postmark is the ONLY outbound email rail.
+ *
+ * Amazon SES and the earlier Resend/Brevo vendors are permanently retired
+ * (owner directive: every email going out from the company ships through
+ * Postmark). That retirement is a CODE invariant, not an env accident: the
+ * chain below can never contain another provider, so a leftover AWS_SES_* /
+ * RESEND_API_KEY / BREVO_API_KEY on some deployment can never silently
+ * re-route mail through a retired vendor. EMAIL_PROVIDER /
+ * EMAIL_FALLBACK_PROVIDER are intentionally ignored for the same reason.
+ *
+ * Every purpose (auth, support, newsletter, per-division transactional) rides
+ * Postmark. Channel separation (V2-PNH-03B) is preserved where it always
+ * mattered — in sender identity (which mailbox a purpose sends FROM, see
+ * `resolveSenderIdentity`) and now additionally in Postmark Message Streams
+ * (which reputation lane it rides, see `resolvePostmarkStream`) — not in
+ * vendor routing.
+ */
+export function resolveProviderChain(purpose?: EmailPurpose): EmailProviderId[] {
+  // The purpose parameter stays for API stability; routing no longer varies
+  // by purpose — one rail for everything.
+  void purpose;
+  return getPostmarkServerToken() ? ["postmark"] : [];
 }
 
 /**
- * Provider routing rules (V2-PNH-03B channel separation):
- *  - purpose === "auth" prefers Resend (DKIM-authenticated henrycogroup.com),
- *    then Brevo as fallback. Auth and marketing must never share rails —
- *    the Brevo limit-exhaustion that broke production signup proved why.
- *  - purpose === "support" prefers Resend, then Brevo.
- *  - purpose === "newsletter" stays on Brevo (bulk sender, retained for
- *    editorial volume), with Resend as fallback only.
- *  - Without a purpose, the EMAIL_PROVIDER preference wins, then a
- *    configured fallback, then any provider that has a key.
+ * Back-compat single-provider resolver — the primary of the chain.
  */
 export function resolveEmailProvider(purpose?: EmailPurpose): ResolvedEmailProvider {
-  const preference = readPreference();
-  const fallback = readFallback();
-  const brevoConfigured = Boolean(getBrevoApiKey());
-  const resendConfigured = Boolean(getResendApiKey());
-
-  if (purpose === "support" || purpose === "auth") {
-    if (resendConfigured) return { provider: "resend", reason: "purpose" };
-    if (brevoConfigured) return { provider: "brevo", reason: "fallback" };
-    return { provider: "none", reason: "no_provider_configured" };
-  }
-
-  if (purpose === "newsletter") {
-    if (brevoConfigured) return { provider: "brevo", reason: "purpose" };
-    if (resendConfigured) return { provider: "resend", reason: "fallback" };
-    return { provider: "none", reason: "no_provider_configured" };
-  }
-
-  if (preference === "brevo") {
-    if (brevoConfigured) return { provider: "brevo", reason: "explicit" };
-    if (fallback === "resend" && resendConfigured) return { provider: "resend", reason: "fallback" };
-    if (resendConfigured) return { provider: "resend", reason: "fallback" };
-    return { provider: "none", reason: "no_provider_configured" };
-  }
-
-  if (preference === "resend") {
-    if (resendConfigured) return { provider: "resend", reason: "explicit" };
-    if (fallback === "brevo" && brevoConfigured) return { provider: "brevo", reason: "fallback" };
-    if (brevoConfigured) return { provider: "brevo", reason: "fallback" };
-    return { provider: "none", reason: "no_provider_configured" };
-  }
-
-  if (resendConfigured) return { provider: "resend", reason: "default" };
-  if (brevoConfigured) return { provider: "brevo", reason: "fallback" };
-  return { provider: "none", reason: "no_provider_configured" };
+  return resolveProviderChain(purpose).length > 0
+    ? { provider: "postmark", reason: "default" }
+    : { provider: "none", reason: "no_provider_configured" };
 }
 
 function applySenderIdentity(input: SendTransactionalEmailInput): SendTransactionalEmailInput {
@@ -105,18 +77,14 @@ export async function sendTransactionalEmail(
   }
 
   const enriched = applySenderIdentity(input);
-  const resolved = resolveEmailProvider(enriched.purpose);
 
-  if (resolved.provider === "brevo") {
-    return sendBrevoEmail(enriched);
-  }
-  if (resolved.provider === "resend") {
-    return sendResendEmail(enriched);
+  if (resolveProviderChain(enriched.purpose).length === 0) {
+    return {
+      provider: "none",
+      status: "skipped",
+      skippedReason: "No email provider is configured for this deployment.",
+    };
   }
 
-  return {
-    provider: "none",
-    status: "skipped",
-    skippedReason: "No email provider is configured for this deployment.",
-  };
+  return sendPostmarkEmail(enriched);
 }

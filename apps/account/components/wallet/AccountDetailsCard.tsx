@@ -24,7 +24,7 @@ export function AccountDetailsCard({
     { label: "Account number", value: rail.accountNumber, mono: true },
   ];
   return (
-    <div className="acct-wal__rail" aria-label="HenryCo finance account">
+    <div className="acct-wal__rail" aria-label="Henry Onyx finance account">
       <div className="acct-wal__rail-head">
         <span className="acct-wal__rail-icon" aria-hidden>
           <Building2 size={18} />
@@ -42,7 +42,7 @@ export function AccountDetailsCard({
           >
             Transfer details
           </p>
-          <h3 className="acct-wal__rail-title">HenryCo finance account</h3>
+          <h3 className="acct-wal__rail-title">Henry Onyx finance account</h3>
         </div>
       </div>
       {rows.map((row) => (

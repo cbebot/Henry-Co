@@ -9,7 +9,7 @@ const helpContent: Record<string, PageHelp> = {
   // Public pages
   "/": {
     title: "Home",
-    description: "The main landing page for HenryCo Care. Here you can discover our services, see pricing highlights, read customer reviews, and find quick links to book or track a service.",
+    description: "The main landing page for Henry Onyx Care. Here you can discover our services, see pricing highlights, read customer reviews, and find quick links to book or track a service.",
     tips: [
       "Use the navigation bar to explore services, pricing, and booking",
       "Scroll down to see featured services and customer reviews",

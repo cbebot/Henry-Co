@@ -1,6 +1,9 @@
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { PropertyEmptyState, PropertyStatusBadge, PropertyWorkspaceShell } from "@/components/property/ui";
 import { requirePropertyRoles } from "@/lib/property/auth";
 import { getPropertySnapshot } from "@/lib/property/data";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import { getWorkspaceNavigation } from "@/lib/property/navigation";
 import { createAdminSupabase } from "@/lib/supabase";
 
@@ -35,25 +38,55 @@ export default async function SupportPage() {
     threads = [];
   }
 
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  // Support workspace — wrap subject for both support_threads (Supabase
+  // table) and notification rows. Bodies/reasons are staff context; we
+  // keep those raw to avoid a fan-out cost on every visit.
+  const threadSubjects = await Promise.all(
+    threads.map((thread) =>
+      resolveLocalizedDynamicField({
+        record: thread as unknown as Record<string, unknown>,
+        field: "subject",
+        locale,
+        fallback: thread.subject ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+  const visibleNotifications = snapshot.notifications.slice(0, 12);
+  const notificationSubjects = await Promise.all(
+    visibleNotifications.map((notification) =>
+      resolveLocalizedDynamicField({
+        record: notification as unknown as Record<string, unknown>,
+        field: "subject",
+        locale,
+        fallback: notification.subject ?? "",
+        machineTranslate: locale !== "en",
+      }),
+    ),
+  );
+
   return (
     <PropertyWorkspaceShell
-      kicker="Support"
-      title="Support and escalation context"
-      description="Support can see the inquiry queue, viewing queue, and the shared support threads generated from property activity."
+      kicker={t("Support")}
+      title={t("Support and escalation context")}
+      description={t("Support can see the inquiry queue, viewing queue, and the shared support threads generated from property activity.")}
       nav={getWorkspaceNavigation("/support")}
     >
       <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Support threads</div>
+          <div className="property-kicker">{t("Support threads")}</div>
           {threads.length ? (
             <div className="mt-5 space-y-4">
-              {threads.map((thread) => (
+              {threads.map((thread, index) => (
                 <div key={thread.id} className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <div className="text-lg font-semibold text-[var(--property-ink)]">{thread.subject}</div>
+                      <div className="text-lg font-semibold text-[var(--property-ink)]">{threadSubjects[index] ?? thread.subject}</div>
                       <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
-                        {thread.category || "general"} · {thread.priority || "normal"}
+                        {thread.category ? t(thread.category) : t("general")} · {thread.priority ? t(thread.priority) : t("normal")}
                       </div>
                     </div>
                     <PropertyStatusBadge status={thread.status} />
@@ -64,22 +97,22 @@ export default async function SupportPage() {
           ) : (
             <div className="mt-5">
               <PropertyEmptyState
-                title="No support threads yet."
-                body="Inquiry and viewing flows will create support context here when they need attention."
+                title={t("No support threads yet.")}
+                body={t("Inquiry and viewing flows will create support context here when they need attention.")}
               />
             </div>
           )}
         </div>
 
         <div className="property-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="property-kicker">Notification log</div>
+          <div className="property-kicker">{t("Notification log")}</div>
           {snapshot.notifications.length ? (
             <div className="mt-5 space-y-4">
-              {snapshot.notifications.slice(0, 12).map((notification) => (
+              {visibleNotifications.map((notification, index) => (
                 <div key={notification.id} className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <div className="text-lg font-semibold text-[var(--property-ink)]">{notification.subject}</div>
+                      <div className="text-lg font-semibold text-[var(--property-ink)]">{notificationSubjects[index] ?? notification.subject}</div>
                       <div className="mt-1 text-sm text-[var(--property-ink-soft)]">
                         {notification.channel} · {notification.recipient}
                       </div>
@@ -95,8 +128,8 @@ export default async function SupportPage() {
           ) : (
             <div className="mt-5">
               <PropertyEmptyState
-                title="No notification records yet."
-                body="Once email or WhatsApp events fire, support can review delivery outcomes here."
+                title={t("No notification records yet.")}
+                body={t("Once email or WhatsApp events fire, support can review delivery outcomes here.")}
               />
             </div>
           )}

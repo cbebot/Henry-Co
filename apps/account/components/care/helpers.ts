@@ -1,32 +1,36 @@
 import type { LinkedCareBooking } from "@/lib/care-sync";
 
-export type CareLocale = "en" | "fr";
+/**
+ * Locale tag kept loose so the page can pass any AppLocale.
+ * String formatters in this module no longer bake locale-specific
+ * labels — pass localized labels via the consuming components instead.
+ */
+export type CareLocale = string;
 
-const SHORT_MONTHS_EN = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-const SHORT_MONTHS_FR = [
-  "janv.", "févr.", "mars", "avr.", "mai", "juin",
-  "juil.", "août", "sept.", "oct.", "nov.", "déc.",
+export type ShortMonths = readonly [
+  string, string, string, string, string, string,
+  string, string, string, string, string, string,
 ];
 
-export function formatStamp(iso: string | null | undefined, locale: CareLocale = "en"): string {
+export function formatStamp(
+  iso: string | null | undefined,
+  shortMonths: ShortMonths,
+): string {
   if (!iso) return "—";
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return "—";
   const d = new Date(ms);
-  const months = locale === "fr" ? SHORT_MONTHS_FR : SHORT_MONTHS_EN;
-  return `${d.getUTCDate().toString().padStart(2, "0")} ${months[d.getUTCMonth()]}`;
+  return `${d.getUTCDate().toString().padStart(2, "0")} ${shortMonths[d.getUTCMonth()]}`;
 }
 
 export function formatBookingWhen(
   date: string | null | undefined,
   slot: string | null | undefined,
-  locale: CareLocale = "en",
+  shortMonths: ShortMonths,
+  toBeScheduledLabel: string,
 ): string {
-  if (!date) return locale === "fr" ? "À planifier" : "To be scheduled";
-  const stamp = formatStamp(date, locale);
+  if (!date) return toBeScheduledLabel;
+  const stamp = formatStamp(date, shortMonths);
   if (!slot) return stamp;
   return `${stamp} · ${slot}`;
 }
@@ -73,20 +77,17 @@ export function statusKind(booking: LinkedCareBooking): StatusKind {
   return "live";
 }
 
-export function statusLabel(booking: LinkedCareBooking, locale: CareLocale = "en"): string {
+export type StatusLabels = {
+  live: string;
+  scheduled: string;
+  completed: string;
+  issue: string;
+  payment: string;
+};
+
+export function statusLabel(booking: LinkedCareBooking, labels: StatusLabels): string {
   const kind = statusKind(booking);
-  if (locale === "fr") {
-    if (kind === "payment") return "Paiement à vérifier";
-    if (kind === "issue") return "Action requise";
-    if (kind === "completed") return "Terminée";
-    if (kind === "scheduled") return "Planifiée";
-    return "En cours";
-  }
-  if (kind === "payment") return "Payment review";
-  if (kind === "issue") return "Action needed";
-  if (kind === "completed") return "Completed";
-  if (kind === "scheduled") return "Scheduled";
-  return "In service";
+  return labels[kind];
 }
 
 /* ---- Aggregate stats ----------------------------------------------- */
@@ -143,7 +144,7 @@ export function careStats(bookings: ReadonlyArray<LinkedCareBooking>): CareStats
   };
 }
 
-/* ---- Hero state + copy --------------------------------------------- */
+/* ---- Hero state ---------------------------------------------------- */
 
 export type HeroState = "empty" | "calm" | "active" | "attention";
 
@@ -152,88 +153,6 @@ export function heroState(stats: CareStats): HeroState {
   if (stats.needsPayment > 0 || stats.needsAttention > 0) return "attention";
   if (stats.inFlight > 0) return "active";
   return "calm";
-}
-
-export type HeroCopy = {
-  headline: string;
-  blurb: string;
-  ctaPrimary: { label: string; href: string };
-  ctaSecondary: { label: string; href: string };
-};
-
-const CARE_BOOK_URL = "https://care.henrycogroup.com/book";
-const CARE_TRACK_URL = "https://care.henrycogroup.com/track";
-
-export function buildHeroCopy(
-  state: HeroState,
-  stats: CareStats,
-  locale: CareLocale = "en",
-): HeroCopy {
-  if (locale === "fr") {
-    if (state === "empty") {
-      return {
-        headline: "Réservez votre première prestation Care.",
-        blurb: "Les services Care que vous réservez ici se synchronisent automatiquement dans cette pièce — code de suivi, paiement, et prochaine étape opérationnelle.",
-        ctaPrimary: { label: "Réserver un service", href: CARE_BOOK_URL },
-        ctaSecondary: { label: "Ouvrir le suivi", href: CARE_TRACK_URL },
-      };
-    }
-    if (state === "attention") {
-      const n = stats.needsPayment + stats.needsAttention;
-      return {
-        headline: `${n} action${n === 1 ? "" : "s"} à mener.`,
-        blurb: "Une ou plusieurs réservations attendent une preuve de paiement ou un suivi. Ouvrez la réservation concernée ci-dessous.",
-        ctaPrimary: { label: "Voir les réservations", href: "#care-bookings" },
-        ctaSecondary: { label: "Ouvrir le suivi", href: CARE_TRACK_URL },
-      };
-    }
-    if (state === "active") {
-      return {
-        headline: `${stats.inFlight} prestation${stats.inFlight === 1 ? "" : "s"} en cours.`,
-        blurb: "Suivi en direct, paiement vérifié, et étape opérationnelle suivante mirroirés depuis HenryCo Care vers cette pièce.",
-        ctaPrimary: { label: "Ouvrir le suivi", href: CARE_TRACK_URL },
-        ctaSecondary: { label: "Réserver un service", href: CARE_BOOK_URL },
-      };
-    }
-    return {
-      headline: `${stats.total} réservation${stats.total === 1 ? "" : "s"} liée${stats.total === 1 ? "" : "s"}.`,
-      blurb: "Vos réservations Care, codes de suivi, reçus et prochaines actions réunis au même endroit — synchronisés en temps réel.",
-      ctaPrimary: { label: "Réserver un service", href: CARE_BOOK_URL },
-      ctaSecondary: { label: "Ouvrir le suivi", href: CARE_TRACK_URL },
-    };
-  }
-
-  if (state === "empty") {
-    return {
-      headline: "Book your first Care service.",
-      blurb: "Care services you book here sync automatically into this room — tracking code, payment status, and the next operational step.",
-      ctaPrimary: { label: "Book a service", href: CARE_BOOK_URL },
-      ctaSecondary: { label: "Open tracking", href: CARE_TRACK_URL },
-    };
-  }
-  if (state === "attention") {
-    const n = stats.needsPayment + stats.needsAttention;
-    return {
-      headline: `${n} ${n === 1 ? "action" : "actions"} to take.`,
-      blurb: "One or more bookings are waiting on payment verification or a follow-up. Open the booking below to clear it.",
-      ctaPrimary: { label: "Review bookings", href: "#care-bookings" },
-      ctaSecondary: { label: "Open tracking", href: CARE_TRACK_URL },
-    };
-  }
-  if (state === "active") {
-    return {
-      headline: `${stats.inFlight} service${stats.inFlight === 1 ? "" : "s"} in motion.`,
-      blurb: "Live tracking, payment verification, and the next operational step are mirrored from HenryCo Care into this room.",
-      ctaPrimary: { label: "Open tracking", href: CARE_TRACK_URL },
-      ctaSecondary: { label: "Book a service", href: CARE_BOOK_URL },
-    };
-  }
-  return {
-    headline: `${stats.total} booking${stats.total === 1 ? "" : "s"} on record.`,
-    blurb: "Your Care bookings, tracking codes, receipts, and upcoming actions — all in one place, synced in real time.",
-    ctaPrimary: { label: "Book a service", href: CARE_BOOK_URL },
-    ctaSecondary: { label: "Open tracking", href: CARE_TRACK_URL },
-  };
 }
 
 /* ---- Activity helpers (mirror property pattern) -------------------- */

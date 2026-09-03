@@ -18,6 +18,18 @@ import {
   formatAuditActorDisplay,
   formatAuditEntityDisplay,
 } from "@/lib/owner-identity";
+import { MARKETPLACE_SELLER_APPLICATIONS_URL } from "@/lib/owner-division-external";
+import {
+  assessThreats,
+  type ThreatAssessment,
+  type ThreatLogRow,
+  type ThreatDeviceRow,
+} from "@/lib/security/threat-signals";
+import {
+  isStudioAgencyLiveHub,
+  listAgencyJobs,
+  listProposalsInReview,
+} from "@/lib/studio-agency-read";
 
 export type {
   WorkforceMember,
@@ -31,6 +43,15 @@ export {
 } from "@/lib/owner-workforce-catalog";
 
 type JsonRecord = Record<string, unknown>;
+
+/** A `customer_activity` row written by an auto-seed (e.g. the Henry Onyx
+ *  careers catalog carries `metadata.seeded = true`). Seeded rows are curated
+ *  content, not real customer/staff events, so owner analytics, division
+ *  snapshots, and recent-activity feeds must exclude them. */
+function isSeededActivityRow(row: JsonRecord): boolean {
+  const meta = row.metadata;
+  return typeof meta === "object" && meta !== null && (meta as { seeded?: unknown }).seeded === true;
+}
 
 type Filter =
   | { column: string; operator?: "eq" | "neq" | "gt" | "gte" | "lt" | "lte"; value: unknown }
@@ -373,6 +394,10 @@ const getOwnerBaseDataset = cache(async () => {
     companies,
     auditLogs,
     authUsers,
+    succeededIntents,
+    marketplaceRefunds,
+    recentSecurityLog,
+    knownDevices,
   ] = await Promise.all([
     safeMaybeSingle("company_settings"),
     safeMaybeSingle("company_site_settings"),
@@ -426,6 +451,44 @@ const getOwnerBaseDataset = cache(async () => {
     safeSelect("companies", "*", { orderBy: "created_at", ascending: false, limit: 80 }),
     safeSelect("audit_logs", "*", { orderBy: "created_at", ascending: false, limit: 80 }),
     listAuthUsers(),
+    // Revenue truth: succeeded intents carry the division dimension (indexed) —
+    // the ONE rail every division's money settles through. This is what wires
+    // studio/jobs/property/logistics into the rollup.
+    safeSelect("payment_intents", "division, amount_minor, status", {
+      filters: [{ column: "status", value: "succeeded" }],
+      orderBy: "created_at",
+      ascending: false,
+      limit: 2000,
+    }),
+    safeSelect("marketplace_refunds", "amount_minor, status, created_at", {
+      orderBy: "created_at",
+      ascending: false,
+      limit: 1000,
+    }),
+    // Engagement + THREAT truth: sign-in/security events over the last 30 days.
+    // ip_address + metadata (country/risk/reason/category) feed the threat
+    // engine (credential spray, impossible travel, reset pressure); the rows
+    // also carry the behavioural record behind "active members, not accounts".
+    safeSelect("customer_security_log", "user_id, event_type, ip_address, metadata, created_at", {
+      filters: [
+        {
+          column: "created_at",
+          operator: "gte",
+          value: new Date(Date.now() - 30 * 86_400_000).toISOString(),
+        },
+      ],
+      orderBy: "created_at",
+      ascending: false,
+      limit: 4000,
+    }),
+    // Integrity + THREAT truth: the persistent device registry. Shared device
+    // ids across accounts = duplicate-account signal; revoked_at vs last_seen_at
+    // = a killed device seen alive again.
+    safeSelect(
+      "account_known_devices",
+      "user_id, device_id, ua_summary, first_country, first_seen_at, last_seen_at, trusted_at, revoked_at",
+      { limit: 3000 },
+    ),
   ]);
 
   const legacyWalletFundingRequests = walletTransactionRows
@@ -449,7 +512,7 @@ const getOwnerBaseDataset = cache(async () => {
     ownerProfiles,
     staffAuditLogs,
     supportThreads,
-    customerActivity,
+    customerActivity: customerActivity.filter((row) => !isSeededActivityRow(row)),
     customerNotifications,
     customerInvoices,
     walletFundingRequests,
@@ -468,11 +531,51 @@ const getOwnerBaseDataset = cache(async () => {
     companies,
     auditLogs,
     authUsers,
+    succeededIntents,
+    marketplaceRefunds,
+    recentSecurityLog,
+    knownDevices,
   };
 });
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
+}
+
+/** Map a customer_security_log row (metadata jsonb carries the enrichment) to a
+ *  threat-engine input row. See lib/security/threat-signals.ts for the fields. */
+function toThreatLogRow(row: JsonRecord, labelFor: (id: string) => string): ThreatLogRow {
+  const meta = (row.metadata && typeof row.metadata === "object" ? row.metadata : {}) as Record<string, unknown>;
+  const metaStr = (key: string) => (typeof meta[key] === "string" ? (meta[key] as string) : "");
+  const userId = toText(row.user_id);
+  return {
+    userId,
+    userLabel: labelFor(userId),
+    eventType: toText(row.event_type),
+    ip: toText(row.ip_address),
+    country: metaStr("country"),
+    location: metaStr("location_summary"),
+    device: metaStr("device_summary"),
+    riskLevel: metaStr("risk_level"),
+    category: metaStr("event_category"),
+    reason: metaStr("reason"),
+    createdAt: toNullableText(row.created_at),
+  };
+}
+
+/** Map an account_known_devices row to a threat-engine device row. */
+function toThreatDeviceRow(row: JsonRecord, labelFor: (id: string) => string): ThreatDeviceRow {
+  const userId = toText(row.user_id);
+  return {
+    userId,
+    userLabel: labelFor(userId),
+    deviceId: toText(row.device_id),
+    firstCountry: toText(row.first_country),
+    firstSeenAt: toNullableText(row.first_seen_at),
+    lastSeenAt: toNullableText(row.last_seen_at),
+    trustedAt: toNullableText(row.trusted_at),
+    revokedAt: toNullableText(row.revoked_at),
+  };
 }
 
 function readNestedRecord(source: JsonRecord | null | undefined, key: string) {
@@ -659,7 +762,7 @@ function buildOwnerSignals(
       body: `${pendingMarketplaceApplications.length} vendor applications are waiting for trust and moderation review.`,
       severity: "warning",
       division: "marketplace",
-      href: "/owner/divisions/marketplace",
+      href: MARKETPLACE_SELLER_APPLICATIONS_URL,
       source: "marketplace_vendor_applications",
       createdAt: toNullableText(pendingMarketplaceApplications[0]?.submitted_at),
     });
@@ -919,6 +1022,18 @@ function buildDivisionSnapshots(
       ).length;
     }
 
+    // Revenue truth (the AI's own gap report, 2026-07-16): studio, jobs,
+    // property, and logistics settle through the payment-intents rail — the
+    // rollup now reads their SUCCEEDED intents (kobo → naira) instead of
+    // showing 0 by omission. Care/marketplace/learn keep their richer
+    // app-native sources above; intents are the source ONLY for divisions
+    // with no native rollup, so nothing double-counts.
+    if (revenueNaira === 0 && ["studio", "jobs", "property", "logistics"].includes(slug)) {
+      revenueNaira = dataset.succeededIntents
+        .filter((row) => normalizeDivisionSlug(row.division) === slug)
+        .reduce((sum, row) => sum + toNumber(row.amount_minor) / 100, 0);
+    }
+
     const divisionWorkforce = workforce.filter((member) => member.division === slug);
     const recentActivity = [
       ...divisionActivity.map((row) => ({
@@ -950,6 +1065,10 @@ function buildDivisionSnapshots(
       .slice(0, 6);
 
     const livePressure = workOpen + divisionSignals.length * 2 + divisionSupport.length;
+    // F1 truth pass: this is a STATED HEURISTIC (hand-tuned weights over live
+    // rows), surfaced everywhere as "Stability index" — never as a measured
+    // "health score". Weights: critical signal -24, warning -12, support drag
+    // capped -18, live pressure overflow capped -14; no-data floor 34.
     const healthScore = clamp(
       recentActivity.length || revenueNaira || workOpen
         ? 88 - divisionSignals.filter((signal) => signal.severity === "critical").length * 24
@@ -1073,6 +1192,9 @@ function buildOwnerBriefing(
   };
 }
 
+// F1 truth pass: these are FIVE standing runbooks (fixed title+body strings)
+// whose INCLUSION is data-driven — a signal fires, its playbook surfaces.
+// Nothing here is generated; the honest "AI" story is Founder Intelligence F2.
 function buildHelperInsights(signals: OwnerSignal[]) {
   const insights: {
     id: string;
@@ -1139,6 +1261,66 @@ export async function getOwnerOverviewData() {
   const dataset = await getOwnerBaseDataset();
   const workforce = buildWorkforceMembers(dataset);
   const signals = buildOwnerSignals(dataset, workforce);
+
+  // ── Engagement truth: active members, not just accounts ────────────────────
+  // Distinct people with a sign-in/security event (or device last-seen) inside
+  // the window — the behavioural record the AI reported it could not see.
+  const now = Date.now();
+  const activeWithin = (days: number): Set<string> => {
+    const cutoff = now - days * 86_400_000;
+    const active = new Set<string>();
+    for (const row of dataset.recentSecurityLog) {
+      const userId = toText(row.user_id);
+      if (!userId) continue;
+      const at = new Date(toText(row.created_at)).getTime();
+      if (Number.isFinite(at) && at >= cutoff) active.add(userId);
+    }
+    for (const row of dataset.knownDevices) {
+      const userId = toText(row.user_id);
+      if (!userId) continue;
+      const at = new Date(toText(row.last_seen_at)).getTime();
+      if (Number.isFinite(at) && at >= cutoff) active.add(userId);
+    }
+    return active;
+  };
+  const activeMembers7d = activeWithin(7).size;
+  const activeMembers30d = activeWithin(30).size;
+
+  // ── Refund truth: aggregated, not invisible ────────────────────────────────
+  const refundRows = dataset.marketplaceRefunds;
+  const refundsTotalNaira = refundRows.reduce((sum, row) => sum + toNumber(row.amount_minor) / 100, 0);
+
+  // ── Threat watch: full attacker-signal assessment ─────────────────────────
+  // The SAME engine the audit console renders — so the dashboard, the audit
+  // page, and the Founder AI all read one truth. Evidence-backed only (owner
+  // calibration): every signal is a real row count. Only actionable threats
+  // (critical + warning) surface on the dashboard; the full list, incl.
+  // watch-level, lives on the audit page. Labels stay short-id here; the audit
+  // page resolves names in a batched customer_profiles lookup.
+  const shortLabel = (id: string) => (id ? `${id.slice(0, 8)}…` : "unknown");
+  const threat = assessThreats(
+    dataset.recentSecurityLog.map((row) => toThreatLogRow(row, shortLabel)),
+    dataset.knownDevices.map((row) => toThreatDeviceRow(row, shortLabel)),
+  );
+  for (const sig of threat.signals) {
+    if (sig.severity === "watch") continue;
+    signals.push({
+      id: `threat-${sig.id}`,
+      severity: sig.severity === "critical" ? "critical" : "warning",
+      division: "account",
+      title: sig.title,
+      body: `${sig.detail} Open the audit console to act.`,
+      href: "/owner/settings/audit",
+    } as (typeof signals)[number]);
+  }
+  const sharedDevices = threat.metrics.sharedDevices;
+
+  // Surface the worst threats first: re-rank the combined signal list by
+  // severity (stable — equal severities keep their prior order) so a critical
+  // threat pushed on last still leads the digest and survives the top-8 slice.
+  const severityRank: Record<string, number> = { critical: 3, warning: 2, info: 1 };
+  signals.sort((a, b) => (severityRank[b.severity] ?? 0) - (severityRank[a.severity] ?? 0));
+
   const divisions = buildDivisionSnapshots(dataset, workforce, signals);
   const totalRevenueNaira = divisions.reduce((sum, division) => sum + division.revenueNaira, 0);
   const totalExpenseNaira = dataset.careExpenses
@@ -1146,14 +1328,15 @@ export async function getOwnerOverviewData() {
     .reduce((sum, row) => sum + toNumber(row.amount), 0);
   const activeStaff = workforce.filter((member) => member.status === "active").length;
   const queuedNotifications = [...dataset.careNotificationQueue, ...dataset.marketplaceNotificationQueue].length;
-  const companyTitle = toText(dataset.companySettings?.brand_title) || "Henry & Co.";
+  const companyTitle = toText(dataset.companySettings?.brand_title) || "Henry Onyx";
   const briefing = buildOwnerBriefing(signals, divisions, dataset);
 
   return {
     companyTitle,
     companyName: toText(dataset.companySettings?.company_name) || companyTitle,
-    dataHealthNote:
-      "Workforce profiles, audit history, and sign-in activity are synchronized from your live HenryCo account records. If a metric looks stale, refresh after the person completes their latest sign-in.",
+    // F1: the freshness note states WHEN this dataset was actually assembled
+    // (per-request cache) instead of fixed reassurance prose.
+    dataHealthNote: `Assembled live from workforce, audit, and sign-in records at ${new Date().toISOString().slice(11, 16)} UTC. Refresh the page to rebuild it.`,
     metrics: {
       divisionsLive: divisions.filter((division) => division.status !== "building").length,
       totalRevenueNaira,
@@ -1162,6 +1345,16 @@ export async function getOwnerOverviewData() {
       activeStaff,
       queuedNotifications,
       criticalSignals: signals.filter((signal) => signal.severity === "critical").length,
+      // Engagement + refund truth (the AI's own gap report, 2026-07-16).
+      activeMembers7d,
+      activeMembers30d,
+      refundsCount: refundRows.length,
+      refundsTotalNaira,
+      sharedDeviceAccounts: sharedDevices,
+      // Threat watch (2026-07-16): the owner sees everything, not just sign-ins.
+      threatPosture: threat.posture,
+      threatCritical: threat.metrics.criticalCount,
+      threatWarning: threat.metrics.warningCount,
     },
     executiveDigest:
       signals[0]?.severity === "critical"
@@ -1279,7 +1472,9 @@ export async function getAnalyticsCenterData() {
     safeSelect("customer_activity", "*", { orderBy: "created_at", ascending: false, limit: 800 }),
   ]);
 
-  const sourceRows = activityRows.length ? activityRows : dataset.customerActivity;
+  const sourceRows = (activityRows.length ? activityRows : dataset.customerActivity).filter(
+    (row) => !isSeededActivityRow(row),
+  );
   const normalizedRows = sourceRows
     .map(readActivityAnalytics)
     .filter((row): row is NonNullable<ReturnType<typeof readActivityAnalytics>> => Boolean(row));
@@ -1574,7 +1769,7 @@ export async function getWorkforceCenterData() {
       managers: workforce.filter((member) => member.isManager).length,
     },
     dataHealthNote:
-      "Role and permission updates are saved to each member’s HenryCo account profile and recorded in the workforce audit log for traceability.",
+      "Role and permission updates are saved to each member’s Henry Onyx account profile and recorded in the workforce audit log for traceability.",
   };
 }
 
@@ -1718,11 +1913,474 @@ export async function getAuditHistoryPageData(options?: {
   };
 }
 
+export type OwnerSecurityEvent = {
+  id: string;
+  userId: string;
+  userLabel: string;
+  eventType: string;
+  category: string;
+  riskLevel: string;
+  device: string;
+  location: string;
+  country: string;
+  ip: string;
+  createdAt: string | null;
+};
+
+export type OwnerKnownDevice = {
+  id: string;
+  userId: string;
+  userLabel: string;
+  device: string;
+  firstCountry: string;
+  firstSeenAt: string | null;
+  lastSeenAt: string | null;
+  state: "trusted" | "revoked" | "active";
+};
+
+/**
+ * getSecurityActivityData — the sessions/devices telemetry for the owner audit
+ * console (Smartsupp-tier "who signed in, from where, on what device").
+ *
+ * Reads the two live telemetry tables the account app already writes on every
+ * sign-in: `customer_security_log` (event + ip + user_agent + a `metadata`
+ * jsonb carrying device_summary / location_summary / country / risk_level /
+ * event_category — there are NO dedicated columns for those, see
+ * account/lib/security-events.ts) and `account_known_devices` (the persistent
+ * per-device registry with first_country / last_seen / trusted / revoked).
+ *
+ * Service-role read (owner-legitimate: this is the requireOwner security
+ * console). Identity is resolved in ONE batched customer_profiles lookup across
+ * both feeds. Best-effort by construction — safeSelect swallows a missing table
+ * to [], so the panels simply stay empty rather than erroring the page.
+ */
+export async function getSecurityActivityData(options?: { limit?: number }) {
+  const limit = Math.min(120, Math.max(20, options?.limit ?? 60));
+  const [securityLog, knownDevices] = await Promise.all([
+    safeSelect("customer_security_log", "*", { orderBy: "created_at", ascending: false, limit }),
+    safeSelect("account_known_devices", "*", { orderBy: "last_seen_at", ascending: false, limit }),
+  ]);
+
+  const userIds = Array.from(
+    new Set([...securityLog, ...knownDevices].map((row) => toText(row.user_id)).filter(Boolean)),
+  );
+
+  const identity = new Map<string, { fullName: string | null; email: string | null }>();
+  if (userIds.length > 0) {
+    try {
+      const admin = createAdminSupabase();
+      const { data } = await admin
+        .from("customer_profiles")
+        .select("id, full_name, email")
+        .in("id", userIds);
+      for (const p of (data ?? []) as Array<{ id: string; full_name: string | null; email: string | null }>) {
+        identity.set(p.id, { fullName: p.full_name, email: p.email });
+      }
+    } catch (error) {
+      logOwnerSurfaceError("lib/owner-data.getSecurityActivityData.identity", error, {});
+    }
+  }
+
+  const labelFor = (userId: string): string => {
+    const profile = identity.get(userId);
+    if (profile?.fullName) return profile.fullName;
+    if (profile?.email) return profile.email;
+    return userId ? `${userId.slice(0, 8)}…` : "Unknown";
+  };
+
+  const metaText = (meta: unknown, key: string): string => {
+    if (!meta || typeof meta !== "object") return "";
+    const value = (meta as Record<string, unknown>)[key];
+    return typeof value === "string" ? value : "";
+  };
+
+  const events: OwnerSecurityEvent[] = securityLog.map((row) => {
+    const meta = row.metadata;
+    const userId = toText(row.user_id);
+    return {
+      id: toText(row.id),
+      userId,
+      userLabel: labelFor(userId),
+      eventType: toText(row.event_type) || "event",
+      category: metaText(meta, "event_category"),
+      riskLevel: metaText(meta, "risk_level"),
+      device: metaText(meta, "device_summary"),
+      location: metaText(meta, "location_summary"),
+      country: metaText(meta, "country"),
+      ip: toText(row.ip_address),
+      createdAt: toNullableText(row.created_at),
+    };
+  });
+
+  const devices: OwnerKnownDevice[] = knownDevices.map((row) => {
+    const revoked = Boolean(row.revoked_at);
+    const trusted = Boolean(row.trusted_at);
+    const userId = toText(row.user_id);
+    return {
+      id: toText(row.id),
+      userId,
+      userLabel: labelFor(userId),
+      device: toText(row.ua_summary) || "Unknown device",
+      firstCountry: toText(row.first_country),
+      firstSeenAt: toNullableText(row.first_seen_at),
+      lastSeenAt: toNullableText(row.last_seen_at),
+      state: revoked ? "revoked" : trusted ? "trusted" : "active",
+    };
+  });
+
+  return {
+    events,
+    devices,
+    metrics: {
+      eventCount: events.length,
+      deviceCount: devices.length,
+      highRisk: events.filter((event) => /high|critical/i.test(event.riskLevel)).length,
+      distinctUsers: new Set(events.map((event) => event.userId).filter(Boolean)).size,
+      revokedDevices: devices.filter((device) => device.state === "revoked").length,
+    },
+  };
+}
+
+/**
+ * getSecurityThreatData — the owner threat watchtower.
+ *
+ * Reads a WIDER window than the sessions view (30 days / up to 5000 events +
+ * the full device registry) and runs the pure `assessThreats` engine over it,
+ * with account names resolved in one batched customer_profiles lookup so every
+ * flagged signal names a real person, not a raw uuid. This is the "we see
+ * everything" surface — attacker fingerprints, not sign-in/out noise.
+ *
+ * Service-role read (requireOwner console). Best-effort: a missing table
+ * degrades to an empty, calm assessment rather than erroring the page.
+ */
+export async function getSecurityThreatData(): Promise<ThreatAssessment> {
+  const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
+  const [securityLog, deviceRows] = await Promise.all([
+    safeSelect("customer_security_log", "user_id, event_type, ip_address, metadata, created_at", {
+      filters: [{ column: "created_at", operator: "gte", value: since }],
+      orderBy: "created_at",
+      ascending: false,
+      limit: 5000,
+    }),
+    safeSelect(
+      "account_known_devices",
+      "user_id, device_id, ua_summary, first_country, first_seen_at, last_seen_at, trusted_at, revoked_at",
+      { limit: 5000 },
+    ),
+  ]);
+
+  const userIds = Array.from(
+    new Set([...securityLog, ...deviceRows].map((row) => toText(row.user_id)).filter(Boolean)),
+  );
+  const identity = new Map<string, { fullName: string | null; email: string | null }>();
+  if (userIds.length > 0) {
+    try {
+      const admin = createAdminSupabase();
+      // Chunk the IN() list — a 5000-account window can exceed URL limits.
+      for (let i = 0; i < userIds.length; i += 500) {
+        const { data } = await admin
+          .from("customer_profiles")
+          .select("id, full_name, email")
+          .in("id", userIds.slice(i, i + 500));
+        for (const p of (data ?? []) as Array<{ id: string; full_name: string | null; email: string | null }>) {
+          identity.set(p.id, { fullName: p.full_name, email: p.email });
+        }
+      }
+    } catch (error) {
+      logOwnerSurfaceError("lib/owner-data.getSecurityThreatData.identity", error, {});
+    }
+  }
+  const labelFor = (userId: string): string => {
+    const profile = identity.get(userId);
+    if (profile?.fullName) return profile.fullName;
+    if (profile?.email) return profile.email;
+    return userId ? `${userId.slice(0, 8)}…` : "Unknown";
+  };
+
+  return assessThreats(
+    securityLog.map((row) => toThreatLogRow(row, labelFor)),
+    deviceRows.map((row) => toThreatDeviceRow(row, labelFor)),
+  );
+}
+
+export type FounderActionQueue = {
+  supportThreads: Array<{ id: string; subject: string; division: string; lastMessage: string }>;
+  vendorApplications: Array<{ id: string; store: string; email: string }>;
+  kycSubmissions: Array<{ id: string; docType: string; user: string }>;
+  productReviews: Array<{ id: string; title: string }>;
+  // SA-4 — the studio-agency operator queue. Empty while STUDIO_AGENCY_LIVE is
+  // dark (the flag check lives in getFounderActionQueue, so a dark agency is
+  // invisible to the model). Proposals held at the SA-D5 review gate + build
+  // jobs waiting on the owner's reauth-gated deploy tap.
+  pendingStudioProposals: Array<{ id: string; title: string }>;
+  studioJobsAwaitingOwner: Array<{ id: string; stage: string }>;
+};
+
+/**
+ * getFounderActionQueue — the REAL records the Founder AI can act on, WITH IDs.
+ *
+ * The AI had every governed action wired but was blocked on "give me the ID"
+ * because its grounding showed COUNTS, not records (live finding, 2026-07-16 —
+ * the AI's own words: "this surface shows me counts, not records"). This reads
+ * the actual pending action targets — open support threads (with the customer's
+ * latest message so a real reply can be drafted), pending vendor applications,
+ * KYC submissions, and product reviews — each with the exact ID its F3 action
+ * needs. Owner-gated grounding; every field is fenced as DATA by company-facts.
+ *
+ * Best-effort by construction (safeSelect degrades a missing table/column to []),
+ * so a schema gap quietly drops a category rather than erroring the turn.
+ */
+export async function getFounderActionQueue(): Promise<FounderActionQueue> {
+  const agencyLive = isStudioAgencyLiveHub();
+  const [threads, vendors, kyc, products, studioProposals, studioJobs] = await Promise.all([
+    safeSelect("support_threads", "id, user_id, subject, division, status", {
+      orderBy: "updated_at",
+      ascending: false,
+      limit: 60,
+    }),
+    safeSelect("marketplace_vendor_applications", "id, store_name, status, normalized_email", {
+      orderBy: "submitted_at",
+      ascending: false,
+      limit: 40,
+    }),
+    safeSelect("customer_verification_submissions", "id, user_id, document_type, status", { limit: 40 }),
+    safeSelect("marketplace_products", "id, title, approval_status, vendor_id", { limit: 60 }),
+    // SA-4: dark agency = empty arrays = invisible to the model.
+    agencyLive ? listProposalsInReview(6) : Promise.resolve([]),
+    agencyLive
+      ? listAgencyJobs({ stages: ["owner_review", "approved_for_deploy", "stalled"], limit: 12 })
+      : Promise.resolve([]),
+  ]);
+
+  const isOpen = (status: string) => {
+    const s = status.toLowerCase();
+    return s !== "closed" && s !== "resolved" && s !== "archived";
+  };
+  const isPending = (status: string) => {
+    const s = status.toLowerCase();
+    return s === "pending" || s === "submitted" || s === "in_review" || s === "review" || s === "draft" || s === "";
+  };
+
+  const openThreads = threads.filter((t) => isOpen(toText(t.status))).slice(0, 8);
+
+  // The customer's latest message per open thread — what the AI needs to draft a
+  // REAL reply instead of filler. One batched read, newest-first, first wins.
+  const lastMessage = new Map<string, string>();
+  const threadIds = openThreads.map((t) => toText(t.id)).filter(Boolean);
+  if (threadIds.length > 0) {
+    try {
+      const admin = createAdminSupabase();
+      const { data } = await admin
+        .from("support_messages")
+        .select("thread_id, sender_type, body, created_at")
+        .in("thread_id", threadIds)
+        .order("created_at", { ascending: false })
+        .limit(300);
+      for (const m of (data ?? []) as Array<{ thread_id: string; sender_type: string; body: string }>) {
+        const key = String(m.thread_id ?? "");
+        // Prefer the latest CUSTOMER message (not the team's own replies).
+        if (key && !lastMessage.has(key) && String(m.sender_type ?? "") !== "agent") {
+          lastMessage.set(key, String(m.body ?? ""));
+        }
+      }
+    } catch (error) {
+      logOwnerSurfaceError("lib/owner-data.getFounderActionQueue.messages", error, {});
+    }
+  }
+
+  return {
+    supportThreads: openThreads.map((t) => ({
+      id: toText(t.id),
+      subject: toText(t.subject) || "Support request",
+      division: toText(t.division) || "account",
+      lastMessage: lastMessage.get(toText(t.id)) ?? "",
+    })),
+    vendorApplications: vendors
+      .filter((v) => isPending(toText(v.status)))
+      .slice(0, 6)
+      .map((v) => ({
+        id: toText(v.id),
+        store: toText(v.store_name) || "a store",
+        email: toText(v.normalized_email),
+      })),
+    kycSubmissions: kyc
+      .filter((k) => isPending(toText(k.status)))
+      .slice(0, 6)
+      .map((k) => ({
+        id: toText(k.id),
+        docType: toText(k.document_type) || "identity",
+        user: toText(k.user_id).slice(0, 8),
+      })),
+    productReviews: products
+      .filter((p) => isPending(toText(p.approval_status)))
+      .slice(0, 6)
+      .map((p) => ({ id: toText(p.id), title: toText(p.title) || "a product" })),
+    pendingStudioProposals: studioProposals
+      .slice(0, 6)
+      .map((p) => ({ id: p.id, title: p.title || "a proposal" })),
+    studioJobsAwaitingOwner: studioJobs
+      .slice(0, 6)
+      .map((j) => ({ id: j.id, stage: j.stage })),
+  };
+}
+
+export type ApprovalQueueItem = {
+  id: string;
+  category: string;
+  label: string;
+  description: string;
+  division: string;
+  severity: "critical" | "warning" | "info";
+  href: string;
+  count: number;
+};
+
+export async function getApprovalQueueData(): Promise<{
+  total: number;
+  items: ApprovalQueueItem[];
+}> {
+  const dataset = await getOwnerBaseDataset();
+  const workforce = buildWorkforceMembers(dataset);
+
+  const items: ApprovalQueueItem[] = [];
+
+  const pendingVendors = dataset.marketplaceVendorApplications.filter((r) => {
+    const s = toText(r.status).toLowerCase();
+    return s === "pending" || s === "submitted" || s === "under_review";
+  });
+  if (pendingVendors.length) {
+    items.push({
+      id: "vendor-applications",
+      category: "Marketplace",
+      label: "Vendor applications pending review",
+      description: `${pendingVendors.length} seller applications are waiting for trust and onboarding approval.`,
+      division: "marketplace",
+      severity: "warning",
+      // Deep-link to the surface with the approve/reject buttons, not the HQ
+      // info room — the queue must never show a decision without its actions.
+      href: MARKETPLACE_SELLER_APPLICATIONS_URL,
+      count: pendingVendors.length,
+    });
+  }
+
+  const openDisputes = dataset.marketplaceDisputes.filter((r) => isOpenStatus(r.status));
+  if (openDisputes.length) {
+    items.push({
+      id: "marketplace-disputes",
+      category: "Marketplace",
+      label: "Open disputes awaiting resolution",
+      description: `${openDisputes.length} buyer-seller dispute${openDisputes.length === 1 ? "" : "s"} still need owner or staff adjudication.`,
+      division: "marketplace",
+      severity: openDisputes.length >= 3 ? "critical" : "warning",
+      href: "/owner/divisions/marketplace",
+      count: openDisputes.length,
+    });
+  }
+
+  const pendingPayouts = dataset.marketplacePayoutRequests?.filter((r) => {
+    const s = toText(r.status).toLowerCase();
+    return s === "pending" || s === "requested";
+  }) ?? [];
+  if (pendingPayouts.length) {
+    items.push({
+      id: "payout-requests",
+      category: "Finance",
+      label: "Payout requests pending approval",
+      description: `${pendingPayouts.length} seller payout request${pendingPayouts.length === 1 ? "" : "s"} waiting for approval and disbursement.`,
+      division: "marketplace",
+      severity: "warning",
+      href: "/owner/finance/revenue",
+      count: pendingPayouts.length,
+    });
+  }
+
+  const urgentSupport = dataset.supportThreads.filter((t) => {
+    const priority = toText(t.priority).toLowerCase();
+    return isOpenStatus(t.status) && (priority === "urgent" || priority === "high");
+  });
+  if (urgentSupport.length) {
+    items.push({
+      id: "urgent-support",
+      category: "Support",
+      label: "Urgent support threads",
+      description: `${urgentSupport.length} high or urgent priority thread${urgentSupport.length === 1 ? "" : "s"} need immediate attention.`,
+      division: "hub",
+      severity: urgentSupport.length >= 2 ? "critical" : "warning",
+      href: "/owner/operations/alerts",
+      count: urgentSupport.length,
+    });
+  }
+
+  const pendingInvites = workforce.filter((m) => m.status === "pending");
+  if (pendingInvites.length) {
+    items.push({
+      id: "staff-invites",
+      category: "Workforce",
+      label: "Pending staff invitations",
+      description: `${pendingInvites.length} staff member${pendingInvites.length === 1 ? "" : "s"} haven't yet accepted their invitation.`,
+      division: "hub",
+      severity: "info",
+      href: "/owner/staff",
+      count: pendingInvites.length,
+    });
+  }
+
+  items.sort((a, b) => {
+    const order = { critical: 0, warning: 1, info: 2 } as Record<string, number>;
+    return (order[a.severity] ?? 3) - (order[b.severity] ?? 3);
+  });
+
+  return { total: items.reduce((s, i) => s + i.count, 0), items };
+}
+
+export async function getAuditEntry(source: string, id: string): Promise<JsonRecord | null> {
+  const admin = createAdminSupabase();
+  const table =
+    source === "staff"
+      ? "staff_audit_logs"
+      : source === "platform"
+        ? "audit_logs"
+        : null;
+  if (!table) return null;
+  try {
+    const { data, error } = await admin.from(table).select("*").eq("id", id).maybeSingle();
+    if (error || !data) return null;
+    return { ...(data as JsonRecord), _source: source };
+  } catch {
+    return null;
+  }
+}
+
+export async function getInvoiceDetail(id: string): Promise<JsonRecord | null> {
+  const admin = createAdminSupabase();
+  try {
+    const { data, error } = await admin
+      .from("customer_invoices")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error || !data) return null;
+    return data as JsonRecord;
+  } catch {
+    return null;
+  }
+}
+
 export async function getWorkforceMemberById(userId: string): Promise<WorkforceMember | null> {
   const dataset = await getOwnerBaseDataset();
   const workforce = buildWorkforceMembers(dataset);
   return workforce.find((m) => m.id === userId) ?? null;
 }
+
+export type OwnerProfileRow = {
+  id: string;
+  userId: string;
+  email: string | null;
+  fullName: string | null;
+  role: string;
+  isActive: boolean;
+  createdAt: string | null;
+};
 
 export async function getSecurityCenterData() {
   const dataset = await getOwnerBaseDataset();
@@ -1737,14 +2395,48 @@ export async function getSecurityCenterData() {
     );
   });
 
+  // Enrich owner_profiles with human-readable identity from customer_profiles.
+  const admin = createAdminSupabase();
+  const ownerUserIds = dataset.ownerProfiles
+    .map((p) => toText(p.user_id))
+    .filter(Boolean);
+
+  const profilesRes =
+    ownerUserIds.length > 0
+      ? await admin
+          .from("customer_profiles")
+          .select("id, full_name, email")
+          .in("id", ownerUserIds)
+      : { data: null };
+
+  const profileMap = new Map<string, { fullName: string | null; email: string | null }>();
+  for (const p of (profilesRes.data ?? []) as Array<{ id: string; full_name: string | null; email: string | null }>) {
+    profileMap.set(p.id, { fullName: p.full_name, email: p.email });
+  }
+
+  const ownerProfiles: OwnerProfileRow[] = dataset.ownerProfiles.map((row) => {
+    const userId = toText(row.user_id);
+    const profile = profileMap.get(userId);
+    return {
+      id: toText(row.id),
+      userId,
+      email: profile?.email ?? toText(row.email) ?? null,
+      fullName: profile?.fullName ?? null,
+      role: toText(row.role) || "owner",
+      isActive: Boolean(row.is_active ?? true),
+      createdAt: toNullableText(row.created_at),
+    };
+  });
+
   return {
     metrics: {
-      owners: dataset.ownerProfiles.length,
+      owners: ownerProfiles.length,
+      activeOwners: ownerProfiles.filter((p) => p.isActive).length,
       suspendedUsers: workforce.filter((member) => member.status === "suspended").length,
       pendingInvites: workforce.filter((member) => member.status === "pending").length,
       riskyEvents: riskyAuditEvents.length,
     },
-    ownerProfiles: dataset.ownerProfiles,
+    ownerProfiles,
     riskyAuditEvents: riskyAuditEvents.slice(0, 24),
     staffAudit: dataset.staffAuditLogs.slice(0, 24),
   };

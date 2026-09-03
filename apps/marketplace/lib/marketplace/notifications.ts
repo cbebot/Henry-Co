@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDivisionConfig } from "@henryco/config";
+import { BRAND_EMAILS, getDivisionConfig, henryDomain } from "@henryco/config";
 import { resolveRecipientLocale, sendTransactionalEmail } from "@henryco/email";
 import { normalizeEmail } from "@/lib/env";
 import { autoTranslateMany } from "@/lib/i18n/auto-translate";
@@ -27,6 +27,7 @@ type MarketplaceEventInput = {
   actorEmail?: string | null;
   entityType?: string | null;
   entityId?: string | null;
+  actionUrl?: string | null;
   payload: Record<string, unknown>;
 };
 
@@ -40,19 +41,23 @@ type EventCopy = {
 };
 
 const marketplace = getDivisionConfig("marketplace");
+// V3-07(S2): production base URL via henryDomain() so preview/staging
+// emit their matching base domain in transactional email links.
 const marketplaceBaseUrl =
   process.env.NODE_ENV === "production"
-    ? "https://marketplace.henrycogroup.com"
+    ? henryDomain("marketplace")
     : "http://localhost:3000";
 
 function getMarketplaceSenderAddress() {
-  const fallback = "onboarding@resend.dev";
-  const candidate = cleanText(process.env.RESEND_FROM_EMAIL || process.env.RESEND_SUPPORT_INBOX || marketplace.supportEmail)
+  // EMAIL-POSTMARK (2026-07-14): POSTMARK_FROM_EMAIL replaces the retired
+  // RESEND_* sender envs, and the resend.dev sandbox fallback is gone —
+  // an unconfigured deployment sends from the brand no-reply address.
+  const candidate = cleanText(process.env.POSTMARK_FROM_EMAIL || marketplace.supportEmail)
     .replace(/[\r\n]+/g, "")
     .trim();
 
   if (!candidate || !candidate.includes("@")) {
-    return fallback;
+    return BRAND_EMAILS.noreply;
   }
 
   return candidate;
@@ -89,7 +94,6 @@ const cooldownByEvent: Partial<Record<MarketplaceTemplateKey, number>> = {
 function ownerAlertEmail() {
   return (
     cleanText(process.env.MARKETPLACE_OWNER_ALERT_EMAIL) ||
-    cleanText(process.env.RESEND_SUPPORT_INBOX) ||
     marketplace.supportEmail
   );
 }
@@ -231,6 +235,8 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
   const payoutReference = String(payload.payoutReference || payload.reference || "");
   const note = String(payload.note || payload.reviewNote || payload.review_note || "");
   const statusLabel = String(payload.statusLabel || payload.status_label || "");
+  const conversationId = String(payload.conversationId || payload.conversation_id || "");
+  const recipientRole = String(payload.recipientRole || payload.recipient_role || "");
 
   switch (event) {
     case "buyer_welcome":
@@ -242,7 +248,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           eyebrow: "Buyer onboarding",
           headline: "Your marketplace account is ready.",
           summary:
-            "Save products, follow verified stores, track split orders, and manage disputes — and move into seller onboarding later from the same HenryCo identity.",
+            "Save products, follow verified stores, track split orders, and manage disputes — and move into seller onboarding later from the same Henry Onyx identity.",
           bullets: [
             "Track orders and payments from one account",
             "Follow stores and save products for later",
@@ -251,9 +257,9 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Open your account",
           ctaHref: `${marketplaceBaseUrl}/account`,
         },
-        whatsappText: "HenryCo Marketplace: account is ready. Browse premium products, track orders, and follow verified stores from one place.",
+        whatsappText: "Henry Onyx Marketplace: account is ready. Browse premium products, track orders, and follow verified stores from one place.",
         whatsappTemplateEnv: "WHATSAPP_TEMPLATE_ORDER_CONFIRMATION",
-        whatsappTemplateValues: ["HenryCo Marketplace", "Your account is ready"],
+        whatsappTemplateValues: ["Henry Onyx Marketplace", "Your account is ready"],
       };
     case "cart_saved":
       return {
@@ -267,7 +273,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             note ||
             "We saved the products you were considering so you can return without rebuilding the basket or losing trust and delivery context.",
           bullets: [
-            "Items remain tied to your HenryCo account",
+            "Items remain tied to your Henry Onyx account",
             "Split-order and delivery notes stay visible at checkout",
           ],
           ctaLabel: "Return to cart",
@@ -289,7 +295,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             "Your delivery details and selected products are still waiting, so you can complete the order without starting over.",
           bullets: [
             "Payment instructions remain visible before confirmation",
-            "Order tracking will attach to the same HenryCo identity",
+            "Order tracking will attach to the same Henry Onyx identity",
           ],
           ctaLabel: "Resume checkout",
           ctaHref: "/checkout",
@@ -305,31 +311,31 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           headline: "Your payment instructions are ready.",
           summary:
             note ||
-            "Use the referenced transfer details, then upload or send proof so finance can verify the payment and release the order to fulfillment.",
-          bullets: [`Order: ${orderNo}`, "Manual verification keeps payment and dispute trails accountable."],
+            "Transfer the exact total using the reference shown, then upload your payment proof. Once your payment is confirmed, your order moves straight into processing.",
+          bullets: [`Order: ${orderNo}`, "Your payment and order are tracked together, so you always have a clear record if anything needs review."],
           ctaLabel: "Track this order",
           ctaHref: `/track/${orderNo}`,
         },
-        whatsappText: `Payment instructions are ready for ${orderNo}. Submit transfer proof after payment so finance can verify it.`,
+        whatsappText: `Payment instructions are ready for ${orderNo}. Upload your transfer proof after paying and we'll confirm your order.`,
         whatsappTemplateEnv: "WHATSAPP_TEMPLATE_PAYMENT_REMINDER",
         whatsappTemplateValues: [orderNo, "payment instructions ready"],
       };
     case "order_confirmed":
       return {
         inAppTitle: "Order confirmed",
-        inAppBody: `${orderNo} has moved into the confirmed order queue.`,
+        inAppBody: `Your order ${orderNo} is confirmed and being prepared.`,
         email: {
           templateKey: event,
           eyebrow: "Order lifecycle",
           headline: "Your order is confirmed.",
           summary:
             note ||
-            `${orderNo} has cleared the first operational checkpoint and is now in the confirmed processing queue.`,
+            `${orderNo} is confirmed. The seller is preparing it for dispatch — we'll notify you at each step.`,
           bullets: [`Order: ${orderNo}`, statusLabel ? `Status: ${statusLabel}` : "Status: confirmed"],
           ctaLabel: "Track order",
           ctaHref: `/track/${orderNo}`,
         },
-        whatsappText: `HenryCo Marketplace confirmed ${orderNo}.`,
+        whatsappText: `Henry Onyx Marketplace confirmed ${orderNo}.`,
         whatsappTemplateEnv: "WHATSAPP_TEMPLATE_ORDER_CONFIRMATION",
         whatsappTemplateValues: [orderNo, "confirmed"],
       };
@@ -346,7 +352,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Track order",
           ctaHref: `/track/${orderNo}`,
         },
-        whatsappText: `HenryCo Marketplace packed ${orderNo} and is preparing it for dispatch.`,
+        whatsappText: `Henry Onyx Marketplace packed ${orderNo} and is preparing it for dispatch.`,
         whatsappTemplateEnv: "WHATSAPP_TEMPLATE_ORDER_SHIPPED",
         whatsappTemplateValues: [orderNo, "packed"],
       };
@@ -359,7 +365,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           eyebrow: "Seller onboarding",
           headline: "Your seller application is in review.",
           summary:
-            "HenryCo Marketplace has received your store application and queued it for trust, category, and service-level review.",
+            "Henry Onyx Marketplace has received your store application and queued it for trust, category, and service-level review.",
           bullets: [
             `Store: ${storeName}`,
             "You will be notified after review or if more information is required.",
@@ -368,7 +374,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "View application",
           ctaHref: "/account/seller-application",
         },
-        whatsappText: `${storeName} has been submitted to HenryCo Marketplace for review. We will update you once trust and category checks are complete.`,
+        whatsappText: `${storeName} has been submitted to Henry Onyx Marketplace for review. We will update you once trust and category checks are complete.`,
       };
     case "vendor_application_approved":
       return {
@@ -384,7 +390,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Open vendor workspace",
           ctaHref: "/vendor",
         },
-        whatsappText: `${storeName} has been approved on HenryCo Marketplace. Your vendor workspace is ready.`,
+        whatsappText: `${storeName} has been approved on Henry Onyx Marketplace. Your vendor workspace is ready.`,
       };
     case "vendor_application_rejected":
       return {
@@ -399,7 +405,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Review application notes",
           ctaHref: "/account/seller-application",
         },
-        whatsappText: `HenryCo Marketplace updated your seller application. ${note || "Please review the notes and resubmit."}`,
+        whatsappText: `Henry Onyx Marketplace updated your seller application. ${note || "Please review the notes and resubmit."}`,
       };
     case "vendor_application_changes_requested":
       return {
@@ -420,7 +426,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Continue application",
           ctaHref: "/account/seller-application/review",
         },
-        whatsappText: `HenryCo Marketplace requested changes for ${storeName}. Review the notes in your account.`,
+        whatsappText: `Henry Onyx Marketplace requested changes for ${storeName}. Review the notes in your account.`,
       };
     case "seller_onboarding_complete":
       return {
@@ -446,7 +452,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
     case "product_submitted_for_review":
       return {
         inAppTitle: "Product submitted for review",
-        inAppBody: `${productTitle} is now in the moderation queue.`,
+        inAppBody: `${productTitle} has been submitted and is now under review.`,
         email: {
           templateKey: event,
           eyebrow: "Catalog moderation",
@@ -461,7 +467,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Open product workspace",
           ctaHref: "/vendor/products",
         },
-        whatsappText: `${productTitle} was submitted for review on HenryCo Marketplace.`,
+        whatsappText: `${productTitle} was submitted for review on Henry Onyx Marketplace.`,
       };
     case "product_approved":
     case "product_changes_requested":
@@ -496,8 +502,8 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
         },
         whatsappText:
           event === "product_approved"
-            ? `${productTitle} is now approved on HenryCo Marketplace.`
-            : `HenryCo Marketplace updated ${productTitle}. ${note || "Review the moderation notes in your vendor workspace."}`,
+            ? `${productTitle} is now approved on Henry Onyx Marketplace.`
+            : `Henry Onyx Marketplace updated ${productTitle}. ${note || "Review the moderation notes in your vendor workspace."}`,
       };
     case "order_placed":
     case "payment_reminder":
@@ -524,7 +530,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             : event === "payment_reminder"
             ? `We are still waiting for payment evidence on ${orderNo}.`
             : event === "payment_verified"
-            ? `${orderNo} has been verified by finance.`
+            ? `Payment confirmed for ${orderNo}.`
             : event === "order_shipped"
             ? `${orderNo} is now in transit.`
             : event === "order_delivered"
@@ -553,7 +559,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Track order",
           ctaHref: `/track/${orderNo}`,
         },
-        whatsappText: `HenryCo Marketplace update for ${orderNo}: ${statusLabel || event.replace(/_/g, " ")}.`,
+        whatsappText: `Henry Onyx Marketplace update for ${orderNo}: ${statusLabel || event.replace(/_/g, " ")}.`,
         whatsappTemplateEnv:
           event === "order_placed"
             ? "WHATSAPP_TEMPLATE_ORDER_CONFIRMATION"
@@ -578,7 +584,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             : event === "dispute_updated"
             ? "Dispute updated"
             : "Dispute resolved",
-        inAppBody: `${disputeNo} now reflects the latest operations note.`,
+        inAppBody: `There's an update on your dispute ${disputeNo}.`,
         email: {
           templateKey: event,
           eyebrow: "Issue resolution",
@@ -586,12 +592,12 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             event === "dispute_resolved"
               ? "Your dispute has a resolution."
               : "Your dispute has been updated.",
-          summary: note || `${disputeNo} is moving through the marketplace support workflow.`,
+          summary: note || `We're reviewing your dispute ${disputeNo} and will update you as soon as there's news.`,
           bullets: [`Dispute: ${disputeNo}`, orderNo ? `Order: ${orderNo}` : null].filter(Boolean) as string[],
           ctaLabel: "Open disputes",
           ctaHref: "/account/disputes",
         },
-        whatsappText: `HenryCo Marketplace dispute update: ${disputeNo}. ${note || ""}`.trim(),
+        whatsappText: `Henry Onyx Marketplace dispute update: ${disputeNo}. ${note || ""}`.trim(),
         whatsappTemplateEnv: "WHATSAPP_TEMPLATE_DISPUTE_UPDATE",
         whatsappTemplateValues: [disputeNo, statusLabel || "updated"],
       };
@@ -603,7 +609,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           templateKey: event,
           eyebrow: "Returns",
           headline: "A return request is now active.",
-          summary: note || `${orderNo} has entered the return workflow and is waiting for the next resolution step.`,
+          summary: note || `We've logged your return request for order ${orderNo}. The seller will review it shortly.`,
           bullets: [`Order: ${orderNo}`, statusLabel ? `Status: ${statusLabel}` : "Status: return requested"],
           ctaLabel: "Open support",
           ctaHref: "/account/disputes",
@@ -624,8 +630,8 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           summary:
             note ||
             (event === "refund_approved"
-              ? `${orderNo} now has an approved refund path.`
-              : `${orderNo} received a refund rejection or alternate resolution.`),
+              ? `Good news — your refund for order ${orderNo} is approved.`
+              : `We've reviewed order ${orderNo} and a refund wasn't approved this time. Reply to this email if you'd like us to take another look.`),
           bullets: [`Order: ${orderNo}`, disputeNo ? `Dispute: ${disputeNo}` : null].filter(Boolean) as string[],
           ctaLabel: "View order support",
           ctaHref: "/account/disputes",
@@ -641,22 +647,22 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
             : event === "payout_approved"
             ? "Payout approved"
             : "Payout update",
-        inAppBody: `${payoutReference} has a finance update.`,
+        inAppBody: `There's an update on your payout ${payoutReference}.`,
         email: {
           templateKey: event,
-          eyebrow: "Vendor finance",
+          eyebrow: "Payouts",
           headline:
             event === "payout_requested"
               ? "A vendor payout needs review."
               : event === "payout_approved"
               ? "Your payout is approved."
               : "Your payout was rejected.",
-          summary: note || `${payoutReference} has progressed through the marketplace finance workflow.`,
+          summary: note || `There's an update on your payout ${payoutReference}.`,
           bullets: [`Reference: ${payoutReference}`, note || null].filter(Boolean) as string[],
           ctaLabel: "Open payouts",
           ctaHref: event === "payout_requested" ? "/finance" : "/vendor/payouts",
         },
-        whatsappText: `HenryCo Marketplace payout update: ${payoutReference}. ${note || ""}`.trim(),
+        whatsappText: `Henry Onyx Marketplace payout update: ${payoutReference}. ${note || ""}`.trim(),
       };
     case "low_stock":
       return {
@@ -671,7 +677,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Open vendor analytics",
           ctaHref: "/vendor/analytics",
         },
-        whatsappText: `HenryCo Marketplace low stock alert: ${note || productTitle || "A listing needs replenishment."}`,
+        whatsappText: `Henry Onyx Marketplace low stock alert: ${note || productTitle || "A listing needs replenishment."}`,
       };
     case "stale_order":
       return {
@@ -686,7 +692,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Open operations workspace",
           ctaHref: "/operations",
         },
-        whatsappText: `HenryCo Marketplace stale order alert: ${note || orderNo || "An order needs intervention."}`,
+        whatsappText: `Henry Onyx Marketplace stale order alert: ${note || orderNo || "An order needs intervention."}`,
       };
     case "abandoned_cart":
       return {
@@ -698,12 +704,12 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           headline: "Your premium shortlist is still ready.",
           summary:
             note ||
-            "Your HenryCo Marketplace cart is still active. If you were comparing trust signals, delivery notes, or split-order timing, you can continue where you stopped.",
-          bullets: ["Your cart stays linked to your HenryCo identity", "Checkout still shows split-order clarity before confirmation"],
+            "Your Henry Onyx Marketplace cart is still active. If you were comparing trust signals, delivery notes, or split-order timing, you can continue where you stopped.",
+          bullets: ["Your cart stays linked to your Henry Onyx identity", "Checkout still shows split-order clarity before confirmation"],
           ctaLabel: "Return to cart",
           ctaHref: "/cart",
         },
-        whatsappText: "HenryCo Marketplace reminder: your cart is still active if you want to continue checkout.",
+        whatsappText: "Henry Onyx Marketplace reminder: your cart is still active if you want to continue checkout.",
       };
     case "featured_campaign_alert":
       return {
@@ -712,7 +718,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
         email: {
           templateKey: event,
           eyebrow: "Campaign spotlight",
-          headline: "A new HenryCo campaign is live.",
+          headline: "A new Henry Onyx campaign is live.",
           summary:
             note || "Curated products, premium trust signals, and cleaner merchandising are now live in this new campaign edit.",
           bullets: [statusLabel || "Curated launch rail", productTitle !== "your product" ? `Featured: ${productTitle}` : null].filter(Boolean) as string[],
@@ -772,6 +778,23 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaHref: "/help",
         },
       };
+    case "marketplace_message":
+      return {
+        inAppTitle: "New message",
+        inAppBody: note || "You have a new marketplace message.",
+        email: {
+          templateKey: event,
+          eyebrow: "Messages",
+          headline: "You have a new marketplace message.",
+          summary: note || "You received a new message in your marketplace conversation.",
+          ctaLabel: "Open conversation",
+          ctaHref: conversationId
+            ? recipientRole === "vendor"
+              ? `/vendor/messages/${conversationId}`
+              : `/account/messages/${conversationId}`
+            : "/account/messages",
+        },
+      };
     case "security_notice":
       return {
         inAppTitle: "Important account notice",
@@ -783,7 +806,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           summary:
             note ||
             "We recorded an important marketplace account event. Review the details and continue with any recommended action.",
-          bullets: ["This notice is part of your HenryCo account trail"],
+          bullets: ["This notice is part of your Henry Onyx account trail"],
           ctaLabel: "Open account",
           ctaHref: "/account",
         },
@@ -802,7 +825,7 @@ function buildEventCopy(event: MarketplaceTemplateKey, payload: Record<string, u
           ctaLabel: "Open workspace",
           ctaHref: "/owner",
         },
-        whatsappText: `HenryCo Marketplace alert: ${note || "Operator attention required."}`,
+        whatsappText: `Henry Onyx Marketplace alert: ${note || "Operator attention required."}`,
         whatsappTemplateEnv: "WHATSAPP_TEMPLATE_OWNER_ALERT",
         whatsappTemplateValues: [note || "Operator alert"],
       };
@@ -1325,6 +1348,7 @@ export async function sendMarketplaceEvent(input: MarketplaceEventInput) {
           : "low",
     entityType: input.entityType,
     entityId: input.entityId,
+    actionUrl: input.actionUrl,
     amountKobo:
       typeof input.payload.amount === "number"
         ? Math.round(Number(input.payload.amount) * 100)

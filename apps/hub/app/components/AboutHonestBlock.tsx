@@ -1,3 +1,5 @@
+import type { HubPublicCopy } from "@henryco/i18n";
+import { ArrowUpRight } from "lucide-react";
 import type { CompanySettingsRecord } from "../lib/company-settings-shared";
 import type { DivisionRow } from "../lib/divisions";
 
@@ -7,19 +9,14 @@ type AboutFigure = {
 };
 
 function deriveCity(settings: CompanySettingsRecord): string | null {
-  const raw =
-    settings.office_address?.trim() ||
-    settings.address?.trim() ||
-    "";
+  const raw = settings.office_address?.trim() || settings.address?.trim() || "";
   if (!raw) return null;
   // Take the first comma-separated segment as the city/region label.
   const first = raw.split(",")[0]?.trim();
   return first || null;
 }
 
-function deriveYearEstablished(
-  settings: CompanySettingsRecord
-): string | null {
+function deriveYearEstablished(settings: CompanySettingsRecord): string | null {
   const created = settings.created_at?.trim() || "";
   if (!created) return null;
   const date = new Date(created);
@@ -28,117 +25,130 @@ function deriveYearEstablished(
 }
 
 /**
- * AboutHonestBlock — replaces the three near-identical CMS sections
- * ("What we are building / How the group is structured / What guides the
- * business") with a single editorial paragraph + a By the numbers strip
- * pulled from real config + a designed founder-note placeholder so the
- * shape is correct and ready for content. (CHROME-01B FIX 2.)
+ * AboutHonestBlock — a single editorial paragraph + a "By the numbers" ledger
+ * computed from real config, plus a founder note. Figures with no real value
+ * are omitted (no "—" filler that reads as empty). V3-PUBLIC-DESIGN-01 moved it
+ * onto the theme-aware `--home-*` public design system so it matches the rest of
+ * the now-light/dark hub (it previously hardcoded a permanent-dark palette).
  */
+export type AboutOwner = {
+  name: string;
+  role: string;
+  bio: string;
+  photoUrl: string;
+};
+
 export default function AboutHonestBlock({
   settings,
   divisions,
+  owner,
+  copy,
 }: {
   settings: CompanySettingsRecord;
   divisions: DivisionRow[];
+  owner?: AboutOwner | null;
+  copy: HubPublicCopy["aboutHonest"];
 }) {
   const liveCount = divisions.filter((d) => d.status === "active").length;
   const yearEstablished = deriveYearEstablished(settings);
   const city = deriveCity(settings);
 
   const figures: AboutFigure[] = [
-    {
-      label: "Divisions live",
-      value: liveCount > 0 ? String(liveCount) : "—",
-    },
-    {
-      label: "Year established",
-      value: yearEstablished ?? "—",
-    },
-    {
-      label: "Operating city",
-      value: city ?? "—",
-    },
+    { label: copy.figureDivisionsLive, value: liveCount > 0 ? String(liveCount) : null },
+    { label: copy.figureYearEstablished, value: yearEstablished },
+    { label: copy.figureOperatingCity, value: city },
+  ].flatMap((figure) =>
+    figure.value ? [{ label: figure.label, value: figure.value }] : [],
+  );
+
+  const noteLinks = [
+    { label: copy.linkReachCompany, href: "/contact" },
+    { label: copy.linkBrowseDivisions, href: "/#divisions" },
   ];
 
   return (
-    <section className="mx-auto max-w-[88rem] px-5 py-14 sm:px-8 lg:px-10">
-      <div className="grid gap-12 border-t border-white/10 pt-12 lg:grid-cols-[1.1fr_0.9fr]">
+    <section className="mx-auto max-w-6xl px-5 py-14 sm:px-8 lg:px-8">
+      <div className="grid gap-12 border-t border-[color:var(--home-line)] pt-12 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
-          <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
-            About this company
-          </p>
-          <h2 className="mt-4 max-w-2xl text-balance text-[1.55rem] font-semibold leading-[1.18] tracking-[-0.012em] text-white sm:text-[1.95rem]">
-            One company, several focused businesses, one operating standard.
-          </h2>
-          <p className="mt-5 max-w-2xl text-pretty text-[15px] leading-[1.75] text-white/74 sm:text-base">
-            Henry &amp; Co. is a multi-division operating group. Each division
-            runs its own market &mdash; Care, Marketplace, Property, Logistics,
-            Studio, Jobs, Learn &mdash; on the same standard of presentation,
-            booking, pricing, and follow-through. The hub exists so customers,
-            partners, and stakeholders can see the whole company in one place
-            and reach the right business in one step. We grow by adding
-            divisions inside this framework, not by stretching one brand thin.
+          <p className="home-eyebrow text-[color:var(--home-accent-text)]">{copy.eyebrow}</p>
+          <h2 className="home-headline mt-4 max-w-2xl text-balance">{copy.title}</h2>
+          <p className="mt-5 max-w-2xl text-pretty text-[15px] leading-[1.75] text-[color:var(--home-ink-65)] sm:text-base">
+            {copy.body}
           </p>
 
-          <dl className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {figures.map((figure) => (
-              <div
-                key={figure.label}
-                className="border-t border-white/10 pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:first:border-l-0 sm:first:pl-0"
-              >
-                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  {figure.label}
-                </dt>
-                <dd className="mt-2 text-[1.45rem] font-semibold leading-tight tracking-tight text-white sm:text-[1.65rem]">
-                  {figure.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          {figures.length ? (
+            <dl className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
+              {figures.map((figure) => (
+                <div
+                  key={figure.label}
+                  className="border-t border-[color:var(--home-line)] pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:first:border-l-0 sm:first:pl-0"
+                >
+                  <dt className="home-eyebrow text-[color:var(--home-ink-50)]">{figure.label}</dt>
+                  <dd className="mt-2 text-[1.45rem] font-semibold leading-tight tracking-tight text-[color:var(--home-ink)] sm:text-[1.65rem]">
+                    {figure.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
         </div>
 
         <aside className="lg:pt-2">
-          <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.02] p-6 sm:p-8">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[#d6a851]">
-              Founder note
-            </p>
-            <div className="mt-5 flex items-start gap-5">
-              <div
-                aria-hidden
-                className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-dashed border-white/15 bg-black/30 text-white/40"
-              >
-                <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em]">
-                  Photo
-                </span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold tracking-tight text-white">
-                  Founder note &mdash; content managed via CMS
+          <div className="rounded-[1.6rem] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-6 sm:p-8">
+            <p className="home-eyebrow text-[color:var(--home-accent-text)]">{copy.founderEyebrow}</p>
+            {owner ? (
+              <>
+                <div className="mt-4 flex items-center gap-4">
+                  {owner.photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={owner.photoUrl}
+                      alt={owner.name}
+                      className="h-16 w-16 shrink-0 rounded-full object-cover ring-1 ring-[color:var(--home-line-12)]"
+                    />
+                  ) : null}
+                  <div className="min-w-0">
+                    <p className="text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
+                      {owner.name}
+                    </p>
+                    {owner.role ? (
+                      <p className="mt-0.5 text-[12px] font-medium uppercase tracking-[0.14em] text-[color:var(--home-ink-50)]">
+                        {owner.role}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+                {owner.bio ? (
+                  <p className="mt-4 text-[13.5px] leading-7 text-[color:var(--home-ink-65)]">
+                    {owner.bio}
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <>
+                <p className="mt-4 text-base font-semibold tracking-tight text-[color:var(--home-ink)]">
+                  {copy.founderPlaceholderTitle}
                 </p>
-                <p className="mt-2 text-[13px] leading-7 text-white/62">
-                  A short, signed note from the founder will appear here. The
-                  shape is ready &mdash; copy, photo, and signature flow in
-                  from the company CMS once published.
+                <p className="mt-3 text-[13.5px] leading-7 text-[color:var(--home-ink-65)]">
+                  {copy.founderPlaceholderBody}
                 </p>
-              </div>
-            </div>
-            <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
-              <li className="flex items-baseline gap-3 py-3 text-sm">
-                <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  Reach the company
-                </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                  /contact
-                </span>
-              </li>
-              <li className="flex items-baseline gap-3 py-3 text-sm">
-                <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                  Browse divisions
-                </span>
-                <span className="ml-auto text-right text-sm font-semibold tracking-tight text-white">
-                  /#divisions
-                </span>
-              </li>
+              </>
+            )}
+            <ul className="mt-6 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
+              {noteLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    className="home-focus group flex items-center justify-between gap-3 py-3 text-sm font-medium text-[color:var(--home-ink-70)] transition hover:text-[color:var(--home-ink)]"
+                  >
+                    <span>{link.label}</span>
+                    <ArrowUpRight
+                      className="h-4 w-4 shrink-0 text-[color:var(--home-accent-text)] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      aria-hidden
+                    />
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </aside>

@@ -5,6 +5,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
 import { LEGACY_WALLET_TRANSACTION_PENDING_STATUS } from "@/lib/wallet-storage";
+import { WALLET_FUNDING_MIN_KOBO, WALLET_FUNDING_MIN_NAIRA } from "@/lib/wallet-topup";
 
 function buildFundingReference(userId: string) {
   const stamp = Date.now().toString(36).toUpperCase();
@@ -32,14 +33,12 @@ export async function POST(request: Request) {
     const note = typeof body.note === "string" ? body.note.trim() : "";
     const amountKobo = Math.round(amountNaira * 100);
 
-    if (!amountKobo || amountKobo < 10000) {
+    // Single shared floor; NO upper bound (owner decision — see wallet-topup.ts).
+    if (!Number.isSafeInteger(amountKobo) || amountKobo < WALLET_FUNDING_MIN_KOBO) {
       return NextResponse.json(
-        { error: "Enter at least NGN 100 to create a funding request." },
+        { error: `Enter at least NGN ${WALLET_FUNDING_MIN_NAIRA.toLocaleString("en-NG")} to create a funding request.` },
         { status: 400 }
       );
-    }
-    if (amountKobo > 10000000) {
-      return NextResponse.json({ error: "For this flow, the maximum is NGN 100,000 per request." }, { status: 400 });
     }
     if (provider !== "bank_transfer") {
       return NextResponse.json({ error: "This funding method is not available yet." }, { status: 400 });
@@ -119,7 +118,7 @@ export async function POST(request: Request) {
         division: "wallet",
         activity_type: "wallet_funding_requested",
         title: `Wallet funding request — NGN ${amountNaira.toLocaleString()}`,
-        description: "Upload proof after you transfer so the team can verify and release your balance.",
+        description: "Keep this reference on your transfer so we can confirm your payment and credit your wallet.",
         amount_kobo: amountKobo,
         status: "pending_verification",
         reference_type: "wallet_funding_request",
@@ -137,7 +136,7 @@ export async function POST(request: Request) {
         eventType: "wallet.transaction.update",
         severity: "info",
         title: "Funding request created",
-        body: `Transfer NGN ${amountNaira.toLocaleString()} using the bank details on the next screen, then upload proof for verification.`,
+        body: `Transfer NGN ${amountNaira.toLocaleString()} using the bank details on the next screen, and keep this reference so we can confirm your payment.`,
         deepLink: `/wallet/funding/${requestId}`,
         relatedType: "wallet_funding_request",
         publisher: "bridge:apps/account/app/api/wallet/fund",
@@ -192,7 +191,7 @@ export async function POST(request: Request) {
       division: "wallet",
       activity_type: "wallet_funding_requested",
       title: `Wallet funding request — NGN ${amountNaira.toLocaleString()}`,
-      description: "Upload proof after the transfer so the team can confirm the funds.",
+      description: "Keep this reference on your transfer so we can confirm your payment and credit your wallet.",
       amount_kobo: amountKobo,
       status: "pending_verification",
       reference_type: "wallet_funding_request",
@@ -210,7 +209,7 @@ export async function POST(request: Request) {
       eventType: "wallet.transaction.update",
       severity: "info",
       title: "Funding request created",
-      body: `Transfer NGN ${amountNaira.toLocaleString()} using the bank details shown, then upload proof for verification.`,
+      body: `Transfer NGN ${amountNaira.toLocaleString()} using the bank details shown, and keep this reference so we can confirm your payment.`,
       deepLink: `/wallet/funding/${transaction.id}`,
       relatedType: "wallet_funding_request",
       publisher: "bridge:apps/account/app/api/wallet/fund",

@@ -1,7 +1,12 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { isRecoverableSupabaseAuthError, normalizeEmail, resolveUserAvatarFromSources } from "@henryco/config";
+import {
+  filterGrantedMemberships,
+  isRecoverableSupabaseAuthError,
+  normalizeEmail,
+  resolveUserAvatarFromSources,
+} from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -21,6 +26,13 @@ type MarketplaceRoleMembershipRow = {
   role: MarketplaceRole;
   scope_type: string;
   scope_id: string | null;
+};
+
+// Candidate row shape including the fields the grant predicate inspects.
+type MarketplaceMembershipFetch = MarketplaceRoleMembershipRow & {
+  user_id: string | null;
+  normalized_email: string | null;
+  is_active: boolean | null;
 };
 
 function uniqueRoles(roles: MarketplaceRole[]) {
@@ -69,39 +81,28 @@ export async function getMarketplaceViewer(): Promise<MarketplaceViewerContext> 
       .maybeSingle<CustomerProfile>(),
   ]);
 
-  let memberships:
-    | MarketplaceRoleMembershipRow[]
-    | null = null;
+  let memberships: MarketplaceRoleMembershipRow[] | null = null;
   let membershipError = false;
+  const emailVerified = Boolean(user.email_confirmed_at);
 
   try {
-    const { data: byUser, error: byUserError } = await admin
+    // Fetch user_id-bound rows OR email-matched candidates, then let the shared
+    // grant predicate decide: bound rows match only their owner; an unclaimed
+    // (user_id null) seed grants only to a verified, matching mailbox.
+    const { data, error } = await admin
       .from("marketplace_role_memberships")
-      .select("id, role, scope_type, scope_id")
-      .eq("user_id", user.id)
-      .eq("is_active", true);
+      .select("id, role, scope_type, scope_id, user_id, normalized_email, is_active")
+      .eq("is_active", true)
+      .or(email ? `user_id.eq.${user.id},normalized_email.eq.${email}` : `user_id.eq.${user.id}`);
 
-    if (byUserError) {
+    if (error) {
       membershipError = true;
     } else {
-      memberships = (byUser as MarketplaceRoleMembershipRow[] | null) ?? [];
-    }
-
-    if (!membershipError && email) {
-      const { data: byEmail, error: byEmailError } = await admin
-        .from("marketplace_role_memberships")
-        .select("id, role, scope_type, scope_id")
-        .eq("normalized_email", email)
-        .eq("is_active", true);
-
-      if (byEmailError) {
-        membershipError = true;
-      } else {
-        memberships = [
-          ...(memberships ?? []),
-          ...((byEmail as MarketplaceRoleMembershipRow[] | null) ?? []),
-        ];
-      }
+      memberships = filterGrantedMemberships((data as MarketplaceMembershipFetch[] | null) ?? [], {
+        userId: user.id,
+        normalizedEmail: email,
+        emailVerified,
+      });
     }
   } catch {
     membershipError = true;

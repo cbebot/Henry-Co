@@ -1,31 +1,50 @@
 import type { Metadata } from "next";
-import CompanyPageClient from "../../components/CompanyPageClient";
+import { getHubPublicCopy } from "@henryco/i18n/server";
+import { getHubPublicLocale } from "../../../lib/locale-server";
+import CompanyPageEditorial from "../../components/CompanyPageEditorial";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
+  localizeCompanyPage,
 } from "../../lib/company-pages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { page } = await getCompanyPage("terms").catch(() => ({ page: null }));
-  const resolved = page ?? createFallbackCompanyPage("terms");
+  const [{ page }, locale] = await Promise.all([
+    getCompanyPage("terms").catch(() => ({ page: null })),
+    getHubPublicLocale().catch(() => "en" as const),
+  ]);
+  const baseResolved = page ?? createFallbackCompanyPage("terms");
+  const resolved = await localizeCompanyPage(baseResolved, locale);
 
   return {
     title: resolved.seo_title || resolved.title,
     description: resolved.seo_description || resolved.intro || resolved.subtitle || undefined,
+    alternates: { canonical: "/terms" },
   };
 }
 
 export default async function TermsPage() {
-  const result = await getCompanyPage("terms").catch(() => ({ page: null, hasServerError: true }));
+  const [result, locale] = await Promise.all([
+    getCompanyPage("terms").catch(() => ({ page: null, hasServerError: true })),
+    getHubPublicLocale().catch(() => "en" as const),
+  ]);
+  const copy = getHubPublicCopy(locale);
+
+  // PASS i18n-100 — translate the row text for SSR first paint.
+  const localizedPage = await localizeCompanyPage(
+    result.page ?? createFallbackCompanyPage("terms"),
+    locale,
+  );
 
   return (
-    <CompanyPageClient
-      pageKey="terms"
-      initialData={result.page ?? createFallbackCompanyPage("terms")}
+    <CompanyPageEditorial
+      page={localizedPage}
       serverWarning={result.hasServerError}
+      copy={copy.companyPage}
+      locale={locale}
     />
   );
 }

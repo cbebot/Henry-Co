@@ -26,8 +26,8 @@ function sentenceCase(input: string): string {
 }
 
 function friendlyDivisionTitle(division: NewsletterDivision): string {
-  if (division === "hub") return "HenryCo";
-  return `HenryCo ${division.charAt(0).toUpperCase()}${division.slice(1)}`;
+  if (division === "hub") return "Henry Onyx";
+  return `Henry Onyx ${division.charAt(0).toUpperCase()}${division.slice(1)}`;
 }
 
 export function buildDraftSkeleton(input: DraftSkeletonInput): NewsletterCampaignContent {
@@ -224,7 +224,7 @@ export function renderDraftAsHtml(content: NewsletterCampaignContent): string {
 </head>
 <body style="margin:0;padding:0;background:#faf7f1;">
 <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
-  <div style="font-family:Inter,system-ui,sans-serif;color:#888;font-size:12px;letter-spacing:.4px;text-transform:uppercase;">HENRY &amp; CO.</div>
+  <div style="font-family:Inter,system-ui,sans-serif;color:#888;font-size:12px;letter-spacing:.4px;text-transform:uppercase;">HENRY ONYX</div>
   <h1 style="font-family:Inter,system-ui,sans-serif;font-weight:600;font-size:24px;margin:12px 0 4px;color:#111;">${escape(
     content.headline
   )}</h1>

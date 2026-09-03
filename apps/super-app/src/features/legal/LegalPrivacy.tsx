@@ -7,7 +7,7 @@ export function LegalPrivacy() {
   return (
     <View style={{ gap: spacing.md }}>
       <Text variant="body" color="textSecondary">
-        This privacy notice applies to Henry &amp; Co. corporate surfaces and direct interactions
+        This privacy notice applies to Henry Onyx corporate surfaces and direct interactions
         with the parent company. Independent division systems may maintain separate notices.
       </Text>
       <Text variant="subtitle">Information you may provide</Text>

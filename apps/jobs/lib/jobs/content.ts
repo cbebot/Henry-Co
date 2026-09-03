@@ -1,3 +1,5 @@
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n/server";
+
 import type { Differentiator } from "@/lib/jobs/types";
 
 export const JOBS_STAGE_ORDER = [
@@ -81,9 +83,9 @@ export const JOBS_DIFFERENTIATORS: Differentiator[] = [
     id: "internal-external-dual-mode",
     title: "Internal and External Dual Mode",
     summary:
-      "HenryCo internal hiring and external employer hiring coexist without forcing one compromise model onto both.",
+      "Henry Onyx internal hiring and external employer hiring coexist without forcing one compromise model onto both.",
     pros: [
-      "Lets HenryCo recruit itself inside the same operating surface",
+      "Lets Henry Onyx recruit itself inside the same operating surface",
       "Avoids duplicating pipeline tooling",
     ],
     cons: [
@@ -174,3 +176,15 @@ export const JOBS_DIFFERENTIATORS: Differentiator[] = [
     innovationScore: 9,
   },
 ];
+
+export function getJobsDifferentiators(locale?: AppLocale): Differentiator[] {
+  if (!locale) return JOBS_DIFFERENTIATORS;
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return JOBS_DIFFERENTIATORS.map((item) => ({
+    ...item,
+    title: t(item.title),
+    summary: t(item.summary),
+    pros: item.pros.map(t),
+    cons: item.cons.map(t),
+  }));
+}

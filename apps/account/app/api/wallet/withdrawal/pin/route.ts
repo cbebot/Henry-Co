@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
+import { buildAccountRiskGate } from "@/lib/risk/gate";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -18,6 +20,18 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // V3-02 S4: setting / changing a withdrawal PIN is a sensitive
+    // action — gate behind fresh re-authentication.
+    const guard = await requireSensitiveAction(request, {
+      action: "wallet.withdrawal.pin",
+      entityType: "wallet_pin",
+      resolveUser: async () => user,
+      userId: (u) => u.id,
+      // V3-40: staff-applied risk hold pauses PIN changes (withdrawal prep).
+      riskGate: buildAccountRiskGate(),
+    });
+    if (!guard.ok) return guard.response;
 
     await ensureAccountProfileRecords(user);
 

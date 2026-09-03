@@ -6,7 +6,7 @@ import { getSharedAccountPropertyUrl, sanitizePropertyAuthReturnTarget } from "@
 
 export default function PropertyAuthCallbackPage() {
   const searchParams = useSearchParams();
-  const [message, setMessage] = useState("Completing your HenryCo Property sign-in...");
+  const [message, setMessage] = useState("Completing your Henry Onyx Property sign-in...");
 
   useEffect(() => {
     let active = true;

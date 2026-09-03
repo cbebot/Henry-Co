@@ -6,6 +6,7 @@ import { getStudioCatalog } from "@/lib/studio/catalog";
 import {
   addStudioNotificationRecord,
   sendDepositReceivedNotifications,
+  sendPaymentReceivedNotifications,
   sendFinalDeliveryNotifications,
   sendInquiryNotifications,
   sendMilestoneReadyNotifications,
@@ -17,6 +18,10 @@ import {
   sendRevisionCompletedNotifications,
   sendRevisionRequestedNotifications,
 } from "@/lib/studio/email/send";
+import {
+  classifyStudioBrief,
+  resolveBriefSubmissionPlan,
+} from "@/lib/studio/brief-class";
 import {
   buildMilestoneAmounts,
   estimateStudioPricing,
@@ -113,7 +118,7 @@ function domainIntentBullet(intent: StudioDomainIntent | null | undefined): stri
       : "Domain: client will connect an existing domain at launch";
   }
   if (intent.path === "later") {
-    return "Domain: choose with HenryCo before go-live";
+    return "Domain: choose with Henry Onyx before go-live";
   }
   const label = cleanText(intent.desiredLabel) || "preferred name TBD";
   const backup = cleanText(intent.backupLabel);
@@ -335,6 +340,18 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     },
   }, catalog.requestConfig);
   const investment = pricing.total;
+  // SA-D5 review gate — classify, then route. Template briefs keep the
+  // shipped instant auto-send; agency briefs hold in `in_review` for a
+  // one-tap staff release before the client ever holds a price.
+  const briefClass = classifyStudioBrief({
+    packageIntent: input.packageIntent,
+    packagePrice: input.packageIntent === "package" ? (pkg?.price ?? null) : null,
+    estimatedTotal: pricing.total,
+  });
+  const plan = resolveBriefSubmissionPlan({
+    briefClass,
+    depositNow: Boolean(input.depositNow),
+  });
   const { proposalMilestones, projectMilestones } = buildMilestonePlan(
     projectId,
     investment,
@@ -358,7 +375,7 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     companyName: cleanText(input.companyName) || null,
     phone: cleanText(input.phone) || null,
     serviceKind: input.serviceKind,
-    status: input.depositNow ? "won" : "proposal_sent",
+    status: plan.leadStatus,
     readinessScore,
     businessType: cleanText(input.businessType),
     budgetBand: cleanText(input.budgetBand),
@@ -379,6 +396,7 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     urgency: cleanText(input.urgency),
     timeline: cleanText(input.timeline),
     packageIntent: input.packageIntent,
+    briefClass,
     techPreferences: input.techPreferences ?? [],
     requiredFeatures: input.requiredFeatures ?? [],
     referenceFiles,
@@ -410,7 +428,7 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     accessKey: createAccessKey(`proposal:${proposalId}`),
-    status: input.depositNow ? "accepted" : "sent",
+    status: plan.proposalStatus,
     title: `${service.name} scope for ${lead.companyName || lead.customerName}`,
     summary:
       pkg?.summary ||
@@ -496,7 +514,7 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
   let project: StudioProject | null = null;
   let payment: StudioPayment | null = null;
 
-  if (input.depositNow) {
+  if (plan.createProjectNow) {
     project = {
       id: projectId,
       proposalId,
@@ -553,11 +571,17 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
   // so the brief author lands on their project/proposal page in <1s.
   // Errors here are logged but not surfaced — the brief is already
   // safely persisted by the upserts above.
+  //
+  // SA-D5: a held (agency) brief still confirms receipt to the client and
+  // alerts the team (sendInquiryNotifications), but the proposal_sent email
+  // — the auto-send — waits for the one-tap staff release.
   after(async () => {
     try {
       await Promise.all([
         sendInquiryNotifications({ lead, proposal, project }),
-        sendProposalNotifications({ lead, proposal, project, teamName: team.name }),
+        plan.sendProposalNow
+          ? sendProposalNotifications({ lead, proposal, project, teamName: team.name })
+          : Promise.resolve(),
         project && payment
           ? sendPaymentInstructionsNotifications({ lead, proposal, project, payment })
           : Promise.resolve(),
@@ -567,7 +591,62 @@ export async function submitStudioBrief(input: SubmitStudioBriefInput) {
     }
   });
 
-  return { lead, brief, proposal, project, payment };
+  return { lead, brief, proposal, project, payment, heldForReview: plan.heldForReview };
+}
+
+/**
+ * SA-D5 — the one-tap staff release for a held agency brief. Verifies the
+ * proposal is actually in `in_review` (double-release is a no-op error, not
+ * a duplicate email), flips it to `sent`, advances the lead, and fires the
+ * same proposal notification the template lane sends at submit.
+ *
+ * Callers gate on `requireStudioRoles(["studio_owner","sales_consultation"])`
+ * — the exact delegation set the owner pre-approved in SA-D1.
+ */
+export async function releaseStudioProposal(proposalId: string) {
+  const snapshot = await getStudioSnapshot();
+  const proposal = snapshot.proposals.find((item) => item.id === proposalId);
+  if (!proposal) throw new Error("Proposal not found.");
+  if (proposal.status !== "in_review") {
+    throw new Error("Only a proposal in review can be released.");
+  }
+
+  const lead = snapshot.leads.find((item) => item.id === proposal.leadId);
+  if (!lead) throw new Error("Lead not found.");
+
+  const catalog = await getStudioCatalog({ includeUnpublished: true });
+  const team = catalog.teams.find((item) => item.id === proposal.teamId) ?? null;
+
+  const released: StudioProposal = {
+    ...proposal,
+    status: "sent",
+    updatedAt: new Date().toISOString(),
+  };
+  await upsertStudioRecord("studio_proposal_upsert", released, {
+    userId: lead.userId,
+    email: lead.normalizedEmail,
+    role: "sales_consultation",
+  });
+
+  const updatedLead: StudioLead = {
+    ...lead,
+    status: "proposal_sent",
+    updatedAt: new Date().toISOString(),
+  };
+  await upsertStudioRecord("studio_lead_upsert", updatedLead, {
+    userId: updatedLead.userId,
+    email: updatedLead.normalizedEmail,
+    role: "sales_consultation",
+  });
+
+  await sendProposalNotifications({
+    lead: updatedLead,
+    proposal: released,
+    project: null,
+    teamName: team?.name ?? "Henry Onyx Studio",
+  });
+
+  return released;
 }
 
 export async function setProposalStatus(proposalId: string, status: StudioProposal["status"]) {
@@ -751,7 +830,7 @@ export async function setPaymentStatus(input: {
     const updatedProject: StudioProject = {
       ...project,
       status: "active",
-      nextAction: "HenryCo Studio has moved the project into active delivery.",
+      nextAction: "Henry Onyx Studio has moved the project into active delivery.",
       milestones,
       updatedAt: new Date().toISOString(),
     };
@@ -782,6 +861,18 @@ export async function setPaymentStatus(input: {
         lead,
         proposal,
         project: updatedProject,
+        payment: updatedPayment,
+      });
+    }
+  } else if (input.status === "paid") {
+    // EMAIL-TPL-02: non-deposit payments (milestones / balances) previously
+    // flipped to paid in SILENCE — only the first deposit emailed the client.
+    // Every confirmed payment now sends the generic receipt.
+    const lead = snapshot.leads.find((item) => item.id === project.leadId);
+    if (lead) {
+      await sendPaymentReceivedNotifications({
+        lead,
+        project,
         payment: updatedPayment,
       });
     }

@@ -22,10 +22,12 @@ import {
 
 import { COLLECTIONS_BY_NAME, listPermittedCollections } from "./collections";
 import { getAdminClient, readTypesenseEnv, type TypesenseEnv } from "./client";
+import { getCollectionTuning } from "./collection-tuning";
 import { checkSearchRateLimit } from "./rate-limit";
 import { buildFilterClauses, resolveUserRoles, type RoleResolution } from "./role";
 import { searchInputSchema } from "./schema";
 import {
+  applyDiversityCap,
   dedupeAndRank,
   scoreCatalog,
   scoreIndexedHit,
@@ -34,6 +36,7 @@ import {
 } from "./ranking";
 import type {
   SearchDocument,
+  SearchDivision,
   SearchInput,
   SearchOutput,
   UnifiedSearchResult,
@@ -108,8 +111,26 @@ export async function searchAcrossDivisions(
             rawInput.role_visibility.includes("staff_owner") ||
             rawInput.role_visibility.includes("platform_owner"),
           is_platform_owner: rawInput.role_visibility.includes("platform_owner"),
+          primary_division: input.primary_division,
         }
       : await resolveUserRoles(deps.supabase, input.user_id);
+
+  // SEARCH-01: if the caller did not pin a primary_division, use the
+  // one resolved from membership rows. This is the signal that lights
+  // up the +0.2 primary_division boost in scoreIndexedHit + the anchor
+  // for the diversity cap; without it the formula's `primary_division`
+  // limb stays dark in production.
+  const effectivePrimaryDivision: SearchDivision | undefined =
+    input.primary_division ?? resolution.primary_division;
+
+  // SEARCH-01: fetch the user's active workflow keys when not supplied
+  // by the caller. The +0.3 boost in scoreIndexedHit checks tags
+  // against this set; without a populated set the boost stays dark.
+  // Best-effort: a failed read silently degrades to an empty set so
+  // search never blocks on this signal.
+  const activeWorkflowKeys =
+    deps.active_workflow_keys ??
+    (await fetchActiveWorkflowKeys(deps.supabase, input.user_id));
 
   // 3. Pick permitted collections
   let permitted = listPermittedCollections({
@@ -132,16 +153,26 @@ export async function searchAcrossDivisions(
     }
     const client = getAdminClient(env);
 
-    const searches = permitted.map((collection) => ({
-      collection: collection.name,
-      q: input.query || "*",
-      query_by: "title,summary,tags,badge",
-      filter_by: buildFilterClauses({ collection, resolution }),
-      per_page: input.limit,
-      facet_by: "type,division",
-      sort_by: "_text_match:desc,updated_at:desc",
-      // Workflow target boost is applied client-side via scoreIndexedHit.
-    }));
+    const searches = permitted.map((collection) => {
+      const tuning = getCollectionTuning(collection);
+      return {
+        collection: collection.name,
+        q: input.query || "*",
+        query_by: "title,summary,tags,badge",
+        query_by_weights: tuning.query_by_weights,
+        num_typos: tuning.num_typos,
+        min_len_1typo: tuning.min_len_1typo,
+        min_len_2typo: tuning.min_len_2typo,
+        prioritize_token_position: tuning.prioritize_token_position,
+        drop_tokens_threshold: tuning.drop_tokens_threshold,
+        prefix: tuning.prefix,
+        filter_by: buildFilterClauses({ collection, resolution }),
+        per_page: input.limit,
+        facet_by: "type,division",
+        sort_by: "_text_match:desc,updated_at:desc",
+        // Workflow target boost is applied client-side via scoreIndexedHit.
+      };
+    });
 
     let response: MultiSearchResponse;
     try {
@@ -169,8 +200,8 @@ export async function searchAcrossDivisions(
         const score = scoreIndexedHit({
           hit: { document: item.document, text_match: item.text_match ?? 0, rank: 0 },
           resolution,
-          primary_division: input.primary_division,
-          active_workflow_keys: deps.active_workflow_keys ?? new Set<string>(),
+          primary_division: effectivePrimaryDivision,
+          active_workflow_keys: activeWorkflowKeys,
         });
         hits.push(toUnifiedFromIndexed({ document: item.document, score }));
       }
@@ -209,8 +240,18 @@ export async function searchAcrossDivisions(
     catalogHitsPromise,
   ]);
 
-  // 6. Combine, dedupe, rank, paginate
-  const ranked = dedupeAndRank([...indexedHits, ...catalogHits]);
+  // 6. Combine, dedupe, rank, paginate. When the caller has not
+  // narrowed by division (generic query path), apply the diversity
+  // cap so one division can't flood the result list — see
+  // `applyDiversityCap` for the rules.
+  let ranked = dedupeAndRank([...indexedHits, ...catalogHits]);
+  if (!input.divisions_filter || input.divisions_filter.length === 0) {
+    ranked = applyDiversityCap(ranked, {
+      perDivisionCap: 3,
+      overflowFloor: 0.5,
+      anchorDivision: effectivePrimaryDivision,
+    });
+  }
   const offset = decodeCursor(input.cursor);
   const slice = ranked.slice(offset, offset + input.limit);
   const next_cursor =
@@ -244,3 +285,37 @@ function decodeCursor(cursor: string | undefined): number {
 
 /** Unused export retained for future facet expansion. */
 export const COLLECTION_FACET_REGISTRY = COLLECTIONS_BY_NAME;
+
+/**
+ * SEARCH-01 — fetch the user's active workflow keys.
+ *
+ * Reads `search_workflow_targets` rows that have NOT been resolved
+ * and projects the `workflow_key` column into a Set. Returns empty
+ * on any error or when supabase / user_id is absent. The +0.3 tag
+ * boost in `scoreIndexedHit` checks `doc.tags?.some(tag =>
+ * set.has(tag))` so the same string identity used by the workflow
+ * trigger (`tags: ["workflow", workflow_key, urgency]`) is what
+ * lands here.
+ */
+async function fetchActiveWorkflowKeys(
+  supabase: SupabaseClient | null,
+  user_id: string | undefined | null,
+): Promise<ReadonlySet<string>> {
+  if (!supabase || !user_id) return new Set<string>();
+  try {
+    const { data, error } = await supabase
+      .from("search_workflow_targets")
+      .select("workflow_key")
+      .eq("user_id", user_id)
+      .is("resolved_at", null);
+    if (error || !data) return new Set<string>();
+    const out = new Set<string>();
+    for (const row of data as Array<{ workflow_key?: unknown }>) {
+      const key = String(row.workflow_key ?? "").trim();
+      if (key) out.add(key);
+    }
+    return out;
+  } catch {
+    return new Set<string>();
+  }
+}

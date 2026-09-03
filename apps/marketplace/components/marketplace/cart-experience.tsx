@@ -24,14 +24,14 @@ export function CartExperience() {
 
   const grouped = Object.entries(
     cart.items.reduce<Record<string, typeof cart.items>>((accumulator, item) => {
-      const key = item.vendorName || item.vendorSlug || "HenryCo";
+      const key = item.vendorName || item.vendorSlug || "Henry Onyx";
       accumulator[key] = accumulator[key] ? [...accumulator[key], item] : [item];
       return accumulator;
     }, {})
   );
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[1fr,380px]">
+    <section className="grid gap-6 xl:grid-cols-[1fr_380px]">
       <div className="space-y-5">
         {grouped.map(([groupName, items]) => (
           <article
@@ -47,8 +47,8 @@ export function CartExperience() {
                   {groupName}
                 </h2>
               </div>
-              <p className="rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
-                {items[0]?.inventoryOwnerType === "company" ? "HenryCo stocked" : "Verified vendor"}
+              <p className="rounded-full border border-[var(--market-line)] bg-[color:var(--home-surface-04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--market-paper-white)]">
+                {items[0]?.inventoryOwnerType === "company" ? "Henry Onyx stocked" : "Verified vendor"}
               </p>
             </div>
 
@@ -61,7 +61,7 @@ export function CartExperience() {
                 return (
                   <div
                     key={item.id}
-                    className="grid gap-4 rounded-[1.7rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-4 sm:grid-cols-[148px,1fr]"
+                    className="grid gap-4 rounded-[1.7rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] p-4 sm:grid-cols-[148px_1fr]"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem] bg-[var(--market-soft-wash)]">
                       {item.image ? (
@@ -86,7 +86,7 @@ export function CartExperience() {
                         <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{item.deliveryNote}</p>
                       </div>
                       <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="inline-flex items-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-1">
+                        <div className="inline-flex items-center rounded-full border border-[var(--market-line)] bg-[color:var(--home-surface-04)] p-1">
                           <button
                             type="button"
                             disabled={cartBusy}
@@ -189,7 +189,7 @@ export function CartExperience() {
             </span>
           </div>
         </div>
-        <div className="mt-6 rounded-[1.5rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]">
+        <div className="mt-6 rounded-[1.5rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]">
           Each vendor segment stays visible during checkout so buyers understand delivery timing, payment state, and post-order support before confirming.
         </div>
         <div className="mt-6 grid gap-3">

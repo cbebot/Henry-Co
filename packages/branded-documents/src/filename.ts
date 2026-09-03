@@ -10,14 +10,20 @@ export type DocumentType =
   | "JobsApplication"
   | "Certificate"
   | "WalletStatement"
-  | "SupportThread";
+  | "SupportThread"
+  | "LogisticsShipmentReceipt"
+  | "LogisticsB2BStatement"
+  | "VendorPayoutStatement"
+  | "VendorTaxSummary"
+  | "OwnerReportWeekly"
+  | "OwnerReportMonthly";
 
 export function buildDocumentFilename(type: DocumentType, id: string, date: Date = new Date()) {
   const stem = String(id || "doc").replace(NON_SLUG, "").slice(0, 32) || "doc";
   const yyyy = date.getUTCFullYear();
   const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(date.getUTCDate()).padStart(2, "0");
-  return `HenryCo-${type}-${stem}-${yyyy}${mm}${dd}.pdf`;
+  return `Henry Onyx-${type}-${stem}-${yyyy}${mm}${dd}.pdf`;
 }
 
 export function contentDispositionHeader(filename: string) {

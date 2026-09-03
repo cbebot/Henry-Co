@@ -1,11 +1,13 @@
 import { LearnWorkspaceLoading } from "@/components/learn/loading-state";
 
+/**
+ * V3-05 — Learn owner workspace route fallback.
+ *
+ * LearnWorkspaceLoading now renders content-shaped skeleton blocks
+ * with no warmup hero copy. Previous theater props ("Preparing academy
+ * operations" + "Loading courses, learners, assignments...") were
+ * dropped from source.
+ */
 export default function OwnerLoading() {
-  return (
-    <LearnWorkspaceLoading
-      kicker="Preparing academy operations"
-      title="Loading courses, learners, assignments, and communications."
-      body="Bringing live academy records into one polished operations view so decisions stay grounded in the current state."
-    />
-  );
+  return <LearnWorkspaceLoading />;
 }

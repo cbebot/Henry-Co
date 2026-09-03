@@ -1,15 +1,27 @@
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import { Suspense } from "react";
 import {
   getRegisteredModules,
-  WorkspaceSlot,
-  EmptyState,
   LoadingSkeleton,
   ErrorBoundary,
 } from "@henryco/dashboard-shell";
-import { CSS_VARS } from "@henryco/dashboard-shell/tokens";
+import {
+  HeroCard,
+  EmptyStateCard,
+  DivisionLanding,
+} from "@henryco/dashboard-shell/surfaces";
 import { buildUnifiedViewer } from "@henryco/auth/server";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import {
+  deepLinkSourceFromUtm,
+  recordDeepLinkArrived,
+  recordDeepLinkDeadLink,
+} from "@henryco/observability";
 import { requireAccountUser } from "@/lib/auth";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { WidgetOpenOverlay } from "@/components/smart-home/WidgetOpenOverlay";
 
 // Side-effect: register modules. Without this import the registry is
 // empty and getRegisteredModules() returns [].
@@ -18,27 +30,46 @@ import "@/app/(account)/_modules";
 /**
  * Catch-all module router — `/modules/[...slug]/page.tsx`.
  *
- * Resolves `slug[0]` to a registered module (`getRegisteredModules`)
- * and renders the module's home view. Sub-paths under
- * `/modules/<slug>/...` are not resolved by this catch-all in DASH-2
- * (the module's `getRoutes()` declares them; DASH-3 extends the router
- * to honour each detail entry). For now any non-home sub-path renders
- * the module home with a "deep-link landing pending" notice — the
- * existing `/marketplace/*` and `/wallet/*` routes still serve their
- * own content unaffected.
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2E). Lifts the bare typography
+ * header into a compact HeroCard so registered modules feel like
+ * first-class dashboard surfaces.
+ *
+ * Module registry contract NOT extended this session — `module.title` and
+ * `module.description` remain the only state-free source. When the
+ * registry adds `getHero(viewer)` the compact hero below picks it up
+ * automatically.
  */
 export const dynamic = "force-dynamic";
 
+type SearchParams = { [key: string]: string | string[] | undefined };
+
 type PageProps = {
   params: Promise<{ slug: string[] }>;
+  searchParams: Promise<SearchParams>;
 };
 
-export default async function ModulePage({ params }: PageProps) {
-  const { slug } = await params;
+function firstParam(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function ModulePage({ params, searchParams }: PageProps) {
+  const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const [moduleSlug, ...rest] = slug;
   if (!moduleSlug) notFound();
 
-  const user = await requireAccountUser();
+  // V3-04 (S8) — deep-link telemetry context. `source` stays "unknown" for
+  // ordinary in-app navigations (no UTM), which we use to skip recording
+  // those as attributed arrivals; a dead link is recorded regardless. The
+  // emit+persist runs in `after()` so telemetry NEVER blocks routing.
+  const source = deepLinkSourceFromUtm(firstParam(sp.utm_source));
+  const sourceRef = firstParam(sp.utm_campaign) ?? null;
+  const target = `/modules/${slug.join("/")}`;
+
+  const [locale, user] = await Promise.all([
+    getAccountAppLocale(),
+    requireAccountUser(),
+  ]);
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const viewer = await buildUnifiedViewer({
     id: user.id,
     email: user.email,
@@ -48,101 +79,153 @@ export default async function ModulePage({ params }: PageProps) {
 
   const registered = getRegisteredModules();
   const targetModule = registered.find((m) => m.slug === moduleSlug);
-  if (!targetModule) notFound();
+  if (!targetModule) {
+    const supabase = await createSupabaseServer();
+    after(() =>
+      recordDeepLinkDeadLink({
+        supabase,
+        actorId: user.id,
+        source,
+        target,
+        sourceRef,
+      }),
+    );
+    notFound();
+  }
 
+  // Role-gate denial is an authorization outcome, not a broken link, so it is
+  // deliberately NOT recorded as a dead link (keeps the S7 dead-link tile to
+  // genuinely broken targets).
   const decision = targetModule.getRoleGate(viewer);
   if (!decision || decision.kind !== "allow") {
     notFound();
   }
 
-  // Detail sub-paths fall through to the home view in DASH-2; DASH-3
-  // wires per-detail rendering via module.getRoutes() lookup.
-  const isDetail = rest.length > 0;
+  // V3-04 (S8) — record a successful attributed arrival, gated on a known
+  // source so in-app navigations don't flood the event sink.
+  if (source !== "unknown") {
+    const supabase = await createSupabaseServer();
+    after(() =>
+      recordDeepLinkArrived({
+        supabase,
+        actorId: user.id,
+        source,
+        target,
+        outcome: "ok",
+      }),
+    );
+  }
 
+  const isDetail = rest.length > 0;
   const widgetsPromise = targetModule.getHomeWidgets(viewer);
 
   return (
-    <WorkspaceSlot>
-      <header style={{ marginBottom: "1.5rem" }}>
-        <p
-          style={{
-            fontSize: "0.7rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: `var(${CSS_VARS.inkMuted})`,
-            margin: 0,
-          }}
-        >
-          Module
-        </p>
-        <h1
-          style={{
-            margin: "0.25rem 0 0",
-            fontSize: "1.75rem",
-            color: `var(${CSS_VARS.ink})`,
-          }}
-        >
-          {targetModule.title}
-        </h1>
-        <p
-          style={{
-            margin: "0.5rem 0 0",
-            color: `var(${CSS_VARS.inkSoft})`,
-          }}
-        >
-          {targetModule.description}
-        </p>
-      </header>
-      <Suspense
-        fallback={
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(15rem, 1fr))",
-              gap: "1rem",
-            }}
-          >
-            <LoadingSkeleton variant="metric" />
-            <LoadingSkeleton variant="metric" />
-            <LoadingSkeleton variant="metric" />
-            <LoadingSkeleton variant="metric" />
-          </div>
-        }
-      >
-        <ErrorBoundary
-          label={`${targetModule.title} module`}
-          fallback={() => (
-            <EmptyState
-              kicker={targetModule.title}
-              headline="Something went wrong loading this module."
-              body="Refresh the page or come back in a moment."
-            />
-          )}
-        >
-          <ModuleHome moduleSlug={targetModule.slug} widgetsPromise={widgetsPromise} isDetail={isDetail} />
-        </ErrorBoundary>
-      </Suspense>
-    </WorkspaceSlot>
+    <DivisionLanding
+      className="acct-fade-in"
+      hero={
+        <HeroCard
+          variant="compact"
+          tone="calm"
+          eyebrow={t("Module")}
+          headline={targetModule.title}
+          blurb={targetModule.description}
+        />
+      }
+      sections={[
+        ...(isDetail
+          ? [
+              {
+                id: "module-detail-notice",
+                title: t("Deep-link landing pending"),
+                meta: t("Module sub-route"),
+                content: (
+                  <EmptyStateCard
+                    tone="ghost"
+                    kicker={targetModule.title}
+                    title={t(
+                      "Deep-link landing for this module is being built.",
+                    )}
+                    body={t(
+                      "The module's home view is below — DASH-3 wires per-detail rendering.",
+                    )}
+                  />
+                ),
+              },
+            ]
+          : []),
+        {
+          id: "module-home",
+          title: targetModule.title,
+          meta: t("Live widgets"),
+          content: (
+            <Suspense
+              fallback={
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(15rem, 1fr))",
+                    gap: "1rem",
+                  }}
+                >
+                  <LoadingSkeleton variant="metric" />
+                  <LoadingSkeleton variant="metric" />
+                  <LoadingSkeleton variant="metric" />
+                  <LoadingSkeleton variant="metric" />
+                </div>
+              }
+            >
+              <ErrorBoundary
+                label={`${targetModule.title} module`}
+                fallback={() => (
+                  <EmptyStateCard
+                    kicker={targetModule.title}
+                    title={t("Something went wrong loading this module.")}
+                    body={t("Refresh the page or come back in a moment.")}
+                  />
+                )}
+              >
+                <ModuleHome
+                  moduleSlug={targetModule.slug}
+                  moduleTitle={targetModule.title}
+                  widgetsPromise={widgetsPromise}
+                />
+              </ErrorBoundary>
+            </Suspense>
+          ),
+        },
+      ]}
+    />
   );
 }
 
 async function ModuleHome({
   moduleSlug,
+  moduleTitle,
   widgetsPromise,
-  isDetail,
 }: {
   moduleSlug: string;
-  widgetsPromise: Promise<ReadonlyArray<{ id: string; render: () => Promise<React.ReactNode>; size: "sm" | "md" | "lg" }>>;
-  isDetail: boolean;
+  moduleTitle: string;
+  widgetsPromise: Promise<
+    ReadonlyArray<{
+      id: string;
+      title: string;
+      render: () => Promise<React.ReactNode>;
+      size: "sm" | "md" | "lg";
+      /** When set, the whole tile navigates here (HomeWidget contract). */
+      href?: string;
+    }>
+  >;
 }) {
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const widgets = await widgetsPromise;
 
   if (widgets.length === 0) {
     return (
-      <EmptyState
-        kicker={moduleSlug}
-        headline="Nothing to show yet."
-        body="When activity arrives in this module it will surface here."
+      <EmptyStateCard
+        kicker={moduleTitle || moduleSlug}
+        title={t("Nothing to show yet.")}
+        body={t("When activity arrives in this module it will surface here.")}
       />
     );
   }
@@ -150,48 +233,38 @@ async function ModuleHome({
   const rendered = await Promise.all(
     widgets.map(async (widget) => ({
       id: widget.id,
+      title: widget.title,
       size: widget.size,
+      href: widget.href,
       node: await widget.render(),
     })),
   );
 
   return (
-    <div>
-      {isDetail ? (
-        <p
-          role="note"
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(15rem, 1fr))",
+        gap: "1rem",
+      }}
+    >
+      {rendered.map((w) => (
+        // `hc-widget-linkable` + the stretched WidgetOpenOverlay make the
+        // whole tile open `widget.href` (HomeWidget contract: "clicking
+        // anywhere on the widget's chrome navigates here") without nesting
+        // the card's own ActionButtons inside a <Link>.
+        <div
+          key={w.id}
+          className="hc-widget-linkable"
           style={{
-            margin: "0 0 1rem",
-            padding: "0.5rem 0.75rem",
-            borderRadius: "0.5rem",
-            backgroundColor: `var(${CSS_VARS.accentSoft})`,
-            color: `var(${CSS_VARS.accentText})`,
-            fontSize: "0.75rem",
+            gridColumn:
+              w.size === "lg" ? "span 2" : w.size === "md" ? "span 2" : "span 1",
           }}
         >
-          Deep-link landing for this module is being built. The module&apos;s home view is below — DASH-3 wires
-          per-detail rendering.
-        </p>
-      ) : null}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(15rem, 1fr))",
-          gap: "1rem",
-        }}
-      >
-        {rendered.map((w) => (
-          <div
-            key={w.id}
-            style={{
-              gridColumn:
-                w.size === "lg" ? "span 2" : w.size === "md" ? "span 2" : "span 1",
-            }}
-          >
-            {w.node}
-          </div>
-        ))}
-      </div>
+          {w.node}
+          {w.href ? <WidgetOpenOverlay href={w.href} label={w.title} /> : null}
+        </div>
+      ))}
     </div>
   );
 }

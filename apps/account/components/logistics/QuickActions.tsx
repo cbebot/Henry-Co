@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight, BookOpen, FileText, Headphones, MapPin, Package, Receipt } from "lucide-react";
+
+import type { AccountCopy } from "@henryco/i18n";
+
 import {
   logisticsBookUrl,
   logisticsQuoteUrl,
@@ -14,54 +17,59 @@ type Action = {
   external: boolean;
 };
 
-export function QuickActions() {
+type Props = {
+  copy: AccountCopy["divisionLogistics"];
+};
+
+export function QuickActions({ copy }: Props) {
   const logisticsBase = getDivisionUrl("logistics").replace(/\/$/, "");
+  const qa = copy.quickActions;
   const actions: Action[] = [
     {
       href: logisticsBookUrl(),
-      label: "Book a delivery",
-      desc: "Pickup & drop-off in a single guided flow.",
+      label: qa.bookLabel,
+      desc: qa.bookDesc,
       icon: Package,
       external: true,
     },
     {
       href: `${logisticsBase}/track`,
-      label: "Track by code",
-      desc: "Live status, ETA and rider context.",
+      label: qa.trackLabel,
+      desc: qa.trackDesc,
       icon: MapPin,
       external: true,
     },
     {
       href: logisticsQuoteUrl(),
-      label: "Quote first",
-      desc: "Indicative pricing before you commit.",
+      label: qa.quoteLabel,
+      desc: qa.quoteDesc,
       icon: FileText,
       external: true,
     },
     {
       href: "/addresses",
-      label: "Saved addresses",
-      desc: "Pickup and drop-off contacts.",
+      label: qa.addressesLabel,
+      desc: qa.addressesDesc,
       icon: BookOpen,
       external: false,
     },
     {
       href: "/invoices",
-      label: "Receipts & invoices",
-      desc: "Branded PDFs for every shipment.",
+      label: qa.invoicesLabel,
+      desc: qa.invoicesDesc,
       icon: Receipt,
       external: false,
     },
     {
       href: "/support",
-      label: "Logistics support",
-      desc: "Open a thread tagged to your account.",
+      label: qa.supportLabel,
+      desc: qa.supportDesc,
       icon: Headphones,
       external: false,
     },
   ];
   return (
-    <div className="acct-log__actions" role="list" aria-label="Logistics quick actions">
+    <div className="acct-log__actions" role="list" aria-label={qa.ariaLabel}>
       {actions.map((a) => {
         const Icon = a.icon;
         const inner = (

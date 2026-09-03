@@ -3,14 +3,32 @@ export * from "./tokens";
 export { buildDocumentFilename, contentDispositionHeader, attachmentDispositionHeader, type DocumentType } from "./filename";
 export { renderDocumentToStream, renderDocumentToBuffer } from "./render";
 export { buildVerificationQr } from "./qr";
+export {
+  type PaymentDocumentLabels,
+  type DocumentIssuerDetails,
+  resolvePaymentMethodLabel,
+  resolveStatusLabel,
+  interpolateLegalLine,
+  formatVatRatePercent,
+  resolveVatLineLabel,
+  resolveVatTreatmentNote,
+} from "./payment-document-labels";
 
 export { TransactionHistoryDocument, type TransactionHistoryProps, type TransactionHistoryFilters, type TransactionRow } from "./templates/transaction-history";
 export { InvoiceDocument, type InvoiceProps, type InvoiceLineItem } from "./templates/invoice";
 export { ReceiptDocument, type ReceiptProps, type ReceiptLineItem } from "./templates/receipt";
+export { CreditNoteDocument, type CreditNoteProps, type CreditNoteLineItem } from "./templates/credit-note";
 export { KycSummaryDocument, type KycSummaryProps, type KycSubmissionRow } from "./templates/kyc-summary";
 export { CareBookingDocument, type CareBookingProps } from "./templates/care-booking";
 export { PropertyListingDocument, type PropertyListingProps } from "./templates/property-listing";
+export {
+  PropertyManagedStatementDocument,
+  type PropertyManagedStatementProps,
+  type PropertyManagedRentRow,
+  type PropertyManagedMaintenanceRow,
+} from "./templates/property-managed-statement";
 export { JobsApplicationDocument, type JobsApplicationProps } from "./templates/jobs-application";
+export { JobsRejectionLetterDocument, type JobsRejectionLetterProps } from "./templates/jobs-rejection-letter";
 export { LearnCertificateDocument, type LearnCertificateProps } from "./templates/learn-certificate";
 export { SupportThreadExportDocument, type SupportThreadExportProps, type SupportMessage } from "./templates/support-thread-export";
 export {
@@ -23,3 +41,39 @@ export {
   type LogisticsB2BStatementProps,
   type LogisticsB2BStatementRow,
 } from "./templates/logistics-b2b-statement";
+export {
+  VendorPayoutStatementDocument,
+  type VendorPayoutStatementProps,
+  type VendorPayoutStatementRow,
+} from "./templates/vendor-payout-statement";
+export {
+  VendorTaxDocumentDocument,
+  type VendorTaxDocumentProps,
+  type VendorTaxMonthlyRow,
+} from "./templates/vendor-tax-document";
+export {
+  StudioProposalDocument,
+  type StudioProposalProps,
+  type StudioProposalMilestone,
+} from "./templates/studio-proposal";
+export {
+  StudioInvoiceDocument,
+  type StudioInvoiceProps,
+  type StudioInvoiceLineItem,
+} from "./templates/studio-invoice";
+export {
+  StudioBrandGuidelinesDocument,
+  type StudioBrandGuidelinesProps,
+  type StudioBrandColour,
+  type StudioBrandType,
+} from "./templates/studio-brand-guidelines";
+export {
+  OwnerReportDocument,
+  ownerReportFormatKobo,
+  type OwnerReportKind,
+  type OwnerReportMetric,
+  type OwnerReportDivisionPressure,
+  type OwnerReportSignalRow,
+  type OwnerReportPaymentRow,
+  type OwnerReportProps,
+} from "./templates/owner-report";

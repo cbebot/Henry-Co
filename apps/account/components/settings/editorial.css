@@ -1,0 +1,300 @@
+/*
+ * V3 follow-up — Settings editorial chrome.
+ *
+ * Mirrors the messages-inbox + calendar editorial pattern (eyebrow with
+ * pulse dot, state-driven headline, capability tiles, "By division"
+ * side panel) so /settings reads as a peer of /messages and /calendar
+ * rather than a fallback PageHeader surface.
+ *
+ * Token discipline: zero raw hex; everything is var(--acct-*) or
+ * color-mix(in srgb, var(--acct-*) …, …). No new tokens introduced —
+ * existing --acct-ink / --acct-gold / --acct-bg-soft / --acct-line and
+ * the per-division --acct-div-* accents already in globals.css are
+ * sufficient.
+ */
+
+.acct-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ─── Hero ─────────────────────────────────────────────────────── */
+
+.acct-settings__hero {
+  /* No card frame — the hero is an editorial spread that lives on
+     the page bg. Background was previously `var(--acct-ink)` but that
+     token flips to a LIGHT value in dark mode (it's the natural
+     foreground), making the hero render as a cheap white card on a
+     dark page. The radial gold halos remain for premium depth without
+     imposing a hard rectangle. */
+  position: relative;
+  isolation: isolate;
+  color: var(--acct-ink);
+  background: transparent;
+  background-image:
+    radial-gradient(110% 90% at 0% 0%, color-mix(in srgb, var(--acct-gold) 14%, transparent) 0%, transparent 60%),
+    radial-gradient(90% 80% at 100% 100%, color-mix(in srgb, var(--acct-gold) 6%, transparent) 0%, transparent 65%);
+  border: 0;
+}
+
+.acct-settings__hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  gap: 32px;
+  padding: 24px 0 16px;
+  align-items: flex-start;
+}
+
+@media (max-width: 880px) {
+  .acct-settings__hero-inner {
+    grid-template-columns: 1fr;
+    padding: 16px 0 8px;
+    gap: 20px;
+  }
+}
+
+.acct-settings__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--acct-gold-soft) 70%, var(--acct-bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 28%, var(--acct-line));
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acct-gold-text, #8a6f00);
+}
+
+.acct-settings__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  animation: acct-settings-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes acct-settings-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.82); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-settings__eyebrow-dot { animation: none; }
+}
+
+.acct-settings__headline {
+  font-family: var(--acct-font-display);
+  font-size: clamp(26px, 3.4vw, 38px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  color: var(--acct-ink);
+  margin: 16px 0 12px;
+  max-width: 22ch;
+}
+
+.acct-settings__blurb {
+  color: var(--acct-muted);
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 58ch;
+  margin: 0;
+}
+
+/* ─── Hero capability tiles ─────────────────────────────────────── */
+
+.acct-settings__hero-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (max-width: 540px) {
+  .acct-settings__hero-tiles { grid-template-columns: 1fr; }
+}
+
+.acct-settings__hero-tile {
+  /* Tiles get a subtle elevated treatment that reads as "inset into
+     the page" rather than "stuck-on white card". Gold-soft is the
+     only token that auto-flips correctly (cream in light / translucent
+     gold over dark in dark mode) so we anchor on it for the tint. */
+  background: color-mix(in srgb, var(--acct-gold-soft) 38%, var(--acct-bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 22%, var(--acct-line));
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 96px;
+  box-shadow: 0 8px 22px -18px rgba(15, 17, 24, 0.18),
+    inset 0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 55%, transparent);
+}
+
+.acct-settings__hero-tile-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acct-muted);
+}
+
+.acct-settings__hero-tile-value {
+  font-family: var(--acct-font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--acct-ink);
+  line-height: 1;
+}
+
+.acct-settings__hero-tile-foot {
+  font-size: 12px;
+  color: var(--acct-muted);
+  line-height: 1.45;
+}
+
+.acct-settings__hero-tile-value--fraction {
+  font-size: 24px;
+}
+
+.acct-settings__hero-tile-value-suffix {
+  font-size: 14px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--acct-muted) 90%, transparent);
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+
+/* ─── Hero side panel — by division ─────────────────────────────── */
+
+.acct-settings__hero-side {
+  background: color-mix(in srgb, var(--acct-gold-soft) 38%, var(--acct-bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 22%, var(--acct-line));
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 12px 28px -22px rgba(15, 17, 24, 0.18),
+    inset 0 1px 0 color-mix(in srgb, var(--acct-bg-soft) 55%, transparent);
+}
+
+.acct-settings__hero-side-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--acct-gold-text, #8a6f00);
+  margin: 0 0 6px;
+}
+
+.acct-settings__hero-side-title {
+  font-family: var(--acct-font-display);
+  color: var(--acct-ink);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin: 0 0 6px;
+}
+
+.acct-settings__hero-side-body {
+  color: var(--acct-muted);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0 0 14px;
+}
+
+.acct-settings__div-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 12.5px;
+  border-top: 1px solid color-mix(in srgb, var(--acct-line) 80%, transparent);
+}
+
+.acct-settings__div-row:first-of-type {
+  border-top: none;
+}
+
+.acct-settings__div-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--acct-ink);
+}
+
+.acct-settings__div-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.acct-settings__div-state {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.acct-settings__div-state[data-state="on"] {
+  color: var(--acct-ink);
+  background: color-mix(in srgb, var(--acct-gold) 24%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acct-gold) 38%, transparent);
+}
+
+.acct-settings__div-state[data-state="off"] {
+  color: var(--acct-muted);
+  background: color-mix(in srgb, var(--acct-bg-elevated) 60%, transparent);
+  border: 1px solid var(--acct-line);
+}
+
+/* ─── Section heads + content frames ───────────────────────────── */
+
+.acct-settings__section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.acct-settings__section-title {
+  font-family: var(--acct-font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--acct-ink);
+  margin: 0;
+}
+
+.acct-settings__section-meta {
+  font-size: 12px;
+  color: var(--acct-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.acct-settings__card {
+  background: var(--acct-bg-soft);
+  border: 1px solid var(--acct-line);
+  border-radius: var(--acct-radius);
+  padding: 24px;
+  box-shadow: var(--acct-shadow);
+}
+
+.acct-settings__card-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--acct-gold-text);
+  margin: 0 0 14px;
+}

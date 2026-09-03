@@ -1,55 +1,48 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { reauthRedirectFor } from "@henryco/auth/server/refresh-middleware";
 import {
-  buildSharedCookieWriteOptions,
-  filterValidSupabaseSessionCookies,
-  findMalformedSupabaseSessionCookieNames,
-  getHqUrl,
-  getSharedCookieDomain,
-  isRecoverableSupabaseAuthError,
-  isSupabaseAuthTokenCookie,
-} from "@henryco/config";
+  sessionStateFor,
+  verifySupabaseSession,
+} from "@henryco/auth/server/verify-supabase-session";
+import {
+  HC_SESSION_STATE_COOKIE,
+  writeSessionStateCookie,
+} from "@henryco/auth/server/session-state";
+import { HC_REAUTH_CONTEXT_COOKIE } from "@henryco/auth/server/reauth-context";
+import { getHqUrl, getSharedCookieDomain } from "@henryco/config";
+import { isPublicAccountRoute } from "./lib/proxy-public-routes";
 
-const PUBLIC_ROUTES = [
-  "/login",
-  "/signup",
-  "/forgot-password",
-  "/reset-password",
-  "/auth/callback",
-  "/auth/confirm",
-  "/auth/resolve",
-  "/auth/verified",
-];
+/**
+ * Account proxy — V3-01 wired (the SSO host).
+ *
+ * Behaviour matrix:
+ *   - `/owner/*`                 → 307 to hq.henrycogroup.com (unchanged)
+ *   - Public auth-flow routes    → verify (cookie auto-refresh), tag cookie,
+ *                                    capture referral, pass through
+ *   - Protected route + reauth   → V3-01 NEW: 307 to /auth/reauth with
+ *                                    return / intent / drafts preserved.
+ *   - Protected route + anon     → 307 to /login (legacy: first-time visitors
+ *                                    have no session to "reauth" from)
+ *   - Protected route + ok       → tag cookie, capture referral, security
+ *                                    headers, pass through
+ *
+ * The reauth → /auth/reauth routing is the V3-01 improvement: it
+ * preserves the draft key + return path so an in-flight form survives
+ * the round-trip.
+ */
 const REFERRAL_COOKIE_NAME = "hc_ref";
 const REFERRAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
-function clearSupabaseAuthCookies(
-  request: NextRequest,
-  response: NextResponse,
-  cookieNames?: Set<string>,
-) {
-  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
-  for (const cookie of request.cookies.getAll()) {
-    if (!isSupabaseAuthTokenCookie(cookie.name)) {
-      continue;
-    }
+// V3-04 (S5): share-arrival attribution. A share URL carries
+// `?ref=share&from=<one-way-hash>`. We mirror the existing `hc_ref`
+// 30-day cookie pattern and stash the opaque `from=` fingerprint so an
+// eventual conversion can be correlated to the sharer. The hash is NOT a
+// credential — it grants nothing; it is matched against a known sharer
+// hash (`verifySharerHash`) only when attribution is actually applied.
+const SHARE_COOKIE_NAME = "hc_share_from";
+const SHARE_HASH_SHAPE = /^s1\.[A-Za-z0-9_-]{16,64}$/;
 
-    if (cookieNames && !cookieNames.has(cookie.name)) {
-      continue;
-    }
-
-    request.cookies.set(cookie.name, "");
-    response.cookies.set(cookie.name, "", {
-      domain: cookieDomain,
-      expires: new Date(0),
-      path: "/",
-      sameSite: "lax",
-      secure: true,
-    });
-  }
-}
-
-function captureReferralCode(request: NextRequest, response: NextResponse) {
+function captureReferralCode(request: NextRequest, response: NextResponse): void {
   const ref = request.nextUrl.searchParams.get("ref");
   if (!ref || ref.length > 64) return;
   const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
@@ -61,95 +54,84 @@ function captureReferralCode(request: NextRequest, response: NextResponse) {
     secure: true,
     maxAge: REFERRAL_COOKIE_MAX_AGE,
   });
+
+  // Share arrivals (`ref=share`) additionally carry an opaque `from=`
+  // sharer fingerprint — capture it for later attribution correlation.
+  if (ref !== "share") return;
+  const from = request.nextUrl.searchParams.get("from");
+  if (!from || !SHARE_HASH_SHAPE.test(from)) return;
+  response.cookies.set(SHARE_COOKIE_NAME, from, {
+    path: "/",
+    domain: cookieDomain,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: true,
+    maxAge: REFERRAL_COOKIE_MAX_AGE,
+  });
 }
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  const malformedCookieNames = new Set(findMalformedSupabaseSessionCookieNames(request.cookies.getAll()));
 
   if (pathname.startsWith("/owner")) {
     return NextResponse.redirect(`${getHqUrl(pathname)}${search}`, 307);
   }
 
-  if (
-    PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/cron/") ||
-    pathname.startsWith("/api/webhooks/account") ||
-    pathname.includes(".")
-  ) {
-    const publicResponse = NextResponse.next();
-    if (malformedCookieNames.size > 0) {
-      clearSupabaseAuthCookies(request, publicResponse, malformedCookieNames);
-    }
-    captureReferralCode(request, publicResponse);
-    return publicResponse;
-  }
-
-  if (malformedCookieNames.size > 0) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("next", `${pathname}${search}`);
-    const redirectResponse = NextResponse.redirect(loginUrl, 307);
-    clearSupabaseAuthCookies(request, redirectResponse, malformedCookieNames);
-    captureReferralCode(request, redirectResponse);
-    return redirectResponse;
-  }
-
   const response = NextResponse.next({ request });
-  const cookieDomain = getSharedCookieDomain(request.nextUrl.hostname);
+  const session = await verifySupabaseSession(request, response);
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookieOptions: cookieDomain
-        ? {
-            domain: cookieDomain,
-            path: "/",
-            sameSite: "lax",
-            secure: true,
-          }
-        : undefined,
-      cookies: {
-        getAll() {
-          return filterValidSupabaseSessionCookies(request.cookies.getAll());
-        },
-        setAll(tokens) {
-          for (const { name, value, options } of tokens) {
-            request.cookies.set(name, value);
-            response.cookies.set(
-              name,
-              value,
-              buildSharedCookieWriteOptions(options, cookieDomain)
-            );
-          }
-        },
-      },
+  if (isPublicAccountRoute(pathname)) {
+    // Public auth routes: pass through with verification side effects
+    // (cookie refresh + state tag + referral capture). No redirect.
+    const state = sessionStateFor(session);
+    const hasActiveReauthContext = Boolean(
+      request.cookies.get(HC_REAUTH_CONTEXT_COOKIE),
+    );
+    const shouldPreserveReauthState =
+      session.status === "anonymous" &&
+      (hasActiveReauthContext ||
+        (pathname.startsWith("/auth/reauth") &&
+          request.cookies.get(HC_SESSION_STATE_COOKIE)?.value ===
+            "reauth-required"));
+
+    if (state && !shouldPreserveReauthState) {
+      writeSessionStateCookie(response, state, {
+        hostname: request.nextUrl.hostname,
+        secure: request.nextUrl.protocol === "https:",
+      });
     }
-  );
-
-  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null = null;
-
-  try {
-    const auth = await supabase.auth.getUser();
-    user = auth.data.user;
-  } catch (error) {
-    if (!isRecoverableSupabaseAuthError(error)) {
-      throw error;
-    }
-
-    clearSupabaseAuthCookies(request, response);
+    captureReferralCode(request, response);
+    return response;
   }
 
-  if (!user) {
+  // Protected route paths below.
+  if (session.status === "reauth") {
+    // Cookies were present; refresh failed. V3-01 routes to
+    // /auth/reauth with return / intent / drafts preserved.
+    return reauthRedirectFor(request, {
+      reason: session.reason,
+      userId: session.userId,
+      carryCookiesFrom: response,
+    });
+  }
+
+  if (session.status === "anonymous") {
+    // No cookies at all — preserve the legacy /login redirect so
+    // first-time visitors land on sign-in / sign-up.
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", `${pathname}${search}`);
     return NextResponse.redirect(loginUrl);
   }
 
+  // ok | no-config — pass through with security headers + referral.
+  const state = sessionStateFor(session);
+  if (state) {
+    writeSessionStateCookie(response, state, {
+      hostname: request.nextUrl.hostname,
+      secure: request.nextUrl.protocol === "https:",
+    });
+  }
   captureReferralCode(request, response);
-
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -158,5 +140,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
 };

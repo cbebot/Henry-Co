@@ -1,0 +1,469 @@
+{
+  "app": "account",
+  "routes": [
+    {
+      "route": "/",
+      "api": false
+    },
+    {
+      "route": "/_dev/shell-primitives",
+      "api": false
+    },
+    {
+      "route": "/activity",
+      "api": false
+    },
+    {
+      "route": "/addresses",
+      "api": false
+    },
+    {
+      "route": "/api/addresses",
+      "api": true
+    },
+    {
+      "route": "/api/addresses/create",
+      "api": true
+    },
+    {
+      "route": "/api/addresses/places/autocomplete",
+      "api": true
+    },
+    {
+      "route": "/api/addresses/places/details",
+      "api": true
+    },
+    {
+      "route": "/api/addresses/set-default",
+      "api": true
+    },
+    {
+      "route": "/api/auth/choose",
+      "api": true
+    },
+    {
+      "route": "/api/auth/email-hook",
+      "api": true
+    },
+    {
+      "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/auth/resend",
+      "api": true
+    },
+    {
+      "route": "/api/auth/role-status",
+      "api": true
+    },
+    {
+      "route": "/api/auth/signup",
+      "api": true
+    },
+    {
+      "route": "/api/cron/engagement-sweep",
+      "api": true
+    },
+    {
+      "route": "/api/cron/notification-email-fallback",
+      "api": true
+    },
+    {
+      "route": "/api/cron/notification-purge",
+      "api": true
+    },
+    {
+      "route": "/api/cron/notification-redelivery",
+      "api": true
+    },
+    {
+      "route": "/api/dashboard/commands",
+      "api": true
+    },
+    {
+      "route": "/api/dashboard/suggestions",
+      "api": true
+    },
+    {
+      "route": "/api/documents/:param/:param",
+      "api": true
+    },
+    {
+      "route": "/api/documents/file/:param",
+      "api": true
+    },
+    {
+      "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/locale",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/:param",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/:param/archive",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/:param/purge",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/:param/read",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/:param/restore",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/:param/unread",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/batch",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/mark-all-read",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/preferences",
+      "api": true
+    },
+    {
+      "route": "/api/notifications/recent",
+      "api": true
+    },
+    {
+      "route": "/api/preferences/update",
+      "api": true
+    },
+    {
+      "route": "/api/profile/avatar",
+      "api": true
+    },
+    {
+      "route": "/api/profile/update",
+      "api": true
+    },
+    {
+      "route": "/api/property/saved/:param",
+      "api": true
+    },
+    {
+      "route": "/api/proxy/download",
+      "api": true
+    },
+    {
+      "route": "/api/referral/code",
+      "api": true
+    },
+    {
+      "route": "/api/runtime-error",
+      "api": true
+    },
+    {
+      "route": "/api/saved-items",
+      "api": true
+    },
+    {
+      "route": "/api/search",
+      "api": true
+    },
+    {
+      "route": "/api/security/sign-out-everywhere",
+      "api": true
+    },
+    {
+      "route": "/api/studio/payments/:param/wallet",
+      "api": true
+    },
+    {
+      "route": "/api/support/create",
+      "api": true
+    },
+    {
+      "route": "/api/support/mark-read",
+      "api": true
+    },
+    {
+      "route": "/api/support/mute",
+      "api": true
+    },
+    {
+      "route": "/api/support/reply",
+      "api": true
+    },
+    {
+      "route": "/api/support/report",
+      "api": true
+    },
+    {
+      "route": "/api/support/upload",
+      "api": true
+    },
+    {
+      "route": "/api/verify",
+      "api": true
+    },
+    {
+      "route": "/api/wallet/fund",
+      "api": true
+    },
+    {
+      "route": "/api/wallet/funding/:param/proof",
+      "api": true
+    },
+    {
+      "route": "/api/wallet/payout-methods",
+      "api": true
+    },
+    {
+      "route": "/api/wallet/withdrawal/pin",
+      "api": true
+    },
+    {
+      "route": "/api/wallet/withdrawal/request",
+      "api": true
+    },
+    {
+      "route": "/api/webhooks/account",
+      "api": true
+    },
+    {
+      "route": "/auth/callback",
+      "api": true
+    },
+    {
+      "route": "/auth/choose",
+      "api": false
+    },
+    {
+      "route": "/auth/confirm",
+      "api": true
+    },
+    {
+      "route": "/auth/link-account",
+      "api": false
+    },
+    {
+      "route": "/auth/reauth",
+      "api": false
+    },
+    {
+      "route": "/auth/resolve",
+      "api": true
+    },
+    {
+      "route": "/auth/verified",
+      "api": false
+    },
+    {
+      "route": "/calendar",
+      "api": false
+    },
+    {
+      "route": "/care",
+      "api": false
+    },
+    {
+      "route": "/care/bookings/:param",
+      "api": false
+    },
+    {
+      "route": "/dashboard",
+      "api": true
+    },
+    {
+      "route": "/documents",
+      "api": false
+    },
+    {
+      "route": "/forgot-password",
+      "api": false
+    },
+    {
+      "route": "/invoices",
+      "api": false
+    },
+    {
+      "route": "/invoices/:param",
+      "api": false
+    },
+    {
+      "route": "/jobs",
+      "api": false
+    },
+    {
+      "route": "/jobs/interviews",
+      "api": false
+    },
+    {
+      "route": "/jobs/interviews/:param",
+      "api": false
+    },
+    {
+      "route": "/learn",
+      "api": false
+    },
+    {
+      "route": "/login",
+      "api": false
+    },
+    {
+      "route": "/logistics",
+      "api": false
+    },
+    {
+      "route": "/marketplace",
+      "api": false
+    },
+    {
+      "route": "/messages",
+      "api": false
+    },
+    {
+      "route": "/messages/activity/:param",
+      "api": false
+    },
+    {
+      "route": "/messages/notification/:param",
+      "api": false
+    },
+    {
+      "route": "/messages/security/:param",
+      "api": false
+    },
+    {
+      "route": "/modules/:splat",
+      "api": false
+    },
+    {
+      "route": "/notifications",
+      "api": false
+    },
+    {
+      "route": "/notifications/recently-deleted",
+      "api": false
+    },
+    {
+      "route": "/payments",
+      "api": false
+    },
+    {
+      "route": "/property",
+      "api": false
+    },
+    {
+      "route": "/property/saved",
+      "api": false
+    },
+    {
+      "route": "/referrals",
+      "api": false
+    },
+    {
+      "route": "/reset-password",
+      "api": false
+    },
+    {
+      "route": "/saved-items",
+      "api": false
+    },
+    {
+      "route": "/search",
+      "api": false
+    },
+    {
+      "route": "/security",
+      "api": false
+    },
+    {
+      "route": "/settings",
+      "api": false
+    },
+    {
+      "route": "/settings/addresses",
+      "api": false
+    },
+    {
+      "route": "/settings/notifications",
+      "api": false
+    },
+    {
+      "route": "/signup",
+      "api": false
+    },
+    {
+      "route": "/studio",
+      "api": false
+    },
+    {
+      "route": "/studio/payments/:param",
+      "api": false
+    },
+    {
+      "route": "/studio/projects/:param",
+      "api": false
+    },
+    {
+      "route": "/subscriptions",
+      "api": false
+    },
+    {
+      "route": "/subscriptions/:param",
+      "api": false
+    },
+    {
+      "route": "/support",
+      "api": false
+    },
+    {
+      "route": "/support/:param",
+      "api": false
+    },
+    {
+      "route": "/support/new",
+      "api": false
+    },
+    {
+      "route": "/tasks",
+      "api": false
+    },
+    {
+      "route": "/verification",
+      "api": false
+    },
+    {
+      "route": "/verify",
+      "api": false
+    },
+    {
+      "route": "/wallet",
+      "api": false
+    },
+    {
+      "route": "/wallet/add",
+      "api": false
+    },
+    {
+      "route": "/wallet/funding",
+      "api": false
+    },
+    {
+      "route": "/wallet/funding/:param",
+      "api": false
+    },
+    {
+      "route": "/wallet/withdrawals",
+      "api": false
+    }
+  ]
+}

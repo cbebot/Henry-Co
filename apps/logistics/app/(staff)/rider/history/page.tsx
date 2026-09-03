@@ -1,4 +1,6 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { getLogisticsViewer } from "@/lib/logistics/auth";
 import { getRiderDashboardData } from "@/lib/logistics/data";
 import { formatCurrency } from "@/lib/env";
@@ -9,6 +11,8 @@ import { formatCurrency } from "@/lib/env";
 export const dynamic = "force-dynamic";
 
 export default async function RiderHistoryPage() {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const viewer = await getLogisticsViewer();
   const data = await getRiderDashboardData(viewer);
   const completed = data.riderShipments.filter(
@@ -19,23 +23,22 @@ export default async function RiderHistoryPage() {
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          History
+          {t("History")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Completed legs
+          {t("Completed legs")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          Every delivery you closed. Tap a row to review the POD record we
-          archived for the customer.
+          {t("Every delivery you closed. Tap a row to review the POD record we archived for the customer.")}
         </p>
       </header>
 
       <Panel tone="flat">
         {completed.length === 0 ? (
           <EmptyState
-            kicker="No closes yet"
-            headline="Your history will appear here"
-            body="Every shipment you complete is auto-archived with its POD record and timestamps."
+            kicker={t("No closes yet")}
+            headline={t("Your history will appear here")}
+            body={t("Every shipment you complete is auto-archived with its POD record and timestamps.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -50,13 +53,13 @@ export default async function RiderHistoryPage() {
                       {shipment.recipientName}
                     </p>
                     <p className="mt-1 text-xs text-[var(--logistics-muted)]">
-                      {shipment.zoneLabel || "Lane TBD"} ·{" "}
+                      {shipment.zoneLabel || t("Lane TBD")} ·{" "}
                       {shipment.serviceType.replaceAll("_", " ")}
                     </p>
                   </div>
                   <div className="text-right text-sm">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                      Closed
+                      {t("Closed")}
                     </p>
                     <p className="mt-1 font-semibold tracking-tight text-white">
                       {shipment.lastEventAt

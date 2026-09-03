@@ -3,10 +3,12 @@ import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData, toMarketplaceOrderFeed } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountOrdersPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/orders");
   const data = await getBuyerDashboardData();
   const feed = toMarketplaceOrderFeed(data.orders);
@@ -15,7 +17,7 @@ export default async function AccountOrdersPage() {
     <WorkspaceShell
       title="Orders"
       description="Each order keeps payment state, split fulfillment, and dispute context visible in one buyer-friendly timeline."
-      {...accountWorkspaceNav("/account/orders")}
+      {...accountWorkspaceNav("/account/orders", locale)}
     >
       {feed.length ? (
         <AccountOrderFeedClient initialItems={feed} />

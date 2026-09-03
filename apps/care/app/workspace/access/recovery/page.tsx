@@ -16,7 +16,7 @@ const care = getDivisionConfig("care");
 
 export const metadata: Metadata = {
   title: `Account Recovery | ${care.name}`,
-  description: "Recover or finish setting up restricted HenryCo Care workspace access.",
+  description: "Recover or finish setting up restricted Henry Onyx Care workspace access.",
   robots: {
     index: false,
     follow: false,
@@ -172,7 +172,7 @@ export default async function StaffRecoveryPage({
                 Send a secure recovery link
               </div>
               <p className="text-sm leading-7 text-zinc-600 dark:text-white/65">
-                If the email belongs to a provisioned staff account, HenryCo Care will prepare a recovery message and queue it for dispatch.
+                If the email belongs to a provisioned staff account, Henry Onyx Care will prepare a recovery message and queue it for dispatch.
               </p>
 
               <label className="grid gap-2">

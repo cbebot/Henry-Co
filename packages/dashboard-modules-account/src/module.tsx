@@ -1,14 +1,17 @@
 import { LayoutDashboard } from "lucide-react";
 import type { UnifiedViewer } from "@henryco/auth";
-import type {
-  DashboardModule,
-  HomeWidget,
-  PaletteEntry,
-  NotificationCategory,
-  RoleDecision,
-  RouteEntry,
-  EmptyTeaching,
+import {
+  viewerCanUseCustomerSurface,
+  type DashboardModule,
+  type HomeWidget,
+  type PaletteEntry,
+  type NotificationCategory,
+  type RoleDecision,
+  type RouteEntry,
+  type EmptyTeaching,
 } from "@henryco/dashboard-shell";
+
+import { createDataAdminClient, listUserAbandonedTasks } from "@henryco/data";
 
 import {
   WalletBalanceCard,
@@ -22,6 +25,7 @@ import {
   WelcomeBackWidget,
 } from "./widgets";
 import { loadCustomerOverviewSnapshot } from "./data";
+import { buildResumeModel } from "./resume";
 
 /**
  * The customer-overview module — slug `customer-overview`.
@@ -32,12 +36,17 @@ import { loadCustomerOverviewSnapshot } from "./data";
  * five customer-side notification categories: account, wallet,
  * security, identity, referral.
  *
- * Eligibility: every `viewer.kind === "customer"` is allowed; staff
- * and owner viewers see the customer-overview only when the
- * preference cookie places them in the customer lane (handled
- * upstream by `@henryco/auth`'s `loadDashboardOptions`). At the
- * module gate, we accept any role — the upstream resolver is the
- * security boundary, not the module.
+ * Eligibility: every authenticated viewer using the customer surface
+ * (`apps/account`) is allowed. The upstream resolver
+ * (`loadDashboardOptions`) is the security boundary that decides
+ * which lane to route a viewer to BY DEFAULT — but once a viewer is
+ * inside the customer surface, the module gate accepts them.
+ *
+ * MODULES-01 (2026-05-23) widened the gate from `viewer.kind ===
+ * "customer"` to `viewerCanUseCustomerSurface(viewer)`. Data-layer
+ * gate in `data.ts` remains `kind === "customer"` because the
+ * customer_profiles / customer_wallet_balance / customer_subscriptions
+ * tables are user-scoped customer-context tables.
  */
 export const customerOverviewModule: DashboardModule = {
   slug: "customer-overview",
@@ -47,16 +56,28 @@ export const customerOverviewModule: DashboardModule = {
   railSlot: "primary",
 
   getEligibleViewer(viewer) {
-    return viewer.kind === "customer" ? "allowed" : "hidden";
+    return viewerCanUseCustomerSurface(viewer) ? "allowed" : "hidden";
   },
 
   getRoleGate(viewer): RoleDecision | null {
-    if (viewer.kind !== "customer") return null;
+    if (!viewerCanUseCustomerSurface(viewer)) return null;
     return { kind: "allow", role: viewer.role };
   },
 
   async getHomeWidgets(viewer): Promise<ReadonlyArray<HomeWidget>> {
-    const snapshot = await loadCustomerOverviewSnapshot(viewer);
+    // SP6: the resume model loads in parallel with the snapshot — the
+    // "continue where you left off" widget now tells the truth (it previously
+    // hardcoded headline={null} href={null}, showing "all caught up" even when
+    // real pending journeys existed).
+    const [snapshot, resume] = await Promise.all([
+      loadCustomerOverviewSnapshot(viewer),
+      listUserAbandonedTasks(createDataAdminClient(), viewer.user.id, {
+        statuses: ["pending"],
+        limit: 6,
+      })
+        .then((tasks) => buildResumeModel(tasks))
+        .catch(() => null),
+    ]);
     if (!snapshot) return [];
 
     const firstName = viewer.user.fullName?.split(" ")[0] ?? null;
@@ -130,10 +151,16 @@ export const customerOverviewModule: DashboardModule = {
         source: "customer-overview",
         title: "Pick up",
         size: "md",
-        weight: 50,
-        href: "/activity",
+        // A real pending journey is a concrete next action — it outranks the
+        // ambient summary cards. With nothing pending the calm state sits low.
+        weight: resume ? 83 : 50,
+        href: resume?.href ?? "/activity",
         render: async () => (
-          <LifecycleContinueWidget headline={null} href={null} />
+          <LifecycleContinueWidget
+            headline={resume?.headline ?? null}
+            href={resume?.href ?? null}
+            count={resume?.count ?? 0}
+          />
         ),
       },
       {
@@ -168,6 +195,7 @@ export const customerOverviewModule: DashboardModule = {
       { path: "support", kind: "detail", label: "Support" },
       { path: "referrals", kind: "detail", label: "Referrals" },
       { path: "settings", kind: "detail", label: "Settings" },
+      { path: "customize", kind: "detail", label: "Customize home" },
       {
         path: "notifications/recently-deleted",
         kind: "detail",
@@ -213,6 +241,15 @@ export const customerOverviewModule: DashboardModule = {
         groupLabel: "Settings",
         href: "/settings",
         keywords: ["profile", "settings", "account preferences"],
+      },
+      {
+        id: "co.customize-home",
+        source: "customer-overview",
+        label: "Customize home",
+        kicker: "Home",
+        groupLabel: "Settings",
+        href: "/customize",
+        keywords: ["customize", "personalize", "home layout", "pin", "hide", "reorder"],
       },
       {
         id: "co.recently-deleted",

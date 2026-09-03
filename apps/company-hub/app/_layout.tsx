@@ -1,12 +1,14 @@
 import "../global.css";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { brandFontAssets } from "@henryco/rn-type";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ToastProvider } from "@/components/Toast";
 import { DivisionModalProvider } from "@/context/DivisionModalContext";
@@ -52,6 +54,10 @@ function RootStack() {
 }
 
 export default function RootLayout() {
+  // Owned type — load the brand faces (interim ttf; swap to bespoke at reveal).
+  // nativewind `font-*` families resolve to them when the flag is live (tailwind.config).
+  const [fontsLoaded] = useFonts(brandFontAssets);
+  if (!fontsLoaded) return null;
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

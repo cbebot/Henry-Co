@@ -7,7 +7,7 @@ import {
   resolveRequestCookieDomain,
 } from "@henryco/config";
 import { publishNotification } from "@henryco/notifications";
-import { uploadOwnedAsset } from "@/lib/cloudinary";
+import { uploadAccountDocument } from "@/lib/account/media";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   getDocumentTypeLabel,
@@ -121,12 +121,12 @@ export async function POST(request: Request) {
       });
     }
 
-    // Upload to Cloudinary in a private folder.
-    const upload = await uploadOwnedAsset(file, user.id, {
-      folder: "verification",
-      resourceType: "auto",
+    // Upload to the RLS-PRIVATE document bucket (signed-URL only — never a
+    // public CDN). Returns a backend-neutral `media://private/...` reference
+    // persisted in place of a raw URL (V3-MEDIA-SWEEP-01).
+    const mediaRef = await uploadAccountDocument(`verification/${user.id}`, file, {
       maxBytes: MAX_FILE_SIZE,
-      allowedTypes: ALLOWED_TYPES,
+      allowedTypes: [...ALLOWED_TYPES],
       invalidTypeMessage: "Upload a JPG, PNG, WebP, or PDF file.",
     });
 
@@ -139,13 +139,12 @@ export async function POST(request: Request) {
         division: "account",
         type: "id_document",
         name: `${documentType} – ${file.name}`,
-        file_url: upload.secureUrl,
+        file_url: mediaRef,
         file_size: file.size,
         mime_type: file.type || "application/octet-stream",
         reference_type: "verification",
         reference_id: documentType,
         metadata: {
-          public_id: upload.publicId,
           document_type: documentType,
         },
       })
@@ -212,7 +211,8 @@ export async function POST(request: Request) {
     console.error("[verify] Upload error:", err);
     return redirectOrJson(request, {
       ok: false,
-      error: err instanceof Error ? err.message : "Upload failed.",
+      error:
+        "We couldn't add that file to the review queue. Try again in a moment, or contact support if it keeps happening.",
       status: 500,
       code: "upload_failed",
     });

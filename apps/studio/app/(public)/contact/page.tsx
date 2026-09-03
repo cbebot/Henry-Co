@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, FolderKanban, Mail, Phone } from "lucide-react";
-import { getDivisionConfig } from "@henryco/config";
+import { getDivisionConfig, getSupportWhatsAppHref } from "@henryco/config";
 import { getStudioCatalog } from "@/lib/studio/catalog";
 
 const studioDivision = getDivisionConfig("studio");
@@ -31,7 +31,7 @@ export default async function ContactPage() {
           Talk to Studio.
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          Direct line to the HenryCo Studio desk for premium web, apps, product UX,
+          Direct line to the Henry Onyx Studio desk for premium web, apps, product UX,
           branding, and custom software. Already know what to build? Skip to the
           structured brief.
         </p>
@@ -51,17 +51,21 @@ export default async function ContactPage() {
               </a>
             </dd>
           </div>
+          {/* NUMBER-PURGE (owner 2026-07-08): no company digits render —
+           * WhatsApp deep link only, number confined to the href. */}
           <div className="flex items-baseline gap-3 py-4">
             <Phone className="h-3.5 w-3.5 text-[var(--studio-signal)]" />
             <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-ink-soft)]">
-              Phone / WhatsApp
+              WhatsApp
             </dt>
             <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--studio-ink)]">
               <a
-                href={`tel:${String(supportPhone).replace(/\s+/g, "")}`}
+                href={getSupportWhatsAppHref(String(supportPhone))}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:text-[var(--studio-signal)] hover:underline underline-offset-4"
               >
-                {supportPhone}
+                WhatsApp
               </a>
             </dd>
           </div>
@@ -84,10 +88,10 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section className="mt-14 rounded-[1.5rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] p-6 sm:p-7">
+      <section className="mt-14 rounded-[1.5rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-02)] p-6 sm:p-7">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(151,244,243,0.08)] text-[var(--studio-signal)]">
+            <span className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-2xl border border-[var(--studio-line-strong)] bg-[color:var(--home-accent-soft)] text-[var(--studio-signal)]">
               <FolderKanban className="h-4 w-4" />
             </span>
             <div>

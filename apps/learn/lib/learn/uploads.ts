@@ -132,3 +132,47 @@ export async function uploadTeacherApplicationFile(
     invalidTypeMessage: "Please upload a PDF, DOC, DOCX, JPG, PNG, or WebP file.",
   });
 }
+
+// V3 PASS 21 — assignment submissions: larger cap (50MB) and broader media
+// allowlist for course deliverables.
+const ASSIGNMENT_ALLOWED_TYPES = new Set([
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "video/mp4",
+  "video/quicktime",
+  "video/webm",
+  "audio/mpeg",
+  "audio/mp4",
+  "audio/wav",
+  "text/plain",
+  "text/csv",
+  "application/zip",
+]);
+
+const ASSIGNMENT_MAX_BYTES = 50 * 1024 * 1024;
+
+export async function uploadAssignmentSubmissionFile(
+  file: File,
+  options: {
+    folderSuffix: string;
+    publicIdPrefix: string;
+  }
+) {
+  return uploadAssetInternal(file, options, {
+    allowedTypes: ASSIGNMENT_ALLOWED_TYPES,
+    maxBytes: ASSIGNMENT_MAX_BYTES,
+    missingFileMessage: "No file was provided.",
+    oversizeMessage: "Please upload files under 50MB.",
+    invalidTypeMessage: "Please upload a PDF, DOC/X, image, video, audio, or zip file.",
+  });
+}

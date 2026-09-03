@@ -5,7 +5,13 @@ import {
   shouldAutoFlag,
   escalateSeverityForRepeatOffender,
 } from "@henryco/trust";
+import { maskContactsForDisplay } from "@henryco/trust/detect";
+import {
+  resolveLocalizedDynamicField,
+  type AppLocale,
+} from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
+import { clipBody, screenMessageBody } from "@/lib/messaging/screen-message";
 import type {
   HiringPipeline,
   Application,
@@ -57,17 +63,20 @@ function mapApplication(row: Record<string, unknown>): Application {
   return {
     id: asString(row.id),
     pipelineId: asString(row.pipeline_id),
-    candidateUserId: asString(row.candidate_user_id),
+    candidateUserId: asString(row.candidate_id ?? row.candidate_user_id),
     candidateName: asString(row.candidate_name),
     candidateEmail: row.candidate_email ? asString(row.candidate_email) : null,
     candidateAvatarUrl: row.candidate_avatar_url
       ? asString(row.candidate_avatar_url)
       : null,
     jobTitle: asString(row.job_title),
-    stage: asString(row.stage, "applied"),
+    // prod column is `current_stage` (legacy code read `stage`, which does not
+    // exist → every card showed "applied"). Read current_stage, fall back to the
+    // legacy key for any pre-migration row. (V3-70 S2 correctness fix.)
+    stage: asString(row.current_stage ?? row.stage, "applied"),
     status: asString(row.status, "active") as Application["status"],
     coverNote: asString(row.cover_note),
-    createdAt: asString(row.created_at),
+    createdAt: asString(row.applied_at ?? row.created_at),
     updatedAt: row.updated_at ? asString(row.updated_at) : null,
   };
 }
@@ -79,7 +88,11 @@ function mapConversation(row: Record<string, unknown>): Conversation {
     subject: asString(row.subject),
     status: asString(row.status, "open") as Conversation["status"],
     unreadCount: asNumber(row.unread_count),
-    lastMessageAt: row.last_message_at ? asString(row.last_message_at) : null,
+    lastMessageAt: row.last_message_at
+      ? asString(row.last_message_at)
+      : row.updated_at
+        ? asString(row.updated_at)
+        : null,
     createdAt: asString(row.created_at),
   };
 }
@@ -91,7 +104,11 @@ function mapMessage(row: Record<string, unknown>): Message {
     senderId: asString(row.sender_id),
     senderType: asString(row.sender_type, "system") as Message["senderType"],
     senderName: row.sender_name ? asString(row.sender_name) : null,
-    body: asString(row.body),
+    // Defense-in-depth: every message body is display-masked on the read path so
+    // any legacy/unscreened row (medium contact detail persisted verbatim before
+    // WS-5) is still masked when rendered to either party. Idempotent on clean or
+    // already-masked text.
+    body: maskContactsForDisplay(asString(row.body)),
     isRead: row.is_read === true,
     readAt: row.read_at ? asString(row.read_at) : null,
     isFlagged: row.is_flagged === true,
@@ -166,7 +183,8 @@ export async function getApplications(
     .from("jobs_applications")
     .select("*")
     .eq("pipeline_id", pipelineId)
-    .order("created_at", { ascending: false });
+    // prod column is applied_at (no created_at on jobs_applications)
+    .order("applied_at", { ascending: false });
 
   if (error) {
     console.error("[hiring] getApplications error:", error.message);
@@ -179,7 +197,8 @@ export async function getApplications(
 }
 
 export async function getApplicationById(
-  applicationId: string
+  applicationId: string,
+  locale?: AppLocale
 ): Promise<Application | null> {
   const admin = createAdminSupabase();
   const { data, error } = await admin
@@ -189,7 +208,19 @@ export async function getApplicationById(
     .maybeSingle();
 
   if (error || !data) return null;
-  return mapApplication(data as Record<string, unknown>);
+  const application = mapApplication(data as Record<string, unknown>);
+  // Wave 2 i18n — cover note is the candidate's free-form pitch. Names
+  // and job titles stay as identifiers (the JobPost row owns the
+  // translated title).
+  if (!locale || locale === "en" || !application.coverNote) return application;
+  const coverNote = await resolveLocalizedDynamicField({
+    record: data as Record<string, unknown>,
+    field: "cover_note",
+    locale,
+    fallback: application.coverNote,
+    machineTranslate: true,
+  });
+  return { ...application, coverNote };
 }
 
 /* ------------------------------------------------------------------ */
@@ -224,16 +255,59 @@ export async function getConversationById(
   return mapConversation(data as Record<string, unknown>);
 }
 
+/**
+ * Resolve only the routing + ownership FKs for a conversation deep-link.
+ *
+ * Used by the employer deep-link resolver
+ * (`app/employer/conversations/[conversationId]/page.tsx`) to authorize the
+ * viewer and forward to the canonical nested hiring thread. `candidate_id` /
+ * `employer_id` are the participating USER ids (used for the per-conversation
+ * authorization check — the viewer must be the employer party); `pipeline_id` +
+ * `application_id` locate the nested thread route. Deliberately selects NO
+ * message body / subject — it is a pure routing lookup, never a content read.
+ */
+export async function getConversationRouteRef(
+  conversationId: string
+): Promise<{
+  id: string;
+  applicationId: string | null;
+  pipelineId: string | null;
+  candidateId: string | null;
+  employerId: string | null;
+  status: string;
+} | null> {
+  const admin = createAdminSupabase();
+  const { data, error } = await admin
+    .from("jobs_conversations")
+    .select("id, application_id, pipeline_id, candidate_id, employer_id, status")
+    .eq("id", conversationId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  const row = data as Record<string, unknown>;
+  return {
+    id: asString(row.id),
+    applicationId: row.application_id ? asString(row.application_id) : null,
+    pipelineId: row.pipeline_id ? asString(row.pipeline_id) : null,
+    candidateId: row.candidate_id ? asString(row.candidate_id) : null,
+    employerId: row.employer_id ? asString(row.employer_id) : null,
+    status: asString(row.status, "open"),
+  };
+}
+
 export async function getCandidateConversations(
   candidateUserId: string
 ): Promise<Conversation[]> {
   const admin = createAdminSupabase();
 
-  // First get applications by this candidate
+  // First get applications by this candidate. The prod column is candidate_id
+  // and it carries the auth user id (see /api/hiring/messages: "viewer.user.id
+  // === jobs_conversations.candidate_id, which equals jobs_applications.
+  // candidate_id by construction").
   const { data: apps } = await admin
     .from("jobs_applications")
     .select("id")
-    .eq("candidate_user_id", candidateUserId);
+    .eq("candidate_id", candidateUserId);
 
   if (!apps || apps.length === 0) return [];
 
@@ -245,7 +319,8 @@ export async function getCandidateConversations(
     .from("jobs_conversations")
     .select("*")
     .in("application_id", applicationIds)
-    .order("last_message_at", { ascending: false });
+    // jobs_conversations has no last_message_at; updated_at is the activity proxy
+    .order("updated_at", { ascending: false });
 
   if (error) {
     console.error("[hiring] getCandidateConversations error:", error.message);
@@ -280,6 +355,12 @@ export async function sendMessage(
   body: string
 ): Promise<{ message: Message | null; blocked: boolean; blockReason: string | null }> {
   const autoFlag = shouldAutoFlag(body);
+
+  // Shared rejection copy — used by both the repeat-offender high/critical block
+  // and the contact-safety screen below so a blocked send reads identically
+  // regardless of which guard rejected it.
+  const blockReason =
+    "This message can't be sent. Remove contact details or off-platform links and try again.";
 
   // Repeat-offender escalation: look up unresolved trust flags for this sender
   // over the past 30 days and escalate the base severity before the block decision.
@@ -324,9 +405,43 @@ export async function sendMessage(
     return {
       message: null,
       blocked: true,
-      blockReason:
-        "This message could not be sent because it contains content that violates platform policy. " +
-        "Keep all communication, contact details, and payment arrangements inside HenryCo.",
+      blockReason,
+    };
+  }
+
+  // Contact-safety screen BEFORE persist (closes the masking gap). contactSafety
+  // composes @henryco/trust, so it agrees with shouldAutoFlag on high/critical
+  // (block) AND additionally catches obfuscated/normalized contact + external
+  // links that the raw flag ranks lower — those previously persisted VERBATIM.
+  //   - block  → reject with the same blocked result (and record a trust_flags
+  //              row so repeat-offender escalation still counts it).
+  //   - mask   → persist the MASKED body (medium handle/link), never the raw text.
+  //   - allow  → persist unchanged.
+  // Direction-agnostic: the same screen runs for candidate→employer and
+  // employer→candidate, so neither side can leak contact details to the other.
+  const screened = screenMessageBody(clipBody(body));
+  if (screened.action === "block") {
+    try {
+      await createAdminSupabase().from("trust_flags").insert({
+        id: randomUUID(),
+        user_id: senderId,
+        flag_type: "off_platform_contact",
+        reason: autoFlag.reason || "off_platform_contact",
+        severity: "high",
+        source: "system",
+        entity_type: "message",
+        entity_id: null, // message was not persisted
+        metadata: { conversation_id: conversationId, sender_type: senderType, screen: "contact_safety" },
+        created_at: new Date().toISOString(),
+        resolved_at: null,
+      });
+    } catch {
+      // Tolerate — the block is unconditional regardless of writeback success
+    }
+    return {
+      message: null,
+      blocked: true,
+      blockReason,
     };
   }
 
@@ -345,7 +460,9 @@ export async function sendMessage(
       conversation_id: conversationId,
       sender_id: senderId,
       sender_type: senderType,
-      body,
+      // Persist the screened body — masked for medium contact detail, unchanged
+      // for clean text. No medium-or-worse contact detail is ever stored raw.
+      body: screened.body,
       is_read: false,
       is_flagged: isFlagged,
       flag_reason: flagReason,
@@ -431,7 +548,7 @@ export async function getCandidateInterviews(
   const { data: apps } = await admin
     .from("jobs_applications")
     .select("id")
-    .eq("candidate_user_id", candidateUserId);
+    .eq("candidate_id", candidateUserId);
 
   if (!apps || apps.length === 0) return [];
 
@@ -500,9 +617,11 @@ export async function updateApplicationStage(
   const admin = createAdminSupabase();
   const now = new Date().toISOString();
 
+  // prod column is `current_stage` (legacy code wrote `stage`, which does not
+  // exist → the write silently failed). Write the real column. (V3-70 S2 fix.)
   const { error } = await admin
     .from("jobs_applications")
-    .update({ stage, updated_at: now } as never)
+    .update({ current_stage: stage, updated_at: now } as never)
     .eq("id", applicationId);
 
   if (error) {

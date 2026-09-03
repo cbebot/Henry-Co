@@ -9,7 +9,7 @@ export function NextMoveCard({ requirements }: Props) {
   const items =
     requirements.length > 0
       ? requirements
-      : ["You're already in the highest trust lane the shared verification surface exposes."];
+      : ["You've reached the highest trust tier — nothing more to do here."];
   return (
     <div className="acct-ver__next" aria-labelledby="acct-ver-next-head">
       <p

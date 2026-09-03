@@ -18,6 +18,12 @@ export type { SignalFeedRow } from "./signal-feed";
 export { createDataAdminClient, type TypedSupabaseClient } from "./client";
 
 export {
+  loadOperatorMembership,
+  type OperatorMembershipViewer,
+  type OperatorMembershipResult,
+} from "./operator-membership";
+
+export {
   getDashboardSummary,
   type DashboardSummary,
   type CustomerSummary,
@@ -50,3 +56,71 @@ export {
   getSupportSummary,
   type SupportSummary,
 } from "./support-summary";
+
+export {
+  getInboxAggregate,
+  type InboxAggregate,
+  type InboxThread,
+  type InboxDivision,
+} from "./inbox-aggregate";
+
+export {
+  getCalendarAggregate,
+  defaultCalendarRange,
+  groupEventsByDay,
+  type CalendarAggregate,
+  type CalendarEvent,
+  type CalendarKind,
+  type CalendarRange,
+} from "./calendar-aggregate";
+
+export {
+  studioViewerIdentity,
+  filterToAllowedProjects,
+  loadViewerStudioProjectIds,
+  type StudioViewerIdentity,
+} from "./studio-scope";
+
+// V3-34 (Phase E) — per-user home-layout persistence (RLS owner-only).
+export {
+  getUserHomeLayout,
+  upsertUserHomeLayout,
+  isLayoutStale,
+  type UserHomeLayout,
+  type UserHomeLayoutPatch,
+  type HomeLayoutSurface,
+} from "./home-layout";
+
+export {
+  captureAbandonedTask,
+  listPendingAbandonedTasks,
+  bumpAbandonedTaskReminder,
+  expireStaleAbandonedTasks,
+  claimAbandonedTasksForUser,
+  listUserAbandonedTasks,
+  dismissAbandonedTask,
+  markAbandonedTaskRecovered,
+  markAbandonedTasksRecoveredByRefs,
+  stripSecretsFromState,
+  stateHasForbiddenKey,
+  isAbandonedTaskType,
+  isAbandonedTaskStatus,
+  ABANDONED_TASK_TYPES,
+  ABANDONED_TASK_STATUSES,
+  type AbandonedTask,
+  type AbandonedTaskState,
+  type AbandonedTaskStatus,
+  type AbandonedTaskType,
+  type CaptureAbandonedTaskInput,
+  type ClaimAbandonedTasksInput,
+} from "./abandoned-tasks";
+
+export {
+  listLiveDeals,
+  recordDealImpressions,
+  applyDealDecision,
+  type DealRow,
+  type DealDecisionStatus,
+  type ListLiveDealsOptions,
+  type DealImpressionEntry,
+} from "./deals";

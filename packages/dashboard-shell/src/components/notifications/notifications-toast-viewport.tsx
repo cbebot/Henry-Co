@@ -1,9 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FocusEvent,
+  type MouseEvent,
+} from "react";
 import { X } from "lucide-react";
 import {
   createSeverityResolver,
+  soundVariantFor,
   type SeverityResolver,
 } from "@henryco/notifications-ui/severity-style";
 import {
@@ -11,6 +20,7 @@ import {
   type SeverityTokens,
 } from "@henryco/notifications-ui/tokens";
 import { isSafeNotificationDeepLink } from "@henryco/notifications-ui/deep-link";
+import { signalAudio } from "@henryco/notifications-ui/chime";
 
 import {
   useNotificationSignal,
@@ -25,29 +35,147 @@ import { CSS_VARS } from "../../tokens/color";
 import { RADIUS } from "../../tokens/spacing";
 import { typeStyle } from "../../tokens/type";
 import { focusVisibleStyle } from "../../tokens/focus";
-import { MOTION_PRESET } from "../../tokens/motion";
+import {
+  reduceToastBaseline,
+  type ToastBaselineState,
+} from "./toast-selection";
+import { loadPersistedBaseline, persistBaseline } from "./toast-baseline-store";
+import {
+  subscribeShellToast,
+  type ShellToast,
+} from "../../shell/toast-bus";
+import {
+  FEEDBACK_TOAST_CSS,
+  FeedbackToastCard,
+  registerToastRenderer,
+} from "@henryco/ui/feedback";
+import { useToastSwipe } from "./use-toast-swipe";
+import { planToastRelease } from "./toast-drip";
 
 /**
  * NotificationsToastViewport — shell-wide live toast strip.
  *
- * Anchored bottom-right desktop / bottom mobile (audit §A.8 + master
- * §C.10 #9 — mobile = different layout). Renders newly-arrived
- * unread signals as transient toasts that auto-dismiss after a
- * severity-aware delay.
+ * Anchored bottom-right desktop / bottom mobile. Renders newly-arrived
+ * unread signals as transient toasts.
  *
- * Honors:
- *   - in_app_toast_enabled (master toggle off → no toasts)
- *   - high_priority_only   (only urgent + security toast)
- *   - muted_divisions / muted_event_types (suppress per source)
- *   - email_dispatched_at  (dim if email already sent)
- *   - quiet_hours_*        (dim toast styling, do not suppress)
+ * Interaction model (the "wonderful" pass):
+ *   - Calm staggered ENTRY (fade + rise), smooth EXIT (fade + collapse) —
+ *     no abrupt pop in/out.
+ *   - A hairline PROGRESS BAR is the dismissal clock: its `animationend`
+ *     fires the dismiss, so the bar and the timer can never desync. Hover
+ *     / focus PAUSES it (and resumes on leave) — read without losing it.
+ *   - Standardized, shorter dwell ladder (severity-style.autoDismissMs);
+ *     security never auto-dismisses (must be seen) — it shows no bar.
+ *   - Severity-aware chime + a subtle haptic on arrival, gated by the
+ *     user's prefs and silenced in quiet hours. The AudioContext is
+ *     unlocked once on the first page gesture (autoplay policy).
+ *   - Honors prefers-reduced-motion (entry/exit collapse to an opacity
+ *     fade; the functional progress indicator stays).
  *
- * Tracks IDs already toasted in this session so the same row isn't
- * re-toasted on every refresh.
+ * Honors: in_app_toast_enabled, high_priority_only, muted_divisions,
+ * muted_event_types, email_dispatched_at (dim), quiet_hours_* (dim + mute
+ * sound). Tracks IDs already toasted this session so a row isn't
+ * re-toasted on refresh.
  */
 
-const VISIBLE_LIMIT = 3;
+// At most TWO toasts are ever on screen at once — a calm cap, not a
+// stack. Newer arrivals beyond the cap wait in the queue (MAX_QUEUE) and
+// promote into view automatically as the visible ones dismiss, so nothing
+// is lost and the corner never floods. (Was 3 → owner-flagged as too many
+// popping out at once.)
+const VISIBLE_LIMIT = 2;
 const MAX_QUEUE = 6;
+/** Exit animation window before the row is removed from state. */
+const EXIT_MS = 240;
+/**
+ * Minimum gap between successive toast appearances. With the cap of two, this
+ * reveals them ONE AT A TIME — a backlog or a burst trickles in calmly instead
+ * of two popping out at once (V3-37 toast regulation). The first toast after a
+ * lull still appears instantly; only subsequent ones wait out the gap.
+ */
+const DRIP_GAP_MS = 650;
+
+const STYLE_ID = "hc-toast-viewport-style";
+
+const TOAST_CSS = `
+@keyframes hcToastIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);     }
+}
+@keyframes hcToastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); max-height: 16rem; }
+  to   { opacity: 0; transform: translateY(4px) scale(0.985); max-height: 0; margin-bottom: -0.5rem; }
+}
+@keyframes hcToastFadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes hcToastProgress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.hc-toast { will-change: transform, opacity; }
+/* backwards (not both): covers the staggered entry delay without a flash, then
+   releases transform/opacity to the element's own styles so the hover-lift and
+   quiet-hours dim aren't frozen by the animation's fill. */
+.hc-toast-in  { animation: hcToastIn 260ms cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.hc-toast-out { animation: hcToastOut ${EXIT_MS}ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+.hc-toast-progress {
+  animation-name: hcToastProgress;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  transform-origin: left center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hc-toast-in  { animation: none; opacity: 1; transform: none; }
+  .hc-toast-out { animation: hcToastFadeOut ${EXIT_MS}ms linear both; }
+}
+`;
+
+/**
+ * Drip-release controller — keeps at most `limit` toasts visible but reveals
+ * them one at a time, paced by `gapMs` (see planToastRelease). Dismissing a
+ * visible toast frees its slot; the next is still paced, never instant. Injected
+ * `Date.now()` only — the decision itself is the pure, tested planToastRelease.
+ */
+function useDripReleasedToasts<T extends { key: string; receivedAt: number }>(
+  candidates: T[],
+  limit: number,
+  gapMs: number,
+): T[] {
+  const [releasedKeys, setReleasedKeys] = useState<string[]>([]);
+  const [tick, setTick] = useState(0);
+  const lastReleaseAtRef = useRef(0);
+
+  // Only re-evaluate when the actual candidate keys change — not on every
+  // parent render (the merged toast arrays are fresh objects each render).
+  const candidateSig = candidates.map((c) => c.key).join("|");
+
+  useEffect(() => {
+    const plan = planToastRelease({
+      candidateKeys: candidateSig ? candidateSig.split("|") : [],
+      releasedKeys,
+      lastReleaseAt: lastReleaseAtRef.current,
+      now: Date.now(),
+      limit,
+      gapMs,
+    });
+    if (plan.action === "prune") {
+      setReleasedKeys(plan.releasedKeys);
+      return;
+    }
+    if (plan.action === "release") {
+      lastReleaseAtRef.current = Date.now();
+      setReleasedKeys((prev) => [...prev, plan.key]);
+      return;
+    }
+    if (plan.action === "wait") {
+      const timer = setTimeout(() => setTick((x) => x + 1), plan.waitMs);
+      return () => clearTimeout(timer);
+    }
+    // idle — nothing to release
+  }, [candidateSig, releasedKeys, limit, gapMs, tick]);
+
+  const byKey = new Map(candidates.map((c) => [c.key, c]));
+  return releasedKeys
+    .map((k) => byKey.get(k))
+    .filter((entry): entry is T => Boolean(entry))
+    .sort((a, b) => b.receivedAt - a.receivedAt);
+}
 
 export type NotificationsToastViewportProps = {
   /** Customer or staff. Defaults to customer. */
@@ -61,7 +189,18 @@ export type NotificationsToastViewportProps = {
 type ActiveToast = {
   signal: RealtimeSignal;
   receivedAt: number;
-  pinned: boolean;
+  /** ms until auto-dismiss; null = persistent (security). */
+  dismissMs: number | null;
+  /** True once dismissal has been requested — plays the exit animation. */
+  leaving: boolean;
+};
+
+/** An imperative toast (from `shellToast.*` / `toast.*`) currently on screen. */
+type ImperativeActive = {
+  toast: ShellToast;
+  receivedAt: number;
+  dismissMs: number | null;
+  leaving: boolean;
 };
 
 export function NotificationsToastViewport({
@@ -70,111 +209,288 @@ export function NotificationsToastViewport({
   t = (s) => s,
 }: NotificationsToastViewportProps) {
   const tt = (key: string) => (typeof t === "function" ? t(key) : key);
-  const resolver = createSeverityResolver(tokens);
-  const { signals } = useNotificationSignal({
+  const resolver = useMemo(() => createSeverityResolver(tokens), [tokens]);
+  const { signals, loading } = useNotificationSignal({
     audience,
     visibleOnly: true,
     unreadOnly: true,
-    limit: 8,
+    // No tight limit on purpose: the "already seen" baseline must cover the
+    // FULL retained unread backlog. With a small window, an older unread row
+    // sliding into view later (after a newer one is read) would be mistaken
+    // for a fresh arrival and toast spuriously.
   });
   const [active, setActive] = useState<ActiveToast[]>([]);
-  const seenRef = useRef<Set<string>>(new Set());
-  // Mark all initially-known signals as already seen on first render so
-  // the backlog (rows that existed before this tab loaded) doesn't toast
-  // on mount.
-  const hasMountedRef = useRef(false);
+  // V3-DASH-TOAST-02: null until the first effect seeds it from the
+  // session-persisted baseline (so a router.refresh() remount restores
+  // "already seen" rather than re-capturing an empty set).
+  const baselineRef = useRef<ToastBaselineState | null>(null);
+  const exitTimers = useRef<Map<string, number>>(new Map());
+  // Imperative toasts (shellToast.*) — a parallel queue so action feedback
+  // (success / error / micro-interactions) shares this viewport without
+  // entangling the realtime-signal path.
+  const [busActive, setBusActive] = useState<ImperativeActive[]>([]);
+  const impExitTimers = useRef<Map<string, number>>(new Map());
 
+  // V3-FEEDBACK-01 renderer election: while this richer viewport is mounted
+  // it owns the shared feedback bus (priority 10 — the app-wide
+  // FeedbackToastViewport registers at 0 and stands down), so an action
+  // toast joins THIS merged, drip-paced strip instead of rendering twice.
   useEffect(() => {
-    if (!hasMountedRef.current) {
-      for (const s of signals) seenRef.current.add(s.id);
-      hasMountedRef.current = true;
-      return;
-    }
+    const registration = registerToastRenderer(10);
+    return () => registration.release();
+  }, []);
+
+  // Unlock the AudioContext on the first page gesture (Chrome/Safari autoplay
+  // policy) so the very first real chime can sound. Once is enough.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let done = false;
+    const cleanup = () => {
+      window.removeEventListener("pointerdown", handler);
+      window.removeEventListener("keydown", handler);
+    };
+    const handler = () => {
+      if (done) return;
+      done = true;
+      void signalAudio.unlock();
+      cleanup();
+    };
+    window.addEventListener("pointerdown", handler, { once: true, passive: true });
+    window.addEventListener("keydown", handler, { once: true });
+    return cleanup;
+  }, []);
+
+  // Decide which signals are genuine post-baseline arrivals to toast. The
+  // pre-existing unread backlog is captured the moment the first hydration
+  // SETTLES (`loading` true→false) — never at first render, when `signals` is
+  // still the provider's empty pre-fetch state. That timing bug re-toasted the
+  // whole backlog on every (re)mount; see `reduceToastBaseline`.
+  useEffect(() => {
+    const ids = signals.map((s) => s.id);
+    // Seed from the session-persisted baseline on the first run; thereafter use
+    // the live ref. Persisting after each reduce is what makes the dedup survive
+    // a router.refresh() remount (the "re-delivers on each click" defect).
+    const prevBaseline = baselineRef.current ?? loadPersistedBaseline(audience);
+    const { state, toast } = reduceToastBaseline(prevBaseline, {
+      loading,
+      signalIds: ids,
+    });
+    baselineRef.current = state;
+    persistBaseline(audience, state);
+    if (toast.length === 0) return;
     setActive((current) => {
-      const additions: ActiveToast[] = [];
-      for (const s of signals) {
-        if (seenRef.current.has(s.id)) continue;
-        seenRef.current.add(s.id);
-        additions.push({ signal: s, receivedAt: Date.now(), pinned: false });
-      }
-      if (additions.length === 0) return current;
+      const byId = new Map(signals.map((s) => [s.id, s] as const));
       const merged = [...current];
-      for (const a of additions) {
-        if (merged.some((m) => m.signal.id === a.signal.id)) continue;
-        merged.push(a);
+      for (const id of toast) {
+        if (merged.some((m) => m.signal.id === id)) continue;
+        const signal = byId.get(id);
+        if (!signal) continue;
+        const sev = resolver.resolveSeverity(signal.priority, signal.category);
+        merged.push({
+          signal,
+          receivedAt: Date.now(),
+          dismissMs: resolver.autoDismissMs(sev.severity),
+          leaving: false,
+        });
       }
       return merged.slice(-MAX_QUEUE);
     });
-  }, [signals]);
+  }, [signals, loading, resolver, audience]);
 
-  // Auto-dismiss schedule per toast.
+  // Clear any pending exit timers on unmount.
   useEffect(() => {
-    const timers: number[] = [];
-    for (const toast of active) {
-      if (toast.pinned) continue;
-      const sev = resolver.resolveSeverity(toast.signal.priority, toast.signal.category);
-      const dismissMs = resolver.autoDismissMs(sev.severity);
-      if (dismissMs === null) continue;
-      const elapsed = Date.now() - toast.receivedAt;
-      const remaining = Math.max(0, dismissMs - elapsed);
-      const id = window.setTimeout(() => {
-        setActive((current) => current.filter((t) => t.signal.id !== toast.signal.id));
-      }, remaining);
-      timers.push(id);
-    }
+    const timers = exitTimers.current;
     return () => {
-      for (const id of timers) window.clearTimeout(id);
+      for (const id of timers.values()) window.clearTimeout(id);
+      timers.clear();
     };
-  }, [active, resolver]);
-
-  const dismiss = useCallback((id: string) => {
-    setActive((current) => current.filter((t) => t.signal.id !== id));
   }, []);
 
-  const pin = useCallback((id: string) => {
-    setActive((current) =>
-      current.map((t) => (t.signal.id === id ? { ...t, pinned: true } : t)),
-    );
+  const remove = useCallback((id: string) => {
+    setActive((current) => current.filter((toast) => toast.signal.id !== id));
+    const timer = exitTimers.current.get(id);
+    if (timer) {
+      window.clearTimeout(timer);
+      exitTimers.current.delete(id);
+    }
   }, []);
 
-  const ordered = useMemo(
-    () => [...active].sort((a, b) => b.receivedAt - a.receivedAt),
+  // Two-phase dismissal: mark leaving (plays the exit animation), then remove
+  // once the animation window has elapsed.
+  const requestDismiss = useCallback(
+    (id: string) => {
+      if (exitTimers.current.has(id)) return; // already leaving
+      setActive((current) =>
+        current.map((toast) =>
+          toast.signal.id === id ? { ...toast, leaving: true } : toast,
+        ),
+      );
+      const timer = window.setTimeout(() => remove(id), EXIT_MS);
+      exitTimers.current.set(id, timer);
+    },
+    [remove],
+  );
+
+  // ── Imperative toasts (shellToast.*) ─────────────────────────────────
+  const removeImp = useCallback((id: string) => {
+    setBusActive((current) => current.filter((t) => t.toast.id !== id));
+    const timer = impExitTimers.current.get(id);
+    if (timer) {
+      window.clearTimeout(timer);
+      impExitTimers.current.delete(id);
+    }
+  }, []);
+
+  const requestDismissImp = useCallback(
+    (id: string) => {
+      if (impExitTimers.current.has(id)) return;
+      setBusActive((current) =>
+        current.map((t) => (t.toast.id === id ? { ...t, leaving: true } : t)),
+      );
+      const timer = window.setTimeout(() => removeImp(id), EXIT_MS);
+      impExitTimers.current.set(id, timer);
+    },
+    [removeImp],
+  );
+
+  // Subscribe to the imperative toast bus once. New emits append (capped);
+  // re-emitting the same id replaces its content in place.
+  useEffect(() => {
+    return subscribeShellToast((toast) => {
+      setBusActive((current) => {
+        const existing = current.findIndex((t) => t.toast.id === toast.id);
+        if (existing !== -1) {
+          const next = current.slice();
+          next[existing] = {
+            toast,
+            receivedAt: Date.now(),
+            dismissMs: toast.durationMs,
+            leaving: false,
+          };
+          return next;
+        }
+        return [
+          ...current,
+          { toast, receivedAt: Date.now(), dismissMs: toast.durationMs, leaving: false },
+        ].slice(-MAX_QUEUE);
+      });
+    });
+  }, []);
+
+  // Clear imperative exit timers on unmount.
+  useEffect(() => {
+    const timers = impExitTimers.current;
+    return () => {
+      for (const id of timers.values()) window.clearTimeout(id);
+      timers.clear();
+    };
+  }, []);
+
+  // V3-NOTIF-SPLIT-01: two SEPARATE lanes, never merged, so an ephemeral
+  // ACTION confirmation (shellToast/feedback — "Marked as read", "Saved")
+  // can never be mistaken for an OWNED NOTIFICATION (a realtime signal from
+  // customer_notifications about an event on the account):
+  //   - Owned notifications -> TOP-RIGHT, descending from the bell they
+  //     belong to, and persisted in the inbox.
+  //   - Action feedback     -> BOTTOM-RIGHT, transient, the consistent
+  //     app-wide feedback corner (V3-FEEDBACK-01: it never moves).
+  // Each lane is independently capped + drip-paced, so a burst in one never
+  // starves the other and the two read as distinct surfaces.
+  const signalLane = useMemo(
+    () =>
+      active
+        .map((a) => ({ key: `sig:${a.signal.id}`, receivedAt: a.receivedAt, item: a }))
+        .sort((a, b) => b.receivedAt - a.receivedAt),
     [active],
   );
-  const visible = ordered.slice(0, VISIBLE_LIMIT);
+  const actionLane = useMemo(
+    () =>
+      busActive
+        .map((b) => ({ key: `imp:${b.toast.id}`, receivedAt: b.receivedAt, item: b }))
+        .sort((a, b) => b.receivedAt - a.receivedAt),
+    [busActive],
+  );
+  // Paced reveal: at most VISIBLE_LIMIT per lane, one at a time, DRIP_GAP_MS apart.
+  const visibleSignals = useDripReleasedToasts(signalLane, VISIBLE_LIMIT, DRIP_GAP_MS);
+  const visibleActions = useDripReleasedToasts(actionLane, VISIBLE_LIMIT, DRIP_GAP_MS);
 
-  if (visible.length === 0) return null;
+  if (visibleSignals.length === 0 && visibleActions.length === 0) return null;
 
   return (
-    <div
-      role="region"
-      aria-label={tt("New activity")}
-      style={{
-        position: "fixed",
-        zIndex: 80,
-        right: "1rem",
-        bottom: "1rem",
-        left: "auto",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-end",
-        gap: "0.5rem",
-        pointerEvents: "none",
-        paddingBottom: "max(env(safe-area-inset-bottom, 0px) + 0.5rem, 0.5rem)",
-      }}
-    >
-      {visible.map((toast, index) => (
-        <ToastCard
-          key={toast.signal.id}
-          toast={toast}
-          index={index}
-          resolver={resolver}
-          onDismiss={() => dismiss(toast.signal.id)}
-          onPin={() => pin(toast.signal.id)}
-          t={tt}
-        />
-      ))}
-    </div>
+    <>
+      <style
+        id={STYLE_ID}
+        // Compile-time constant CSS (signal-card keyframes + the shared
+        // feedback-card stylesheet) — no user content flows in.
+        dangerouslySetInnerHTML={{ __html: TOAST_CSS + FEEDBACK_TOAST_CSS }}
+      />
+      {/* OWNED NOTIFICATIONS — top-right, descending from the bell. A real
+          event on the account; mirrored in the persistent bell inbox. */}
+      {visibleSignals.length > 0 ? (
+        <div
+          role="region"
+          aria-label={tt("Notifications")}
+          style={{
+            position: "fixed",
+            zIndex: 80,
+            right: "1rem",
+            // Clear the top app bar / bell so a fresh notification appears to
+            // descend from the bell rather than float over the header.
+            top: "max(env(safe-area-inset-top, 0px) + 4.25rem, 4.25rem)",
+            left: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: "0.5rem",
+            pointerEvents: "none",
+          }}
+        >
+          {visibleSignals.map((entry, index) => (
+            <ToastCard
+              key={entry.key}
+              toast={entry.item}
+              index={index}
+              resolver={resolver}
+              onDismiss={() => requestDismiss(entry.item.signal.id)}
+              t={tt}
+            />
+          ))}
+        </div>
+      ) : null}
+      {/* ACTION FEEDBACK — bottom-right, the consistent transient feedback
+          corner (V3-FEEDBACK-01). The SHARED card from @henryco/ui/feedback,
+          kept in its OWN lane and never mixed with owned notifications. */}
+      {visibleActions.length > 0 ? (
+        <div
+          role="status"
+          aria-label={tt("New activity")}
+          style={{
+            position: "fixed",
+            zIndex: 81,
+            right: "1rem",
+            bottom: "1rem",
+            left: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: "0.5rem",
+            pointerEvents: "none",
+            paddingBottom: "max(env(safe-area-inset-bottom, 0px) + 0.5rem, 0.5rem)",
+          }}
+        >
+          {visibleActions.map((entry, index) => (
+            <FeedbackToastCard
+              key={entry.key}
+              toast={entry.item.toast}
+              index={index}
+              leaving={entry.item.leaving}
+              onDismiss={() => requestDismissImp(entry.item.toast.id)}
+              t={tt}
+            />
+          ))}
+        </div>
+      ) : null}
+    </>
   );
 }
 
@@ -183,15 +499,35 @@ type ToastCardProps = {
   index: number;
   resolver: SeverityResolver;
   onDismiss: () => void;
-  onPin: () => void;
   t: (key: string) => string;
 };
 
-function ToastCard({ toast, index, resolver, onDismiss, onPin, t }: ToastCardProps) {
+function ToastCard({ toast, index, resolver, onDismiss, t }: ToastCardProps) {
   const renderState = useSignalRenderState(toast.signal);
-  const { markReadLocally } = useRealtime();
+  const { markReadLocally, preferences } = useRealtime();
+  // Pointer/keyboard dwell: pauses the progress clock AND lifts the card.
+  const [paused, setPaused] = useState(false);
+  const swipe = useToastSwipe(onDismiss, !toast.leaving);
   const sev = resolver.resolveSeverity(toast.signal.priority, toast.signal.category);
   const isUrgent = sev.severity === "urgent" || sev.severity === "security";
+
+  // Arrival feedback — once per toast, only when it actually shows and not in
+  // quiet hours. Chime + a subtle haptic, each behind its own preference.
+  useEffect(() => {
+    if (renderState.toastSuppressed || renderState.inQuiet) return;
+    if (preferences.notification_sound_enabled) {
+      signalAudio.playChime(soundVariantFor(sev.severity));
+    }
+    if (
+      preferences.notification_vibration_enabled &&
+      typeof navigator !== "undefined" &&
+      typeof navigator.vibrate === "function"
+    ) {
+      navigator.vibrate(isUrgent ? [12, 60, 24] : 14);
+    }
+    // Mount-only: a toast mounts once per signal id (stable key).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (renderState.toastSuppressed) {
     return null;
@@ -203,14 +539,35 @@ function ToastCard({ toast, index, resolver, onDismiss, onPin, t }: ToastCardPro
     ? toast.signal.action_url || toast.signal.message_href
     : "/notifications";
 
+  const pause = () => setPaused(true);
+  const resume = (e: FocusEvent | MouseEvent) => {
+    // Keep paused while focus/pointer is still inside the card (e.g. tabbing
+    // from the link to the close button).
+    if (
+      "relatedTarget" in e &&
+      e.currentTarget instanceof Node &&
+      e.relatedTarget instanceof Node &&
+      e.currentTarget.contains(e.relatedTarget)
+    ) {
+      return;
+    }
+    setPaused(false);
+  };
+
   return (
     <div
+      className={`hc-toast ${toast.leaving ? "hc-toast-out" : "hc-toast-in"}`}
       role={isUrgent ? "alert" : "status"}
       aria-live={isUrgent ? "assertive" : "polite"}
       aria-atomic="false"
-      onMouseEnter={onPin}
-      onFocus={onPin}
+      onMouseEnter={pause}
+      onMouseLeave={resume}
+      onFocus={pause}
+      onBlur={resume}
+      {...swipe.handlers}
       style={{
+        position: "relative",
+        overflow: "hidden",
         pointerEvents: "auto",
         width: "min(92vw, 26rem)",
         display: "flex",
@@ -220,14 +577,26 @@ function ToastCard({ toast, index, resolver, onDismiss, onPin, t }: ToastCardPro
         border: `1px solid var(${CSS_VARS.hairline})`,
         borderLeft: `3px solid var(${sev.colorVar})`,
         backgroundColor: `var(${CSS_VARS.surfaceElevated})`,
-        boxShadow: "0 18px 44px rgba(17,24,39,0.18)",
-        transform: `translateY(0)`,
-        animationDelay: `${index * 30}ms`,
-        animation: `${MOTION_PRESET.surfaceEntry.keyframes} ${MOTION_PRESET.surfaceEntry.duration}ms ${MOTION_PRESET.surfaceEntry.easing}`,
-        opacity: renderState.dim ? 0.85 : 1,
+        boxShadow: paused
+          ? "0 24px 56px rgba(17,24,39,0.24)"
+          : "0 18px 44px rgba(17,24,39,0.18)",
+        transform: paused && !toast.leaving ? "translateY(-1px)" : "translateY(0)",
+        transition:
+          "box-shadow 180ms cubic-bezier(0.22,1,0.36,1), transform 180ms cubic-bezier(0.22,1,0.36,1)",
+        animationDelay: toast.leaving ? "0ms" : `${index * 40}ms`,
+        ...swipe.style,
       }}
     >
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "0.65rem" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "0.65rem",
+          // Quiet hours / already-emailed → recede, without the entry animation
+          // (which controls card opacity) fighting it.
+          opacity: renderState.dim ? 0.82 : 1,
+        }}
+      >
         <span
           aria-hidden
           style={{
@@ -305,19 +674,38 @@ function ToastCard({ toast, index, resolver, onDismiss, onPin, t }: ToastCardPro
             height: "1.6rem",
             borderRadius: RADIUS.pill,
             border: "none",
-            background: "transparent",
+            background: paused ? `var(${CSS_VARS.surfaceSunken})` : "transparent",
             color: `var(${CSS_VARS.inkSoft})`,
             cursor: "pointer",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
+            transition: "background 160ms linear",
             ...focusVisibleStyle(),
           }}
         >
           <X size={14} aria-hidden />
         </button>
       </div>
+      {toast.dismissMs !== null && !toast.leaving ? (
+        <span
+          aria-hidden
+          className="hc-toast-progress"
+          onAnimationEnd={onDismiss}
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: "2px",
+            backgroundColor: `var(${sev.colorVar})`,
+            opacity: 0.5,
+            animationDuration: `${toast.dismissMs}ms`,
+            animationPlayState: paused ? "paused" : "running",
+          }}
+        />
+      ) : null}
     </div>
   );
 }

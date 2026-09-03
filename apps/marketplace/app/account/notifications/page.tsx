@@ -1,25 +1,45 @@
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { EmptyState, WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import type { MarketplaceNotification } from "@/lib/marketplace/types";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountNotificationsPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/notifications");
   const data = await getBuyerDashboardData();
+
+  // List surface — wrap only the most-visible field per row (title); body is
+  // longer and translation is deferred to the catalogue wave.
+  /* TODO(wave3-catalogue): paginate translation — notification body skipped
+     above to keep DeepL spend bounded; revisit once the cache layer lands. */
+  const localizedNotifications = await Promise.all(
+    data.notifications.map(async (notification) => ({
+      ...notification,
+      title: await resolveLocalizedDynamicField({
+        record: notification as unknown as Record<string, unknown>,
+        field: "title",
+        locale,
+        fallback: notification.title,
+        machineTranslate: locale !== "en",
+      }),
+    })),
+  );
 
   return (
     <WorkspaceShell
       title="Notifications"
       description="In-app, email, and WhatsApp lifecycle updates are designed to show up here as a single readable account timeline."
-      {...accountWorkspaceNav("/account/notifications")}
+      {...accountWorkspaceNav("/account/notifications", locale)}
     >
-      {data.notifications.length ? (
+      {localizedNotifications.length ? (
         <div className="space-y-4">
-          {data.notifications.map((notification: MarketplaceNotification) => (
+          {localizedNotifications.map((notification: MarketplaceNotification) => (
             <article key={notification.id} className="market-paper rounded-[1.75rem] p-5">
               <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                 <div>

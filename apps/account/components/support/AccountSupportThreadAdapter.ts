@@ -60,9 +60,17 @@ export function accountSupportThreadAdapter(): MessageThreadAdapter {
         }
       }
 
+      // Per-dispatch idempotency key: a retry of the SAME message reuses the
+      // key, so a send that persisted server-side but failed on the network
+      // replays the stored response instead of double-posting (the reply
+      // route keys idempotency on this header).
+      const idempotencyKey = String(formData.get("idempotencyKey") || "");
       const response = await fetch("/api/support/reply", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          ...(idempotencyKey ? { "idempotency-key": idempotencyKey } : {}),
+        },
         body: JSON.stringify({
           thread_id: threadId,
           body,
@@ -73,11 +81,16 @@ export function accountSupportThreadAdapter(): MessageThreadAdapter {
       const data = (await response.json().catch(() => ({}))) as {
         message_id?: string;
         error?: string;
+        reason?: string;
       };
       if (!response.ok || !data.message_id) {
+        // The reply route reports contact-safety blocks as `reason`
+        // ("contact_blocked", 422) and other failures as `error` — read
+        // both so blocked sends surface their real cause instead of the
+        // generic copy.
         return {
           ok: false,
-          reason: data.error || "We couldn't send your reply.",
+          reason: data.error || data.reason || "We couldn't send your reply.",
         };
       }
       return { ok: true, messageId: data.message_id };
@@ -110,12 +123,21 @@ export function accountSupportThreadAdapter(): MessageThreadAdapter {
       });
       const data = (await response.json().catch(() => ({}))) as {
         ok?: boolean;
+        ref?: string;
         url?: string;
         name?: string;
         type?: string;
         size?: number;
         reason?: string;
       };
+      // /api/support/upload writes to the RLS-PRIVATE document bucket and
+      // returns BOTH the durable `media://private/...` ref AND a short-lived
+      // SIGNED previewUrl. The thread engine carries a single `url` through to
+      // both the in-composer preview render AND the submitted reply payload, so
+      // we hand it the SIGNED previewUrl (a private ref can't render in the
+      // browser). The reply route then canonicalises that signed URL back to
+      // the ref before persisting, so the column never stores a transient URL.
+      // (V3-MEDIA-SWEEP-01)
       if (!response.ok || !data.ok || !data.url) {
         return { ok: false, reason: data.reason || "Upload failed." };
       }
@@ -162,9 +184,9 @@ export function mapRowToMessage(
     (isOwn
       ? "You"
       : senderType === "agent"
-        ? "HenryCo Support"
+        ? "Henry Onyx Support"
         : senderType === "system"
-          ? "HenryCo"
+          ? "Henry Onyx"
           : "Customer");
 
   const attachments = Array.isArray(row.attachments)

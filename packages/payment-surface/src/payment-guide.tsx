@@ -1,4 +1,5 @@
 import { Mail, ShieldCheck, Smartphone } from "lucide-react";
+import { COMPANY, getSupportWhatsAppHref } from "@henryco/config";
 import { cn } from "@henryco/ui/cn";
 import { HenryCoHeroCard } from "@henryco/ui/public-shell";
 import { PaymentCopyButton } from "./payment-copy-button";
@@ -19,9 +20,9 @@ export interface PaymentGuideProps {
 }
 
 function whatsappHrefOf(value: string | null) {
-  if (!value) return null;
-  const digits = value.replace(/[^\d]/g, "");
-  return digits ? `https://wa.me/${digits}` : null;
+  // SINGLE-SOURCE (owner 2026-07-08): the one wa.me builder lives in config.
+  if (!value || !value.replace(/[^0-9]/g, "")) return null;
+  return getSupportWhatsAppHref(value);
 }
 
 /**
@@ -44,6 +45,7 @@ export function PaymentGuide({
 }: PaymentGuideProps) {
   const formattedAmount = formatPaymentAmount(amount, currency);
   const whatsapp = whatsappHrefOf(platform.supportWhatsApp);
+  const legalEntity = COMPANY.group.legalName;
   const panelClass = cn(
     "rounded-[1.4rem] border border-[color:var(--payment-line,rgba(255,255,255,0.18))] bg-black/10 p-5 sm:p-6",
     theme?.panelClassName,
@@ -86,7 +88,7 @@ export function PaymentGuide({
           Verified company payee
         </div>
         <p className={cn("mt-2 max-w-2xl text-sm leading-6", softClass)}>
-          Transfer only to the HenryCo company account shown below. Each detail has a copy button so nothing
+          Transfer only to the {legalEntity} company account shown below. Each detail has a copy button so nothing
           has to be retyped.
         </p>
         <dl className="mt-4 divide-y divide-[color:var(--payment-line,rgba(255,255,255,0.18))] border-y border-[color:var(--payment-line,rgba(255,255,255,0.18))]">
@@ -109,7 +111,7 @@ export function PaymentGuide({
               </dt>
               <dd className="flex min-w-0 flex-1 items-center justify-between gap-3 sm:justify-end">
                 <span className={cn("min-w-0 flex-1 truncate font-mono text-sm font-semibold sm:flex-initial sm:text-right", inkClass)}>
-                  {item.value || "Awaiting finance configuration"}
+                  {item.value || "—"}
                 </span>
                 {item.value ? <PaymentCopyButton value={item.value} label={item.copyLabel} /> : null}
               </dd>
@@ -126,7 +128,7 @@ export function PaymentGuide({
           {[
             "Copy the amount and account details from the section above.",
             "Transfer from your bank or company account using your record name as reference.",
-            "Upload your receipt or proof below — finance reviews and confirms within one business day.",
+            "Upload your receipt or proof below — we review and confirm it within one business day.",
             "Once confirmed, your record advances and you receive an update by email.",
           ].map((step, index) => (
             <li

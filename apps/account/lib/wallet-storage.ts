@@ -142,7 +142,12 @@ export function isPendingWithdrawalStatus(status: string | null | undefined) {
   const normalized = asText(status).toLowerCase();
   return Boolean(
     normalized &&
-      !["completed", "verified", "processed", "paid", "rejected", "cancelled", "failed"].includes(
+      // A pending hold = money still IN the wallet balance but earmarked for a withdrawal. Once the
+      // auto-payout rail RESERVES a withdrawal it moves to 'processing' AND decrements the balance,
+      // so 'processing' is no longer a hold — counting it would double-subtract the same amount from
+      // available (the C1 fix; aligns with dashboard-modules-wallet's PENDING_WITHDRAWAL_STATUSES,
+      // which already excludes it). Terminal statuses are likewise not holds.
+      !["completed", "verified", "processed", "paid", "rejected", "cancelled", "failed", "processing"].includes(
         normalized
       )
   );

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, Calendar, Package } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import type { LogisticsRecentShipment } from "@/lib/logistics/recent-shipments";
 
-function formatDate(value: string | null) {
+function formatDate(value: string | null, locale: AppLocale) {
   if (!value) return null;
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("en-NG", {
+  return d.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -28,26 +29,29 @@ function formatStatus(status: string) {
  */
 export default function RecentShipmentCards({
   shipments,
+  locale = "en",
 }: {
   shipments: LogisticsRecentShipment[];
+  locale?: AppLocale;
 }) {
   if (!shipments.length) return null;
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
     <section>
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.32em] text-[var(--logistics-accent-soft)]">
-          Your recent shipments
+          {t("Your recent shipments")}
         </p>
         <span className="text-[11px] font-medium text-white/55">
-          Tap a card to open it
+          {t("Tap a card to open it")}
         </span>
       </div>
       <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {shipments.map((shipment, index) => {
           const date =
-            formatDate(shipment.scheduledDeliveryAt) ??
-            formatDate(shipment.createdAt);
+            formatDate(shipment.scheduledDeliveryAt, locale) ??
+            formatDate(shipment.createdAt, locale);
           const phoneHint = shipment.senderPhone || shipment.recipientPhone || "";
           const params = new URLSearchParams();
           if (shipment.trackingCode) params.set("code", shipment.trackingCode);
@@ -74,7 +78,7 @@ export default function RecentShipmentCards({
                     <p className="mt-1 line-clamp-1 text-sm font-semibold tracking-tight text-white">
                       {shipment.zoneLabel ||
                         shipment.recipientName ||
-                        "Shipment"}
+                        t("Shipment")}
                     </p>
                   </div>
                 </div>
@@ -87,12 +91,12 @@ export default function RecentShipmentCards({
                   ) : null}
                   {shipment.lifecycleStatus ? (
                     <span className="rounded-full border border-white/10 bg-black/25 px-2 py-0.5">
-                      {formatStatus(shipment.lifecycleStatus)}
+                      {t(formatStatus(shipment.lifecycleStatus))}
                     </span>
                   ) : null}
                 </div>
                 <div className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-white">
-                  Open shipment
+                  {t("Open shipment")}
                   <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
                 </div>
               </Link>

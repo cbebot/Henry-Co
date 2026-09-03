@@ -41,7 +41,7 @@ export function resolveBrevoConfig(
   return {
     apiKey: env.BREVO_API_KEY?.trim() || null,
     senderEmail: env.BREVO_SENDER_EMAIL?.trim() || BRAND_EMAILS.noreply,
-    senderName: env.BREVO_SENDER_NAME?.trim() || "HenryCo",
+    senderName: env.BREVO_SENDER_NAME?.trim() || "Henry Onyx",
   };
 }
 

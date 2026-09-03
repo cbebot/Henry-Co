@@ -2,10 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Receipt } from "lucide-react";
 
+import {
+  formatPaymentAmount,
+  formatPaymentReference,
+} from "@henryco/payment-surface/format";
 import { requireClientPortalViewer } from "@/lib/portal/auth";
 import { getClientPortalSnapshot } from "@/lib/portal/data";
-import { formatKobo, shortDate } from "@/lib/portal/helpers";
+import { shortDate } from "@/lib/portal/helpers";
 import { invoiceStatusToken, paymentStatusToken } from "@/lib/portal/status";
+import { koboToMajorUnits } from "@/lib/studio/portal-payment-mapping";
 import { PortalEmptyState } from "@/components/portal/empty-state";
 import { StatusBadge } from "@/components/portal/status-badge";
 
@@ -62,13 +67,13 @@ export default async function ClientPaymentsPage() {
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--studio-ink-soft)]">
           Pay outstanding invoices, see what is being verified, and review every payment you&apos;ve made
-          to HenryCo Studio.
+          to Henry Onyx Studio.
         </p>
       </header>
 
       <section className="portal-card-elev grid gap-4 p-5 sm:grid-cols-3 sm:p-6">
-        <Stat label="Outstanding" value={formatKobo(totalOutstanding, "NGN")} accent="warn" />
-        <Stat label="Paid to date" value={formatKobo(totalPaid, "NGN")} accent="success" />
+        <Stat label="Outstanding" value={formatPaymentAmount(koboToMajorUnits(totalOutstanding), "NGN")} accent="warn" />
+        <Stat label="Paid to date" value={formatPaymentAmount(koboToMajorUnits(totalPaid), "NGN")} accent="success" />
         <Stat label="Verifying" value={String(outstanding.filter((i) => i.status === "pending_verification").length)} />
       </section>
 
@@ -77,10 +82,16 @@ export default async function ClientPaymentsPage() {
           Outstanding invoices
         </h2>
         {outstanding.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-5 py-4 text-[13px] text-[var(--studio-ink-soft)]">
+          <p className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-5 py-4 text-[13px] text-[var(--studio-ink-soft)]">
             You&apos;re all caught up. Nothing to pay right now.
           </p>
         ) : (
+          // TODO(wave1): multi-row invoice list. invoice.description plus
+          // joined project titles are Supabase-row text fields — translate
+          // each via Promise.all + resolveLocalizedDynamicField in a
+          // follow-up wave. Single-row surfaces at /client/payment/[id]
+          // and /payment?invoice=token are already wrapped via the cached
+          // DeepL pipeline.
           <div className="grid gap-3">
             {outstanding.map((invoice) => {
               const status = invoiceStatusToken(invoice.status);
@@ -105,7 +116,7 @@ export default async function ClientPaymentsPage() {
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-[var(--studio-ink-soft)]">
                       <StatusBadge tone={status.tone} label={status.label} size="sm" />
                       <span className="font-semibold text-[var(--studio-ink)]">
-                        {formatKobo(invoice.amountKobo, invoice.currency)}
+                        {formatPaymentAmount(koboToMajorUnits(invoice.amountKobo), invoice.currency)}
                       </span>
                     </div>
                   </div>
@@ -141,10 +152,10 @@ export default async function ClientPaymentsPage() {
                 >
                   <div className="min-w-0">
                     <div className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[var(--studio-ink-soft)]">
-                      {payment.paymentReference || "Bank transfer"}
+                      {formatPaymentReference(payment.id, payment.paymentReference)}
                     </div>
                     <div className="mt-0.5 text-[14px] font-semibold text-[var(--studio-ink)]">
-                      {formatKobo(payment.amountKobo, payment.currency)}
+                      {formatPaymentAmount(koboToMajorUnits(payment.amountKobo), payment.currency)}
                     </div>
                     <div className="mt-1 text-[11.5px] text-[var(--studio-ink-soft)]">
                       {projectTitle ? `${projectTitle} · ` : ""}
@@ -152,8 +163,8 @@ export default async function ClientPaymentsPage() {
                       {payment.verifiedAt ? ` · Verified ${shortDate(payment.verifiedAt)}` : ""}
                     </div>
                     {payment.status === "rejected" && payment.rejectionReason ? (
-                      <div className="mt-2 rounded-xl border border-[rgba(255,143,143,0.4)] bg-[rgba(255,143,143,0.08)] px-3 py-2 text-[12px] text-[#ffb8b8]">
-                        Rejected: {payment.rejectionReason}
+                      <div className="mt-2 rounded-xl border border-[var(--studio-red-line)] bg-[var(--studio-red-soft)] px-3 py-2 text-[12px] text-[var(--studio-red-ink)]">
+                        {rejectionMessage(payment.rejectionReason)}
                       </div>
                     ) : null}
                   </div>
@@ -178,6 +189,18 @@ export default async function ClientPaymentsPage() {
   );
 }
 
+function rejectionMessage(rejectionReason: string): string {
+  const code = rejectionReason.trim().toLowerCase();
+  switch (code) {
+    case "reference_mismatch":
+      return "The reference did not match a transfer we could find. Please re-check and resubmit.";
+    case "amount_mismatch":
+      return "The amount did not match this invoice. Please resubmit with the correct transfer.";
+    default:
+      return "We could not verify this payment. Please resubmit your proof or contact us.";
+  }
+}
+
 function Stat({
   label,
   value,
@@ -189,12 +212,12 @@ function Stat({
 }) {
   const valueClass =
     accent === "success"
-      ? "text-[#bdf2cf]"
+      ? "text-[var(--studio-green-ink)]"
       : accent === "warn"
-      ? "text-[#f3d28a]"
+      ? "text-[var(--studio-amber-ink)]"
       : "text-[var(--studio-ink)]";
   return (
-    <div className="rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3">
+    <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-fill-faint)] px-4 py-3">
       <div className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
         {label}
       </div>

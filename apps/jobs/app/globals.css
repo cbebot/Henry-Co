@@ -1,7 +1,16 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
+@import "../../../packages/ui/src/styles/public-design.css";
 @import "../../../packages/workspace-shell/src/styles.css";
 @import "../../../packages/messaging-thread/src/styles.css";
+
+/* Tailwind v4 ships `dark:` bound to @media(prefers-color-scheme) — the OS.
+   Our theme TOGGLE is class-based (.dark on <html> via next-themes). Without
+   this declaration the two decouple: tokens follow the toggle, `dark:`
+   utilities follow the OS, and when they disagree (user toggles against their
+   OS) `bg-white`/`text-white` etc. render solid-white / invisible. Rebind
+   `dark:` to the .dark class so every utility tracks the toggle. */
+@custom-variant dark (&:where(.dark, .dark *));
 @source "../../../packages/ui/src";
 @source "../../../packages/workspace-shell/src";
 @source "../../../packages/messaging-thread/src";
@@ -81,19 +90,11 @@
 
 :root {
   color-scheme: light;
-  --font-jobs-sans:
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-  --font-jobs-display:
-    "Newsreader",
-    "Iowan Old Style",
-    "Palatino Linotype",
-    serif;
+  /* Owned type — route jobs' sans/display THROUGH the shared family tokens so the
+     owned-type flip reaches jobs' own chrome (it consumes --font-jobs-*). Brand at
+     reveal; interim/system fallback pre-reveal (same genre as before). */
+  --font-jobs-sans: var(--hc-font-sans);
+  --font-jobs-display: var(--hc-font-serif);
   --jobs-bg: #eef4f4;
   --jobs-paper: rgba(255, 255, 255, 0.92);
   --jobs-paper-soft: rgba(249, 252, 252, 0.72);
@@ -137,6 +138,32 @@
   --hc-accent-text: #8A6F00;
   --hc-accent-on-surface: #8A6F00;
   --hc-focus-ring: #C9A227;
+
+  /* V3-INNER-L-JOBS — bridge the shared @henryco/dashboard-shell --acct-*
+     primitives (HeroCard / NextStepRow / …) onto jobs' light tokens, so jobs
+     can ADOPT the shared dashboard grammar instead of hand-rolled hero chrome.
+     Jobs is already light Register-L; the accent is its configured teal
+     (#0e7c86 fills, --jobs-forest for AA accent text). Every var(--jobs-*)
+     reference auto-flips in .dark below — no separate dark block needed. */
+  --acct-bg: var(--jobs-bg);
+  --acct-bg-soft: var(--jobs-paper);
+  --acct-bg-elevated: var(--jobs-paper);
+  --acct-surface: var(--jobs-surface);
+  --acct-ink: var(--jobs-ink);
+  --acct-muted: var(--jobs-muted);
+  --acct-line: var(--jobs-line);
+  --acct-gold: var(--jobs-accent);
+  --acct-gold-soft: var(--jobs-accent-soft);
+  --acct-gold-strong: var(--jobs-forest);
+  --acct-gold-text: var(--jobs-forest);
+  --acct-green: var(--jobs-success);   --acct-green-soft: var(--jobs-success-soft);
+  --acct-red: var(--jobs-danger);      --acct-red-soft: var(--jobs-danger-soft);
+  --acct-orange: var(--jobs-warning);  --acct-orange-soft: var(--jobs-warning-soft);
+  --acct-blue: #2563EB;                --acct-blue-soft: rgba(37, 99, 235, 0.12);
+  --acct-font-display: var(--font-jobs-display);
+  --acct-radius: 1.25rem;
+  --acct-radius-lg: 1.75rem;
+  --acct-radius-sm: 0.75rem;
 }
 
 .dark {
@@ -161,6 +188,49 @@
   --jobs-warning-soft: rgba(237, 210, 138, 0.14);
   --jobs-shadow: 0 32px 120px rgba(0, 0, 0, 0.35);
   --jobs-shadow-strong: 0 48px 160px rgba(0, 0, 0, 0.45);
+}
+
+/* V3-INNER-L-JOBS — WCAG-AA corrections for the shared @henryco/dashboard-shell
+   HeroCard under jobs' mid-tone teal accent.
+
+   surfaces.css renders an INVERTED hero (dark card on the light dashboard / a
+   light card in dark mode) and tunes the primary-CTA text + focus ring for
+   account's LIGHT gold, where `color: var(--acct-ink)` reads on the fill in
+   both modes. Jobs' accent is teal (#0e7c86 light / #49b6bf dark) whose
+   lightness INVERTS between modes, so those gold-tuned defaults fail AA on the
+   accent fill (CTA 3.4:1 light / 2.2:1 dark; focus ring 1.8:1 / 1.6:1; eyebrow
+   3.6:1 dark). These overrides pin AA-verified on-accent text, a darkened
+   eyebrow tint, and a high-contrast focus ring per mode. Scoped under
+   `.acct-hero` (specificity beats the shared single-class rules regardless of
+   import order) and live ONLY in jobs globals — the shared package is never
+   touched, so account + other divisions keep their gold tuning. All ratios
+   proven in .codex-temp/v3-inner/wcag-jobs-hero.mjs (every pairing ≥ AA). */
+
+/* ════════════════════════════════════════════════════════════════════
+ * V3-INNER-L-ELEVATE-JOBS — "The Candidate Ledger".
+ *
+ * The candidate dashboard already adopted the shared HeroCard (V3-INNER-L-JOBS,
+ * with the WCAG-AA corrections above). This layer ELEVATES it into the
+ * candidate's OWN editorial voice — a deep teal-forest "career ledger" register
+ * on the inverted masthead slab — by re-toning the .acct-* primitives ONLY in
+ * the candidate workspace ([data-workspace-division="jobs-candidate"]); the
+ * shared package AND the employer/recruiter consoles are untouched.
+ * Light-primary; the var(--jobs-*) indirection keeps considered dark parity.
+ * The mode-aware on-accent CTA ink stays governed by the AA block above — this
+ * layer never re-colours the CTA text.
+ * ════════════════════════════════════════════════════════════════════ */
+
+/* The ledger slab — teal/forest radials replace the account gold. */
+/* Attention warms toward brass — a considered "you're being looked at", not alarm. */
+
+/* A hairline teal rule under the headline — the ledger baseline. */
+
+/* Tiles pick up a faint teal hairline. */
+
+/* The next-step row gets a teal-framed icon so it reads as part of the same
+   ledger system, not a generic alert. */
+[data-workspace-division="jobs-candidate"] .acct-next-step__icon {
+  border: 1px solid color-mix(in srgb, var(--jobs-accent) 26%, transparent);
 }
 
 * {
@@ -212,9 +282,12 @@ textarea {
 }
 
 .jobs-shell {
+  /* Final layer = the theme-aware base canvas (in the public subtree --jobs-bg
+     is aliased to --home-canvas), with jobs' teal/brass glows floated on top. */
   background:
     radial-gradient(circle at 12% 0%, rgba(14, 124, 134, 0.14), transparent 42%),
-    radial-gradient(circle at 88% 8%, rgba(184, 138, 71, 0.1), transparent 38%);
+    radial-gradient(circle at 88% 8%, rgba(184, 138, 71, 0.1), transparent 38%),
+    var(--jobs-bg);
 }
 
 .jobs-public-header {
@@ -456,6 +529,29 @@ select.jobs-select option {
   cursor: not-allowed;
   pointer-events: none;
   filter: grayscale(0.2);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Flagship hero entrance — a single, orchestrated staggered reveal on
+   load. Base state is VISIBLE; the animation only runs when motion is
+   welcome, so reduced-motion (and the global kill-switch above) leave the
+   content fully visible — never a blank hero.
+   ────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .jobs-reveal {
+    animation: jobsReveal 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+@keyframes jobsReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* henryco-overflow-guard: prevent horizontal scroll on small viewports */

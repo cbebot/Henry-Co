@@ -1,0 +1,303 @@
+/* ============================================================================
+   /auth/reauth — bespoke bits layered on the Henry Onyx auth register.
+
+   The reauth surface reuses the shared auth primitives (AuthShell, PasswordField,
+   AuthSubmit, .auth-divider, .auth-provider, .auth-success) and adds only what's
+   unique to session-recovery: the locked identity card, the draft-preservation
+   notice, the switch-account footer, and the discard-confirm dialog. Every colour
+   comes from the same --acct-* / gold tokens the primitives use, so the page is
+   dual-theme by construction and never drifts from login.
+   ========================================================================== */
+
+.reauth {
+  animation: auth-rise 520ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+/* ─── locked identity card ─────────────────────────────────────────────── */
+.reauth-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1.6rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.95rem;
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-soft, var(--acct-bg));
+}
+
+.reauth-identity-avatar {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: none;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.reauth-identity-avatar--fallback {
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 32% 28%, #f6e4a6, var(--acct-gold, #c9a227) 62%, var(--acct-gold-strong, #a88718));
+  color: #201700;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.reauth-identity-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.reauth-identity-label {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--acct-muted);
+}
+
+.reauth-identity-email {
+  font-size: 0.9rem;
+  font-weight: 550;
+  color: var(--acct-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── draft-preservation notice — reassurance before the ask ───────────── */
+.reauth-draft {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--acct-gold, #c9a227) 34%, transparent);
+  background: color-mix(in srgb, var(--acct-gold, #c9a227) 9%, var(--acct-bg));
+}
+
+.reauth-draft-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  margin-top: 0.05rem;
+  color: var(--acct-gold-strong, #a88718);
+}
+
+.dark .reauth-draft-icon {
+  color: var(--seam-core, #f0d488);
+}
+
+.reauth-draft-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.reauth-draft-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--acct-ink);
+}
+
+.reauth-draft-note {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--acct-muted);
+}
+
+/* ─── method blocks ────────────────────────────────────────────────────── */
+.reauth .auth-stagger {
+  margin-top: 1.4rem;
+}
+
+.reauth-provider-primary {
+  margin-top: 0.9rem;
+}
+
+.reauth-oauth-hint {
+  margin-bottom: 0.75rem;
+}
+
+.reauth-oauth-status {
+  margin-top: 1.4rem;
+  padding: 1.15rem 1rem;
+  border-radius: 0.95rem;
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg-soft, var(--acct-bg));
+  color: var(--acct-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ─── magic-link sent (uses .auth-success) ─────────────────────────────── */
+.reauth .auth-success {
+  margin-top: 1.4rem;
+}
+
+.reauth-success-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.reauth-success-body {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: inherit;
+  opacity: 0.9;
+}
+
+/* ─── switch-account footer ────────────────────────────────────────────── */
+.reauth-switch {
+  margin-top: 2rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--acct-line);
+}
+
+.reauth-switch-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--acct-ink);
+}
+
+.reauth-switch-body {
+  margin-top: 0.25rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--acct-muted);
+}
+
+.reauth-link-button {
+  margin-top: 0.55rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--acct-gold-strong, #a88718);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-underline-offset: 2px;
+  transition: color 160ms ease;
+}
+
+.dark .reauth-link-button {
+  color: var(--seam-core, #f0d488);
+}
+
+.reauth-link-button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.reauth-link-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.reauth-link-button:focus-visible {
+  outline: 2px solid var(--acct-gold, #c9a227);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── discard-confirm dialog ───────────────────────────────────────────── */
+.reauth-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: color-mix(in srgb, #06080c 55%, transparent);
+  animation: auth-rise 220ms var(--hc-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+.reauth-confirm {
+  width: 100%;
+  max-width: 24rem;
+  padding: 1.5rem;
+  border-radius: 1.1rem;
+  border: 1px solid var(--acct-line);
+  background: var(--acct-bg);
+  box-shadow: 0 30px 60px -20px rgba(6, 8, 12, 0.55);
+}
+
+.reauth-confirm-title {
+  font-family: var(--acct-font-display, var(--font-reading, Georgia, serif));
+  font-size: 1.15rem;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  color: var(--acct-ink);
+}
+
+.reauth-confirm-body {
+  margin-top: 0.55rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--acct-muted);
+}
+
+.reauth-confirm-actions {
+  margin-top: 1.35rem;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.6rem;
+}
+
+@media (min-width: 480px) {
+  .reauth-confirm-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+.reauth-confirm-cancel {
+  width: auto;
+  min-width: 8rem;
+  padding: 0 1.1rem;
+}
+
+.reauth-confirm-discard {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 8rem;
+  height: 3rem;
+  padding: 0 1.1rem;
+  border: 0;
+  border-radius: 0.9rem;
+  background: var(--acct-red, #ef4444);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 160ms ease, transform 140ms ease;
+}
+
+.reauth-confirm-discard:hover {
+  filter: brightness(1.05);
+}
+
+.reauth-confirm-discard:active {
+  transform: translateY(1px);
+}
+
+.reauth-confirm-discard:focus-visible {
+  outline: 2px solid var(--acct-ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reauth,
+  .reauth-confirm-overlay {
+    animation: none !important;
+  }
+}

@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import MetricTraceDrawer from "./MetricTraceDrawer";
 
 type MetricCardProps = {
   label: string;
@@ -7,6 +8,17 @@ type MetricCardProps = {
   icon: LucideIcon;
   trend?: { value: string; positive: boolean };
   color?: string;
+  /**
+   * V3 PASS 21 / H5 — Anti-pattern #18 enforcement.
+   *
+   * Every reconcilable metric MUST declare a `traceId` so the
+   * MetricTraceDrawer can surface the underlying SQL filter + result
+   * sample + execution timestamp. Cards without a traceId are treated
+   * as "bare" and surface a small warning chip until they are
+   * promoted.
+   */
+  traceId?: string;
+  traceLabel?: string;
 };
 
 export default function MetricCard({
@@ -16,6 +28,8 @@ export default function MetricCard({
   icon: Icon,
   trend,
   color = "var(--owner-accent)",
+  traceId,
+  traceLabel,
 }: MetricCardProps) {
   return (
     <div className="owner-metric">
@@ -36,8 +50,8 @@ export default function MetricCard({
             <p
               className={`mt-1 text-xs font-semibold ${
                 trend.positive
-                  ? "text-[var(--acct-green)]"
-                  : "text-[var(--acct-red)]"
+                  ? "text-[var(--acct-green-text)]"
+                  : "text-[var(--acct-red-text)]"
               }`}
             >
               {trend.value}
@@ -46,10 +60,24 @@ export default function MetricCard({
         </div>
         <div
           className="flex h-10 w-10 items-center justify-center rounded-xl"
-          style={{ background: `${color}15` }}
+          // color may be a raw hex OR a var() reference; hex-alpha suffixing
+          // ("#fff" + "15") silently produces invalid CSS for var() values.
+          style={{ background: `color-mix(in srgb, ${color} 12%, transparent)` }}
         >
           <Icon size={20} style={{ color }} />
         </div>
+      </div>
+      <div className="mt-3 flex items-center justify-between">
+        {traceId ? (
+          <MetricTraceDrawer traceId={traceId} label={traceLabel ?? label} />
+        ) : (
+          <span
+            className="inline-flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wider text-[var(--acct-muted)]"
+            title="No reconcile trace registered for this metric"
+          >
+            No trace
+          </span>
+        )}
       </div>
     </div>
   );

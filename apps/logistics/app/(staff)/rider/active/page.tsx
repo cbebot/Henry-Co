@@ -4,6 +4,8 @@ import {
   Panel,
   EmptyState,
 } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { getLogisticsViewer } from "@/lib/logistics/auth";
 import {
   getRiderDashboardData,
@@ -29,6 +31,8 @@ type PageProps = {
 };
 
 export default async function RiderActivePage({ searchParams }: PageProps) {
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const params = await searchParams;
   const viewer = await getLogisticsViewer();
   const dashboard = await getRiderDashboardData(viewer);
@@ -46,23 +50,23 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
       <div className="space-y-6 py-6">
         <header>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-            Active leg
+            {t("Active leg")}
           </p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">
-            No active leg
+            {t("No active leg")}
           </h1>
         </header>
         <Panel tone="flat">
           <EmptyState
-            kicker="Queue empty"
-            headline="No assignment in progress"
-            body="When you have a shipment, this page shows the customer contact, pickup + dropoff detail, and the POD capture form."
+            kicker={t("Queue empty")}
+            headline={t("No assignment in progress")}
+            body={t("When you have a shipment, this page shows the customer contact, pickup + dropoff detail, and the POD capture form.")}
             action={
               <Link
                 href="/rider"
                 className="inline-flex items-center gap-2 rounded-full border border-[var(--logistics-line)] bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.08]"
               >
-                Back to today
+                {t("Back to today")}
               </Link>
             }
           />
@@ -82,7 +86,7 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
             className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--logistics-accent-soft)] hover:text-white"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-            Today
+            {t("Today")}
           </Link>
           <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
             {candidate.recipientName}
@@ -95,7 +99,7 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
         </div>
         <div className="text-right">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-            Quoted total
+            {t("Quoted total")}
           </p>
           <p className="mt-1 text-base font-semibold tracking-tight text-white">
             {formatCurrency(
@@ -108,11 +112,11 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
 
       <section
         className="grid gap-3 sm:grid-cols-2"
-        aria-label="Pickup and dropoff"
+        aria-label={t("Pickup and dropoff")}
       >
         <Panel tone="flat">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--logistics-accent-soft)]">
-            Pickup
+            {t("Pickup")}
           </p>
           {detail?.shipment.pickupAddress ? (
             <div className="mt-3 space-y-1.5 text-sm">
@@ -137,19 +141,19 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
                   href={`tel:${detail.shipment.pickupAddress.phone}`}
                 >
                   <MapPin className="h-3.5 w-3.5" aria-hidden />
-                  Call sender
+                  {t("Call sender")}
                 </a>
               ) : null}
             </div>
           ) : (
             <p className="mt-3 text-sm text-[var(--logistics-muted)]">
-              Address not provided yet.
+              {t("Address not provided yet.")}
             </p>
           )}
         </Panel>
         <Panel tone="flat">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--logistics-accent-soft)]">
-            Dropoff
+            {t("Dropoff")}
           </p>
           {detail?.shipment.dropoffAddress ? (
             <div className="mt-3 space-y-1.5 text-sm">
@@ -174,29 +178,29 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
                   href={`tel:${detail.shipment.dropoffAddress.phone}`}
                 >
                   <MapPin className="h-3.5 w-3.5" aria-hidden />
-                  Call recipient
+                  {t("Call recipient")}
                 </a>
               ) : null}
             </div>
           ) : (
             <p className="mt-3 text-sm text-[var(--logistics-muted)]">
-              Address not provided yet.
+              {t("Address not provided yet.")}
             </p>
           )}
         </Panel>
       </section>
 
-      <section aria-label="Parcel">
+      <section aria-label={t("Parcel")}>
         <Panel tone="flat">
           <div className="flex items-start gap-3">
             <Package className="mt-0.5 h-5 w-5 text-[var(--logistics-accent)]" aria-hidden />
             <div className="min-w-0">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[var(--logistics-accent-soft)]">
-                Parcel
+                {t("Parcel")}
               </p>
               <p className="mt-2 text-sm font-semibold tracking-tight text-white">
                 {candidate.parcelType}
-                {candidate.fragile ? " · Fragile" : ""}
+                {candidate.fragile ? ` · ${t("Fragile")}` : ""}
               </p>
               {candidate.parcelDescription ? (
                 <p className="mt-1 text-sm leading-relaxed text-[var(--logistics-muted)]">
@@ -204,8 +208,8 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
                 </p>
               ) : null}
               <p className="mt-1 text-xs text-[var(--logistics-muted)]">
-                {candidate.weightKg ? `${candidate.weightKg} kg` : "Weight TBD"} ·{" "}
-                {candidate.sizeTier} · promise window{" "}
+                {candidate.weightKg ? `${candidate.weightKg} kg` : t("Weight TBD")} ·{" "}
+                {candidate.sizeTier} · {t("promise window")}{" "}
                 {candidate.pricingBreakdown.promiseWindowHours[0]}–
                 {candidate.pricingBreakdown.promiseWindowHours[1]}h
               </p>
@@ -214,7 +218,7 @@ export default async function RiderActivePage({ searchParams }: PageProps) {
         </Panel>
       </section>
 
-      <section aria-label="Proof of delivery">
+      <section aria-label={t("Proof of delivery")}>
         <PODCaptureClient shipmentId={candidate.id} legId={null} />
       </section>
     </div>

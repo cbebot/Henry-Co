@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
-import { Manrope, Newsreader } from "next/font/google";
-import { createDivisionMetadata, getDivisionConfig } from "@henryco/config";
+import { Fraunces, Manrope, Newsreader } from "next/font/google";
+import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { AssistDock } from "@henryco/ui/support";
+import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
+import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 import "./globals.css";
 
 const display = Newsreader({
@@ -21,6 +24,14 @@ const sans = Manrope({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-jobs-sans",
+});
+
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
 });
 
 export const dynamic = "force-dynamic";
@@ -47,16 +58,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className={brandFontVariables} data-onyx-type={onyxTypeAttr()} suppressHydrationWarning>
       <body
-        className={`${display.variable} ${sans.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
+        className={`${display.variable} ${sans.variable} ${reading.variable} min-h-screen bg-[var(--jobs-bg)] text-[var(--jobs-ink)] antialiased`}
       >
         <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
-            {children}
-            <AssistDock division="jobs" accent="#0E7C86" />
+            <SensitiveActionProviderBridge email={null}>
+              {children}
+            </SensitiveActionProviderBridge>
+            {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+              <IntelligenceLauncher division="jobs" accent="#0E7C86" endpoint={getAccountUrl("/api/intelligence/chat")} />
+            ) : (
+              <SupportAssist division="jobs" accent="#0E7C86" />
+            )}
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

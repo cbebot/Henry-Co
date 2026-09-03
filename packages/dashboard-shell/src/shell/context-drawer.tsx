@@ -149,6 +149,7 @@ export function ContextDrawer({
         onClose={() => setOpen(false)}
         kicker={t("Activity")}
         title={t("Signal feed")}
+        telemetrySurface="context_drawer_signal_feed"
       >
         {children ?? (
           <div style={{ padding: "1.5rem 0", textAlign: "center" }}>

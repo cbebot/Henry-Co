@@ -1,20 +1,24 @@
+import { translateSurfaceLabel } from "@henryco/i18n/server";
 import { confirmEnrollmentPaymentAction } from "@/lib/learn/actions";
 import { requireLearnRoles } from "@/lib/learn/auth";
 import { getLearnSnapshot } from "@/lib/learn/data";
 import { ownerNav } from "@/lib/learn/navigation";
+import { getLearnPublicLocale } from "@/lib/locale-server";
 import { PendingSubmitButton } from "@/components/learn/pending-submit-button";
 import { humanizeLabel, LearnPanel, LearnWorkspaceShell } from "@/components/learn/ui";
 
 export default async function OwnerLearnersPage() {
   await requireLearnRoles(["academy_owner", "academy_admin", "finance", "support"], "/owner/learners");
   const snapshot = await getLearnSnapshot();
+  const locale = await getLearnPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   return (
     <LearnWorkspaceShell
-      kicker="Learners"
-      title="Monitor enrollments, payment state, and assignment pressure."
-      description="Learner operations stay tied to live academy records so course status, assignments, and certificate eligibility stay consistent."
-      nav={ownerNav("/owner/learners")}
+      kicker={t("Learners")}
+      title={t("Monitor enrollments, payment state, and assignment pressure.")}
+      description={t("Learner operations stay tied to live academy records so course status, assignments, and certificate eligibility stay consistent.")}
+      nav={ownerNav("/owner/learners", t)}
     >
       <div className="space-y-5">
         {snapshot.enrollments.map((enrollment) => {
@@ -25,13 +29,13 @@ export default async function OwnerLearnersPage() {
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <div className="font-semibold text-[var(--learn-ink)]">{course?.title}</div>
-                  <p className="mt-2 text-sm text-[var(--learn-ink-soft)]">{enrollment.normalizedEmail || enrollment.userId} • {humanizeLabel(enrollment.status)} • {enrollment.percentComplete}%</p>
+                  <p className="mt-2 text-sm text-[var(--learn-ink-soft)]">{enrollment.normalizedEmail || enrollment.userId} • {t(humanizeLabel(enrollment.status))} • {enrollment.percentComplete}%</p>
                 </div>
                 {payment && payment.status === "pending" ? (
                   <form action={confirmEnrollmentPaymentAction} className="flex gap-3">
                     <input type="hidden" name="paymentId" value={payment.id} />
-                    <PendingSubmitButton className="px-4 py-2" pendingLabel="Confirming payment...">Confirm payment</PendingSubmitButton>
-                    <PendingSubmitButton variant="secondary" name="sponsor" value="true" className="px-4 py-2" pendingLabel="Marking as sponsored...">Mark sponsored</PendingSubmitButton>
+                    <PendingSubmitButton className="px-4 py-2" pendingLabel={t("Confirming payment...")}>{t("Confirm payment")}</PendingSubmitButton>
+                    <PendingSubmitButton variant="secondary" name="sponsor" value="true" className="px-4 py-2" pendingLabel={t("Marking as sponsored...")}>{t("Mark sponsored")}</PendingSubmitButton>
                   </form>
                 ) : null}
               </div>

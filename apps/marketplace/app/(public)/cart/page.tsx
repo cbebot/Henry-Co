@@ -1,28 +1,44 @@
+import type { Metadata } from "next";
 import { CartExperience } from "@/components/marketplace/cart-experience";
 import { EmptyState, PageIntro } from "@/components/marketplace/shell";
 import { getCartPreview } from "@/lib/marketplace/data";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getMarketplacePublicLocale();
+  const copy = getMarketplacePublicCopy(locale);
+  return {
+    title: copy.cart.pageIntro.title,
+    description: copy.cart.pageIntro.description,
+  };
+}
+
 export default async function CartPage() {
-  const cart = await getCartPreview();
+  const [locale, cart] = await Promise.all([
+    getMarketplacePublicLocale(),
+    getCartPreview(),
+  ]);
+  const copy = getMarketplacePublicCopy(locale);
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-8 px-4 py-8 sm:px-6 xl:px-8">
       <PageIntro
-        kicker="Cart"
-        title="A premium basket with faster edits and cleaner split-order clarity."
-        description="The cart now keeps vendor grouping visible, updates quantity quickly, and stays connected to the mini-cart drawer so buyers never lose context when they are close to checkout."
+        kicker={copy.cart.pageIntro.kicker}
+        title={copy.cart.pageIntro.title}
+        description={copy.cart.pageIntro.description}
       />
 
       {cart.items.length ? (
         <CartExperience />
       ) : (
         <EmptyState
-          title="Your cart is still empty."
-          body="Quick-add from product cards, save items for later, and the basket will stay updated in the mini-cart drawer and the full cart without a hard refresh."
+          title={copy.cart.emptyState.title}
+          body={copy.cart.emptyState.body}
           ctaHref="/search"
-          ctaLabel="Browse products"
+          ctaLabel={copy.cart.emptyState.ctaLabel}
         />
       )}
     </div>

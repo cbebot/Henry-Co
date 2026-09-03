@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,7 +15,10 @@ import {
   Sparkles,
   SquareStack,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useOptionalHenryCoLocale } from "@henryco/i18n/react";
 import { cn, formatCompactNumber, formatCurrency } from "@/lib/utils";
+import { PROPERTY_PLACEHOLDER_IMAGE, resolvePropertyMediaUrl } from "@/lib/property/media";
 import type {
   PropertyAgent,
   PropertyArea,
@@ -53,7 +58,9 @@ export function PropertySectionIntro({
         <div className="max-w-3xl">
           <p className="property-kicker">{kicker}</p>
           <h1 className="property-heading mt-4 text-balance">{title}</h1>
-          <p className="mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--property-ink-soft)] sm:text-lg">
+          {/* READING-02: hero sub-copy in the editorial serif reading face
+              (--property-ink-soft already aliases the ink-70 equivalent). */}
+          <p className="hc-font-reading mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--property-ink-soft)] sm:text-lg">
             {description}
           </p>
         </div>
@@ -133,11 +140,11 @@ export function PropertyListingCard({
   const target = href || `/property/${listing.slug}`;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40 hover:shadow-[0_22px_60px_rgba(0,0,0,0.18)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40 hover:shadow-[0_30px_80px_-50px_rgb(var(--home-ink-rgb)/0.18)]">
       <Link href={target} className="block">
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
-            src={listing.heroImage}
+            src={resolvePropertyMediaUrl(listing.heroImage) || PROPERTY_PLACEHOLDER_IMAGE}
             alt={listing.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
@@ -262,8 +269,8 @@ export function PropertyAreaCard({
 }) {
   const areaCopy = copy?.areaCard;
   return (
-    <article className="group overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40">
-      <div className="relative bg-[radial-gradient(circle_at_top_left,rgba(232,184,148,0.22),transparent_42%),linear-gradient(135deg,rgba(191,122,71,0.18),rgba(18,13,10,0.04))] px-6 py-9">
+    <article className="group overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] transition duration-300 hover:-translate-y-1 hover:border-[var(--property-accent-strong)]/40">
+      <div className="relative bg-[radial-gradient(circle_at_top_left,rgba(232,184,148,0.22),transparent_42%),linear-gradient(135deg,rgba(191,122,71,0.18),transparent)] px-6 py-9">
         <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[var(--property-accent-strong)]">
           {area.city}
         </p>
@@ -312,9 +319,11 @@ export function PropertyAreaCard({
 }
 
 export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
-    <article className="overflow-hidden rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)]">
-      <div className="grid gap-0 sm:grid-cols-[0.5fr,1fr]">
+    <article className="overflow-hidden rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)]">
+      <div className="grid gap-0 sm:grid-cols-[0.5fr_1fr]">
         <div className="relative h-72 sm:h-full">
           <Image
             src={agent.photoUrl}
@@ -349,7 +358,7 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
           <dl className="divide-y divide-[var(--property-line)] border-t border-[var(--property-line)] text-sm">
             <div className="flex items-baseline gap-3 py-2.5">
               <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-                Email
+                {t("Email")}
               </dt>
               <dd className="ml-auto truncate text-right text-sm font-medium text-[var(--property-ink)]">
                 {agent.email}
@@ -357,7 +366,7 @@ export function PropertyAgentCard({ agent }: { agent: PropertyAgent }) {
             </div>
             <div className="flex items-baseline gap-3 py-2.5">
               <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-                Phone
+                {t("Phone")}
               </dt>
               <dd className="ml-auto truncate text-right text-sm font-medium text-[var(--property-ink)]">
                 {agent.phone}
@@ -377,10 +386,12 @@ export function PropertyManagedRecordCard({
   record: PropertyManagedRecord;
   compact?: boolean;
 }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <article
       className={cn(
-        "rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] p-6",
+        "rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-6",
         compact && "p-5",
       )}
     >
@@ -399,7 +410,7 @@ export function PropertyManagedRecordCard({
       <dl className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)] text-sm sm:grid sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:border-y">
         <div className="py-3 sm:px-4 sm:py-4 sm:first:pl-0">
           <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-            Owner
+            {t("Owner")}
           </dt>
           <dd className="mt-1.5 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
             {record.ownerName}
@@ -407,7 +418,7 @@ export function PropertyManagedRecordCard({
         </div>
         <div className="py-3 sm:px-4 sm:py-4">
           <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-            Portfolio value
+            {t("Portfolio value")}
           </dt>
           <dd className="mt-1.5 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
             {formatCurrency(record.portfolioValue)}
@@ -415,7 +426,7 @@ export function PropertyManagedRecordCard({
         </div>
         <div className="py-3 sm:px-4 sm:py-4 sm:last:pr-0">
           <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-            Service lines
+            {t("Service lines")}
           </dt>
           <dd className="mt-1.5 text-sm font-semibold tracking-tight text-[var(--property-ink)]">
             {record.serviceLines.length}
@@ -443,8 +454,10 @@ export function PropertyDifferentiatorCard({
 }: {
   item: PropertyDifferentiator;
 }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
-    <article className="rounded-[1.8rem] border border-[var(--property-line)] bg-[rgba(0,0,0,0.04)] p-6">
+    <article className="rounded-[1.8rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] p-6">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-[1.2rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[1.35rem]">
           {item.name}
@@ -459,7 +472,7 @@ export function PropertyDifferentiatorCard({
       <div className="mt-5 grid gap-6 border-y border-[var(--property-line)] py-5 md:grid-cols-2 md:divide-x md:divide-[var(--property-line)] md:py-4">
         <div className="md:pr-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--property-sage)]">
-            Pros
+            {t("Pros")}
           </p>
           <ul className="mt-2 space-y-1.5">
             {item.pros.map((value) => (
@@ -475,7 +488,7 @@ export function PropertyDifferentiatorCard({
         </div>
         <div className="md:pl-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--property-accent-strong)]">
-            Trade-offs
+            {t("Trade-offs")}
           </p>
           <ul className="mt-2 space-y-1.5">
             {item.cons.map((value) => (
@@ -491,7 +504,7 @@ export function PropertyDifferentiatorCard({
         </div>
       </div>
       <p className="mt-4 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-        Difficulty: {item.difficulty.replace("_", " ")}
+        {t("Difficulty")}: {item.difficulty.replace("_", " ")}
       </p>
     </article>
   );
@@ -513,7 +526,7 @@ export function PropertyWorkspaceShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[260px,1fr] lg:px-10">
+    <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[260px_1fr] lg:px-10">
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <p className="property-kicker">{kicker}</p>
         <h1 className="mt-4 text-balance text-[1.65rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
@@ -633,25 +646,27 @@ export function PropertyStatusBadge({ status }: { status: string }) {
 }
 
 export function PropertyQuickFacts({ listing }: { listing: PropertyListing }) {
+  const locale = useOptionalHenryCoLocale() ?? "en";
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const facts = [
     {
       icon: <MapPin className="h-3.5 w-3.5" />,
-      label: "Area",
+      label: t("Area"),
       value: listing.locationLabel,
     },
     {
       icon: <CalendarRange className="h-3.5 w-3.5" />,
-      label: "Availability",
-      value: listing.availableNow ? "Available now" : "Future availability",
+      label: t("Availability"),
+      value: listing.availableNow ? t("Available now") : t("Future availability"),
     },
     {
       icon: <ShieldCheck className="h-3.5 w-3.5" />,
-      label: "Trust",
-      value: `${listing.trustBadges.length} signals`,
+      label: t("Trust"),
+      value: `${listing.trustBadges.length} ${t("signals")}`,
     },
     {
       icon: <Sparkles className="h-3.5 w-3.5" />,
-      label: "Headline",
+      label: t("Headline"),
       value: listing.headlineMetrics.slice(0, 2).join(" · "),
     },
   ];
@@ -698,7 +713,7 @@ export function PropertyPortfolioStats({
         </p>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
           {statsCopy?.managedStockBody ??
-            "Listings currently running through HenryCo managed-property rails."}
+            "Listings currently running through Henry Onyx managed-property rails."}
         </p>
       </li>
       <li className="md:pl-8">
@@ -718,7 +733,7 @@ export function PropertyPortfolioStats({
         </p>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
           {statsCopy?.managedValueBody ??
-            "Combined managed-property portfolio value under HenryCo trust operations."}
+            "Combined managed-property portfolio value under Henry Onyx trust operations."}
         </p>
       </li>
     </ol>

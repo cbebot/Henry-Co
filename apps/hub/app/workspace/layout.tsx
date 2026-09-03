@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { IBM_Plex_Mono, Manrope } from "next/font/google";
+import { getHubWorkspaceCopy } from "@henryco/i18n/server";
+import { getHubPublicLocale } from "../../lib/locale-server";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -15,11 +17,15 @@ const plexMono = IBM_Plex_Mono({
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-export const metadata: Metadata = {
-  title: "Henry & Co. Staff HQ",
-  description:
-    "Role-aware HenryCo Staff HQ for managers, operators, finance reviewers, and cross-division teams.",
-};
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getHubPublicLocale();
+  const copy = getHubWorkspaceCopy(locale);
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
 
 export default function WorkspaceLayout({
   children,

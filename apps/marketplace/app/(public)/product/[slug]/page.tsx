@@ -1,358 +1,512 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, BadgeCheck, PackageCheck, ShieldCheck, Truck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
+import {
+  Body,
+  DisplayHeading,
+  EditorialList,
+  EditorialRow,
+  Eyebrow,
+  Lede,
+  PublicCTA,
+  PublicProofRail,
+  Section,
+} from "@henryco/ui/public-design";
+import { JsonLd, buildProductLd } from "@henryco/seo";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getSellerAcademyCopy, translateSurfaceLabel } from "@henryco/i18n";
+import { SellerTierBadge } from "@henryco/ui";
+import { henryDomain } from "@henryco/config";
 import { ProductDetailActions } from "@/components/marketplace/product-detail-actions";
+import { DeliveryPromiseBadge } from "@/components/marketplace/DeliveryPromiseBadge";
+import { getVendorDeliveryPromise } from "@/lib/marketplace/delivery-promises";
 import { ProductMediaGallery } from "@/components/marketplace/product-media-gallery";
-import { ProductCard, TrustPassport } from "@/components/marketplace/shell";
+import { TrustPassport } from "@/components/marketplace/shell";
+import { VariantMatrix } from "@/components/marketplace/variant-matrix";
 import { getMarketplaceProductBySlug } from "@/lib/marketplace/data";
+import { resolveSellerTierForVendor } from "@/lib/marketplace/seller-tier-data";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { getMarketplacePublicCopy } from "@/lib/public-copy";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const [{ slug }, locale] = await Promise.all([params, getMarketplacePublicLocale()]);
+  const copy = getMarketplacePublicCopy(locale);
+  const data = await getMarketplaceProductBySlug(slug);
+  if (!data) {
+    return {
+      title: copy.product.metadata.titleTemplate.replace("{title}", slug),
+      description: copy.product.metadata.fallbackDescription,
+    };
+  }
+  const [productTitle, productSummary, productDescription] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: data.product.title,
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: data.product.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: data.product.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+  ]);
+  return {
+    title: copy.product.metadata.titleTemplate.replace("{title}", productTitle),
+    description:
+      productSummary ||
+      productDescription ||
+      copy.product.metadata.descriptionTemplate.replace("{title}", productTitle),
+  };
+}
 
 export default async function ProductPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  const [{ slug }, locale] = await Promise.all([params, getMarketplacePublicLocale()]);
   const data = await getMarketplaceProductBySlug(slug);
   if (!data) notFound();
+  const copy = getMarketplacePublicCopy(locale);
+  const productCopy = copy.product;
+  // V3-58: public seller tier for the listing's vendor (owner→business bridge).
+  const sellerTier = data.vendor ? await resolveSellerTierForVendor(data.vendor.id) : "none";
+  const sellerCopy = getSellerAcademyCopy(locale);
+  // V3-DELIVERY-COMPLETE-01 (T6): the vendor's active Delivery Promise (dormant-safe → null).
+  const deliveryPromise = data.vendor ? await getVendorDeliveryPromise(data.vendor.id) : null;
 
-  const fulfillmentRows: Array<{
-    icon: typeof BadgeCheck;
-    label: string;
-    value: string;
-  }> = [
-    {
-      icon: BadgeCheck,
-      label: "Seller trust",
-      value: data.vendor
-        ? `${data.vendor.name} passport visible`
-        : "Seller passport pending",
+  // Single-row detail page: wrap all visible DB-driven text fields so non-EN
+  // locales render translated copy on demand.
+  const [
+    localizedTitle,
+    localizedSummary,
+    localizedDescription,
+    localizedDeliveryNote,
+    localizedLeadTime,
+    localizedCategoryName,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: data.product.title,
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: data.product.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: data.product.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "deliveryNote",
+      locale,
+      fallback: data.product.deliveryNote ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.product as unknown as Record<string, unknown>,
+      field: "leadTime",
+      locale,
+      fallback: data.product.leadTime ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    data.category
+      ? resolveLocalizedDynamicField({
+          record: data.category as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: data.category.name,
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+  ]);
+
+  // V3 PASS 21 — Product + Offer + AggregateRating JSON-LD (M9).
+  // V3-07(S2): henryDomain() routes preview/staging at their matching domain.
+  const productUrl = henryDomain("marketplace", `/product/${data.product.slug}`);
+  const productLd = buildProductLd({
+    name: localizedTitle,
+    description: localizedSummary || localizedDescription,
+    sku: data.product.sku,
+    brand: data.brand?.name,
+    imageUrls: data.product.gallery,
+    url: productUrl,
+    offers: {
+      priceCurrency: data.product.currency,
+      price: (data.product.basePrice / 100).toFixed(2),
+      availability: data.product.stock > 0 ? "InStock" : "OutOfStock",
+      url: productUrl,
     },
+    aggregateRating:
+      data.product.reviewCount > 0
+        ? {
+            ratingValue: Number(data.product.rating.toFixed(1)),
+            reviewCount: data.product.reviewCount,
+          }
+        : undefined,
+  });
+
+  const stockCount = data.product.stock;
+  const stockLabel = (stockCount === 1
+    ? productCopy.fulfillment.availabilityValueSingular
+    : productCopy.fulfillment.availabilityValuePlural
+  ).replace("{count}", String(stockCount));
+
+  const sellerTrustValue = data.vendor
+    ? productCopy.fulfillment.sellerTrustValueTemplate.replace("{vendor}", data.vendor.name)
+    : productCopy.fulfillment.sellerTrustValueFallback;
+
+  // Honest hero proof — real figures only; null self-suppresses (no "0 reviews").
+  const heroProof = [
+    { value: stockCount > 0 ? String(stockCount) : null, label: productCopy.fulfillment.availabilityLabel },
+    { value: localizedLeadTime || null, label: productCopy.price.leadTimeLabel },
     {
-      icon: PackageCheck,
-      label: "Availability",
-      value: `${data.product.stock} unit${data.product.stock === 1 ? "" : "s"} in current stock`,
-    },
-    {
-      icon: Truck,
-      label: "Fulfillment",
-      value: data.product.deliveryNote || data.product.leadTime,
-    },
-    {
-      icon: ShieldCheck,
-      label: "Payment",
-      value: data.product.codEligible
-        ? "COD or verified transfer"
-        : "Verified transfer flow",
+      value: data.product.reviewCount > 0 ? data.product.rating.toFixed(1) : null,
+      label: productCopy.reviews.kicker,
     },
   ];
 
+  // Fulfillment promises as a hairline list (not a 4-tile wall).
+  const fulfillmentRows = [
+    { label: productCopy.fulfillment.sellerTrustLabel, value: sellerTrustValue },
+    { label: productCopy.fulfillment.availabilityLabel, value: stockLabel },
+    {
+      label: productCopy.fulfillment.fulfillmentLabel,
+      value: localizedDeliveryNote || localizedLeadTime,
+    },
+    {
+      label: productCopy.fulfillment.paymentLabel,
+      value: data.product.codEligible
+        ? productCopy.fulfillment.paymentValueCod
+        : productCopy.fulfillment.paymentValueVerified,
+    },
+  ].filter((row) => Boolean(row.value));
+
+  // The trust beat — only genuinely-true lines (rating suppressed until real).
+  const safetyItems = [
+    productCopy.safety.stockTemplate.replace("{count}", String(stockCount)),
+    data.product.codEligible ? productCopy.safety.codEligible : productCopy.safety.codFallback,
+    data.vendor
+      ? productCopy.safety.vendorLinkedTemplate.replace("{vendor}", data.vendor.name)
+      : productCopy.safety.vendorPending,
+    data.product.reviewCount > 0
+      ? (data.product.reviewCount === 1
+          ? productCopy.safety.reviewsTemplateSingular
+          : productCopy.safety.reviewsTemplatePlural
+        )
+          .replace("{count}", String(data.product.reviewCount))
+          .replace("{rating}", data.product.rating.toFixed(1))
+      : null,
+  ].filter((item): item is string => Boolean(item));
+
+  // One quiet, real buyer voice as proof (prefer a verified purchase). No reviews → null.
+  const featuredReview =
+    data.reviews.find((review) => review.verifiedPurchase) ?? data.reviews[0] ?? null;
+
+  const specEntries = Object.entries(data.product.specifications);
+  const passportLinks = [
+    data.vendor
+      ? {
+          href: `/store/${data.vendor.slug}`,
+          label: productCopy.detail.visitVendorTemplate.replace("{vendor}", data.vendor.name),
+        }
+      : null,
+    // The Onyx Line — contact-safe "Message seller" (flag-gated dark). Anchors a
+    // listing thread; the seller never sees the buyer's contact details.
+    data.vendor && process.env.MARKETPLACE_MESSAGING_ENABLED === "1"
+      ? {
+          href: `/account/messages/new?anchor_type=listing&anchor_id=${data.product.id}`,
+          label: translateSurfaceLabel(locale, "Message seller"),
+        }
+      : null,
+    data.category
+      ? {
+          href: `/category/${data.category.slug}`,
+          label: productCopy.detail.exploreCategoryTemplate.replace("{category}", localizedCategoryName),
+        }
+      : null,
+    data.brand
+      ? {
+          href: `/brand/${data.brand.slug}`,
+          label: productCopy.detail.seeBrandTemplate.replace("{brand}", data.brand.name),
+        }
+      : null,
+  ].filter((link): link is { href: string; label: string } => Boolean(link));
+
   return (
-    <div className="mx-auto max-w-[1480px] space-y-16 px-4 py-10 pb-28 sm:px-6 xl:px-8">
-      {/* Editorial product hero — gallery + sticky detail aside, no panel-on-panel */}
-      <section className="grid gap-12 xl:grid-cols-[1.06fr,0.94fr]">
-        <ProductMediaGallery title={data.product.title} gallery={data.product.gallery} />
+    <main id="henryco-main" tabIndex={-1}>
+      <JsonLd id={`marketplace-product-${data.product.slug}-jsonld`} data={productLd} />
 
-        <div className="space-y-10 xl:sticky xl:top-28 xl:self-start">
-          <article>
-            <div className="flex flex-wrap gap-1.5">
-              {data.product.trustBadges.map((badge) => (
-                <span
-                  key={badge}
-                  className="inline-flex items-center gap-1 rounded-full border border-[var(--market-line)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]"
-                >
-                  {badge}
-                </span>
-              ))}
-            </div>
-            <h1 className="mt-5 max-w-2xl text-balance font-[family:var(--font-marketplace-display)] text-[2.2rem] leading-[1.04] tracking-[-0.045em] text-[var(--market-paper-white)] sm:text-[2.7rem] md:text-[3rem]">
-              {data.product.title}
-            </h1>
-            <p className="mt-4 max-w-2xl text-pretty text-[15px] leading-[1.7] text-[var(--market-muted)] sm:text-base">
-              {data.product.description}
-            </p>
+      {/* ── HERO — the image leads; one display title, one price focal, locked buy box ── */}
+      <Section rhythm="hero">
+        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+          {/* The image is the heart of listing presentation — tasteful, on the light system. */}
+          <ProductMediaGallery title={localizedTitle} gallery={data.product.gallery} />
 
-            {/* Price line — editorial, divided */}
-            <div className="mt-7 flex flex-wrap items-end justify-between gap-5 border-y border-[var(--market-line)] py-6">
-              <div>
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  Price
-                </p>
-                <p className="mt-2 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[2.2rem]">
-                  {formatCurrency(data.product.basePrice, data.product.currency)}
-                </p>
-                {data.product.compareAtPrice ? (
-                  <p className="mt-1 text-sm text-[var(--market-muted)] line-through">
-                    {formatCurrency(data.product.compareAtPrice, data.product.currency)}
-                  </p>
-                ) : null}
-              </div>
-              <div className="space-y-1 text-right">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                  Lead time
-                </p>
-                <p className="text-sm font-semibold text-[var(--market-paper-white)]">
-                  {data.product.leadTime}
-                </p>
-                <p className="text-xs text-[var(--market-muted)]">
-                  {data.product.deliveryNote}
-                </p>
-              </div>
-            </div>
-
-            {/* Fulfillment grid — divided list, not 4 tiles */}
-            <ul className="mt-7 grid gap-5 sm:grid-cols-2 sm:divide-x sm:divide-[var(--market-line)]">
-              {fulfillmentRows.map(({ icon: Icon, label, value }, i) => (
-                <li
-                  key={label}
-                  className={`${i % 2 === 1 ? "sm:pl-6" : ""} ${i >= 2 ? "sm:border-t sm:border-[var(--market-line)] sm:pt-5" : ""}`}
-                >
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--market-line)] text-[var(--market-brass)]">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <p className="mt-3 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                    {label}
-                  </p>
-                  <p className="mt-1 text-sm font-semibold leading-snug text-[var(--market-paper-white)]">
-                    {value}
-                  </p>
-                </li>
-              ))}
-            </ul>
-
-            {/* Specs — divided <dl> */}
-            {Object.keys(data.product.specifications).length > 0 ? (
-              <dl className="mt-7 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
-                {Object.entries(data.product.specifications).map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="flex items-baseline gap-4 py-3 sm:flex-row sm:justify-between"
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            {localizedCategoryName ? <Eyebrow>{localizedCategoryName}</Eyebrow> : null}
+            <DisplayHeading level={1} size="display" className="mt-4 max-w-xl">
+              {localizedTitle}
+            </DisplayHeading>
+            {data.product.henryOnyxVerified || sellerTier !== "none" || deliveryPromise ? (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                {data.product.henryOnyxVerified ? (
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--home-accent-text)]"
+                    title={translateSurfaceLabel(locale, "Reviewed by Henry Onyx Intelligence for authenticity and safety")}
                   >
-                    <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                      {label}
-                    </dt>
-                    <dd className="text-right text-sm font-semibold tracking-tight text-[var(--market-paper-white)]">
-                      {value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+                    <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+                    {translateSurfaceLabel(locale, "Henry Onyx Verified")}
+                  </span>
+                ) : null}
+                {sellerTier !== "none" ? (
+                  <SellerTierBadge
+                    tier={sellerTier}
+                    label={sellerCopy.tierNames[sellerTier]}
+                    tooltip={sellerCopy.badge.tooltip[sellerTier]}
+                  />
+                ) : null}
+                <DeliveryPromiseBadge promise={deliveryPromise} locale={locale} />
+              </div>
+            ) : null}
+            {localizedDescription ? (
+              <Lede className="mt-5 max-w-xl">{localizedDescription}</Lede>
+            ) : null}
+
+            {/* The one focal line — price as the climax of the hero. */}
+            <div className="mt-8 flex flex-wrap items-end gap-x-5 gap-y-2 border-t border-[color:var(--home-line)] pt-7">
+              <span className="home-num text-[2.1rem] font-semibold leading-none text-[color:var(--home-accent-text)] sm:text-[2.4rem]">
+                {formatCurrency(data.product.basePrice, data.product.currency)}
+              </span>
+              {data.product.compareAtPrice ? (
+                <span className="home-num text-base text-[color:var(--home-ink-50)] line-through">
+                  {formatCurrency(data.product.compareAtPrice, data.product.currency)}
+                </span>
+              ) : null}
+            </div>
+
+            {/* LOCKED — variant select + buy/cart controls. Style tokens flow via aliases;
+                logic, props, and handlers are untouched. */}
+            {data.product.variants && data.product.variants.length > 0 ? (
+              <div className="mt-7">
+                <VariantMatrix product={data.product} variants={data.product.variants} />
+              </div>
             ) : null}
 
             <div className="mt-8">
               <ProductDetailActions product={data.product} vendor={data.vendor} />
             </div>
-          </article>
 
-          {/* Why this feels safer — editorial border-l ribbon */}
-          <article className="border-l-2 border-[var(--market-brass)]/55 pl-5">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
-              Why this listing feels safer
-            </p>
-            <ul className="mt-3 space-y-2.5">
-              {[
-                `${data.product.stock} units currently visible to inventory`,
-                data.product.codEligible
-                  ? "Cash on delivery eligible where supported"
-                  : "Manual verification flow available",
-                data.vendor
-                  ? `${data.vendor.name} seller passport is linked directly from this page`
-                  : "Vendor trust surface is still pending linkage",
-                /* Suppress rating line entirely until a genuine review exists.
-                 * Showing "0 reviews at 0.0 average rating" reads as broken,
-                 * not new. */
-                data.product.reviewCount > 0
-                  ? `${data.product.reviewCount} review${data.product.reviewCount === 1 ? "" : "s"} at ${data.product.rating.toFixed(1)} average rating`
-                  : null,
-              ]
-                .filter((item): item is string => Boolean(item))
-                .map((item) => (
-                <li
-                  key={item}
-                  className="flex gap-2.5 text-sm leading-7 text-[var(--market-muted)]"
-                >
-                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--market-brass)]" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
+            {/* Honest proof — real figures only; the rail self-suppresses if nothing's true. */}
+            <PublicProofRail className="mt-9" items={heroProof} />
+          </div>
         </div>
-      </section>
+      </Section>
 
-      {data.vendor ? <TrustPassport vendor={data.vendor} /> : null}
-
-      {/* Product detail accordion + Complete the set — 2-col editorial */}
-      <section className="grid gap-12 xl:grid-cols-[1.05fr,0.95fr]">
-        <article>
-          <p className="market-kicker">Product detail</p>
-          <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.85rem]">
-            Everything that matters before checkout.
-          </h2>
-          <div className="mt-7 border-t border-[var(--market-line)]">
-            <details className="group border-b border-[var(--market-line)] py-5" open>
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
-                <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                  Delivery, support, and post-order care
-                </h3>
-                <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[var(--market-muted)] transition group-open:rotate-90 group-open:text-[var(--market-brass)]" />
-              </summary>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
-                {data.product.deliveryNote ||
-                  "Delivery windows will be clarified at checkout."}{" "}
-                Orders stay traceable from payment to fulfillment, and disputes or support
-                threads stay attached to the same order record.
-              </p>
-            </details>
-            <details className="group border-b border-[var(--market-line)] py-5">
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
-                <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                  Specifications and material clarity
-                </h3>
-                <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[var(--market-muted)] transition group-open:rotate-90 group-open:text-[var(--market-brass)]" />
-              </summary>
-              <dl className="mt-4 divide-y divide-[var(--market-line)]/60">
-                {Object.entries(data.product.specifications).map(([label, value]) => (
-                  <div key={label} className="flex items-baseline gap-4 py-2.5">
-                    <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                      {label}
-                    </dt>
-                    <dd className="ml-auto text-right text-sm font-semibold text-[var(--market-paper-white)]">
-                      {value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </details>
-            <details className="group border-b border-[var(--market-line)] py-5">
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
-                <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                  Store passport and related discovery
-                </h3>
-                <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-[var(--market-muted)] transition group-open:rotate-90 group-open:text-[var(--market-brass)]" />
-              </summary>
-              <div className="mt-3 flex flex-wrap gap-3">
-                {data.vendor ? (
-                  <Link
-                    href={`/store/${data.vendor.slug}`}
-                    className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
-                  >
-                    Visit {data.vendor.name}
-                  </Link>
-                ) : null}
-                {data.category ? (
-                  <Link
-                    href={`/category/${data.category.slug}`}
-                    className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
-                  >
-                    Explore {data.category.name}
-                  </Link>
-                ) : null}
-                {data.brand ? (
-                  <Link
-                    href={`/brand/${data.brand.slug}`}
-                    className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
-                  >
-                    See {data.brand.name}
-                  </Link>
-                ) : null}
-              </div>
-            </details>
-          </div>
-        </article>
-
-        <article>
-          <p className="market-kicker">Complete the set</p>
-          <h2 className="mt-4 max-w-sm text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.85rem]">
-            More from this buying context.
-          </h2>
-          <p className="mt-3 max-w-md text-sm leading-7 text-[var(--market-muted)]">
-            Recommendation rails stay curated and clean instead of becoming noisy upsell clutter.
-          </p>
-          <ul className="mt-7 divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
-            {data.related.slice(0, 4).map((product) => (
-              <li key={product.slug}>
-                <Link
-                  href={`/product/${product.slug}`}
-                  className="group flex items-baseline justify-between gap-4 py-4 transition hover:bg-white/[0.02]"
-                >
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                      {product.categorySlug.replace(/-/g, " ")}
-                    </p>
-                    <p className="mt-1.5 text-[1rem] font-semibold leading-snug tracking-tight text-[var(--market-paper-white)] group-hover:text-[var(--market-brass)]">
-                      {product.title}
-                    </p>
-                  </div>
-                  <p className="shrink-0 text-sm font-semibold text-[var(--market-brass)]">
-                    {formatCurrency(product.basePrice, product.currency)}
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </article>
-      </section>
-
-      {data.reviews.length ? (
-        <section>
-          <div className="grid gap-12 lg:grid-cols-[0.85fr,1.15fr]">
-            <div>
-              <p className="market-kicker">Review highlights</p>
-              <h2 className="mt-4 max-w-sm text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[2rem]">
-                Verified buying signals, not noisy filler.
-              </h2>
-            </div>
-            <ul className="divide-y divide-[var(--market-line)] border-y border-[var(--market-line)]">
-              {data.reviews.slice(0, 4).map((review) => (
-                <li key={review.id} className="grid gap-4 py-6 md:grid-cols-[0.32fr,0.68fr]">
-                  <div>
-                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-                      {review.verifiedPurchase ? "Verified purchase" : "Review"}
-                    </p>
-                    <p className="mt-2 text-sm font-semibold tracking-tight text-[var(--market-paper-white)]">
-                      {review.buyerName}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-[1.05rem] font-semibold leading-snug tracking-tight text-[var(--market-paper-white)]">
-                      {review.title}
-                    </h3>
-                    <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--market-muted)]">
-                      {review.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+      {/* ── TRUST PASSPORT — the vendor's accountability, surfaced before payment ── */}
+      {data.vendor ? (
+        <Section rhythm="tight">
+          <TrustPassport vendor={data.vendor} copy={copy} />
+        </Section>
       ) : null}
 
-      <section className="space-y-6">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="market-kicker">More to discover</p>
-            <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[2.1rem]">
-              Continue browsing without losing your place.
-            </h2>
+      {/* ── DETAIL — fulfillment + specs as hairline lists, not card-walls ── */}
+      {fulfillmentRows.length > 0 || specEntries.length > 0 ? (
+        <Section>
+          <div className="grid gap-x-12 gap-y-12 lg:grid-cols-[0.42fr_0.58fr]">
+            <SectionHeaderInline
+              eyebrow={productCopy.detail.kicker}
+              title={productCopy.detail.title}
+              lede={localizedDeliveryNote || productCopy.detail.deliveryFallback}
+            />
+            <div className="space-y-10">
+              {fulfillmentRows.length > 0 ? (
+                <EditorialList>
+                  {fulfillmentRows.map((row, i) => (
+                    <EditorialRow
+                      key={row.label}
+                      index={String(i + 1).padStart(2, "0")}
+                      title={row.label}
+                      body={row.value}
+                    />
+                  ))}
+                </EditorialList>
+              ) : null}
+
+              {specEntries.length > 0 ? (
+                <div>
+                  <p className="home-eyebrow">{productCopy.detail.specsTitle}</p>
+                  <dl className="mt-4 divide-y divide-[color:var(--home-line)] border-t border-[color:var(--home-line)]">
+                    {specEntries.map(([label, value]) => (
+                      <div key={label} className="flex items-baseline justify-between gap-6 py-3.5">
+                        <dt className="home-caption">{label}</dt>
+                        <dd className="home-body-sm text-right font-medium text-[color:var(--home-ink)]">
+                          {value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ) : null}
+            </div>
           </div>
-          <Link
+        </Section>
+      ) : null}
+
+      {/* ── THE ONE REASON — the climax: trust visible before payment ── */}
+      {safetyItems.length > 0 ? (
+        <Section rhythm="hero" tone="sunken">
+          <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+            <div>
+              <Eyebrow>{productCopy.safety.kicker}</Eyebrow>
+              <DisplayHeading level={2} size="display" className="mt-4 max-w-md">
+                {copy.home.whyTitle}
+              </DisplayHeading>
+            </div>
+            <EditorialList>
+              {safetyItems.map((item, i) => (
+                <EditorialRow key={item} index={String(i + 1).padStart(2, "0")} title={item} />
+              ))}
+            </EditorialList>
+          </div>
+
+          {featuredReview ? (
+            <figure className="mt-12 max-w-2xl">
+              <p className="home-eyebrow">
+                {featuredReview.verifiedPurchase
+                  ? productCopy.reviews.verifiedPurchase
+                  : productCopy.reviews.reviewLabel}
+              </p>
+              <blockquote
+                className="home-headline mt-4 text-[color:var(--home-ink-85)]"
+                style={{ fontFamily: "var(--home-font-display)" }}
+              >
+                <span className="text-[color:var(--home-accent-text)]">&ldquo;</span>
+                {featuredReview.title || featuredReview.body}
+                <span className="text-[color:var(--home-accent-text)]">&rdquo;</span>
+              </blockquote>
+              <figcaption className="home-caption mt-4">{featuredReview.buyerName}</figcaption>
+            </figure>
+          ) : null}
+        </Section>
+      ) : null}
+
+      {/* ── COMPLETE THE SET — related products as a hairline list with the price focal ── */}
+      {data.related.length > 0 ? (
+        <Section>
+          <header className="flex max-w-2xl flex-col gap-4">
+            <Eyebrow>{productCopy.related.kicker}</Eyebrow>
+            <DisplayHeading level={2} size="display">
+              {productCopy.related.title}
+            </DisplayHeading>
+            <Lede>{productCopy.related.body}</Lede>
+          </header>
+          <EditorialList className="mt-10">
+            {data.related.slice(0, 4).map((product, i) => (
+              <EditorialRow
+                key={product.slug}
+                index={String(i + 1).padStart(2, "0")}
+                href={`/product/${product.slug}`}
+                title={product.title}
+                body={product.categorySlug.replace(/-/g, " ")}
+                trailing={
+                  <span className="home-num text-sm font-semibold text-[color:var(--home-accent-text)]">
+                    {formatCurrency(product.basePrice, product.currency)}
+                  </span>
+                }
+              />
+            ))}
+          </EditorialList>
+        </Section>
+      ) : null}
+
+      {/* ── INVITATION — one dominant primary ── */}
+      <Section>
+        <div className="flex flex-col gap-6 rounded-[var(--home-radius-lg)] border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-02)] p-8 sm:flex-row sm:items-center sm:justify-between sm:p-12">
+          <div className="max-w-xl">
+            <DisplayHeading level={2} size="headline">
+              {productCopy.rail.headline}
+            </DisplayHeading>
+            <Body className="mt-2">{productCopy.rail.caption}</Body>
+          </div>
+          <PublicCTA
             href="/search"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)] underline-offset-4 hover:underline"
+            variant="primary"
+            size="lg"
+            trailingIcon={<ArrowRight aria-hidden className="h-4 w-4" />}
           >
-            Open search
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+            {productCopy.rail.ctaLabel}
+          </PublicCTA>
         </div>
-        <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-4">
-          {data.related.map((product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
-        </div>
-      </section>
-    </div>
+      </Section>
+
+      {/* Store passport + cross-discovery — quiet ghost links, demoted under the climax. */}
+      {passportLinks.length > 0 ? (
+        <Section rhythm="tight">
+          <p className="home-eyebrow">{productCopy.detail.passportTitle}</p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {passportLinks.map((link) => (
+              <PublicCTA
+                key={link.href}
+                href={link.href}
+                variant="secondary"
+                trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}
+              >
+                {link.label}
+              </PublicCTA>
+            ))}
+          </div>
+        </Section>
+      ) : null}
+    </main>
+  );
+}
+
+/** Local inline section header (start-aligned, no max-width clamp on the column). */
+function SectionHeaderInline({
+  eyebrow,
+  title,
+  lede,
+}: {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+}) {
+  return (
+    <header className="flex flex-col gap-4">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <DisplayHeading level={2} size="headline">
+        {title}
+      </DisplayHeading>
+      {lede ? <Lede>{lede}</Lede> : null}
+    </header>
   );
 }

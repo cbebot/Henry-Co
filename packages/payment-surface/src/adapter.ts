@@ -59,6 +59,7 @@ export function buildPaymentRecordView(input: {
   proofUrl?: string | null;
   updatedAt?: string | null;
   rank?: { index: number; total: number } | null;
+  reference?: string | null;
 }): PaymentRecordView {
   return {
     id: input.id,
@@ -72,6 +73,7 @@ export function buildPaymentRecordView(input: {
     proofUrl: input.proofUrl ?? null,
     updatedAt: input.updatedAt ?? null,
     rank: input.rank ?? null,
+    reference: input.reference ?? null,
   };
 }
 
@@ -82,6 +84,9 @@ export function buildPaymentSurfaceContext(input: {
   upload?: PaymentSurfaceContext["upload"];
   copy?: PaymentSurfaceContext["copy"];
   theme?: PaymentSurfaceContext["theme"];
+  cardCta?: PaymentSurfaceContext["cardCta"];
+  walletCta?: PaymentSurfaceContext["walletCta"];
+  cardOnly?: PaymentSurfaceContext["cardOnly"];
 }): PaymentSurfaceContext {
   return {
     payment: input.payment,
@@ -90,5 +95,8 @@ export function buildPaymentSurfaceContext(input: {
     upload: input.upload,
     copy: input.copy,
     theme: input.theme,
+    cardCta: input.cardCta,
+    walletCta: input.walletCta,
+    cardOnly: input.cardOnly,
   };
 }

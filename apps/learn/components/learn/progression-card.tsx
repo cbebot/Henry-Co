@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { CheckCircle2, Lock, PlayCircle } from "lucide-react";
+import type { AppLocale } from "@henryco/i18n";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { LearnPanel, LearnStatusBadge } from "@/components/learn/ui";
 
 export type ProgressionLesson = {
@@ -22,28 +24,27 @@ export type ProgressionModule = {
 
 export type UnlockPolicy = "sequential" | "open" | "module_gated";
 
-const POLICY_COPY: Record<
-  UnlockPolicy,
-  { label: string; tagline: string; tone: "signal" | "neutral" | "success" }
-> = {
-  sequential: {
-    label: "Sequential",
-    tagline: "Each lesson unlocks the next. Finish in order — no skipping.",
-    tone: "signal",
-  },
-  module_gated: {
-    label: "Module-gated",
-    tagline:
-      "Lessons inside a module are open in any order. The next module opens once you finish the current one.",
-    tone: "neutral",
-  },
-  open: {
-    label: "Open exploration",
-    tagline:
-      "All lessons are unlocked. Move through the course in whatever order works for you.",
-    tone: "success",
-  },
-};
+function buildPolicyCopy(
+  t: (text: string) => string,
+): Record<UnlockPolicy, { label: string; tagline: string; tone: "signal" | "neutral" | "success" }> {
+  return {
+    sequential: {
+      label: t("Sequential"),
+      tagline: t("Each lesson unlocks the next. Finish in order — no skipping."),
+      tone: "signal",
+    },
+    module_gated: {
+      label: t("Module-gated"),
+      tagline: t("Lessons inside a module are open in any order. The next module opens once you finish the current one."),
+      tone: "neutral",
+    },
+    open: {
+      label: t("Open exploration"),
+      tagline: t("All lessons are unlocked. Move through the course in whatever order works for you."),
+      tone: "success",
+    },
+  };
+}
 
 function lessonHref(courseId: string, moduleId: string, lessonId: string) {
   return `/learner/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`;
@@ -55,13 +56,17 @@ export function ProgressionCard({
   policy,
   totalLessonCount,
   completedLessonCount,
+  locale = "en",
 }: {
   courseId: string;
   modules: ProgressionModule[];
   policy: UnlockPolicy;
   totalLessonCount: number;
   completedLessonCount: number;
+  locale?: AppLocale;
 }) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const POLICY_COPY = buildPolicyCopy(t);
   const percent =
     totalLessonCount > 0 ? Math.round((completedLessonCount / totalLessonCount) * 100) : 0;
   const policyMeta = POLICY_COPY[policy] ?? POLICY_COPY.sequential;
@@ -71,10 +76,10 @@ export function ProgressionCard({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--learn-copper)]">
-            Course progression
+            {t("Course progression")}
           </p>
           <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[var(--learn-ink)] sm:text-[1.4rem]">
-            {completedLessonCount} of {totalLessonCount} lessons complete
+            {completedLessonCount} {t("of")} {totalLessonCount} {t("lessons complete")}
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-7 text-[var(--learn-ink-soft)]">
             {policyMeta.tagline}
@@ -85,7 +90,7 @@ export function ProgressionCard({
 
       <div>
         <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-          <span>Overall progress</span>
+          <span>{t("Overall progress")}</span>
           <span>{percent}%</span>
         </div>
         <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[color:rgba(255,255,255,0.06)]">
@@ -111,13 +116,13 @@ export function ProgressionCard({
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--learn-ink-soft)]">
-                    <span>Module {moduleIndex + 1}</span>
+                    <span>{t("Module")} {moduleIndex + 1}</span>
                     {moduleCompleted ? (
-                      <span className="text-[var(--learn-mint)]">· complete</span>
+                      <span className="text-[var(--learn-mint)]">· {t("complete")}</span>
                     ) : moduleStarted ? (
-                      <span className="text-[var(--learn-copper)]">· in progress</span>
+                      <span className="text-[var(--learn-copper)]">· {t("in progress")}</span>
                     ) : module.unlocked ? null : (
-                      <span>· locked</span>
+                      <span>· {t("locked")}</span>
                     )}
                   </div>
                   <h3 className="mt-1 text-base font-semibold tracking-tight text-[var(--learn-ink)]">
@@ -166,9 +171,9 @@ export function ProgressionCard({
                           </span>
                           <span className="block text-[11px] text-[var(--learn-ink-soft)]">
                             {lesson.durationMinutes
-                              ? `${lesson.durationMinutes} min`
-                              : "Estimated read"}
-                            {lesson.isPreview && !lesson.completed ? " · Preview" : ""}
+                              ? `${lesson.durationMinutes} ${t("min")}`
+                              : t("Estimated read")}
+                            {lesson.isPreview && !lesson.completed ? ` · ${t("Preview")}` : ""}
                           </span>
                         </span>
                       </span>

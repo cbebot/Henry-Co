@@ -90,7 +90,7 @@ export default async function StaffNewsletterIndexPage() {
       <StaffPageHeader
         eyebrow="Newsletter"
         title="Editorial workspace"
-        description="Draft, review, approve, and send HenryCo newsletters. Every send is gated by voice guard, consent, and suppression."
+        description="Draft, review, approve, and send Henry Onyx newsletters. Every send is gated by voice guard, consent, and suppression."
         actions={
           <Link
             href="/operations/newsletter/new"

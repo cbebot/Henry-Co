@@ -24,12 +24,33 @@ importers:
       '@axe-core/playwright':
         specifier: ^4.11.3
         version: 4.11.3(playwright-core@1.59.0)
+      '@fontsource-variable/fraunces':
+        specifier: ^5.2.9
+        version: 5.2.9
+      '@fontsource-variable/jetbrains-mono':
+        specifier: ^5.2.8
+        version: 5.2.8
+      '@fontsource-variable/manrope':
+        specifier: ^5.2.8
+        version: 5.2.8
+      '@fontsource/newsreader':
+        specifier: ^5.1.0
+        version: 5.2.10
+      '@fontsource/noto-sans-arabic':
+        specifier: ^5.2.10
+        version: 5.2.10
+      '@fontsource/noto-sans-sc':
+        specifier: ^5.2.9
+        version: 5.2.9
       '@playwright/test':
         specifier: ^1.59.0
         version: 1.59.0
       axe-core:
         specifier: ^4.11.4
         version: 4.11.4
+      fontkit:
+        specifier: ^2.0.4
+        version: 2.0.4
       next:
         specifier: 16.1.6
         version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -51,6 +72,9 @@ importers:
       '@henryco/address-selector':
         specifier: workspace:^
         version: link:../../packages/address-selector
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
       '@henryco/auth':
         specifier: workspace:^
         version: link:../../packages/auth
@@ -66,21 +90,51 @@ importers:
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
+      '@henryco/chat-thread':
+        specifier: workspace:^
+        version: link:../../packages/chat-thread
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-modules-account':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-account
       '@henryco/dashboard-modules-building':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-building
+      '@henryco/dashboard-modules-business':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-business
+      '@henryco/dashboard-modules-care':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-care
       '@henryco/dashboard-modules-hotel':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-hotel
+      '@henryco/dashboard-modules-jobs':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-jobs
+      '@henryco/dashboard-modules-learn':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-learn
+      '@henryco/dashboard-modules-logistics':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-logistics
       '@henryco/dashboard-modules-marketplace':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-marketplace
+      '@henryco/dashboard-modules-play':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-play
+      '@henryco/dashboard-modules-property':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-property
+      '@henryco/dashboard-modules-studio':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-modules-studio
       '@henryco/dashboard-modules-wallet':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-wallet
@@ -93,15 +147,24 @@ importers:
       '@henryco/email':
         specifier: workspace:^
         version: link:../../packages/email
+      '@henryco/gaming-arena':
+        specifier: workspace:^
+        version: link:../../packages/gaming-arena
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../../packages/intelligence
+      '@henryco/kyc':
+        specifier: workspace:^
+        version: link:../../packages/kyc
       '@henryco/lifecycle':
         specifier: workspace:^
         version: link:../../packages/lifecycle
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@henryco/messaging-thread':
         specifier: workspace:^
         version: link:../../packages/messaging-thread
@@ -114,12 +177,27 @@ importers:
       '@henryco/observability':
         specifier: workspace:^
         version: link:../../packages/observability
+      '@henryco/payment-router':
+        specifier: workspace:^
+        version: link:../../packages/payment-router
+      '@henryco/payments-db':
+        specifier: workspace:^
+        version: link:../../packages/payments-db
+      '@henryco/pricing':
+        specifier: workspace:^
+        version: link:../../packages/pricing
+      '@henryco/push':
+        specifier: workspace:^
+        version: link:../../packages/push
       '@henryco/search-core':
         specifier: workspace:^
         version: link:../../packages/search-core
       '@henryco/search-ui':
         specifier: workspace:^
         version: link:../../packages/search-ui
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/trust':
         specifier: workspace:^
         version: link:../../packages/trust
@@ -147,6 +225,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -163,14 +244,20 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0
     devDependencies:
+      '@playwright/test':
+        specifier: ^1.59.0
+        version: 1.59.0
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.2.1
       '@types/node':
         specifier: ^20
         version: 20.19.37
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.15.6
       '@types/react':
-        specifier: ^19
+        specifier: ^19.2.14
         version: 19.2.14
       '@types/react-dom':
         specifier: ^19
@@ -180,34 +267,58 @@ importers:
         version: 9.39.3(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
         version: 4.2.1
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
       typescript:
         specifier: ^5
         version: 5.9.3
 
   apps/care:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-shell
       '@henryco/email':
         specifier: workspace:^
         version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../../packages/intelligence
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../../packages/observability
+      '@henryco/payment-router':
+        specifier: workspace:^
+        version: link:../../packages/payment-router
       '@henryco/payment-surface':
         specifier: workspace:^
         version: link:../../packages/payment-surface
+      '@henryco/pricing':
+        specifier: workspace:^
+        version: link:../../packages/pricing
       '@henryco/seo':
         specifier: workspace:^
         version: link:../../packages/seo
@@ -217,6 +328,9 @@ importers:
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@sentry/nextjs':
+        specifier: ^10.0.0
+        version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
       '@supabase/ssr':
         specifier: ^0.9.0
         version: 0.9.0(@supabase/supabase-js@2.98.0)
@@ -282,11 +396,160 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  apps/cms:
+    dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
+      '@henryco/brand':
+        specifier: workspace:^
+        version: link:../../packages/brand
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../../packages/config
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../../packages/data
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../../packages/i18n
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../../packages/observability
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
+      '@henryco/ui':
+        specifier: workspace:^
+        version: link:../../packages/ui
+      '@hookform/resolvers':
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.71.2(react@19.2.3))
+      '@sentry/nextjs':
+        specifier: ^10.0.0
+        version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
+      '@supabase/ssr':
+        specifier: ^0.9.0
+        version: 0.9.0(@supabase/supabase-js@2.98.0)
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+      react-hook-form:
+        specifier: ^7.71.2
+        version: 7.71.2(react@19.2.3)
+      tailwind-merge:
+        specifier: ^3.5.0
+        version: 3.5.0
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.1
+      '@types/node':
+        specifier: ^22.13.10
+        version: 22.19.15
+      '@types/react':
+        specifier: ^19.0.10
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.0.4
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9.39.3
+        version: 9.39.3(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.1.6
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  apps/command:
+    dependencies:
+      '@henryco/command-contract':
+        specifier: workspace:^
+        version: link:../../packages/command-contract
+      '@henryco/command-surface':
+        specifier: workspace:^
+        version: link:../../packages/command-surface
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../../packages/config
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.1
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9
+        version: 9.39.3(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.1.6
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.1
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   apps/company-hub:
     dependencies:
       '@expo/vector-icons':
         specifier: ^15.0.3
         version: 15.1.1(expo-font@14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      '@henryco/rn-type':
+        specifier: workspace:^
+        version: link:../../packages/rn-type
       '@react-native-async-storage/async-storage':
         specifier: 2.2.0
         version: 2.2.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))
@@ -296,6 +559,9 @@ importers:
       expo-constants:
         specifier: ~18.0.13
         version: 18.0.13(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))
+      expo-font:
+        specifier: ~14.0.11
+        version: 14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       expo-haptics:
         specifier: ~15.0.8
         version: 15.0.8(expo@54.0.33)
@@ -378,15 +644,24 @@ importers:
 
   apps/hub:
     dependencies:
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
       '@henryco/auth':
         specifier: workspace:^
         version: link:../../packages/auth
       '@henryco/brand':
         specifier: workspace:^
         version: link:../../packages/brand
+      '@henryco/branded-documents':
+        specifier: workspace:^
+        version: link:../../packages/branded-documents
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-modules-owner':
         specifier: workspace:^
         version: link:../../packages/dashboard-modules-owner
@@ -405,12 +680,30 @@ importers:
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../../packages/intelligence
+      '@henryco/interactions':
+        specifier: workspace:^
+        version: link:../../packages/interactions
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
+      '@henryco/moderation':
+        specifier: workspace:^
+        version: link:../../packages/moderation
       '@henryco/newsletter':
         specifier: workspace:^
         version: link:../../packages/newsletter
+      '@henryco/notifications':
+        specifier: workspace:^
+        version: link:../../packages/notifications
+      '@henryco/notifications-ui':
+        specifier: workspace:^
+        version: link:../../packages/notifications-ui
       '@henryco/observability':
         specifier: workspace:^
         version: link:../../packages/observability
+      '@henryco/push':
+        specifier: workspace:^
+        version: link:../../packages/push
       '@henryco/search-core':
         specifier: workspace:^
         version: link:../../packages/search-core
@@ -420,9 +713,15 @@ importers:
       '@henryco/seo':
         specifier: workspace:^
         version: link:../../packages/seo
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../../packages/trust
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@henryco/workflow':
+        specifier: workspace:^
+        version: link:../../packages/workflow
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.2.3))
@@ -459,6 +758,12 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
+      postal-mime:
+        specifier: ^2.7.4
+        version: 2.7.4
       react:
         specifier: ^19.0.0
         version: 19.2.3
@@ -484,6 +789,9 @@ importers:
       '@types/node':
         specifier: ^22.13.10
         version: 22.19.15
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.15.6
       '@types/react':
         specifier: ^19.0.10
         version: 19.2.14
@@ -496,9 +804,6 @@ importers:
       eslint-config-next:
         specifier: 16.1.6
         version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
-      pg:
-        specifier: ^8.20.0
-        version: 8.20.0
       tailwindcss:
         specifier: ^4
         version: 4.2.1
@@ -508,15 +813,27 @@ importers:
 
   apps/jobs:
     dependencies:
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
       '@henryco/auth':
         specifier: workspace:^
         version: link:../../packages/auth
+      '@henryco/aware':
+        specifier: workspace:^
+        version: link:../../packages/aware
+      '@henryco/branded-documents':
+        specifier: workspace:^
+        version: link:../../packages/branded-documents
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../../packages/dashboard-shell
@@ -526,12 +843,27 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../../packages/intelligence
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@henryco/messaging-thread':
         specifier: workspace:^
         version: link:../../packages/messaging-thread
+      '@henryco/notifications':
+        specifier: workspace:^
+        version: link:../../packages/notifications
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../../packages/observability
       '@henryco/payment-surface':
         specifier: workspace:^
         version: link:../../packages/payment-surface
+      '@henryco/payments-db':
+        specifier: workspace:^
+        version: link:../../packages/payments-db
       '@henryco/seo':
         specifier: workspace:^
         version: link:../../packages/seo
@@ -544,6 +876,9 @@ importers:
       '@henryco/workspace-shell':
         specifier: workspace:^
         version: link:../../packages/workspace-shell
+      '@sentry/nextjs':
+        specifier: ^10.0.0
+        version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
       '@supabase/ssr':
         specifier: ^0.9.0
         version: 0.9.0(@supabase/supabase-js@2.98.0)
@@ -611,6 +946,15 @@ importers:
 
   apps/learn:
     dependencies:
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
+      '@henryco/aware':
+        specifier: workspace:^
+        version: link:../../packages/aware
       '@henryco/branded-documents':
         specifier: workspace:^
         version: link:../../packages/branded-documents
@@ -623,15 +967,30 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../../packages/intelligence
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../../packages/observability
+      '@henryco/payments-db':
+        specifier: workspace:^
+        version: link:../../packages/payments-db
       '@henryco/seo':
         specifier: workspace:^
         version: link:../../packages/seo
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@sentry/nextjs':
+        specifier: ^10.0.0
+        version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
       '@supabase/ssr':
         specifier: ^0.9.0
         version: 0.9.0(@supabase/supabase-js@2.98.0)
@@ -702,6 +1061,9 @@ importers:
 
   apps/logistics:
     dependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
       '@henryco/branded-documents':
         specifier: workspace:^
         version: link:../../packages/branded-documents
@@ -717,12 +1079,18 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
       '@henryco/notifications-ui':
         specifier: workspace:^
         version: link:../../packages/notifications-ui
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../../packages/observability
       '@henryco/payment-surface':
         specifier: workspace:^
         version: link:../../packages/payment-surface
@@ -738,112 +1106,9 @@ importers:
       '@henryco/workspace-shell':
         specifier: workspace:^
         version: link:../../packages/workspace-shell
-      '@supabase/ssr':
-        specifier: ^0.9.0
-        version: 0.9.0(@supabase/supabase-js@2.98.0)
-      '@supabase/supabase-js':
-        specifier: ^2.98.0
-        version: 2.98.0
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      framer-motion:
-        specifier: ^12.35.0
-        version: 12.35.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      lucide-react:
-        specifier: ^0.577.0
-        version: 0.577.0(react@19.2.3)
-      next:
-        specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      next-themes:
-        specifier: ^0.4.6
-        version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react:
-        specifier: 19.2.3
-        version: 19.2.3
-      react-dom:
-        specifier: 19.2.3
-        version: 19.2.3(react@19.2.3)
-      resend:
-        specifier: ^6.10.0
-        version: 6.10.0
-      server-only:
-        specifier: ^0.0.1
-        version: 0.0.1
-      tailwind-merge:
-        specifier: ^3.5.0
-        version: 3.5.0
-    devDependencies:
-      '@playwright/test':
-        specifier: ^1.59.0
-        version: 1.59.0
-      '@tailwindcss/postcss':
-        specifier: ^4
-        version: 4.2.1
-      '@types/node':
-        specifier: ^20
-        version: 20.19.37
-      '@types/react':
-        specifier: ^19
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19
-        version: 19.2.3(@types/react@19.2.14)
-      eslint:
-        specifier: ^9
-        version: 9.39.3(jiti@2.6.1)
-      eslint-config-next:
-        specifier: 16.1.6
-        version: 16.1.6(@typescript-eslint/parser@8.56.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
-      tailwindcss:
-        specifier: ^4
-        version: 4.2.1
-      typescript:
-        specifier: ^5
-        version: 5.9.3
-
-  apps/marketplace:
-    dependencies:
-      '@henryco/address-selector':
-        specifier: workspace:^
-        version: link:../../packages/address-selector
-      '@henryco/brand':
-        specifier: workspace:^
-        version: link:../../packages/brand
-      '@henryco/cart-saved-items':
-        specifier: workspace:^
-        version: link:../../packages/cart-saved-items
-      '@henryco/config':
-        specifier: workspace:^
-        version: link:../../packages/config
-      '@henryco/dashboard-shell':
-        specifier: workspace:^
-        version: link:../../packages/dashboard-shell
-      '@henryco/email':
-        specifier: workspace:^
-        version: link:../../packages/email
-      '@henryco/i18n':
-        specifier: workspace:^
-        version: link:../../packages/i18n
-      '@henryco/notifications':
-        specifier: workspace:^
-        version: link:../../packages/notifications
-      '@henryco/payment-surface':
-        specifier: workspace:^
-        version: link:../../packages/payment-surface
-      '@henryco/pricing':
-        specifier: workspace:^
-        version: link:../../packages/pricing
-      '@henryco/seo':
-        specifier: workspace:^
-        version: link:../../packages/seo
-      '@henryco/trust':
-        specifier: workspace:^
-        version: link:../../packages/trust
-      '@henryco/ui':
-        specifier: workspace:^
-        version: link:../../packages/ui
+      '@sentry/nextjs':
+        specifier: ^10.0.0
+        version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
       '@supabase/ssr':
         specifier: ^0.9.0
         version: 0.9.0(@supabase/supabase-js@2.98.0)
@@ -909,23 +1174,77 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  apps/property:
+  apps/marketplace:
     dependencies:
+      '@henryco/address-selector':
+        specifier: workspace:^
+        version: link:../../packages/address-selector
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
+      '@henryco/aware':
+        specifier: workspace:^
+        version: link:../../packages/aware
+      '@henryco/brand':
+        specifier: workspace:^
+        version: link:../../packages/brand
+      '@henryco/cart-saved-items':
+        specifier: workspace:^
+        version: link:../../packages/cart-saved-items
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../../packages/chat-composer
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../../packages/dashboard-shell
       '@henryco/email':
         specifier: workspace:^
         version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../../packages/intelligence
+      '@henryco/lifecycle':
+        specifier: workspace:^
+        version: link:../../packages/lifecycle
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
+      '@henryco/messaging':
+        specifier: workspace:^
+        version: link:../../packages/messaging
+      '@henryco/messaging-thread':
+        specifier: workspace:^
+        version: link:../../packages/messaging-thread
+      '@henryco/moderation':
+        specifier: workspace:^
+        version: link:../../packages/moderation
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../../packages/observability
+      '@henryco/payment-router':
+        specifier: workspace:^
+        version: link:../../packages/payment-router
       '@henryco/payment-surface':
         specifier: workspace:^
         version: link:../../packages/payment-surface
+      '@henryco/payments-db':
+        specifier: workspace:^
+        version: link:../../packages/payments-db
       '@henryco/pricing':
         specifier: workspace:^
         version: link:../../packages/pricing
@@ -938,6 +1257,133 @@ importers:
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@sentry/nextjs':
+        specifier: ^10.0.0
+        version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
+      '@supabase/ssr':
+        specifier: ^0.9.0
+        version: 0.9.0(@supabase/supabase-js@2.98.0)
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      framer-motion:
+        specifier: ^12.35.0
+        version: 12.35.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+      resend:
+        specifier: ^6.10.0
+        version: 6.10.0
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      tailwind-merge:
+        specifier: ^3.5.0
+        version: 3.5.0
+    devDependencies:
+      '@playwright/test':
+        specifier: ^1.59.0
+        version: 1.59.0
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.1
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.15.6
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9
+        version: 9.39.3(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.1.6
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.1
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  apps/property:
+    dependencies:
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../../packages/auth
+      '@henryco/aware':
+        specifier: workspace:^
+        version: link:../../packages/aware
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../../packages/config
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../../packages/i18n
+      '@henryco/lifecycle':
+        specifier: workspace:^
+        version: link:../../packages/lifecycle
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
+      '@henryco/notifications':
+        specifier: workspace:^
+        version: link:../../packages/notifications
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../../packages/observability
+      '@henryco/payment-surface':
+        specifier: workspace:^
+        version: link:../../packages/payment-surface
+      '@henryco/payments-db':
+        specifier: workspace:^
+        version: link:../../packages/payments-db
+      '@henryco/pricing':
+        specifier: workspace:^
+        version: link:../../packages/pricing
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../../packages/trust
+      '@henryco/ui':
+        specifier: workspace:^
+        version: link:../../packages/ui
+      '@sentry/nextjs':
+        specifier: ^10.0.0
+        version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
       '@supabase/ssr':
         specifier: ^0.9.0
         version: 0.9.0(@supabase/supabase-js@2.98.0)
@@ -1020,6 +1466,9 @@ importers:
       '@henryco/data':
         specifier: workspace:^
         version: link:../../packages/data
+      '@henryco/email':
+        specifier: workspace:^
+        version: link:../../packages/email
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
@@ -1029,6 +1478,9 @@ importers:
       '@henryco/lifecycle':
         specifier: workspace:^
         version: link:../../packages/lifecycle
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@henryco/newsletter':
         specifier: workspace:^
         version: link:../../packages/newsletter
@@ -1038,6 +1490,9 @@ importers:
       '@henryco/observability':
         specifier: workspace:^
         version: link:../../packages/observability
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../../packages/seo
       '@henryco/trust':
         specifier: workspace:^
         version: link:../../packages/trust
@@ -1108,21 +1563,30 @@ importers:
 
   apps/studio:
     dependencies:
-      '@anthropic-ai/sdk':
-        specifier: ^0.92.0
-        version: 0.92.0(zod@4.3.6)
+      '@henryco/ai-gateway':
+        specifier: workspace:^
+        version: link:../../packages/ai-gateway
       '@henryco/auth':
         specifier: workspace:^
         version: link:../../packages/auth
+      '@henryco/aware':
+        specifier: workspace:^
+        version: link:../../packages/aware
       '@henryco/branded-documents':
         specifier: workspace:^
         version: link:../../packages/branded-documents
       '@henryco/chat-composer':
         specifier: workspace:^
         version: link:../../packages/chat-composer
+      '@henryco/chat-thread':
+        specifier: workspace:^
+        version: link:../../packages/chat-thread
       '@henryco/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../../packages/contact-safety
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../../packages/dashboard-shell
@@ -1132,24 +1596,54 @@ importers:
       '@henryco/i18n':
         specifier: workspace:^
         version: link:../../packages/i18n
+      '@henryco/lifecycle':
+        specifier: workspace:^
+        version: link:../../packages/lifecycle
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@henryco/messaging-thread':
         specifier: workspace:^
         version: link:../../packages/messaging-thread
       '@henryco/notifications':
         specifier: workspace:^
         version: link:../../packages/notifications
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../../packages/observability
+      '@henryco/payment-router':
+        specifier: workspace:^
+        version: link:../../packages/payment-router
       '@henryco/payment-surface':
         specifier: workspace:^
         version: link:../../packages/payment-surface
+      '@henryco/payments-db':
+        specifier: workspace:^
+        version: link:../../packages/payments-db
+      '@henryco/pricing':
+        specifier: workspace:^
+        version: link:../../packages/pricing
       '@henryco/seo':
         specifier: workspace:^
         version: link:../../packages/seo
+      '@henryco/studio-bundle':
+        specifier: workspace:^
+        version: link:../../packages/studio-bundle
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../../packages/trust
       '@henryco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@henryco/workflow':
+        specifier: workspace:^
+        version: link:../../packages/workflow
       '@henryco/workspace-shell':
         specifier: workspace:^
         version: link:../../packages/workspace-shell
+      '@sentry/nextjs':
+        specifier: ^10.0.0
+        version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
       '@supabase/ssr':
         specifier: ^0.9.0
         version: 0.9.0(@supabase/supabase-js@2.98.0)
@@ -1215,11 +1709,63 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  apps/studio-sites:
+    dependencies:
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../../packages/config
+      '@henryco/studio-bundle':
+        specifier: workspace:^
+        version: link:../../packages/studio-bundle
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.1
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9
+        version: 9.39.3(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.1.6
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.1
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   apps/super-app:
     dependencies:
       '@expo/vector-icons':
         specifier: ^15.0.3
         version: 15.1.1(expo-font@14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      '@henryco/rn-type':
+        specifier: workspace:^
+        version: link:../../packages/rn-type
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.1.0))
@@ -1336,6 +1882,58 @@ importers:
         specifier: ~5.9.2
         version: 5.9.3
 
+  apps/work:
+    dependencies:
+      '@henryco/command-contract':
+        specifier: workspace:^
+        version: link:../../packages/command-contract
+      '@henryco/command-surface':
+        specifier: workspace:^
+        version: link:../../packages/command-surface
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../../packages/config
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.2.1
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9
+        version: 9.39.3(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.1.6
+        version: 16.1.6(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.2.1
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   packages/address-selector:
     dependencies:
       '@supabase/supabase-js':
@@ -1361,22 +1959,83 @@ importers:
         specifier: ^5.6.0
         version: 5.9.3
 
+  packages/ai-gateway:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^0.92.0
+        version: 0.92.0(zod@4.3.6)
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../intelligence
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@henryco/pricing':
+        specifier: workspace:^
+        version: link:../pricing
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/auth:
     devDependencies:
       '@henryco/config':
         specifier: workspace:^
         version: link:../config
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@supabase/ssr':
+        specifier: ^0.9.0
+        version: 0.9.0(@supabase/supabase-js@2.98.0)
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.98.0
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
       next:
         specifier: ^16.1.6
         version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
       typescript:
         specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/aware:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.19.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5
         version: 5.9.3
 
   packages/brand:
@@ -1402,6 +2061,9 @@ importers:
       '@henryco/brand':
         specifier: workspace:^
         version: link:../brand
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
       '@react-pdf/renderer':
         specifier: ^4.3.0
         version: 4.5.1(react@19.2.3)
@@ -1472,6 +2134,80 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/chat-thread:
+    dependencies:
+      '@henryco/chat-composer':
+        specifier: workspace:^
+        version: link:../chat-composer
+      '@henryco/messaging-thread':
+        specifier: workspace:^
+        version: link:../messaging-thread
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/command-contract:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/command-surface:
+    dependencies:
+      '@henryco/command-contract':
+        specifier: workspace:^
+        version: link:../command-contract
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/config:
     dependencies:
       next:
@@ -1484,6 +2220,19 @@ importers:
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
+
+  packages/contact-safety:
+    dependencies:
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../trust
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/dashboard-modules-account:
     dependencies:
@@ -1540,9 +2289,95 @@ importers:
       '@henryco/auth':
         specifier: workspace:^
         version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../dashboard-shell
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-business:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/cart-saved-items':
+        specifier: workspace:^
+        version: link:../cart-saved-items
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-care:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
       '@types/node':
         specifier: ^20
         version: 20.19.37
@@ -1574,9 +2409,135 @@ importers:
       '@henryco/auth':
         specifier: workspace:^
         version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
       '@henryco/dashboard-shell':
         specifier: workspace:^
         version: link:../dashboard-shell
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-jobs:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../trust
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-learn:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-logistics:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
       '@types/node':
         specifier: ^20
         version: 20.19.37
@@ -1682,6 +2643,86 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/dashboard-modules-play:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/gaming-arena':
+        specifier: workspace:^
+        version: link:../gaming-arena
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-property:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/dashboard-modules-staff:
     dependencies:
       react:
@@ -1703,9 +2744,55 @@ importers:
       '@henryco/data':
         specifier: workspace:^
         version: link:../data
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../intelligence
       '@henryco/observability':
         specifier: workspace:^
         version: link:../observability
+      '@types/node':
+        specifier: ^20
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/dashboard-modules-studio:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
       '@types/node':
         specifier: ^20
         version: 20.19.37
@@ -1767,6 +2854,12 @@ importers:
 
   packages/dashboard-shell:
     dependencies:
+      '@henryco/notifications-ui':
+        specifier: workspace:^
+        version: link:../notifications-ui
+      '@henryco/ui':
+        specifier: workspace:^
+        version: link:../ui
       react:
         specifier: ^19.0.0
         version: 19.2.3
@@ -1780,9 +2873,9 @@ importers:
       '@henryco/config':
         specifier: workspace:^
         version: link:../config
-      '@henryco/notifications-ui':
+      '@henryco/observability':
         specifier: workspace:^
-        version: link:../notifications-ui
+        version: link:../observability
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
@@ -1800,6 +2893,13 @@ importers:
         version: 5.9.3
 
   packages/data:
+    dependencies:
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../intelligence
     devDependencies:
       '@henryco/auth':
         specifier: workspace:^
@@ -1819,6 +2919,28 @@ importers:
       '@henryco/config':
         specifier: workspace:*
         version: link:../config
+
+  packages/gaming-arena:
+    dependencies:
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+    devDependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/i18n:
     dependencies:
@@ -1851,7 +2973,126 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
 
-  packages/lifecycle: {}
+  packages/interactions:
+    dependencies:
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/ui':
+        specifier: workspace:^
+        version: link:../ui
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/kyc:
+    dependencies:
+      '@henryco/media':
+        specifier: workspace:^
+        version: link:../media
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../trust
+    devDependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/lifecycle:
+    dependencies:
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/media:
+    devDependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/messaging:
+    dependencies:
+      '@henryco/contact-safety':
+        specifier: workspace:^
+        version: link:../contact-safety
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/messaging-thread:
     dependencies:
@@ -1878,6 +3119,34 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/moderation:
+    dependencies:
+      '@henryco/intelligence':
+        specifier: workspace:^
+        version: link:../intelligence
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@henryco/trust':
+        specifier: workspace:^
+        version: link:../trust
+    devDependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/newsletter:
     dependencies:
       '@henryco/config':
@@ -1886,9 +3155,19 @@ importers:
       '@henryco/intelligence':
         specifier: workspace:*
         version: link:../intelligence
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/notifications:
     dependencies:
+      '@henryco/push':
+        specifier: workspace:^
+        version: link:../push
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.98.0
@@ -1924,6 +3203,9 @@ importers:
       '@sentry/nextjs':
         specifier: ^10.0.0
         version: 10.52.0(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.7.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.106.2)
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.37
@@ -1934,8 +3216,30 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/payment-router:
+    dependencies:
+      '@henryco/i18n':
+        specifier: workspace:^
+        version: link:../i18n
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/payment-surface:
     dependencies:
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
       next:
         specifier: ^16.1.6
         version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1962,7 +3266,116 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/pricing: {}
+  packages/payments-db:
+    dependencies:
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.15.6
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/pricing:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/push:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      web-push:
+        specifier: ^3.6.7
+        version: 3.6.7
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      '@types/web-push':
+        specifier: ^3.6.4
+        version: 3.6.4
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/rn-type:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.10
+        version: 22.19.15
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/rooms:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/config':
+        specifier: workspace:^
+        version: link:../config
+      '@henryco/dashboard-shell':
+        specifier: workspace:^
+        version: link:../dashboard-shell
+      '@henryco/data':
+        specifier: workspace:^
+        version: link:../data
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.98.0
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.3)
+      next:
+        specifier: ^16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      tsx:
+        specifier: ^4.20.6
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/search-core:
     dependencies:
@@ -2072,6 +3485,15 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/studio-bundle:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/trust: {}
 
   packages/ui:
@@ -2079,6 +3501,12 @@ importers:
       '@fingerprintjs/fingerprintjs-pro-react':
         specifier: ^2.7.1
         version: 2.7.1
+      '@henryco/auth':
+        specifier: workspace:^
+        version: link:../auth
+      '@henryco/chat-thread':
+        specifier: workspace:^
+        version: link:../chat-thread
       '@henryco/config':
         specifier: workspace:^
         version: link:../config
@@ -2088,6 +3516,15 @@ importers:
       '@henryco/intelligence':
         specifier: workspace:^
         version: link:../intelligence
+      '@henryco/notifications-ui':
+        specifier: workspace:^
+        version: link:../notifications-ui
+      '@henryco/observability':
+        specifier: workspace:^
+        version: link:../observability
+      '@henryco/seo':
+        specifier: workspace:^
+        version: link:../seo
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -2122,6 +3559,15 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/workflow:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.37
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -3030,6 +4476,15 @@ packages:
   '@fingerprintjs/fingerprintjs-pro@3.12.9':
     resolution: {integrity: sha512-MiM8ASp9nQgY/abPK+1+LaZHvn6aaTX9Zze1ghCDO/Y86k1dbRnDeBr5Zg5fmEhwMda9J7+6zl54lds6GENZUw==}
 
+  '@fontsource-variable/fraunces@5.2.9':
+    resolution: {integrity: sha512-Y6IjunlN9Ni723np+GIgAaKzCDBrPRrqNi01TZxHs5wtHYROWFM9W6yiT+/gGwSjWIRD18oX17kD/BRWekc/Lw==}
+
+  '@fontsource-variable/jetbrains-mono@5.2.8':
+    resolution: {integrity: sha512-WBA9elru6Jdp5df2mES55wuOO0WIrn3kpXnI4+W2ek5u3ZgLS9XS4gmIlcQhiZOWEKl95meYdvK7xI+ETLCq/Q==}
+
+  '@fontsource-variable/manrope@5.2.8':
+    resolution: {integrity: sha512-nc9lOuCRz73UHnovDE2bwXUdghE2SEOc7Aii0qGe3CLyE03W1a7VnY5Z6euRiapiKbCkGS+eXbY3s/kvWeGeSw==}
+
   '@fontsource/inter@5.2.8':
     resolution: {integrity: sha512-P6r5WnJoKiNVV+zvW2xM13gNdFhAEpQ9dQJHt3naLvfg+LkF2ldgSLiF4T41lf1SQCM9QmkqPTn4TH568IRagg==}
 
@@ -3038,6 +4493,12 @@ packages:
 
   '@fontsource/newsreader@5.2.10':
     resolution: {integrity: sha512-TFaYzoFhDqarUyV2yYjgZZEwT4bpaj6sGBnXSnFknQ/QB8/9LzfY6IO9+inHOX4zzPp87Z7/KuG1OI5gr91Q3A==}
+
+  '@fontsource/noto-sans-arabic@5.2.10':
+    resolution: {integrity: sha512-Hgj3NwQJ0NquIADW3hFboFjsts4UvEOJQ8tOX0bhQZgpNKHsMawjv/1SZnq0QvRbP6efHTZM/A1k7tdy9S6sbA==}
+
+  '@fontsource/noto-sans-sc@5.2.9':
+    resolution: {integrity: sha512-bTUIWGBgJDpwi5qAr+x0/lcgv80IHTB9vl6s2f6EymZEa7qYV99yNRBZuKFT+SYDKVunZrjCEhWtpxqmbXWl5Q==}
 
   '@hookform/resolvers@5.2.2':
     resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
@@ -4676,6 +6137,9 @@ packages:
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
 
+  '@types/web-push@3.6.4':
+    resolution: {integrity: sha512-GnJmSr40H3RAnj0s34FNTcJi1hmWFV5KXugE0mYWnYhgTAHLJ/dJKAwDmvPJYMke0RplY2XE9LnM4hqSqKIjhQ==}
+
   '@types/webxr@0.5.24':
     resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
 
@@ -5139,6 +6603,9 @@ packages:
   asap@2.0.6:
     resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
 
+  asn1.js@5.4.1:
+    resolution: {integrity: sha512-+I//4cYPccV8LdmBLiX8CYvf9Sp3vQsrqu2QNXRcrbiWvcx/UdlFiqUJJzxRQxgsZmvhXhn4cSKeSmoFjVdupA==}
+
   assert@2.1.0:
     resolution: {integrity: sha512-eLHpSK/Y4nhMJ07gDaAzoX/XAKS8PSaojml3M0DM4JpV1LAi5JOJ/p6H/XWrl8L+DzVEvVCW1z3vWAaB9oTsQw==}
 
@@ -5268,6 +6735,9 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
+  bn.js@4.12.3:
+    resolution: {integrity: sha512-fGTi3gxV/23FTYdAoUtLYp6qySe2KE3teyZitipKNRuVYcBkoP/bB3guXN/XVKUe9mxCHXnc9C4ocyz8OmgN0g==}
+
   bplist-creator@0.1.0:
     resolution: {integrity: sha512-sXaHZicyEEmY86WyueLTQesbeoH/mquvarJaQNbjuOQO+7gbFcDEWqKmcWA4cOTLzFlfgvkiVxolk1k5bBIpmg==}
 
@@ -5306,6 +6776,9 @@ packages:
 
   bser@2.1.1:
     resolution: {integrity: sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==}
+
+  buffer-equal-constant-time@1.0.1:
+    resolution: {integrity: sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==}
 
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
@@ -5733,6 +7206,9 @@ packages:
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
+
+  ecdsa-sig-formatter@1.0.11:
+    resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
 
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
@@ -6513,6 +7989,10 @@ packages:
     resolution: {integrity: sha512-n2hY8YdoRE1i7r6M0w9DIw5GgZN0G25P8zLCRQ8rjXtTU3vsNFBI/vWK/UIeE6g5MUUz6avwAPXmL6Fy9D/90w==}
     engines: {node: '>= 6'}
 
+  http_ece@1.2.0:
+    resolution: {integrity: sha512-JrF8SSLVmcvc5NducxgyOrKXe3EsyHMgBFgSaIUGmArKe+rwr0uphRkRXvwiom3I+fpIfoItveHrfudL8/rxuA==}
+    engines: {node: '>=16'}
+
   https-proxy-agent@5.0.1:
     resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
     engines: {node: '>= 6'}
@@ -7046,6 +8526,12 @@ packages:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
 
+  jwa@2.0.1:
+    resolution: {integrity: sha512-hRF04fqJIP8Abbkq5NKGN0Bbr3JxlQ+qhZufXVr0DvujKy93ZCbXZMHDL4EOtodSbCWxOqR8MS1tXA5hwqCXDg==}
+
+  jws@4.0.1:
+    resolution: {integrity: sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==}
+
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
@@ -7472,6 +8958,9 @@ packages:
   min-indent@1.0.1:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
     engines: {node: '>=4'}
+
+  minimalistic-assert@1.0.1:
+    resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
 
   minimatch@10.2.4:
     resolution: {integrity: sha512-oRjTw/97aTBN0RHbYCdtF1MQfvusSIBQM0IZEgzl6426+8jSC0nF1a/GmnVLpfB9yyr6g6FTqWqiZVbxrtaCIg==}
@@ -9061,6 +10550,11 @@ packages:
   wcwidth@1.0.1:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
 
+  web-push@3.6.7:
+    resolution: {integrity: sha512-OpiIUe8cuGjrj3mMBFWY+e4MMIkW3SVT+7vEIjvD9kejGUypv8GPDf84JdPWskK8zMRIJ6xYGm+Kxr8YkPyA0A==}
+    engines: {node: '>= 16'}
+    hasBin: true
+
   webgl-constants@1.1.1:
     resolution: {integrity: sha512-LkBXKjU5r9vAW7Gcu3T5u+5cvSvh5WwINdr0C+9jpzVB41cjQAP5ePArDtk/WHYdVj0GefCgM73BA7FlIiNtdg==}
 
@@ -10242,7 +11736,6 @@ snapshots:
       - graphql
       - supports-color
       - utf-8-validate
-    optional: true
 
   '@expo/code-signing-certificates@0.0.6':
     dependencies:
@@ -10307,7 +11800,6 @@ snapshots:
     optionalDependencies:
       react: 19.2.3
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   '@expo/env@2.0.11':
     dependencies:
@@ -10374,7 +11866,7 @@ snapshots:
       postcss: 8.4.49
       resolve-from: 5.0.0
     optionalDependencies:
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -10454,7 +11946,7 @@ snapshots:
       '@expo/json-file': 10.0.13
       '@react-native/normalize-colors': 0.81.5
       debug: 4.4.3
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       resolve-from: 5.0.0
       semver: 7.7.4
       xml2js: 0.6.0
@@ -10482,7 +11974,6 @@ snapshots:
       expo-font: 14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react: 19.2.3
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   '@expo/ws-tunnel@1.0.6': {}
 
@@ -10514,11 +12005,21 @@ snapshots:
 
   '@fingerprintjs/fingerprintjs-pro@3.12.9': {}
 
+  '@fontsource-variable/fraunces@5.2.9': {}
+
+  '@fontsource-variable/jetbrains-mono@5.2.8': {}
+
+  '@fontsource-variable/manrope@5.2.8': {}
+
   '@fontsource/inter@5.2.8': {}
 
   '@fontsource/jetbrains-mono@5.2.8': {}
 
   '@fontsource/newsreader@5.2.10': {}
+
+  '@fontsource/noto-sans-arabic@5.2.10': {}
+
+  '@fontsource/noto-sans-sc@5.2.9': {}
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.71.2(react@19.1.0))':
     dependencies:
@@ -11707,7 +13208,6 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
     optionalDependencies:
       '@types/react': 19.2.14
-    optional: true
 
   '@react-navigation/bottom-tabs@7.15.9(@react-navigation/native@7.2.2(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-safe-area-context@5.6.2(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-screens@4.16.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -12707,6 +14207,10 @@ snapshots:
 
   '@types/tough-cookie@4.0.5': {}
 
+  '@types/web-push@3.6.4':
+    dependencies:
+      '@types/node': 20.19.37
+
   '@types/webxr@0.5.24': {}
 
   '@types/ws@8.18.1':
@@ -13223,6 +14727,13 @@ snapshots:
 
   asap@2.0.6: {}
 
+  asn1.js@5.4.1:
+    dependencies:
+      bn.js: 4.12.3
+      inherits: 2.0.4
+      minimalistic-assert: 1.0.1
+      safer-buffer: 2.1.2
+
   assert@2.1.0:
     dependencies:
       call-bind: 1.0.8
@@ -13363,7 +14874,7 @@ snapshots:
       resolve-from: 5.0.0
     optionalDependencies:
       '@babel/runtime': 7.28.6
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color
@@ -13397,6 +14908,8 @@ snapshots:
   big-integer@1.6.52: {}
 
   binary-extensions@2.3.0: {}
+
+  bn.js@4.12.3: {}
 
   bplist-creator@0.1.0:
     dependencies:
@@ -13446,6 +14959,8 @@ snapshots:
   bser@2.1.1:
     dependencies:
       node-int64: 0.4.0
+
+  buffer-equal-constant-time@1.0.1: {}
 
   buffer-from@1.1.2: {}
 
@@ -13861,6 +15376,10 @@ snapshots:
       call-bind-apply-helpers: 1.0.2
       es-errors: 1.3.0
       gopd: 1.2.0
+
+  ecdsa-sig-formatter@1.0.11:
+    dependencies:
+      safe-buffer: 5.2.1
 
   ee-first@1.1.1: {}
 
@@ -14539,7 +16058,6 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   expo-constants@18.0.13(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)):
     dependencies:
@@ -14558,7 +16076,6 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   expo-device@8.0.10(expo@54.0.33):
     dependencies:
@@ -14574,7 +16091,6 @@ snapshots:
     dependencies:
       expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   expo-font@14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -14589,7 +16105,6 @@ snapshots:
       fontfaceobserver: 2.3.0
       react: 19.2.3
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   expo-haptics@15.0.8(expo@54.0.33):
     dependencies:
@@ -14612,7 +16127,6 @@ snapshots:
     dependencies:
       expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    optional: true
 
   expo-linear-gradient@15.0.8(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -14660,7 +16174,6 @@ snapshots:
       invariant: 2.2.4
       react: 19.2.3
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.3)
-    optional: true
 
   expo-notifications@0.32.16(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -14907,7 +16420,6 @@ snapshots:
       - graphql
       - supports-color
       - utf-8-validate
-    optional: true
 
   exponential-backoff@3.1.3: {}
 
@@ -15237,6 +16749,8 @@ snapshots:
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
+
+  http_ece@1.2.0: {}
 
   https-proxy-agent@5.0.1:
     dependencies:
@@ -16081,6 +17595,17 @@ snapshots:
       object.assign: 4.1.7
       object.values: 1.2.1
 
+  jwa@2.0.1:
+    dependencies:
+      buffer-equal-constant-time: 1.0.1
+      ecdsa-sig-formatter: 1.0.11
+      safe-buffer: 5.2.1
+
+  jws@4.0.1:
+    dependencies:
+      jwa: 2.0.1
+      safe-buffer: 5.2.1
+
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
@@ -16668,6 +18193,8 @@ snapshots:
   mimic-fn@2.1.0: {}
 
   min-indent@1.0.1: {}
+
+  minimalistic-assert@1.0.1: {}
 
   minimatch@10.2.4:
     dependencies:
@@ -17512,7 +19039,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-    optional: true
 
   react-refresh@0.14.2: {}
 
@@ -18617,6 +20143,16 @@ snapshots:
   wcwidth@1.0.1:
     dependencies:
       defaults: 1.0.4
+
+  web-push@3.6.7:
+    dependencies:
+      asn1.js: 5.4.1
+      http_ece: 1.2.0
+      https-proxy-agent: 7.0.6
+      jws: 4.0.1
+      minimist: 1.2.8
+    transitivePeerDependencies:
+      - supports-color
 
   webgl-constants@1.1.1: {}
 

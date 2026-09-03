@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import {
   AlertCircle,
   CheckCircle2,
@@ -11,29 +11,38 @@ import {
   Sparkles,
   Wand2,
 } from "lucide-react";
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
+import { AiProse } from "@henryco/ui/prose";
 import {
   generateStudioBriefDraftAction,
   type BriefCopilotResult,
-  type BriefCopilotStructured,
 } from "@/lib/studio/brief-copilot-action";
+import type { BriefCopilotStructured } from "@/lib/studio/brief-copilot-structured";
 
-const EXAMPLE_PROMPTS: Array<{ label: string; body: string }> = [
-  {
-    label: "Logistics SaaS",
-    body:
-      "A logistics SaaS for last-mile delivery in Lagos. Couriers track jobs on a mobile app while dispatchers assign and reroute from a web dashboard. We need a customer-facing order page, courier mobile UX, dispatcher console, payments, and analytics. Launch within ten weeks.",
-  },
-  {
-    label: "Members investment platform",
-    body:
-      "A members-only investment platform for accredited Nigerian investors. People apply, sign documents, fund their account by bank transfer, and view performance updates monthly. Strong KYC, two-factor auth, and an admin compliance dashboard. We want a clean, restrained, executive feel. Budget around eight to fifteen million naira.",
-  },
-  {
-    label: "Internal ops tool",
-    body:
-      "An internal ops tool for our 30-person agency. Project intake, milestone tracking, time logs, invoicing, and a client portal. Has to integrate with our existing accounting package. Should feel calm and not overwhelming. Soft launch in six weeks.",
-  },
-];
+function getExamplePrompts(locale: AppLocale): Array<{ label: string; body: string }> {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  return [
+    {
+      label: t("Logistics SaaS"),
+      body: t(
+        "A logistics SaaS for last-mile delivery in Lagos. Couriers track jobs on a mobile app while dispatchers assign and reroute from a web dashboard. We need a customer-facing order page, courier mobile UX, dispatcher console, payments, and analytics. Launch within ten weeks.",
+      ),
+    },
+    {
+      label: t("Members investment platform"),
+      body: t(
+        "A members-only investment platform for accredited Nigerian investors. People apply, sign documents, fund their account by bank transfer, and view performance updates monthly. Strong KYC, two-factor auth, and an admin compliance dashboard. We want a clean, restrained, executive feel. Budget around eight to fifteen million naira.",
+      ),
+    },
+    {
+      label: t("Internal ops tool"),
+      body: t(
+        "An internal ops tool for our 30-person agency. Project intake, milestone tracking, time logs, invoicing, and a client portal. Has to integrate with our existing accounting package. Should feel calm and not overwhelming. Soft launch in six weeks.",
+      ),
+    },
+  ];
+}
 
 type State =
   | { kind: "idle" }
@@ -49,6 +58,8 @@ export function BriefCopilotPanel({
 }: {
   onApply: (structured: BriefCopilotStructured) => void;
 }) {
+  const locale = useHenryCoLocale();
+  const examplePrompts = useMemo(() => getExamplePrompts(locale), [locale]);
   const [description, setDescription] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
   const [pending, startTransition] = useTransition();
@@ -98,13 +109,13 @@ export function BriefCopilotPanel({
   const isSuccess = state.kind === "success";
 
   return (
-    <section className="relative overflow-hidden rounded-[1.6rem] border border-[var(--studio-line-strong)] bg-[radial-gradient(120%_100%_at_0%_0%,rgba(151,244,243,0.08),transparent_55%),linear-gradient(180deg,rgba(8,19,28,0.84),rgba(8,16,22,0.96))] p-6 sm:p-8">
+    <section className="relative overflow-hidden rounded-[1.6rem] border border-[var(--studio-line-strong)] bg-[radial-gradient(120%_100%_at_0%_0%,var(--home-accent-soft),transparent_55%),var(--home-sheet)] p-6 sm:p-8">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-16 right-[-10%] hidden h-[20rem] w-[20rem] rounded-full opacity-50 blur-3xl md:block"
         style={{
           background:
-            "radial-gradient(circle, rgba(217,168,109,0.18) 0%, rgba(151,244,243,0.06) 40%, transparent 70%)",
+            "radial-gradient(circle, var(--home-accent-soft) 0%, transparent 70%)",
         }}
       />
 
@@ -140,7 +151,7 @@ export function BriefCopilotPanel({
           rows={5}
           maxLength={MAX_LENGTH}
           placeholder="A logistics SaaS for last-mile delivery in Lagos. Couriers track jobs on a mobile app while dispatchers assign and reroute from a web dashboard…"
-          className="w-full rounded-2xl border border-[var(--studio-line-strong)] bg-[rgba(0,0,0,0.18)] px-4 py-3.5 text-[15px] leading-[1.65] text-[var(--studio-ink)] outline-none transition focus:border-[rgba(151,244,243,0.55)] focus:bg-[rgba(0,0,0,0.22)] focus:ring-2 focus:ring-[rgba(151,244,243,0.18)]"
+          className="w-full rounded-2xl border border-[var(--studio-line-strong)] bg-[color:var(--home-surface)] px-4 py-3.5 text-[15px] leading-[1.65] text-[var(--studio-ink)] outline-none transition focus:border-[color:var(--home-accent)] focus:bg-[color:var(--home-sheet)] focus:ring-2 focus:ring-[color:var(--home-accent-ring)]"
           disabled={pending}
         />
         <div className="mt-2 flex items-center justify-between text-[11.5px] font-medium text-[var(--studio-ink-soft)]">
@@ -158,12 +169,12 @@ export function BriefCopilotPanel({
             Try one of these starting points
           </p>
           <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            {EXAMPLE_PROMPTS.map((example) => (
+            {examplePrompts.map((example) => (
               <button
                 key={example.label}
                 type="button"
                 onClick={() => loadExample(example.body)}
-                className="group flex flex-col items-start gap-2 rounded-2xl border border-[var(--studio-line)] bg-[rgba(255,255,255,0.03)] px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[rgba(151,244,243,0.45)]"
+                className="group flex flex-col items-start gap-2 rounded-2xl border border-[var(--studio-line)] bg-[color:var(--home-surface)] px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[color:var(--home-accent)]"
               >
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
                   Example
@@ -194,7 +205,7 @@ export function BriefCopilotPanel({
             </span>
           ) : (
             <span>
-              Free for early users · Powered by HenryCo Studio Intelligence · Your text is never used to train external models.
+              Free for early users · Powered by Henry Onyx Studio Intelligence · Your text is never used to train external models.
             </span>
           )}
         </p>
@@ -207,7 +218,7 @@ export function BriefCopilotPanel({
                 setState({ kind: "idle" });
                 textareaRef.current?.focus();
               }}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line-strong)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-[13px] font-semibold text-[var(--studio-ink)] transition hover:border-[rgba(151,244,243,0.4)]"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--studio-line-strong)] bg-[color:var(--home-surface-04)] px-4 py-2 text-[13px] font-semibold text-[var(--studio-ink)] transition hover:border-[color:var(--home-accent)]"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Try a different paragraph
@@ -218,7 +229,7 @@ export function BriefCopilotPanel({
             onClick={handleSubmit}
             disabled={!canSubmit}
             aria-disabled={!canSubmit}
-            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#dff8fb,#8df4f2_42%,#4eb8c2)] px-5 py-2.5 text-[13.5px] font-semibold text-[#021016] shadow-[0_22px_56px_rgba(88,212,210,0.26)] transition hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-55 disabled:shadow-none"
+            className="inline-flex items-center gap-2 rounded-full bg-[color:var(--home-accent)] px-5 py-2.5 text-[13.5px] font-semibold text-[color:var(--home-accent-ink)] transition hover:-translate-y-0.5 hover:bg-[color:var(--home-accent-strong)] disabled:translate-y-0 disabled:opacity-55"
           >
             {pending ? (
               <>
@@ -263,17 +274,19 @@ function SuccessSummary({
 }) {
   const confidencePct = Math.round(meta.confidence * 100);
   return (
-    <div className="mt-6 rounded-2xl border border-[rgba(151,244,243,0.35)] bg-[rgba(151,244,243,0.05)] p-5">
+    <div className="mt-6 rounded-2xl border border-[color:var(--home-accent-ring)] bg-[color:var(--home-accent-soft)] p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-signal)]">
             <Edit3 className="h-3.5 w-3.5" />
             Co-pilot draft
           </p>
-          <p className="mt-2 text-[13.5px] leading-5 text-[var(--studio-ink)]">{structured.summary || structured.goals}</p>
+          <AiProse size="chat" className="mt-2 text-[var(--studio-ink)]">
+            {structured.summary || structured.goals}
+          </AiProse>
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] bg-[rgba(0,0,0,0.18)] px-3 py-1 text-[11px] font-semibold text-[var(--studio-ink-soft)]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--studio-line)] bg-[color:var(--home-sheet)] px-3 py-1 text-[11px] font-semibold text-[var(--studio-ink-soft)]">
             <span
               className={`h-1.5 w-1.5 rounded-full ${
                 confidencePct >= 80
@@ -283,11 +296,15 @@ function SuccessSummary({
                     : "bg-[#f3d28a]"
               }`}
             />
-            Confidence {confidencePct}%
+            {confidencePct >= 80
+              ? "Ready to review"
+              : confidencePct >= 60
+                ? "Good start — a few fields to confirm"
+                : "Rough draft — please check the details"}
           </span>
           {meta.cached ? (
             <span className="text-[10.5px] uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
-              Cache hit · faster &amp; cheaper
+              Instant draft
             </span>
           ) : null}
         </div>
@@ -311,18 +328,17 @@ function SuccessSummary({
       </dl>
 
       {structured.uncertainties.length > 0 ? (
-        <div className="mt-4 rounded-xl border border-[var(--studio-line)] bg-[rgba(0,0,0,0.18)] p-3.5">
+        <div className="mt-4 rounded-xl border border-[var(--studio-line)] bg-[color:var(--home-surface)] p-3.5">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--studio-ink-soft)]">
             Worth clarifying as you scroll down
           </p>
-          <ul className="mt-2 space-y-1 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-            {structured.uncertainties.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span aria-hidden className="text-[var(--studio-signal)]">·</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+          <AiProse size="chat" className="mt-2 text-[var(--studio-ink-soft)]">
+            <ul>
+              {structured.uncertainties.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </AiProse>
         </div>
       ) : null}
 
@@ -335,7 +351,7 @@ function SuccessSummary({
           <button
             type="button"
             onClick={onApply}
-            className="inline-flex items-center gap-2 rounded-full border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] px-4 py-2 text-[12.5px] font-semibold text-[var(--studio-signal)] transition hover:bg-[rgba(151,244,243,0.14)]"
+            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] px-4 py-2 text-[12.5px] font-semibold text-[var(--studio-signal)] transition hover:bg-[color:var(--home-accent-ring)]"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             Re-apply to brief below
@@ -345,10 +361,9 @@ function SuccessSummary({
 
       <NextActionsRail structured={structured} confidence={confidencePct} />
 
-      {meta.callsRemaining !== null ? (
+      {meta.callsRemaining !== null && meta.callsRemaining <= 2 ? (
         <p className="mt-3 text-[11px] text-[var(--studio-ink-soft)]">
-          {meta.callsRemaining} co-pilot {meta.callsRemaining === 1 ? "draft" : "drafts"} left in
-          this window.
+          You have a couple of drafts left for now — try again shortly if you run out.
         </p>
       ) : null}
     </div>
@@ -399,11 +414,11 @@ function NextActionsRail({
           <button
             type="button"
             onClick={scrollToBuilder}
-            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[rgba(151,244,243,0.45)] bg-[rgba(151,244,243,0.08)] px-3 py-2.5 text-left transition hover:bg-[rgba(151,244,243,0.14)]"
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] px-3 py-2.5 text-left transition hover:bg-[color:var(--home-accent-ring)]"
           >
             <span
               aria-hidden
-              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--studio-signal)] text-[11px] font-semibold text-[#021016]"
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--home-accent)] text-[11px] font-semibold text-[color:var(--home-accent-ink)]"
             >
               1
             </span>
@@ -424,11 +439,11 @@ function NextActionsRail({
               event.preventDefault();
               scrollToBuilder();
             }}
-            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-3 py-2.5 text-left transition hover:border-[rgba(151,244,243,0.35)] hover:bg-[rgba(255,255,255,0.04)]"
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-02)] px-3 py-2.5 text-left transition hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-04)]"
           >
             <span
               aria-hidden
-              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-black/15 text-[11px] font-semibold text-[var(--studio-ink-soft)]"
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-[color:var(--home-surface)] text-[11px] font-semibold text-[var(--studio-ink-soft)]"
             >
               2
             </span>
@@ -449,11 +464,11 @@ function NextActionsRail({
         <li>
           <a
             href={wantsTemplates ? "/pick" : "/checkout/template/portfolio-studio"}
-            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[rgba(255,255,255,0.025)] px-3 py-2.5 text-left transition hover:border-[rgba(151,244,243,0.35)] hover:bg-[rgba(255,255,255,0.04)]"
+            className="group/step flex h-full w-full items-start gap-2.5 rounded-[1rem] border border-[var(--studio-line)] bg-[color:var(--home-surface-02)] px-3 py-2.5 text-left transition hover:border-[color:var(--home-accent)] hover:bg-[color:var(--home-surface-04)]"
           >
             <span
               aria-hidden
-              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-black/15 text-[11px] font-semibold text-[var(--studio-ink-soft)]"
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--studio-line)] bg-[color:var(--home-surface)] text-[11px] font-semibold text-[var(--studio-ink-soft)]"
             >
               3
             </span>

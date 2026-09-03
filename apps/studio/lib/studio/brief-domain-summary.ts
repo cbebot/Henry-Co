@@ -26,14 +26,14 @@ export function briefDomainSummary(brief: Pick<StudioBrief, "domainIntent"> | nu
       title: "Web address (domain)",
       body: di.desiredLabel
         ? `You plan to use ${di.desiredLabel}. We connect it when the build is ready—no need to buy another name unless you want one.`
-        : "You’ll use an existing domain at launch. HenryCo walks you through DNS when the site is ready.",
+        : "You’ll use an existing domain at launch. Henry Onyx walks you through DNS when the site is ready.",
     };
   }
 
   if (di.path === "later") {
     return {
       title: "Web address (domain)",
-      body: "You asked to decide the domain later with HenryCo. We’ll shortlist options and confirm availability before anything is purchased.",
+      body: "You asked to decide the domain later with Henry Onyx We’ll shortlist options and confirm availability before anything is purchased.",
     };
   }
 

@@ -3,15 +3,26 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, FileQuestion, Sparkles } from "lucide-react";
 
+import { PaymentSurface, buildPaymentSurfaceContext } from "@henryco/payment-surface";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField, type AppLocale } from "@henryco/i18n/server";
 import { getStudioCatalog } from "@/lib/studio/catalog";
-import { getStudioLoginUrl } from "@/lib/studio/links";
+import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getClientPortalViewer } from "@/lib/portal/auth";
 import {
   getInvoiceByToken,
+  getLatestPaymentSubmissionForInvoice,
   getOutstandingInvoicesForViewer,
 } from "@/lib/portal/data";
 import { formatKobo, shortDate } from "@/lib/portal/helpers";
 import { invoiceStatusToken } from "@/lib/portal/status";
+import { isPortalPaymentSurfaceEnabled } from "@/lib/studio/portal-payment-flag";
+import {
+  invoiceProofOnFile,
+  portalInvoiceToPaymentRecordView,
+} from "@/lib/studio/portal-payment-mapping";
+import { STUDIO_PAYMENT_THEME } from "@/lib/studio/payment-surface-theme";
 import { BankDetails } from "@/components/portal/bank-details";
 import { InvoiceSummary } from "@/components/portal/invoice-summary";
 import { PaymentForm } from "@/components/portal/payment-form";
@@ -22,8 +33,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Pay invoice · HenryCo Studio",
-  description: "Securely pay your HenryCo Studio invoice and submit proof of payment.",
+  title: "Pay invoice · Henry Onyx Studio",
+  description: "Securely pay your Henry Onyx Studio invoice and submit proof of payment.",
   robots: { index: false, follow: false },
 };
 
@@ -36,12 +47,19 @@ export default async function StudioPaymentPage({
   const token = (invoiceTokenParam ?? "").trim();
   const viewer = await getClientPortalViewer();
   const catalog = await getStudioCatalog();
+  const locale = await getStudioPublicLocale();
 
   // Scenario A — token-based access (unauthenticated or otherwise).
   if (token) {
     const lookup = await getInvoiceByToken(token);
     if (lookup) {
-      return renderInvoicePay(lookup.invoice, lookup.project?.title ?? null, catalog, /* token */ token);
+      return renderInvoicePay(
+        lookup.invoice,
+        lookup.project ?? null,
+        catalog,
+        /* token */ token,
+        locale,
+      );
     }
     return renderInvoiceNotFound();
   }
@@ -71,7 +89,7 @@ export default async function StudioPaymentPage({
   }
 
   if (invoices.length === 1) {
-    return renderInvoicePay(invoices[0], null, catalog, /* token */ null);
+    return renderInvoicePay(invoices[0], null, catalog, /* token */ null, locale);
   }
 
   return (
@@ -89,6 +107,11 @@ export default async function StudioPaymentPage({
         </p>
       </header>
 
+      {/* TODO(wave1): multi-row invoice picker — each invoice.description is
+          a Supabase-row text field. Wrap with Promise.all +
+          resolveLocalizedDynamicField in a follow-up wave (cost vs. value
+          deferred for list view; the per-invoice surface at
+          /client/payment/[invoiceId] is already wrapped). */}
       <div className="mt-6 space-y-3">
         {invoices.map((invoice) => {
           const status = invoiceStatusToken(invoice.status);
@@ -146,25 +169,124 @@ function renderInvoiceNotFound() {
   );
 }
 
-function renderInvoicePay(
+async function renderInvoicePay(
   invoice: import("@/types/portal").StudioInvoice,
-  projectTitle: string | null,
+  project: import("@/types/portal").ClientProject | null,
   catalog: Awaited<ReturnType<typeof getStudioCatalog>>,
-  token: string | null
+  token: string | null,
+  locale: AppLocale,
 ) {
+  // ——— Shared data-load: identical for the legacy and flag-on renders. ———
   const platform = catalog.platform;
   const amountLabel = formatKobo(invoice.amountKobo, invoice.currency);
   const isPaid = invoice.status === "paid";
   const isPending = invoice.status === "pending_verification";
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline. Single-row invoice
+  // surface so the DeepL cost is acceptable.
+  const [localizedInvoiceDescription, localizedProjectTitle] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: invoice as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: invoice.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    project
+      ? resolveLocalizedDynamicField({
+          record: project as unknown as Record<string, unknown>,
+          field: "title",
+          locale,
+          fallback: project.title ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+  ]);
+  const localizedInvoice = { ...invoice, description: localizedInvoiceDescription };
+
+  // ——— Flag on: shared @henryco/payment-surface rendering. Token/access
+  // semantics are untouched — the same PaymentForm posts the same fields
+  // (invoiceId, invoiceToken, bank reference, proof, notes) to the same
+  // submitPaymentProofAction. ———
+  if (isPortalPaymentSurfaceEnabled()) {
+    const t = (text: string) => translateSurfaceLabel(locale, text);
+    // Real proof-on-file details for the verifying state only; read-only.
+    const submission = isPending
+      ? await getLatestPaymentSubmissionForInvoice(invoice.id)
+      : null;
+    const view = portalInvoiceToPaymentRecordView(localizedInvoice, {
+      label: localizedInvoiceDescription.trim() || t("Studio invoice"),
+      statusLabel: invoiceStatusToken(invoice.status, locale).label,
+      proof: invoiceProofOnFile(invoice, submission),
+    });
+    const ctx = buildPaymentSurfaceContext({
+      payment: view,
+      record: {
+        title: project ? localizedProjectTitle : t("Henry Onyx Studio"),
+        back: { href: "/client/dashboard", label: t("Back to client portal") },
+        account: { href: getStudioAccountUrl(), label: t("Henry Onyx account home") },
+        primaryCta: { href: "/client/dashboard", label: t("Open client portal") },
+      },
+      platform: {
+        bankName: platform.paymentBankName,
+        accountName: platform.paymentAccountName,
+        accountNumber: platform.paymentAccountNumber,
+        supportEmail: platform.paymentSupportEmail,
+        supportWhatsApp: platform.paymentSupportWhatsApp,
+      },
+      copy: {
+        bodyByStatus: {
+          pending: t(
+            "Send your transfer using the verified company details below, then attach your proof so finance can confirm and keep your project moving.",
+          ),
+          processing: t(
+            "We have your payment proof. Finance is verifying — usually within one business day. You do not need to do anything else.",
+          ),
+          paid: t(
+            "This invoice is fully paid. Thank you — your client portal shows the milestone unlock and what the team is working on next.",
+          ),
+        },
+        guideTitle: t("Pay by bank transfer into the verified Henry Onyx account"),
+        instructions: t(
+          "Use your invoice number as the transfer reference. Proof can be a bank receipt, debit alert screenshot, or PDF — anything showing amount, date, and destination.",
+        ),
+        proofHint: t(
+          "After the transfer, attach your proof in the form below — finance verifies within one business day.",
+        ),
+        receiptText: t(
+          "Confirmed on {date}.{proof} Your client portal shows the milestone unlock and what the team is working on next.",
+        ),
+      },
+      theme: STUDIO_PAYMENT_THEME,
+    });
+
+    return (
+      <>
+        <PaymentSurface ctx={ctx} />
+        {view.status === "pending" ? (
+          <div className="mx-auto w-full max-w-[64rem] px-5 pb-12 sm:px-8 lg:px-10">
+            <PaymentForm
+              invoiceId={localizedInvoice.id}
+              invoiceToken={token}
+              invoiceNumber={localizedInvoice.invoiceNumber}
+              amountLabel={amountLabel}
+            />
+          </div>
+        ) : null}
+      </>
+    );
+  }
+
+  // ——— Flag off (default): the existing portal rendering, unchanged. ———
   return (
     <main className="portal-shell mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <h1 className="sr-only">
-        Pay invoice {invoice.invoiceNumber} · {amountLabel}
+        Pay invoice {localizedInvoice.invoiceNumber} · {amountLabel}
       </h1>
 
       <div className="space-y-5">
-        <InvoiceSummary invoice={invoice} projectTitle={projectTitle} />
+        <InvoiceSummary invoice={localizedInvoice} projectTitle={project ? localizedProjectTitle : null} />
 
         {isPaid ? (
           <div className="portal-card-elev p-6 text-center">
@@ -206,14 +328,13 @@ function renderInvoicePay(
               amountLabel={amountLabel}
             />
             <PaymentForm
-              invoiceId={invoice.id}
+              invoiceId={localizedInvoice.id}
               invoiceToken={token}
-              invoiceNumber={invoice.invoiceNumber}
+              invoiceNumber={localizedInvoice.invoiceNumber}
               amountLabel={amountLabel}
             />
             <div className="rounded-2xl border border-dashed border-[var(--studio-line)] bg-[rgba(255,255,255,0.02)] px-5 py-4 text-[12.5px] leading-5 text-[var(--studio-ink-soft)]">
-              Card payments are coming soon. For now, bank transfer is the fastest way to confirm and
-              keep your project moving.
+              Bank transfer is the fastest way to confirm this payment and keep your project moving.
             </div>
           </>
         )}

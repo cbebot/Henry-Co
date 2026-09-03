@@ -54,6 +54,7 @@ type Props = {
   enableDraft: boolean;
   validationMessage: string | null;
   ariaLabel?: string;
+  textareaName?: string;
 };
 
 export function FullScreenComposer(props: Props) {
@@ -81,6 +82,7 @@ export function FullScreenComposer(props: Props) {
     enableDraft,
     validationMessage,
     ariaLabel,
+    textareaName,
   } = props;
 
   const [mounted, setMounted] = useState(false);
@@ -238,6 +240,9 @@ export function FullScreenComposer(props: Props) {
               variant="carousel"
               removeLabel={labels?.removeAttachmentLabel}
               retryLabel={labels?.retryUploadLabel}
+              uploadingLabel={labels?.uploadingLabel}
+              attachmentFailedLabel={labels?.attachmentFailedLabel}
+              attachmentListLabel={labels?.attachmentListLabel}
             />
           </div>
         ) : null}
@@ -248,6 +253,7 @@ export function FullScreenComposer(props: Props) {
             value={text}
             onChange={(event) => onTextChange(event.target.value)}
             onKeyDown={onKeyDown}
+            name={textareaName}
             fill
             placeholder={labels?.placeholder || "Write a message…"}
             aria-label={ariaLabel || "Message body"}
@@ -273,6 +279,7 @@ export function FullScreenComposer(props: Props) {
               hasContent={text.length > 0 || attachments.length > 0}
               onDiscard={onDiscardDraft}
               savedLabel={labels?.draftSavedLabel}
+              savingLabel={labels?.savingLabel}
               discardLabel={labels?.discardDraftLabel}
               reduceMotion={reduceMotion}
             />

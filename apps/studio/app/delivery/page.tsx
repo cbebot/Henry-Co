@@ -25,6 +25,11 @@ export default async function DeliveryDashboardPage() {
         <StudioMetricCard label="Reference assets" value={String(snapshot.files.filter((file) => file.kind === "reference").length)} hint="Reference files available to support production work." />
       </section>
 
+      {/* TODO(wave1): multi-row deliverable list (staff). deliverable.label
+          and deliverable.summary are Supabase-row text fields — translate
+          each via Promise.all + resolveLocalizedDynamicField in a follow-up
+          wave. Single-row detail surface at /project/[projectId] is already
+          wrapped through the cached DeepL pipeline. */}
       <section className="studio-panel rounded-[1.75rem] p-6">
         <div className="studio-kicker">Shared handoffs</div>
         <div className="mt-5 space-y-4">
@@ -42,7 +47,7 @@ export default async function DeliveryDashboardPage() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {deliverable.fileIds.map((fileId) => (
                   <span key={fileId} className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-xs text-[var(--studio-ink-soft)]">
-                    File {fileId.slice(0, 8)}
+                    {snapshot.files.find((file) => file.id === fileId)?.label ?? "Attached file"}
                   </span>
                 ))}
               </div>

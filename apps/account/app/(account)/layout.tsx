@@ -18,21 +18,54 @@ import {
 } from "@henryco/auth/server";
 import type { DashboardOption } from "@henryco/auth";
 import AccountLayoutInner from "./AccountLayoutInner";
-import AccountRouteLoading from "@/components/layout/AccountRouteLoading";
+import AccountRouteLoader from "@/components/layout/AccountRouteLoader";
 import IdentityBarPaletteBridge from "@/components/search/IdentityBarPaletteBridge";
 import AccountPaletteHost from "@/components/search/PaletteHost";
+import { SensitiveActionProviderBridge } from "@/components/auth/SensitiveActionProviderBridge";
 import { requireAccountUser } from "@/lib/auth";
 import { getPreferences } from "@/lib/account-data";
+import { getAccountAppLocale } from "@/lib/locale-server";
+import { resolveModuleHomeHref } from "@/lib/module-home-href";
 import { RealtimeBrowserBridge } from "./RealtimeBrowserBridge";
 import { MobileChromeBridge } from "./MobileChromeBridge";
+import { MobileDashboardNavigator } from "./MobileDashboardNavigator";
+import { NextActionDock } from "@/components/next-action/NextActionDock";
 import { COMPANY } from "@henryco/config";
+import { translateSurfaceLabel } from "@henryco/i18n";
 
 // Side-effect import — registers every module so getEligibleModules
 // has a populated registry when computing moduleJumpEntries below.
 import "@/app/(account)/_modules";
 
 /**
+ * Per-slug accent overrides for module slugs that do NOT map 1:1 onto a
+ * `COMPANY.divisions` key:
+ *   - `play` → the gaming division's magenta (the slug is `play`, the
+ *     division key is `gaming`).
+ *   - `business` → a dedicated indigo (the seller/business workspace is
+ *     cross-division and has no `DivisionKey`). Kept in lockstep with
+ *     `BUSINESS_IDENTITY.accent` in `@henryco/dashboard-modules-business`.
+ *
+ * The six division-aligned new modules (care, jobs, learn, logistics,
+ * property, studio) resolve directly from `COMPANY.divisions` below, so
+ * they need no override; they are listed here for completeness/intent.
+ */
+const MODULE_ACCENT_OVERRIDES: Record<string, string> = {
+  care: "#6B7CFF",
+  jobs: "#0E7C86",
+  learn: "#3C8C7A",
+  logistics: "#D06F32",
+  property: "#B06C3E",
+  studio: "#4AC1C5",
+  play: "#A21CAF",
+  business: "#4F46E5",
+};
+
+/**
  * Map a module slug to its division accent hex.
+ * - play / business and the six division-aligned new slugs →
+ *   `MODULE_ACCENT_OVERRIDES[slug]` (authoritative for slugs the
+ *   division catalog doesn't key directly, e.g. `play`/`business`).
  * - care/marketplace/property/logistics/studio/jobs/learn/building/hotel
  *   → COMPANY.divisions[slug].accent
  * - customer-overview / wallet / support / notifications / settings →
@@ -43,6 +76,8 @@ import "@/app/(account)/_modules";
  * catalog.
  */
 function divisionAccentFor(slug: string): string {
+  const override = MODULE_ACCENT_OVERRIDES[slug];
+  if (override) return override;
   const direct = (COMPANY.divisions as Record<string, { accent: string }>)[slug];
   if (direct) return direct.accent;
   return COMPANY.divisions.hub.accent;
@@ -104,10 +139,7 @@ export default async function AccountLayout({ children, rail, drawer }: LayoutPr
   return (
     <Suspense
       fallback={
-        <AccountRouteLoading
-          title="Opening your account"
-          description="Confirming your session and loading navigation."
-        />
+        <AccountRouteLoader />
       }
     >
       <ShellChromeRoot rail={rail} drawer={drawer}>
@@ -119,7 +151,24 @@ export default async function AccountLayout({ children, rail, drawer }: LayoutPr
 
 async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
   const user = await requireAccountUser();
-  const [viewer, options, preferences] = await Promise.all([
+  const locale = await getAccountAppLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  // DIAG-IOS-01 hardening. The previous Promise.all rejected as a unit
+  // — a single fetcher hiccup (e.g. a transient Supabase auth-RLS flake
+  // mid-deploy) collapsed every authenticated route into V3-10's
+  // fallback because the layout error bubbled up through the route
+  // segment. `allSettled` barriers each fetcher independently so a
+  // partial-data render degrades to a "no notifications preferences
+  // yet" state instead of a full-page "Something didn't load."
+  //
+  // The mandatory primitive is `buildUnifiedViewer` — the viewer drives
+  // role-aware module visibility downstream. We retain the synchronous
+  // throw on its rejection so the V3-10 boundary fires for the
+  // genuinely-unrecoverable case (no viewer = no shell). The two
+  // optional fetchers (`loadDashboardOptions`, `getPreferences`)
+  // degrade silently when they fail; missing options collapse the lane
+  // switcher chrome rather than crashing.
+  const [viewerResult, optionsResult, preferencesResult] = await Promise.allSettled([
     buildUnifiedViewer({
       id: user.id,
       email: user.email,
@@ -133,7 +182,39 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     getPreferences(user.id),
   ]);
 
+  if (viewerResult.status !== "fulfilled") {
+    // The viewer is the only fetcher whose failure must surface the
+    // V3-10 boundary — without it we can't compute eligible modules,
+    // accent themes, or the role-aware identity bar. Re-throw with the
+    // original cause so Sentry + the runtime-error log capture the
+    // upstream reason.
+    throw viewerResult.reason;
+  }
+
+  const viewer = viewerResult.value;
+  const options: DashboardOption[] =
+    optionsResult.status === "fulfilled" ? optionsResult.value : [];
+  const preferences =
+    preferencesResult.status === "fulfilled" ? preferencesResult.value : null;
+
   const switcherOptions = options.length > 1 ? options : undefined;
+  const identityLabels = {
+    accountMenu: t("Account"),
+    search: t("Search"),
+    searchAriaLabel: t("Search Henry Onyx"),
+    switchLane: t("Switch lane"),
+    signOut: t("Sign out"),
+  };
+  const mobileDashboardLabels = {
+    trigger: t("Dashboard"),
+    openLabel: t("Open dashboard navigation"),
+    dialogLabel: t("Dashboard navigation"),
+    allPages: t("All pages"),
+    closeLabel: t("Close dashboard navigation"),
+    searchPlaceholder: t("Search pages"),
+    sectionsLabel: t("Navigation sections"),
+    pagesLabel: t("Dashboard pages"),
+  };
 
   // Cmd+1..9 module shortcuts — first 9 eligible modules in rail
   // order. Computed server-side so the client bridge receives a
@@ -143,7 +224,10 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     .slice(0, 9)
     .map((m) => ({
       slug: m.slug,
-      href: m.slug === "customer-overview" ? "/" : `/modules/${m.slug}`,
+      // Honor a module's declared `homeHref` (e.g. wallet → `/wallet`)
+      // so Cmd-jump opens the real surface, not the `/modules/<slug>`
+      // summary. customer-overview stays at `/`.
+      href: resolveModuleHomeHref(m),
     }));
 
   // BottomActionBar Modules drawer — richer entry with title +
@@ -155,7 +239,9 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
     slug: m.slug,
     title: m.title,
     description: m.description,
-    href: m.slug === "customer-overview" ? "/" : `/modules/${m.slug}`,
+    // Same homeHref resolution as the rail + Cmd-jump so tapping a module
+    // in the mobile drawer lands on its canonical surface in one tap.
+    href: resolveModuleHomeHref(m),
     icon: typeof m.icon === "function" ? m.icon() : m.icon,
     accentHex: divisionAccentFor(m.slug),
   }));
@@ -170,6 +256,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
       }
     >
       <style dangerouslySetInnerHTML={{ __html: MOTION_KEYFRAMES_CSS + MOBILE_SHELL_CSS }} />
+      <SensitiveActionProviderBridge email={viewer.user.email}>
       <AccountPaletteHost userId={user.id} moduleJumpEntries={moduleJumpEntries}>
         {/*
           Theme-aware shell wrapper. The shell's `--hc-*` tokens are
@@ -198,6 +285,7 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
             options={switcherOptions}
             onSelectOption={selectLaneAction}
             onSignOut={signOutAction}
+            labels={identityLabels}
             notificationsTrigger={
               <ContextDrawer>
                 <NotificationsDrawerBody
@@ -208,18 +296,40 @@ async function ShellChromeRoot({ children, rail, drawer }: LayoutProps) {
               </ContextDrawer>
             }
           />
-          <AccountLayoutInner>
-            {rail}
+          {/* CHROME-OPENER FIX (redesign 2026-07-08): the @rail slot was
+              spread INTO the content column, stacking ~573px of module
+              nav above every page. It now passes as a prop so the inner
+              shell can seat it in its intended sticky side column. */}
+          <AccountLayoutInner rail={rail}>
             {children}
             {drawer}
           </AccountLayoutInner>
+          {/* The dashboard page index now lives INSIDE the bottom bar's "More"
+              sheet (navigatorSlot), not as a floating corner pill — so mobile
+              navigation is one consistent list and the only floating control is
+              the Intelligence launcher. */}
           <MobileChromeBridge
             modules={mobileModuleEntries}
             onSignOut={signOutAction}
+            navigatorSlot={<MobileDashboardNavigator labels={mobileDashboardLabels} />}
           />
           <NotificationsToastViewport audience="customer" />
+          {/* V3-39 (flag-dark) — the single next-action chrome affordance for
+              the account division. Server-resolved; arbitrated with the
+              IntelligenceLauncher corner via the shared mobile lift + the
+              package clearance contract (chip stacks above the launcher).
+              Renders nothing while personalization_next_action is unset. */}
+          <NextActionDock
+            viewer={viewer}
+            preferences={
+              preferences && typeof preferences === "object"
+                ? (preferences as Record<string, unknown>)
+                : null
+            }
+          />
         </div>
       </AccountPaletteHost>
+      </SensitiveActionProviderBridge>
     </RealtimeBrowserBridge>
   );
 }

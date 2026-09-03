@@ -4,12 +4,12 @@ import {
   renderHenryCoEmail,
   renderHenryCoEmailText,
   resolveSenderIdentity,
-  sendBrevoEmail,
-  sendResendEmail,
+  sendTransactionalEmail,
   type EmailDispatchResult,
   type EmailPurpose,
   type SendTransactionalEmailInput,
 } from "@henryco/email";
+import { henrySubdomain } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -37,14 +37,16 @@ const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 1;
 const BODY_CAP = 1024;
 
-const ACCOUNT_HOME_FALLBACK = "https://account.henrycogroup.com";
+// V3-07(S2): env-aware account origin so emails carry the matching base
+// domain in preview/staging instead of always production.
+const ACCOUNT_HOME_FALLBACK = henrySubdomain("account");
 // PASS 22 issue #1 — every email this cron sends footers a "Manage email
 // preferences" link. The previous path `/account/settings/notifications`
 // 404'd because the account shell does not nest under `/account/...` —
 // the real surface is `/settings/notifications`. Recipients clicking the
 // footer were landing on the not-found page and could not unsubscribe.
 const PREFERENCES_PATH = "/settings/notifications";
-const HENRYCO_HOST_SUFFIXES: readonly string[] = ["henrycogroup.com", "henryco.local"];
+const HENRYCO_HOST_SUFFIXES: readonly string[] = ["henryonyx.com", "henryco.local"];
 
 type Bucket = { count: number; windowStartedAt: number };
 const rateBuckets = new Map<string, Bucket>();
@@ -131,7 +133,7 @@ function isSafeAbsoluteHenryCoUrl(value: string): boolean {
 
 function safeRelativeToAbsolute(value: string): string | null {
   // Permit "/path" (single leading slash, no backslash, no HTML), upgrading to
-  // absolute against account.henrycogroup.com so the email always carries a
+  // absolute against account.henryonyx.com so the email always carries a
   // clickable URL even if the source row stored a relative deep_link.
   if (!value || value.length > 1024) return null;
   if (!value.startsWith("/") || value.startsWith("//")) return null;
@@ -187,49 +189,38 @@ const DIVISION_TITLE: Record<string, string> = {
   studio: "Studio",
   security: "Security",
   account: "Account",
-  hub: "HenryCo",
-  staff: "HenryCo",
-  system: "HenryCo",
+  hub: "Henry Onyx",
+  staff: "Henry Onyx",
+  system: "Henry Onyx",
 };
 
 function divisionTitle(division: string | null | undefined): string {
   const key = String(division || "").trim().toLowerCase();
-  return DIVISION_TITLE[key] || "HenryCo";
+  return DIVISION_TITLE[key] || "Henry Onyx";
 }
 
-// ─── Dispatch with explicit Resend→Brevo fallback ──────────────────────────
+// ─── Dispatch (EMAIL-POSTMARK, 2026-07-14) ─────────────────────────────────
 //
-// Why we don't use sendTransactionalEmail() here: that helper picks ONE
-// provider and returns its result. The auth-hook taught us that on a Resend
-// 5xx/rate-limit, we want a deterministic Brevo fallback for the same
-// message, not a "try again next cron run" miss. Mirrors the pattern
-// established in apps/account/app/api/auth/email-hook/route.ts.
+// The shared router IS the dispatch policy now: Postmark only, no vendor
+// fallback — Amazon SES, Resend and Brevo are permanently retired. A failed send is
+// simply retried by the next cron run (bounded by RETRY_CAP).
 
-async function dispatchWithFallback(
+async function dispatchEmail(
   input: SendTransactionalEmailInput,
-): Promise<{ result: EmailDispatchResult; providerUsed: "resend" | "brevo" | null }> {
-  const primary = await sendResendEmail(input);
-  if (primary.status === "sent") return { result: primary, providerUsed: "resend" };
-
-  // Resend failed; do not log title/body/email values per info-disclosure rules.
-  console.error("[cron/notification-email-fallback] resend failed", {
-    status: primary.status,
-    safeError: primary.safeError,
-    skippedReason: primary.skippedReason,
-  });
-
-  const fallback = await sendBrevoEmail(input);
-  if (fallback.status === "sent") {
-    console.warn("[cron/notification-email-fallback] brevo fallback succeeded after resend failure");
-    return { result: fallback, providerUsed: "brevo" };
+): Promise<{ result: EmailDispatchResult; providerUsed: "postmark" | null }> {
+  const result = await sendTransactionalEmail(input);
+  if (result.status === "sent" && result.provider === "postmark") {
+    return { result, providerUsed: "postmark" };
   }
 
-  console.error("[cron/notification-email-fallback] brevo fallback also failed", {
-    status: fallback.status,
-    safeError: fallback.safeError,
-    skippedReason: fallback.skippedReason,
+  // Do not log title/body/email values per info-disclosure rules.
+  console.error("[cron/notification-email-fallback] email dispatch failed", {
+    provider: result.provider,
+    status: result.status,
+    safeError: result.safeError,
+    skippedReason: result.skippedReason,
   });
-  return { result: fallback, providerUsed: null };
+  return { result, providerUsed: null };
 }
 
 // ─── Worker types ──────────────────────────────────────────────────────────
@@ -394,7 +385,7 @@ async function logDelivery(
     division: string | null;
     eventType: string | null;
     status: "sent" | "error" | "skipped";
-    provider: "resend" | "brevo" | "none";
+    provider: "postmark" | "none";
     errorCode?: string | null;
     errorMessage?: string | null;
     metadata?: Record<string, unknown>;
@@ -423,7 +414,7 @@ async function logDelivery(
 async function markDispatched(
   admin: AdminClient,
   notificationId: string,
-  provider: "resend" | "brevo" | null,
+  provider: "postmark" | null,
   metadataPatch?: Record<string, unknown>,
 ): Promise<void> {
   // Read existing metadata to merge — supabase-js doesn't support JSON merge
@@ -471,11 +462,15 @@ function buildIndividualEmail(args: {
     purpose,
     subject,
     title: args.title,
-    intro: args.body || "You have a new HenryCo notification waiting in your inbox.",
+    intro: args.body || "You have a new Henry Onyx notification waiting in your inbox.",
     actionLabel: "View notification",
     actionHref: args.ctaUrl,
+    // V3-04 (S6): attribute the landing to the notification-fallback
+    // email so owner analytics can distinguish in-app vs email-driven
+    // notification opens. The renderer appends utm_source=henryco_email.
+    campaign: `notification_fallback_${args.division || "general"}`,
     footnote:
-      "This is a HenryCo transactional message. Manage notification email preferences any time at " +
+      "This is a Henry Onyx transactional message. Manage notification email preferences any time at " +
       `${ACCOUNT_HOME_FALLBACK}${PREFERENCES_PATH}.`,
   } as const;
   return {
@@ -488,10 +483,10 @@ function buildIndividualEmail(args: {
 function buildDigestEmail(args: {
   pendingCount: number;
 }): { subject: string; html: string; text: string } {
-  const subject = `[HenryCo] You have ${args.pendingCount} pending notifications`;
+  const subject = `[Henry Onyx] You have ${args.pendingCount} pending notifications`;
   const layout = {
     purpose: "auth" as EmailPurpose,
-    eyebrow: "HenryCo",
+    eyebrow: "Henry Onyx",
     subject,
     title: `${args.pendingCount} updates are waiting in your inbox`,
     intro:
@@ -499,8 +494,10 @@ function buildDigestEmail(args: {
       "to review the pending updates in one place.",
     actionLabel: "Open my inbox",
     actionHref: `${ACCOUNT_HOME_FALLBACK}/notifications`,
+    // V3-04 (S6): attribute digest-driven inbox opens.
+    campaign: "notification_fallback_digest",
     footnote:
-      "This is a HenryCo transactional message. Manage notification email preferences any time at " +
+      "This is a Henry Onyx transactional message. Manage notification email preferences any time at " +
       `${ACCOUNT_HOME_FALLBACK}${PREFERENCES_PATH}.`,
   } as const;
   return {
@@ -513,7 +510,7 @@ function buildDigestEmail(args: {
 // ─── Per-row dispatch ──────────────────────────────────────────────────────
 
 type DispatchOutcome =
-  | { kind: "sent"; provider: "resend" | "brevo" }
+  | { kind: "sent"; provider: "postmark" }
   | { kind: "skipped" }
   | { kind: "failed"; reason: string };
 
@@ -525,7 +522,7 @@ async function sendIndividual(
   const purpose = purposeForDivision(row.division);
   const sender = resolveSenderIdentity(purpose);
   const ctaUrl = resolveSafeCtaUrl(row.action_url);
-  const titleText = (row.title || "").slice(0, 200) || "You have a new HenryCo notification";
+  const titleText = (row.title || "").slice(0, 200) || "You have a new Henry Onyx notification";
   const bodyText = (row.body || "").slice(0, 800);
   const rendered = buildIndividualEmail({
     division: row.division,
@@ -534,7 +531,7 @@ async function sendIndividual(
     ctaUrl,
   });
 
-  const dispatch = await dispatchWithFallback({
+  const dispatch = await dispatchEmail({
     to: recipientEmail,
     subject: rendered.subject,
     html: rendered.html,
@@ -585,7 +582,7 @@ async function sendDigest(
   const sender = resolveSenderIdentity(purpose);
   const rendered = buildDigestEmail({ pendingCount: rows.length });
 
-  const dispatch = await dispatchWithFallback({
+  const dispatch = await dispatchEmail({
     to: recipientEmail,
     subject: rendered.subject,
     html: rendered.html,
@@ -634,8 +631,7 @@ async function sendDigest(
 
 async function runWorker(): Promise<{
   considered: number;
-  individuals_sent_resend: number;
-  individuals_sent_brevo: number;
+  individuals_sent: number;
   digests_sent: number;
   failed: number;
   retired_after_retries: number;
@@ -645,8 +641,7 @@ async function runWorker(): Promise<{
 }> {
   const summary = {
     considered: 0,
-    individuals_sent_resend: 0,
-    individuals_sent_brevo: 0,
+    individuals_sent: 0,
     digests_sent: 0,
     failed: 0,
     retired_after_retries: 0,
@@ -811,8 +806,7 @@ async function runWorker(): Promise<{
       const outcome = await sendIndividual(admin, recipientEmail, row);
       processedTotal += 1;
       if (outcome.kind === "sent") {
-        if (outcome.provider === "resend") summary.individuals_sent_resend += 1;
-        else summary.individuals_sent_brevo += 1;
+        summary.individuals_sent += 1;
       } else if (outcome.kind === "failed") {
         summary.failed += 1;
       }

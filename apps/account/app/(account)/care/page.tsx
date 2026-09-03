@@ -1,4 +1,17 @@
+import { RouteLiveRefresh } from "@henryco/ui";
+import { getAccountCopy } from "@henryco/i18n/server";
+import { formatAccountTemplate } from "@henryco/i18n";
+import { henryDomain } from "@henryco/config";
+import {
+  HeroCard,
+  EmptyStateCard,
+  DivisionLanding,
+  type HeroCardTile,
+  type HeroCardBreakdownRow,
+} from "@henryco/dashboard-shell/surfaces";
+
 import { requireAccountUser } from "@/lib/auth";
+import { DivisionResumeChip } from "@/components/recovery/DivisionResumeChip";
 import {
   getCareBookings,
   getDivisionActivity,
@@ -6,10 +19,9 @@ import {
 import { getAccountAppLocale } from "@/lib/locale-server";
 
 import "@/components/care/styles.css";
-import { CareHero } from "@/components/care/CareHero";
 import { CareActiveGlance } from "@/components/care/CareActiveGlance";
 import { CareActivity } from "@/components/care/CareActivity";
-import { careStats, toCareActivityRows, type CareLocale } from "@/components/care/helpers";
+import { careStats, heroState, toCareActivityRows } from "@/components/care/helpers";
 
 import CareBookingsDashboard, {
   CARE_BOOKING_FILTER_OPTIONS,
@@ -20,95 +32,49 @@ import CareBookingsDashboard, {
 export const dynamic = "force-dynamic";
 
 const CARE_PAGE_SIZE = 12;
+// V3-07(S2): build CTAs from henryDomain() so preview/staging deployments
+// route to the matching base domain instead of always production.
+const CARE_BOOK_URL = henryDomain("care", "/book");
+const CARE_TRACK_URL = henryDomain("care", "/track");
 
-const COPY_EN = {
-  eyebrow: "Care · live",
-  sideKicker: "How this room works",
-  sideTitle: "Book on Care, follow up here.",
-  sideBody: "Every booking made on HenryCo Care mirrors into this room — tracking code, payment status, and the next operational step land here automatically. The dashboard below stays in sync as service progresses.",
-  breakdownLabel: "By status",
-  tileLabels: {
-    total: "Bookings",
-    inFlight: "In service",
-    payment: "Awaiting payment",
-    completed: "Completed",
-  },
-  tileFoot: {
-    totalEmpty: "Book your first Care service to start",
-    totalWith: (n: number) => `${n} linked to this account`,
-    inFlightEmpty: "Nothing actively moving right now",
-    inFlightWith: "Live status mirrors below",
-    paymentEmpty: "No outstanding payment verification",
-    paymentWith: "Submit or check receipt below",
-    completedEmpty: "No services completed yet",
-    completedWith: "Marked done by the Care team",
-  },
-  sectionGlance: "Next action",
-  sectionGlanceMeta: "The most time-sensitive booking surfaces here.",
-  sectionBookings: "All bookings",
-  sectionBookingsEmpty: "Bookings made while signed in appear here in real time.",
-  sectionBookingsMeta: (n: number) => `${n} booking${n === 1 ? "" : "s"} · filter, paginate, and open any one for the live detail.`,
-  sectionActivity: "Recent activity",
-  sectionActivityEmpty: "Status updates, receipts, and reviews surface here as they happen.",
-  sectionActivityMeta: (n: number) => `${n} update${n === 1 ? "" : "s"} · most recent first`,
-  emptyTitle: "No Care bookings linked yet",
-  emptyBody: "Bookings you make on Care while signed in land here immediately. Older bookings also surface once their email or phone matches your shared profile.",
-  glanceNextAction: "Next action",
-  glanceService: "Service",
-  glancePickup: "Pickup",
-  glanceBalance: "Balance due",
-  glanceTracking: "Tracking",
-  activityAriaLabel: "Care activity",
-};
+export async function generateMetadata() {
+  const locale = await getAccountAppLocale();
+  const copy = getAccountCopy(locale).divisionCare;
+  return {
+    title: copy.metadata.title,
+    description: copy.metadata.description,
+  };
+}
 
-const COPY_FR: typeof COPY_EN = {
-  eyebrow: "Care · en direct",
-  sideKicker: "Comment cette pièce fonctionne",
-  sideTitle: "Réservez sur Care, suivez ici.",
-  sideBody: "Chaque réservation faite sur HenryCo Care est miroitée dans cette pièce — code de suivi, statut du paiement, et la prochaine étape opérationnelle arrivent ici automatiquement. Le tableau de bord ci-dessous reste synchronisé pendant le service.",
-  breakdownLabel: "Par statut",
-  tileLabels: {
-    total: "Réservations",
-    inFlight: "En cours",
-    payment: "Paiement à vérifier",
-    completed: "Terminées",
-  },
-  tileFoot: {
-    totalEmpty: "Réservez votre premier service Care",
-    totalWith: (n: number) => `${n} liée${n === 1 ? "" : "s"} à ce compte`,
-    inFlightEmpty: "Rien d’actif pour le moment",
-    inFlightWith: "Statut en direct ci-dessous",
-    paymentEmpty: "Aucune vérification de paiement en attente",
-    paymentWith: "Soumettre ou vérifier le reçu ci-dessous",
-    completedEmpty: "Aucune prestation terminée pour le moment",
-    completedWith: "Marquées comme terminées par Care",
-  },
-  sectionGlance: "Prochaine action",
-  sectionGlanceMeta: "La réservation la plus urgente est mise en avant ici.",
-  sectionBookings: "Toutes les réservations",
-  sectionBookingsEmpty: "Les réservations faites en étant connecté apparaissent ici en temps réel.",
-  sectionBookingsMeta: (n: number) => `${n} réservation${n === 1 ? "" : "s"} · filtrer, paginer et ouvrir le détail en direct.`,
-  sectionActivity: "Activité récente",
-  sectionActivityEmpty: "Mises à jour de statut, reçus et avis apparaissent ici dès qu’ils se produisent.",
-  sectionActivityMeta: (n: number) => `${n} mise${n === 1 ? "" : "s"} à jour · plus récentes en premier`,
-  emptyTitle: "Aucune réservation Care liée pour le moment",
-  emptyBody: "Les nouvelles réservations faites en étant connecté apparaîtront ici immédiatement. Les anciennes réservations apparaîtront aussi une fois que leur e-mail ou téléphone correspondra à votre profil partagé.",
-  glanceNextAction: "Prochaine action",
-  glanceService: "Service",
-  glancePickup: "Enlèvement",
-  glanceBalance: "Solde dû",
-  glanceTracking: "Suivi",
-  activityAriaLabel: "Activité Care",
-};
-
+/**
+ * Care landing — division overview rebuilt against the shared surface
+ * primitives (`<HeroCard />`, `<EmptyStateCard />`, `<DivisionLanding />`).
+ *
+ * ACCOUNT-PREMIUM-01 (session 1 reference).
+ *
+ * Composition (top → bottom):
+ *   1. <HeroCard variant="paired"> — state-driven (empty/calm/active/attention)
+ *      + 4 tiles (total / in-flight / payment / completed)
+ *      + side breakdown (in-flight / scheduled / payment / completed counts)
+ *   2. <CareActiveGlance /> — when there's a top active booking, the next-action
+ *      surface (kept as a richer card than NextStepRow because it has a full
+ *      metadata grid; logically equivalent to NextStepRow but with more weight)
+ *   3. Bookings section — list with filter/pagination via CareBookingsDashboard
+ *      (or EmptyStateCard when stats.total === 0)
+ *   4. Activity section — recent activity timeline (or EmptyStateCard)
+ *
+ * State driving:
+ *   - heroState(stats) returns "empty" | "calm" | "active" | "attention"
+ *   - the four state slices in copy.hero.state.* carry localized headline/blurb/CTA copy
+ *   - tile tones lift the payment value when balanceDue > 0
+ */
 export default async function CarePage({
   searchParams,
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [localeRaw, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
-  const locale: CareLocale = localeRaw === "fr" ? "fr" : "en";
-  const copy = locale === "fr" ? COPY_FR : COPY_EN;
+  const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
+  const copy = getAccountCopy(locale).divisionCare;
 
   const params = searchParams ? await searchParams : {};
   const selectedBookingId = typeof params.booking === "string" ? params.booking : null;
@@ -121,7 +87,7 @@ export default async function CarePage({
 
   const [bookings, activity] = await Promise.all([
     getCareBookings(user.id),
-    getDivisionActivity(user.id, "care"),
+    getDivisionActivity(user.id, "care", 20, locale),
   ]);
 
   const stats = careStats(bookings);
@@ -131,60 +97,154 @@ export default async function CarePage({
   const listSlice = filteredBookings.slice((page - 1) * CARE_PAGE_SIZE, page * CARE_PAGE_SIZE);
   const activityRows = toCareActivityRows(activity);
 
-  return (
-    <div className="acct-care acct-fade-in">
-      <CareHero
-        stats={stats}
-        locale={locale}
-        labels={{
-          eyebrow: copy.eyebrow,
-          sideKicker: copy.sideKicker,
-          sideTitle: copy.sideTitle,
-          sideBody: copy.sideBody,
-          breakdownLabel: copy.breakdownLabel,
-          tileLabels: copy.tileLabels,
-          tileFoot: copy.tileFoot,
-        }}
-      />
+  // ── Build HeroCard props from state machine ──────────────────────
+  const state = heroState(stats);
+  const heroCount =
+    state === "empty"
+      ? 0
+      : state === "attention"
+        ? stats.needsPayment + stats.needsAttention
+        : state === "active"
+          ? stats.inFlight
+          : stats.total;
+  let heroHeadline: string;
+  let heroBlurb: string;
+  let heroCtaPrimaryLabel: string;
+  let heroCtaSecondaryLabel: string;
+  if (state === "empty") {
+    const s = copy.hero.state.empty;
+    heroHeadline = s.headline;
+    heroBlurb = s.blurb;
+    heroCtaPrimaryLabel = s.ctaPrimary;
+    heroCtaSecondaryLabel = s.ctaSecondary;
+  } else {
+    const s =
+      state === "attention"
+        ? copy.hero.state.attention
+        : state === "active"
+          ? copy.hero.state.active
+          : copy.hero.state.calm;
+    heroHeadline = formatAccountTemplate(
+      heroCount === 1 ? s.headlineTemplateSingular : s.headlineTemplatePlural,
+      { count: heroCount },
+    );
+    heroBlurb = s.blurb;
+    heroCtaPrimaryLabel = s.ctaPrimary;
+    heroCtaSecondaryLabel = s.ctaSecondary;
+  }
 
-      {stats.topActiveBooking ? (
-        <section aria-labelledby="acct-care-glance">
-          <div className="acct-care__section-head">
-            <h2 id="acct-care-glance" className="acct-care__section-title">
-              {copy.sectionGlance}
-            </h2>
-            <span className="acct-care__section-meta">{copy.sectionGlanceMeta}</span>
-          </div>
-          <CareActiveGlance
-            booking={stats.topActiveBooking}
-            locale={locale}
-            labels={{
-              nextActionLabel: copy.glanceNextAction,
-              serviceLabel: copy.glanceService,
-              pickupLabel: copy.glancePickup,
-              balanceLabel: copy.glanceBalance,
-              trackingLabel: copy.glanceTracking,
-            }}
+  const ctaPrimaryHref =
+    state === "attention" ? "#care-bookings" : state === "active" ? CARE_TRACK_URL : CARE_BOOK_URL;
+  const ctaSecondaryHref = state === "active" ? CARE_BOOK_URL : CARE_TRACK_URL;
+
+  const tiles: ReadonlyArray<HeroCardTile> = [
+    {
+      label: copy.hero.tileLabels.total,
+      value: stats.total,
+      foot:
+        stats.total === 0
+          ? copy.hero.tileFoot.totalEmpty
+          : formatAccountTemplate(copy.hero.tileFoot.totalWithTemplate, { count: stats.total }),
+    },
+    {
+      label: copy.hero.tileLabels.inFlight,
+      value: stats.inFlight,
+      foot:
+        stats.inFlight === 0
+          ? copy.hero.tileFoot.inFlightEmpty
+          : copy.hero.tileFoot.inFlightWith,
+      tone: stats.inFlight > 0 ? "active" : "default",
+    },
+    {
+      label: copy.hero.tileLabels.payment,
+      value: stats.needsPayment,
+      foot:
+        stats.needsPayment === 0
+          ? copy.hero.tileFoot.paymentEmpty
+          : copy.hero.tileFoot.paymentWith,
+      tone: stats.needsPayment > 0 ? "warning" : "default",
+    },
+    {
+      label: copy.hero.tileLabels.completed,
+      value: stats.completed,
+      foot:
+        stats.completed === 0
+          ? copy.hero.tileFoot.completedEmpty
+          : copy.hero.tileFoot.completedWith,
+    },
+  ];
+
+  const breakdownAll: ReadonlyArray<HeroCardBreakdownRow> = [
+    { label: copy.hero.breakdownLabels.inFlight, count: stats.inFlight, color: "var(--acct-gold)" },
+    { label: copy.hero.breakdownLabels.scheduled, count: stats.scheduled, color: "var(--acct-blue)" },
+    { label: copy.hero.breakdownLabels.payment, count: stats.needsPayment, color: "var(--acct-red)" },
+    { label: copy.hero.breakdownLabels.completed, count: stats.completed, color: "var(--acct-green)" },
+  ];
+  const breakdown = breakdownAll.filter((row) => row.count > 0);
+
+  // ── Section metas ───────────────────────────────────────────────
+  const bookingsMeta =
+    bookings.length === 0
+      ? copy.sections.bookingsEmpty
+      : formatAccountTemplate(
+          bookings.length === 1
+            ? copy.sections.bookingsMetaTemplateSingular
+            : copy.sections.bookingsMetaTemplatePlural,
+          { count: bookings.length },
+        );
+  const activityMeta =
+    activityRows.length === 0
+      ? copy.sections.activityEmpty
+      : formatAccountTemplate(
+          activityRows.length === 1
+            ? copy.sections.activityMetaTemplateSingular
+            : copy.sections.activityMetaTemplatePlural,
+          { count: activityRows.length },
+        );
+
+  // ── Compose sections ────────────────────────────────────────────
+  const sections = [
+    // Active glance (when present) is rendered as a section to stay
+    // adjacent to the bookings list. The card itself is a richer
+    // capability than NextStepRow so we keep it as its own card.
+    ...(stats.topActiveBooking
+      ? [
+          {
+            id: "care-glance",
+            title: copy.sections.glance,
+            meta: copy.sections.glanceMeta,
+            content: (
+              <CareActiveGlance
+                booking={stats.topActiveBooking}
+                locale={locale}
+                labels={{
+                  nextActionLabel: copy.glance.nextActionLabel,
+                  serviceLabel: copy.glance.serviceLabel,
+                  pickupLabel: copy.glance.pickupLabel,
+                  balanceLabel: copy.glance.balanceLabel,
+                  trackingLabel: copy.glance.trackingLabel,
+                  serviceFallback: copy.glance.serviceFallback,
+                  toBeScheduled: copy.formatLabels.toBeScheduled,
+                  shortMonths: copy.formatLabels.shortMonths,
+                  statusLabels: copy.status,
+                }}
+              />
+            ),
+          },
+        ]
+      : []),
+    {
+      id: "care-bookings",
+      title: copy.sections.bookings,
+      meta: bookingsMeta,
+      content:
+        bookings.length === 0 ? (
+          <EmptyStateCard
+            kicker={copy.hero.eyebrow}
+            title={copy.empty.title}
+            body={copy.empty.body}
+            cta={{ label: copy.hero.state.empty.ctaPrimary, href: CARE_BOOK_URL }}
           />
-        </section>
-      ) : null}
-
-      <section id="care-bookings" aria-labelledby="acct-care-bookings">
-        <div className="acct-care__section-head">
-          <h2 id="acct-care-bookings" className="acct-care__section-title">
-            {copy.sectionBookings}
-          </h2>
-          <span className="acct-care__section-meta">
-            {bookings.length === 0
-              ? copy.sectionBookingsEmpty
-              : copy.sectionBookingsMeta(bookings.length)}
-          </span>
-        </div>
-        {bookings.length === 0 ? (
-          <div className="acct-care__empty">
-            <strong>{copy.emptyTitle}</strong>
-            {copy.emptyBody}
-          </div>
         ) : (
           <CareBookingsDashboard
             locale={locale}
@@ -196,34 +256,76 @@ export default async function CarePage({
             totalPages={totalPages}
             pageSize={CARE_PAGE_SIZE}
             totalFiltered={filteredBookings.length}
+            copy={copy.dashboard}
+            statusValueLabels={copy.statusValueLabels}
           />
-        )}
-      </section>
-
-      <section aria-labelledby="acct-care-activity">
-        <div className="acct-care__section-head">
-          <h2 id="acct-care-activity" className="acct-care__section-title">
-            {copy.sectionActivity}
-          </h2>
-          <span className="acct-care__section-meta">
-            {activityRows.length === 0
-              ? copy.sectionActivityEmpty
-              : copy.sectionActivityMeta(activityRows.length)}
-          </span>
-        </div>
-        {activityRows.length === 0 ? (
-          <div className="acct-care__empty">
-            <strong>{copy.sectionActivity}</strong>
-            {copy.sectionActivityEmpty}
-          </div>
+        ),
+    },
+    {
+      id: "care-activity",
+      title: copy.sections.activity,
+      meta: activityMeta,
+      content:
+        activityRows.length === 0 ? (
+          <EmptyStateCard
+            kicker={copy.sections.activity}
+            title={copy.sections.activity}
+            body={copy.sections.activityEmpty}
+          />
         ) : (
           <CareActivity
             activity={activityRows}
-            locale={locale}
+            shortMonths={copy.formatLabels.shortMonths}
             ariaLabel={copy.activityAriaLabel}
           />
-        )}
-      </section>
-    </div>
+        ),
+    },
+  ];
+
+  const heroTone: "calm" | "active" | "attention" | "empty" =
+    state === "empty"
+      ? "empty"
+      : state === "attention"
+        ? "attention"
+        : state === "active"
+          ? "active"
+          : "calm";
+
+  return (
+    <DivisionLanding
+      className="acct-care acct-fade-in"
+      /* SP6: division-scoped resume chip — renders only when a REAL pending
+         care journey exists for this viewer. */
+      nextStep={<DivisionResumeChip division="care" userId={user.id} />}
+      hero={
+        <HeroCard
+          variant="paired"
+          tone={heroTone}
+          eyebrow={copy.hero.eyebrow}
+          headline={heroHeadline}
+          blurb={heroBlurb}
+          ariaTilesLabel={copy.hero.tilesAriaLabel}
+          ctaPrimary={{ label: heroCtaPrimaryLabel, href: ctaPrimaryHref }}
+          ctaSecondary={{ label: heroCtaSecondaryLabel, href: ctaSecondaryHref }}
+          tiles={tiles}
+          side={{
+            kicker: copy.hero.sideKicker,
+            title: copy.hero.sideTitle,
+            body: copy.hero.sideBody,
+            breakdown:
+              breakdown.length > 0
+                ? {
+                    label: copy.hero.breakdownLabel,
+                    rows: breakdown,
+                  }
+                : undefined,
+          }}
+        />
+      }
+      /* SMART (2026-07-10): statuses tick without manual refresh — same 15s
+         visible-tab revalidate the marketplace + wallet landings already run. */
+      footer={<RouteLiveRefresh />}
+      sections={sections}
+    />
   );
 }

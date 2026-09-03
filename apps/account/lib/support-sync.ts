@@ -28,6 +28,9 @@ function cleanPreview(value: string) {
 function normalizeAttachments(value: Array<Record<string, unknown>> | undefined) {
   return (value ?? []).map((attachment) => ({
     name: cleanText(attachment.name) || null,
+    // Mirror the durable `media://private/...` REF cross-app (NOT a transient
+    // signed URL): the care app signs it on its own side at read time. Callers
+    // pass the canonicalised ref (V3-MEDIA-SWEEP-01); we preserve it verbatim.
     url: cleanText(attachment.url) || null,
     mime_type: cleanText(attachment.mime_type) || null,
     size: Number(attachment.size) || null,

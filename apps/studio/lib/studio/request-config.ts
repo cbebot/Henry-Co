@@ -1,3 +1,4 @@
+import { translateSurfaceLabel, type AppLocale } from "@henryco/i18n";
 import type { StudioServiceKind } from "@/lib/studio/types";
 
 export type StudioPricedOption = {
@@ -32,7 +33,7 @@ export type StudioRequestConfig = {
   frameworkOptions: StudioPricedOption[];
   /** Backend / data platform choices (filtered by serviceKind). */
   backendOptions: StudioPricedOption[];
-  /** Hosting / deployment lane (free-form list — most are no-cost and HenryCo neutral). */
+  /** Hosting / deployment lane (free-form list — most are no-cost and Henry Onyx neutral). */
   hostingOptions: string[];
   projectTypes: StudioPricedOption[];
   platformOptions: StudioPricedOption[];
@@ -148,17 +149,17 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       "Editorial and brand-forward",
       "Technical, product-led, and precise",
       "Corporate, premium, and authoritative",
-      "HenryCo should direct the aesthetic",
+      "Henry Onyx should direct the aesthetic",
     ],
     stackOptions: [
-      "HenryCo recommends the stack",
+      "Henry Onyx recommends the stack",
       "Continue with our existing stack",
       "Open-source first / no vendor lock-in",
       "Cloud-native / serverless preferred",
       "Strict on-prem or self-hosted",
     ],
     programmingLanguageOptions: [
-      "HenryCo's recommendation",
+      "Henry Onyx's recommendation",
       "TypeScript",
       "JavaScript",
       "Python",
@@ -174,7 +175,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
     frameworkOptions: [
       {
         id: "framework-recommend",
-        label: "HenryCo's framework recommendation",
+        label: "Henry Onyx's framework recommendation",
         description: "We pick the right framework for the job once scope is reviewed.",
         amount: 0,
         isActive: true,
@@ -182,7 +183,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       {
         id: "framework-nextjs",
         label: "Next.js (React) — App Router",
-        description: "Server components, streaming, edge-ready. HenryCo's default for premium web.",
+        description: "Server components, streaming, edge-ready. Henry Onyx's default for premium web.",
         amount: 0,
         isActive: true,
         serviceKinds: ["website", "ecommerce", "internal_system", "custom_software", "ui_ux"],
@@ -263,7 +264,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
     backendOptions: [
       {
         id: "backend-recommend",
-        label: "HenryCo recommends the backend",
+        label: "Henry Onyx recommends the backend",
         description: "We choose between Supabase, custom Node services, or a managed cloud stack.",
         amount: 0,
         isActive: true,
@@ -271,7 +272,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       {
         id: "backend-supabase",
         label: "Supabase (Postgres + Auth + Storage)",
-        description: "HenryCo's default — Postgres, row-level security, magic-link auth, file storage.",
+        description: "Henry Onyx's default — Postgres, row-level security, magic-link auth, file storage.",
         amount: 0,
         isActive: true,
       },
@@ -323,7 +324,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       },
     ],
     hostingOptions: [
-      "HenryCo recommends the host",
+      "Henry Onyx recommends the host",
       "Vercel (managed Next.js / Edge)",
       "Cloudflare Pages / Workers",
       "Netlify",
@@ -431,7 +432,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       {
         id: "platform-best-fit",
         label: "Best-fit recommendation",
-        description: "HenryCo recommends the architecture after reviewing scope and growth constraints.",
+        description: "Henry Onyx recommends the architecture after reviewing scope and growth constraints.",
         amount: 0,
         isActive: true,
       },
@@ -807,7 +808,7 @@ export function defaultStudioRequestConfig(): StudioRequestConfig {
       },
       {
         id: "timeline-recommend",
-        label: "Need HenryCo to recommend the timeline",
+        label: "Need Henry Onyx to recommend the timeline",
         description: "Use this if the right sequence depends on deeper scope review.",
         modifierType: "percent",
         value: 0,
@@ -896,4 +897,56 @@ export function findModifierOptionByLabel(
       (option) => option.label.toLowerCase() === normalized
     ) ?? null
   );
+}
+
+/**
+ * Localize a StudioRequestConfig for display. Canonical English labels remain
+ * the source of truth for storage and pricing lookups (findPricedOptionByLabel,
+ * sumOptionCosts, etc.) — this helper produces a parallel display-only config
+ * with each label/description run through translateSurfaceLabel for the
+ * given locale.
+ *
+ * Use this in UI consumers right before render. Do NOT use the returned
+ * config for any persisted state — the original label string is the
+ * canonical key.
+ */
+export function localizeStudioRequestConfig(
+  config: StudioRequestConfig,
+  locale: AppLocale,
+): StudioRequestConfig {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+
+  const localizePriced = (options: StudioPricedOption[]): StudioPricedOption[] =>
+    options.map((option) => ({
+      ...option,
+      label: t(option.label),
+      description: option.description ? t(option.description) : option.description,
+    }));
+
+  const localizeModifier = (options: StudioModifierOption[]): StudioModifierOption[] =>
+    options.map((option) => ({
+      ...option,
+      label: t(option.label),
+      description: option.description ? t(option.description) : option.description,
+    }));
+
+  const localizeStrings = (list: string[]): string[] => list.map((item) => t(item));
+
+  return {
+    businessOptions: localizeStrings(config.businessOptions),
+    budgetOptions: localizeStrings(config.budgetOptions),
+    designOptions: localizeStrings(config.designOptions),
+    stackOptions: localizeStrings(config.stackOptions),
+    programmingLanguageOptions: localizeStrings(config.programmingLanguageOptions),
+    frameworkOptions: localizePriced(config.frameworkOptions),
+    backendOptions: localizePriced(config.backendOptions),
+    hostingOptions: localizeStrings(config.hostingOptions),
+    projectTypes: localizePriced(config.projectTypes),
+    platformOptions: localizePriced(config.platformOptions),
+    pageOptions: localizePriced(config.pageOptions),
+    moduleOptions: localizePriced(config.moduleOptions),
+    addOnOptions: localizePriced(config.addOnOptions),
+    urgencyOptions: localizeModifier(config.urgencyOptions),
+    timelineOptions: localizeModifier(config.timelineOptions),
+  };
 }

@@ -1,18 +1,22 @@
 import Link from "next/link";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireJobsRoles } from "@/lib/auth";
 import { getRecruiterOverviewData } from "@/lib/jobs/data";
 import { recruiterNav } from "@/lib/jobs/navigation";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { SectionCard, WorkspaceShell } from "@/components/workspace-shell";
 
 export const dynamic = "force-dynamic";
 
 export default async function RecruiterJobsPage() {
   await requireJobsRoles(["recruiter", "admin", "owner", "moderator"], "/recruiter/jobs");
-  const data = await getRecruiterOverviewData();
+  const locale = await getJobsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const data = await getRecruiterOverviewData(locale);
 
   return (
-    <WorkspaceShell area="recruiter" title="Jobs Queue" subtitle="Review published, pending, and internal roles." nav={recruiterNav} activeHref="/recruiter/jobs" accent="linear-gradient(135deg,#1d3f6f 0%,#3266b4 55%,#6db7ff 100%)">
-      <SectionCard title="Jobs">
+    <WorkspaceShell area="recruiter" title={t("Jobs Queue")} subtitle={t("Review published, pending, and internal roles.")} nav={recruiterNav} activeHref="/recruiter/jobs" accent="linear-gradient(135deg,#1d3f6f 0%,#3266b4 55%,#6db7ff 100%)">
+      <SectionCard title={t("Jobs")}>
         <div className="space-y-3">
           {data.jobs.map((job) => (
             <Link key={job.slug} href={`/jobs/${job.slug}`} className="block rounded-2xl bg-[var(--jobs-paper-soft)] p-4">

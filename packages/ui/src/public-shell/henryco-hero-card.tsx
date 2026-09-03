@@ -346,7 +346,7 @@ const HENRYCO_HERO_CARD_CSS = `
   letter-spacing: -0.02em;
   font-weight: 600;
   font-family:
-    var(--font-display, "Iowan Old Style"),
+    var(--hc-font-display, "Iowan Old Style"),
     "Iowan Old Style",
     "Baskerville Old Face",
     Baskerville,

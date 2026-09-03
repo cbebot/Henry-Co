@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
+import { buildAccountRiskGate } from "@/lib/risk/gate";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { ensureAccountProfileRecords } from "@/lib/account-profile";
@@ -57,8 +59,17 @@ export async function GET() {
       return NextResponse.json({ methods: legacyMethods });
     }
 
+    // Dedupe by ACCOUNT, not just id: a legacy method migrated into the modern table would
+    // otherwise list twice (same bank + account under two ids). Modern rows win — they carry
+    // the bank_code that powers the automatic payout rail.
+    const accountKey = (m: { bank_name?: string | null; account_number?: string | null }) =>
+      `${String(m.bank_name || "").trim().toLowerCase()}::${normalizeAccountNumber(m.account_number)}`;
+    const modern = data ?? [];
+    const modernKeys = new Set(modern.map(accountKey));
+    const uniqueLegacy = legacyMethods.filter((m) => !modernKeys.has(accountKey(m)));
+
     return NextResponse.json({
-      methods: [...(data ?? []), ...legacyMethods].filter(
+      methods: [...modern, ...uniqueLegacy].filter(
         (item, index, list) => list.findIndex((entry) => String(entry.id) === String(item.id)) === index
       ),
     });
@@ -77,12 +88,27 @@ export async function POST(request: Request) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const userId = user.id;
 
+    // V3-02 S4: adding / changing a payout method is sensitive.
+    const guard = await requireSensitiveAction(request, {
+      action: "wallet.payout_method.add",
+      entityType: "payout_method",
+      resolveUser: async () => user,
+      userId: (u) => u.id,
+      // V3-40: staff-applied risk hold pauses payout-destination changes.
+      riskGate: buildAccountRiskGate(),
+    });
+    if (!guard.ok) return guard.response;
+
     await ensureAccountProfileRecords(user);
 
     const body = await request.json();
     const bankName = String(body.bank_name || "").trim();
     const accountName = String(body.account_name || "").trim();
     const accountNumber = normalizeAccountNumber(body.account_number);
+    // V3-MONEY-PAYOUT: the provider (NIP) bank code — what addresses the bank on an automatic
+    // payout transfer. Optional and additive: a method without it simply stays on the manual
+    // review flow. Digits only (Flutterwave bank codes are numeric strings, e.g. "044").
+    const bankCode = String(body.bank_code || "").trim().replace(/\D/g, "").slice(0, 6);
 
     if (!bankName || !accountName || !accountNumber || accountNumber.length < 8) {
       return NextResponse.json(
@@ -210,6 +236,8 @@ export async function POST(request: Request) {
         currency: "NGN",
         is_default: isDefault,
         is_active: true,
+        // bank_code enables the automatic payout rail for this method; absent → manual review.
+        metadata: bankCode ? { bank_code: bankCode } : {},
       } as never)
       .select("id, bank_name, account_name, account_number, is_default")
       .single();

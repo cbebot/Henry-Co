@@ -1,105 +1,183 @@
 import { ArrowUpRight } from "lucide-react";
-
 import {
-  buildHeroCopy,
-  heroState,
-  type StudioStats,
-} from "./helpers";
+  formatAccountTemplate,
+  translateSurfaceLabel,
+  type AccountCopy,
+  type AppLocale,
+} from "@henryco/i18n";
+
+import { heroState, STUDIO_ORIGIN, type StudioStats } from "./helpers";
+
+type StudioCopy = AccountCopy["divisionStudio"];
 
 type Props = {
   stats: StudioStats;
+  locale?: AppLocale;
+  copy: StudioCopy;
 };
 
-export function StudioHero({ stats }: Props) {
+type ResolvedHero = {
+  headline: string;
+  blurb: string;
+  ctaPrimary: { label: string; href: string };
+  ctaSecondary: { label: string; href: string };
+};
+
+function pluralPick(count: number, singular: string, plural: string): string {
+  return count === 1 ? singular : plural;
+}
+
+function resolveHero(stats: StudioStats, copy: StudioCopy): ResolvedHero {
   const state = heroState(stats);
-  const copy = buildHeroCopy(state, stats);
+  const slice = copy.hero.state;
+
+  if (state === "empty") {
+    return {
+      headline: slice.empty.headline,
+      blurb: slice.empty.blurb,
+      ctaPrimary: { label: slice.empty.ctaPrimary, href: `${STUDIO_ORIGIN}/request` },
+      ctaSecondary: { label: slice.empty.ctaSecondary, href: STUDIO_ORIGIN },
+    };
+  }
+
+  if (state === "attention") {
+    const count = stats.overduePayments;
+    return {
+      headline: formatAccountTemplate(
+        pluralPick(count, slice.attention.headlineTemplateSingular, slice.attention.headlineTemplatePlural),
+        { count },
+      ),
+      blurb: slice.attention.blurb,
+      ctaPrimary: { label: slice.attention.ctaPrimary, href: "#studio-payments" },
+      ctaSecondary: { label: slice.attention.ctaSecondary, href: STUDIO_ORIGIN },
+    };
+  }
+
+  if (state === "active") {
+    if (stats.readyReview > 0) {
+      const count = stats.readyReview;
+      return {
+        headline: formatAccountTemplate(
+          pluralPick(count, slice.activeReady.headlineTemplateSingular, slice.activeReady.headlineTemplatePlural),
+          { count },
+        ),
+        blurb: slice.activeReady.blurb,
+        ctaPrimary: { label: slice.activeReady.ctaPrimary, href: "#studio-projects" },
+        ctaSecondary: { label: slice.activeReady.ctaSecondary, href: STUDIO_ORIGIN },
+      };
+    }
+    const count = stats.metrics.activeProjects;
+    return {
+      headline: formatAccountTemplate(
+        pluralPick(count, slice.activeProjects.headlineTemplateSingular, slice.activeProjects.headlineTemplatePlural),
+        { count },
+      ),
+      blurb: slice.activeProjects.blurb,
+      ctaPrimary: { label: slice.activeProjects.ctaPrimary, href: STUDIO_ORIGIN },
+      ctaSecondary: { label: slice.activeProjects.ctaSecondary, href: `${STUDIO_ORIGIN}/request` },
+    };
+  }
+
+  const count = stats.totalProjects;
+  return {
+    headline: formatAccountTemplate(
+      pluralPick(count, slice.calm.headlineTemplateSingular, slice.calm.headlineTemplatePlural),
+      { count },
+    ),
+    blurb: slice.calm.blurb,
+    ctaPrimary: { label: slice.calm.ctaPrimary, href: STUDIO_ORIGIN },
+    ctaSecondary: { label: slice.calm.ctaSecondary, href: `${STUDIO_ORIGIN}/request` },
+  };
+}
+
+export function StudioHero({ stats, locale = "en", copy }: Props) {
+  const state = heroState(stats);
+  const hero = resolveHero(stats, copy);
+  // translateSurfaceLabel remains for any free-form fallback that escapes the slice.
+  void translateSurfaceLabel;
+  void locale;
 
   const breakdown = [
-    { key: "active",   label: "Active",         count: stats.metrics.activeProjects, color: "var(--acct-gold)" },
-    { key: "review",   label: "Ready for review", count: stats.readyReview,          color: "var(--acct-blue)" },
-    { key: "pending",  label: "Pending payment", count: stats.metrics.pendingPayments, color: "var(--acct-purple)" },
-    { key: "proof",    label: "Proof submitted",  count: stats.metrics.proofSubmitted, color: "var(--acct-green)" },
+    { key: "active",   label: copy.hero.breakdown.active,         count: stats.metrics.activeProjects, color: "var(--acct-gold)" },
+    { key: "review",   label: copy.hero.breakdown.readyReview,    count: stats.readyReview,            color: "var(--acct-blue)" },
+    { key: "pending",  label: copy.hero.breakdown.pendingPayment, count: stats.metrics.pendingPayments, color: "var(--acct-purple)" },
+    { key: "proof",    label: copy.hero.breakdown.proofSubmitted, count: stats.metrics.proofSubmitted, color: "var(--acct-green)" },
   ].filter((row) => row.count > 0);
 
   return (
-    <section className="acct-stu__hero" data-state={state} aria-label="Studio overview">
+    <section className="acct-stu__hero" data-state={state} aria-label={copy.hero.overviewAriaLabel}>
       <div className="acct-stu__hero-inner">
         <div>
           <span className="acct-stu__eyebrow">
             <span className="acct-stu__eyebrow-dot" aria-hidden />
-            Studio · live
+            {copy.hero.eyebrowLive}
           </span>
-          <h1 className="acct-stu__headline">{copy.headline}</h1>
-          <p className="acct-stu__blurb">{copy.blurb}</p>
+          <h1 className="acct-stu__headline">{hero.headline}</h1>
+          <p className="acct-stu__blurb">{hero.blurb}</p>
           <div className="acct-stu__hero-ctas">
             <a
               className="acct-stu__cta acct-stu__cta--primary"
-              href={copy.ctaPrimary.href}
-              target={copy.ctaPrimary.href.startsWith("#") ? undefined : "_blank"}
-              rel={copy.ctaPrimary.href.startsWith("#") ? undefined : "noopener noreferrer"}
+              href={hero.ctaPrimary.href}
+              target={hero.ctaPrimary.href.startsWith("#") ? undefined : "_blank"}
+              rel={hero.ctaPrimary.href.startsWith("#") ? undefined : "noopener noreferrer"}
             >
-              {copy.ctaPrimary.label} <ArrowUpRight size={14} aria-hidden />
+              {hero.ctaPrimary.label} <ArrowUpRight size={14} aria-hidden />
             </a>
             <a
               className="acct-stu__cta acct-stu__cta--ghost"
-              href={copy.ctaSecondary.href}
-              target={copy.ctaSecondary.href.startsWith("#") ? undefined : "_blank"}
-              rel={copy.ctaSecondary.href.startsWith("#") ? undefined : "noopener noreferrer"}
+              href={hero.ctaSecondary.href}
+              target={hero.ctaSecondary.href.startsWith("#") ? undefined : "_blank"}
+              rel={hero.ctaSecondary.href.startsWith("#") ? undefined : "noopener noreferrer"}
             >
-              {copy.ctaSecondary.label} <ArrowUpRight size={14} aria-hidden />
+              {hero.ctaSecondary.label} <ArrowUpRight size={14} aria-hidden />
             </a>
           </div>
-          <div className="acct-stu__hero-tiles" role="list" aria-label="Studio activity">
+          <div className="acct-stu__hero-tiles" role="list" aria-label={copy.hero.activityAriaLabel}>
             <div className="acct-stu__hero-tile" role="listitem">
-              <span className="acct-stu__hero-tile-label">Active projects</span>
+              <span className="acct-stu__hero-tile-label">{copy.hero.tiles.activeLabel}</span>
               <span className="acct-stu__hero-tile-value">{stats.metrics.activeProjects}</span>
               <span className="acct-stu__hero-tile-foot">
                 {stats.metrics.activeProjects === 0
-                  ? "No live workspaces right now"
-                  : "Live workspaces with delivery motion"}
+                  ? copy.hero.tiles.activeFootEmpty
+                  : copy.hero.tiles.activeFootHasValue}
               </span>
             </div>
             <div className="acct-stu__hero-tile" role="listitem">
-              <span className="acct-stu__hero-tile-label">Pending payments</span>
+              <span className="acct-stu__hero-tile-label">{copy.hero.tiles.pendingLabel}</span>
               <span className="acct-stu__hero-tile-value">{stats.metrics.pendingPayments}</span>
               <span className="acct-stu__hero-tile-foot">
                 {stats.metrics.pendingPayments === 0
-                  ? "Commercial lane is clear"
-                  : "Commercial checkpoints still open"}
+                  ? copy.hero.tiles.pendingFootEmpty
+                  : copy.hero.tiles.pendingFootHasValue}
               </span>
             </div>
             <div className="acct-stu__hero-tile" role="listitem">
-              <span className="acct-stu__hero-tile-label">Proof submitted</span>
+              <span className="acct-stu__hero-tile-label">{copy.hero.tiles.proofLabel}</span>
               <span className="acct-stu__hero-tile-value">{stats.metrics.proofSubmitted}</span>
               <span className="acct-stu__hero-tile-foot">
                 {stats.metrics.proofSubmitted === 0
-                  ? "Nothing awaiting review"
-                  : "Payments waiting on Studio review"}
+                  ? copy.hero.tiles.proofFootEmpty
+                  : copy.hero.tiles.proofFootHasValue}
               </span>
             </div>
             <div className="acct-stu__hero-tile" role="listitem">
-              <span className="acct-stu__hero-tile-label">Deliverables</span>
+              <span className="acct-stu__hero-tile-label">{copy.hero.tiles.deliverablesLabel}</span>
               <span className="acct-stu__hero-tile-value">{stats.metrics.deliverables}</span>
               <span className="acct-stu__hero-tile-foot">
                 {stats.metrics.deliverables === 0
-                  ? "Files appear here as Studio uploads them"
-                  : "Files and outputs tracked in one place"}
+                  ? copy.hero.tiles.deliverablesFootEmpty
+                  : copy.hero.tiles.deliverablesFootHasValue}
               </span>
             </div>
           </div>
         </div>
-        <aside className="acct-stu__hero-side" aria-label="How this room works">
-          <p className="acct-stu__hero-side-label">How this room works</p>
-          <p className="acct-stu__hero-side-title">One project room, real state.</p>
-          <p className="acct-stu__hero-side-body">
-            Proposals, milestones, payment proofs, deliverables, and
-            communication signals stay connected to the same HenryCo
-            identity you use everywhere else. The dashboard below reflects
-            the Studio team&apos;s actual progress, not a status list.
-          </p>
+        <aside className="acct-stu__hero-side" aria-label={copy.hero.sideAriaLabel}>
+          <p className="acct-stu__hero-side-label">{copy.hero.sideLabel}</p>
+          <p className="acct-stu__hero-side-title">{copy.hero.sideTitle}</p>
+          <p className="acct-stu__hero-side-body">{copy.hero.sideBody}</p>
           {breakdown.length > 0 ? (
-            <div className="acct-stu__hero-breakdown" aria-label="Activity breakdown">
-              <p className="acct-stu__hero-breakdown-label">By state</p>
+            <div className="acct-stu__hero-breakdown" aria-label={copy.hero.breakdownAriaLabel}>
+              <p className="acct-stu__hero-breakdown-label">{copy.hero.breakdownLabel}</p>
               {breakdown.map((row) => (
                 <div key={row.key} className="acct-stu__hero-breakdown-row">
                   <span className="acct-stu__hero-breakdown-name">

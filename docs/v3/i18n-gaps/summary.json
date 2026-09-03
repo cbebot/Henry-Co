@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-09T23:10:15.540Z",
+  "generatedAt": "2026-05-17T10:43:58.018Z",
   "modules": {
     "surface": {
       "fr": 10,
@@ -15,25 +15,25 @@
       "ha": 5
     },
     "account": {
-      "fr": 12,
-      "es": 5,
-      "pt": 5,
-      "ar": 4,
-      "de": 3,
-      "it": 1,
-      "zh": 4,
-      "hi": 4,
-      "ig": 5,
-      "yo": 4,
-      "ha": 4
+      "fr": 63,
+      "es": 39,
+      "pt": 39,
+      "ar": 31,
+      "de": 143,
+      "it": 127,
+      "zh": 117,
+      "hi": 116,
+      "ig": 119,
+      "yo": 118,
+      "ha": 118
     },
     "hubHome": {
-      "fr": 6,
+      "fr": 7,
       "es": 4,
       "pt": 5,
-      "ar": 1,
+      "ar": 2,
       "de": 7,
-      "it": 3,
+      "it": 12,
       "zh": 0,
       "hi": 0,
       "ig": 2,
@@ -54,30 +54,30 @@
       "ha": 0
     },
     "jobs": {
-      "fr": 0,
-      "es": 0,
-      "pt": 0,
-      "ar": 0,
-      "de": 2,
-      "it": 1,
-      "zh": 0,
-      "hi": 0,
-      "ig": 0,
-      "yo": 0,
-      "ha": 0
+      "fr": 54,
+      "es": 50,
+      "pt": 50,
+      "ar": 45,
+      "de": 76,
+      "it": 77,
+      "zh": 68,
+      "hi": 67,
+      "ig": 48,
+      "yo": 69,
+      "ha": 69
     },
     "care": {
-      "fr": 0,
-      "es": 0,
-      "pt": 0,
-      "ar": 0,
-      "de": 0,
-      "it": 0,
-      "zh": 0,
-      "hi": 0,
-      "ig": 0,
-      "yo": 0,
-      "ha": 0
+      "fr": 4,
+      "es": 2,
+      "pt": 2,
+      "ar": 2,
+      "de": 2,
+      "it": 2,
+      "zh": 2,
+      "hi": 2,
+      "ig": 2,
+      "yo": 2,
+      "ha": 2
     },
     "auth": {
       "fr": 0,
@@ -137,31 +137,31 @@
       "echo": 11
     },
     "de": {
-      "missing": 149,
-      "echo": 25
+      "missing": 0,
+      "echo": 26
     },
     "it": {
-      "missing": 149,
+      "missing": 0,
       "echo": 13
     },
     "zh": {
-      "missing": 187,
+      "missing": 0,
       "echo": 19
     },
     "hi": {
-      "missing": 187,
+      "missing": 0,
       "echo": 10
     },
     "ig": {
-      "missing": 187,
+      "missing": 0,
       "echo": 16
     },
     "yo": {
-      "missing": 187,
+      "missing": 0,
       "echo": 16
     },
     "ha": {
-      "missing": 187,
+      "missing": 0,
       "echo": 19
     }
   }

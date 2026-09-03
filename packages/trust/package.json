@@ -8,5 +8,8 @@
     "./detect": "./detect.ts",
     "./moderation": "./moderation.ts",
     "./verification": "./verification.ts"
+  },
+  "scripts": {
+    "test": "tsx --test __tests__/*.test.mjs"
   }
 }

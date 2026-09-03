@@ -8,10 +8,13 @@
     "./tokens": "./src/tokens/index.ts",
     "./components": "./src/components/index.ts",
     "./shell": "./src/shell/index.ts",
+    "./surfaces": "./src/surfaces/index.ts",
+    "./surfaces.css": "./src/surfaces/surfaces.css",
     "./register": "./src/register.ts",
     "./staff-register": "./src/staff-register.ts",
     "./owner-register": "./src/owner-register.ts",
     "./home-widget": "./src/home-widget.ts",
+    "./personalization": "./src/personalization/index.ts",
     "./command-palette": "./src/command-palette.ts",
     "./command-aggregator": "./src/command-aggregator.ts",
     "./notification-categories": "./src/notification-categories.ts",
@@ -19,7 +22,7 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --test src/__tests__/command-aggregator.test.ts src/__tests__/bottom-action-bar.test.ts"
+    "test": "tsx --test src/__tests__/command-aggregator.test.ts src/__tests__/bottom-action-bar.test.ts src/__tests__/realtime-auth-refresh.test.ts src/__tests__/toast-selection.test.ts src/__tests__/toast-bus.test.ts src/__tests__/toast-drip.test.ts src/__tests__/toast-baseline-store.test.ts src/personalization/__tests__/compute-layout.test.ts"
   },
   "peerDependencies": {
     "lucide-react": "^0.577.0",
@@ -27,10 +30,14 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  "dependencies": {
+    "@henryco/notifications-ui": "workspace:^",
+    "@henryco/ui": "workspace:^"
+  },
   "devDependencies": {
     "@henryco/auth": "workspace:^",
     "@henryco/config": "workspace:^",
-    "@henryco/notifications-ui": "workspace:^",
+    "@henryco/observability": "workspace:^",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "lucide-react": "^0.577.0",

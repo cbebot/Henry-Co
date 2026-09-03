@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
+import { getStudioPublicLocale } from "@/lib/locale-server";
 import { getStudioCatalog, getStudioTeamBySlug } from "@/lib/studio/catalog";
 
 export default async function TeamDetailPage({
@@ -15,14 +17,42 @@ export default async function TeamDetailPage({
   ]);
   if (!team) notFound();
 
+  // WAVE1 — wrap Supabase-row text fields through resolveLocalizedDynamicField
+  // so non-EN locales hit the cached DeepL pipeline. Public single-row team
+  // detail surface so the DeepL cost is acceptable.
+  const locale = await getStudioPublicLocale();
+  const [localizedTeamName, localizedTeamLabel, localizedTeamSummary] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: team as unknown as Record<string, unknown>,
+      field: "name",
+      locale,
+      fallback: team.name ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: team as unknown as Record<string, unknown>,
+      field: "label",
+      locale,
+      fallback: team.label ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: team as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: team.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+  ]);
+
   return (
     <main id="henryco-main" tabIndex={-1} className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8 lg:px-10">
       <section>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl">
-            <p className="studio-kicker">{team.label}</p>
+            <p className="studio-kicker">{localizedTeamLabel}</p>
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
-              {team.name}
+              {localizedTeamName}
             </h1>
           </div>
           <span className="rounded-full border border-[var(--studio-line)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--studio-signal)]">
@@ -30,7 +60,7 @@ export default async function TeamDetailPage({
           </span>
         </div>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
-          {team.summary}
+          {localizedTeamSummary}
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link

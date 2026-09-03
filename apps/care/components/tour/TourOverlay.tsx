@@ -3,9 +3,13 @@
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, X, Sparkles } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useTour } from "./TourProvider";
 
 export default function TourOverlay() {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const { state, nextStep, prevStep, skipTour } = useTour();
   const router = useRouter();
 
@@ -57,12 +61,12 @@ export default function TourOverlay() {
           <div className="flex items-start justify-between px-8 pt-8">
             <div className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
               <Sparkles className="h-3.5 w-3.5" />
-              Step {state.currentStep + 1} of {totalSteps}
+              {t("Step")} {state.currentStep + 1} {t("of")} {totalSteps}
             </div>
             <button
               onClick={skipTour}
               className="rounded-full p-1.5 text-zinc-400 transition hover:bg-black/5 hover:text-zinc-600 dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white/70"
-              aria-label="Close tour"
+              aria-label={t("Close tour")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -71,10 +75,10 @@ export default function TourOverlay() {
           {/* Content */}
           <div className="px-8 pb-2 pt-4">
             <h3 className="text-xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-2xl">
-              {step.title}
+              {t(step.title)}
             </h3>
             <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/65">
-              {step.body}
+              {t(step.body)}
             </p>
 
             {step.actionLabel && step.actionHref ? (
@@ -83,7 +87,7 @@ export default function TourOverlay() {
                 onClick={() => skipTour()}
                 className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)]/10 px-4 py-2.5 text-sm font-semibold text-[color:var(--accent)] transition hover:bg-[color:var(--accent)]/20"
               >
-                {step.actionLabel}
+                {t(step.actionLabel)}
                 <ChevronRight className="h-3.5 w-3.5" />
               </a>
             ) : null}
@@ -97,7 +101,7 @@ export default function TourOverlay() {
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-500 transition hover:text-zinc-900 disabled:opacity-30 dark:text-white/50 dark:hover:text-white"
             >
               <ChevronLeft className="h-4 w-4" />
-              Back
+              {t("Back")}
             </button>
 
             <div className="flex items-center gap-1.5">
@@ -119,7 +123,7 @@ export default function TourOverlay() {
               onClick={nextStep}
               className="care-button-primary inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-semibold"
             >
-              {isLast ? "Finish" : "Next"}
+              {isLast ? t("Finish") : t("Next")}
               {isLast ? null : <ChevronRight className="h-4 w-4" />}
             </button>
           </div>

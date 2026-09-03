@@ -13,6 +13,7 @@ import {
   TriangleAlert,
   TrendingUp,
 } from "lucide-react";
+import { getCareCopy } from "@henryco/i18n/server";
 import { requireRoles } from "@/lib/auth/server";
 import {
   getAdminBookings,
@@ -24,22 +25,26 @@ import {
   getUrgentBookings,
   monthArchiveNote,
 } from "@/lib/admin/care-admin";
+import { getCarePublicLocale } from "@/lib/locale-server";
 import { logProtectedPageAccess } from "@/lib/security/logger";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Owner Dashboard | Henry & Co. Fabric Care",
-  description:
-    "Owner control room for bookings, finance, security, reviews, and company-wide operations.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getCarePublicLocale();
+  const copy = getCareCopy(locale);
+  return {
+    title: copy.staffOwner.metadata.title,
+    description: copy.staffOwner.metadata.description,
+  };
+}
 
 function formatMoney(value: number) {
   return `₦${Number(value || 0).toLocaleString()}`;
 }
 
-function formatDateTime(value?: string | null) {
-  if (!value) return "—";
+function formatDateTime(value: string | null | undefined, dash: string) {
+  if (!value) return dash;
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
   return d.toLocaleString("en-NG", {
@@ -107,6 +112,10 @@ function toneClasses(tone: AlertTone) {
 export default async function OwnerDashboardPage() {
   await requireRoles(["owner"]);
   await logProtectedPageAccess("/owner");
+
+  const locale = await getCarePublicLocale();
+  const copy = getCareCopy(locale);
+  const so = copy.staffOwner;
 
   const [
     activeBookings,
@@ -176,110 +185,128 @@ export default async function OwnerDashboardPage() {
 
   if (Number(summary.total_outflow || 0) > Number(summary.total_inflow || 0)) {
     alerts.push({
-      title: "Expense pressure is above inflow",
-      text: "Total outflow is already higher than inflow. The owner should check approvals, high-cost activity, and recoverable revenue immediately.",
+      title: so.alertsPanel.expensePressure.title,
+      text: so.alertsPanel.expensePressure.text,
       tone: "red",
     });
   }
 
   if (recordedExpenses.length >= 4) {
     alerts.push({
-      title: "Expenses awaiting owner decision",
-      text: `${recordedExpenses.length} expense entries are still recorded and waiting for approval or voiding.`,
+      title: so.alertsPanel.awaitingDecision.title,
+      text: so.alertsPanel.awaitingDecision.textTemplate.replace(
+        "{count}",
+        String(recordedExpenses.length),
+      ),
       tone: "amber",
     });
   }
 
   if (refundExpenses.length >= 2 || refundAmount >= 50000) {
     alerts.push({
-      title: "Unusual refund activity detected",
-      text: `Recent refund-linked expenses are visible in the system. Refund pressure is currently ${formatMoney(refundAmount)} from ${refundExpenses.length} item(s).`,
+      title: so.alertsPanel.refundActivity.title,
+      text: so.alertsPanel.refundActivity.textTemplate
+        .replace("{amount}", formatMoney(refundAmount))
+        .replace("{count}", String(refundExpenses.length)),
       tone: "red",
     });
   }
 
   if (overdueBookings >= 3 || urgentBookings.length >= 5) {
     alerts.push({
-      title: "Booking delay risk is rising",
-            text: `${overdueBookings} overdue booking(s) and ${urgentBookings.length} urgent booking(s) are currently visible. This can damage service trust if not handled fast.`,
+      title: so.alertsPanel.delayRisk.title,
+      text: so.alertsPanel.delayRisk.textTemplate
+        .replace("{overdue}", String(overdueBookings))
+        .replace("{urgent}", String(urgentBookings.length)),
       tone: "amber",
     });
   }
 
   if (liveGrowth >= 20 && monthInflow > 0) {
     alerts.push({
-      title: "Recent flow looks strong",
-      text: `Live current-month inflow is outpacing outflow by ${formatPercent(liveGrowth)} on recent tracked activity. Keep the system disciplined so growth stays clean.`,
+      title: so.alertsPanel.strongFlow.title,
+      text: so.alertsPanel.strongFlow.textTemplate.replace(
+        "{percent}",
+        formatPercent(liveGrowth),
+      ),
       tone: "blue",
     });
   }
 
   const forecastText =
     projectedNet >= 0
-      ? `If the current live run-rate holds, care could close the month around ${formatMoney(projectedNet)} net.`
-      : `If the current live run-rate holds, care may close the month under pressure at about ${formatMoney(projectedNet)} net.`;
+      ? so.forecastPanel.positiveTemplate.replace("{amount}", formatMoney(projectedNet))
+      : so.forecastPanel.negativeTemplate.replace("{amount}", formatMoney(projectedNet));
+
+  const balanceNote = so.metrics.balance.flowTemplate
+    .replace("{inflow}", formatMoney(summary.total_inflow))
+    .replace("{outflow}", formatMoney(summary.total_outflow));
+
+  const reviewsNote = so.metrics.reviews.pendingTemplate.replace(
+    "{count}",
+    String(pendingReviews),
+  );
 
   return (
     <div className="space-y-8">
       <section className="rounded-[38px] border border-black/10 bg-white/80 p-8 shadow-[0_22px_80px_rgba(0,0,0,0.08)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04]">
         <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-          Owner command center
+          {so.hero.eyebrow}
         </div>
         <h1 className="mt-2 text-4xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-5xl">
-          Master control for the entire care operation.
+          {so.hero.title}
         </h1>
         <p className="mt-4 max-w-3xl text-zinc-600 dark:text-white/65">
-          This is the highest layer. You see the real state of the company here:
-          urgency, income, expense pressure, records quality, review health, and security.
+          {so.hero.body}
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <QuickLink href="/owner/bookings">Bookings</QuickLink>
-          <QuickLink href="/owner/finance">Finance</QuickLink>
-          <QuickLink href="/owner/records">Records</QuickLink>
-          <QuickLink href="/owner/security">Security</QuickLink>
-          <QuickLink href="/owner/settings">Settings</QuickLink>
-          <QuickLink href="/owner/reviews">Reviews</QuickLink>
-          <QuickLink href="/owner/staff">Staff</QuickLink>
-          <QuickLink href="/staff">Field staff</QuickLink>
-          <QuickLink href="/manager/expenses">Manager expenses</QuickLink>
-          <QuickLink href="/rider/expenses">Rider expenses</QuickLink>
-          <QuickLink href="/support/expenses">Support expenses</QuickLink>
+          <QuickLink href="/owner/bookings">{so.quickLinks.bookings}</QuickLink>
+          <QuickLink href="/owner/finance">{so.quickLinks.finance}</QuickLink>
+          <QuickLink href="/owner/records">{so.quickLinks.records}</QuickLink>
+          <QuickLink href="/owner/security">{so.quickLinks.security}</QuickLink>
+          <QuickLink href="/owner/settings">{so.quickLinks.settings}</QuickLink>
+          <QuickLink href="/owner/reviews">{so.quickLinks.reviews}</QuickLink>
+          <QuickLink href="/owner/staff">{so.quickLinks.staff}</QuickLink>
+          <QuickLink href="/staff">{so.quickLinks.fieldStaff}</QuickLink>
+          <QuickLink href="/manager/expenses">{so.quickLinks.managerExpenses}</QuickLink>
+          <QuickLink href="/rider/expenses">{so.quickLinks.riderExpenses}</QuickLink>
+          <QuickLink href="/support/expenses">{so.quickLinks.supportExpenses}</QuickLink>
         </div>
       </section>
 
       <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           icon={ClipboardList}
-          label="Active bookings"
+          label={so.metrics.activeBookings.label}
           value={String(activeBookings.length)}
-          note="Current operational queue"
+          note={so.metrics.activeBookings.note}
         />
         <MetricCard
           icon={FolderArchive}
-          label="Archived bookings"
+          label={so.metrics.archivedBookings.label}
           value={String(archivedBookings.length)}
-          note="Older than 30 days"
+          note={so.metrics.archivedBookings.note}
         />
         <MetricCard
           icon={DollarSign}
-          label="Balance"
+          label={so.metrics.balance.label}
           value={formatMoney(summary.balance)}
-          note={`${formatMoney(summary.total_inflow)} in • ${formatMoney(summary.total_outflow)} out`}
+          note={balanceNote}
         />
         <MetricCard
           icon={BadgeCheck}
-          label="Reviews"
+          label={so.metrics.reviews.label}
           value={String(approvedReviews)}
-          note={`${pendingReviews} pending approval`}
+          note={reviewsNote}
         />
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <Panel
-          eyebrow="Smart alerts"
-          title="Finance and operations anomaly watch"
-          subtitle="This is where the owner catches unusual pressure before it becomes damage."
+          eyebrow={so.alertsPanel.eyebrow}
+          title={so.alertsPanel.title}
+          subtitle={so.alertsPanel.subtitle}
         >
           <div className="grid gap-4">
             {alerts.length > 0 ? (
@@ -293,21 +320,21 @@ export default async function OwnerDashboardPage() {
                 </article>
               ))
             ) : (
-              <EmptyState text="No major anomalies are visible right now." />
+              <EmptyState text={so.alertsPanel.empty} />
             )}
           </div>
         </Panel>
 
         <Panel
-          eyebrow="Forecast"
-          title="Short-range operational projection"
-          subtitle="A live run-rate estimate based on current month tracked activity."
+          eyebrow={so.forecastPanel.eyebrow}
+          title={so.forecastPanel.title}
+          subtitle={so.forecastPanel.subtitle}
         >
           <div className="grid gap-4">
-            <InfoTile label="Month inflow (live)">{formatMoney(monthInflow)}</InfoTile>
-            <InfoTile label="Month outflow (live)">{formatMoney(monthOutflow)}</InfoTile>
-            <InfoTile label="Projected month-end net">{formatMoney(projectedNet)}</InfoTile>
-            <InfoTile label="Flow growth signal">{formatPercent(liveGrowth)}</InfoTile>
+            <InfoTile label={so.forecastPanel.monthInflow}>{formatMoney(monthInflow)}</InfoTile>
+            <InfoTile label={so.forecastPanel.monthOutflow}>{formatMoney(monthOutflow)}</InfoTile>
+            <InfoTile label={so.forecastPanel.projectedNet}>{formatMoney(projectedNet)}</InfoTile>
+            <InfoTile label={so.forecastPanel.flowGrowth}>{formatPercent(liveGrowth)}</InfoTile>
             <div className="rounded-2xl border border-black/10 bg-black/[0.03] p-4 text-sm leading-relaxed text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-white/75">
               {forecastText}
             </div>
@@ -317,9 +344,9 @@ export default async function OwnerDashboardPage() {
 
       <section className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
         <Panel
-          eyebrow="Urgency"
-          title="Orders demanding attention"
-          subtitle="The owner should notice pressure instantly, even if the manager is running the day."
+          eyebrow={so.urgencyPanel.eyebrow}
+          title={so.urgencyPanel.title}
+          subtitle={so.urgencyPanel.subtitle}
         >
           <div className="grid gap-4">
             {urgentBookings.length > 0 ? (
@@ -340,7 +367,7 @@ export default async function OwnerDashboardPage() {
                     {booking.customer_name}
                   </div>
                   <div className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                    {booking.service_type} • {booking.status} • {booking.pickup_date || "No pickup date"}
+                    {booking.service_type} • {booking.status} • {booking.pickup_date || so.urgencyPanel.noPickup}
                   </div>
                   <div className="mt-3 text-sm text-zinc-500 dark:text-white/45">
                     {booking.pickup_address}
@@ -348,29 +375,29 @@ export default async function OwnerDashboardPage() {
                 </article>
               ))
             ) : (
-              <EmptyState text="No urgent bookings at the moment." />
+              <EmptyState text={so.urgencyPanel.empty} />
             )}
           </div>
         </Panel>
 
         <Panel
-          eyebrow="Brand state"
-          title="Live company presentation"
-          subtitle="What the public side is currently pulling from settings."
+          eyebrow={so.brandPanel.eyebrow}
+          title={so.brandPanel.title}
+          subtitle={so.brandPanel.subtitle}
         >
           <div className="grid gap-4">
-            <InfoTile label="Hero badge">{settings?.hero_badge || "—"}</InfoTile>
-            <InfoTile label="Support email">{settings?.support_email || "—"}</InfoTile>
-            <InfoTile label="Support phone">{settings?.support_phone || "—"}</InfoTile>
-            <InfoTile label="Pickup hours">{settings?.pickup_hours || "—"}</InfoTile>
-            <InfoTile label="Care domain">{settings?.care_domain || "Not configured yet"}</InfoTile>
-            <InfoTile label="Hub domain">{settings?.hub_domain || "Not configured yet"}</InfoTile>
+            <InfoTile label={so.brandPanel.heroBadge}>{settings?.hero_badge || so.dash}</InfoTile>
+            <InfoTile label={so.brandPanel.supportEmail}>{settings?.support_email || so.dash}</InfoTile>
+            <InfoTile label={so.brandPanel.supportPhone}>{settings?.support_phone || so.dash}</InfoTile>
+            <InfoTile label={so.brandPanel.pickupHours}>{settings?.pickup_hours || so.dash}</InfoTile>
+            <InfoTile label={so.brandPanel.careDomain}>{settings?.care_domain || so.brandPanel.notConfigured}</InfoTile>
+            <InfoTile label={so.brandPanel.hubDomain}>{settings?.hub_domain || so.brandPanel.notConfigured}</InfoTile>
 
             <Link
               href="/owner/settings"
               className="care-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold"
             >
-              Open settings
+              {so.brandPanel.openSettings}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -379,9 +406,9 @@ export default async function OwnerDashboardPage() {
 
       <section className="grid gap-8 xl:grid-cols-[1fr_1fr]">
         <Panel
-          eyebrow="Cash movement"
-          title="Recent payments"
-          subtitle="Quick read on inflow."
+          eyebrow={so.paymentsPanel.eyebrow}
+          title={so.paymentsPanel.title}
+          subtitle={so.paymentsPanel.subtitle}
         >
           <div className="grid gap-4">
             {recentPayments.length > 0 ? (
@@ -393,7 +420,7 @@ export default async function OwnerDashboardPage() {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <div className="font-semibold text-zinc-950 dark:text-white">
-                        {payment.booking?.customer_name || "General payment"}
+                        {payment.booking?.customer_name || so.paymentsPanel.generalPayment}
                       </div>
                       <div className="mt-1 text-xs text-zinc-500 dark:text-white/45">
                         {payment.payment_no} • {payment.payment_method}
@@ -404,22 +431,22 @@ export default async function OwnerDashboardPage() {
                         {formatMoney(payment.amount)}
                       </div>
                       <div className="mt-1 text-xs text-zinc-500 dark:text-white/45">
-                        {formatDateTime(payment.created_at)}
+                        {formatDateTime(payment.created_at, so.dash)}
                       </div>
                     </div>
                   </div>
                 </article>
               ))
             ) : (
-              <EmptyState text="No recent payments yet." />
+              <EmptyState text={so.paymentsPanel.empty} />
             )}
           </div>
         </Panel>
 
         <Panel
-          eyebrow="Cost pressure"
-          title="Recent expenses"
-          subtitle="Owner should always understand where money is going."
+          eyebrow={so.expensesPanel.eyebrow}
+          title={so.expensesPanel.title}
+          subtitle={so.expensesPanel.subtitle}
         >
           <div className="grid gap-4">
             {recentExpenses.length > 0 ? (
@@ -442,7 +469,7 @@ export default async function OwnerDashboardPage() {
                         {formatMoney(expense.amount)}
                       </div>
                       <div className="mt-1 text-xs text-zinc-500 dark:text-white/45">
-                        {formatDateTime(expense.created_at)}
+                        {formatDateTime(expense.created_at, so.dash)}
                       </div>
                     </div>
                   </div>
@@ -453,13 +480,13 @@ export default async function OwnerDashboardPage() {
                       rel="noreferrer"
                       className="mt-3 inline-flex text-sm font-semibold text-[color:var(--accent)]"
                     >
-                      View proof
+                      {so.expensesPanel.viewProof}
                     </a>
                   ) : null}
                 </article>
               ))
             ) : (
-              <EmptyState text="No recent expenses yet." />
+              <EmptyState text={so.expensesPanel.empty} />
             )}
           </div>
         </Panel>
@@ -467,9 +494,9 @@ export default async function OwnerDashboardPage() {
 
       <section className="grid gap-8 xl:grid-cols-[1fr_1fr]">
         <Panel
-          eyebrow="Review health"
-          title="Recent customer voice"
-              subtitle="Strong service brands protect trust, not just workflow."
+          eyebrow={so.reviewsPanel.eyebrow}
+          title={so.reviewsPanel.title}
+          subtitle={so.reviewsPanel.subtitle}
         >
           <div className="grid gap-4">
             {recentReviews.length > 0 ? (
@@ -489,7 +516,7 @@ export default async function OwnerDashboardPage() {
                           : "border-amber-300/30 bg-amber-500/10 text-amber-700 dark:text-amber-100"
                       }`}
                     >
-                      {review.is_approved ? "approved" : "pending"}
+                      {review.is_approved ? so.reviewsPanel.approved : so.reviewsPanel.pending}
                     </span>
                   </div>
                   <div className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/68">
@@ -499,7 +526,7 @@ export default async function OwnerDashboardPage() {
                     <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-black/10 bg-white/75 dark:border-white/10 dark:bg-white/[0.05]">
                       <Image
                         src={review.photo_url}
-                        alt={`Review photo from ${review.customer_name}`}
+                        alt={so.reviewsPanel.photoAltTemplate.replace("{name}", review.customer_name)}
                         width={960}
                         height={640}
                         unoptimized
@@ -510,40 +537,48 @@ export default async function OwnerDashboardPage() {
                 </article>
               ))
             ) : (
-              <EmptyState text="No reviews available yet." />
+              <EmptyState text={so.reviewsPanel.empty} />
             )}
           </div>
         </Panel>
 
         <Panel
-          eyebrow="Intelligence"
-          title="What the owner should track next"
-          subtitle="The company becomes more productive when insight is turned into action."
+          eyebrow={so.intelligencePanel.eyebrow}
+          title={so.intelligencePanel.title}
+          subtitle={so.intelligencePanel.subtitle}
         >
           <div className="grid gap-4">
             <FeatureCard
               icon={ShieldAlert}
-              title="Smart expense red flags"
+              title={so.intelligencePanel.expenseFlags.title}
               text={
                 topExpenseCategory
-                  ? `Top recent expense category is ${topExpenseCategory[0]} at ${formatMoney(topExpenseCategory[1])}.`
-                  : "No major category pressure is visible yet."
+                  ? so.intelligencePanel.expenseFlags.topTemplate
+                      .replace("{category}", topExpenseCategory[0])
+                      .replace("{amount}", formatMoney(topExpenseCategory[1]))
+                  : so.intelligencePanel.expenseFlags.emptyText
               }
             />
             <FeatureCard
               icon={TriangleAlert}
-              title="Booking delay alerts"
-              text={`${overdueBookings} overdue booking(s) are visible in the active care queue.`}
+              title={so.intelligencePanel.delayAlerts.title}
+              text={so.intelligencePanel.delayAlerts.textTemplate.replace(
+                "{count}",
+                String(overdueBookings),
+              )}
             />
             <FeatureCard
               icon={TrendingUp}
-              title="Operational forecasting"
+              title={so.intelligencePanel.forecasting.title}
               text={forecastText}
             />
             <FeatureCard
               icon={ShieldCheck}
-              title="Approval discipline"
-              text={`${recordedExpenses.length} expense record(s) are currently waiting for owner action.`}
+              title={so.intelligencePanel.approvalDiscipline.title}
+              text={so.intelligencePanel.approvalDiscipline.textTemplate.replace(
+                "{count}",
+                String(recordedExpenses.length),
+              )}
             />
           </div>
         </Panel>
@@ -553,7 +588,7 @@ export default async function OwnerDashboardPage() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-              Archive policy
+              {so.archivePanel.eyebrow}
             </div>
             <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
               {monthArchiveNote()}
@@ -564,7 +599,7 @@ export default async function OwnerDashboardPage() {
             href="/owner/records"
             className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
           >
-            Open archive-aware records
+            {so.archivePanel.cta}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

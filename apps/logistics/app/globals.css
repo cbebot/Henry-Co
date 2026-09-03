@@ -1,8 +1,14 @@
 @import "tailwindcss";
 @import "../../../packages/ui/src/styles/globals.css";
 @import "../../../packages/workspace-shell/src/styles.css";
+@import "../../../packages/ui/src/styles/public-design.css";
 @source "../../../packages/ui/src";
 @source "../../../packages/workspace-shell/src";
+
+/* V3-PUBLIC-REBUILD — bind Tailwind's dark: variant to the .dark class (next-themes
+   toggle) instead of @media(prefers-color-scheme), so dark: utilities track the
+   toggle, not the OS, matching the --home-* token flip on the public surface. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* ──────────────────────────────────────────────────────────────────
    Workspace-shell token mapping for the logistics division.
@@ -72,8 +78,22 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+}
+
+/* ---------------------------------------------------------------- */
+/* PERF-01 — W3C-gated smooth-scroll                                */
+/* ---------------------------------------------------------------- */
+/*
+ * Memory: project_henryco_perf01_loading.md — owner-validated
+ * canonical PERF-01 pattern. Smooth-scroll only when the user has
+ * not asked the OS to reduce motion. Pairs with PublicRouteLoader
+ * for the route-transition story.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -85,15 +105,10 @@ body {
     radial-gradient(circle at 12% 84%, rgba(111, 78, 68, 0.16), transparent 28%),
     linear-gradient(180deg, #08050a 0%, #09070c 42%, #120d12 100%);
   color: var(--logistics-ink);
-  font-family:
-    var(--font-manrope),
-    "Manrope",
-    "Aptos",
-    "Segoe UI Variable",
-    "Segoe UI",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
+  /* Owned type — route logistics body through the shared sans family so the flip
+     reaches it (was consuming the raw --font-manrope next/font handle, which the
+     flip never re-declares). Brand at reveal; system fallback pre-reveal. */
+  font-family: var(--hc-font-sans);
 }
 
 body::before {

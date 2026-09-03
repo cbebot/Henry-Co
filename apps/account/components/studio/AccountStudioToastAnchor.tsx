@@ -4,7 +4,7 @@ import { CheckCircle2, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 
-/** Same query key as HenryCo Studio so cross-app redirects can show confirmation. */
+/** Same query key as Henry Onyx Studio so cross-app redirects can show confirmation. */
 const TOAST_COPY: Record<string, { title: string; body: string }> = {
   proof_uploaded: {
     title: "Payment proof received",

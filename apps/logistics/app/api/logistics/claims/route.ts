@@ -99,6 +99,13 @@ export async function POST(request: NextRequest) {
       opened_by_user_id: viewer.user.id,
       reason: String(body.reason).slice(0, 200),
       description: body.description ?? null,
+      // Claim evidence is sensitive (loss/damage photos). When a logistics-
+      // controlled uploader is wired up it must write to the RLS-private
+      // `logistics-documents` bucket (see uploadLogisticsDocument) and pass the
+      // resulting `media://private/...` reference here — which is persisted
+      // verbatim below. Read sites MUST resolve via signLogisticsMediaUrls
+      // before sending to a client (resolveMediaUrl THROWS on a private ref).
+      // Legacy/external URL strings are still accepted unchanged.
       evidence_urls: Array.isArray(body.evidence_urls)
         ? body.evidence_urls.slice(0, 12).map((url) => String(url))
         : [],

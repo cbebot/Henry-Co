@@ -412,7 +412,7 @@ export async function sendWhatsAppProbe(input: {
     phone: to,
     body:
       cleanText(input.body) ||
-      "HenryCo Care WhatsApp health check. If you received this message, Cloud delivery is active.",
+      "Henry Onyx Care WhatsApp health check. If you received this message, Cloud delivery is active.",
     template,
     metadata: {
       sourceKind: "owner_probe",

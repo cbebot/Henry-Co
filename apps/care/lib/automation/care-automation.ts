@@ -21,6 +21,7 @@ import {
   sendWhatsAppText,
 } from "@/lib/support/whatsapp";
 import { getOperationsIntelligenceSnapshot } from "@/lib/operations-intelligence";
+import { runRecurringAutoBookSweep } from "@/lib/automation/recurring-auto-book";
 
 type BookingAutomationRow = {
   id: string;
@@ -66,6 +67,10 @@ type AutomationRunSummary = {
   reengagementSent: number;
   whatsappSent: number;
   skipped: number;
+  recurringRunsConsidered: number;
+  recurringBookingsCreated: number;
+  recurringSkippedDuplicates: number;
+  recurringSkippedInvalid: number;
 };
 
 const LAGOS_TIME_ZONE = "Africa/Lagos";
@@ -451,7 +456,7 @@ async function sendOwnerOperationalAlerts(now: Date) {
       const whatsapp = await sendWhatsAppText({
         phone: ownerWhatsApp,
         body: [
-          "HenryCo Care owner alert",
+          "Henry Onyx Care owner alert",
           signal.title,
           signal.summary,
           `Area: ${signal.group}`,
@@ -599,7 +604,7 @@ async function sendPaymentReminders(
         accountName:
           cleanText(settings.payment_account_name) ||
           cleanText(settings.company_account_name) ||
-          "HenryCo Care",
+          "Henry Onyx Care",
         accountNumber:
           cleanText(settings.payment_account_number) ||
           cleanText(settings.company_account_number) ||
@@ -623,12 +628,12 @@ async function sendPaymentReminders(
       const whatsapp = await sendWhatsAppText({
         phone: booking.phone,
         body: [
-          "HenryCo Care payment reminder",
+          "Henry Onyx Care payment reminder",
           `Tracking code: ${trackingCode}`,
           `Amount due: ${formatMoney(balanceDue)}`,
           dueLabel,
           "",
-          `Bank: ${cleanText(settings.payment_bank_name) || cleanText(settings.company_bank_name) || "HenryCo Care"}`,
+          `Bank: ${cleanText(settings.payment_bank_name) || cleanText(settings.company_bank_name) || "Henry Onyx Care"}`,
           `Account number: ${cleanText(settings.payment_account_number) || cleanText(settings.company_account_number) || "Not provided yet"}`,
           "Please send payment confirmation once the transfer is complete.",
         ].join("\n"),
@@ -819,7 +824,7 @@ async function sendMarketingNurture(
         body:
           campaign === "service_reminder"
             ? [
-                "HenryCo Care reminder",
+                "Henry Onyx Care reminder",
                 `Hello ${customerName},`,
                 "",
                 `It may be a good time to schedule the next ${serviceFamily.toLowerCase()} visit.`,
@@ -829,7 +834,7 @@ async function sendMarketingNurture(
                 "Reply STOP by email if you want outreach paused.",
               ].join("\n")
             : [
-                "HenryCo Care check-in",
+                "Henry Onyx Care check-in",
                 `Hello ${customerName},`,
                 "",
                 "This is a light follow-up in case you want another pickup or service slot.",
@@ -880,11 +885,24 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
     const settings = await getCareSettings();
     const dataset = await getAutomationDataset();
 
-    const [ownerSummariesSent, ownerAlerts, paymentRemindersSent, nurture] = await Promise.all([
+    const [
+      ownerSummariesSent,
+      ownerAlerts,
+      paymentRemindersSent,
+      nurture,
+      recurring,
+    ] = await Promise.all([
       sendOwnerMonthlySummary(now, dataset),
       sendOwnerOperationalAlerts(now),
       sendPaymentReminders(now, settings, dataset),
       sendMarketingNurture(now, dataset),
+      // V3 PASS 21 — recurring auto-book sweep (24h lookahead).
+      runRecurringAutoBookSweep(now).catch(() => ({
+        scheduledRunsConsidered: 0,
+        bookingsCreated: 0,
+        skippedDuplicates: 0,
+        skippedInvalid: 0,
+      })),
     ]);
 
     const summary = {
@@ -897,6 +915,10 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
       reengagementSent: nurture.reengagementSent,
       whatsappSent: nurture.whatsappSent,
       skipped: nurture.skipped,
+      recurringRunsConsidered: recurring.scheduledRunsConsidered,
+      recurringBookingsCreated: recurring.bookingsCreated,
+      recurringSkippedDuplicates: recurring.skippedDuplicates,
+      recurringSkippedInvalid: recurring.skippedInvalid,
     } satisfies AutomationRunSummary;
 
     await writeAutomationLog({

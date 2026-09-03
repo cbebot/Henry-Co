@@ -2,6 +2,7 @@
  * @henryco/dashboard-shell/shell — chrome barrel.
  */
 export { IdentityBar, type IdentityBarProps } from "./identity-bar";
+export { LinkActivity } from "./link-activity";
 export { WorkspaceRail, type WorkspaceRailProps } from "./workspace-rail";
 export {
   StaffShell,
@@ -27,6 +28,17 @@ export {
   useSignalRenderState,
   useUnreadCount,
 } from "./realtime-hooks";
+export {
+  shellToast,
+  emitShellToast,
+  subscribeShellToast,
+  resolveShellToast,
+  TONE_DEFAULT_DURATION_MS,
+  type ShellToast,
+  type ShellToastInput,
+  type ShellToastTone,
+  type ShellToastApi,
+} from "./toast-bus";
 export {
   isWithinQuietHours,
   isMutedDivision,

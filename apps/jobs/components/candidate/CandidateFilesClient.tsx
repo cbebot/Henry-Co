@@ -138,7 +138,7 @@ export default function CandidateFilesClient({
               <ButtonPendingContent
                 pending={uploading}
                 pendingLabel="Uploading..."
-                spinnerLabel="Uploading candidate document"
+                spinnerLabel="Uploading your document"
               >
                 Upload
               </ButtonPendingContent>
@@ -159,7 +159,7 @@ export default function CandidateFilesClient({
       >
         {documents.length === 0 ? (
           <EmptyState
-            kicker="Vault is empty"
+            kicker="No documents yet"
             title="Add your resume or supporting proof."
             body="A resume is the fastest way to strengthen your profile and give employers useful context."
             action={

@@ -2,25 +2,26 @@ import * as React from "react";
 import { cn } from "../cn";
 
 /**
- * HenryCoMonogram — a path-based "H&Co" lockup designed for favicons,
+ * HenryCoMonogram — a path-based "H · Onyx" lockup designed for favicons,
  * app icons, and any small surface where a wordmark would be illegible.
+ * (Identifier keeps the internal "HenryCo" shorthand; the rendered brand is
+ * "Henry Onyx" per V3-IDENTITY-01.)
  *
- * Why pure paths instead of <text>: at favicon sizes, anti-aliasing on
- * webfont text varies wildly across renderers. Drawing the glyphs as
- * paths guarantees the same crisp lockup at 16px, 32px, and 192px.
+ * Why pure paths for the H instead of <text>: at favicon sizes, anti-aliasing
+ * on webfont text varies wildly across renderers. Drawing the "H" as paths
+ * guarantees the same crisp anchor at 16px, 32px, and 192px.
  *
  * Composition:
- *   - "H" anchors the lockup, drawn with a serif voice (subtle bracket
- *     serifs, light contrast) so it reads as intentional rather than
+ *   - "H" anchors the lockup (for "Henry"), drawn with a serif voice (subtle
+ *     bracket serifs, light contrast) so it reads as intentional rather than
  *     a default sans capital.
- *   - "&Co" sits as a small caption inside the lower-right negative
- *     space of the H. The "&" is a hairline italic curve; "Co" caps
- *     follow as small-caps.
- *   - A 4-unit copper accent rule under "&Co" anchors the lockup
- *     visually and is the only piece that takes the brand accent.
+ *   - "Onyx" — the gemstone — sits as a small italic small-caps caption in
+ *     the lower-right negative space of the H.
+ *   - A copper accent rule under "Onyx" anchors the lockup visually and is
+ *     the only piece that takes the brand accent.
  *
  * All shapes draw with `currentColor`. The accent rule takes the
- * `accent` prop (defaults to the HenryCo signature copper).
+ * `accent` prop (defaults to the signature copper).
  */
 export type HenryCoMonogramProps = Omit<
   React.SVGProps<SVGSVGElement>,
@@ -34,7 +35,7 @@ export type HenryCoMonogramProps = Omit<
 export function HenryCoMonogram({
   size = 32,
   accent = "#C9A227",
-  label = "Henry & Co.",
+  label = "Henry Onyx",
   className,
   style,
   role,
@@ -78,10 +79,10 @@ export function HenryCoMonogram({
         <path d="M9 28 H45 V34 H9 Z" />
       </g>
 
-      {/* "&Co" subtle caption — placed under the right stem in negative
-          space outside the H bounding box. Set in italic small-caps via
-          font features; the SVG will render with the nearest available
-          serif and `font-variant: small-caps`. */}
+      {/* "Onyx" subtle caption — the gemstone word, placed under the right
+          stem in the lower-right negative space of the H. Italic small-caps
+          via font features; renders with the nearest available serif and
+          `font-variant: small-caps`. */}
       <g
         fill="currentColor"
         opacity={0.78}
@@ -93,20 +94,20 @@ export function HenryCoMonogram({
         }}
       >
         <text
-          x={49.5}
+          x={41.5}
           y={53}
           fontStyle="italic"
           fontWeight={400}
-          fontSize={11}
-          letterSpacing="0.04em"
+          fontSize={8.5}
+          letterSpacing="0.01em"
         >
-          &amp;Co
+          Onyx
         </text>
       </g>
 
-      {/* Brand-accent rule under the &Co lockup — the only colour
-          flourish. Width and position tuned to the &Co block. */}
-      <rect x={49.5} y={56} width={11.5} height={1.6} fill={accent} />
+      {/* Brand-accent rule under the Onyx caption — the only colour
+          flourish. Width and position tuned to the caption block. */}
+      <rect x={41.5} y={56} width={20} height={1.6} fill={accent} />
     </svg>
   );
 }

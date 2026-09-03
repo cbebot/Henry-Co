@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 import {
   formatSurfaceTemplate,
   translateSurfaceLabel,
-  useHenryCoLocale,
+  useOptionalHenryCoLocale,
+  DEFAULT_LOCALE,
   type AppLocale,
 } from "@henryco/i18n";
 import { ChevronRight } from "lucide-react";
@@ -17,6 +18,7 @@ import {
   useUnreadCount,
   type RealtimeSignal,
 } from "@henryco/dashboard-shell";
+import { toBrandName } from "@henryco/config";
 import { timeAgoLocalized } from "@/lib/format";
 import { HenryCoBell, MarkReadIcon, ArchiveIcon, DeleteIcon, EmptyStateGlyph } from "./icons/HenryCoIcons";
 import { SwipeableNotificationCard } from "./SwipeableNotificationCard";
@@ -52,7 +54,7 @@ function withFallbackSource(signal: RealtimeSignal): BellNotification {
     ...signal,
     source: {
       key: signal.division ?? "system",
-      label: signal.division ?? "HenryCo",
+      label: signal.division ?? toBrandName("Henry Onyx"),
       accent: "#111827",
       logoUrl: null,
     },
@@ -132,7 +134,10 @@ export default function NotificationBell({
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const locale = useHenryCoLocale();
+  // Resilient to a missing LocaleProvider during a hydration interruption on a
+  // fresh origin (V3-DOMAIN-FIX-01 / DIAG-IOS-01) — this is always mounted in
+  // the dashboard chrome, so a throw here collapsed the whole account shell.
+  const locale = useOptionalHenryCoLocale() ?? DEFAULT_LOCALE;
   const t = (text: string) => translateSurfaceLabel(locale, text);
 
   const items = useMemo<BellNotification[]>(
@@ -279,7 +284,7 @@ export default function NotificationBell({
   const displayCount = unreadCount > 9 ? "9+" : String(unreadCount);
   const bellAriaLabel =
     unreadCount > 0
-      ? `${t("Open notifications")} — ${unreadCount} ${unreadCount === 1 ? "unread" : "unread"}`
+      ? `${t("Open notifications")} — ${unreadCount} ${t("unread")}`
       : t("Open notifications");
 
   return (
@@ -287,7 +292,7 @@ export default function NotificationBell({
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`relative rounded-xl p-2 text-[var(--acct-muted)] transition hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--acct-gold)]/40 ${buttonClassName}`}
+        className={`relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-[var(--acct-muted)] transition hover:bg-[var(--acct-surface)] hover:text-[var(--acct-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--acct-gold)]/40 ${buttonClassName}`}
         aria-label={bellAriaLabel}
         aria-expanded={open}
         aria-haspopup="dialog"
@@ -317,7 +322,7 @@ export default function NotificationBell({
             align === "left" ? "left-0" : "right-0"
           }`}
         >
-          <div className="border-b border-[var(--acct-line)] bg-[linear-gradient(135deg,rgba(201,162,39,0.10),rgba(255,255,255,0.92))] px-4 py-4">
+          <div className="border-b border-[var(--acct-line)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--acct-gold)_14%,var(--acct-bg-soft)),var(--acct-bg-soft))] px-4 py-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="acct-kicker">{t("Notifications")}</p>

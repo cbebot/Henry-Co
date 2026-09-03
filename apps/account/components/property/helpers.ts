@@ -13,18 +13,58 @@ export function formatStamp(iso: string | null | undefined): string {
 
 const NF = new Intl.NumberFormat("en-NG", { maximumFractionDigits: 0 });
 
-export function formatMoney(amount: number | null | undefined, currency = "NGN"): string {
+export function formatMoney(
+  amount: number | null | undefined,
+  currency = "NGN",
+  contactFallback?: string,
+): string {
   const n = Number(amount);
-  if (!Number.isFinite(n) || n <= 0) return "Contact agent";
+  if (!Number.isFinite(n) || n <= 0) return contactFallback ?? "Contact agent";
   if (currency === "NGN") return `₦${NF.format(n)}`;
   return `${currency} ${NF.format(n)}`;
 }
 
-export function formatRoomCount(bedrooms: number | null, bathrooms: number | null, sizeSqm: number | null): string {
+export type RoomCountLabels = {
+  bedSingular: string;
+  bedPlural: string;
+  bathSingular: string;
+  bathPlural: string;
+  sizeSqmTemplate: string;
+};
+
+export function formatRoomCount(
+  bedrooms: number | null,
+  bathrooms: number | null,
+  sizeSqm: number | null,
+  labels?: RoomCountLabels,
+): string {
   const parts: string[] = [];
-  if (bedrooms != null && bedrooms > 0) parts.push(`${bedrooms} bed${bedrooms === 1 ? "" : "s"}`);
-  if (bathrooms != null && bathrooms > 0) parts.push(`${bathrooms} bath${bathrooms === 1 ? "" : "s"}`);
-  if (sizeSqm != null && sizeSqm > 0) parts.push(`${sizeSqm} sqm`);
+  if (bedrooms != null && bedrooms > 0) {
+    const unit = labels
+      ? bedrooms === 1
+        ? labels.bedSingular
+        : labels.bedPlural
+      : bedrooms === 1
+        ? "bed"
+        : "beds";
+    parts.push(`${bedrooms} ${unit}`);
+  }
+  if (bathrooms != null && bathrooms > 0) {
+    const unit = labels
+      ? bathrooms === 1
+        ? labels.bathSingular
+        : labels.bathPlural
+      : bathrooms === 1
+        ? "bath"
+        : "baths";
+    parts.push(`${bathrooms} ${unit}`);
+  }
+  if (sizeSqm != null && sizeSqm > 0) {
+    const sizeText = labels
+      ? labels.sizeSqmTemplate.replace("{size}", String(sizeSqm))
+      : `${sizeSqm} sqm`;
+    parts.push(sizeText);
+  }
   return parts.join(" · ");
 }
 
@@ -42,7 +82,15 @@ export function activityKind(activityType: string | null | undefined): ActivityK
   return ACTIVITY_KIND_BY_TYPE[String(activityType ?? "")] ?? "generic";
 }
 
-const ACTIVITY_TITLE_BY_TYPE: Record<string, string> = {
+export type ActivityTitleLabels = {
+  inquiry: string;
+  viewing: string;
+  listing_submitted: string;
+  listing_updated: string;
+  listing_reviewed: string;
+};
+
+const ACTIVITY_TITLE_BY_TYPE_DEFAULT: Record<string, string> = {
   property_inquiry: "Property inquiry",
   property_viewing_requested: "Viewing request",
   property_listing_submitted: "Listing submitted",
@@ -50,9 +98,26 @@ const ACTIVITY_TITLE_BY_TYPE: Record<string, string> = {
   property_listing_reviewed: "Listing review complete",
 };
 
-export function activityTitle(activityType: string | null | undefined): string {
+export function activityTitle(
+  activityType: string | null | undefined,
+  labels?: ActivityTitleLabels,
+): string {
   const k = String(activityType ?? "");
-  return ACTIVITY_TITLE_BY_TYPE[k] || k.replace(/_/g, " ");
+  if (labels) {
+    switch (k) {
+      case "property_inquiry":
+        return labels.inquiry;
+      case "property_viewing_requested":
+        return labels.viewing;
+      case "property_listing_submitted":
+        return labels.listing_submitted;
+      case "property_listing_updated":
+        return labels.listing_updated;
+      case "property_listing_reviewed":
+        return labels.listing_reviewed;
+    }
+  }
+  return ACTIVITY_TITLE_BY_TYPE_DEFAULT[k] || k.replace(/_/g, " ");
 }
 
 export function countByActivity(
@@ -100,28 +165,14 @@ export function heroState(stats: PropertyStats): HeroState {
   return "discover";
 }
 
-export function buildHeadline(state: HeroState, stats: PropertyStats): string {
-  if (state === "empty") return "Start exploring HenryCo Property.";
-  if (state === "active") {
-    if (stats.viewings > 0) {
-      return `${stats.viewings} viewing${stats.viewings === 1 ? "" : "s"} scheduled.`;
-    }
-    return `${stats.inquiries} inquir${stats.inquiries === 1 ? "y" : "ies"} live.`;
-  }
-  return `${stats.saved} shortlisted home${stats.saved === 1 ? "" : "s"}.`;
-}
-
-export function buildBlurb(state: HeroState): string {
-  if (state === "empty") {
-    return "Discover residential rentals, sale listings, and HenryCo-managed homes. Save your favourites and every inquiry, viewing, or listing follow-up lands here automatically.";
-  }
-  if (state === "active") {
-    return "Your shortlist, inquiries, and viewing schedule live in one room. Pick up where you left off — every action is mirrored from HenryCo Property in real time.";
-  }
-  return "Saved homes ready to revisit. Open a listing to request a viewing or send an inquiry, and the follow-up will mirror straight back into this room.";
-}
-
 /* ---- Side-panel "By activity" breakdown ----------------------------- */
+
+export type BreakdownLabels = {
+  saved: string;
+  inquiries: string;
+  viewings: string;
+  listings: string;
+};
 
 export type ActivityBreakdownItem = {
   key: ActivityKind | "saved" | "listing";
@@ -135,12 +186,15 @@ export type ActivityBreakdownItem = {
  * Colours map to existing --acct-* brand tokens so the dot matches the
  * row-icon background used in PropertyActivity, keeping discipline tight.
  */
-export function activityBreakdown(stats: PropertyStats): ReadonlyArray<ActivityBreakdownItem> {
+export function activityBreakdown(
+  stats: PropertyStats,
+  labels: BreakdownLabels,
+): ReadonlyArray<ActivityBreakdownItem> {
   const rows: ActivityBreakdownItem[] = [
-    { key: "saved",    label: "Saved",     count: stats.saved,     color: "var(--acct-purple)" },
-    { key: "inquiry",  label: "Inquiries", count: stats.inquiries, color: "var(--acct-blue)" },
-    { key: "viewing",  label: "Viewings",  count: stats.viewings,  color: "var(--acct-gold)" },
-    { key: "listing",  label: "Listings",  count: stats.listings,  color: "var(--acct-green)" },
+    { key: "saved",    label: labels.saved,     count: stats.saved,     color: "var(--acct-purple)" },
+    { key: "inquiry",  label: labels.inquiries, count: stats.inquiries, color: "var(--acct-blue)" },
+    { key: "viewing",  label: labels.viewings,  count: stats.viewings,  color: "var(--acct-gold)" },
+    { key: "listing",  label: labels.listings,  count: stats.listings,  color: "var(--acct-green)" },
   ];
   return rows.filter((r) => r.count > 0);
 }

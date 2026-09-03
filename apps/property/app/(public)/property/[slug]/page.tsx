@@ -3,12 +3,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   CalendarRange,
-  FileCheck2,
   Heart,
   ShieldCheck,
 } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { resolveLocalizedDynamicField, type AppLocale } from "@henryco/i18n/server";
 import { JsonLd, buildRealEstateListingLd } from "@henryco/seo";
-import { PropertyPendingButton } from "@/components/property/form-status";
+import {
+  ComparablePricingRail,
+  selectComparableListings,
+} from "@/components/property/comparable-pricing";
+import { PropertyInquiryForm } from "@/components/property/actions/PropertyInquiryForm";
+import { PropertyViewingForm } from "@/components/property/actions/PropertyViewingForm";
+import { SavePropertyButton } from "@/components/property/actions/SavePropertyButton";
 import {
   PropertyAgentCard,
   PropertyListingCard,
@@ -17,8 +24,11 @@ import {
   PropertyStatusBadge,
 } from "@/components/property/ui";
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
+import { PropertyVerificationBadge } from "@/components/property/verification-badge";
 import { getPropertyDashboardData, getPropertyBySlug } from "@/lib/property/data";
+import { resolvePropertyMediaUrl } from "@/lib/property/media";
 import { getPropertyViewer } from "@/lib/property/auth";
+import { getPropertyPublicLocale } from "@/lib/locale-server";
 import {
   getPropertyOrigin,
   getSharedAccountLoginUrl,
@@ -38,60 +48,68 @@ type SearchParams = {
 
 function getTrustCopy(
   listing: NonNullable<Awaited<ReturnType<typeof getPropertyBySlug>>>["listing"],
+  locale: AppLocale,
 ) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   if (listing.managedByHenryCo) {
     return {
-      title: "Managed by HenryCo",
-      body:
-        "HenryCo is involved beyond publication. That usually means clearer viewing coordination, tighter listing upkeep, and a more reliable post-inquiry path.",
+      title: t("Managed by Henry Onyx"),
+      body: t(
+        "Henry Onyx is involved beyond publication. That usually means clearer viewing coordination, tighter listing upkeep, and a more reliable post-inquiry path.",
+      ),
       bullets: [
-        "Viewing coordination can stay with HenryCo instead of being passed around informally.",
-        "Listing updates and follow-through are handled with stronger operational continuity.",
-        "Managed properties can still require documents or extra checks before the next step moves forward.",
+        t("Viewing coordination can stay with Henry Onyx instead of being passed around informally."),
+        t("Listing updates and follow-through are handled with stronger operational continuity."),
+        t("Managed properties can still require documents or extra checks before the next step moves forward."),
       ],
     };
   }
 
   if (listing.trustBadges.some((badge) => badge.toLowerCase().includes("review"))) {
     return {
-      title: "Reviewed before publication",
-      body:
-        "This listing is not appearing here as an untouched upload. HenryCo has already reviewed the record before showing it publicly.",
+      title: t("Reviewed before publication"),
+      body: t(
+        "This listing is not appearing here as an untouched upload. Henry Onyx has already reviewed the record before showing it publicly.",
+      ),
       bullets: [
-        "Trust notes stay visible so seekers understand what has been checked.",
-        "Publication does not remove the possibility of later document or access verification.",
-        "If the listing changes materially, it can move back into review.",
+        t("Trust notes stay visible so seekers understand what has been checked."),
+        t("Publication does not remove the possibility of later document or access verification."),
+        t("If the listing changes materially, it can move back into review."),
       ],
     };
   }
 
   return {
-    title: "Serious-listing standard",
-    body:
-      "HenryCo expects pricing, media, and listing identity to be strong enough for real decision-making before a property is promoted publicly.",
+    title: t("Serious-listing standard"),
+    body: t(
+      "Henry Onyx expects pricing, media, and listing identity to be strong enough for real decision-making before a property is promoted publicly.",
+    ),
     bullets: [
-      "If a viewing is requested, HenryCo may still confirm access, location, or readiness before the appointment.",
-      "Higher-risk listings can move through extra checks even after they appear live.",
-      "Managed and verified labels reflect a stronger operating path than a basic submission.",
+      t("If a viewing is requested, Henry Onyx may still confirm access, location, or readiness before the appointment."),
+      t("Higher-risk listings can move through extra checks even after they appear live."),
+      t("Managed and verified labels reflect a stronger operating path than a basic submission."),
     ],
   };
 }
 
-function getViewingFlow(listingTitle: string) {
+function getViewingFlow(listingTitle: string, locale: AppLocale) {
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return [
     {
-      title: "Request is logged",
-      body: `Your request for ${listingTitle} is written into HenryCo Property's viewing queue instead of being left in a chat thread.`,
+      title: t("Request is logged"),
+      body: `${t("Your request for")} ${listingTitle} ${t("is written into Henry Onyx Property's viewing queue instead of being left in a chat thread.")}`,
     },
     {
-      title: "Access and location are confirmed",
-      body:
-        "A HenryCo agent may confirm the property location, access conditions, or calendar before your appointment is finalised.",
+      title: t("Access and location are confirmed"),
+      body: t(
+        "A Henry Onyx agent may confirm the property location, access conditions, or calendar before your appointment is finalised.",
+      ),
     },
     {
-      title: "Post-viewing checks stay clear",
-      body:
-        "If you want to move forward, HenryCo may request identity, affordability, or company documents before the next approval step.",
+      title: t("Post-viewing checks stay clear"),
+      body: t(
+        "If you want to move forward, Henry Onyx may request identity, affordability, or company documents before the next approval step.",
+      ),
     },
   ];
 }
@@ -107,10 +125,74 @@ export default async function PropertyDetailPage({
   const messages = await searchParams;
   const data = await getPropertyBySlug(slug);
   const viewer = await getPropertyViewer();
+  const locale = await getPropertyPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
 
   if (!data || !["published", "approved"].includes(data.listing.status)) {
     notFound();
   }
+
+  // PASS 18C / wave1 — wrap Supabase-row text fields through
+  // resolveLocalizedDynamicField so non-EN locales hit the i18n column,
+  // locale_overrides, or DeepL fallback per row. Single-row detail page,
+  // so the DeepL cost is acceptable.
+  const [
+    listingTitle,
+    listingSummary,
+    listingDescription,
+    areaName,
+    agentName,
+    agentBio,
+  ] = await Promise.all([
+    resolveLocalizedDynamicField({
+      record: data.listing as unknown as Record<string, unknown>,
+      field: "title",
+      locale,
+      fallback: data.listing.title ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.listing as unknown as Record<string, unknown>,
+      field: "summary",
+      locale,
+      fallback: data.listing.summary ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    resolveLocalizedDynamicField({
+      record: data.listing as unknown as Record<string, unknown>,
+      field: "description",
+      locale,
+      fallback: data.listing.description ?? "",
+      machineTranslate: locale !== "en",
+    }),
+    data.area
+      ? resolveLocalizedDynamicField({
+          record: data.area as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: data.area.name ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    data.agent
+      ? resolveLocalizedDynamicField({
+          record: data.agent as unknown as Record<string, unknown>,
+          field: "name",
+          locale,
+          fallback: data.agent.name ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+    data.agent
+      ? resolveLocalizedDynamicField({
+          record: data.agent as unknown as Record<string, unknown>,
+          field: "bio",
+          locale,
+          fallback: data.agent.bio ?? "",
+          machineTranslate: locale !== "en",
+        })
+      : Promise.resolve(""),
+  ]);
 
   const accountData = viewer.user ? await getPropertyDashboardData() : null;
   const myInquiry =
@@ -128,20 +210,22 @@ export default async function PropertyDetailPage({
   const returnPath = `/property/${data.listing.slug}`;
   const loginHref = getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin });
   const signupHref = getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin });
-  const trustCopy = getTrustCopy(data.listing);
-  const viewingFlow = getViewingFlow(data.listing.title);
+  const trustCopy = getTrustCopy(data.listing, locale);
+  const viewingFlow = getViewingFlow(listingTitle || data.listing.title, locale);
 
   const canonicalUrl = `${propertyOrigin.replace(/\/$/, "")}${returnPath}`;
+  const heroImage = resolvePropertyMediaUrl(data.listing.heroImage);
+  const galleryUrls = data.listing.gallery
+    .map(resolvePropertyMediaUrl)
+    .filter((src): src is string => Boolean(src));
   const galleryImages = Array.from(
     new Set(
-      [data.listing.heroImage, ...data.listing.gallery].filter(
-        (src): src is string => Boolean(src),
-      ),
+      [heroImage, ...galleryUrls].filter((src): src is string => Boolean(src)),
     ),
   );
   const listingJsonLd = buildRealEstateListingLd({
-    name: data.listing.title,
-    description: data.listing.description,
+    name: listingTitle || data.listing.title,
+    description: listingDescription || data.listing.description,
     url: canonicalUrl,
     imageUrls: galleryImages,
     datePosted: data.listing.listedAt,
@@ -165,7 +249,7 @@ export default async function PropertyDetailPage({
     },
     agent: data.agent
       ? {
-          name: data.agent.name,
+          name: agentName || data.agent.name,
           telephone: data.agent.phone || undefined,
           email: data.agent.email || undefined,
           imageUrl: data.agent.photoUrl || undefined,
@@ -179,29 +263,31 @@ export default async function PropertyDetailPage({
       <JsonLd id="property-listing-jsonld" data={listingJsonLd} />
       <PropertySectionIntro
         kicker={data.listing.locationLabel}
-        title={data.listing.title}
-        description={data.listing.description}
+        title={listingTitle || data.listing.title}
+        description={listingDescription || data.listing.description}
       />
 
       {/* Notification rail — editorial left-rule ribbons, no panels */}
       <div className="mt-6 space-y-3">
         {messages.inquiry === "sent" ? (
           <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
-            Inquiry submitted. HenryCo Property has placed it in the follow-up queue and the next
-            response will stay tied to your account.
+            {t(
+              "Inquiry submitted. Henry Onyx Property has placed it in the follow-up queue and the next response will stay tied to your account.",
+            )}
           </p>
         ) : null}
         {messages.viewing === "requested" ? (
           <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
-            Viewing request submitted. Scheduling, reminders, and any verification follow-up are
-            now attached to a recorded workflow.
+            {t(
+              "Viewing request submitted. Scheduling, reminders, and any verification follow-up are now attached to a recorded workflow.",
+            )}
           </p>
         ) : null}
         {messages.saved === "1" || messages.removed === "1" ? (
           <p className="border-l-2 border-[var(--property-line)] pl-4 text-sm leading-7 text-[var(--property-ink-soft)]">
             {messages.saved === "1"
-              ? "Property saved to your HenryCo account history."
-              : "Property removed from saved listings."}
+              ? t("Property saved to your Henry Onyx account history.")
+              : t("Property removed from saved listings.")}
           </p>
         ) : null}
       </div>
@@ -210,12 +296,17 @@ export default async function PropertyDetailPage({
         <div className="space-y-12">
           {/* Gallery — clickable lightbox viewer with prev/next + thumb strip */}
           <PropertyImageGallery
-            title={data.listing.title}
-            hero={data.listing.heroImage}
-            gallery={data.listing.gallery}
+            title={listingTitle || data.listing.title}
+            hero={heroImage}
+            gallery={galleryUrls}
           />
 
           <PropertyQuickFacts listing={data.listing} />
+
+          {/* V3 PASS 21 — verification posture surfaced from the
+              documented state model (/docs/property-verification-state-model.md).
+              Editorial pill + summary, links to /trust. */}
+          <PropertyVerificationBadge listing={data.listing} locale={locale} />
 
           {/* Highlights + Verification + Amenities — editorial 2-col, no panel */}
           <div>
@@ -233,7 +324,7 @@ export default async function PropertyDetailPage({
 
             <div className="mt-7 grid gap-10 md:grid-cols-2">
               <div>
-                <p className="property-kicker">Highlights</p>
+                <p className="property-kicker">{t("Highlights")}</p>
                 <ul className="mt-4 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
                   {data.listing.headlineMetrics.map((item) => (
                     <li
@@ -246,7 +337,7 @@ export default async function PropertyDetailPage({
                 </ul>
               </div>
               <div>
-                <p className="property-kicker">Verification notes</p>
+                <p className="property-kicker">{t("Verification notes")}</p>
                 <ul className="mt-4 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
                   {data.listing.verificationNotes.map((item) => (
                     <li
@@ -262,7 +353,7 @@ export default async function PropertyDetailPage({
 
             {data.listing.amenities.length > 0 ? (
               <div className="mt-10">
-                <p className="property-kicker">Amenities</p>
+                <p className="property-kicker">{t("Amenities")}</p>
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   {data.listing.amenities.map((item) => (
                     <span
@@ -280,12 +371,12 @@ export default async function PropertyDetailPage({
           {/* Listing trust — editorial split with left-rule */}
           <section>
             <div className="flex items-baseline gap-4">
-              <p className="property-kicker">Listing trust</p>
+              <p className="property-kicker">{t("Listing trust")}</p>
               <span className="h-px flex-1 bg-[var(--property-line)]" />
             </div>
-            <div className="mt-6 grid gap-8 md:grid-cols-[0.85fr,1.15fr]">
+            <div className="mt-6 grid gap-8 md:grid-cols-[0.85fr_1.15fr]">
               <div className="flex items-start gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[rgba(191,122,71,0.1)] text-[var(--property-accent-strong)]">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--property-line)] bg-[color:var(--home-accent-soft)] text-[var(--property-accent-strong)]">
                   <ShieldCheck className="h-5 w-5" />
                 </span>
                 <h2 className="text-[1.45rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.7rem]">
@@ -317,7 +408,7 @@ export default async function PropertyDetailPage({
         <div className="space-y-12">
           {/* Pricing aside — editorial, no panel */}
           <aside className="lg:pt-2">
-            <p className="property-kicker">Summary</p>
+            <p className="property-kicker">{t("Summary")}</p>
             <p className="mt-4 text-[2.4rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--property-ink)] sm:text-[2.7rem]">
               {formatCurrency(data.listing.price, data.listing.currency)}
             </p>
@@ -329,7 +420,7 @@ export default async function PropertyDetailPage({
               <div className="flex items-baseline gap-3 py-3">
                 <ShieldCheck className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                  Location
+                  {t("Location")}
                 </dt>
                 <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--property-ink)]">
                   {data.listing.locationLabel}
@@ -338,30 +429,23 @@ export default async function PropertyDetailPage({
               <div className="flex items-baseline gap-3 py-3">
                 <CalendarRange className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
                 <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                  Availability
+                  {t("Availability")}
                 </dt>
                 <dd className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--property-ink)]">
                   {data.listing.availableNow
-                    ? "Available now"
-                    : `From ${formatDate(data.listing.availableFrom)}`}
+                    ? t("Available now")
+                    : `${t("From")} ${formatDate(data.listing.availableFrom)}`}
                 </dd>
               </div>
             </dl>
 
             <div className="mt-6">
               {viewer.user ? (
-                <form action="/api/property" method="POST">
-                  <input type="hidden" name="intent" value="wishlist_toggle" />
-                  <input type="hidden" name="listing_id" value={data.listing.id} />
-                  <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
-                  <PropertyPendingButton
-                    idleLabel={isSaved ? "Remove from saved" : "Save property"}
-                    pendingLabel={isSaved ? "Updating saved state" : "Saving property"}
-                    variant="secondary"
-                    idleIcon={<Heart className="h-4 w-4" />}
-                    className="px-5"
-                  />
-                </form>
+                <SavePropertyButton
+                  listingId={data.listing.id}
+                  slug={data.listing.slug}
+                  isSaved={isSaved}
+                />
               ) : (
                 <Link
                   href={getSharedAccountLoginUrl({
@@ -371,7 +455,7 @@ export default async function PropertyDetailPage({
                   className="property-button-secondary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
                 >
                   <Heart className="h-4 w-4" />
-                  Sign in to save
+                  {t("Sign in to save")}
                 </Link>
               )}
             </div>
@@ -380,16 +464,16 @@ export default async function PropertyDetailPage({
           {/* Your progress — editorial, divided rows */}
           {viewer.user && (myInquiry || myViewing) ? (
             <section>
-              <p className="property-kicker">Your progress on this property</p>
+              <p className="property-kicker">{t("Your progress on this property")}</p>
               <ul className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
                 {myInquiry ? (
                   <li className="flex items-start justify-between gap-4 py-4">
                     <div>
                       <h3 className="text-[1rem] font-semibold tracking-tight text-[var(--property-ink)]">
-                        Inquiry status
+                        {t("Inquiry status")}
                       </h3>
                       <p className="mt-1 text-sm leading-7 text-[var(--property-ink-soft)]">
-                        Tracked in the HenryCo account timeline.
+                        {t("Tracked in the Henry Onyx account timeline.")}
                       </p>
                     </div>
                     <PropertyStatusBadge status={myInquiry.status} />
@@ -399,12 +483,12 @@ export default async function PropertyDetailPage({
                   <li className="flex items-start justify-between gap-4 py-4">
                     <div>
                       <h3 className="text-[1rem] font-semibold tracking-tight text-[var(--property-ink)]">
-                        Viewing status
+                        {t("Viewing status")}
                       </h3>
                       <p className="mt-1 text-sm leading-7 text-[var(--property-ink-soft)]">
-                        Preferred: {formatDate(myViewing.preferredDate)}
+                        {t("Preferred")}: {formatDate(myViewing.preferredDate)}
                         {myViewing.scheduledFor
-                          ? ` · Scheduled: ${formatDate(myViewing.scheduledFor)}`
+                          ? ` · ${t("Scheduled")}: ${formatDate(myViewing.scheduledFor)}`
                           : ""}
                       </p>
                     </div>
@@ -416,14 +500,14 @@ export default async function PropertyDetailPage({
                 href={getSharedAccountPropertyUrl(myViewing ? "viewings" : "inquiries")}
                 className="property-button-secondary mt-5 inline-flex rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Open full account timeline
+                {t("Open full account timeline")}
               </Link>
             </section>
           ) : null}
 
           {/* Viewing flow — horizontal numbered timeline */}
           <section>
-            <p className="property-kicker">What happens after you request a viewing</p>
+            <p className="property-kicker">{t("What happens after you request a viewing")}</p>
             <ol className="mt-5 grid gap-6 md:grid-cols-3">
               {viewingFlow.map((step, i) => (
                 <li
@@ -433,7 +517,7 @@ export default async function PropertyDetailPage({
                   }`}
                 >
                   <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
-                    Step {String(i + 1).padStart(2, "0")}
+                    {t("Step")} {String(i + 1).padStart(2, "0")}
                   </p>
                   <h3 className="mt-3 text-[1rem] font-semibold leading-snug tracking-tight text-[var(--property-ink)]">
                     {step.title}
@@ -448,77 +532,26 @@ export default async function PropertyDetailPage({
 
           {/* Inquiry form — editorial, no panel */}
           <section>
-            <p className="property-kicker">Inquiry</p>
+            <p className="property-kicker">{t("Inquiry")}</p>
             <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
-              Ask about this property
+              {t("Ask about this property")}
             </h2>
             {viewer.user ? (
-              <form action="/api/property" method="POST" className="mt-6 space-y-4">
-                <input type="hidden" name="intent" value="inquiry_submit" />
-                <input type="hidden" name="listing_id" value={data.listing.id} />
-                <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
-
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    Name
-                  </span>
-                  <input
-                    name="name"
-                    required
-                    defaultValue={viewer.user.fullName || ""}
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    Email
-                  </span>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    defaultValue={viewer.user.email || ""}
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    Phone
-                  </span>
-                  <input
-                    name="phone"
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                    placeholder="+234..."
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    Message
-                  </span>
-                  <textarea
-                    name="message"
-                    required
-                    rows={4}
-                    className="property-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder="What would you like HenryCo Property to clarify for you?"
-                  />
-                </label>
-
-                <p className="text-xs leading-6 text-[var(--property-ink-muted)]">
-                  HenryCo uses your account so replies, clarifications, and the next trust checks
-                  stay in one place.
-                </p>
-
-                <PropertyPendingButton
-                  idleLabel="Submit inquiry"
-                  pendingLabel="Submitting inquiry"
-                />
-              </form>
+              <PropertyInquiryForm
+                listingId={data.listing.id}
+                slug={data.listing.slug}
+                defaults={{
+                  fullName: viewer.user.fullName || "",
+                  email: viewer.user.email || "",
+                }}
+              />
             ) : (
               <div className="mt-6">
                 <PropertyPublicAuthGate
-                  title="Sign in to send an inquiry"
-                  description="Inquiries are tied to your HenryCo account so agents can respond securely and you can track follow-up in one place."
+                  title={t("Sign in to send an inquiry")}
+                  description={t(
+                    "Inquiries are tied to your Henry Onyx account so agents can respond securely and you can track follow-up in one place.",
+                  )}
                   loginHref={loginHref}
                   signupHref={signupHref}
                 />
@@ -528,109 +561,26 @@ export default async function PropertyDetailPage({
 
           {/* Viewing request form — editorial, no panel */}
           <section>
-            <p className="property-kicker">Viewing request</p>
+            <p className="property-kicker">{t("Viewing request")}</p>
             <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
-              Request a viewing
+              {t("Request a viewing")}
             </h2>
             {viewer.user ? (
-              <form action="/api/property" method="POST" className="mt-6 space-y-4">
-                <input type="hidden" name="intent" value="viewing_request" />
-                <input type="hidden" name="listing_id" value={data.listing.id} />
-                <input type="hidden" name="return_to" value={`/property/${data.listing.slug}`} />
-
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    Attendee name
-                  </span>
-                  <input
-                    name="attendee_name"
-                    required
-                    defaultValue={viewer.user.fullName || ""}
-                    className="property-input mt-2 rounded-2xl px-4 py-3"
-                  />
-                </label>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="block">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                      Email
-                    </span>
-                    <input
-                      name="attendee_email"
-                      type="email"
-                      required
-                      defaultValue={viewer.user.email || ""}
-                      className="property-input mt-2 rounded-2xl px-4 py-3"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                      Phone
-                    </span>
-                    <input
-                      name="attendee_phone"
-                      className="property-input mt-2 rounded-2xl px-4 py-3"
-                    />
-                  </label>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="block">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                      Preferred time
-                    </span>
-                    <input
-                      name="preferred_date"
-                      type="datetime-local"
-                      required
-                      className="property-input mt-2 rounded-2xl px-4 py-3"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                      Backup time
-                    </span>
-                    <input
-                      name="backup_date"
-                      type="datetime-local"
-                      className="property-input mt-2 rounded-2xl px-4 py-3"
-                    />
-                  </label>
-                </div>
-                <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-soft)]">
-                    Notes
-                  </span>
-                  <textarea
-                    name="notes"
-                    rows={3}
-                    className="property-textarea mt-2 rounded-2xl px-4 py-3"
-                    placeholder="Access, household schedule, or questions for the viewing team."
-                  />
-                </label>
-
-                <div className="border-l-2 border-[var(--property-accent-strong)]/55 pl-4 py-2">
-                  <div className="flex items-center gap-2">
-                    <FileCheck2 className="h-3.5 w-3.5 text-[var(--property-accent-strong)]" />
-                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink)]">
-                      What to expect
-                    </span>
-                  </div>
-                  <p className="mt-2 text-xs leading-6 text-[var(--property-ink-muted)]">
-                    HenryCo may confirm access, location, or listing readiness before the
-                    appointment is fixed. If you want to move forward after the viewing, extra
-                    documents can still be requested depending on the property and next step.
-                  </p>
-                </div>
-
-                <PropertyPendingButton
-                  idleLabel="Request viewing"
-                  pendingLabel="Requesting viewing"
-                />
-              </form>
+              <PropertyViewingForm
+                listingId={data.listing.id}
+                slug={data.listing.slug}
+                defaults={{
+                  fullName: viewer.user.fullName || "",
+                  email: viewer.user.email || "",
+                }}
+              />
             ) : (
               <div className="mt-6">
                 <PropertyPublicAuthGate
-                  title="Sign in to request a viewing"
-                  description="Viewings are scheduled through your HenryCo account so confirmations, reminders, and updates stay in one secure timeline."
+                  title={t("Sign in to request a viewing")}
+                  description={t(
+                    "Viewings are scheduled through your Henry Onyx account so confirmations, reminders, and updates stay in one secure timeline.",
+                  )}
                   loginHref={loginHref}
                   signupHref={signupHref}
                 />
@@ -640,12 +590,26 @@ export default async function PropertyDetailPage({
         </div>
       </section>
 
+      {/* V3 PASS 21 — comparable pricing rail. Same-kind, near-area
+          listings ranked by closeness; helps the visitor anchor the
+          price posture without leaving the page. */}
+      {data.related.length > 0 ? (
+        <section className="mt-16">
+          <ComparablePricingRail
+            target={data.listing}
+            comparables={selectComparableListings(data.listing, data.related, 4)}
+          />
+        </section>
+      ) : null}
+
       {data.related.length ? (
         <section className="mt-16">
           <PropertySectionIntro
-            kicker="Related listings"
-            title="Other homes and spaces worth shortlisting."
-            description="Similar inventory in the same area or category, surfaced with the same editorial standard."
+            kicker={t("Related listings")}
+            title={t("Other homes and spaces worth shortlisting.")}
+            description={t(
+              "Similar inventory in the same area or category, surfaced with the same editorial standard.",
+            )}
           />
           <div className="mt-8 grid gap-5 xl:grid-cols-3">
             {data.related.map((listing) => (

@@ -37,16 +37,16 @@ function ImageAttachment({ attachment, ownTone }: Props) {
       href={attachment.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0A0E1A]"
+      className="group block overflow-hidden rounded-2xl border border-[var(--studio-thread-line)] bg-[var(--studio-thread-card)]"
       aria-label={`Open image ${attachment.label} in a new tab`}
     >
       <div className="relative">
         {!loaded ? (
           <div
-            className="flex h-44 w-full items-center justify-center bg-white/[0.03]"
+            className="flex h-44 w-full items-center justify-center bg-[var(--studio-thread-hover)]"
             aria-hidden
           >
-            <ImageIcon className="h-6 w-6 text-white/30" />
+            <ImageIcon className="h-6 w-6 text-[var(--studio-thread-ink-faint)]" />
           </div>
         ) : null}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -63,7 +63,7 @@ function ImageAttachment({ attachment, ownTone }: Props) {
       </div>
       <div
         className={`flex items-center justify-between gap-2 px-3 py-2 text-[11px] ${
-          ownTone ? "text-[#F5F4EE]/80" : "text-white/55"
+          ownTone ? "text-[var(--studio-thread-ink-soft)]" : "text-[var(--studio-thread-ink-muted)]"
         }`}
       >
         <span className="truncate" title={attachment.label}>
@@ -81,8 +81,8 @@ function ImageAttachment({ attachment, ownTone }: Props) {
 
 function FileAttachment({ attachment, ownTone }: Props) {
   const containerToneCls = ownTone
-    ? "border-white/[0.18] bg-white/[0.06] hover:bg-white/[0.10]"
-    : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05]";
+    ? "border-[var(--studio-thread-line)] bg-[var(--studio-thread-hover)] hover:bg-[var(--studio-thread-hover)]"
+    : "border-[var(--studio-thread-line)] bg-[var(--studio-thread-hover)] hover:bg-[var(--studio-thread-hover)]";
   // Cross-origin (Cloudinary) URLs ignore the `download` attribute, so
   // route the file through the same-origin /api/portal/download proxy
   // which re-streams with Content-Disposition: attachment. The proxy
@@ -102,8 +102,8 @@ function FileAttachment({ attachment, ownTone }: Props) {
       <span
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
           ownTone
-            ? "bg-[#d4b14e]/25 text-[#F5F4EE]"
-            : "bg-[#d4b14e]/15 text-[#d4b14e]"
+            ? "bg-[var(--studio-thread-accent-soft)] text-[var(--studio-thread-ink)]"
+            : "bg-[var(--studio-thread-accent-soft)] text-[var(--studio-thread-accent-text)]"
         }`}
       >
         {renderAttachmentIcon(attachment)}
@@ -111,7 +111,7 @@ function FileAttachment({ attachment, ownTone }: Props) {
       <div className="min-w-0 flex-1">
         <div
           className={`truncate text-[13px] font-medium leading-tight ${
-            ownTone ? "text-[#F5F4EE]" : "text-white/90"
+            ownTone ? "text-[var(--studio-thread-ink)]" : "text-[var(--studio-thread-ink)]"
           }`}
           title={attachment.label}
         >
@@ -119,7 +119,7 @@ function FileAttachment({ attachment, ownTone }: Props) {
         </div>
         <div
           className={`mt-0.5 flex items-center gap-1.5 text-[11px] ${
-            ownTone ? "text-[#F5F4EE]/65" : "text-white/45"
+            ownTone ? "text-[var(--studio-thread-ink-muted)]" : "text-[var(--studio-thread-ink-muted)]"
           }`}
         >
           <span className="uppercase tracking-[0.06em]">
@@ -137,7 +137,7 @@ function FileAttachment({ attachment, ownTone }: Props) {
       </div>
       <Download
         className={`h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 ${
-          ownTone ? "text-[#F5F4EE]/80" : "text-white/55"
+          ownTone ? "text-[var(--studio-thread-ink-soft)]" : "text-[var(--studio-thread-ink-muted)]"
         }`}
         aria-hidden
       />

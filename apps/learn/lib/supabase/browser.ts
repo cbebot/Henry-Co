@@ -2,7 +2,6 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 import { getSharedCookieDomain } from "@henryco/config";
-import { getRequiredEnv } from "@/lib/env";
 
 let browserClient: ReturnType<typeof createBrowserClient> | null = null;
 
@@ -11,14 +10,16 @@ export function createSupabaseBrowser() {
     return browserClient;
   }
 
-  const url = getRequiredEnv(
-    "NEXT_PUBLIC_SUPABASE_URL",
-    "Missing NEXT_PUBLIC_SUPABASE_URL for the browser Supabase client."
-  );
-  const anon = getRequiredEnv(
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "Missing NEXT_PUBLIC_SUPABASE_ANON_KEY for the browser Supabase client."
-  );
+  // Static `process.env.NEXT_PUBLIC_*` access so Next.js inlines the values
+  // into the client bundle at build time. A dynamic read (process.env[name])
+  // is NOT inlined and resolves to undefined in the browser.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) {
+    throw new Error(
+      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY for the browser Supabase client."
+    );
+  }
 
   const cookieDomain =
     typeof window === "undefined" ? undefined : getSharedCookieDomain(window.location.hostname);

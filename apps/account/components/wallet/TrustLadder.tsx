@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CheckCircle2, FileCheck, KeyRound, ShieldCheck } from "lucide-react";
+import type { AccountCopy } from "@henryco/i18n/server";
 
 type Row = {
   title: string;
@@ -15,7 +16,15 @@ type Props = {
   verificationHref?: string;
   payoutMethodCount: number;
   withdrawalPinConfigured: boolean;
+  copy: AccountCopy["wallet"]["trust"];
 };
+
+function format(template: string, values: Record<string, string | number>): string {
+  return Object.entries(values).reduce(
+    (acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v)),
+    template,
+  );
+}
 
 export function TrustLadder({
   verificationLabel,
@@ -23,44 +32,45 @@ export function TrustLadder({
   verificationHref = "/verification",
   payoutMethodCount,
   withdrawalPinConfigured,
+  copy,
 }: Props) {
   const rows: Row[] = [
     {
-      title: "Identity verified",
+      title: copy.identityTitle,
       desc: verificationDone
-        ? `${verificationLabel}. Required for withdrawal payouts.`
-        : `${verificationLabel}. Complete it once to unlock withdrawals.`,
+        ? format(copy.identityDescDoneTemplate, { label: verificationLabel })
+        : format(copy.identityDescTodoTemplate, { label: verificationLabel }),
       state: verificationDone ? "done" : "todo",
-      cta: verificationDone ? undefined : { href: verificationHref, label: "Continue →" },
+      cta: verificationDone ? undefined : { href: verificationHref, label: copy.identityCta },
       icon: ShieldCheck,
     },
     {
-      title: "Withdrawal PIN",
-      desc: withdrawalPinConfigured
-        ? "Your withdrawal PIN is set."
-        : "Set a 4-digit PIN to authorise every withdrawal.",
+      title: copy.pinTitle,
+      desc: withdrawalPinConfigured ? copy.pinDescDone : copy.pinDescTodo,
       state: withdrawalPinConfigured ? "done" : "todo",
       cta: withdrawalPinConfigured
         ? undefined
-        : { href: "/wallet/withdrawals", label: "Set PIN →" },
+        : { href: "/wallet/withdrawals", label: copy.pinCta },
       icon: KeyRound,
     },
     {
-      title: "Payout method",
+      title: copy.payoutTitle,
       desc:
         payoutMethodCount > 0
-          ? `${payoutMethodCount} verified ${payoutMethodCount === 1 ? "method" : "methods"} on file.`
-          : "Add a bank account to receive withdrawals.",
+          ? payoutMethodCount === 1
+            ? copy.payoutDescSingular
+            : format(copy.payoutDescPluralTemplate, { count: payoutMethodCount })
+          : copy.payoutDescEmpty,
       state: payoutMethodCount > 0 ? "done" : "todo",
       cta:
         payoutMethodCount > 0
-          ? { href: "/wallet/withdrawals", label: "Manage →" }
-          : { href: "/wallet/withdrawals", label: "Add method →" },
+          ? { href: "/wallet/withdrawals", label: copy.payoutCtaManage }
+          : { href: "/wallet/withdrawals", label: copy.payoutCtaAdd },
       icon: FileCheck,
     },
   ];
   return (
-    <div className="acct-wal__trust" aria-label="Withdrawal readiness">
+    <div className="acct-wal__trust" aria-label={copy.ariaLabel}>
       <p
         style={{
           fontSize: 11,
@@ -71,7 +81,7 @@ export function TrustLadder({
           margin: 0,
         }}
       >
-        Withdrawal readiness
+        {copy.heading}
       </p>
       {rows.map((row) => {
         const Icon = row.icon;

@@ -1,31 +1,50 @@
 import type { Metadata } from "next";
-import CompanyPageClient from "../../components/CompanyPageClient";
+import { getHubPublicCopy } from "@henryco/i18n/server";
+import { getHubPublicLocale } from "../../../lib/locale-server";
+import CompanyPageEditorial from "../../components/CompanyPageEditorial";
 import {
   createFallbackCompanyPage,
   getCompanyPage,
+  localizeCompanyPage,
 } from "../../lib/company-pages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { page } = await getCompanyPage("privacy").catch(() => ({ page: null }));
-  const resolved = page ?? createFallbackCompanyPage("privacy");
+  const [{ page }, locale] = await Promise.all([
+    getCompanyPage("privacy").catch(() => ({ page: null })),
+    getHubPublicLocale().catch(() => "en" as const),
+  ]);
+  const baseResolved = page ?? createFallbackCompanyPage("privacy");
+  const resolved = await localizeCompanyPage(baseResolved, locale);
 
   return {
     title: resolved.seo_title || resolved.title,
     description: resolved.seo_description || resolved.intro || resolved.subtitle || undefined,
+    alternates: { canonical: "/privacy" },
   };
 }
 
 export default async function PrivacyPage() {
-  const result = await getCompanyPage("privacy").catch(() => ({ page: null, hasServerError: true }));
+  const [result, locale] = await Promise.all([
+    getCompanyPage("privacy").catch(() => ({ page: null, hasServerError: true })),
+    getHubPublicLocale().catch(() => "en" as const),
+  ]);
+  const copy = getHubPublicCopy(locale);
+
+  // PASS i18n-100 — translate the row text for SSR first paint.
+  const localizedPage = await localizeCompanyPage(
+    result.page ?? createFallbackCompanyPage("privacy"),
+    locale,
+  );
 
   return (
-    <CompanyPageClient
-      pageKey="privacy"
-      initialData={result.page ?? createFallbackCompanyPage("privacy")}
+    <CompanyPageEditorial
+      page={localizedPage}
       serverWarning={result.hasServerError}
+      copy={copy.companyPage}
+      locale={locale}
     />
   );
 }

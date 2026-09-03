@@ -70,6 +70,17 @@ export const MOBILE_SHELL_CSS = `
 .hc-modal-body {
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
+  /* FIX-MOBILE-CLICKS — disable iOS Safari 300ms double-tap-zoom
+     delay inside every dashboard modal body (BottomSheet + Drawer).
+     Without this, iOS heuristics can suppress the synthetic click when
+     scroll deltas (e.g. address-bar collapse) interleave the touch
+     sequence — the Settings + Help in-the-More-sheet regression. The
+     manipulation value keeps panning + pinch-zoom alive, only suppresses
+     the double-tap-zoom heuristic that gates the click. Cascades to
+     every link/button inside the sheet via the touch-action hit-test
+     model — no per-button workaround needed. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* DASH-7 — main content padding so content doesn't tuck under the bar. */
@@ -88,6 +99,11 @@ export const MOBILE_SHELL_CSS = `
 .hc-bottom-action-bar button {
   transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), color 160ms ease;
   -webkit-tap-highlight-color: transparent;
+  /* FIX-MOBILE-CLICKS — mirror the .hc-modal-body rule so the four
+     bottom-nav anchors share the same iOS click guarantee. The nav
+     itself doesn't sit inside a modal body, so the rule has to be
+     repeated here rather than inherit from .hc-modal-body. */
+  touch-action: manipulation;
 }
 .hc-bottom-action-bar a:active,
 .hc-bottom-action-bar button:active {

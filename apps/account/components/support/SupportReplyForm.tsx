@@ -18,8 +18,8 @@ const ACCOUNT_ACCEPTED_MIME_TYPES = [
   "text/plain",
 ] as const;
 
-const ACCOUNT_MAX_ATTACHMENTS = 4;
-const ACCOUNT_MAX_FILE_BYTES = 10 * 1024 * 1024;
+const ACCOUNT_MAX_ATTACHMENTS = 12;
+const ACCOUNT_MAX_FILE_BYTES = 25 * 1024 * 1024;
 
 export default function SupportReplyForm({ threadId }: { threadId: string }) {
   const locale = useHenryCoLocale();

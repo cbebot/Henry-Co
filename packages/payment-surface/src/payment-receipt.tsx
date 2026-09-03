@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { COMPANY } from "@henryco/config";
 import { cn } from "@henryco/ui/cn";
-import { formatPaymentReceiptDate } from "./format";
+import { formatPaymentAmount, formatPaymentReceiptDate, formatPaymentReference } from "./format";
 import type { PaymentRecordView, PaymentSurfaceRecord, PaymentSurfaceTheme } from "./types";
 
 export interface PaymentReceiptProps {
@@ -26,6 +27,10 @@ function applyTemplate(template: string, vars: Record<string, string>) {
  */
 export function PaymentReceipt({ payment, record, theme, receiptText }: PaymentReceiptProps) {
   const date = formatPaymentReceiptDate(payment.updatedAt);
+  const legalEntity = COMPANY.group.legalName;
+  const receiptYear = new Date().getFullYear();
+  const reference = formatPaymentReference(payment.id, payment.reference);
+  const amountLabel = formatPaymentAmount(payment.amount, payment.currency);
   const proofClause = payment.proofName ? ` Proof on file: ${payment.proofName}.` : "";
   const body = applyTemplate(receiptText ?? DEFAULT_RECEIPT, { date, proof: proofClause });
   const cta = record.primaryCta ?? record.back;
@@ -62,6 +67,23 @@ export function PaymentReceipt({ payment, record, theme, receiptText }: PaymentR
         {cta.label}
         <ArrowRight className="h-4 w-4" />
       </Link>
+      <div
+        className={cn(
+          "mt-5 border-t pt-4 text-[11px] leading-5",
+          "border-[color:var(--payment-line,rgba(255,255,255,0.18))]",
+          "text-[color:var(--payment-soft,rgba(255,255,255,0.58))]",
+          theme?.softTextClassName,
+        )}
+      >
+        <dl className="grid grid-cols-2 gap-y-1">
+          <dt>Reference</dt>
+          <dd className="text-right font-medium tabular-nums text-[color:var(--payment-ink,white)]">{reference}</dd>
+          <dt>Amount paid</dt>
+          <dd className="text-right font-medium tabular-nums text-[color:var(--payment-ink,white)]">{amountLabel}</dd>
+        </dl>
+        <div className="mt-3 font-semibold text-[color:var(--payment-accent,#97f4f3)]">{legalEntity}</div>
+        <div>{`© ${receiptYear} ${legalEntity}`}</div>
+      </div>
     </section>
   );
 }

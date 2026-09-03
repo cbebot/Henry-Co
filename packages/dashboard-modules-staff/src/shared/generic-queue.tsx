@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   Section,
   PageHeader,
@@ -77,6 +77,13 @@ export type GenericStaffQueueClientProps<T> = {
   ) => Promise<void>;
   /** Function returning the row deep-link href. Falls back to no-op. */
   rowDeepLink?: (row: T) => string | null;
+  /**
+   * V3-41 — an optional server-rendered panel shown ABOVE the queue (the 7-day
+   * forecast, the at-risk list, the dispute watch-list). Passing a ReactNode
+   * keeps this client shell unaware of predictive types and ships none of the
+   * panel's code to the browser.
+   */
+  forecastPanel?: ReactNode;
 };
 
 export function GenericStaffQueueClient<T>({
@@ -93,6 +100,7 @@ export function GenericStaffQueueClient<T>({
   onBulkAction,
   onExport,
   rowDeepLink,
+  forecastPanel,
 }: GenericStaffQueueClientProps<T>) {
   const [filters, setFilters] = useState<FilterValueMap>({});
   const filteredRows = useMemo(() => {
@@ -111,6 +119,7 @@ export function GenericStaffQueueClient<T>({
           `${snapshot.pendingCount} pending · ${snapshot.slaBreachCount} SLA breach · ${snapshot.slaWarningCount} warning`
         }
       />
+      {forecastPanel}
       <Section kicker={sectionKicker ?? title}>
         <StaffQueueShell<T>
           filterFields={filterFields}

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { HelpCircle, X, Sparkles, ChevronRight, BookOpen, MessageCircleQuestion } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { useTour } from "./TourProvider";
 import { getHelpForRoute } from "@/lib/tour/help-content";
 import type { TourMachine, TourScope } from "@/lib/tour/engine";
@@ -14,6 +16,8 @@ export default function HelpButton({
   machine: TourMachine | null;
   scope: TourScope;
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { startTour } = useTour();
@@ -25,7 +29,7 @@ export default function HelpButton({
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-24 right-5 z-[60] flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent)] text-[#07111F] shadow-lg transition hover:scale-105 hover:shadow-xl active:scale-95 sm:bottom-6 sm:right-6"
-        aria-label="Help"
+        aria-label={t("Help")}
       >
         <HelpCircle className="h-5 w-5" />
       </button>
@@ -41,10 +45,10 @@ export default function HelpButton({
                 <div>
                   <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
                     <BookOpen className="h-3.5 w-3.5" />
-                    Help & Guidance
+                    {t("Help & Guidance")}
                   </div>
                   <h3 className="mt-1 text-lg font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white">
-                    {help?.title || "Help"}
+                    {help?.title ? t(help.title) : t("Help")}
                   </h3>
                 </div>
                 <button
@@ -62,7 +66,7 @@ export default function HelpButton({
                     {/* Page description */}
                     <div>
                       <p className="text-sm leading-7 text-zinc-600 dark:text-white/65">
-                        {help.description}
+                        {t(help.description)}
                       </p>
                     </div>
 
@@ -70,13 +74,13 @@ export default function HelpButton({
                     {help.tips.length > 0 ? (
                       <div>
                         <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
-                          Tips
+                          {t("Tips")}
                         </h4>
                         <ul className="mt-3 space-y-2.5">
                           {help.tips.map((tip, i) => (
                             <li key={i} className="flex gap-3 text-sm leading-6 text-zinc-700 dark:text-white/70">
                               <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
-                              {tip}
+                              {t(tip)}
                             </li>
                           ))}
                         </ul>
@@ -87,7 +91,7 @@ export default function HelpButton({
                     {help.faq.length > 0 ? (
                       <div>
                         <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500 dark:text-white/45">
-                          Common Questions
+                          {t("Common Questions")}
                         </h4>
                         <div className="mt-3 space-y-4">
                           {help.faq.map((item, i) => (
@@ -96,10 +100,10 @@ export default function HelpButton({
                                 <MessageCircleQuestion className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--accent)]" />
                                 <div>
                                   <div className="text-sm font-semibold text-zinc-900 dark:text-white">
-                                    {item.question}
+                                    {t(item.question)}
                                   </div>
                                   <p className="mt-1.5 text-sm leading-6 text-zinc-600 dark:text-white/60">
-                                    {item.answer}
+                                    {t(item.answer)}
                                   </p>
                                 </div>
                               </div>
@@ -111,7 +115,7 @@ export default function HelpButton({
                   </div>
                 ) : (
                   <p className="text-sm text-zinc-500 dark:text-white/50">
-                    No specific help available for this page yet.
+                    {t("No specific help available for this page yet.")}
                   </p>
                 )}
               </div>
@@ -127,7 +131,7 @@ export default function HelpButton({
                     className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:-translate-y-0.5 dark:border-white/10 dark:bg-white/[0.05] dark:text-white"
                   >
                     <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
-                    Replay guided tour
+                    {t("Replay guided tour")}
                   </button>
                 </div>
               ) : null}

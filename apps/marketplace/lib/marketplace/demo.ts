@@ -26,7 +26,7 @@ export const demoCategories: MarketplaceCategory[] = [
     hero: "Premium home goods curated with cleaner trust and clearer delivery promises.",
     featured: true,
     productCount: 18,
-    filterPresets: ["Fast delivery", "HenryCo verified", "Company stocked"],
+    filterPresets: ["Fast delivery", "Henry Onyx verified", "Company stocked"],
     trustNotes: ["48-hour dispatch promise", "Style-audited listings", "Protected returns"],
   },
   {
@@ -84,7 +84,7 @@ export const demoVendors: MarketplaceVendor[] = [
   {
     id: "vendor-henryco",
     slug: "henryco-verified",
-    name: "HenryCo Verified",
+    name: "Henry Onyx Verified",
     description:
       "Company-owned inventory with tighter QA, cleaner delivery commitments, and concierge support coverage.",
     status: "approved",
@@ -98,10 +98,10 @@ export const demoVendors: MarketplaceVendor[] = [
     accent: "#B2863B",
     heroImage:
       "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
-    badges: ["HenryCo verified", "Fast dispatch", "Concierge support"],
+    badges: ["Henry Onyx verified", "Fast dispatch", "Concierge support"],
     ownerType: "company",
-    supportEmail: "marketplace@henrycogroup.com",
-    supportPhone: "+2349133957084",
+    supportEmail: "marketplace@henryonyx.com",
+    supportPhone: "+2340000000000",
   },
   {
     id: "vendor-luminous",
@@ -148,7 +148,7 @@ export const demoProducts: MarketplaceProduct[] = [
     reviewCount: 28,
     featured: true,
     approvalStatus: "approved",
-    trustBadges: ["HenryCo verified", "Serial-checked", "Fast dispatch"],
+    trustBadges: ["Henry Onyx verified", "Serial-checked", "Fast dispatch"],
     gallery: [
       "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
@@ -318,7 +318,7 @@ export const demoBuyerAddresses: MarketplaceAddress[] = [
     id: "addr-1",
     label: "Home",
     recipient: "Henry Buyer",
-    phone: "+2349133957084",
+    phone: "+2340000000000",
     line1: "14 Admiralty Way",
     line2: "Lekki Phase 1",
     city: "Lagos",
@@ -341,19 +341,20 @@ export const demoBuyerOrders: MarketplaceOrder[] = [
     grandTotal: 463000,
     placedAt: new Date(now.getTime() - 1000 * 60 * 60 * 28).toISOString(),
     buyerName: "Henry Buyer",
-    buyerEmail: "buyer@henrycogroup.com",
+    buyerEmail: "buyer@henryonyx.com",
     shippingCity: "Lagos",
     shippingRegion: "Lagos",
     timeline: [
       "Order placed",
-      "Payment verified by finance",
-      "Split fulfillment prepared",
+      "Payment confirmed",
+      "Preparing your items for delivery",
       "One vendor shipment is in transit",
     ],
     groups: [
       {
         id: "group-1",
         vendorSlug: "henryco-verified",
+        vendorId: null,
         ownerType: "company",
         fulfillmentStatus: "shipped",
         paymentStatus: "verified",
@@ -369,6 +370,7 @@ export const demoBuyerOrders: MarketplaceOrder[] = [
       {
         id: "group-2",
         vendorSlug: "luminous-atelier",
+        vendorId: null,
         ownerType: "vendor",
         fulfillmentStatus: "packed",
         paymentStatus: "verified",
@@ -490,7 +492,7 @@ export const demoVendorApplication: MarketplaceVendorApplication = {
     businessRegistration: {
       kind: "businessRegistration",
       name: "business-registration.pdf",
-      fileUrl: "https://files.henrycogroup.com/marketplace/demo/business-registration.pdf",
+      fileUrl: "https://files.henryonyx.com/marketplace/demo/business-registration.pdf",
       mimeType: "application/pdf",
       size: 384000,
       publicId: "demo-business-registration",
@@ -500,7 +502,7 @@ export const demoVendorApplication: MarketplaceVendorApplication = {
     founderIdentity: {
       kind: "founderIdentity",
       name: "founder-id.pdf",
-      fileUrl: "https://files.henrycogroup.com/marketplace/demo/founder-id.pdf",
+      fileUrl: "https://files.henryonyx.com/marketplace/demo/founder-id.pdf",
       mimeType: "application/pdf",
       size: 276000,
       publicId: "demo-founder-identity",
@@ -510,7 +512,7 @@ export const demoVendorApplication: MarketplaceVendorApplication = {
     payoutProof: {
       kind: "payoutProof",
       name: "payout-proof.pdf",
-      fileUrl: "https://files.henrycogroup.com/marketplace/demo/payout-proof.pdf",
+      fileUrl: "https://files.henryonyx.com/marketplace/demo/payout-proof.pdf",
       mimeType: "application/pdf",
       size: 198000,
       publicId: "demo-payout-proof",

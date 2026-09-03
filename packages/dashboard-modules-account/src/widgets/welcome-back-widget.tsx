@@ -87,6 +87,20 @@ export function WelcomeBackWidget({
             />
           ) : null}
         </div>
+        {/* SMART (2026-07-10): tenure line — the data layer sets the year only
+            when the account is a full year old or more, so this is always an
+            honest milestone, never filler for a week-old account. */}
+        {snapshot.memberSinceYear ? (
+          <p
+            style={{
+              margin: "0.75rem 0 0",
+              fontSize: "0.75rem",
+              color: `var(${CSS_VARS.inkMuted})`,
+            }}
+          >
+            With Henry Onyx since {snapshot.memberSinceYear}.
+          </p>
+        ) : null}
       </Section>
     </Panel>
   );

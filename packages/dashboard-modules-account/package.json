@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./module": "./src/module.tsx",
     "./widgets": "./src/widgets/index.ts",
-    "./data": "./src/data.ts"
+    "./data": "./src/data.ts",
+    "./resume": "./src/resume.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

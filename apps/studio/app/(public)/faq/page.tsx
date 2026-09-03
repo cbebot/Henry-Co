@@ -11,11 +11,16 @@ export default async function FaqPage() {
         <h1 className="mt-4 max-w-3xl text-balance text-[2.2rem] font-semibold leading-[1.04] tracking-[-0.025em] text-[var(--studio-ink)] sm:text-[2.9rem] md:text-[3.4rem]">
           Before you reach out.
         </h1>
-        <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
+        {/* READING-02: hero body in the editorial serif reading face. */}
+        <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--studio-ink-soft)] sm:text-lg">
           The essentials clients usually check before starting a project with Studio.
         </p>
       </section>
 
+      {/* TODO(wave1): multi-row FAQ list. faq.question / faq.answer are
+          Supabase-row text fields — translate each via Promise.all +
+          resolveLocalizedDynamicField in a follow-up wave. (List is small
+          enough to land in scope on a second pass.) */}
       <ul className="mt-12 border-t border-[var(--studio-line)]">
         {catalog.faqs.map((item) => (
           <li
@@ -29,7 +34,9 @@ export default async function FaqPage() {
                 </h2>
                 <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[var(--studio-ink-soft)] transition group-open:rotate-90 group-open:text-[var(--studio-signal)]" />
               </summary>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--studio-ink-soft)]">
+              {/* READING-02: FAQ answers read in the serif face + prose measure
+                  (hub home-faq precedent); ink stays host-owned. */}
+              <p className="hc-font-reading text-pretty mt-3 max-w-prose text-sm leading-7 text-[var(--studio-ink-soft)]">
                 {item.answer}
               </p>
             </details>

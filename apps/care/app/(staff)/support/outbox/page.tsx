@@ -8,7 +8,7 @@ import { getSupportThreads } from "@/lib/support/data";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Support Outbox | Henry & Co. Fabric Care",
+  title: "Support Outbox | Henry Onyx Fabric Care",
   description: "View sent replies and outbound communication history.",
 };
 

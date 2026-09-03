@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileCheck2, ShieldCheck, UploadCloud } from "lucide-react";
 import { HenryCoActivityIndicator } from "@henryco/ui";
@@ -88,6 +89,7 @@ function normalizeDocuments(
             : "other",
         name: value.split("/").pop() || `${key}.pdf`,
         fileUrl: value,
+        previewUrl: null,
         mimeType: null,
         size: null,
         publicId: null,
@@ -112,6 +114,9 @@ function normalizeDocuments(
             : "other",
       name: document.name,
       fileUrl: document.fileUrl,
+      // Display-only signed URL provided by the server; preserved so the
+      // "Review file" preview link works after hydration.
+      previewUrl: document.previewUrl ?? null,
       mimeType: document.mimeType || null,
       size: typeof document.size === "number" ? document.size : null,
       publicId: document.publicId || null,
@@ -140,6 +145,7 @@ export function SellerApplicationWizard({
   initialPlan = null,
 }: SellerApplicationWizardProps) {
   const { pushToast } = useMarketplaceRuntime();
+  const router = useRouter();
   const initialDraft = initialApplication?.draftPayload ?? {};
   const draftPlan =
     typeof (initialDraft as Record<string, unknown>).plan === "string"
@@ -242,15 +248,22 @@ export function SellerApplicationWizard({
 
     if (response.ok) {
       setSubmitState("submitted");
-      pushToast("Seller application submitted", "success", "HenryCo review has started.");
-      window.location.href = "/account/seller-application?submitted=1";
+      // A major completion — the Onyx chime acknowledges it. (Body brand-fixed
+      // from the retired "HenryCo" surface name while consolidating.)
+      pushToast("Seller application submitted", "success", "Review has started.", {
+        chime: true,
+      });
+      // Soft navigation — the toast (and its chime) survive into the
+      // confirmation view instead of being destroyed by a document load.
+      router.push("/account/seller-application?submitted=1");
       return;
     }
 
     const payload = (await response.json().catch(() => null)) as { error?: string } | null;
     const message = payload?.error || "Application submission failed.";
     setError(message);
-    pushToast("Submission blocked", "error", message);
+    // A meaningful attempted completion failing — the single low error tone.
+    pushToast("Submission blocked", "error", message, { chime: true });
     setSubmitState("idle");
   }
 
@@ -324,7 +337,7 @@ export function SellerApplicationWizard({
               key={item}
               className={`inline-flex items-center gap-3 rounded-full px-4 py-2 text-sm font-semibold ${
                 step === item
-                  ? "bg-[var(--market-noir)] text-[var(--market-paper-white)]"
+                  ? "bg-[color:var(--home-accent)] text-[color:var(--home-accent-ink)]"
                   : "bg-[var(--market-bg-elevated)] text-[var(--market-muted)]"
               }`}
             >
@@ -391,7 +404,7 @@ export function SellerApplicationWizard({
                 />
               </label>
             </div>
-            <div className="rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-5 text-sm leading-7 text-[var(--market-muted)]">
+            <div className="rounded-[1.6rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] p-5 text-sm leading-7 text-[var(--market-muted)]">
               Store identity is what the moderation and owner review queue will see first. Keep the name, legal entity,
               and category focus precise so approval and trust-routing do not stall.
             </div>
@@ -413,7 +426,7 @@ export function SellerApplicationWizard({
               </label>
               <div className="rounded-[1.6rem] border border-[var(--market-line)] bg-[var(--market-bg-elevated)] p-5">
                 <div className="flex items-center gap-3">
-                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[rgba(255,255,255,0.05)] text-[var(--market-brass)]">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--market-line)] bg-[color:var(--home-surface-07)] text-[var(--market-brass)]">
                     <ShieldCheck className="h-5 w-5" />
                   </div>
                   <div>
@@ -422,9 +435,9 @@ export function SellerApplicationWizard({
                   </div>
                 </div>
                 <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--market-muted)]">
-                  <p>Founder identity and payout proof are mandatory before submission can enter the serious review lane.</p>
+                  <p>Founder identity and payout proof are required before we can complete your verification review.</p>
                   <p>Business registration is recommended for faster approval and fewer clarification requests.</p>
-                  <p>Uploaded evidence is recorded into HenryCo documents and linked to the seller moderation workflow.</p>
+                  <p>Your uploaded documents are stored securely and used only to verify your store during review.</p>
                 </div>
               </div>
             </div>
@@ -444,7 +457,7 @@ export function SellerApplicationWizard({
                 return (
                   <div
                     key={item.key}
-                    className="group rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.04)] p-5"
+                    className="group rounded-[1.6rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] p-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -455,7 +468,7 @@ export function SellerApplicationWizard({
                         className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
                           item.required
                             ? "bg-[rgba(255,171,151,0.12)] text-[var(--market-alert)]"
-                            : "bg-[rgba(117,209,255,0.12)] text-[var(--market-sky)]"
+                            : "bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]"
                         }`}
                       >
                         {item.required ? "Required" : "Recommended"}
@@ -474,15 +487,17 @@ export function SellerApplicationWizard({
                             {document.status.replace(/_/g, " ")}
                             {sizeLabel ? ` · ${sizeLabel}` : ""}
                           </p>
-                          <a
-                            href={document.fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
-                          >
-                            <FileCheck2 className="h-4 w-4" />
-                            Review file
-                          </a>
+                          {document.previewUrl ? (
+                            <a
+                              href={document.previewUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--market-brass)]"
+                            >
+                              <FileCheck2 className="h-4 w-4" />
+                              Review file
+                            </a>
+                          ) : null}
                         </div>
                       ) : (
                         <div className="space-y-2">
@@ -541,7 +556,7 @@ export function SellerApplicationWizard({
                 type="checkbox"
               />
               <span className="text-sm leading-7 text-[var(--market-ink)]">
-                I accept HenryCo Marketplace moderation, trust, payout-protection, and response-standard requirements.
+                I accept Henry Onyx Marketplace moderation, trust, payout-protection, and response-standard requirements.
               </span>
             </label>
           </div>
@@ -581,8 +596,8 @@ export function SellerApplicationWizard({
             ) : null}
 
             <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-soft-olive)] p-5 text-sm leading-7 text-[var(--market-paper-white)]">
-              Submission routes the application into the live moderation queue, records the verification evidence in HenryCo
-              documents, and triggers owner/admin alerts. Publishing access stays locked until approval is complete.
+              Once you submit, your application goes to our team for review and your documents are stored securely. Publishing
+              stays locked until you&rsquo;re approved.
             </div>
           </div>
         ) : null}

@@ -14,6 +14,8 @@ import {
   syncThreadMembers,
   type ThreadAccessRow,
 } from "@/app/lib/internal-comms-access";
+import { writeOwnerAudit } from "@/lib/owner-audit-log";
+import { withOwnerMutationContext, actorFromOwnerAuth } from "@/lib/owner-mutation-context";
 
 export const runtime = "nodejs";
 
@@ -258,92 +260,133 @@ export async function POST(request: Request) {
     return ownerAuthDeniedResponse(auth);
   }
 
-  let body: {
-    title?: string;
-    slug?: string;
-    kind?: string;
-    division?: string | null;
-    welcome?: string | null;
-  };
-  try {
-    body = (await request.json()) as typeof body;
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
-  }
-
-  const title = cleanText(body.title);
-  const slug = slugify(cleanText(body.slug || body.title, 72));
-  const kind = cleanText(body.kind || "group", 24).toLowerCase();
-  const division = cleanText(body.division || "", 48).toLowerCase() || null;
-  const welcome = cleanText(body.welcome || "", 8000);
-
-  if (!title || !slug || !ALLOWED_KINDS.has(kind)) {
-    return NextResponse.json(
-      { error: "title, slug, and a valid kind are required." },
-      { status: 400 }
-    );
-  }
-
-  const admin = createAdminSupabase();
-  const activeOwnerIds = await listActiveOwnerIds(admin);
-  const { data: existing } = await admin
-    .from("hq_internal_comm_threads")
-    .select("id, slug, kind, title, division, visibility, created_at, updated_at")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (existing) {
-    return NextResponse.json({ thread: existing, existing: true });
-  }
-
-  const { data: inserted, error } = await admin
-    .from("hq_internal_comm_threads")
-    .insert({
-      slug,
-      kind,
-      title,
-      division,
-      visibility: "members_only",
-    })
-    .select("id, slug, kind, title, division, visibility, created_at, updated_at")
-    .maybeSingle();
-
-  if (error || !inserted) {
-    logInternalCommsError("threads/create", error);
-    if (error && isInternalCommsStorageError(error)) {
-      return NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 });
-    }
-    return NextResponse.json({ error: "Could not create thread." }, { status: 400 });
-  }
-
-  if (kind === "broadcast" || kind === "announcement") {
-    await syncThreadMembers(
-      admin,
-      inserted.id,
-      activeOwnerIds,
-      kind === "announcement" ? "observer" : "owner"
-    );
-  }
-
-  await admin.from("hq_internal_comm_thread_members").upsert(
+  return withOwnerMutationContext(
     {
-      thread_id: inserted.id,
-      user_id: auth.user.id,
-      role: "owner",
-      pinned: true,
-      last_read_at: new Date().toISOString(),
+      route: "/api/owner/internal-comms/threads",
+      method: "POST",
+      actor: actorFromOwnerAuth(auth),
     },
-    { onConflict: "thread_id,user_id" }
+    async () => {
+      let body: {
+        title?: string;
+        slug?: string;
+        kind?: string;
+        division?: string | null;
+        welcome?: string | null;
+      };
+      try {
+        body = (await request.json()) as typeof body;
+      } catch {
+        return {
+          outcome: "validation" as const,
+          value: NextResponse.json({ error: "Invalid JSON." }, { status: 400 }),
+        };
+      }
+
+      const title = cleanText(body.title);
+      const slug = slugify(cleanText(body.slug || body.title, 72));
+      const kind = cleanText(body.kind || "group", 24).toLowerCase();
+      const division = cleanText(body.division || "", 48).toLowerCase() || null;
+      const welcome = cleanText(body.welcome || "", 8000);
+
+      if (!title || !slug || !ALLOWED_KINDS.has(kind)) {
+        return {
+          outcome: "validation" as const,
+          value: NextResponse.json(
+            { error: "title, slug, and a valid kind are required." },
+            { status: 400 },
+          ),
+        };
+      }
+
+      const admin = createAdminSupabase();
+      const activeOwnerIds = await listActiveOwnerIds(admin);
+      const { data: existing } = await admin
+        .from("hq_internal_comm_threads")
+        .select("id, slug, kind, title, division, visibility, created_at, updated_at")
+        .eq("slug", slug)
+        .maybeSingle();
+
+      if (existing) {
+        return {
+          outcome: "conflict" as const,
+          value: NextResponse.json({ thread: existing, existing: true }),
+        };
+      }
+
+      const { data: inserted, error } = await admin
+        .from("hq_internal_comm_threads")
+        .insert({
+          slug,
+          kind,
+          title,
+          division,
+          visibility: "members_only",
+        })
+        .select("id, slug, kind, title, division, visibility, created_at, updated_at")
+        .maybeSingle();
+
+      if (error || !inserted) {
+        logInternalCommsError("threads/create", error);
+        if (error && isInternalCommsStorageError(error)) {
+          return {
+            outcome: "server_error" as const,
+            value: NextResponse.json({ error: INTERNAL_COMMS_UNAVAILABLE }, { status: 503 }),
+          };
+        }
+        return {
+          outcome: "server_error" as const,
+          value: NextResponse.json({ error: "Could not create thread." }, { status: 400 }),
+        };
+      }
+
+      if (kind === "broadcast" || kind === "announcement") {
+        await syncThreadMembers(
+          admin,
+          inserted.id,
+          activeOwnerIds,
+          kind === "announcement" ? "observer" : "owner",
+        );
+      }
+
+      await admin.from("hq_internal_comm_thread_members").upsert(
+        {
+          thread_id: inserted.id,
+          user_id: auth.user.id,
+          role: "owner",
+          pinned: true,
+          last_read_at: new Date().toISOString(),
+        },
+        { onConflict: "thread_id,user_id" },
+      );
+
+      if (welcome) {
+        await admin.from("hq_internal_comm_messages").insert({
+          thread_id: inserted.id,
+          author_id: auth.user.id,
+          author_label: auth.user.email?.trim() || "Owner",
+          body: welcome,
+        });
+      }
+
+      await writeOwnerAudit({
+        action: "owner.messaging.thread.create",
+        entityType: "hq_internal_comm_thread",
+        entityId: inserted.id,
+        newValues: {
+          slug,
+          kind,
+          title,
+          division,
+          welcome_present: Boolean(welcome),
+        },
+        division: division ?? "hub",
+      });
+
+      return {
+        outcome: "ok" as const,
+        value: NextResponse.json({ thread: inserted, existing: false }, { status: 201 }),
+      };
+    },
   );
-
-  if (welcome) {
-    await admin.from("hq_internal_comm_messages").insert({
-      thread_id: inserted.id,
-      author_id: auth.user.id,
-      author_label: auth.user.email?.trim() || "Owner",
-      body: welcome,
-    });
-  }
-
-  return NextResponse.json({ thread: inserted, existing: false }, { status: 201 });
 }

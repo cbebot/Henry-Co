@@ -1,33 +1,36 @@
 import { Panel, EmptyState } from "@henryco/dashboard-shell/components";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { getLogisticsPublicLocale } from "@/lib/locale-server";
 import { getDispatchDashboardData } from "@/lib/logistics/data";
 
 export const dynamic = "force-dynamic";
 
 export default async function DispatcherZonesPage() {
-  const data = await getDispatchDashboardData();
+  const locale = await getLogisticsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const data = await getDispatchDashboardData(locale);
   const zones = data.zones;
 
   return (
     <div className="space-y-8 py-6">
       <header>
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--logistics-accent-soft)]">
-          Zones
+          {t("Zones")}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          Corridor configuration
+          {t("Corridor configuration")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--logistics-muted)]">
-          The lanes your fleet is licensed to operate. Edit base fee, SLA, and
-          urgency multipliers per zone.
+          {t("The lanes your fleet is licensed to operate. Edit base fee, SLA, and urgency multipliers per zone.")}
         </p>
       </header>
 
       <Panel tone="flat">
         {zones.length === 0 ? (
           <EmptyState
-            kicker="No zones"
-            headline="Configure your first zone"
-            body="Zones describe a corridor (Enugu metro, Lagos mainland, etc) and feed rate cards + SLA."
+            kicker={t("No zones")}
+            headline={t("Configure your first zone")}
+            body={t("Zones describe a corridor (Enugu metro, Lagos mainland, etc) and feed rate cards + SLA.")}
           />
         ) : (
           <ul className="divide-y divide-[var(--logistics-line)]">
@@ -44,13 +47,13 @@ export default async function DispatcherZonesPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                      Base fee
+                      {t("Base fee")}
                     </p>
                     <p className="mt-1 font-semibold tracking-tight text-white">
                       {zone.baseFee} NGN
                     </p>
                     <p className="mt-0.5 text-xs text-[var(--logistics-muted)]">
-                      ETA {zone.etaHoursMin}–{zone.etaHoursMax}h
+                      {t("ETA")} {zone.etaHoursMin}–{zone.etaHoursMax}h
                     </p>
                   </div>
                 </div>

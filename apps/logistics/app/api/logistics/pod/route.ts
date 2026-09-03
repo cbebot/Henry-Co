@@ -6,14 +6,17 @@ import { getLogisticsViewer, viewerHasRole } from "@/lib/logistics/auth";
 /**
  * V3 PASS 21 — POST /api/logistics/pod
  *
- * Rider-only endpoint. Writes a public.logistics_pod_records row with
- * photo URL (Cloudinary public id resolved upstream by the rider
- * client), optional signature URL, GPS coordinates + accuracy,
- * recipient name + relationship, and a free-text note.
+ * Rider-only endpoint. Writes a public.logistics_pod_records row with the
+ * proof-of-delivery photo reference, optional signature reference, GPS
+ * coordinates + accuracy, recipient name + relationship, and a free-text note.
  *
- * The rider client uploads the asset to Cloudinary first, then posts
- * the resulting public_id + secure_url here. We do not proxy binary
- * data through this route.
+ * The rider client uploads the asset to the RLS-PRIVATE `logistics-documents`
+ * bucket via /api/logistics/pod/upload first, then posts the resulting
+ * backend-neutral `media://private/...` reference here as `photo_url`. We do
+ * not proxy binary data through this route. The persisted value is a signed-
+ * read reference, NOT a public CDN URL — sensitive POD media is never
+ * dereferenceable by raw URL. (Legacy rows holding an absolute URL still
+ * resolve via signLogisticsMediaUrl passthrough at read time.)
  *
  * RLS on the table enforces:
  *   - captured_by_user_id = auth.uid()
@@ -75,9 +78,14 @@ export async function POST(request: NextRequest) {
       shipment_id: body.shipment_id,
       leg_id: body.leg_id ?? null,
       captured_by_user_id: viewer.user.id,
+      // photo_url / signature_url now hold `media://private/...` references
+      // (RLS-private bucket; signed-read only). Legacy absolute URLs still
+      // accepted for backward compatibility.
       photo_url: body.photo_url ?? null,
       signature_url: body.signature_url ?? null,
-      cloudinary_public_id: body.cloudinary_public_id ?? null,
+      // Cloudinary public-id metadata is retired (assets no longer live on a
+      // public CDN). Persist only a non-empty legacy value; otherwise null.
+      cloudinary_public_id: body.cloudinary_public_id?.trim() ? body.cloudinary_public_id : null,
       gps_lat: typeof body.gps_lat === "number" ? body.gps_lat : null,
       gps_lng: typeof body.gps_lng === "number" ? body.gps_lng : null,
       gps_accuracy_m:

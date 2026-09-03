@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { getAccountUrl } from "@henryco/config";
 import { LoaderCircle, ShieldCheck, UploadCloud } from "lucide-react";
+import { translateSurfaceLabel } from "@henryco/i18n";
+import { useHenryCoLocale } from "@henryco/i18n/react";
 import { ButtonPendingContent } from "@henryco/ui";
 import { getSharedAccountPropertyUrl } from "@/lib/property/links";
 import {
@@ -79,7 +81,7 @@ function formatFileLimit(bytes: number) {
   return `${Math.round(bytes / (1024 * 1024))} MB max`;
 }
 
-function renderField(spec: PropertySubmissionFieldSpec) {
+function renderField(spec: PropertySubmissionFieldSpec, t: (text: string) => string) {
   const commonClasses =
     spec.kind === "textarea"
       ? "property-textarea mt-2 w-full rounded-2xl px-4 py-3"
@@ -90,28 +92,28 @@ function renderField(spec: PropertySubmissionFieldSpec) {
   return (
     <label key={spec.name} className="block">
       <span className="text-sm font-medium text-[var(--property-ink)]">
-        {spec.label}
+        {t(spec.label)}
         {spec.required ? " *" : ""}
       </span>
       <span className="mt-1 block text-xs leading-6 text-[var(--property-ink-soft)]">
-        {spec.description}
+        {t(spec.description)}
       </span>
       {spec.kind === "textarea" ? (
         <textarea
           name={spec.name}
           rows={4}
           required={spec.required}
-          placeholder={spec.placeholder}
+          placeholder={spec.placeholder ? t(spec.placeholder) : undefined}
           className={commonClasses}
         />
       ) : spec.kind === "select" ? (
         <select name={spec.name} required={spec.required} className={commonClasses} defaultValue="">
           <option value="" disabled>
-            Select an option
+            {t("Select an option")}
           </option>
           {(spec.options || []).map((option) => (
             <option key={option.value} value={option.value}>
-              {option.label}
+              {t(option.label)}
             </option>
           ))}
         </select>
@@ -120,7 +122,7 @@ function renderField(spec: PropertySubmissionFieldSpec) {
           name={spec.name}
           type={spec.kind}
           required={spec.required}
-          placeholder={spec.placeholder}
+          placeholder={spec.placeholder ? t(spec.placeholder) : undefined}
           className={commonClasses}
         />
       )}
@@ -132,25 +134,27 @@ function UploadField({
   spec,
   count,
   onCountChange,
+  t,
 }: {
   spec: PropertySubmissionUploadSpec;
   count: number;
   onCountChange: (count: number) => void;
+  t: (text: string) => string;
 }) {
   return (
-    <label className="block rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
+    <label className="block rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-semibold text-[var(--property-ink)]">
-            {spec.label}
+            {t(spec.label)}
             {spec.required ? " *" : ""}
           </div>
           <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
-            {spec.description}
+            {t(spec.description)}
           </div>
         </div>
         <div className="rounded-full border border-[var(--property-line)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--property-ink-soft)]">
-          {spec.required ? `${spec.minimumFiles}+ required` : "Optional"}
+          {spec.required ? `${spec.minimumFiles}+ ${t("required")}` : t("Optional")}
         </div>
       </div>
       <input
@@ -164,8 +168,8 @@ function UploadField({
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--property-ink-soft)]">
         <span>
           {count > 0
-            ? `${count} file${count === 1 ? "" : "s"} selected`
-            : "No files selected yet"}
+            ? `${count} ${count === 1 ? t("file selected") : t("files selected")}`
+            : t("No files selected yet")}
         </span>
         <span>{formatFileLimit(PROPERTY_MAX_DOCUMENT_FILE_BYTES)}</span>
       </div>
@@ -174,6 +178,8 @@ function UploadField({
 }
 
 export function PropertySubmissionForm({ areas, defaults }: Props) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [serviceType, setServiceType] = useState<PropertyListingServiceType>("rent");
   const [intent, setIntent] = useState<PropertyListingIntent>("owner_listed");
@@ -223,14 +229,14 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       }
 
       if (!response.ok || !payload?.ok || !payload.submission) {
-        throw new Error(payload?.error || "Property submission could not be completed.");
+        throw new Error(payload?.error || t("Property submission could not be completed."));
       }
 
       setMessage({
         type: "success",
         text:
           payload.message ||
-          "Listing submitted. HenryCo Property queued moderation and trust review.",
+          t("Listing submitted. Henry Onyx Property queued moderation and trust review."),
       });
       setSubmissionFeedback(payload.submission);
       formRef.current?.reset();
@@ -243,7 +249,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         text:
           error instanceof Error
             ? error.message
-            : "Property submission could not be completed.",
+            : t("Property submission could not be completed."),
       });
     } finally {
       setSubmitting(false);
@@ -266,7 +272,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       <input type="hidden" name="listing_intent" value={effectiveIntent} />
       <input type="hidden" name="kind" value={blueprint.kind} />
 
-      <div className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+      <div className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl">
             <div className="text-lg font-semibold text-[var(--property-ink)]">
@@ -276,51 +282,51 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               {blueprint.reviewHeadline}
             </p>
           </div>
-          <div className="rounded-full border border-[rgba(152,179,154,0.35)] bg-[rgba(152,179,154,0.10)] px-4 py-2 text-xs font-semibold tracking-wide text-[var(--property-sage-soft)]">
-            {blueprint.requiresInspection ? "Inspection-sensitive" : "Editorial review path"}
+          <div className="rounded-full border border-[color:color-mix(in_srgb,var(--property-sage)_35%,transparent)] bg-[color:color-mix(in_srgb,var(--property-sage)_12%,transparent)] px-4 py-2 text-xs font-semibold tracking-wide text-[var(--property-sage-soft)]">
+            {blueprint.requiresInspection ? t("Inspection-sensitive") : t("Editorial review path")}
           </div>
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
+          <div className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-              Documents
+              {t("Documents")}
             </div>
             <div className="mt-2 text-sm text-[var(--property-ink)]">
-              {blueprint.docsMin === 0 ? "Optional" : `${blueprint.docsMin}+ expected`}
+              {blueprint.docsMin === 0 ? t("Optional") : `${blueprint.docsMin}+ ${t("expected")}`}
             </div>
             <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
-              Direct uploads are preferred over links for authority, identity, and management review.
+              {t("Direct uploads are preferred over links for authority, identity, and management review.")}
             </div>
           </div>
-          <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
+          <div className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-              Media
+              {t("Media")}
             </div>
             <div className="mt-2 text-sm text-[var(--property-ink)]">
-              {blueprint.mediaMin}+ suggested for strong review
+              {blueprint.mediaMin}+ {t("suggested for strong review")}
             </div>
             <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
-              Better media improves approval speed, inspection preparation, and buyer trust.
+              {t("Better media improves approval speed, inspection preparation, and buyer trust.")}
             </div>
           </div>
-          <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
+          <div className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-              Eligibility
+              {t("Eligibility")}
             </div>
             <div className="mt-2 text-sm text-[var(--property-ink)]">
-              {blueprint.requiresVerifiedIdentity ? "Verified identity expected" : "Authority-first"}
+              {blueprint.requiresVerifiedIdentity ? t("Verified identity expected") : t("Authority-first")}
             </div>
             <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
               {blueprint.eligibilityCopy}
             </div>
           </div>
-          <div className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 p-4">
+          <div className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-              Operating path
+              {t("Operating path")}
             </div>
             <div className="mt-2 text-sm text-[var(--property-ink)]">
-              {serviceType === "managed_property" ? "Managed listing" : "Non-managed listing"}
+              {serviceType === "managed_property" ? t("Managed listing") : t("Non-managed listing")}
             </div>
             <div className="mt-1 text-xs leading-6 text-[var(--property-ink-soft)]">
               {blueprint.managedTrackCopy}
@@ -331,7 +337,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Service type</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Service type")}</span>
           <select
             value={serviceType}
             onChange={(event) => {
@@ -353,7 +359,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Submission mode</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Submission mode")}</span>
           <select
             value={effectiveIntent}
             onChange={(event) => setIntent(event.target.value as PropertyListingIntent)}
@@ -370,7 +376,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Owner or agent name</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Owner or agent name")}</span>
           <input
             name="owner_name"
             required
@@ -380,7 +386,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Email</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Email")}</span>
           <input
             name="owner_email"
             type="email"
@@ -391,7 +397,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Phone</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Phone")}</span>
           <input
             name="owner_phone"
             required
@@ -399,23 +405,24 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             placeholder="+234..."
           />
         </label>
-        <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
+        <div className="rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-            Trust routing
+            {t("Trust routing")}
           </div>
           <div className="mt-2 text-sm font-semibold text-[var(--property-ink)]">
-            {blueprint.kind.replaceAll("_", " ")} listing
+            {blueprint.kind.replaceAll("_", " ")} {t("listing")}
           </div>
           <div className="mt-2 text-xs leading-6 text-[var(--property-ink-soft)]">
-            HenryCo keeps this record private first, then decides whether it moves to documents,
-            eligibility, inspection, or editorial review.
+            {t(
+              "Henry Onyx keeps this record private first, then decides whether it moves to documents, eligibility, inspection, or editorial review.",
+            )}
           </div>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Listing title</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Listing title")}</span>
           <input
             name="title"
             required
@@ -424,7 +431,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Area</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Area")}</span>
           <select name="location_slug" required className="property-select mt-2 rounded-2xl px-4 py-3">
             {areas.map((area) => (
               <option key={area.id} value={area.slug}>
@@ -437,30 +444,32 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Short summary</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Short summary")}</span>
           <textarea
             name="summary"
             required
             rows={4}
             className="property-textarea mt-2 rounded-2xl px-4 py-3"
-            placeholder="A decisive paragraph that frames the property well."
+            placeholder={t("A decisive paragraph that frames the property well.")}
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Description</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Description")}</span>
           <textarea
             name="description"
             required
             rows={4}
             className="property-textarea mt-2 rounded-2xl px-4 py-3"
-            placeholder="Explain the space, occupancy reality, access conditions, and what makes the listing serious."
+            placeholder={t(
+              "Explain the space, occupancy reality, access conditions, and what makes the listing serious.",
+            )}
           />
         </label>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Location label</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Location label")}</span>
           <input
             name="location_label"
             required
@@ -469,7 +478,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">District</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("District")}</span>
           <input
             name="district"
             required
@@ -478,12 +487,12 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Address line</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Address line")}</span>
           <input
             name="address_line"
             required
             className="property-input mt-2 rounded-2xl px-4 py-3"
-            placeholder="Street name or estate"
+            placeholder={t("Street name or estate")}
           />
         </label>
       </div>
@@ -491,7 +500,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       {blueprint.showPriceFields ? (
         <div className="grid gap-4 md:grid-cols-4">
           <label className="block">
-            <span className="text-sm font-medium text-[var(--property-ink)]">Price</span>
+            <span className="text-sm font-medium text-[var(--property-ink)]">{t("Price")}</span>
             <input
               name="price"
               type="number"
@@ -501,17 +510,17 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium text-[var(--property-ink)]">Interval</span>
+            <span className="text-sm font-medium text-[var(--property-ink)]">{t("Interval")}</span>
             <input
               name="price_interval"
               required
               className="property-input mt-2 rounded-2xl px-4 py-3"
-              placeholder={serviceType === "shortlet" ? "per night" : "per year"}
+              placeholder={serviceType === "shortlet" ? t("per night") : t("per year")}
             />
           </label>
           {blueprint.showBedrooms ? (
             <label className="block">
-              <span className="text-sm font-medium text-[var(--property-ink)]">Beds</span>
+              <span className="text-sm font-medium text-[var(--property-ink)]">{t("Beds")}</span>
               <input
                 name="bedrooms"
                 type="number"
@@ -524,7 +533,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           )}
           {blueprint.showBathrooms ? (
             <label className="block">
-              <span className="text-sm font-medium text-[var(--property-ink)]">Baths</span>
+              <span className="text-sm font-medium text-[var(--property-ink)]">{t("Baths")}</span>
               <input
                 name="bathrooms"
                 type="number"
@@ -534,7 +543,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             </label>
           ) : (
             <label className="block">
-              <span className="text-sm font-medium text-[var(--property-ink)]">Parking</span>
+              <span className="text-sm font-medium text-[var(--property-ink)]">{t("Parking")}</span>
               <input
                 name="parking_spaces"
                 type="number"
@@ -545,69 +554,73 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           )}
         </div>
       ) : (
-        <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5 text-sm leading-7 text-[var(--property-ink-soft)]">
-          This path is inspection-led rather than publication-led. HenryCo still needs the location,
-          authority, and access truth before deciding whether the property can move into a public
-          listing workflow.
+        <div className="rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5 text-sm leading-7 text-[var(--property-ink-soft)]">
+          {t(
+            "This path is inspection-led rather than publication-led. Henry Onyx still needs the location, authority, and access truth before deciding whether the property can move into a public listing workflow.",
+          )}
         </div>
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Amenities</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Amenities")}</span>
           <textarea
             name="amenities"
             rows={3}
             className="property-textarea mt-2 rounded-2xl px-4 py-3"
-            placeholder="Generator, smart security, rooftop terrace..."
+            placeholder={t("Generator, smart security, rooftop terrace...")}
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-[var(--property-ink)]">Existing media URLs</span>
+          <span className="text-sm font-medium text-[var(--property-ink)]">{t("Existing media URLs")}</span>
           <textarea
             name="gallery_urls"
             rows={3}
             className="property-textarea mt-2 rounded-2xl px-4 py-3"
-            placeholder="If assets already exist online, add one URL per line."
+            placeholder={t("If assets already exist online, add one URL per line.")}
           />
         </label>
       </div>
 
       {blueprint.contextFields.length > 0 ? (
-        <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
-          <div className="text-lg font-semibold text-[var(--property-ink)]">Path-specific details</div>
+        <section className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
+          <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Path-specific details")}</div>
           <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-            Only the details relevant to this listing path are shown below. HenryCo uses them to
-            understand authority, occupancy, inspection access, and managed handoff reality.
+            {t(
+              "Only the details relevant to this listing path are shown below. Henry Onyx uses them to understand authority, occupancy, inspection access, and managed handoff reality.",
+            )}
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {blueprint.contextFields.map((field) => renderField(field))}
+            {blueprint.contextFields.map((field) => renderField(field, t))}
           </div>
         </section>
       ) : null}
 
-      <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+      <section className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="text-lg font-semibold text-[var(--property-ink)]">Media and evidence</div>
+            <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Media and evidence")}</div>
             <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-              Upload the real evidence directly. HenryCo stores review files against the listing so
-              staff can assess them without chasing pasted links.
+              {t(
+                "Upload the real evidence directly. Henry Onyx stores review files against the listing so staff can assess them without chasing pasted links.",
+              )}
             </p>
           </div>
           <div className="rounded-full border border-[var(--property-line)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink-soft)]">
-            Async upload flow
+            {t("Async upload flow")}
           </div>
         </div>
 
-        <label className="mt-5 block rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-4">
+        <label className="mt-5 block rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-4">
           <div className="flex items-center gap-3 text-[var(--property-accent-strong)]">
             <UploadCloud className="h-5 w-5" />
-            <div className="text-sm font-semibold text-[var(--property-ink)]">Property media</div>
+            <div className="text-sm font-semibold text-[var(--property-ink)]">{t("Property media")}</div>
           </div>
           <div className="mt-2 text-xs leading-6 text-[var(--property-ink-soft)]">
-            Upload photos or image evidence. Clear front, interior, and access images make review
-            faster. {formatFileLimit(PROPERTY_MAX_MEDIA_FILE_BYTES)}.
+            {t(
+              "Upload photos or image evidence. Clear front, interior, and access images make review faster.",
+            )}{" "}
+            {formatFileLimit(PROPERTY_MAX_MEDIA_FILE_BYTES)}.
           </div>
           <input
             name="media"
@@ -619,8 +632,8 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           />
           <div className="mt-2 text-xs text-[var(--property-ink-soft)]">
             {uploadCounts.media > 0
-              ? `${uploadCounts.media} media file${uploadCounts.media === 1 ? "" : "s"} selected`
-              : "No media selected yet"}
+              ? `${uploadCounts.media} ${uploadCounts.media === 1 ? t("media file selected") : t("media files selected")}`
+              : t("No media selected yet")}
           </div>
         </label>
 
@@ -631,29 +644,30 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               spec={spec}
               count={uploadCounts[spec.name]}
               onCountChange={(count) => updateUploadCount(spec.name, count)}
+              t={t}
             />
           ))}
         </div>
       </section>
 
       <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
-        <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
-          <div className="text-lg font-semibold text-[var(--property-ink)]">HenryCo checks</div>
+        <section className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
+          <div className="text-lg font-semibold text-[var(--property-ink)]">{t("Henry Onyx checks")}</div>
           <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
             {blueprint.moderationChecks.map((item) => (
-              <p key={item}>• {item}</p>
+              <p key={item}>• {t(item)}</p>
             ))}
           </div>
         </section>
 
-        <section className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+        <section className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
           <div className="flex items-center gap-3 text-[var(--property-accent-strong)]">
             <ShieldCheck className="h-5 w-5" />
-            <div className="text-lg font-semibold text-[var(--property-ink)]">What happens next</div>
+            <div className="text-lg font-semibold text-[var(--property-ink)]">{t("What happens next")}</div>
           </div>
           <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
             {blueprint.userChecklist.map((item) => (
-              <p key={item}>• {item}</p>
+              <p key={item}>• {t(item)}</p>
             ))}
           </div>
         </section>
@@ -661,20 +675,20 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
 
       <div className="flex flex-wrap gap-4 text-sm text-[var(--property-ink-soft)]">
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="furnished" value="1" />
-          Furnished
+          <input type="checkbox" name="furnished" value="1" className="h-4 w-4 accent-[var(--home-accent)]" />
+          {t("Furnished")}
         </label>
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="pet_friendly" value="1" />
-          Pet friendly
+          <input type="checkbox" name="pet_friendly" value="1" className="h-4 w-4 accent-[var(--home-accent)]" />
+          {t("Pet friendly")}
         </label>
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="shortlet_ready" value="1" />
-          Short-let ready
+          <input type="checkbox" name="shortlet_ready" value="1" className="h-4 w-4 accent-[var(--home-accent)]" />
+          {t("Short-let ready")}
         </label>
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" name="managed_by_henryco" value="1" />
-          Request HenryCo management
+          <input type="checkbox" name="managed_by_henryco" value="1" className="h-4 w-4 accent-[var(--home-accent)]" />
+          {t("Request Henry Onyx management")}
         </label>
       </div>
 
@@ -682,8 +696,8 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
         <div
           className={`rounded-[1.6rem] border px-5 py-4 text-sm leading-7 ${
             message.type === "success"
-              ? "border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] text-[var(--property-sage-soft)]"
-              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[var(--property-alert)]"
+              ? "border-[color:color-mix(in_srgb,var(--property-sage)_30%,transparent)] bg-[color:color-mix(in_srgb,var(--property-sage)_12%,transparent)] text-[var(--property-sage-soft)]"
+              : "border-[color:color-mix(in_srgb,var(--property-danger)_36%,transparent)] bg-[color:color-mix(in_srgb,var(--property-danger)_10%,transparent)] text-[var(--property-danger)]"
           }`}
         >
           {message.text}
@@ -691,11 +705,11 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
       ) : null}
 
       {submissionFeedback ? (
-        <div className="rounded-[1.8rem] border border-[var(--property-line)] bg-black/10 p-5">
+        <div className="rounded-[1.8rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                Live policy result
+                {t("Live policy result")}
               </div>
               <div className="mt-2 text-lg font-semibold text-[var(--property-ink)]">
                 {submissionFeedback.guidanceHeadline}
@@ -704,7 +718,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
                 {submissionFeedback.policySummary}
               </p>
             </div>
-            <div className="rounded-full border border-[var(--property-line)] bg-black/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
+            <div className="rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
               {submissionFeedback.policyStatus.replaceAll("_", " ")}
             </div>
           </div>
@@ -713,7 +727,7 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
             {submissionFeedback.guidanceBullets.map((item) => (
               <div
                 key={item}
-                className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
+                className="rounded-[1.2rem] border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
               >
                 {item}
               </div>
@@ -725,75 +739,14 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
               href={getSharedAccountPropertyUrl("listings")}
               className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
             >
-              Open property account
+              {t("Open property account")}
             </Link>
             {submissionFeedback.verificationStatus !== "verified" ? (
               <Link
                 href={getAccountUrl("/verification")}
                 className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
               >
-                Open account verification
-              </Link>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-
-      {message ? (
-        <div
-          className={`rounded-[1.6rem] border px-5 py-4 text-sm leading-7 ${
-            message.type === "success"
-              ? "border-[rgba(152,179,154,0.3)] bg-[rgba(152,179,154,0.12)] text-[var(--property-sage-soft)]"
-              : "border-[rgba(201,110,93,0.3)] bg-[rgba(201,110,93,0.12)] text-[var(--property-alert)]"
-          }`}
-        >
-          {message.text}
-        </div>
-      ) : null}
-
-      {submissionFeedback ? (
-        <div className="rounded-[1.6rem] border border-[var(--property-line)] bg-black/10 p-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--property-ink-soft)]">
-                Live policy result
-              </div>
-              <div className="mt-2 text-lg font-semibold text-[var(--property-ink)]">
-                {submissionFeedback.guidanceHeadline}
-              </div>
-              <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-                {submissionFeedback.policySummary}
-              </p>
-            </div>
-            <div className="rounded-full border border-[var(--property-line)] bg-black/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--property-ink)]">
-              {submissionFeedback.policyStatus.replaceAll("_", " ")}
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {submissionFeedback.guidanceBullets.map((item) => (
-              <div
-                key={item}
-                className="rounded-[1.2rem] border border-[var(--property-line)] bg-black/10 px-4 py-4 text-sm leading-7 text-[var(--property-ink-soft)]"
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link
-              href={getSharedAccountPropertyUrl("listings")}
-              className="property-button-primary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
-            >
-              Open property account
-            </Link>
-            {submissionFeedback.verificationStatus !== "verified" ? (
-              <Link
-                href={getAccountUrl("/verification")}
-                className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold"
-              >
-                Open account verification
+                {t("Open account verification")}
               </Link>
             ) : null}
           </div>
@@ -805,26 +758,26 @@ export function PropertySubmissionForm({ areas, defaults }: Props) {
           type="submit"
           disabled={submitting}
           aria-busy={submitting}
-          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px] disabled:cursor-wait disabled:opacity-80 disabled:active:translate-y-0"
+          className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px] disabled:cursor-wait disabled:opacity-80 disabled:active:translate-y-0"
         >
           <ButtonPendingContent
             pending={submitting}
-            pendingLabel="Submitting listing..."
-            spinnerLabel="Submitting property listing"
+            pendingLabel={t("Submitting listing...")}
+            spinnerLabel={t("Submitting property listing")}
           >
-            Submit listing
+            {t("Submit listing")}
           </ButtonPendingContent>
         </button>
         <Link
           href={getSharedAccountPropertyUrl("listings")}
-          className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c120d] active:translate-y-[0.5px]"
+          className="property-button-secondary inline-flex rounded-full px-5 py-3 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-[var(--property-accent-strong)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--home-canvas)] active:translate-y-[0.5px]"
         >
-          Open property account
+          {t("Open property account")}
         </Link>
         {submitting ? (
           <span className="inline-flex items-center gap-2 text-xs text-[var(--property-ink-soft)]">
             <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-            Uploading media and trust files without leaving the page
+            {t("Uploading media and trust files without leaving the page")}
           </span>
         ) : null}
       </div>

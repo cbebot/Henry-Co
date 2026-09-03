@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { AppLocale } from "@henryco/i18n";
+import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getDivisionBrand, type DivisionBrand } from "@/lib/branding";
 import {
@@ -8,7 +9,7 @@ import {
   notificationMessageHref,
   resolveSafeActionUrl,
 } from "@/lib/notification-center";
-import { resolveNotificationPresentation } from "@/lib/notification-localization";
+import { resolveNotificationPresentationAsync } from "@/lib/notification-localization";
 import { getSharedPaymentRail } from "@/lib/payment-settings";
 import {
   extractLegacyWithdrawalPinHash,
@@ -77,14 +78,49 @@ function resolveNotificationKey(row: Record<string, unknown>) {
   );
 }
 
-function localizeNotificationRow(row: Record<string, unknown>, locale?: AppLocale) {
+async function localizeNotificationRow(row: Record<string, unknown>, locale?: AppLocale) {
   if (!locale) return row;
-  const localized = resolveNotificationPresentation({ row, locale });
+  const localized = await resolveNotificationPresentationAsync({ row, locale });
   return {
     ...row,
     title: localized.title,
     body: localized.body,
   };
+}
+
+/**
+ * Wave 3 (account) — translate system-generated title/description on
+ * customer_activity rows. These titles/descriptions are produced server-side
+ * by helpers like care-sync.ts (`buildActivityTitle`), notification-center.ts
+ * (lifecycle activity inserts), and intelligence-rollout.ts (intel events).
+ * They are NOT user-typed, so machine-translating to the viewer's locale is
+ * safe — falls back to source text when DeepL is unsupported.
+ */
+async function localizeActivityRow(row: Record<string, unknown>, locale?: AppLocale) {
+  if (!locale || locale === "en") return row;
+  const fallbackTitle = asText(row.title);
+  const fallbackDescription = asText(row.description);
+  const [title, description] = await Promise.all([
+    fallbackTitle
+      ? resolveLocalizedDynamicField({
+          record: row,
+          field: "title",
+          locale,
+          fallback: fallbackTitle,
+          machineTranslate: true,
+        })
+      : Promise.resolve(fallbackTitle),
+    fallbackDescription
+      ? resolveLocalizedDynamicField({
+          record: row,
+          field: "description",
+          locale,
+          fallback: fallbackDescription,
+          machineTranslate: true,
+        })
+      : Promise.resolve(fallbackDescription),
+  ]);
+  return { ...row, title, description };
 }
 
 export type EnrichedNotification = Record<string, unknown> & {
@@ -170,7 +206,7 @@ export async function getWalletSummary(userId: string) {
   return wallet || { id: null, balance_kobo: 0, currency: "NGN", is_active: true };
 }
 
-export async function getWalletTransactions(userId: string, limit = 20) {
+export async function getWalletTransactions(userId: string, limit = 50) {
   const { data } = await admin()
     .from("customer_wallet_transactions")
     .select("*")
@@ -181,7 +217,7 @@ export async function getWalletTransactions(userId: string, limit = 20) {
   return data || [];
 }
 
-export async function getRecentActivity(userId: string, limit = 10) {
+export async function getRecentActivity(userId: string, limit = 40, locale?: AppLocale) {
   const { data } = await admin()
     .from("customer_activity")
     .select("*")
@@ -189,10 +225,12 @@ export async function getRecentActivity(userId: string, limit = 10) {
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  return data || [];
+  const rows = (data || []) as Array<Record<string, unknown>>;
+  if (!locale || locale === "en") return rows;
+  return Promise.all(rows.map((row) => localizeActivityRow(row, locale)));
 }
 
-export async function getNotifications(userId: string, limit = 20) {
+export async function getNotifications(userId: string, limit = 50) {
   const { data } = await admin()
     .from("customer_notifications")
     .select("*")
@@ -238,7 +276,7 @@ export async function getRecentlyDeletedNotificationFeed(
   const rows = await getRecentlyDeletedNotifications(userId, limit);
   return Promise.all(
     rows.map(async (row) => {
-      const localized = localizeNotificationRow(row, locale);
+      const localized = await localizeNotificationRow(row, locale);
       const source = await getDivisionBrand(resolveNotificationKey(localized));
       return {
         ...localized,
@@ -262,7 +300,7 @@ export async function getNotificationFeed(
   const notifications = (await getNotifications(userId, limit)) as Array<Record<string, unknown>>;
   return Promise.all(
     notifications.map(async (notification) => {
-      const localizedNotification = localizeNotificationRow(notification, locale);
+      const localizedNotification = await localizeNotificationRow(notification, locale);
       const source = await getDivisionBrand(resolveNotificationKey(localizedNotification));
       return {
         ...localizedNotification,
@@ -278,7 +316,7 @@ export async function getNotificationFeed(
   );
 }
 
-export async function getNotificationBellFeed(userId: string, limit = 8, locale?: AppLocale) {
+export async function getNotificationBellFeed(userId: string, limit = 20, locale?: AppLocale) {
   const [items, unreadCount] = await Promise.all([
     getNotificationFeed(userId, limit, locale),
     getUnreadNotificationCount(userId),
@@ -468,13 +506,21 @@ export async function getCartRecoveryState(userId: string) {
 }
 
 export async function getProfile(userId: string) {
-  const { data } = await admin()
-    .from("customer_profiles")
-    .select("*")
-    .eq("id", userId)
-    .maybeSingle();
+  try {
+    const { data } = await admin()
+      .from("customer_profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
 
-  return data;
+    return data;
+  } catch {
+    // DASH-RESILIENCE: the profile is awaited by many dashboard pages. A
+    // rejected read (e.g. a Supabase connection drop under load) must degrade
+    // to null — callers already handle a missing profile — not crash the page
+    // into the V3-10 error boundary.
+    return null;
+  }
 }
 
 export async function getSupportThreads(userId: string) {
@@ -701,7 +747,7 @@ export async function getDocuments(userId: string) {
 export async function getPaymentMethods(userId: string) {
   const { data } = await admin()
     .from("customer_payment_methods")
-    .select("*")
+    .select("id, type, label, last_four, bank_name, is_default, provider, metadata, created_at")
     .eq("user_id", userId)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });
@@ -725,7 +771,7 @@ export async function getSecurityLog(userId: string, limit = 20) {
 export async function getDashboardSummary(userId: string, locale?: AppLocale) {
   const [wallet, activity, notifications, subscriptions, invoices, supportThreads, unreadCount, unreadSupportCount] = await Promise.all([
     getWalletSummary(userId),
-    getRecentActivity(userId, 5),
+    getRecentActivity(userId, 5, locale),
     getNotificationFeed(userId, 5, locale),
     getSubscriptions(userId),
     getInvoices(userId, 3),

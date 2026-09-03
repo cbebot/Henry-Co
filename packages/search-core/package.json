@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./collections": "./src/collections.ts",
+    "./collection-tuning": "./src/collection-tuning.ts",
     "./schema": "./src/schema.ts",
     "./client": "./src/client.ts",
     "./query": "./src/query.ts",
@@ -14,14 +15,18 @@
     "./role": "./src/role.ts",
     "./rate-limit": "./src/rate-limit.ts",
     "./suggestions": "./src/suggestions.ts",
+    "./synonyms": "./src/synonyms.ts",
     "./palette-ranker": "./src/palette-ranker.ts",
     "./types": "./src/types.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --test src/__tests__/palette-ranker.test.ts src/__tests__/role-isolation.test.ts",
+    "test": "tsx --test src/__tests__/palette-ranker.test.ts src/__tests__/role-isolation.test.ts src/__tests__/diversity-cap.test.ts src/__tests__/collection-tuning.test.ts src/__tests__/synonyms.test.ts",
     "test:ranker": "tsx --test src/__tests__/palette-ranker.test.ts",
-    "test:role-isolation": "tsx --test src/__tests__/role-isolation.test.ts"
+    "test:role-isolation": "tsx --test src/__tests__/role-isolation.test.ts",
+    "test:diversity": "tsx --test src/__tests__/diversity-cap.test.ts",
+    "test:tuning": "tsx --test src/__tests__/collection-tuning.test.ts",
+    "test:synonyms": "tsx --test src/__tests__/synonyms.test.ts"
   },
   "dependencies": {
     "@henryco/config": "workspace:^",

@@ -162,6 +162,19 @@ function payloadTooLarge() {
   return new NextResponse(null, { status: 413 });
 }
 
+// Postgres error codes we defensively treat as "schema drift, serve defaults".
+// 42703 = undefined_column (the precise smoking-gun shape that DIAG-ACCOUNT-01
+//        hit when /api/notifications/preferences was 500ing every authed page).
+// 42P01 = undefined_table  (catastrophic — but still better to serve defaults
+//        than to 500 the dashboard while ops chases a missing table).
+const SCHEMA_DRIFT_CODES = new Set(["42703", "42P01"]);
+
+function isSchemaDriftError(err: unknown): boolean {
+  if (!err || typeof err !== "object") return false;
+  const code = (err as { code?: unknown }).code;
+  return typeof code === "string" && SCHEMA_DRIFT_CODES.has(code);
+}
+
 export async function GET() {
   try {
     const supabase = await createSupabaseServer();
@@ -171,43 +184,51 @@ export async function GET() {
     if (!user) return unauthorized();
 
     const admin = createAdminSupabase();
+    // DIAG-ACCOUNT-01 hardening: `select("*")` instead of an explicit column
+    // list. The explicit list was the precise smoking gun — when prod was
+    // missing the columns added by historical migrations 20260403183000 /
+    // 20260406140000 / 20260420160000, every authed-session preferences fetch
+    // 500ed and the dashboard's V3-10 boundary fired. `select("*")` returns
+    // whatever columns exist; we merge the result over `userPreferenceDefaults`
+    // so the response shape is stable for the client regardless of partial
+    // schema state. Tradeoff: a few unused bytes per response (the legacy
+    // `theme`, `default_division`, etc. columns ride along) — acceptable for
+    // the architectural guarantee that schema drift cannot crash the home
+    // page again.
     const { data, error } = await admin
       .from("customer_preferences")
-      .select(
-        [
-          "user_id",
-          "email_fallback_enabled",
-          "email_fallback_delay_hours",
-          "quiet_hours_enabled",
-          "quiet_hours_start",
-          "quiet_hours_end",
-          "quiet_hours_timezone",
-          "muted_divisions",
-          "muted_event_types",
-          "in_app_toast_enabled",
-          "notification_sound_enabled",
-          "notification_vibration_enabled",
-          "high_priority_only",
-          "email_marketing",
-          "email_transactional",
-          "email_digest",
-          "push_enabled",
-          "whatsapp_enabled",
-          "sms_enabled",
-        ].join(", "),
-      )
+      .select("*")
       .eq("user_id", user.id)
       .maybeSingle();
 
     if (error) {
       logApiError("notifications/preferences GET", error);
+      // Schema drift must NEVER 500 this endpoint — the realtime provider
+      // already silently degrades on a 500 (defaults are pre-applied), but
+      // the V3-10 fallback class of bugs typically starts when a single 500
+      // here cascades through a downstream client component that assumes a
+      // 200 shape. Returning defaults is strictly safer than 500.
+      if (isSchemaDriftError(error)) {
+        return NextResponse.json({ preferences: userPreferenceDefaults(user.id) });
+      }
       return NextResponse.json({ error: USER_FACING_LOAD }, { status: 500 });
     }
 
-    const prefs = data ?? userPreferenceDefaults(user.id);
+    // Merge over defaults so the client receives every expected key even if
+    // a column was dropped or hasn't been added yet. The DB row wins for any
+    // column the row exposes; missing columns inherit the canonical default.
+    const prefs = { ...userPreferenceDefaults(user.id), ...(data ?? {}) };
     return NextResponse.json({ preferences: prefs });
   } catch (err) {
     logApiError("notifications/preferences GET", err);
+    if (isSchemaDriftError(err)) {
+      // We can't recover the user.id at this layer because the throw came
+      // from inside the supabase auth client. The realtime provider on the
+      // client only reads the boolean / array shape of preferences (never
+      // the user_id field), so an empty-string user_id is harmless. Issuing
+      // a 200 with defaults is strictly safer than 500ing the dashboard.
+      return NextResponse.json({ preferences: userPreferenceDefaults("") });
+    }
     return NextResponse.json({ error: USER_FACING_LOAD }, { status: 500 });
   }
 }
@@ -312,42 +333,36 @@ export async function PATCH(request: Request) {
     // change persist, even on the (impossible-in-practice) trigger-skipped
     // path. We guard against the user_id being overwritten by setting it
     // explicitly from the authenticated session.
+    //
+    // DIAG-ACCOUNT-01 hardening: `select("*")` for the readback so the
+    // response shape stays stable across schema drift. Same merge-over-defaults
+    // pattern as the GET above.
     const { data: written, error } = await admin
       .from("customer_preferences")
       .upsert({ user_id: user.id, ...updates }, { onConflict: "user_id" })
-      .select(
-        [
-          "user_id",
-          "email_fallback_enabled",
-          "email_fallback_delay_hours",
-          "quiet_hours_enabled",
-          "quiet_hours_start",
-          "quiet_hours_end",
-          "quiet_hours_timezone",
-          "muted_divisions",
-          "muted_event_types",
-          "in_app_toast_enabled",
-          "notification_sound_enabled",
-          "notification_vibration_enabled",
-          "high_priority_only",
-          "email_marketing",
-          "email_transactional",
-          "email_digest",
-          "push_enabled",
-          "whatsapp_enabled",
-          "sms_enabled",
-        ].join(", "),
-      )
+      .select("*")
       .single();
 
     if (error || !written) {
       logApiError("notifications/preferences PATCH", error);
+      // Schema-drift on PATCH is rarer (callers only PATCH the columns they
+      // see in the GET shape, so a drift here would imply the GET's drift
+      // path was already swallowed). Still, return a 400 with the canonical
+      // validation shape so the optimistic-update client rolls back cleanly
+      // rather than seeing a 500-shaped error.
+      if (isSchemaDriftError(error)) {
+        return badRequest();
+      }
       return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
     }
 
-    return NextResponse.json({ preferences: written });
+    const prefs = { ...userPreferenceDefaults(user.id), ...written };
+    return NextResponse.json({ preferences: prefs });
   } catch (err) {
     logApiError("notifications/preferences PATCH", err);
+    if (isSchemaDriftError(err)) {
+      return badRequest();
+    }
     return NextResponse.json({ error: USER_FACING_SAVE }, { status: 500 });
   }
 }

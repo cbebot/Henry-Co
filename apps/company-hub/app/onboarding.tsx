@@ -25,15 +25,15 @@ type Slide = {
 const SLIDES: Slide[] = [
   {
     icon: "domain",
-    title: "Henry & Co.\nat a glance",
+    title: "Henry Onyx\nat a glance",
     description:
-      "A single entry point into every Henry & Co. division. Services span fabric care, technology, commerce, talent, property, education, logistics, and more — all under one roof.",
+      "A single entry point into every Henry Onyx division. Services span fabric care, technology, commerce, talent, property, education, logistics, and more — all under one roof.",
   },
   {
     icon: "view-grid-outline",
     title: "Discover\nDivisions",
     description:
-      "Browse 8+ divisions with detailed profiles, status indicators, and direct links. Each division operates with autonomy while sharing the group's commitment to premium execution.",
+      "Browse every division with detailed profiles, status indicators, and direct links. Each division operates with autonomy while sharing the group's commitment to premium execution.",
   },
   {
     icon: "connection",
@@ -158,7 +158,7 @@ export default function OnboardingScreen() {
           <Pressable
             onPress={handleGetStarted}
             className="w-full items-center rounded-2xl bg-[#C9A227] py-4 active:opacity-80"
-            accessibilityLabel="Get started with Henry and Co Hub"
+            accessibilityLabel="Get started with Henry Onyx Hub"
             accessibilityRole="button"
           >
             <Text className="text-base font-bold text-[#0B0B0C]">

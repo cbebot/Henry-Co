@@ -1,19 +1,16 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { Manrope } from "next/font/google";
-import { HenryCoPublicAccountPresets, PublicAccountChip } from "@henryco/ui";
+import { Fraunces, Manrope } from "next/font/google";
 import { LocaleProvider } from "@henryco/i18n/react";
 import { PublicThemeGuard } from "@henryco/ui/public-shell";
-import { AssistDock } from "@henryco/ui/support";
-import { createDivisionMetadata, getAccountUrl, getDivisionConfig } from "@henryco/config";
+import { SupportAssist } from "@henryco/ui/support";
+import { IntelligenceLauncher } from "@henryco/ui/intelligence";
+import { createDivisionMetadata, getDivisionConfig, getAccountUrl } from "@henryco/config";
 import { ScrollToTopOnNavigation } from "@henryco/config/scroll-to-top";
 import { HenryCoAnalytics, getVerificationMeta } from "@henryco/seo";
 import { isRtlLocale } from "@henryco/i18n/server";
 import { getLogisticsPublicLocale } from "@/lib/locale-server";
-import LogisticsShell from "@/components/layout/LogisticsShell";
-import { getLogisticsSharedLoginUrl, getLogisticsSharedSignupUrl } from "@/lib/logistics-public-links";
-import { getLogisticsPublicChipUser } from "@/lib/logistics-public-viewer";
 import { SeoJsonLd } from "@/components/seo/SeoJsonLd";
+import { brandFontVariables, onyxTypeAttr } from "@henryco/ui/fonts";
 import "./globals.css";
 
 const logistics = getDivisionConfig("logistics");
@@ -24,12 +21,20 @@ const manrope = Manrope({
   display: "swap",
 });
 
+// The brand editorial reading serif — loaded straight into the shared `--font-reading`
+// seam so `.hc-prose` renders in the real Fraunces, not a system fallback.
+const reading = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-reading",
+});
+
 // PASS 18C — emit hreflang + og:locale per request.
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLogisticsPublicLocale();
   return {
     ...createDivisionMetadata("logistics", {
-      title: `${logistics.name} | Henry & Co.`,
+      title: `${logistics.name} | Henry Onyx`,
       description: logistics.description,
       openGraphDescription: logistics.tagline,
       path: "/",
@@ -39,45 +44,33 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+/**
+ * Root layout — providers only. The public marketing/booking surface lives under
+ * the `(public)` route group (its own shell wraps PublicChrome + PublicSiteFooter
+ * on the theme-aware --home-* scope). Staff/operator workspaces ((staff)) and the
+ * auth/pay redirects render bare here and keep their own dark chrome/tokens.
+ */
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [lang, h, chipUser] = await Promise.all([
-    getLogisticsPublicLocale(),
-    headers(),
-    getLogisticsPublicChipUser(),
-  ]);
+  const lang = await getLogisticsPublicLocale();
   const dir = isRtlLocale(lang) ? "rtl" : "ltr";
-  const returnPath = h.get("x-logistics-return-path") || "/";
-  const accountSlot = (
-    <PublicAccountChip
-      {...HenryCoPublicAccountPresets.standard}
-      user={chipUser}
-      loginHref={getLogisticsSharedLoginUrl(returnPath)}
-      signupHref={getLogisticsSharedSignupUrl(returnPath)}
-      accountHref={getAccountUrl("/logistics")}
-      preferencesHref={getAccountUrl("/settings")}
-      settingsHref={getAccountUrl("/security")}
-      showSignOut
-      buttonClassName="border-[var(--logistics-line-strong)] bg-[rgba(215,117,57,0.14)] text-[var(--logistics-accent-soft)] hover:bg-[rgba(215,117,57,0.24)]"
-      dropdownClassName="border-[var(--logistics-line)] bg-[#120a14]"
-      menuItems={[
-        { label: "Logistics in My Account", href: getAccountUrl("/logistics"), external: true },
-      ]}
-    />
-  );
 
   return (
-    <html lang={lang} dir={dir} className={manrope.variable} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className={`${brandFontVariables} ${manrope.variable} ${reading.variable}`} data-onyx-type={onyxTypeAttr()} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <SeoJsonLd />
         <PublicThemeGuard>
           <ScrollToTopOnNavigation />
           <LocaleProvider locale={lang}>
-            <LogisticsShell accountSlot={accountSlot}>{children}</LogisticsShell>
-            <AssistDock division="logistics" accent="#D77539" />
+            {children}
+            {process.env.NEXT_PUBLIC_INTELLIGENCE_LIVE === "1" ? (
+              <IntelligenceLauncher division="logistics" accent="#D06F32" endpoint={getAccountUrl("/api/intelligence/chat")} />
+            ) : (
+              <SupportAssist division="logistics" accent="#D06F32" />
+            )}
           </LocaleProvider>
         </PublicThemeGuard>
         <HenryCoAnalytics />

@@ -11,6 +11,7 @@ import { getMarketplaceViewer, requireMarketplaceUser } from "@/lib/marketplace/
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { createAdminSupabase } from "@/lib/supabase";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export const dynamic = "force-dynamic";
  * action — no client JS needed for the basic round-trip.
  */
 export default async function AccountSavedPage() {
+  const locale = await getMarketplacePublicLocale();
   const viewer = await requireMarketplaceUser("/account/saved");
   const admin = createAdminSupabase();
   const items = await listSavedItems(admin, viewer.user!.id, {
@@ -38,7 +40,7 @@ export default async function AccountSavedPage() {
     <WorkspaceShell
       title="Saved for later"
       description="Items you moved out of the cart so they don't lock up your basket — restore one when you're ready, or clear it."
-      {...accountWorkspaceNav("/account/saved")}
+      {...accountWorkspaceNav("/account/saved", locale)}
     >
       {items.length === 0 ? (
         <EmptyState
@@ -82,7 +84,7 @@ function SavedItemCard({
   return (
     <li className="market-paper flex flex-col overflow-hidden rounded-[1.5rem]">
       {image ? (
-        <div className="relative aspect-[4/3] bg-black/30">
+        <div className="relative aspect-[4/3] bg-[color:var(--market-fill-faint)]">
           {/* href present → wrap image in a link to the product */}
           {href ? (
             <Link href={href} className="absolute inset-0">
@@ -197,7 +199,7 @@ function RestoreForm({ savedItemId }: { savedItemId: string }) {
           market-button-primary inline-flex items-center gap-1.5
           rounded-full px-3.5 py-2 text-[12.5px] font-semibold transition outline-none
           focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55
-          focus-visible:ring-offset-2 focus-visible:ring-offset-[#04070d]
+          focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--acct-bg)]
           active:translate-y-[0.5px]
         "
       >
@@ -217,8 +219,8 @@ function RemoveForm({ savedItemId }: { savedItemId: string }) {
         type="submit"
         className="
           inline-flex items-center gap-1.5 rounded-full
-          border border-red-500/30 bg-transparent px-3.5 py-2 text-[12.5px] font-semibold
-          text-red-500 transition hover:border-red-400/50 hover:text-red-400
+          border border-[color:var(--acct-red)]/30 bg-transparent px-3.5 py-2 text-[12.5px] font-semibold
+          text-[color:var(--acct-red-ink)] transition hover:border-[color:var(--acct-red)]/50 hover:text-[color:var(--acct-red)]
         "
         aria-label="Remove saved item"
       >

@@ -1,4 +1,12 @@
-import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { translateSurfaceLabel, getAccountCopy } from "@henryco/i18n/server";
+import {
+  HeroCard,
+  EmptyStateCard,
+  NextStepRow,
+  DivisionLanding,
+  type HeroCardTile,
+  type HeroCardBreakdownRow,
+} from "@henryco/dashboard-shell/surfaces";
 
 import { requireAccountUser } from "@/lib/auth";
 import { getInvoices } from "@/lib/account-data";
@@ -6,105 +14,22 @@ import { formatDate } from "@/lib/format";
 import { getAccountAppLocale } from "@/lib/locale-server";
 
 import "@/components/invoices/styles.css";
-import { InvoicesHero } from "@/components/invoices/InvoicesHero";
 import { InvoicesList } from "@/components/invoices/InvoicesList";
 import {
+  formatKoboCompact,
   invoiceStats,
   type InvoiceRow,
 } from "@/components/invoices/helpers";
 
 export const dynamic = "force-dynamic";
 
-type CopyShape = {
-  title: string;
-  description: string;
-  emptyTitle: string;
-  emptyDescription: string;
-  fallbackInvoice: string;
-  statuses: Record<string, string>;
-  statusPending: string;
-  eyebrow: string;
-  headlineWithReceipts: string;
-  headlineEmpty: string;
-  blurbDefault: string;
-  totalPaid: string;
-  thisMonth: string;
-  outstanding: string;
-  paidLabel: string;
-  pendingLabel: string;
-  overdueLabel: string;
-  byDivision: string;
-  nothing: string;
-  sectionTitle: string;
-};
-
-function getCopy(locale: string): CopyShape {
-  if (locale === "fr") {
-    return {
-      title: "Factures et reçus",
-      description: "Votre historique de paiements et vos reçus téléchargeables.",
-      emptyTitle: "Aucune facture pour le moment",
-      emptyDescription:
-        "Vos factures et reçus apparaîtront ici après vos paiements dans les services HenryCo.",
-      fallbackInvoice: "Facture {number}",
-      statuses: {
-        paid: "Payée",
-        pending: "En attente",
-        overdue: "En retard",
-        draft: "Brouillon",
-        cancelled: "Annulée",
-        refunded: "Remboursée",
-      },
-      statusPending: "Statut en attente",
-      eyebrow: "Factures · reçus",
-      headlineWithReceipts: "Votre historique de paiements.",
-      headlineEmpty: "Vos reçus apparaîtront ici.",
-      blurbDefault:
-        "Tous les paiements à travers HenryCo finissent ici en PDFs téléchargeables et de marque.",
-      totalPaid: "Payé · à vie",
-      thisMonth: "Payé · ce mois",
-      outstanding: "En attente",
-      paidLabel: "reçus",
-      pendingLabel: "en attente",
-      overdueLabel: "en retard",
-      byDivision: "Par division",
-      nothing: "Aucune facture pour le moment.",
-      sectionTitle: "Toutes les factures",
-    };
-  }
-  return {
-    title: "Invoices & Receipts",
-    description: "Your payment history and downloadable receipts.",
-    emptyTitle: "No invoices yet",
-    emptyDescription:
-      "Your invoices and receipts will appear here after making payments across HenryCo services.",
-    fallbackInvoice: "Invoice {number}",
-    statuses: {
-      paid: "Paid",
-      pending: "Pending",
-      overdue: "Overdue",
-      draft: "Draft",
-      cancelled: "Cancelled",
-      refunded: "Refunded",
-    },
-    statusPending: "Status pending",
-    eyebrow: "Invoices · receipts",
-    headlineWithReceipts: "Every receipt, one place.",
-    headlineEmpty: "Receipts will land here.",
-    blurbDefault:
-      "Every payment across HenryCo arrives here as a branded, downloadable PDF — care bookings, marketplace orders, studio invoices, logistics shipments, learn certificates.",
-    totalPaid: "Total paid · lifetime",
-    thisMonth: "Paid · this month",
-    outstanding: "Outstanding",
-    paidLabel: "receipts",
-    pendingLabel: "pending",
-    overdueLabel: "overdue",
-    byDivision: "By division",
-    nothing: "No invoices yet.",
-    sectionTitle: "All invoices",
-  };
-}
-
+/**
+ * Invoices landing.
+ *
+ * ACCOUNT-PREMIUM-01 (session 2, Phase 2C). Lifts InvoicesHero into the
+ * shared <HeroCard /> primitive and surfaces a NextStepRow when there's an
+ * overdue invoice.
+ */
 export default async function InvoicesPage() {
   const [locale, user] = await Promise.all([getAccountAppLocale(), requireAccountUser()]);
   const rawInvoices = await getInvoices(user.id, 50);
@@ -117,66 +42,154 @@ export default async function InvoicesPage() {
     total_kobo: Number(row.total_kobo) || 0,
     created_at: String(row.created_at ?? ""),
   }));
-  const copy = getCopy(locale);
+  const accountCopy = getAccountCopy(locale);
+  const copy = accountCopy.invoices;
   const stats = invoiceStats(invoices);
-  const headline =
-    invoices.length === 0 ? copy.headlineEmpty : copy.headlineWithReceipts;
 
-  return (
-    <div className="acct-inv acct-fade-in">
-      <InvoicesHero
-        stats={stats}
-        eyebrow={copy.eyebrow}
-        headline={headline}
-        blurb={copy.blurbDefault}
-        labels={{
-          totalPaid: copy.totalPaid,
-          thisMonth: copy.thisMonth,
-          outstanding: copy.outstanding,
-          paidCount: copy.paidLabel,
-          pendingCount: copy.pendingLabel,
-          overdueCount: copy.overdueLabel,
-          byDivision: copy.byDivision,
-          nothing: copy.nothing,
+  // ── State picker ─────────────────────────────────────────────────
+  const heroTone: "calm" | "active" | "attention" | "empty" =
+    invoices.length === 0
+      ? "empty"
+      : stats.overdueCount > 0
+        ? "attention"
+        : stats.pendingCount > 0
+          ? "active"
+          : "calm";
+
+  const headline =
+    invoices.length === 0 ? copy.hero.headlineEmpty : copy.hero.headlineWithReceipts;
+
+  // ── Tiles ────────────────────────────────────────────────────────
+  const tiles: ReadonlyArray<HeroCardTile> = [
+    {
+      label: copy.hero.totalPaidLabel,
+      value: `₦${formatKoboCompact(stats.totalPaidKobo)}`,
+      foot: `${stats.paidCount} ${copy.hero.paidCountUnit}`,
+    },
+    {
+      label: copy.hero.thisMonthLabel,
+      value: `₦${formatKoboCompact(stats.thisMonthPaidKobo)}`,
+      foot: copy.hero.thisMonthFoot,
+    },
+    {
+      label: copy.hero.outstandingLabel,
+      value: `₦${formatKoboCompact(stats.outstandingKobo)}`,
+      foot: `${stats.pendingCount} ${copy.hero.pendingCountUnit}${
+        stats.overdueCount > 0 ? ` · ${stats.overdueCount} ${copy.hero.overdueCountUnit}` : ""
+      }`,
+      tone: stats.overdueCount > 0 ? "warning" : stats.pendingCount > 0 ? "active" : "default",
+    },
+  ];
+
+  // ── Breakdown (by division) ──────────────────────────────────────
+  const divisionLabels = copy.divisions as Record<string, string>;
+  const breakdown: ReadonlyArray<HeroCardBreakdownRow> = stats.divisions.map((d) => ({
+    label: divisionLabels[d.key] ?? d.label,
+    count: d.count,
+    color: d.color,
+  }));
+
+  // ── NextStepRow: pick first overdue invoice ──────────────────────
+  let nextStep: React.ReactNode = null;
+  const overdue = invoices.find((inv) => inv.status === "overdue");
+  if (overdue) {
+    nextStep = (
+      <NextStepRow
+        tone="attention"
+        kicker={copy.hero.overdueCountUnit}
+        title={
+          overdue.invoice_no
+            ? copy.list.fallbackTitle.replace("{number}", overdue.invoice_no)
+            : (overdue.description ?? copy.hero.outstandingLabel)
+        }
+        detail={`₦${formatKoboCompact(overdue.total_kobo)}`}
+        cta={{
+          label: translateSurfaceLabel(locale, "Settle now"),
+          href: `/invoices/${overdue.id}`,
         }}
       />
-      <section aria-labelledby="acct-inv-list">
-        <div className="acct-inv__section-head">
-          <h2 id="acct-inv-list" className="acct-inv__section-title">
-            {copy.sectionTitle}
-          </h2>
-          <span className="acct-inv__section-meta">
-            {invoices.length} {invoices.length === 1 ? "receipt" : "receipts"} on file
-          </span>
-        </div>
-        {invoices.length === 0 ? (
-          <div className="acct-inv__empty">
-            <strong>{copy.emptyTitle}</strong>
-            {copy.emptyDescription}
-          </div>
-        ) : (
-          <InvoicesList
-            invoices={invoices}
-            statusLabel={(status) =>
-              copy.statuses[status as keyof typeof copy.statuses] || copy.statusPending
-            }
-            fallbackTitle={(invoiceNo) =>
-              copy.fallbackInvoice.replace("{number}", invoiceNo ?? "")
-            }
-            formatDate={(iso) => formatDate(iso, { locale })}
-          />
-        )}
-      </section>
-      <p
-        style={{
-          fontSize: 11,
-          color: "var(--acct-muted)",
-          textAlign: "center",
-          margin: "8px 0 0",
-        }}
-      >
-        {translateSurfaceLabel(locale, "Receipts download as branded PDFs.")}
-      </p>
-    </div>
+    );
+  }
+
+  const sectionMeta =
+    invoices.length === 1
+      ? `${invoices.length} ${copy.section.receiptsOnFileSingular}`
+      : `${invoices.length} ${copy.section.receiptsOnFilePlural}`;
+
+  return (
+    <DivisionLanding
+      className="acct-inv acct-fade-in"
+      hero={
+        <HeroCard
+          variant="paired"
+          tone={heroTone}
+          eyebrow={copy.hero.eyebrow}
+          headline={headline}
+          blurb={copy.hero.blurb}
+          ariaLabel={copy.hero.ariaOverview}
+          ariaTilesLabel={copy.hero.ariaTotals}
+          tiles={tiles}
+          side={{
+            kicker: copy.hero.byDivision,
+            title: copy.hero.byDivision,
+            body:
+              stats.totalCount > 0
+                ? `${stats.totalCount} ${stats.totalCount === 1 ? copy.section.receiptsOnFileSingular : copy.section.receiptsOnFilePlural}`
+                : copy.hero.byDivisionEmpty,
+            breakdown:
+              breakdown.length > 0
+                ? {
+                    label: copy.hero.byDivision,
+                    rows: breakdown,
+                    ariaLabel: copy.hero.ariaByDivision,
+                  }
+                : undefined,
+          }}
+        />
+      }
+      nextStep={nextStep}
+      sections={[
+        {
+          id: "acct-inv-list",
+          title: copy.section.title,
+          meta: sectionMeta,
+          content:
+            invoices.length === 0 ? (
+              <EmptyStateCard
+                kicker={copy.hero.eyebrow}
+                title={copy.empty.title}
+                body={copy.empty.description}
+              />
+            ) : (
+              <InvoicesList
+                invoices={invoices}
+                statusLabel={(status) => {
+                  const statuses = copy.statuses as Record<string, string>;
+                  return statuses[status] || copy.statuses.fallback;
+                }}
+                fallbackTitle={(invoiceNo) =>
+                  copy.list.fallbackTitle.replace("{number}", invoiceNo ?? "")
+                }
+                formatDate={(iso) => formatDate(iso, { locale })}
+                ariaListLabel={copy.list.ariaLabel}
+                rowAriaTemplate={copy.list.rowAriaLabel}
+                divisionLabels={copy.divisions}
+              />
+            ),
+        },
+      ]}
+      footer={
+        <p
+          style={{
+            fontSize: 11,
+            color: "var(--acct-muted)",
+            textAlign: "center",
+            margin: "8px 0 0",
+          }}
+        >
+          {translateSurfaceLabel(locale, copy.footerNote)}
+        </p>
+      }
+    />
   );
 }

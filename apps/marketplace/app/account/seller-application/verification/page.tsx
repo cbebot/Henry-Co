@@ -3,10 +3,12 @@ import { WorkspaceShell } from "@/components/marketplace/shell";
 import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function SellerApplicationVerificationPage() {
+  const locale = await getMarketplacePublicLocale();
   await requireMarketplaceUser("/account/seller-application/verification");
   const data = await getBuyerDashboardData();
 
@@ -14,7 +16,7 @@ export default async function SellerApplicationVerificationPage() {
     <WorkspaceShell
       title="Seller verification"
       description="Step 2 captures the trust story, KYC context, and service standards that determine whether the store is ready for approval."
-      {...accountWorkspaceNav("/account/seller-application")}
+      {...accountWorkspaceNav("/account/seller-application", locale)}
     >
       <SellerApplicationWizard step="verification" initialApplication={data.application} />
     </WorkspaceShell>

@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { getDivisionUrl } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, slugify } from "@/lib/env";
-import { uploadJobsDocument } from "@/lib/cloudinary";
+import { uploadJobsCandidateDocument } from "@/lib/jobs/media";
 import { DEFAULT_PIPELINE } from "@/lib/jobs/content";
 import {
   getApplicationById,
@@ -28,11 +28,13 @@ import { isEmployerSubscribed } from "@/lib/jobs/employer-subscription";
 import {
   alreadyAppliedReason,
   conflictOfInterestReason,
+  courseGateReason,
   dailyCapReason,
   detectJobPostScamSignals,
   exceedsDailyApplicationCap,
   isApplicantEmployerConflict,
 } from "@/lib/jobs/hiring-rules";
+import { assertCourseGatePassed } from "@/lib/jobs/learn-to-earn-data";
 import {
   createJobsInAppNotification,
   sendJobsEmail,
@@ -482,10 +484,15 @@ export async function uploadCandidateAsset(input: {
   kind: string;
   file: File;
 }) {
-  const bucket = String(process.env.JOBS_DOCUMENTS_BUCKET || "jobs-documents").trim() || "jobs-documents";
-  const uploaded = await uploadJobsDocument(input.file, {
-    folderSuffix: `${input.actor.userId}/${input.kind}`,
-    publicIdPrefix: `${input.kind}-${input.actor.userId}`,
+  // Candidate documents (resume / portfolio / certification) are NDPA personal
+  // data: upload to the RLS-private bucket via @henryco/media and persist the
+  // backend-neutral `media://private/jobs-documents/<key>` reference in the same
+  // `file_url` column. Read sites resolve it to a short-lived signed URL via
+  // signJobsMediaUrl (data.ts:buildDocument + the documents API route).
+  const mediaRef = await uploadJobsCandidateDocument({
+    userId: input.actor.userId,
+    kind: input.kind,
+    file: input.file,
   });
 
   const { data, error } = await createAdminSupabase()
@@ -496,23 +503,23 @@ export async function uploadCandidateAsset(input: {
       name: input.file.name,
       type: "document",
       division: JOBS_DIVISION,
-      file_url: uploaded.secureUrl,
+      file_url: mediaRef,
       file_size: input.file.size,
       mime_type: input.file.type,
       reference_type: "jobs_candidate_profile",
       reference_id: input.actor.userId,
       metadata: {
         documentKind: input.kind,
-        publicId: uploaded.publicId,
-        storageBucket: bucket,
-        storagePath: uploaded.publicId,
       },
     } as never)
     .select("*")
     .maybeSingle();
 
   if (error) {
-    throw new Error(error.message || "Document metadata could not be saved.");
+    // Raw DB error text (table/constraint names) never leaves the server —
+    // callers surface a fixed message; the diagnostic detail goes to logs.
+    console.error("[jobs][uploadCandidateAsset] document insert failed:", error.message);
+    throw new Error("Document metadata could not be saved.");
   }
 
   await logAudit({
@@ -523,7 +530,7 @@ export async function uploadCandidateAsset(input: {
     newValues: {
       kind: input.kind,
       name: input.file.name,
-      fileUrl: uploaded.secureUrl,
+      fileRef: mediaRef,
     },
   });
 
@@ -672,6 +679,16 @@ export async function submitApplication(input: {
     throw new Error(conflictOfInterestReason());
   }
 
+  // V3-56 course gate: a hard gate blocks the application until the candidate has
+  // a verified Henry Onyx Learn completion; a soft gate marks them preferred.
+  const courseGate = await assertCourseGatePassed(admin, {
+    jobSlug: job.slug,
+    candidateUserId: input.actor.userId,
+  });
+  if (courseGate.blockingGate) {
+    throw new Error(courseGateReason(courseGate.blockingGate.course_label));
+  }
+
   const existingAppRows = await admin
     .from("customer_activity")
     .select("*")
@@ -714,7 +731,11 @@ export async function submitApplication(input: {
     availability: availability || existingProfile?.availability || null,
     salaryExpectation: salaryExpectation || existingProfile?.salaryExpectation || null,
     stage: "applied",
-    recruiterConfidence: Math.min((existingProfile?.trustScore ?? 42) + 6, 100),
+    learnPreferred: courseGate.preferred,
+    recruiterConfidence: Math.min(
+      (existingProfile?.trustScore ?? 42) + (courseGate.preferred ? 10 : 6),
+      100,
+    ),
     candidateReadiness: existingProfile?.trustScore ?? 42,
     internal: job.internal,
     profileSnapshot: existingProfile,
@@ -805,7 +826,6 @@ export async function submitApplication(input: {
           detailLines: [
             `Role: ${job.title}`,
             `Candidate: ${existingProfile?.fullName || input.actor.fullName || "Candidate"}`,
-            `Readiness score: ${existingProfile?.trustScore ?? 42}`,
           ],
           ctaLabel: "Review applicant",
           ctaHref: `/employer/applicants/${applicationId}`,
@@ -828,11 +848,11 @@ export async function submitApplication(input: {
       actionLabel: "Open candidate",
       emailKey: "internal_hiring_alert",
       emailHeading: "Internal hiring application received",
-      emailSummary: `${metadata.candidateName} applied to ${job.title} inside HenryCo Jobs.`,
+      emailSummary: `${metadata.candidateName} applied to ${job.title} inside Henry Onyx Jobs.`,
       emailDetailLines: [
         `Role: ${job.title}`,
         `Candidate: ${metadata.candidateName}`,
-        `Readiness score: ${existingProfile?.trustScore ?? 42}`,
+        `Profile: ${existingProfile ? "On record" : "Not created yet"}`,
       ],
       entityType: "jobs_application",
       entityId: applicationId,
@@ -845,7 +865,7 @@ export async function submitApplication(input: {
     {
       key: "application_submitted",
       heading: "Application submitted",
-      summary: `Your application for ${job.title} at ${job.employerName} has been recorded inside HenryCo Jobs.`,
+      summary: `Your application for ${job.title} at ${job.employerName} has been submitted. You can track its progress in your candidate hub.`,
       detailLines: [
         `Role: ${job.title}`,
         `Employer: ${job.employerName}`,
@@ -864,7 +884,7 @@ export async function submitApplication(input: {
 
   await sendJobsWhatsApp({
     phone: existingProfile?.phone || null,
-    body: `HenryCo Jobs: your application for ${job.title} at ${job.employerName} has been submitted. Track it in your candidate dashboard.`,
+    body: `Henry Onyx Jobs: your application for ${job.title} at ${job.employerName} has been submitted. Track it in your candidate dashboard.`,
     actorId: input.actor.userId,
     actorRole: input.actor.role,
     entityType: "jobs_application",
@@ -926,7 +946,7 @@ export async function createEmployerProfile(input: {
     activityType: JOBS_ACTIVITY_EMPLOYER_PROFILE,
     status: "active",
     title: name,
-    description: description || "Employer profile published into HenryCo Jobs.",
+    description: description || "Employer profile published into Henry Onyx Jobs.",
     referenceType: "jobs_employer",
     referenceId: slug,
     actionUrl: "/employer/company",
@@ -995,7 +1015,7 @@ export async function createEmployerProfile(input: {
   await createJobsInAppNotification({
     userId: input.actor.userId,
     title: "Employer onboarding submitted",
-    body: `${name} is now inside HenryCo Jobs and awaiting verification review.`,
+    body: `${name} is now inside Henry Onyx Jobs and awaiting verification review.`,
     actionUrl: "/employer/company",
     actionLabel: "Open employer console",
     referenceType: "jobs_employer",
@@ -1007,7 +1027,7 @@ export async function createEmployerProfile(input: {
     {
       key: "employer_verification",
       heading: "Employer profile submitted",
-      summary: `${name} has been created inside HenryCo Jobs and is now awaiting verification review.`,
+      summary: `${name} has been created inside Henry Onyx Jobs and is now awaiting verification review.`,
       detailLines: [
         `Employer: ${name}`,
         `Website: ${website || companyPayload.href}`,
@@ -1030,7 +1050,7 @@ export async function createEmployerProfile(input: {
     actionLabel: "Review verification",
     emailKey: "recruiter_alert",
     emailHeading: "Employer verification queue update",
-    emailSummary: `${name} was just onboarded and is waiting for verification review inside HenryCo Jobs.`,
+    emailSummary: `${name} was just onboarded and is waiting for verification review inside Henry Onyx Jobs.`,
     emailDetailLines: [
       `Employer: ${name}`,
       `Industry: ${industry}`,
@@ -1070,9 +1090,36 @@ export async function createJobPost(input: {
     throw new Error("Job title is required.");
   }
 
+  // J8 — mandatory salary disclosure validator. Reject empty/zero/
+  // placeholder ranges. Either both salaryMin and salaryMax (numeric,
+  // > 0, min <= max) OR a non-placeholder salaryLabel is required.
+  // "Competitive", "negotiable", "tbd", "DOE" and similar are
+  // explicitly rejected — that pattern destroys candidate trust on
+  // first impression and is named in the uniformity anti-patterns.
+  const salaryMinRaw = Number(asText(input.formData.get("salaryMin")) || 0);
+  const salaryMaxRaw = Number(asText(input.formData.get("salaryMax")) || 0);
+  const salaryLabelRaw = asText(input.formData.get("salaryLabel")).trim();
+  const hasNumericRange =
+    Number.isFinite(salaryMinRaw) &&
+    Number.isFinite(salaryMaxRaw) &&
+    salaryMinRaw > 0 &&
+    salaryMaxRaw > 0 &&
+    salaryMinRaw <= salaryMaxRaw;
+  const SALARY_PLACEHOLDER_BLOCKLIST =
+    /^(competitive|negotiable|tbd|doe|to be discussed|market rate|industry standard|attractive|generous|undisclosed|n\/?a)$/i;
+  const hasUsableLabel =
+    salaryLabelRaw.length > 0 && !SALARY_PLACEHOLDER_BLOCKLIST.test(salaryLabelRaw);
+  if (!hasNumericRange && !hasUsableLabel) {
+    throw new Error(
+      "Salary disclosure is required. Provide a numeric salary range " +
+        "(min and max, with max >= min) or a concrete salary label. " +
+        '"Competitive", "negotiable" and similar placeholders are not accepted.',
+    );
+  }
+
   const slug = slugify(asText(input.formData.get("slug")) || `${title}-${employer?.employerSlug || "henryco"}`);
   const employerSlug = employer?.employerSlug || "henryco-group";
-  const employerName = employer?.employerName || "HenryCo Group";
+  const employerName = employer?.employerName || "Henry Onyx";
   const isPrivileged = input.actor.role === "owner" || input.actor.role === "manager";
   const [eligibility, subscription] = await Promise.all([
     getEmployerPostingEligibility({
@@ -1091,10 +1138,13 @@ export async function createJobPost(input: {
   // billing is in place. Owners/managers retain the override path
   // they already have for trust-tier and verification rules.
   if (!subscription.allowed && !isPrivileged) {
+    // User-facing gate copy — never interpolate the raw status enum or slug.
+    console.error(
+      `[jobs][createJobPost] subscription gate blocked ${employerSlug} (status: ${subscription.status})`,
+    );
     throw new Error(
-      `A live HenryCo Jobs employer subscription is required to post roles. ` +
-        `The current subscription status for ${employerSlug} is "${subscription.status}". ` +
-        `Renew or talk to the HenryCo team before publishing this role.`
+      "An active Henry Onyx Jobs employer subscription is required to post roles. " +
+        "Renew your subscription or contact support to publish this role.",
     );
   }
   const internal = asText(input.formData.get("internal")) === "1" && isPrivileged;
@@ -1200,11 +1250,10 @@ export async function createJobPost(input: {
           trustHighlights.length > 0
             ? trustHighlights
             : asUniqueList([
-                eligibility.trustTier !== "basic"
-                  ? `Shared trust ${eligibility.trustTier.replace(/_/g, " ")}`
-                  : null,
+                // Candidate-facing highlights only — never internal tier
+                // enums or moderation-queue state.
+                eligibility.trustTier !== "basic" ? "Employer in good standing" : null,
                 employerProfile?.employer.verificationStatus === "verified" ? "Verified employer" : null,
-                moderationStatus === "approved" ? "Moderated posting" : "Awaiting moderation review",
                 "Structured pipeline",
             ]),
       pipelineStages: pipelineStages.length > 0 ? pipelineStages : [...DEFAULT_PIPELINE],
@@ -1243,12 +1292,12 @@ export async function createJobPost(input: {
   } else if (internal) {
     await notifyInternalTeam({
       title: "Internal role published",
-      body: `${title} is live in the HenryCo internal hiring lane.`,
+      body: `${title} is live in the Henry Onyx internal hiring lane.`,
       actionUrl: `/employer/jobs/${slug}`,
       actionLabel: "Open role",
       emailKey: "internal_hiring_alert",
       emailHeading: "Internal hiring role published",
-      emailSummary: `${title} is now live for HenryCo internal hiring inside Jobs.`,
+      emailSummary: `${title} is now live for Henry Onyx internal hiring inside Jobs.`,
       emailDetailLines: [
         `Employer: ${employerName}`,
         `Location: ${location}`,
@@ -1270,10 +1319,10 @@ export async function createJobPost(input: {
           : "Role submitted for review",
     body:
       moderationStatus === "approved"
-        ? `${title} is now live in HenryCo Jobs.`
+        ? `${title} is now live in Henry Onyx Jobs.`
         : moderationStatus === "draft"
-          ? `${title} was saved as draft until trust, company readiness, and moderation requirements are complete.`
-          : `${title} is now waiting in the moderation queue.`,
+          ? `${title} was saved as a draft. Complete your company setup and posting requirements to submit it for review.`
+          : `${title} has been submitted and is under review. You will be notified when it goes live.`,
     actionUrl: `/employer/jobs/${slug}`,
     actionLabel: "Open role",
     priority: moderationStatus === "approved" ? "normal" : "high",
@@ -1299,6 +1348,24 @@ export async function createJobPost(input: {
   });
 
   return { slug, moderationStatus };
+}
+
+// Candidate-facing display names for the known pipeline stages. Recruiter
+// stage identifiers are free strings (pipelines are recruiter-definable), so
+// anything unmapped falls back to a generic update — internal slugs like
+// "bg_check" must never reach candidate notifications verbatim.
+const CANDIDATE_STAGE_LABELS: Record<string, string> = {
+  applied: "Application received",
+  reviewing: "Under review",
+  shortlisted: "Shortlisted",
+  interview: "Interview stage",
+  offer: "Offer stage",
+  hired: "Hired",
+  rejected: "Not proceeding",
+};
+
+function candidateStageLabel(stage: string): string | null {
+  return CANDIDATE_STAGE_LABELS[String(stage || "").trim().toLowerCase()] ?? null;
 }
 
 export async function advanceApplicationStage(input: {
@@ -1337,12 +1404,18 @@ export async function advanceApplicationStage(input: {
     subject: `${existing.jobTitle} application`,
   });
 
+  const stageLabel = candidateStageLabel(input.stage);
+
   if (threadId) {
     await admin.from("support_messages").insert({
       thread_id: threadId,
       sender_id: input.actor.userId,
       sender_type: "system",
-      body: input.note || `Application moved to ${input.stage}.`,
+      body:
+        input.note ||
+        (stageLabel
+          ? `Application update: ${stageLabel}.`
+          : "Your application has been updated."),
       attachments: [
         {
           type: "timeline_event",
@@ -1355,8 +1428,10 @@ export async function advanceApplicationStage(input: {
 
   await createJobsInAppNotification({
     userId: existing.candidateUserId,
-    title: `Application moved to ${input.stage}`,
-    body: `${existing.jobTitle} at ${existing.employerName} has been updated.`,
+    title: "Application update",
+    body: stageLabel
+      ? `${existing.jobTitle} at ${existing.employerName}: ${stageLabel}.`
+      : `${existing.jobTitle} at ${existing.employerName} has been updated.`,
     actionUrl: "/candidate/applications",
     actionLabel: "Open applications",
     priority: input.stage === "interview" || input.stage === "offer" ? "high" : "normal",
@@ -1384,7 +1459,9 @@ export async function advanceApplicationStage(input: {
             : input.stage === "rejected"
               ? "Application update"
               : "Interview update",
-        summary: `${existing.jobTitle} at ${existing.employerName} has moved to ${input.stage}.`,
+        summary: stageLabel
+          ? `${existing.jobTitle} at ${existing.employerName}: ${stageLabel}.`
+          : `${existing.jobTitle} at ${existing.employerName} has been updated.`,
         detailLines: [input.note || "Open your application timeline for the latest context."],
         ctaLabel: "Open timeline",
         ctaHref: "/candidate/applications",
@@ -1400,7 +1477,9 @@ export async function advanceApplicationStage(input: {
 
   await sendJobsWhatsApp({
     phone: existing.candidatePhone,
-    body: `HenryCo Jobs: ${existing.jobTitle} at ${existing.employerName} moved to ${input.stage}. Open your dashboard for the full update.`,
+    body: stageLabel
+      ? `Henry Onyx Jobs: ${existing.jobTitle} at ${existing.employerName} — ${stageLabel}. Open your dashboard for the full update.`
+      : `Henry Onyx Jobs: your application for ${existing.jobTitle} at ${existing.employerName} has been updated. Open your dashboard for the full update.`,
     actorId: input.actor.userId,
     actorRole: input.actor.role,
     entityType: "jobs_application",
@@ -1568,7 +1647,7 @@ export async function updateEmployerVerification(input: {
       await createJobsInAppNotification({
         userId: memberUserId,
         title: "Employer verification updated",
-        body: `${employerName} is now ${input.status} in HenryCo Jobs.`,
+        body: `${employerName} is now ${input.status} in Henry Onyx Jobs.`,
         actionUrl: "/employer/company",
         actionLabel: "Open employer profile",
         priority: "high",
@@ -1583,7 +1662,7 @@ export async function updateEmployerVerification(input: {
         {
           key: "employer_verification",
           heading: "Employer verification updated",
-          summary: `${employerName} is now marked ${input.status} inside HenryCo Jobs.`,
+          summary: `${employerName} is now marked ${input.status} inside Henry Onyx Jobs.`,
           detailLines: [input.reason || "Open your employer console for the latest verification context."],
           ctaLabel: "Open employer console",
           ctaHref: toJobsUrl("/employer/company"),

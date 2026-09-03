@@ -165,7 +165,7 @@ export function JobsApplicationDocument({ application, posting, candidate, resum
 
       <LegalFooter
         lines={[
-          "This application package was assembled from the candidate's HenryCo Jobs profile at the moment of submission. Any subsequent profile edits are not reflected here.",
+          "This application package was assembled from the candidate's Henry Onyx Jobs profile at the moment of submission. Any subsequent profile edits are not reflected here.",
           "Recruiters and hiring teams should treat this PDF as the canonical record of what the candidate submitted at this point in time.",
         ]}
       />

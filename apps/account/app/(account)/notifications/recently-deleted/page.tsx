@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
+import { HeroCard } from "@henryco/dashboard-shell/surfaces";
 import { requireAccountUser } from "@/lib/auth";
 import { getRecentlyDeletedNotificationFeed } from "@/lib/account-data";
 import { getAccountAppLocale } from "@/lib/locale-server";
-import PageHeader from "@/components/layout/PageHeader";
 import RecentlyDeletedFeed from "@/components/notifications/RecentlyDeletedFeed";
 
 export const dynamic = "force-dynamic";
@@ -27,12 +27,14 @@ export default async function RecentlyDeletedNotificationsPage() {
         {t("Back to notifications")}
       </Link>
 
-      <PageHeader
-        title={t("Recently deleted")}
-        description={t(
+      <HeroCard
+        variant="compact"
+        tone="empty"
+        eyebrow={`${t("Notifications")} · ${t("Recently deleted")}`}
+        headline={t("Recently deleted")}
+        blurb={t(
           "Restore notifications you removed in the last 30 days, or remove them forever.",
         )}
-        icon={Trash2}
       />
 
       <RecentlyDeletedFeed notifications={notifications} />

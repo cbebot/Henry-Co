@@ -7,9 +7,25 @@ Authoring) — Claude Code · Opus 4.7 · 1M context · xhigh.
 `docs/v3/V3-DISCOVERY-INVENTORY.md` for full state-of-platform.
 
 This directory contains a **complete, self-contained rebuild prompt
-per HenryCo division**. Each prompt is paste-ready: open a fresh
-Claude Opus 4.7 Max session, paste the prompt, and it should produce
-a world-class rebuild without follow-up questions.
+per Henry Onyx division**. Each prompt is paste-ready: open a fresh
+**Claude Opus 4.8 ultracode (max effort)** session, paste the prompt,
+and it should produce a world-class rebuild without follow-up questions.
+
+> **⭐ REQUIRED FIRST READ — the craft bar:**
+> [`LAUNCH-SHOWCASE-CRAFT-STANDARD.md`](./LAUNCH-SHOWCASE-CRAFT-STANDARD.md).
+> Every division prompt below INHERITS it. It defines the launch-grade
+> cinematic craft (scroll-driven build, cinematic clips, film grain,
+> glass cards — used with restraint, where appropriate), the page-by-page
+> rebuild discipline, brand + voice, accessibility + performance budgets,
+> and the **anti-shallow-work charter**. Read it in full before the
+> division prompt: the division prompt says *what* to rebuild and *what to
+> preserve*; the standard says *to what bar*.
+
+> **Brand note (supersedes the older prompts below):** the brand is
+> **Henry Onyx** (not the retired "Henry & Co."); render everything
+> user-facing as Henry Onyx. Some prompts still embed legacy
+> `henrycogroup.com` strings — treat them as the live domains of record
+> per current config, but never print "Henry & Co." into any surface.
 
 > **Note on naming.** The repo's git history already uses "PASS 21"
 > labels for the design / hardcoded-status-hex polish (e.g., commit

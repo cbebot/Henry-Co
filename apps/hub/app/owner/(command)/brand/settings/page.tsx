@@ -1,28 +1,41 @@
+import type { Metadata } from "next";
+import { getHubOwnerCopy } from "@henryco/i18n/server";
 import { OwnerPageHeader, OwnerPanel } from "@/components/owner/OwnerPrimitives";
 import { CompanySettingsForm, HubSiteSettingsForm } from "@/components/owner/BrandSettingsForms";
+import { getHubPublicLocale } from "@/lib/locale-server";
 import { getBrandCenterData } from "@/lib/owner-data";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getHubPublicLocale();
+  const copy = getHubOwnerCopy(locale).brand.settings;
+  return {
+    title: copy.metadataTitle,
+    description: copy.metadataDescription,
+  };
+}
+
 export default async function BrandSettingsPage() {
-  const data = await getBrandCenterData();
+  const [data, locale] = await Promise.all([getBrandCenterData(), getHubPublicLocale()]);
+  const copy = getHubOwnerCopy(locale).brand.settings;
   const company = data.companySettings || {};
   const site = data.siteSettings || {};
 
   return (
     <div className="space-y-6 acct-fade-in">
       <OwnerPageHeader
-        eyebrow="Brand Settings"
-        title="Company-wide identity controls"
-        description="These controls write directly into the shared company settings rows used by the group brand layer."
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        description={copy.description}
       />
 
-      <OwnerPanel title="Company settings" description="Top-level company identity, contact, and SEO defaults.">
-        <CompanySettingsForm company={company as Record<string, unknown>} />
+      <OwnerPanel title={copy.companyPanelTitle} description={copy.companyPanelDescription}>
+        <CompanySettingsForm company={company as Record<string, unknown>} copy={getHubOwnerCopy(locale).brandSettingsForms} />
       </OwnerPanel>
 
-      <OwnerPanel title="Hub site shell" description="The current live hub shell row for the public group site.">
-        <HubSiteSettingsForm site={site as Record<string, unknown>} />
+      <OwnerPanel title={copy.hubPanelTitle} description={copy.hubPanelDescription}>
+        <HubSiteSettingsForm site={site as Record<string, unknown>} copy={getHubOwnerCopy(locale).brandSettingsForms} />
       </OwnerPanel>
     </div>
   );

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { translateSurfaceLabel } from "@henryco/i18n";
 import { requireJobsRoles } from "@/lib/auth";
 import { getRecruiterOverviewData } from "@/lib/jobs/data";
 import { recruiterNav } from "@/lib/jobs/navigation";
+import { getJobsPublicLocale } from "@/lib/locale-server";
 import { EmptyState } from "@/components/feedback";
 import { SectionCard, StatTile, WorkspaceShell } from "@/components/workspace-shell";
 
@@ -9,31 +11,33 @@ export const dynamic = "force-dynamic";
 
 export default async function RecruiterOverviewPage() {
   await requireJobsRoles(["recruiter", "admin", "owner", "moderator"], "/recruiter");
-  const data = await getRecruiterOverviewData();
+  const locale = await getJobsPublicLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
+  const data = await getRecruiterOverviewData(locale);
 
   return (
     <WorkspaceShell
       area="recruiter"
-      title="Recruiter Console"
-      subtitle="Manage the hiring pipeline, employers, moderation, and candidate queue."
+      title={t("Recruiter Console")}
+      subtitle={t("Manage the hiring pipeline, employers, moderation, and candidate queue.")}
       nav={recruiterNav}
       activeHref="/recruiter"
       accent="linear-gradient(135deg,#1d3f6f 0%,#3266b4 55%,#6db7ff 100%)"
     >
       <div className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatTile label="Jobs" value={data.jobs.length} detail="Published and pending jobs in the system." />
-          <StatTile label="Employers" value={data.employers.length} detail="Employer profiles under management." />
-          <StatTile label="Candidates" value={data.candidateProfiles.length} detail="Profiles with live jobs metadata." />
-          <StatTile label="Applications" value={data.applications.length} detail="Active pipeline rows." />
+          <StatTile label={t("Jobs")} value={data.jobs.length} detail={t("Published and pending jobs in the system.")} />
+          <StatTile label={t("Employers")} value={data.employers.length} detail={t("Employer profiles under management.")} />
+          <StatTile label={t("Candidates")} value={data.candidateProfiles.length} detail={t("Profiles with live jobs metadata.")} />
+          <StatTile label={t("Applications")} value={data.applications.length} detail={t("Active pipeline rows.")} />
         </div>
 
-        <SectionCard title="Priority queue" actions={<Link href="/recruiter/pipeline" className="text-sm font-semibold text-[var(--jobs-accent)]">Open pipeline</Link>}>
+        <SectionCard title={t("Priority queue")} actions={<Link href="/recruiter/pipeline" className="text-sm font-semibold text-[var(--jobs-accent)]">{t("Open pipeline")}</Link>}>
           {data.applications.length === 0 ? (
             <EmptyState
-              kicker="No active queue"
-              title="The pipeline is quiet right now."
-              body="New applications, moderation pressure, and hiring movement will appear here as soon as the live system receives them."
+              kicker={t("No active queue")}
+              title={t("The pipeline is quiet right now.")}
+              body={t("New applications, moderation pressure, and hiring movement will appear here as soon as the live system receives them.")}
             />
           ) : (
             <div className="space-y-3">

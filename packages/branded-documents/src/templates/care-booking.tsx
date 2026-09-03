@@ -42,7 +42,7 @@ export function CareBookingDocument({ booking, customer, technician, itemisation
     <BrandedDocument
       metadata={{
         title: `Care booking ${booking.referenceNo}`,
-        subject: "HenryCo Care booking confirmation",
+        subject: "Henry Onyx Care booking confirmation",
         keywords: ["care", "booking", "henryco", booking.referenceNo],
       }}
       header={{
@@ -119,7 +119,7 @@ export function CareBookingDocument({ booking, customer, technician, itemisation
 
       <LegalFooter
         lines={[
-          "HenryCo Care service guarantee: any garment returned not to specification will be re-cleaned at no extra charge within 5 days of completion.",
+          "Henry Onyx Care service guarantee: any garment returned not to specification will be re-cleaned at no extra charge within 5 days of completion.",
           "This document is your booking record. Pricing is confirmed at intake; the receipt issued after completion is the canonical billing record.",
         ]}
       />

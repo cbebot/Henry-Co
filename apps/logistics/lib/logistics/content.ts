@@ -1,4 +1,4 @@
-import { BRAND_EMAILS } from "@henryco/config";
+import { BRAND_EMAILS, COMPANY } from "@henryco/config";
 import type {
   LogisticsDifferentiator,
   LogisticsPublicMetric,
@@ -8,9 +8,9 @@ import type {
 } from "@/lib/logistics/types";
 
 export const DEFAULT_LOGISTICS_SETTINGS: LogisticsSettings = {
-  businessName: "HenryCo Logistics",
+  businessName: "Henry Onyx Logistics",
   supportEmail: BRAND_EMAILS.logistics,
-  supportPhone: "+2349133957084",
+  supportPhone: COMPANY.group.supportPhone,
   currency: "NGN",
   timezone: "Africa/Lagos",
   defaultCountry: "Nigeria",
@@ -70,7 +70,7 @@ export const LOGISTICS_SERVICES: LogisticsServiceCard[] = [
   {
     slug: "dispatch-operations",
     name: "Internal dispatch operations",
-    summary: "Operational dispatch lanes for HenryCo teams and partner businesses that need control, not noise.",
+    summary: "Managed dispatch lanes for teams and partners that need controlled routing and a single accountable queue.",
     promise: "Queue ownership, rider workflows, and issue playbooks.",
     badge: "Ops core",
     serviceType: "dispatch",
@@ -181,7 +181,7 @@ export const LOGISTICS_DIFFERENTIATORS: LogisticsDifferentiator[] = [
     id: "dual-surface",
     name: "Dual-surface customer visibility",
     description:
-      "Keep shipments visible in public tracking and in the shared HenryCo account with documents, notifications, and support continuity.",
+      "Keep shipments visible in public tracking and in the shared Henry Onyx account with documents, notifications, and support continuity.",
     pros: ["Future-proof account strategy", "Better customer memory"],
     cons: ["Requires disciplined mirroring"],
     difficulty: "high",

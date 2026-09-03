@@ -1,17 +1,28 @@
 import "server-only";
 
+import React from "react";
 import { getHqUrl } from "@henryco/config";
 import { sendTransactionalEmail } from "@henryco/email";
+import { composeMorningBriefNarrative } from "@/lib/founder-intelligence/morning-brief-narrative";
+import {
+  OwnerReportDocument,
+  renderDocumentToBuffer,
+  buildDocumentFilename,
+  type OwnerReportProps,
+} from "@henryco/branded-documents";
 import { getFinanceCenterData, getMessagingCenterData, getOperationsCenterData, getOwnerOverviewData } from "@/lib/owner-data";
+import { getAgencyBriefSnapshot, type AgencyBriefSnapshot } from "@/lib/studio-agency-read";
 import { divisionLabel, formatCurrencyAmount } from "@/lib/format";
 import { createAdminSupabase } from "@/lib/supabase";
+
+const OWNER_REPORT_STORAGE_BUCKET = "owner-reports";
 
 const LAGOS_TIME_ZONE = "Africa/Lagos";
 const OWNER_REPORT_ENTITY_TYPE = "owner_report";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LAGOS_OFFSET_MS = 60 * 60 * 1000;
 
-export type OwnerReportKind = "weekly" | "monthly";
+export type OwnerReportKind = "daily" | "weekly" | "monthly";
 
 type OwnerRecipient = {
   email: string;
@@ -115,7 +126,18 @@ function buildMonthlyPeriod(now: Date) {
   };
 }
 
+function buildDailyPeriod(now: Date) {
+  const lagosNow = toLagosDate(now);
+  return {
+    key: formatDateKey(lagosNow),
+    label: formatShortDate(lagosNow),
+  };
+}
+
 function shouldRunReport(kind: OwnerReportKind, now: Date) {
+  // Daily = the morning brief: the cron fires once a day and the per-recipient
+  // audit dedupe (kind:periodKey:email) makes retries idempotent.
+  if (kind === "daily") return true;
   const lagosNow = toLagosDate(now);
   if (kind === "weekly") {
     return lagosNow.getUTCDay() === 1;
@@ -245,7 +267,7 @@ async function sendOwnerReportEmail(input: {
   const dispatch = await sendTransactionalEmail({
     to: input.to,
     purpose: "security",
-    fromName: "HenryCo HQ",
+    fromName: "Henry Onyx HQ",
     subject: input.subject,
     html: input.html,
     text: input.text,
@@ -262,7 +284,7 @@ async function sendOwnerReportEmail(input: {
   if (dispatch.status === "skipped") {
     return {
       status: "failed" as const,
-      reason: dispatch.skippedReason || "Email provider not configured for HenryCo HQ.",
+      reason: dispatch.skippedReason || "Email provider not configured for Henry Onyx HQ.",
       messageId: null,
     };
   }
@@ -301,15 +323,23 @@ function renderOwnerReportEmail(input: {
   finance: Awaited<ReturnType<typeof getFinanceCenterData>>;
   operations: Awaited<ReturnType<typeof getOperationsCenterData>>;
   messaging: Awaited<ReturnType<typeof getMessagingCenterData>>;
+  /** F2b: the AI-composed executive opening (daily brief, flag-gated) — null ships the deterministic brief. */
+  narrative?: string | null;
+  /** SA-4: the studio-agency snapshot (deterministic; null while the agency is dark or has nothing). */
+  agency?: AgencyBriefSnapshot | null;
 }) {
   const title =
     input.kind === "monthly"
-      ? `HenryCo owner monthly report • ${input.periodLabel}`
-      : `HenryCo owner weekly report • ${input.periodLabel}`;
+      ? `Henry Onyx owner monthly report • ${input.periodLabel}`
+      : input.kind === "weekly"
+        ? `Henry Onyx owner weekly report • ${input.periodLabel}`
+        : `Henry Onyx morning brief • ${input.periodLabel}`;
   const intro =
     input.kind === "monthly"
       ? "This report is the richer monthly owner snapshot: money movement, pressure points, delivery health, and the next sensible executive actions."
-      : "This weekly owner report keeps the most important operational and financial truths visible without making you parse raw tables.";
+      : input.kind === "weekly"
+        ? "This weekly owner report keeps the most important operational and financial truths visible without making you parse raw tables."
+        : "Where the company stands this morning — the numbers that matter, what changed overnight, and what needs your attention first.";
   const topSignals = input.overview.signals.slice(0, 5).map((signal) => `${signal.title}: ${signal.body}`);
   const divisionPressure = [...input.overview.divisions]
     .sort((left, right) => left.healthScore - right.healthScore)
@@ -335,6 +365,24 @@ function renderOwnerReportEmail(input: {
   const recommendations = input.overview.helperInsights
     .slice(0, 4)
     .map((insight) => `${insight.title}: ${insight.body}`);
+  // SA-4 — the agency section: jobs moved, decisions waiting, money accrued.
+  // Deterministic (no AI, no flag dependency beyond the snapshot itself being
+  // empty while STUDIO_AGENCY_LIVE is dark).
+  const agencyLines = input.agency
+    ? [
+        `${input.agency.activeJobs} build job(s) active — ${input.agency.awaitingOwner} waiting on your approval, ${input.agency.stalled} stalled.`,
+        `${input.agency.proposalsInReview} agency proposal(s) held at the review gate.`,
+        `${input.agency.studioDecisionsPending} orchestrator decision(s) pending in the studio inbox.`,
+        `Provider cost accrued on jobs created today: ${formatCurrencyAmount(Math.floor(input.agency.accruedTodayKobo / 100))}.`,
+      ]
+    : [];
+  const agencyHasSubstance = Boolean(
+    input.agency &&
+      (input.agency.activeJobs > 0 ||
+        input.agency.proposalsInReview > 0 ||
+        input.agency.studioDecisionsPending > 0 ||
+        input.agency.stalled > 0),
+  );
   const movementRows = input.finance.recentPayments
     .slice(0, input.kind === "monthly" ? 8 : 5)
     .map(
@@ -353,7 +401,7 @@ function renderOwnerReportEmail(input: {
     <div style="background:#f3efe8;padding:32px;font-family:Manrope,Segoe UI,Arial,sans-serif;color:#17120f;">
       <div style="max-width:760px;margin:0 auto;background:#fffdfa;border:1px solid rgba(23,18,15,0.08);border-radius:32px;overflow:hidden;box-shadow:0 32px 90px rgba(15,15,15,0.12);">
         <div style="padding:30px 34px;background:linear-gradient(135deg,#17120f 0%,#4f4232 55%,#c9a227 100%);color:#fffaf2;">
-          <div style="font-size:11px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;opacity:0.78;">HenryCo HQ</div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;opacity:0.78;">Henry Onyx HQ</div>
           <h1 style="margin:14px 0 8px;font-family:Newsreader,Georgia,serif;font-size:40px;line-height:1;font-weight:600;">${escapeHtml(title)}</h1>
           <p style="margin:0;font-size:15px;line-height:1.7;max-width:620px;color:rgba(255,250,242,0.9);">${escapeHtml(intro)}</p>
         </div>
@@ -361,6 +409,18 @@ function renderOwnerReportEmail(input: {
         <div style="padding:28px 34px;">
           <p style="margin:0 0 18px;font-size:15px;line-height:1.75;color:#5d5b55;">Hello ${escapeHtml(input.recipientName || "Owner")},</p>
           <p style="margin:0 0 22px;font-size:15px;line-height:1.85;color:#5d5b55;">${escapeHtml(input.overview.executiveDigest)}</p>
+
+          ${
+            input.narrative
+              ? `
+          <div style="margin:0 0 24px;padding:20px 22px;border:1px solid rgba(201,162,39,0.35);border-radius:18px;background:#fbf7ec;">
+            <p style="margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#8a6f00;">This morning, in brief</p>
+            <p style="margin:0;font-size:15px;line-height:1.85;color:#17120f;">${escapeHtml(input.narrative)}</p>
+            <p style="margin:10px 0 0;font-size:12px;color:#867f74;">Composed by Henry Onyx Intelligence from the same live records as the numbers below.</p>
+          </div>
+          `
+              : ""
+          }
 
           <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:24px;">
             ${renderMetricCard(
@@ -406,6 +466,17 @@ function renderOwnerReportEmail(input: {
           </section>
 
           ${
+            agencyHasSubstance
+              ? `
+          <section style="margin-top:24px;">
+            <h2 style="margin:0 0 10px;font-size:18px;font-weight:700;color:#17120f;">Studio agency</h2>
+            ${renderList(agencyLines)}
+          </section>
+          `
+              : ""
+          }
+
+          ${
             recommendations.length
               ? `
           <section style="margin-top:24px;">
@@ -440,7 +511,7 @@ function renderOwnerReportEmail(input: {
           </div>
 
           <p style="margin:24px 0 0;font-size:13px;line-height:1.7;color:#867f74;">
-            Generated from live HenryCo HQ data surfaces. If a number looks stale, refresh the relevant division after the next workflow update lands.
+            Generated from live Henry Onyx HQ data surfaces. If a number looks stale, refresh the relevant division after the next workflow update lands.
           </p>
         </div>
       </div>
@@ -452,6 +523,7 @@ function renderOwnerReportEmail(input: {
     "",
     intro,
     "",
+    ...(input.narrative ? ["This morning, in brief:", input.narrative, ""] : []),
     `Recognized revenue: ${formatCurrencyAmount(input.finance.moneyMovement.recognizedRevenueNaira)}`,
     `Recorded outflow: ${formatCurrencyAmount(input.finance.moneyMovement.recordedOutflowNaira)}`,
     `Critical signals: ${input.overview.metrics.criticalSignals}`,
@@ -468,6 +540,7 @@ function renderOwnerReportEmail(input: {
     "",
     "Division pressure:",
     ...divisionPressure.map((line) => `- ${line}`),
+    ...(agencyHasSubstance ? ["", "Studio agency:", ...agencyLines.map((line) => `- ${line}`)] : []),
     ...(recommendations.length
       ? ["", "Practical next actions:", ...recommendations.map((line) => `- ${line}`)]
       : []),
@@ -482,6 +555,163 @@ function renderOwnerReportEmail(input: {
   };
 }
 
+/**
+ * V3 PASS 21 / H6 — assemble the OwnerReportDocument props from the
+ * canonical overview/finance/operations/messaging snapshot.
+ */
+function buildOwnerReportProps(input: {
+  // The branded-documents PDF template exists for weekly|monthly only; the
+  // daily morning brief never builds a PDF.
+  kind: Exclude<OwnerReportKind, "daily">;
+  periodKey: string;
+  periodLabel: string;
+  recipientName: string;
+  overview: Awaited<ReturnType<typeof getOwnerOverviewData>>;
+  finance: Awaited<ReturnType<typeof getFinanceCenterData>>;
+  operations: Awaited<ReturnType<typeof getOperationsCenterData>>;
+  messaging: Awaited<ReturnType<typeof getMessagingCenterData>>;
+  generatedAt: Date;
+}): OwnerReportProps {
+  const moneyVisibilityLines = [
+    `Recognized revenue: ${formatCurrencyAmount(input.finance.moneyMovement.recognizedRevenueNaira)}`,
+    `Recorded outflow: ${formatCurrencyAmount(input.finance.moneyMovement.recordedOutflowNaira)}`,
+    `Wallet funding awaiting verification: ${formatCurrencyAmount(input.finance.moneyMovement.walletFundingPendingNaira)}`,
+    `Wallet withdrawals awaiting payout: ${formatCurrencyAmount(input.finance.moneyMovement.walletWithdrawalPendingNaira)}`,
+    `Pending shared invoices: ${input.finance.pendingInvoices.length}`,
+    `Pending marketplace payouts: ${input.finance.pendingPayouts.length}`,
+  ];
+  const messagingLines = [
+    `${input.messaging.metrics.failed} delivery failure(s) are still open in the notification queues.`,
+    `${input.messaging.metrics.skipped} queue item(s) were skipped.`,
+    `${input.operations.metrics.openSupport} support thread(s) are still open across divisions.`,
+    `${input.operations.metrics.staleSupport} support thread(s) are stale beyond the live update window.`,
+  ];
+  const divisionPressure = [...input.overview.divisions]
+    .sort((left, right) => left.healthScore - right.healthScore)
+    .slice(0, 4)
+    .map((division) => ({
+      slug: division.slug,
+      displayName: division.displayName,
+      healthLabel: division.healthLabel,
+      alertCount: division.alertCount,
+      revenueLabel: formatCurrencyAmount(division.revenueNaira),
+    }));
+  const signals = input.overview.signals.slice(0, 5).map((signal) => ({
+    id: signal.id,
+    title: signal.title,
+    body: signal.body,
+    division: signal.division ?? null,
+  }));
+  const recommendations = input.overview.helperInsights.slice(0, 4).map((insight) => ({
+    id: insight.id,
+    title: insight.title,
+    body: insight.body,
+    division: null,
+  }));
+  const recentPayments = input.finance.recentPayments
+    .slice(0, input.kind === "monthly" ? 8 : 5)
+    .map((item) => ({
+      id: item.id,
+      division: divisionLabel(item.division),
+      label: item.label,
+      status: item.status,
+      amountLabel: formatCurrencyAmount(item.amountNaira),
+    }));
+
+  return {
+    kind: input.kind,
+    periodKey: input.periodKey,
+    periodLabel: input.periodLabel,
+    recipientName: input.recipientName,
+    executiveDigest: input.overview.executiveDigest,
+    metrics: [
+      {
+        label: "Recognized revenue",
+        value: formatCurrencyAmount(input.finance.moneyMovement.recognizedRevenueNaira),
+        detail: "Live revenue across Care, Marketplace, and shared invoices.",
+      },
+      {
+        label: "Recorded outflow",
+        value: formatCurrencyAmount(input.finance.moneyMovement.recordedOutflowNaira),
+        detail: "Care expense ledger plus wallet payouts already marked complete.",
+      },
+      {
+        label: "Critical signals",
+        value: String(input.overview.metrics.criticalSignals),
+        detail: "Items currently demanding owner attention.",
+      },
+      {
+        label: "Open support",
+        value: String(input.operations.metrics.openSupport),
+        detail: "Cross-division customer and operational threads still open.",
+      },
+    ],
+    signals,
+    moneyVisibilityLines,
+    messagingLines,
+    divisionPressure,
+    recentPayments,
+    recommendations,
+    generatedAt: input.generatedAt.toISOString(),
+    hqUrl: getHqUrl("/owner"),
+  };
+}
+
+/**
+ * Render the premium owner-report PDF and upload it to the
+ * `owner-reports` Supabase storage bucket. Returns the storage path
+ * and a signed URL valid for 7 days for inclusion in the email.
+ *
+ * Failures are non-fatal: callers degrade to the existing HTML email
+ * if the PDF cannot be produced (bucket missing, fonts not registered,
+ * etc.) so the operator still receives the report.
+ */
+async function uploadOwnerReportPdf(props: OwnerReportProps): Promise<{
+  path: string;
+  signedUrl: string | null;
+} | null> {
+  try {
+    // React-PDF's renderToBuffer typing wants ReactElement<DocumentProps>;
+    // every BrandedDocument template returns one structurally. The cast
+    // is the standard interop shape across the package.
+    const element = React.createElement(OwnerReportDocument, props) as unknown as Parameters<
+      typeof renderDocumentToBuffer
+    >[0];
+    const buffer = await renderDocumentToBuffer(element);
+    const filename = buildDocumentFilename(
+      props.kind === "monthly" ? "OwnerReportMonthly" : "OwnerReportWeekly",
+      props.periodKey,
+      new Date(props.generatedAt),
+    );
+    const storagePath = `${props.kind}/${props.periodKey}/${filename}`;
+    const admin = createAdminSupabase();
+
+    const { error: uploadError } = await admin.storage
+      .from(OWNER_REPORT_STORAGE_BUCKET)
+      .upload(storagePath, buffer, {
+        contentType: "application/pdf",
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.warn("[owner-reporting] PDF upload failed:", uploadError.message);
+      return null;
+    }
+
+    const { data: signed } = await admin.storage
+      .from(OWNER_REPORT_STORAGE_BUCKET)
+      .createSignedUrl(storagePath, 60 * 60 * 24 * 7);
+
+    return {
+      path: storagePath,
+      signedUrl: signed?.signedUrl ?? null,
+    };
+  } catch (err) {
+    console.warn("[owner-reporting] PDF render threw:", err);
+    return null;
+  }
+}
+
 export async function runOwnerReport(
   kind: OwnerReportKind,
   options?: {
@@ -490,7 +720,8 @@ export async function runOwnerReport(
   }
 ) {
   const now = options?.now ?? new Date();
-  const period = kind === "monthly" ? buildMonthlyPeriod(now) : buildWeeklyPeriod(now);
+  const period =
+    kind === "monthly" ? buildMonthlyPeriod(now) : kind === "weekly" ? buildWeeklyPeriod(now) : buildDailyPeriod(now);
 
   if (!options?.force && !shouldRunReport(kind, now)) {
     return {
@@ -508,12 +739,15 @@ export async function runOwnerReport(
     };
   }
 
-  const [overview, finance, operations, messaging, recipients] = await Promise.all([
+  const [overview, finance, operations, messaging, recipients, agency] = await Promise.all([
     getOwnerOverviewData(),
     getFinanceCenterData(),
     getOperationsCenterData(),
     getMessagingCenterData(),
     listOwnerRecipients(),
+    // SA-4: deterministic studio-agency snapshot — degrades to zeros while the
+    // agency tables are absent/dark, in which case the section simply doesn't render.
+    getAgencyBriefSnapshot(now).catch(() => null),
   ]);
 
   if (!recipients.length) {
@@ -526,6 +760,10 @@ export async function runOwnerReport(
       deliveries: [] as DispatchResult[],
     };
   }
+
+  // F2b: the AI opening for the DAILY brief — composed once per run (not per
+  // recipient), flag-gated + best-effort inside.
+  const narrative = kind === "daily" ? await composeMorningBriefNarrative() : null;
 
   const deliveries: DispatchResult[] = [];
   const sentAction = `owner_report_${kind}_sent`;
@@ -545,6 +783,27 @@ export async function runOwnerReport(
       continue;
     }
 
+    // V3 PASS 21 / H6 — render the premium PDF and upload to storage.
+    // Falls back gracefully if the bucket is missing or fonts fail. The daily
+    // morning brief is deliberately lean (email only, no PDF), and the
+    // branded-documents template only knows weekly|monthly.
+    const pdfUpload =
+      kind === "daily"
+        ? null
+        : await uploadOwnerReportPdf(
+            buildOwnerReportProps({
+              kind,
+              periodKey: period.key,
+              periodLabel: period.label,
+              recipientName: recipient.fullName,
+              overview,
+              finance,
+              operations,
+              messaging,
+              generatedAt: now,
+            }),
+          );
+
     const emailTemplate = renderOwnerReportEmail({
       kind,
       periodLabel: period.label,
@@ -553,12 +812,26 @@ export async function runOwnerReport(
       finance,
       operations,
       messaging,
+      narrative,
+      agency,
     });
+    const pdfHtml = pdfUpload?.signedUrl
+      ? `\n<div style="margin-top:24px;padding:18px;border:1px solid rgba(23,18,15,0.08);border-radius:18px;background:#fffdfa;">
+           <p style="margin:0 0 8px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#867f74;">Premium PDF</p>
+           <p style="margin:0 0 8px;font-size:14px;color:#5d5b55;">The full owner report has been rendered as a branded PDF and stored in the owner-reports bucket. The signed link below is valid for 7 days.</p>
+           <a href="${escapeHtml(pdfUpload.signedUrl)}" style="display:inline-block;padding:12px 20px;border-radius:999px;background:#c9a227;color:#17120f;text-decoration:none;font-weight:700;">Download branded PDF</a>
+         </div>`
+      : "";
+    const pdfText = pdfUpload?.signedUrl
+      ? `\nPremium PDF download (signed, 7-day expiry): ${pdfUpload.signedUrl}`
+      : "";
+    const enrichedHtml = emailTemplate.html.replace(/<\/div>\s*$/, `${pdfHtml}\n</div>`);
+    const enrichedText = `${emailTemplate.text}${pdfText}`;
     const dispatch = await sendOwnerReportEmail({
       to: recipient.email,
       subject: emailTemplate.subject,
-      html: emailTemplate.html,
-      text: emailTemplate.text,
+      html: enrichedHtml,
+      text: enrichedText,
     });
 
     const action = dispatch.status === "sent" ? sentAction : failedAction;
@@ -575,6 +848,8 @@ export async function runOwnerReport(
         messageId: dispatch.messageId,
         metrics: overview.metrics,
         finance: finance.moneyMovement,
+        pdfPath: pdfUpload?.path ?? null,
+        pdfSigned: Boolean(pdfUpload?.signedUrl),
       },
     });
 
