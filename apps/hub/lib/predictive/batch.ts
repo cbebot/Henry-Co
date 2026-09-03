@@ -78,7 +78,16 @@ export async function runPredictiveBatch(
   if (!predictiveBatchEnabled(env)) return emptySummary("flag_dark");
 
   const worker = `predictive-tick:${randomUUID().slice(0, 8)}`;
-  const admin = createAdminSupabase();
+
+  // A missing service-role key (preview envs, a rotated secret) must DEGRADE, not
+  // 500 a cron. Nothing has been acquired or written at this point, so returning
+  // here leaks no lock.
+  let admin: ReturnType<typeof createAdminSupabase>;
+  try {
+    admin = createAdminSupabase();
+  } catch {
+    return emptySummary("tables_absent");
+  }
 
   // SINGLE-FLIGHT. A losing acquirer no-ops, so two overlapping cron fires
   // serialize instead of both spending the daily budget.

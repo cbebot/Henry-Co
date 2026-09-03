@@ -37,15 +37,18 @@ export type RiskBand = "low" | "elevated" | "high";
  * never rendered from here. Each maps 1:1 to a rule below, so every band is
  * traceable to the exact signals that produced it.
  */
-export type QualityReasonCode =
-  | "provider_silent"
-  | "milestone_overdue"
-  | "payment_stalled"
-  | "provider_low_completion_rate"
-  | "provider_slow_response"
-  | "customer_disengaged"
-  | "prior_complaint_on_unit"
-  | "delivery_window_missed";
+export const QUALITY_REASON_CODES = [
+  "provider_silent",
+  "milestone_overdue",
+  "payment_stalled",
+  "provider_low_completion_rate",
+  "provider_slow_response",
+  "customer_disengaged",
+  "prior_complaint_on_unit",
+  "delivery_window_missed",
+] as const;
+
+export type QualityReasonCode = (typeof QUALITY_REASON_CODES)[number];
 
 /**
  * The CLOSED set of suggested interventions. Every member is an action a HUMAN

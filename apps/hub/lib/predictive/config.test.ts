@@ -155,6 +155,78 @@ describe("V3-41 money isolation — structural", () => {
   });
 });
 
+describe("V3-41 readers reference REAL schema values", () => {
+  // The precedent this guards against: staff-marketplace selects six columns that
+  // do not exist on marketplace_orders, its try/catch swallows the PostgREST
+  // error, and the queue silently renders empty. A reader that compares against a
+  // status value the platform never writes fails the same way — no crash, no log,
+  // just a feature that is permanently off. These are the values verified against
+  // supabase/prod-actual/schema.sql and the marketplace write paths.
+  const REAL_STATUS_VALUES = new Set([
+    // marketplace_orders.status (default 'placed'; 'disputed' set at route.ts:2248)
+    "placed",
+    "paid",
+    "shipped",
+    "delivered",
+    "disputed",
+    "cancelled",
+    "refunded",
+    // marketplace_orders.payment_status (default 'pending')
+    "pending",
+    // marketplace_refunds.status (default 'pending')
+    "processing",
+    // care_bookings.status CHECK (schema.sql:6274)
+    "booked",
+    "confirmed",
+    "picked_up",
+    "ready",
+    "out_for_delivery",
+    // care_bookings.payment_status CHECK (schema.sql:6273)
+    "unpaid",
+    "part_paid",
+    "waived",
+    "overpaid",
+    // studio_projects / learn_enrollments defaults
+    "active",
+  ]);
+
+  it("every status literal the readers compare against is a REAL platform value", () => {
+    const source = read("apps/hub/lib/predictive/readers.ts");
+    const literals = new Set<string>();
+    // `.eq("status", "x")` / `row.status === "x"` / `.in("status", ["a","b"])`
+    for (const m of source.matchAll(/\.(?:eq|in)\("(?:status|payment_status)",\s*(\[[^\]]*\]|"[^"]*")\)/g)) {
+      for (const v of m[1].matchAll(/"([a-z_]+)"/g)) literals.add(v[1]);
+    }
+    for (const m of source.matchAll(/row\.(?:status|payment_status)\s*===\s*"([a-z_]+)"/g)) {
+      literals.add(m[1]);
+    }
+    // `.not("status", "in", "(a,b,c)")`
+    for (const m of source.matchAll(/\.not\("status",\s*"in",\s*"\(([^)]*)\)"\)/g)) {
+      for (const v of m[1].split(",")) if (v.trim()) literals.add(v.trim());
+    }
+    assert.ok(literals.size > 0, "the scan must actually find status literals");
+    for (const value of literals) {
+      assert.ok(
+        REAL_STATUS_VALUES.has(value),
+        `"${value}" is not a real platform status — the reader would be silently dead`,
+      );
+    }
+  });
+
+  it("the dead `refund_requested` status is not resurrected", () => {
+    const source = read("apps/hub/lib/predictive/readers.ts");
+    assert.equal(
+      source.includes("refund_requested"),
+      false,
+      "no such order status exists; unresolved refunds come from marketplace_refunds",
+    );
+    assert.ok(
+      source.includes('.from("marketplace_refunds")'),
+      "the refund signal must be read from the real refunds table",
+    );
+  });
+});
+
 describe("V3-41 no auto-action — structural", () => {
   it("the batch writes ONLY to predictive tables", () => {
     const source = read("apps/hub/lib/predictive/batch.ts");

@@ -251,6 +251,27 @@ export async function readTransactions(now: Date): Promise<TransactionCandidate[
       .order("created_at", { ascending: false })
       .limit(TRANSACTION_LIMIT);
     if (error || !data) return [];
+
+    // Unresolved refunds, read from the REAL refunds table. The order status
+    // vocabulary is placed/paid/shipped/delivered/disputed/cancelled/refunded —
+    // it has no "a refund was asked for and is still open" member, so deriving
+    // this signal from `orders.status` would be silently false forever: exactly
+    // the dead-signal class of bug that already leaves staff-marketplace
+    // rendering an empty queue. Read the refunds themselves instead.
+    const unresolvedRefundOrderIds = new Set<string>();
+    try {
+      const { data: refunds } = await admin
+        .from("marketplace_refunds")
+        .select("order_id,status,created_at")
+        .in("status", ["pending", "processing"])
+        .order("created_at", { ascending: false })
+        .limit(TRANSACTION_LIMIT);
+      for (const row of (refunds ?? []) as ReadonlyArray<Record<string, unknown>>) {
+        if (typeof row.order_id === "string") unresolvedRefundOrderIds.add(row.order_id);
+      }
+    } catch {
+      // Absent table ⇒ the feature is simply not present for this run.
+    }
     return (data as ReadonlyArray<Record<string, unknown>>).map((row) => {
       const total = Number(row.grand_total);
       const settledDays = daysBetween((row.placed_at as string | null) ?? (row.created_at as string | null), now);
@@ -262,7 +283,9 @@ export async function readTransactions(now: Date): Promise<TransactionCandidate[
           // No delivery confirmation yet => the gap IS the age of the order.
           deliveryConfirmationGapDays: delivered ? 0 : settledDays,
           daysSincePayment: settledDays,
-          refundRequestedUnresolved: row.status === "refund_requested",
+          refundRequestedUnresolved: unresolvedRefundOrderIds.has(String(row.id)),
+          // 'disputed' IS a real order status (set when a dispute opens —
+          // apps/marketplace/app/api/marketplace/route.ts:2248).
           itemNotReceivedReported: row.status === "disputed",
         } satisfies DisputeFeatures,
       };

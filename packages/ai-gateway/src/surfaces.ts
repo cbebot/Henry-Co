@@ -272,9 +272,13 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     maxCalls: 1,
     freeAllowancePerDay: 60,
   },
-  // V3-41 — the predictive staff narrative. Never a wallet; bounded twice over
-  // (freeAllowancePerDay here + reserve-before-run against the internal daily
-  // spend ledger at the call site, one narrative per queue per run).
+  // V3-41 — the predictive staff narrative. Never a wallet. Two bounds, and they
+  // are NOT equivalent: `freeAllowancePerDay` is enforced by the gateway's
+  // default IN-MEMORY rate limiter (server/index.ts), so it resets on a cold
+  // start and is only a per-process backstop. The DURABLE ceiling is the
+  // caller's reserve-before-run against `internal_ai_spend_ledger`
+  // (cross-process, cross-restart), plus a hard per-run call cap and the
+  // batch's single-flight lock.
   "predictive.narrative": {
     surface: "predictive.narrative",
     billable: false,

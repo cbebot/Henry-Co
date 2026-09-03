@@ -16,6 +16,7 @@
  * exist, and the panel must render its empty state rather than break the queue.
  */
 
+import { DISPUTE_FACTORS, QUALITY_INTERVENTIONS, QUALITY_REASON_CODES } from "@henryco/intelligence";
 import type {
   DisputeBand,
   DisputeFactor,
@@ -98,6 +99,17 @@ function asStringArray(value: unknown): string[] {
   return value.filter((v): v is string => typeof v === "string");
 }
 
+/**
+ * Rows are read back from a table the batch wrote, possibly under an OLDER or
+ * NEWER model version than the deployed copy module. A code with no operator
+ * copy renders as an empty chip, so unknown codes are dropped at the boundary
+ * rather than shown as blanks. `staff_predictive` copy coverage for every KNOWN
+ * code is separately proven by apps/hub/lib/predictive/copy-coverage.test.ts.
+ */
+const KNOWN_REASONS = new Set<string>(QUALITY_REASON_CODES);
+const KNOWN_INTERVENTIONS = new Set<string>(QUALITY_INTERVENTIONS);
+const KNOWN_DISPUTE_FACTORS = new Set<string>(DISPUTE_FACTORS);
+
 async function loadForecast(
   supabase: PredictiveSupabaseClient,
   queue: QueueKey,
@@ -155,9 +167,12 @@ async function loadAtRisk(
         unitType: row.unit_type as ServiceUnitType,
         unitId: String(row.unit_id ?? ""),
         band: row.risk_band as RiskBand,
-        reasons: asStringArray(row.reasons) as QualityReasonCode[],
+        reasons: asStringArray(row.reasons).filter((r): r is QualityReasonCode =>
+          KNOWN_REASONS.has(r),
+        ),
         intervention:
-          typeof row.suggested_intervention === "string"
+          typeof row.suggested_intervention === "string" &&
+          KNOWN_INTERVENTIONS.has(row.suggested_intervention)
             ? (row.suggested_intervention as QualityIntervention)
             : null,
       }));
@@ -185,7 +200,7 @@ async function loadDisputes(
         band: row.band as DisputeBand,
         factors: (Array.isArray(row.top_factors) ? row.top_factors : [])
           .map((f) => (f && typeof f === "object" ? (f as { factor?: unknown }).factor : null))
-          .filter((f): f is DisputeFactor => typeof f === "string"),
+          .filter((f): f is DisputeFactor => typeof f === "string" && KNOWN_DISPUTE_FACTORS.has(f)),
       }));
   } catch {
     return [];
