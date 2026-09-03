@@ -2584,6 +2584,7 @@ export type Database = {
           in_app_toast_enabled: boolean
           muted_divisions: string[]
           muted_event_types: string[]
+          next_action_prompts_enabled: boolean
           notification_care: boolean | null
           notification_jobs: boolean | null
           notification_learn: boolean | null
@@ -2622,6 +2623,7 @@ export type Database = {
           in_app_toast_enabled?: boolean
           muted_divisions?: string[]
           muted_event_types?: string[]
+          next_action_prompts_enabled?: boolean
           notification_care?: boolean | null
           notification_jobs?: boolean | null
           notification_learn?: boolean | null
@@ -2660,6 +2662,7 @@ export type Database = {
           in_app_toast_enabled?: boolean
           muted_divisions?: string[]
           muted_event_types?: string[]
+          next_action_prompts_enabled?: boolean
           notification_care?: boolean | null
           notification_jobs?: boolean | null
           notification_learn?: boolean | null
@@ -10001,6 +10004,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      next_action_dismissals: {
+        Row: {
+          action_id: string
+          context_kind: string
+          dismissed_at: string
+          user_id: string
+        }
+        Insert: {
+          action_id: string
+          context_kind: string
+          dismissed_at?: string
+          user_id: string
+        }
+        Update: {
+          action_id?: string
+          context_kind?: string
+          dismissed_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       notification_delivery_log: {
         Row: {

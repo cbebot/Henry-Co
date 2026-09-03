@@ -19,6 +19,7 @@ export * from "./consent-copy";
 export * from "./personalization-copy";
 export * from "./deals-copy";
 export * from "./availability-copy";
+export * from "./next-action-copy";
 export * from "./auth-copy";
 export * from "./auth-session-copy";
 export * from "./recovery-copy";

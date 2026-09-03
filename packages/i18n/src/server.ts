@@ -39,6 +39,11 @@ export {
   formatAvailabilityTemplate,
   type AvailabilityCopy,
 } from "./availability-copy";
+export {
+  getNextActionCopy,
+  type NextActionCopy,
+  type NextActionEntryCopy,
+} from "./next-action-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
 export { getErrorFallbackCopy, type ErrorFallbackCopy } from "./error-fallback-copy";

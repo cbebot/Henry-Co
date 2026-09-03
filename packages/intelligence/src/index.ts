@@ -5,6 +5,7 @@ export * from "./search";
 export * from "./recommendations";
 export * from "./deals";
 export * from "./availability";
+export * from "./next-action";
 
 export const henryDivisionSchema = z.enum([
   "hub",
@@ -340,7 +341,12 @@ export type HenryFeatureFlagName =
   // surfaces render exactly as before (no badge, no fetch). Stays dark until
   // `service_area_coverage` seeding is verified on prod (the soak note: a flood
   // of unavailable_shown means missing rows, not a broken resolver).
-  | "personalization_availability";
+  | "personalization_availability"
+  // V3-39 (Phase E) — kill switch for the per-page "do this next" chip + resolver.
+  // Default OFF (dark launch): with the flag unset nothing mounts, nothing reads,
+  // nothing emits. Deterministic + AI-free; the stitch inside is additionally
+  // consent-gated at runtime (E-D2) — the flag gates the whole surface.
+  | "personalization_next_action";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -404,6 +410,12 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_AVAILABILITY) ||
       list.has("personalization_availability") ||
       list.has("availability"),
+    // V3-39 next-action kill switch — default OFF (dark launch). Deliberately
+    // NOT covered by the broad "personalization" alias: the chip is a new
+    // chrome affordance and turns on only by its own explicit name.
+    personalization_next_action:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_NEXT_ACTION) ||
+      list.has("personalization_next_action"),
   };
 }
 

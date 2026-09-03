@@ -23,10 +23,11 @@
     "./identity": "./src/public/account-identity.ts",
     "./brand": "./src/brand/index.ts",
     "./share": "./src/share/index.ts",
-    "./availability": "./src/availability/index.ts"
+    "./availability": "./src/availability/index.ts",
+    "./next-action": "./src/next-action/index.ts"
   },
   "scripts": {
-    "test": "tsx --test src/__tests__/feedback.test.ts src/__tests__/account-identity.test.ts src/__tests__/division-public-theme.test.ts"
+    "test": "tsx --test src/__tests__/feedback.test.ts src/__tests__/account-identity.test.ts src/__tests__/division-public-theme.test.ts src/__tests__/next-action-arbitration.test.ts"
   },
   "peerDependencies": {
     "next": "^16.1.6",
