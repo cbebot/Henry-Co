@@ -4,6 +4,7 @@ export * from "./analytics";
 export * from "./search";
 export * from "./recommendations";
 export * from "./deals";
+export * from "./availability";
 export * from "./risk/index";
 
 export const henryDivisionSchema = z.enum([
@@ -112,6 +113,13 @@ export const HenryEventNames = {
   AI_USAGE_METERED: "henry.ai.usage.metered",
   AI_USAGE_BLOCKED: "henry.ai.usage.blocked",
   AI_PROVIDER_FAILED: "henry.ai.provider.failed",
+  // V3-38 local availability (Phase E). Envelope division = the resolving
+  // division app. Payloads carry aggregate counts + coarse location codes
+  // (country/region) only — never a user id key, never provider counts per
+  // offering, never coordinates.
+  AVAILABILITY_BATCH_RESOLVED: "henry.availability.batch.resolved",
+  AVAILABILITY_UNAVAILABLE_SHOWN: "henry.availability.unavailable.shown",
+  AVAILABILITY_FIND_SIMILAR_CLICKED: "henry.availability.find_similar.clicked",
   // Predictive fraud & risk (V3-40). Division 'system' (platform-invoked batch) except
   // staff actions, which ride division 'staff'. Properties carry entity ids + tiers ONLY —
   // never PII, never a raw score outside the staff surface, never a provider/model name.
@@ -341,6 +349,11 @@ export type HenryFeatureFlagName =
   // OFF: the deal pages/actions do not activate; the legacy marketplace
   // curation fallback keeps serving its widget. Deterministic + AI-free.
   | "personalization_deals"
+  // V3-38 (Phase E) — local-availability badges/states. Default OFF: catalog
+  // surfaces render exactly as before (no badge, no fetch). Stays dark until
+  // `service_area_coverage` seeding is verified on prod (the soak note: a flood
+  // of unavailable_shown means missing rows, not a broken resolver).
+  | "personalization_availability";
   // V3-40 (Phase E) — the predictive risk batch scorer, shadow-first. Default OFF:
   // no batch runs, no rows written, the staff risk queue renders its empty state.
   // Deterministic + AI-free; enforcement additionally requires a LIVE model version
@@ -408,6 +421,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_DEALS) ||
       list.has("personalization_deals") ||
       list.has("deals"),
+    // V3-38 local-availability kill switch — default OFF (dark until seeded).
+    personalization_availability:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PERSONALIZATION_AVAILABILITY) ||
+      list.has("personalization_availability") ||
+      list.has("availability"),
     // V3-40 predictive risk batch (shadow-first) — default OFF (dark launch).
     predictive_shadow:
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_SHADOW) ||

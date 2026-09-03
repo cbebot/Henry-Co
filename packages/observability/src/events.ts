@@ -315,6 +315,16 @@ export type HenryEventName =
   | "henry.deal.offer.impressed"
   | "henry.deal.offer.claimed"
   | "henry.deal.fairness.alerted"
+  // V3-38 local availability (Phase E). `batch.resolved` fires once per
+  // /api/availability batch with aggregate counts + the location source;
+  // `unavailable.shown` fires when an UnavailableState actually renders
+  // (coarse area codes only — the coverage-gap signal the owner soaks on);
+  // `find_similar.clicked` tracks the graceful-unavailable CTA. Payloads are
+  // location-keyed, never user-keyed: no user ids, no coordinates, no
+  // per-offering provider counts.
+  | "henry.availability.batch.resolved"
+  | "henry.availability.unavailable.shown"
+  | "henry.availability.find_similar.clicked"
   // V3-40 predictive fraud & risk (Phase E, Wave E.3). Platform-invoked batch
   // events ride actorless (system); staff actions carry the acting staff id.
   // Payloads are entity ids + tiers + counts ONLY — never PII, never a raw

@@ -36,6 +36,11 @@ export {
   type PersonalizationCopy,
 } from "./personalization-copy";
 export { getDealsCopy, formatDealsTemplate, type DealsCopy } from "./deals-copy";
+export {
+  getAvailabilityCopy,
+  formatAvailabilityTemplate,
+  type AvailabilityCopy,
+} from "./availability-copy";
 export { getAuthCopy, type AuthCopy } from "./auth-copy";
 export { getStateCopy, type StateCopy } from "./state-copy";
 export { getErrorFallbackCopy, type ErrorFallbackCopy } from "./error-fallback-copy";
