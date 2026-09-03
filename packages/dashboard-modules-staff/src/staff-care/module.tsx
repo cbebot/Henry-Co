@@ -42,15 +42,13 @@ export const staffCareModule: StaffDashboardModule = {
         href: "/modules/staff-care",
         keywords: ["care", "pickups", "dispatch"],
       },
-      {
-        id: "staff-care.unpaid",
-        source: "staff-care",
-        groupLabel: "Open" as const,
-        label: "Care · outstanding payments",
-        kicker: "Staff",
-        href: "/modules/staff-care?payment_status=outstanding",
-        keywords: ["unpaid", "outstanding", "payment"],
-      },
+      // A second entry promising "outstanding payments" used to sit here,
+      // pointing at `?payment_status=outstanding`. The module page defines that
+      // filter, but the staff route never forwards searchParams to it — so the
+      // entry landed on the same unfiltered queue as the one above while
+      // claiming to have narrowed it. Preset-filter plumbing for the shared
+      // staff queue is a real feature; a palette row that pretends to have it
+      // is not (V3-OWNER-CONTROL-01 dead-link sweep).
     ];
   },
 

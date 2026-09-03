@@ -7,6 +7,9 @@ import {
   readCompanySettingsRow,
 } from "@/lib/company-settings-write";
 import { applyStaffStatusToggle, readStaffStatus } from "@/lib/staff-status-write";
+// The owner-control rail's status vocabulary, reused here so the AI path and
+// the governed route agree on which applications are decidable at all.
+import { SELLER_APPLICATION_PENDING } from "@/lib/owner-control/statuses";
 import { applyKycReview, readKycSubmission, type KycDecision } from "@/lib/kyc-review-write";
 import {
   applySellerDecision,
@@ -250,6 +253,11 @@ const kycReview: FounderActionEntry = {
       note: String(trueState.note ?? ""),
       actorId: ownerId,
       actorRole: ownerRole,
+      // The status this proposal was re-read against at confirm time, so the
+      // write is a compare-and-set. Omitting it made the update unconditional
+      // and could silently reinstate a rejected verification as approved —
+      // which cascades into customer_profiles.verification_status.
+      expectedStatus: String(trueState.status ?? ""),
     });
     if (!applied.ok) return { ok: false, error: applied.error };
     return { ok: true, executionRef: applied.executionRef };
@@ -273,6 +281,12 @@ const sellerDecision: FounderActionEntry = {
     if (!state) return null;
     const decision = params.decision as string;
     if (state.status === decision) return null;
+    // LEGALITY, matching the owner-control rail. Without this the AI path would
+    // happily propose approving an application that is already rejected, or one
+    // still in `draft` that its author never submitted — transitions the
+    // governed route refuses outright. `status === decision` alone only catches
+    // the no-op case.
+    if (!SELLER_APPLICATION_PENDING.includes(state.status as never)) return null;
     return { ...state, decision, note: (params.note as string) ?? "" };
   },
   // driftKeys single-sourced from the governance spread (["status"]).
@@ -307,6 +321,11 @@ const sellerDecision: FounderActionEntry = {
       note: String(trueState.note ?? ""),
       actorId: ownerId,
       actorRole: ownerRole,
+      // The status this proposal was READ against, so the write is a
+      // compare-and-set and a failed activation can compensate. Omitting it
+      // used to be possible and silently disabled both; it is now required by
+      // the core's own type.
+      expectedStatus: String(trueState.status ?? ""),
     });
     if (!applied.ok) return { ok: false, error: applied.error };
     return { ok: true, executionRef: applied.executionRef };
@@ -555,6 +574,7 @@ const productReview: FounderActionEntry = {
       note: String(trueState.note ?? ""),
       actorId: ownerId,
       actorRole: ownerRole,
+      expectedStatus: String(trueState.status ?? ""),
     });
     if (!applied.ok) return { ok: false, error: applied.error };
     return { ok: true, executionRef: applied.executionRef };

@@ -18,7 +18,7 @@ import {
   formatAuditActorDisplay,
   formatAuditEntityDisplay,
 } from "@/lib/owner-identity";
-import { MARKETPLACE_SELLER_APPLICATIONS_URL } from "@/lib/owner-division-external";
+import { OWNER_SELLER_APPLICATIONS_HREF } from "@/lib/owner-division-external";
 import {
   assessThreats,
   type ThreatAssessment,
@@ -762,7 +762,7 @@ function buildOwnerSignals(
       body: `${pendingMarketplaceApplications.length} vendor applications are waiting for trust and moderation review.`,
       severity: "warning",
       division: "marketplace",
-      href: MARKETPLACE_SELLER_APPLICATIONS_URL,
+      href: OWNER_SELLER_APPLICATIONS_HREF,
       source: "marketplace_vendor_applications",
       createdAt: toNullableText(pendingMarketplaceApplications[0]?.submitted_at),
     });
@@ -2256,9 +2256,10 @@ export async function getApprovalQueueData(): Promise<{
       description: `${pendingVendors.length} seller applications are waiting for trust and onboarding approval.`,
       division: "marketplace",
       severity: "warning",
-      // Deep-link to the surface with the approve/reject buttons, not the HQ
-      // info room — the queue must never show a decision without its actions.
-      href: MARKETPLACE_SELLER_APPLICATIONS_URL,
+      // Deep-link to the surface with the approve/reject buttons. Those now
+      // live in HQ behind the owner's own gate; the old marketplace-admin link
+      // required a role the owner does not hold and dead-ended at /account.
+      href: OWNER_SELLER_APPLICATIONS_HREF,
       count: pendingVendors.length,
     });
   }

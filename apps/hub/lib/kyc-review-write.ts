@@ -69,8 +69,37 @@ export async function applyKycReview(input: {
   note: string;
   actorId: string;
   actorRole: string;
-}): Promise<{ ok: true; executionRef: string; profileStatus: string } | { ok: false; error: string }> {
-  const { submissionId, decision, note, actorId, actorRole } = input;
+  /**
+   * Prior status the decision was made against — the compare-and-set anchor, so
+   * a second reviewer cannot overwrite the first verdict and re-derive the
+   * applicant's profile status from it.
+   */
+  /**
+   * REQUIRED. It was optional, and founder-intelligence/action-catalog.ts
+   * omitted it — so on that path the compare-and-set below degraded to an
+   * unconditional update by id, and this file's own docstring promise that a
+   * second reviewer cannot overwrite the first verdict was not honoured by its
+   * only other caller. seller-decision-write.ts had the identical defect and was
+   * fixed; these two were missed in that sweep.
+   *
+   * Non-optional makes omitting it a compile error rather than a silent
+   * downgrade. (vendor-status-write.ts keeps an optional one safely, because
+   * owner_set_vendor_active performs the real CAS inside a transaction.)
+   */
+  expectedStatus: string;
+}): Promise<
+  { ok: true; executionRef: string; profileStatus: string; changed: boolean } | { ok: false; error: string }
+> {
+  const { submissionId, decision, note, actorId, actorRole, expectedStatus } = input;
+  if (!expectedStatus.trim()) {
+    // Fail closed. Required-by-type stops an OMITTED argument; it does not stop
+    // an empty one, and `String(trueState.status ?? "")` upstream yields "" if a
+    // reader ever returns a row without a status. An empty value in the
+    // compare-and-set filter matches no row, so the write would report a lost
+    // race instead of applying — a silent nothing dressed as a conflict.
+    return { ok: false, error: "That record could not be read cleanly. Refresh and try again." };
+  }
+
 
   if (decision !== "approved" && decision !== "rejected") {
     return { ok: false, error: "Choose a valid review decision." };
@@ -112,7 +141,10 @@ export async function applyKycReview(input: {
     return { ok: false, error: "Audit logging failed; verification review was not changed." };
   }
 
-  await admin
+  // Checked, not fire-and-forget: everything below re-derives the applicant's
+  // profile verification status from the submission set, so a write that did
+  // not land would have the profile advance off a decision that was not saved.
+  let submissionUpdate = admin
     .from("customer_verification_submissions")
     .update({
       status: decision,
@@ -121,6 +153,18 @@ export async function applyKycReview(input: {
       reviewed_at: now,
     })
     .eq("id", submissionId);
+  submissionUpdate = submissionUpdate.eq("status", expectedStatus);
+  const { data: submissionUpdated, error: submissionError } = await submissionUpdate.select("id");
+  if (submissionError) {
+    console.error("[kyc-review-write] submission update failed", submissionError.message);
+    return { ok: false, error: "That verification submission could not be updated." };
+  }
+  if (!Array.isArray(submissionUpdated) || submissionUpdated.length !== 1) {
+    return {
+      ok: false,
+      error: "That submission moved while you were deciding it. Refresh to see where it stands now.",
+    };
+  }
 
   let profileStatus = decision === "approved" ? "pending" : "rejected";
 
@@ -135,7 +179,17 @@ export async function applyKycReview(input: {
         .map((r: Record<string, unknown>) => String(r.document_type))
     );
     if (approved.has("government_id") || approved.has("selfie")) {
-      await admin
+      // CHECKED — it previously was not, not even logged. This write is what
+      // makes the person actually verified everywhere else in the ecosystem;
+      // the submission row alone changes nothing outside this queue. A silent
+      // failure here leaves the console reporting "approved" over an account
+      // that every other surface still treats as unverified.
+      //
+      // It does NOT abort: the submission verdict has already landed and is
+      // audited, and the derivation is self-healing — the next reviewed
+      // submission for this user recomputes it from all submissions. Logging
+      // loudly is the correct weight for a recoverable inconsistency.
+      const { error: profileError } = await admin
         .from("customer_profiles")
         .update({
           verification_status: "verified",
@@ -144,6 +198,12 @@ export async function applyKycReview(input: {
           verification_note: note.trim() || "Identity verified via document review.",
         })
         .eq("id", userId);
+      if (profileError) {
+        console.error(
+          "[kyc-review-write] customer_profiles verification write failed; the submission is approved but the profile still reads unverified",
+          { userId, error: profileError.message },
+        );
+      }
       profileStatus = "verified";
     } else {
       profileStatus = "pending";
@@ -159,7 +219,9 @@ export async function applyKycReview(input: {
       .neq("id", submissionId)
       .limit(1);
     if (!pendingOthers || pendingOthers.length === 0) {
-      await admin
+      // CHECKED, same reasoning as the verified branch above: logged loudly,
+      // never aborting, because the derivation recomputes on the next review.
+      const { error: profileError } = await admin
         .from("customer_profiles")
         .update({
           verification_status: "rejected",
@@ -168,6 +230,12 @@ export async function applyKycReview(input: {
           verification_note: note.trim() || "Documents rejected.",
         })
         .eq("id", userId);
+      if (profileError) {
+        console.error(
+          "[kyc-review-write] customer_profiles rejection write failed; the submission is rejected but the profile still reads otherwise",
+          { userId, error: profileError.message },
+        );
+      }
       profileStatus = "rejected";
     } else {
       profileStatus = "pending";
@@ -220,5 +288,5 @@ export async function applyKycReview(input: {
     console.error("[kyc-review-write] post-write notify step failed (review landed)", e);
   }
 
-  return { ok: true, executionRef: `kyc:${submissionId}:${decision}`, profileStatus };
+  return { ok: true, executionRef: `kyc:${submissionId}:${decision}`, profileStatus, changed: true };
 }

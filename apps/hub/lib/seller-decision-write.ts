@@ -37,6 +37,31 @@ import { createAdminSupabase } from "@/lib/supabase";
 
 export type SellerDecision = "approved" | "changes_requested" | "rejected";
 
+/**
+ * Reported when the storefront row landed but the vendor role membership did
+ * not. The partial state is stated plainly rather than softened, because the
+ * owner needs to know two different things: the store IS live to buyers, and the
+ * seller CANNOT yet reach their workspace.
+ *
+ * The named recovery is real and in-product. Suspend followed by Reinstate both
+ * route through `owner_set_vendor_active`, which writes the storefront status
+ * and the role membership inside ONE transaction — so the pair repairs exactly
+ * the row that failed here, and does it atomically. Re-running Approve would
+ * not work: the application now reads `approved`, which is not a state the
+ * approve action accepts.
+ */
+// TWO OUTCOMES, TWO MESSAGES. The single message this replaced described the
+// world before compensation existed — "the store was created ... use Suspend
+// then Reinstate to repair it" — which is now false on the common path, because
+// a successful rollback means no store was left behind and there is nothing to
+// repair. Telling an operator to go fix something that is already fine is the
+// same class of defect as the dead deep link that started this pass.
+const GRANT_ROLLED_BACK_MESSAGE =
+  "Workspace access could not be granted, so nothing was changed. The store was not activated and the application is back in your queue — try approving it again.";
+
+const GRANT_FAILED_DIRTY_MESSAGE =
+  "Workspace access could not be granted, and the store record could not be put back. This application still reads approved and its storefront may be live while the seller cannot sign in. Engineering has to reconcile it before you decide it again.";
+
 export type SellerApplicationState = {
   applicationId: string;
   userId: string | null;
@@ -110,8 +135,38 @@ export async function applySellerDecision(input: {
   note: string;
   actorId: string;
   actorRole: string;
-}): Promise<{ ok: true; executionRef: string } | { ok: false; error: string }> {
-  const { applicationId, decision, note, actorId, actorRole } = input;
+  /**
+   * Prior status the decision was made against — the compare-and-set anchor.
+   * The console's fresh read and this write are two round trips, and between
+   * them another operator can decide the same application. CAS makes the UPDATE
+   * itself the check, so the second decision matches nothing instead of
+   * silently overwriting the first and re-running the activation below.
+   */
+  /**
+   * REQUIRED, and it must stay required. It was optional, and
+   * founder-intelligence/action-catalog.ts simply did not pass it — which
+   * silently disabled BOTH safety properties at once for that caller: the
+   * compare-and-set degraded to an unconditional update by id, and the
+   * compensating revert below short-circuits on a falsy value, so a failed
+   * activation left the application permanently `approved` with no store. That
+   * is exactly the unrecoverable state this core was rewritten to remove,
+   * reopened by an omitted argument.
+   *
+   * Making it non-optional moves that from "remember to pass it" to a compile
+   * error.
+   */
+  expectedStatus: string;
+}): Promise<{ ok: true; executionRef: string; changed: boolean } | { ok: false; error: string }> {
+  const { applicationId, decision, note, actorId, actorRole, expectedStatus } = input;
+  if (!expectedStatus.trim()) {
+    // Fail closed. Required-by-type stops an OMITTED argument; it does not stop
+    // an empty one, and `String(trueState.status ?? "")` upstream yields "" if a
+    // reader ever returns a row without a status. An empty value in the
+    // compare-and-set filter matches no row, so the write would report a lost
+    // race instead of applying — a silent nothing dressed as a conflict.
+    return { ok: false, error: "That record could not be read cleanly. Refresh and try again." };
+  }
+
 
   if (decision !== "approved" && decision !== "changes_requested" && decision !== "rejected") {
     return { ok: false, error: "Choose a valid seller review decision." };
@@ -134,6 +189,80 @@ export async function applySellerDecision(input: {
 
   const applicantUserId = application.user_id ? String(application.user_id) : null;
   const storeName = String(application.store_name || "your store");
+  const proposedSlug = String(application.proposed_store_slug || "").trim();
+
+  // STORE-URL COLLISION GATE (V3-OWNER-CONTROL-01).
+  //
+  // `proposed_store_slug` is typed by the applicant and never checked for
+  // uniqueness at submission. `marketplace_vendors.slug` carries a UNIQUE
+  // constraint, and the approval below used to upsert `onConflict: "slug"` —
+  // which is an UPDATE when the slug already exists, setting every supplied
+  // column including `owner_user_id`. Store slugs are public (/store/[slug]).
+  //
+  // So: apply naming yourself as some existing seller's slug, wait for the
+  // one-tap approve, and the approval hands you their store row, their vendor
+  // role membership, and with it their catalogue and their payout balance. The
+  // guard the rail already had was on the wrong entity — it verified the
+  // APPLICATION was pending, and nothing verified the VENDOR row the write
+  // actually lands on.
+  //
+  // Refuse the approval instead. The owner is told exactly what is wrong, and
+  // no state moves: an applicant cannot be allowed to choose which row the
+  // owner's button writes to.
+  let existingVendorId: string | null = null;
+  if (decision === "approved") {
+    if (!proposedSlug) {
+      return { ok: false, error: "That application has no store URL, so no store can be opened for it." };
+    }
+    const { data: slugHolder, error: slugError } = await admin
+      .from("marketplace_vendors")
+      .select("id, owner_user_id, status")
+      .eq("slug", proposedSlug)
+      .maybeSingle();
+    if (slugError) {
+      return { ok: false, error: "The store URL could not be checked; the seller was not approved." };
+    }
+    const holderOwnerId = slugHolder?.owner_user_id ? String(slugHolder.owner_user_id) : null;
+    if (slugHolder && holderOwnerId !== applicantUserId) {
+      return {
+        ok: false,
+        error: `The store URL "${proposedSlug}" already belongs to another seller. Ask the applicant to choose a different one before approving.`,
+      };
+    }
+
+    // SUSPENDED-STORE GATE (V3-OWNER-CONTROL-01, round 2).
+    //
+    // The collision gate above deliberately PERMITS the case where the slug
+    // holder is the applicant themselves — that is their own store, and
+    // approving simply updates it. But `vendorPayload` below hardcodes
+    // `status: "approved"` and the block after it reactivates the vendor role
+    // membership. So if that self-held store is SUSPENDED, a one-tap "Approve
+    // seller" quietly reinstates it.
+    //
+    // That is a bypass of this pass's own gate. `marketplace.vendor.reinstate`
+    // requires a fresh password step-up and refuses anything not currently
+    // suspended (the `not_suspended` branch of `owner_set_vendor_active`);
+    // re-submitting an application is free and forces the row back to
+    // `submitted` (apps/marketplace/app/api/seller-applications/route.ts:232),
+    // so a suspended seller could re-apply and have the ungated approve button
+    // undo their suspension. The rail's freshness check could not catch it: it
+    // reads the APPLICATION's status and never looks at the vendor row the
+    // write actually lands on — the same "guard was on the wrong entity" shape
+    // as the slug-takeover above.
+    //
+    // Refuse, and name the control that is allowed to do this. Reinstatement is
+    // a decision the owner should take deliberately about a store, not one that
+    // arrives as a side effect of clearing an application queue.
+    const holderStatus = String((slugHolder as { status?: unknown } | null)?.status ?? "").trim();
+    if (slugHolder && holderStatus === "suspended") {
+      return {
+        ok: false,
+        error: `"${proposedSlug}" is a suspended store. Approving this application would put it back online — use Reinstate store on the sellers panel if that is what you intend.`,
+      };
+    }
+
+    existingVendorId = slugHolder?.id ? String(slugHolder.id) : null;
+  }
 
   // Audit-first: its failure aborts before any state moves (staff-route parity).
   const { error: auditError } = await admin.from("staff_audit_logs").insert({
@@ -156,9 +285,37 @@ export async function applySellerDecision(input: {
     return { ok: false, error: "Audit logging failed; seller application was not changed." };
   }
 
-  // The application status update — matches the marketplace route's columns
-  // exactly (status, review_note, reviewed_at, reviewed_by).
-  await admin
+
+  // THE STATUS FLIP RUNS FIRST, AND ITS FAILURE IS COMPENSATED. Both halves
+  // matter, and the pass tried each one alone before arriving here.
+  //
+  // Flip-first alone was unrecoverable. The application committed `approved`,
+  // then the vendor upsert or role grant failed, and because
+  // SELLER_APPLICATION_PENDING excludes `approved` the route's legality gate
+  // 409'd every retry forever: a record the console broke and could not heal.
+  //
+  // Flip-LAST alone was worse, and in a way that is easy to miss. It removes the
+  // stuck record but opens an orphan: two owners deciding at once — one
+  // approving, one rejecting — would have the approver create the store and
+  // grant the vendor role, and only then lose the compare-and-set to the
+  // rejection. Application `rejected`, storefront live, seller role granted. A
+  // rejected applicant selling is a worse outcome than an approval that needs
+  // retrying.
+  //
+  // So the CAS stays first, where losing it means NOTHING happened, and the
+  // activation failures below restore the prior status instead of leaving the
+  // row stranded. The result is retryable in the common case and orphan-free in
+  // the racing case.
+  //
+  // Compensation can itself fail. That window is far narrower than what it
+  // replaces (one UPDATE by primary key, against a row this request just wrote)
+  // and it is logged loudly rather than swallowed.
+  //
+  // `vendor-status-write.ts` does the strictly correct thing — one guarded RPC
+  // doing SELECT FOR UPDATE and every write in a single transaction — and that
+  // is the right eventual home for this core too. It is not this pass, because
+  // it means moving slug-collision resolution and role-grant logic into plpgsql.
+  let statusUpdate = admin
     .from("marketplace_vendor_applications")
     .update({
       status: decision,
@@ -167,6 +324,46 @@ export async function applySellerDecision(input: {
       reviewed_by: actorId,
     } as never)
     .eq("id", applicationId);
+  // Unconditional: expectedStatus is required, so there is no caller for whom
+  // this degrades to a blind update.
+  statusUpdate = statusUpdate.eq("status", expectedStatus);
+  const { data: statusUpdated, error: statusError } = await statusUpdate.select("id");
+  if (statusError) {
+    console.error("[seller-decision-write] status update failed", statusError.message);
+    return { ok: false, error: "That application could not be updated." };
+  }
+  if (!Array.isArray(statusUpdated) || statusUpdated.length !== 1) {
+    return {
+      ok: false,
+      error: "That application moved while you were deciding it. Refresh to see where it stands now.",
+    };
+  }
+
+  /**
+   * Put the application back where it was, so a failed activation leaves a row
+   * the owner can decide again rather than one that is terminal and unusable.
+   * Guarded on the status this request itself set, so it can never overwrite a
+   * decision somebody else made in the meantime.
+   */
+  const revertStatusAfterFailedActivation = async (why: string): Promise<void> => {
+    const { data: reverted, error: revertError } = await admin
+      .from("marketplace_vendor_applications")
+      .update({ status: expectedStatus, reviewed_at: null, reviewed_by: null } as never)
+      .eq("id", applicationId)
+      .eq("status", decision)
+      .select("id");
+    if (revertError || !Array.isArray(reverted) || reverted.length !== 1) {
+      console.error(
+        "[seller-decision-write] COULD NOT REVERT after failed activation — the application " +
+          "reads approved but the seller was never activated, and the console cannot retry it",
+        {
+          applicationId,
+          why,
+          error: revertError?.message ?? "no row matched (status was not the one this call set)",
+        },
+      );
+    }
+  };
 
   // On approval, actually activate the seller: upsert the vendor store record
   // and grant the vendor role membership (marketplace route parity).
@@ -182,50 +379,213 @@ export async function applySellerDecision(input: {
     const vendorVerificationLevel = getVendorVerificationLevel(sharedVerificationStatus);
     const vendorTrustScore = getInitialVendorTrustScore(sharedVerificationStatus);
 
-    const { data: vendor } = await admin
-      .from("marketplace_vendors")
-      .upsert(
-        {
-          slug: application.proposed_store_slug,
-          name: application.store_name,
-          description: application.story || `${application.store_name} storefront`,
-          owner_user_id: application.user_id,
-          owner_type: "vendor",
-          status: "approved",
-          verification_level: vendorVerificationLevel,
-          trust_score: vendorTrustScore,
-          response_sla_hours: 6,
-          fulfillment_rate: 93,
-          dispute_rate: 2.5,
-          review_score: 4.5,
-          followers_count: 0,
-          accent: "#4D5F34",
-          hero_image_url: null,
-          badges: [
-            "Approved vendor",
-            sharedVerificationStatus === "verified"
-              ? "Identity verified"
-              : sharedVerificationStatus === "pending"
-                ? "Identity under review"
-                : "Identity required",
-          ],
-          support_email: application.normalized_email,
-          support_phone: application.contact_phone,
-        } as never,
-        { onConflict: "slug" },
-      )
-      .select("id")
-      .maybeSingle();
+    // Written by id when the applicant already has this store, by insert when
+    // they do not — never keyed on the applicant's own text. The old
+    // `onConflict: "slug"` upsert let the applicant pick which row this write
+    // landed on; see the collision gate above.
+    const vendorPayload = {
+      slug: proposedSlug,
+      name: application.store_name,
+      description: application.story || `${application.store_name} storefront`,
+      owner_user_id: application.user_id,
+      owner_type: "vendor",
+      status: "approved",
+      verification_level: vendorVerificationLevel,
+      trust_score: vendorTrustScore,
+      response_sla_hours: 6,
+      fulfillment_rate: 93,
+      dispute_rate: 2.5,
+      review_score: 4.5,
+      followers_count: 0,
+      accent: "#4D5F34",
+      hero_image_url: null,
+      badges: [
+        "Approved vendor",
+        sharedVerificationStatus === "verified"
+          ? "Identity verified"
+          : sharedVerificationStatus === "pending"
+            ? "Identity under review"
+            : "Identity required",
+      ],
+      support_email: application.normalized_email,
+      support_phone: application.contact_phone,
+    };
 
-    await admin.from("marketplace_role_memberships").upsert({
-      user_id: application.user_id,
-      normalized_email: application.normalized_email,
-      scope_type: "vendor",
-      scope_id: vendor?.id ?? null,
-      role: "vendor",
-      is_active: true,
-    } as never);
+    // Captured BEFORE the write so compensation can put this row back exactly
+    // as it found it. Without this the revert restored the application row and
+    // left `marketplace_vendors.status = 'approved'` behind — and that row is
+    // precisely what the public catalogue reads
+    // (apps/marketplace/lib/marketplace/data.ts:294 filters .eq("status",
+    // "approved")). The result was a live, publicly browsable storefront for an
+    // application that is no longer approved.
+    let priorVendorStatus: string | null = null;
+    if (existingVendorId) {
+      const { data: priorVendor } = await admin
+        .from("marketplace_vendors")
+        .select("status")
+        .eq("id", existingVendorId)
+        .maybeSingle();
+      priorVendorStatus = String((priorVendor as { status?: unknown } | null)?.status ?? "") || null;
+    }
+
+    const written = existingVendorId
+      ? await admin
+          .from("marketplace_vendors")
+          .update(vendorPayload as never)
+          .eq("id", existingVendorId)
+          // Never resurrect a suspended store. The slug-collision gate above
+          // already refuses a suspended holder, but that check and this write
+          // are separate round trips — a suspension landing in between would
+          // otherwise be silently clobbered back to 'approved' by an approval
+          // that was decided before it. A zero-row result is handled below as a
+          // failed activation.
+          .neq("status", "suspended")
+          .select("id")
+          .maybeSingle()
+      : await admin
+          .from("marketplace_vendors")
+          .insert(vendorPayload as never)
+          .select("id")
+          .maybeSingle();
+
+    if (written.error || !written.data) {
+      await revertStatusAfterFailedActivation("vendor store write failed");
+      // Name the likely cause rather than reporting a generic write failure. An
+      // UPDATE that returns no row and no error is the `.neq("status",
+      // "suspended")` guard doing its job — somebody suspended this store
+      // between the collision check and this write — and "could not be written"
+      // would send the owner looking for a database fault that does not exist.
+      const blockedBySuspension = Boolean(existingVendorId) && !written.error && !written.data;
+      return {
+        ok: false,
+        error: blockedBySuspension
+          ? "That store was suspended while you were deciding this application, so it was not reactivated. Nothing was changed — use Reinstate store on the sellers panel if bringing it back online is what you intend."
+          : "The store record could not be written, so the seller was not activated and the application is back in your queue.",
+      };
+    }
+    const vendorId = String((written.data as { id: string }).id);
+
+    /**
+     * Undo the storefront write this call just made. `pending` is the resting
+     * state for a store that was never approved — it is not `approved`, so the
+     * catalogue will not list it, and it is not `suspended`, which would falsely
+     * imply the owner took action against a live seller.
+     */
+    const revertVendorAfterFailedGrant = async (why: string): Promise<boolean> => {
+      const restoreTo = priorVendorStatus ?? "pending";
+      // `.select()` is load-bearing, not decoration. Without it a guard that
+      // matches NO row comes back `error: null` — PostgREST reports success for
+      // an update that changed nothing — so a silent no-op would read as a
+      // completed rollback. The row count is the only way to tell them apart.
+      const { data: reverted, error: vendorRevertError } = await admin
+        .from("marketplace_vendors")
+        .update({ status: restoreTo } as never)
+        .eq("id", vendorId)
+        .eq("status", "approved")
+        .select("id");
+      const ok = !vendorRevertError && Array.isArray(reverted) && reverted.length === 1;
+      if (!ok) {
+        console.error(
+          "[seller-decision-write] COULD NOT REVERT the storefront after a failed grant — " +
+            "a store may be live; the application is deliberately LEFT approved so the two agree",
+          {
+            vendorId,
+            restoreTo,
+            why,
+            error: vendorRevertError?.message ?? "no row matched (status was not 'approved')",
+          },
+        );
+      }
+      return ok;
+    };
+
+    // Read-then-write rather than upsert. The only unique index on
+    // marketplace_role_memberships is an EXPRESSION index —
+    // `(user_id, normalized_email, scope_type, coalesce(scope_id, '000…'), role)`
+    // at marketplace_init.sql:539, confirmed on prod at
+    // supabase/prod-actual/schema.sql:7018 — which PostgREST cannot name in
+    // `onConflict`, so an upsert here degrades to a plain insert and a repeat
+    // approval raises a unique violation instead of being a no-op. Learn teacher
+    // grants already do it this way for the same reason.
+    //
+    // EVERY RESULT BELOW IS CHECKED, which none of them previously were. This is
+    // the step that makes an approved seller able to sell: `/vendor` is gated by
+    // `requireMarketplaceRoles`, which reads `marketplace_role_memberships`
+    // ALONE (apps/marketplace/lib/marketplace/auth.ts:92-106). A silent failure
+    // here therefore ends with the console saying "Done", the application
+    // reading `approved`, the storefront row live — and the seller bounced to
+    // /account when they try to open their workspace. That is materially the
+    // same broken outcome as the incident this whole pass was commissioned to
+    // fix, only harder to diagnose because every surface claims success.
+    //
+    // `.limit(1)` + array rather than `.maybeSingle()`: the expression index
+    // permits near-duplicate rows that the four `.eq()` filters below cannot
+    // distinguish (they do not constrain `normalized_email`), and `maybeSingle`
+    // turns "two matches" into an ERROR. Reading one row and reactivating it is
+    // the correct handling of that case; erroring is not.
+    const { data: existingRows, error: membershipReadError } = await admin
+      .from("marketplace_role_memberships")
+      .select("id")
+      .eq("user_id", application.user_id)
+      .eq("scope_type", "vendor")
+      .eq("scope_id", vendorId)
+      .eq("role", "vendor")
+      .limit(1);
+    if (membershipReadError) {
+      console.error(
+        "[seller-decision-write] membership lookup failed",
+        membershipReadError.message,
+      );
+      // ORDER AND DEPENDENCY BOTH MATTER. Unsticking the application while the
+      // storefront is still live is the worst available end state: the owner is
+      // shown a row that is "safe to re-decide" while a store for it is publicly
+      // catalogued. If the storefront could not be put back, the application is
+      // deliberately LEFT approved so the two records agree with each other —
+      // an approval missing its role grant, which the log names, rather than a
+      // live store nobody can see the reason for.
+      const rolledBack = await revertVendorAfterFailedGrant("membership lookup failed");
+      if (rolledBack) await revertStatusAfterFailedActivation("membership lookup failed");
+      // The message the operator sees, and the reason recorded on the ledger,
+      // both distinguish "nothing happened" from "records are inconsistent".
+      return {
+        ok: false,
+        error: rolledBack ? GRANT_ROLLED_BACK_MESSAGE : GRANT_FAILED_DIRTY_MESSAGE,
+      };
+    }
+
+    const existingMembershipId = (existingRows ?? [])[0]?.id;
+    const grant = existingMembershipId
+      ? await admin
+          .from("marketplace_role_memberships")
+          .update({ is_active: true } as never)
+          .eq("id", existingMembershipId)
+          .select("id")
+      : await admin
+          .from("marketplace_role_memberships")
+          .insert({
+            user_id: application.user_id,
+            normalized_email: application.normalized_email,
+            scope_type: "vendor",
+            scope_id: vendorId,
+            role: "vendor",
+            is_active: true,
+          } as never)
+          .select("id");
+
+    if (grant.error || !Array.isArray(grant.data) || grant.data.length !== 1) {
+      console.error(
+        "[seller-decision-write] vendor role grant failed",
+        grant.error?.message ?? "no row written",
+      );
+      const rolledBack = await revertVendorAfterFailedGrant("vendor role grant failed");
+      if (rolledBack) await revertStatusAfterFailedActivation("vendor role grant failed");
+      return {
+        ok: false,
+        error: rolledBack ? GRANT_ROLLED_BACK_MESSAGE : GRANT_FAILED_DIRTY_MESSAGE,
+      };
+    }
   }
+
 
   const reviewerBody =
     decision === "approved"
@@ -284,5 +644,5 @@ export async function applySellerDecision(input: {
     console.error("[seller-decision-write] post-write notify step failed (decision landed)", e);
   }
 
-  return { ok: true, executionRef: `seller:${applicationId}:${decision}` };
+  return { ok: true, executionRef: `seller:${applicationId}:${decision}`, changed: true };
 }

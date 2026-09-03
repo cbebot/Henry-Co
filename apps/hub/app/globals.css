@@ -179,6 +179,36 @@ body {
   opacity: 0.72;
 }
 
+/* Destructive owner verdicts — reject, suspend, remove (V3-OWNER-CONTROL-01).
+   Tinted rather than a solid red fill: the OCC-6 accessibility walk established
+   that a *-text tone token used as a BACKGROUND under white text fails AA in one
+   of the two themes, so the tone stays in the foreground where its contrast is
+   already proven against the soft tint. Same geometry as the primary button, so
+   a row of verdicts reads as one control group with one obviously heavier
+   member — the weight is the warning, not a colour the owner has to decode. */
+.acct-button-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--acct-red-text);
+  background: var(--acct-red-soft);
+  border: 1px solid color-mix(in srgb, var(--acct-red-text) 32%, transparent);
+  border-radius: var(--acct-radius);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.acct-button-danger:hover {
+  background: color-mix(in srgb, var(--acct-red-text) 14%, var(--acct-red-soft));
+}
+.acct-button-danger:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .acct-button-ghost {
   display: inline-flex;
   align-items: center;

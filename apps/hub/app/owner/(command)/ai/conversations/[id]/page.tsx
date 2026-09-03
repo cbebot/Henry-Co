@@ -53,8 +53,12 @@ export default async function IntelligenceConversationDetailPage({
 
   if (!detail) notFound();
 
+  // Points at Support Command, which actually READS ?thread= and highlights the
+  // row. The alerts page takes no searchParams at all, so the old target
+  // dropped the id and left the owner at the top of an unrelated board — the
+  // link resolved, it just never took him to the thread he clicked.
   const escalationHref = detail.escalatedThreadId
-    ? `/owner/operations/alerts?thread=${detail.escalatedThreadId}`
+    ? `/owner/support?thread=${encodeURIComponent(detail.escalatedThreadId)}`
     : null;
 
   return (

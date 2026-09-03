@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { writeAuditLog } from "@henryco/observability/audit-log";
 import { requireSensitiveAction } from "@henryco/auth/server/sensitive-action-guard";
 import { requireOwner } from "@/app/lib/owner-auth";
+import { assertSqlOwner } from "@/lib/owner-control/authorize";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getFounderAction } from "@/lib/founder-intelligence/action-catalog";
 
@@ -42,6 +43,24 @@ export async function POST(request: NextRequest) {
 
   const auth = await requireOwner();
   if (!auth.ok) {
+    return NextResponse.json({ error: "Not available." }, { status: 404 });
+  }
+
+  // GATE 2 — the SQL owner predicate, under the caller's own JWT.
+  //
+  // This path reaches three of the six shared write cores (seller decisions, KYC
+  // review, product review) through lib/founder-intelligence/action-catalog.ts,
+  // so until this was added those cores had TWO doors with different locks: the
+  // owner-control rail verified ownership in SQL, and this one verified it only
+  // in TypeScript — exactly what owner-control/authorize.ts's own docstring
+  // forbids ("SQL-verified, never a TS mirror alone").
+  //
+  // It also inherits requireOwner()'s email fallback, which matches an
+  // owner_profiles row by EMAIL when no user_id row exists. The rail refuses
+  // that binding deliberately; this door accepted it. Not reachable on today's
+  // data (the live owner row is user_id-bound) but it is the precise shape of
+  // the "email-OR role binding" finding the FIRE audits named ecosystem-wide.
+  if (!(await assertSqlOwner(auth.supabase))) {
     return NextResponse.json({ error: "Not available." }, { status: 404 });
   }
 

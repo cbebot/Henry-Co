@@ -376,7 +376,13 @@ export default async function OwnerAuditPage({
 
       <OwnerPanel
         title={t("Known devices")}
-        description={t("The persistent device registry — first country seen, last activity, and trust state. Revoked devices can no longer complete a trusted sign-in.")}
+        // Truth-in-copy (V3-OWNER-CONTROL-01): the old line ended on "Revoked
+        // devices can no longer complete a trusted sign-in", which reads as an
+        // instruction for a control this table does not have — it has no revoke
+        // button and never did. Revocation is real, it just lives elsewhere:
+        // securing an account revokes every recognised device for it, and that
+        // runs as a one-tap operator decision.
+        description={t("The persistent device registry — first country seen, last activity, and trust state. This table is a record, not a control: a device loses trust when you secure that person's account from the operator decisions inbox, which revokes every device recognised for them at once.")}
         action={
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--acct-muted)]">
             <MonitorSmartphone className="h-3.5 w-3.5" aria-hidden />

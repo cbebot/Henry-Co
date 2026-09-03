@@ -7,6 +7,10 @@ import {
   FORBIDDEN_MONEY_PARAM_KEYS,
   governanceParamKeys,
 } from "../action-governance";
+import {
+  getOwnerControlAction,
+  type OwnerControlActionKey,
+} from "../../owner-control/registry";
 
 /**
  * F3 governance gate — the executable proof of the money-invariant fixes from
@@ -40,6 +44,49 @@ test("moneyAdjacent ⇒ requiresReauth (reversible never substitutes for no cash
   for (const g of FOUNDER_ACTION_GOVERNANCE) {
     if (g.moneyAdjacent) {
       assert.equal(g.requiresReauth, true, `${g.key} is moneyAdjacent but not requiresReauth`);
+    }
+  }
+});
+
+/**
+ * V3-OWNER-CONTROL-01 — cross-path reauth parity.
+ *
+ * Two surfaces now reach the same write cores: the approvals console (through
+ * the owner-control registry) and the F3 confirm card (through this catalog).
+ * When the console demands a fresh password for a verdict, the card must too —
+ * otherwise the softer path is simply a way around the harder one's gate, and
+ * the card is the path where a MODEL proposed the action, so it warrants at
+ * least as much friction.
+ *
+ * Derived from the two tables rather than hardcoded, so gating a console action
+ * later fails this test until its F3 twin is gated as well.
+ */
+test("F3 entries sharing a write core with a reauth-gated console action are reauth-gated too", () => {
+  const SHARED_WRITE_CORES: Record<string, OwnerControlActionKey[]> = {
+    "owner.marketplace.product.review": [
+      "marketplace.product.approve",
+      "marketplace.product.request_changes",
+      "marketplace.product.reject",
+    ],
+    "owner.marketplace.seller.decision": [
+      "marketplace.seller.approve",
+      "marketplace.seller.request_changes",
+      "marketplace.seller.reject",
+    ],
+    "owner.kyc.review": ["account.kyc.approve", "account.kyc.reject"],
+  };
+
+  for (const [governanceKey, consoleKeys] of Object.entries(SHARED_WRITE_CORES)) {
+    const governance = FOUNDER_ACTION_GOVERNANCE.find((entry) => entry.key === governanceKey);
+    assert.ok(governance, `${governanceKey} must exist in governance`);
+
+    const gatedTwin = consoleKeys.find((key) => getOwnerControlAction(key)?.requiresReauth);
+    if (gatedTwin) {
+      assert.equal(
+        governance?.requiresReauth,
+        true,
+        `${governanceKey} drives the same write core as ${gatedTwin}, which demands reauth on the console — the F3 card must demand it too`,
+      );
     }
   }
 });

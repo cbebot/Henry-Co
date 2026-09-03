@@ -77,6 +77,11 @@ export const ownerNavItems: OwnerNavItem[] = [
       { href: "/owner/operations", label: "Overview", icon: LayoutDashboard },
       { href: "/owner/operations/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/owner/operations/approvals", label: "Approval center", icon: ClipboardCheck },
+      // SA-4 shipped this inbox and never linked it: the route existed, the
+      // operator queued real one-tap proposals into it, and the only way to
+      // reach it was to type the URL. An unreachable surface is a dead link
+      // pointing the other way.
+      { href: "/owner/operations/decisions", label: "Operator decisions", icon: Siren },
       { href: "/owner/operations/queues", label: "Task Queues", icon: ListTodo },
       { href: "/owner/operations/alerts", label: "Alerts", icon: AlertTriangle },
       { href: "/owner/divisions/performance", label: "Division Ranking", icon: BarChart3 },

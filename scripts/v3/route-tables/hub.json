@@ -6,11 +6,31 @@
       "api": false
     },
     {
+      "route": "/.well-known/apple-app-site-association",
+      "api": true
+    },
+    {
+      "route": "/.well-known/assetlinks.json",
+      "api": true
+    },
+    {
       "route": "/about",
       "api": false
     },
     {
+      "route": "/announcing-v3",
+      "api": false
+    },
+    {
       "route": "/api/auth/logout",
+      "api": true
+    },
+    {
+      "route": "/api/auth/reauth",
+      "api": true
+    },
+    {
+      "route": "/api/cron/operator-tick",
       "api": true
     },
     {
@@ -30,7 +50,15 @@
       "api": true
     },
     {
+      "route": "/api/dashboard/commands",
+      "api": true
+    },
+    {
       "route": "/api/health",
+      "api": true
+    },
+    {
+      "route": "/api/inbound/email",
       "api": true
     },
     {
@@ -50,7 +78,31 @@
       "api": true
     },
     {
+      "route": "/api/owner/control",
+      "api": true
+    },
+    {
       "route": "/api/owner/divisions",
+      "api": true
+    },
+    {
+      "route": "/api/owner/intelligence/actions/confirm",
+      "api": true
+    },
+    {
+      "route": "/api/owner/intelligence/briefing",
+      "api": true
+    },
+    {
+      "route": "/api/owner/intelligence/chat",
+      "api": true
+    },
+    {
+      "route": "/api/owner/intelligence/conversations",
+      "api": true
+    },
+    {
+      "route": "/api/owner/intelligence/health",
       "api": true
     },
     {
@@ -110,11 +162,27 @@
       "api": true
     },
     {
+      "route": "/api/owner/support/reply",
+      "api": true
+    },
+    {
       "route": "/api/owner/upload",
       "api": true
     },
     {
       "route": "/api/profile/update",
+      "api": true
+    },
+    {
+      "route": "/api/push/public-key",
+      "api": true
+    },
+    {
+      "route": "/api/push/subscribe",
+      "api": true
+    },
+    {
+      "route": "/api/push/unsubscribe",
       "api": true
     },
     {
@@ -127,6 +195,10 @@
     },
     {
       "route": "/contact",
+      "api": false
+    },
+    {
+      "route": "/interactions-gallery",
       "api": false
     },
     {
@@ -147,6 +219,14 @@
     },
     {
       "route": "/owner/ai",
+      "api": false
+    },
+    {
+      "route": "/owner/ai/conversations",
+      "api": false
+    },
+    {
+      "route": "/owner/ai/conversations/:param",
       "api": false
     },
     {
@@ -198,7 +278,19 @@
       "api": false
     },
     {
+      "route": "/owner/finance/invoices/:param",
+      "api": false
+    },
+    {
       "route": "/owner/finance/revenue",
+      "api": false
+    },
+    {
+      "route": "/owner/inbox",
+      "api": false
+    },
+    {
+      "route": "/owner/inbox/:param",
       "api": false
     },
     {
@@ -242,6 +334,10 @@
       "api": false
     },
     {
+      "route": "/owner/operations/decisions",
+      "api": false
+    },
+    {
       "route": "/owner/operations/queues",
       "api": false
     },
@@ -251,6 +347,10 @@
     },
     {
       "route": "/owner/settings/audit",
+      "api": false
+    },
+    {
+      "route": "/owner/settings/audit/:param/:param",
       "api": false
     },
     {
@@ -286,7 +386,19 @@
       "api": false
     },
     {
+      "route": "/owner/support",
+      "api": false
+    },
+    {
+      "route": "/owner/v3-launch/dashboard",
+      "api": false
+    },
+    {
       "route": "/preferences",
+      "api": false
+    },
+    {
+      "route": "/press/v3",
       "api": false
     },
     {
@@ -298,7 +410,31 @@
       "api": false
     },
     {
+      "route": "/services",
+      "api": false
+    },
+    {
       "route": "/terms",
+      "api": false
+    },
+    {
+      "route": "/type-sample",
+      "api": false
+    },
+    {
+      "route": "/v3",
+      "api": false
+    },
+    {
+      "route": "/v3/how-we-earn",
+      "api": false
+    },
+    {
+      "route": "/v3/try",
+      "api": false
+    },
+    {
+      "route": "/v3/what-shipped",
       "api": false
     },
     {
