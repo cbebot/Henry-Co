@@ -135,7 +135,7 @@ const EN: StaffIntelligenceCopy = {
     window_rolling: "compared with the last 28 days",
     window_insufficient: "not enough history to judge yet",
     band: { watch: "Unusual", alert: "Well outside the usual" },
-    summary: "{observed} today against {expected} typical — {deviation}x the usual spread, {window}.",
+    summary: "{observed} on the last full day against {expected} typical — {deviation}x the usual spread, {window}.",
     dismiss: "Hide",
     none: "Nothing unusual right now.",
   },
@@ -145,7 +145,7 @@ const EN: StaffIntelligenceCopy = {
     advisoryNote:
       "Suggestions only. Accepting one records your decision and opens the surface — it changes nothing on its own.",
     staffing_increase:
-      "The {queue} queue looks like it needs about {recommended} people a day next week ({extra} more than now).",
+      "The {queue} queue is forecast to need about {recommended} people a day next week, more than it is set up for.",
     investigate_anomaly:
       "{series} is {deviation}x its usual spread — {observed} against {expected} typical. Worth checking.",
     review_at_risk_units: "{high} in-flight items need attention, {elevated} more are worth a look.",

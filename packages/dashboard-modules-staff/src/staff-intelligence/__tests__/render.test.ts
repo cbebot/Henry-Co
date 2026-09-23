@@ -205,7 +205,7 @@ test("RENDER: interpolation is complete — card text shows real values, not tok
   const html = render({ locale: "en", lens: "support", available: FULL, withData: true });
   // staffing_increase: "...needs about 5 people a day next week (2 more than now)."
   assert.ok(html.includes("5 people"), "staffing figure interpolated");
-  assert.ok(html.includes("2 more"), "extra headcount interpolated");
+  assert.equal(html.includes("0 more"), false, "never claims an unknowable headcount delta");
   // The anomaly series code is localized, not shown as a raw slug.
   assert.ok(html.includes(getStaffIntelligenceCopy("en").chart.refund_requests));
 });

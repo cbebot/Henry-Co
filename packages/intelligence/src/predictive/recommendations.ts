@@ -116,11 +116,6 @@ function isoWeekKey(asOf: string): string {
   return `${year}-W${String(week).padStart(2, "0")}`;
 }
 
-function dayKey(asOf: string): string {
-  const ms = Date.parse(asOf);
-  return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : "undated";
-}
-
 function safeCount(value: unknown): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
 }
@@ -134,7 +129,6 @@ function safeCount(value: unknown): number {
  */
 export function deriveRecommendations(input: DeriveRecommendationsInput): RecommendationCard[] {
   const week = isoWeekKey(input.asOf);
-  const day = dayKey(input.asOf);
   const maxPerScope = safeCount(input.maxPerScope) || DEFAULT_MAX_PER_SCOPE;
   const cards: RecommendationCard[] = [];
 
@@ -171,7 +165,9 @@ export function deriveRecommendations(input: DeriveRecommendationsInput): Recomm
   // --- Anomalies, routed to the lens that owns the series -------------------
   for (const anomaly of input.anomalies ?? []) {
     if (!anomaly?.detected) continue;
-    const scope = SERIES_SCOPE[anomaly.series];
+    const scope = Object.prototype.hasOwnProperty.call(SERIES_SCOPE, anomaly.series)
+      ? SERIES_SCOPE[anomaly.series]
+      : undefined;
     if (!scope) continue;
     cards.push({
       key: `anomaly.${anomaly.series}.${anomaly.at.slice(0, 10)}`,
@@ -196,7 +192,7 @@ export function deriveRecommendations(input: DeriveRecommendationsInput): Recomm
   const atRiskElevated = safeCount(input.atRisk?.elevated);
   if (atRiskHigh > 0) {
     cards.push({
-      key: `quality.at_risk.${day}`,
+      key: `quality.at_risk.${week}`,
       kind: "review_at_risk_units",
       roleScope: "support",
       severity: "attention",
@@ -211,7 +207,7 @@ export function deriveRecommendations(input: DeriveRecommendationsInput): Recomm
   const disputeWatch = safeCount(input.disputeWatch?.watch);
   if (disputeHigh > 0 || disputeWatch > 0) {
     cards.push({
-      key: `dispute.watchlist.${day}`,
+      key: `dispute.watchlist.${week}`,
       kind: "review_dispute_watchlist",
       roleScope: "finance",
       severity: disputeHigh > 0 ? "attention" : "info",
@@ -228,7 +224,7 @@ export function deriveRecommendations(input: DeriveRecommendationsInput): Recomm
   const riskFreeze = safeCount(input.riskBacklog?.freeze);
   if (riskReview > 0 || riskFreeze > 0) {
     cards.push({
-      key: `risk.backlog.${day}`,
+      key: `risk.backlog.${week}`,
       kind: "review_risk_backlog",
       roleScope: "trust",
       severity: riskFreeze > 0 ? "attention" : "info",
@@ -242,7 +238,7 @@ export function deriveRecommendations(input: DeriveRecommendationsInput): Recomm
   const hindsight = input.disputeHindsight;
   if (hindsight && safeCount(hindsight.disputes) >= 5) {
     cards.push({
-      key: `hindsight.rule.${hindsight.factor}.${day}`,
+      key: `hindsight.rule.${hindsight.factor}.${week}`,
       kind: "rule_suggestion_hindsight",
       roleScope: "trust",
       severity: "info",
@@ -323,4 +319,26 @@ export function recommendationScopeForKey(key: unknown): RecommendationRoleScope
     return Object.prototype.hasOwnProperty.call(SERIES_SCOPE, second) ? SERIES_SCOPE[second] : null;
   }
   return null;
+}
+
+/**
+ * Is this key's time suffix CURRENT? Backlog cards are keyed by ISO week and
+ * anomaly cards by day; the engine only ever emits the current week, and
+ * anomalies from the chart window. The write path refuses anything else, so a
+ * lens member cannot pre-dismiss next month's cards for the whole team.
+ */
+export function isRecommendationKeyCurrent(key: unknown, now: Date): boolean {
+  if (recommendationScopeForKey(key) === null) return false;
+  const suffix = (key as string).split(".").pop() ?? "";
+  const nowMs = now.getTime();
+  if (!Number.isFinite(nowMs)) return false;
+  if (/^\d{4}-W\d{2}$/.test(suffix)) {
+    // Current week or the previous one (a card raised late on Sunday).
+    return suffix === isoWeekKey(now.toISOString()) || suffix === isoWeekKey(new Date(nowMs - 7 * 86_400_000).toISOString());
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(suffix)) {
+    const ms = Date.parse(`${suffix}T00:00:00.000Z`);
+    return Number.isFinite(ms) && ms <= nowMs + 86_400_000 && ms >= nowMs - 35 * 86_400_000;
+  }
+  return false;
 }

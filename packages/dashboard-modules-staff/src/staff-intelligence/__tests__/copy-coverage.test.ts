@@ -88,7 +88,7 @@ test("every card ACTION label exists in every locale", () => {
 
 test("placeholders SURVIVE translation — a dropped {param} would render a hole", () => {
   const required: Record<string, string[]> = {
-    staffing_increase: ["{queue}", "{recommended}", "{extra}"],
+    staffing_increase: ["{queue}", "{recommended}"],
     investigate_anomaly: ["{series}", "{deviation}", "{observed}", "{expected}"],
     review_at_risk_units: ["{high}", "{elevated}"],
     review_dispute_watchlist: ["{high}", "{watch}"],

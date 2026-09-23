@@ -213,6 +213,7 @@ export default async function TrackCModulePage({
           viewer={viewer}
           supabase={supabase as never}
           requestedLens={typeof query.lens === "string" ? query.lens : null}
+          locale={locale}
           onRecommendationAction={handleRecommendationAction}
         />
       );

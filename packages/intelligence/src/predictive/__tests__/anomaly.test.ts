@@ -268,3 +268,26 @@ test("STRUCTURAL: the detector has no path to an AI gateway, a wallet or a datab
     assert.equal(source.includes(forbidden), false, `the detector must not reference "${forbidden}"`);
   }
 });
+
+// ── round-1 regression: count data needs a spread floor ─────────────────────
+
+test("ROUND-1: a near-empty queue's next single item is NOISE, not an alert", () => {
+  const quiet = seriesOf([...Array.from({ length: 26 }, () => 0), 1]);
+  quiet.push({ at: new Date(START + 27 * DAY).toISOString(), value: 2 });
+  const [a] = detectAnomalies(quiet, { series: "refund_requests" });
+  assert.equal(a.detected, false, `0,0,...,1 then 2 must not fire (got z=${a.deviation})`);
+
+  const single = seriesOf([...Array.from({ length: 26 }, () => 0), 1, 0]);
+  single.push({ at: new Date(START + 28 * DAY).toISOString(), value: 1 });
+  assert.equal(detectAnomalies(single, { series: "kyc_submissions" })[0].detected, false);
+});
+
+test("ROUND-1: a FLAT queue suddenly flooded DOES fire", () => {
+  const flat = seriesOf(Array.from({ length: 27 }, () => 0));
+  flat.push({ at: new Date(START + 27 * DAY).toISOString(), value: 500 });
+  const [a] = detectAnomalies(flat, { series: "support_volume" });
+  assert.equal(a.detected, true, "0 -> 500 is the incident the banner exists for");
+  assert.equal(a.band, "alert");
+  assert.equal(a.basis, "flat_series");
+  assert.ok(Number.isFinite(a.deviation) && a.deviation <= 50);
+});

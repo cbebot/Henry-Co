@@ -132,3 +132,18 @@ test("SURFACE: a failed action never shows a false 'Agreed'", () => {
     "the resolved state is set only AFTER the server confirms",
   );
 });
+
+test("ROUND-1: the audit runs through the CALLER'S session — service role makes add_audit_log_v2 raise", () => {
+  const s = read(WRITE);
+  const audit = s.slice(s.indexOf("writeAuditLog("), s.indexOf("writeAuditLog(") + 40);
+  assert.ok(audit.includes("session"), `the audit must use the staff session client, got: ${audit}`);
+  assert.equal(/writeAuditLog\(admin/.test(s), false, "an admin-client audit is refused by add_audit_log_v2 and silently lost");
+  assert.equal(/writeAuditLog\([^)]*\)\s*\.catch/.test(s), false, "an audit failure must not be swallowed");
+  assert.ok(s.includes("recommendation_key: key"), "the key travels in new_values (entity_id is a uuid)");
+});
+
+test("ROUND-1: a write must name a CURRENT key", () => {
+  const s = read(WRITE);
+  assert.ok(s.includes("isRecommendationKeyCurrent(key, now)"));
+  assert.ok(s.indexOf("isRecommendationKeyCurrent(") < s.indexOf('.from("staff_recommendation_state")'));
+});

@@ -12,6 +12,7 @@
 --     workload_forecasts / quality_assessments
 --     / dispute_likelihoods                   ->  is_staff_in_any()
 --     staff_recommendation_state              ->  is_staff_in_any()
+--       (rows with role_scope='trust'         ->  is_staff_in('security'))
 --
 -- So the matrix is not something the dashboards implement — it is something
 -- they must not BYPASS. V3-42 reads with the caller's RLS-scoped session, never
@@ -240,4 +241,120 @@ begin
     raise exception 'V3-42 NO-AUTO-ACT PROOF FAILED: % violation(s)', violations;
   end if;
   raise notice 'V3-42 no-auto-act PASSED (DB refuses every actorless state change)';
+end $$;
+
+-- =============================================================================
+-- ROUND-1 HARDENING — cells the first matrix did not exercise. An adversarial
+-- review proved six policy mutations SURVIVED the original proof, and found that
+-- trust-scoped decision rows leaked to all staff. Every one is now a cell.
+-- =============================================================================
+insert into public.risk_enforcement_log
+  (entity_type, entity_id, action, tier_at_action, model_kind, model_version, shadow, actor)
+values ('account', 'matrix-account-a', 'flag', 'review', 'fraud_risk', 'matrix-test-v1', true, 'system');
+
+insert into public.dispute_likelihoods (transaction_id, scored_at, likelihood, band, model_version)
+values ('matrix-txn-a', timezone('utc', now()), 0.5, 'high', 'dispute-logistic-v1')
+on conflict do nothing;
+
+insert into public.workload_forecasts (queue, generated_at, payload, sample_size, basis, model_version)
+values ('support', timezone('utc', now()), '{}'::jsonb, 0, 'empty', 'workload-seasonal-ewma-v1')
+on conflict do nothing;
+
+-- A TRUST-scoped decision, as a security staffer would leave it.
+insert into public.staff_recommendation_state
+  (recommendation_key, role_scope, status, actor, acted_at)
+values ('matrix.trust.decision', 'trust', 'dismissed', gen_random_uuid(), timezone('utc', now()));
+
+do $$
+declare
+  violations int := 0;
+  p record;
+  n int;
+  t text;
+begin
+  for p in
+    select * from (values
+      -- role,          divisions,          security, staff
+      ('anon',          '',                 false,    false),
+      ('authenticated', '',                 false,    false),
+      ('authenticated', 'support',          false,    true),
+      ('authenticated', 'marketplace',      false,    true),
+      ('authenticated', 'security',         true,     true)
+    ) as v(rolename, divisions, security, staff)
+  loop
+    perform set_config('test.divisions', p.divisions, true);
+    perform set_config('role', p.rolename, true);
+
+    -- V3-40 enforcement log: security only (round 1: only risk_scores was probed).
+    begin select count(*) into n from public.risk_enforcement_log;
+    exception when insufficient_privilege then n := 0; end;
+    if (n > 0) <> p.security then
+      raise warning 'MATRIX VIOLATION: role=% divisions=[%] read % risk_enforcement_log rows', p.rolename, p.divisions, n;
+      violations := violations + 1;
+    end if;
+
+    -- V3-41 tables: staff only, never anon / non-staff.
+    foreach t in array array['dispute_likelihoods', 'workload_forecasts'] loop
+      begin execute format('select count(*) from public.%I', t) into n;
+      exception when insufficient_privilege then n := 0; end;
+      if (n > 0) <> p.staff then
+        raise warning 'MATRIX VIOLATION: role=% divisions=[%] read % % rows', p.rolename, p.divisions, n, t;
+        violations := violations + 1;
+      end if;
+    end loop;
+
+    -- THE round-1 leak: trust-scoped decisions are security-only.
+    begin select count(*) into n from public.staff_recommendation_state where role_scope = 'trust';
+    exception when insufficient_privilege then n := 0; end;
+    if (n > 0) <> p.security then
+      raise warning 'MATRIX VIOLATION: role=% divisions=[%] read % TRUST-scoped decision rows', p.rolename, p.divisions, n;
+      violations := violations + 1;
+    end if;
+
+    -- ...while non-trust decisions stay visible to every staff member.
+    begin select count(*) into n from public.staff_recommendation_state where role_scope <> 'trust';
+    exception when insufficient_privilege then n := 0; end;
+    if (n > 0) <> p.staff then
+      raise warning 'MATRIX VIOLATION: role=% divisions=[%] read % non-trust decision rows', p.rolename, p.divisions, n;
+      violations := violations + 1;
+    end if;
+
+    perform set_config('role', 'none', true);
+  end loop;
+
+  -- DELETE is locked too (round 1: only INSERT/UPDATE were probed).
+  perform set_config('test.divisions', 'security', true);
+  perform set_config('role', 'authenticated', true);
+  begin
+    delete from public.staff_recommendation_state;
+    if found then
+      raise warning 'VIOLATION: authenticated staff DELETED recommendation state';
+      violations := violations + 1;
+    end if;
+  exception when others then null;
+  end;
+  perform set_config('role', 'none', true);
+
+  -- The acted_at CHECK: a decision must record WHEN (as owner).
+  begin
+    insert into public.staff_recommendation_state (recommendation_key, role_scope, status, actor)
+      values ('matrix.noactedat', 'support', 'accepted', gen_random_uuid());
+    raise warning 'VIOLATION: a decision with no acted_at was accepted';
+    violations := violations + 1;
+  exception when check_violation then null;
+  end;
+
+  -- The (key, role_scope) uniqueness the app's upsert depends on.
+  begin
+    insert into public.staff_recommendation_state (recommendation_key, role_scope, status)
+      values ('matrix.card.a', 'support', 'open');
+    raise warning 'VIOLATION: a duplicate (key, role_scope) row was accepted — the upsert target is gone';
+    violations := violations + 1;
+  exception when unique_violation then null;
+  end;
+
+  if violations > 0 then
+    raise exception 'V3-42 ROUND-1 HARDENING FAILED: % violation(s)', violations;
+  end if;
+  raise notice 'V3-42 round-1 hardening PASSED (enforcement log, V3-41 tables, trust-row isolation, DELETE, acted_at, uniqueness)';
 end $$;

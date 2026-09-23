@@ -249,7 +249,7 @@ function RecommendationRow({
   };
 
   return (
-    <Panel tone="raised" aria-label={card.key}>
+    <Panel tone="raised" aria-label={copy.recommendation.severity[card.severity]}>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <Chip tone={card.severity === "attention" ? "warning" : "neutral"}>

@@ -8,6 +8,7 @@ import {
   deriveRecommendations,
   recommendationsForScope,
   recommendationScopeForKey,
+  isRecommendationKeyCurrent,
   SERIES_SCOPE,
   assertHumanActor,
   RECOMMENDATION_KINDS,
@@ -223,7 +224,7 @@ test("cards carry CODES and NUMBERS, never operator prose", () => {
     atRisk: { high: 2, elevated: 3 },
   });
   for (const card of cards) {
-    assert.match(card.key, /^[a-z0-9._-]+$/, `key must be a slug, got "${card.key}"`);
+    assert.match(card.key, /^[A-Za-z0-9._-]+$/, `key must be a slug, got "${card.key}"`);
     for (const [name, value] of Object.entries(card.params)) {
       if (typeof value === "string") {
         assert.match(value, /^[a-zA-Z0-9._-]+$/, `param ${name} looks like prose: "${value}"`);
@@ -361,4 +362,41 @@ test("a trust-SHAPED key can never be claimed by another lens", () => {
   for (const key of ["risk.backlog.2026-09-17", "hindsight.rule.item_not_received_reported.2026-09-17", "anomaly.enforcement_actions.2026-09-17"]) {
     assert.equal(recommendationScopeForKey(key), "trust");
   }
+});
+
+// ── round-1 regression: keys are current, backlog cards are weekly ──────────
+
+test("ROUND-1: backlog cards are keyed by WEEK so a dismissal outlives the day", () => {
+  const cards = deriveRecommendations({
+    asOf: AS_OF,
+    atRisk: { high: 1, elevated: 0 },
+    disputeWatch: { high: 1, watch: 0 },
+    riskBacklog: { review: 1, freeze: 0 },
+    disputeHindsight: { factor: "delivery_confirmation_gap", disputes: 9, windowDays: 30 },
+  });
+  for (const card of cards) {
+    assert.match(card.key, /\.2026-W38$/, `${card.key} must end in the ISO week`);
+  }
+});
+
+test("ROUND-1: only CURRENT keys are writable — no pre-dismissing next month", () => {
+  const now = new Date(AS_OF);
+  assert.equal(isRecommendationKeyCurrent("quality.at_risk.2026-W38", now), true);
+  assert.equal(isRecommendationKeyCurrent("quality.at_risk.2026-W37", now), true, "last week still resolvable");
+  assert.equal(isRecommendationKeyCurrent("quality.at_risk.2026-W42", now), false, "a future week");
+  assert.equal(isRecommendationKeyCurrent("risk.backlog.2099-W01", now), false);
+  assert.equal(isRecommendationKeyCurrent("anomaly.refund_requests.2026-09-16", now), true);
+  assert.equal(isRecommendationKeyCurrent("anomaly.refund_requests.2026-12-31", now), false, "a future day");
+  assert.equal(isRecommendationKeyCurrent("anomaly.refund_requests.2026-06-01", now), false, "outside the window");
+  assert.equal(isRecommendationKeyCurrent("workload.staffing.ANYTHING", now), false, "no time suffix");
+  assert.equal(isRecommendationKeyCurrent("nonsense.key.2026-W38", now), false);
+  assert.equal(isRecommendationKeyCurrent("quality.at_risk.2026-W38", new Date(Number.NaN)), false);
+});
+
+test("ROUND-1: prototype names never resolve a series scope", () => {
+  const cards = deriveRecommendations({
+    asOf: AS_OF,
+    anomalies: [anomaly({ series: "toString" }), anomaly({ series: "constructor" }), anomaly({ series: "__proto__" })],
+  });
+  assert.deepEqual(cards, []);
 });

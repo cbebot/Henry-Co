@@ -11,7 +11,9 @@
 --     'open' impossible without an actor uuid. The system therefore cannot
 --     accept its own recommendation — not by policy, but by construction.
 --     (Automation is V3-43/44/47's domain, and even there human-gated.)
---   * STAFF-ONLY VISIBILITY. Reads are gated to staff (`is_staff_in_any()`);
+--   * STAFF-ONLY VISIBILITY. Reads are gated to staff (`is_staff_in_any()`), and
+--     trust-lens rows to security staff (`is_staff_in('security')`), matching the
+--     V3-40 tables they derive from;
 --     anon has nothing; every write is service-role only, performed by a staff
 --     server action that has already re-derived the acting staff identity.
 --   * NO MONEY CONTACT, NO CUSTOMER CONTACT. Nothing here touches a wallet, a
@@ -44,12 +46,20 @@ set check_function_bodies = off;
 --    FALSE, so a missing predicate DENIES rather than opens.
 -- ---------------------------------------------------------------------------
 do $$ begin
+  if to_regprocedure('public.is_staff_in(text,text)') is null then
+    create function public.is_staff_in(division_key text, role_key text default null)
+    returns boolean
+    language sql stable security definer set search_path = public
+    as 'select false';
+    revoke all on function public.is_staff_in(text, text) from public, anon;
+    grant execute on function public.is_staff_in(text, text) to authenticated, service_role;
+  end if;
   if to_regprocedure('public.is_staff_in_any()') is null then
     create function public.is_staff_in_any()
     returns boolean
     language sql stable security definer set search_path = public
     as 'select false';
-    revoke all on function public.is_staff_in_any() from public;
+    revoke all on function public.is_staff_in_any() from public, anon;
     grant execute on function public.is_staff_in_any() to authenticated, service_role;
   end if;
 end $$;
@@ -123,8 +133,19 @@ revoke insert, update, delete, truncate on public.staff_recommendation_state fro
 grant select on public.staff_recommendation_state to authenticated;
 
 drop policy if exists staff_recommendation_state_staff_select on public.staff_recommendation_state;
+-- Trust-lens rows follow the SAME gate as the V3-40 risk tables they are
+-- derived from. Their keys reveal when the risk backlog was non-empty, when
+-- risk/enforcement anomalies occurred, and which security staffer acted — so a
+-- support operator querying PostgREST directly must get NOTHING for them
+-- (adversarial round 1 found the original `is_staff_in_any()` gate leaked all
+-- three). Every other lens stays readable by any staff member.
 create policy staff_recommendation_state_staff_select on public.staff_recommendation_state
   for select to authenticated
-  using (public.is_staff_in_any());
+  using (
+    case
+      when role_scope = 'trust' then public.is_staff_in('security')
+      else public.is_staff_in_any()
+    end
+  );
 
 select 'v3-42 staff recommendation state applied' as status;

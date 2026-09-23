@@ -110,12 +110,19 @@ function dayKey(iso: unknown): string | null {
   return new Date(ms).toISOString().slice(0, 10);
 }
 
-/** Fold per-day counts into a DENSE window ending today. Days with no rows are
- *  explicit zeros — otherwise a chart joins Tuesday to Friday as if Wednesday
- *  never happened, and the anomaly baseline is computed over busy days only. */
-function densify(counts: Map<string, number>, now: Date, days: number): SeriesPoint[] {
+/**
+ * Fold per-day ARRIVAL counts into a dense window that ends YESTERDAY.
+ *
+ * Today is excluded on purpose (adversarial round 1). The batch runs at 02:47
+ * UTC, so "today" holds ~3 hours of arrivals, or an explicit 0 before the run.
+ * Judging that partial bucket made real spikes undetectable on every arrival
+ * series and drew a permanent false dip at the end of every chart. The last
+ * point is now always a COMPLETE day. Missing days inside the window are true
+ * zeros: the source read covered them.
+ */
+function densifyCompleteDays(counts: Map<string, number>, now: Date, days: number): SeriesPoint[] {
   if (counts.size === 0) return [];
-  const endMs = Date.parse(`${now.toISOString().slice(0, 10)}T00:00:00.000Z`);
+  const endMs = Date.parse(`${now.toISOString().slice(0, 10)}T00:00:00.000Z`) - DAY_MS;
   const startMs = endMs - (days - 1) * DAY_MS;
   const out: SeriesPoint[] = [];
   for (let ms = startMs; ms <= endMs; ms += DAY_MS) {
@@ -125,61 +132,128 @@ function densify(counts: Map<string, number>, now: Date, days: number): SeriesPo
   return out;
 }
 
-/** Daily row counts from a table the viewer IS entitled to read, optionally
- *  restricted to certain bands (filtered in SQL, so the limit is spent on rows
- *  that count). */
-async function loadDailyCounts(
+/**
+ * Daily EVENT counts (each row is one event that happened once), newest first.
+ * Ordering DESC matters: PostgREST caps responses (max_rows = 1000), and an
+ * ascending read would let the cap drop the most recent days, the ones that
+ * matter. Only used for tables with one row per event, never for tables the
+ * batch re-scores daily (those would be summed 28 times over).
+ */
+async function loadDailyEvents(
   supabase: IntelligenceSupabaseClient,
   table: string,
   timeColumn: string,
   now: Date,
-  bandFilter?: { column: string; values: readonly string[] },
 ): Promise<SeriesPoint[]> {
-  const since = new Date(now.getTime() - SERIES_WINDOW_DAYS * DAY_MS);
+  const since = new Date(now.getTime() - (SERIES_WINDOW_DAYS + 1) * DAY_MS);
   const counts = new Map<string, number>();
   try {
-    let query = supabase.from(table).select(timeColumn).gte(timeColumn, since.toISOString());
-    if (bandFilter) query = query.in(bandFilter.column, bandFilter.values);
-    const { data, error } = await query.order(timeColumn, { ascending: true }).limit(SERIES_ROW_LIMIT);
+    const { data, error } = await supabase
+      .from(table)
+      .select(timeColumn)
+      .gte(timeColumn, since.toISOString())
+      .order(timeColumn, { ascending: false })
+      .limit(SERIES_ROW_LIMIT);
     if (error || !data) return [];
     for (const row of data) {
       const key = dayKey(row[timeColumn]);
       if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
     }
   } catch {
-    // Absent table / renamed column / RLS denial -> contribute nothing.
     return [];
   }
-  return densify(counts, now, SERIES_WINDOW_DAYS);
+  return densifyCompleteDays(counts, now, SERIES_WINDOW_DAYS);
 }
 
-/** Tally rows in the window by one low-cardinality text column. */
-async function loadBandCounts(
+/**
+ * A SNAPSHOT series from a batch run journal: one point per day, from that
+ * day's newest successful run. The V3-40/V3-41 batches re-score the same
+ * entities every night, so counting score ROWS over 28 days inflated figures up
+ * to ~28x (round 1). The journal already records each run's tally exactly once.
+ * Days without a run are simply absent: a skipped batch is not "zero risk".
+ */
+async function loadJournalSeries(
   supabase: IntelligenceSupabaseClient,
-  table: string,
-  timeColumn: string,
-  bandColumn: string,
+  table: "risk_batch_runs" | "predictive_batch_runs",
   now: Date,
-): Promise<Record<string, number>> {
-  const since = new Date(now.getTime() - SERIES_WINDOW_DAYS * DAY_MS);
-  const counts: Record<string, number> = {};
+  extract: (counts: Record<string, unknown>) => number | null,
+): Promise<SeriesPoint[]> {
+  const okColumn = table === "risk_batch_runs" ? "status" : "outcome";
+  const okValue = table === "risk_batch_runs" ? "done" : "succeeded";
   try {
     const { data, error } = await supabase
       .from(table)
-      .select(`${bandColumn},${timeColumn}`)
-      .gte(timeColumn, since.toISOString())
+      .select(`started_at,${okColumn},counts`)
+      .gte("started_at", new Date(now.getTime() - SERIES_WINDOW_DAYS * DAY_MS).toISOString())
+      .eq(okColumn, okValue)
+      .order("started_at", { ascending: false })
+      .limit(120);
+    if (error || !data) return [];
+    const byDay = new Map<string, number>();
+    for (const row of data) {
+      const key = dayKey(row.started_at);
+      if (!key || byDay.has(key)) continue; // newest run of the day wins
+      const counts = (row.counts && typeof row.counts === "object" ? row.counts : {}) as Record<string, unknown>;
+      const value = extract(counts);
+      if (value !== null && Number.isFinite(value) && value >= 0) byDay.set(key, Math.round(value));
+    }
+    return [...byDay.entries()]
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+      .map(([key, value]) => ({ at: `${key}T00:00:00.000Z`, value }));
+  } catch {
+    return [];
+  }
+}
+
+const num = (value: unknown): number => {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+};
+
+/**
+ * The LATEST batch's flagged entities: band tallies and drill rows, each entity
+ * counted once. Reads newest-first within the band filter, keeps only the
+ * newest scoring day, and de-duplicates by id, so a transaction watched for
+ * ten days is one transaction, not ten.
+ */
+async function loadLatestSnapshot(
+  supabase: IntelligenceSupabaseClient,
+  table: string,
+  idColumn: string,
+  bandColumn: string,
+  timeColumn: string,
+  bands: readonly string[],
+  now: Date,
+): Promise<{ counts: Record<string, number>; drill: DrillRow[] }> {
+  const empty = { counts: {}, drill: [] as DrillRow[] };
+  try {
+    const { data, error } = await supabase
+      .from(table)
+      .select(`${idColumn},${bandColumn},${timeColumn}`)
+      .gte(timeColumn, new Date(now.getTime() - 3 * DAY_MS).toISOString())
+      .in(bandColumn, bands)
       .order(timeColumn, { ascending: false })
       .limit(SERIES_ROW_LIMIT);
-    if (error || !data) return counts;
+    if (error || !data || data.length === 0) return empty;
+    const newestDay = dayKey(data[0][timeColumn]);
+    const seen = new Set<string>();
+    const counts: Record<string, number> = {};
+    const drill: DrillRow[] = [];
     for (const row of data) {
-      const band = row[bandColumn];
-      if (typeof band !== "string") continue;
+      if (dayKey(row[timeColumn]) !== newestDay) continue;
+      const id = String(row[idColumn] ?? "");
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      const band = String(row[bandColumn] ?? "");
       counts[band] = (counts[band] ?? 0) + 1;
+      if (drill.length < DRILLDOWN_LIMIT) {
+        drill.push({ id, label: id, band, at: String(row[timeColumn] ?? "") });
+      }
     }
+    return { counts, drill };
   } catch {
-    return counts;
+    return empty;
   }
-  return counts;
 }
 
 interface ForecastRow {
@@ -190,7 +264,7 @@ interface ForecastRow {
   perHour: ReadonlyArray<{ at: string; predicted: number }>;
 }
 
-/** The newest forecast row per queue — ONE bounded read serves every queue. */
+/** The newest forecast row per queue: ONE bounded read serves every queue. */
 async function loadLatestForecasts(
   supabase: IntelligenceSupabaseClient,
   now: Date,
@@ -232,12 +306,13 @@ async function loadLatestForecasts(
   return out;
 }
 
-/** Observed daily volume for a queue, from the batch-published counts. */
+/** Observed daily volume for a queue, from the batch-published counts, ending
+ *  at the last COMPLETE day. */
 function observedSeries(row: ForecastRow | undefined, now: Date): SeriesPoint[] {
   if (!row || row.observedDaily.length === 0) return [];
   const counts = new Map<string, number>();
   for (const d of row.observedDaily) counts.set(d.date, d.count);
-  return densify(counts, now, SERIES_WINDOW_DAYS);
+  return densifyCompleteDays(counts, now, SERIES_WINDOW_DAYS);
 }
 
 /** The next seven days of a forecast, as daily totals. */
@@ -252,35 +327,6 @@ function forecastSeries(row: ForecastRow | undefined): SeriesPoint[] {
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
     .slice(0, 7)
     .map(([key, value]) => ({ at: `${key}T00:00:00.000Z`, value: Math.round(value) }));
-}
-
-async function loadDrill(
-  supabase: IntelligenceSupabaseClient,
-  table: string,
-  idColumn: string,
-  bandColumn: string,
-  timeColumn: string,
-  bands: readonly string[],
-  now: Date,
-): Promise<DrillRow[]> {
-  try {
-    const { data, error } = await supabase
-      .from(table)
-      .select(`${idColumn},${bandColumn},${timeColumn}`)
-      .gte(timeColumn, new Date(now.getTime() - SERIES_WINDOW_DAYS * DAY_MS).toISOString())
-      .in(bandColumn, bands)
-      .order(timeColumn, { ascending: false })
-      .limit(DRILLDOWN_LIMIT);
-    if (error || !data) return [];
-    return data.map((row) => ({
-      id: String(row[idColumn] ?? ""),
-      label: String(row[idColumn] ?? ""),
-      band: String(row[bandColumn] ?? ""),
-      at: String(row[timeColumn] ?? ""),
-    }));
-  } catch {
-    return [];
-  }
 }
 
 /**
@@ -298,15 +344,14 @@ export async function loadLensSnapshot(
 ): Promise<LensSnapshot> {
   switch (lens) {
     case "trust": {
-      // V3-40 tables. Only a `security` staff session returns rows at all.
-      const [flagged, enforcement, tiers, drill] = await Promise.all([
-        loadDailyCounts(supabase, "risk_scores", "scored_at", now, {
-          column: "tier",
-          values: ["review", "freeze"],
+      // V3-40 tables + journal. Only a `security` staff session returns rows.
+      const [flagged, enforcement, latest] = await Promise.all([
+        loadJournalSeries(supabase, "risk_batch_runs", now, (c) => {
+          const tiers = (c.tiers && typeof c.tiers === "object" ? c.tiers : {}) as Record<string, unknown>;
+          return num(tiers.review) + num(tiers.freeze);
         }),
-        loadDailyCounts(supabase, "risk_enforcement_log", "created_at", now),
-        loadBandCounts(supabase, "risk_scores", "scored_at", "tier", now),
-        loadDrill(supabase, "risk_scores", "entity_id", "tier", "scored_at", ["review", "freeze"], now),
+        loadDailyEvents(supabase, "risk_enforcement_log", "created_at", now),
+        loadLatestSnapshot(supabase, "risk_scores", "entity_id", "tier", "scored_at", ["review", "freeze"], now),
       ]);
       return {
         lens,
@@ -314,20 +359,24 @@ export async function loadLensSnapshot(
           { key: "risk_flagged", kind: "observed", points: flagged, href: "/modules/staff-risk" },
           { key: "enforcement_actions", kind: "observed", points: enforcement, href: "/modules/staff-risk" },
         ],
-        bands: { risk: tiers },
+        bands: { risk: latest.counts },
         forecasts: [],
-        drill,
+        drill: latest.drill,
       };
     }
     case "finance": {
-      const [forecasts, watchList, bands, drill] = await Promise.all([
+      const [forecasts, watchList, latest] = await Promise.all([
         loadLatestForecasts(supabase, now),
-        loadDailyCounts(supabase, "dispute_likelihoods", "scored_at", now, {
-          column: "band",
-          values: ["watch", "high"],
-        }),
-        loadBandCounts(supabase, "dispute_likelihoods", "scored_at", "band", now),
-        loadDrill(supabase, "dispute_likelihoods", "transaction_id", "band", "scored_at", ["watch", "high"], now),
+        loadJournalSeries(supabase, "predictive_batch_runs", now, (c) => num(c.dispute_watch)),
+        loadLatestSnapshot(
+          supabase,
+          "dispute_likelihoods",
+          "transaction_id",
+          "band",
+          "scored_at",
+          ["watch", "high"],
+          now,
+        ),
       ]);
       return {
         lens,
@@ -346,20 +395,16 @@ export async function loadLensSnapshot(
           },
           { key: "dispute_rate", kind: "observed", points: watchList },
         ],
-        bands: { dispute: bands },
+        bands: { dispute: latest.counts },
         forecasts: [],
-        drill,
+        drill: latest.drill,
       };
     }
     case "support": {
-      const [forecasts, atRisk, bands, drill] = await Promise.all([
+      const [forecasts, atRisk, latest] = await Promise.all([
         loadLatestForecasts(supabase, now),
-        loadDailyCounts(supabase, "quality_assessments", "assessed_at", now, {
-          column: "risk_band",
-          values: ["elevated", "high"],
-        }),
-        loadBandCounts(supabase, "quality_assessments", "assessed_at", "risk_band", now),
-        loadDrill(
+        loadJournalSeries(supabase, "predictive_batch_runs", now, (c) => num(c.at_risk)),
+        loadLatestSnapshot(
           supabase,
           "quality_assessments",
           "unit_id",
@@ -382,9 +427,9 @@ export async function loadLensSnapshot(
           { key: "support_forecast", kind: "forecast", points: forecastSeries(support) },
           { key: "at_risk_units", kind: "observed", points: atRisk },
         ],
-        bands: { quality: bands },
+        bands: { quality: latest.counts },
         forecasts: support ? [{ queue: support.queue, basis: support.basis, staffing: support.staffing }] : [],
-        drill,
+        drill: latest.drill,
       };
     }
     case "moderation":
@@ -420,17 +465,26 @@ export interface RecommendationStateRow {
   snoozeUntil: string | null;
 }
 
-/** Persisted accept/dismiss/snooze state for this lens. */
+/**
+ * Persisted accept/dismiss/snooze state for EXACTLY the cards being shown.
+ *
+ * Filtering by the current card keys (rather than "the newest 40 rows for the
+ * lens") means no pile of other rows, junk or legitimate, can push a real
+ * decision out of the read window and make a dismissed card reappear.
+ */
 export async function loadRecommendationState(
   supabase: IntelligenceSupabaseClient,
   lens: LensKey,
+  cardKeys: readonly string[],
 ): Promise<RecommendationStateRow[]> {
+  if (cardKeys.length === 0) return [];
   try {
     const { data, error } = await supabase
       .from("staff_recommendation_state")
       .select("recommendation_key,status,snooze_until,role_scope")
       .eq("role_scope", lens)
-      .order("created_at", { ascending: false })
+      .in("recommendation_key", cardKeys.slice(0, RECOMMENDATION_LIMIT))
+      .order("updated_at", { ascending: false })
       .limit(RECOMMENDATION_LIMIT);
     if (error || !data) return [];
     return data.map((row) => ({

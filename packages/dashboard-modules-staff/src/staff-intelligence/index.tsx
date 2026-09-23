@@ -139,16 +139,21 @@ export async function StaffIntelligencePageServer({
   const lens: LensKey = resolveLens(caps, requestedLens);
   const available = lensesForViewer(caps);
 
-  const [snapshot, state] = await Promise.all([
-    loadLensSnapshot(supabase, lens),
-    loadRecommendationState(supabase, lens),
-  ]);
+  const snapshot = await loadLensSnapshot(supabase, lens);
 
   // Outliers are hunted in what HAPPENED, never in a model's own projection.
   const anomalies = detectAnomaliesForSeries(
     snapshot.series.filter((s) => s.kind === "observed").map((s) => ({ series: s.key, points: s.points })),
   );
   const fired = firedAnomalies(anomalies);
+  // Derive the candidate cards, then read persisted decisions for EXACTLY those
+  // keys — a bounded, targeted read no pile of other rows can crowd out.
+  const candidates = buildRecommendationRail({ lens, snapshot, anomalies: fired, state: [] });
+  const state = await loadRecommendationState(
+    supabase,
+    lens,
+    candidates.map((card) => card.key),
+  );
   const cards = buildRecommendationRail({ lens, snapshot, anomalies: fired, state });
 
   // S5 telemetry. Lens + counts + series KEYS only — never a person, an entity

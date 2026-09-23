@@ -24,6 +24,7 @@ import "server-only";
 
 import {
   assertHumanActor,
+  isRecommendationKeyCurrent,
   isFlagEnabled,
   parseHenryFeatureFlags,
   recommendationScopeForKey,
@@ -32,6 +33,7 @@ import {
 import { writeAuditLog } from "@henryco/observability/audit-log";
 import { emitEvent } from "@henryco/observability/events";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
+import { createStaffSupabaseServer } from "@/lib/supabase/server";
 import { assertActorMayActOnLens, type IntelligenceStaffActor } from "./actor";
 
 export type RecommendationAction = "accept" | "dismiss" | "snooze";
@@ -72,6 +74,11 @@ export async function recordRecommendationAction(
   const keyScope = recommendationScopeForKey(key);
   if (!keyScope) throw new Error("Unknown recommendation.");
   if (keyScope !== input.lens) throw new Error("That recommendation does not belong to this dashboard.");
+  // ...and it must be CURRENT: the engine only emits this week's backlog cards
+  // and anomalies inside the chart window. Refusing future/stale keys stops a
+  // lens member pre-dismissing next month's cards for the whole team.
+  const now = input.now ?? new Date();
+  if (!isRecommendationKeyCurrent(key, now)) throw new Error("That recommendation is no longer current.");
 
   const status = STATUS_BY_ACTION[input.action];
   if (!status) throw new Error("Unknown recommendation action.");
@@ -79,7 +86,6 @@ export async function recordRecommendationAction(
   // Layer 3 — a state change away from 'open' REQUIRES a human actor.
   assertHumanActor(status, input.actor.userId);
 
-  const now = input.now ?? new Date();
   const snoozeUntil =
     status === "snoozed" ? new Date(now.getTime() + SNOOZE_DAYS * 86_400_000).toISOString() : null;
 
@@ -102,15 +108,25 @@ export async function recordRecommendationAction(
   );
   if (error) throw new Error("Recommendation state could not be saved.");
 
-  // Layer 5 — audit. Actor + role + key, never the card's rendered words.
-  await writeAuditLog(admin as never, {
+  // Layer 5 — audit, through the CALLER'S OWN SESSION (the bulk-actions.ts
+  // precedent). `add_audit_log_v2` takes the actor from auth.uid() and refuses
+  // non-staff callers; under the service role auth.uid() is NULL, so an admin-
+  // client audit raised on every call and was silently swallowed (round 1).
+  // `entity_id` is a uuid column, so the key travels in new_values instead.
+  const session = await createStaffSupabaseServer();
+  const auditId = await writeAuditLog(session as never, {
     action: `staff.intelligence.recommendation.${status}`,
     entityType: "staff_recommendation",
-    entityId: key,
-    newValues: { status, role_scope: input.lens, snooze_until: snoozeUntil },
+    entityId: null,
+    newValues: { recommendation_key: key, status, role_scope: input.lens, snooze_until: snoozeUntil },
     division: null,
     reason: "operator_decision",
-  }).catch(() => undefined);
+  });
+  if (!auditId) {
+    // The decision itself is saved (and carries its actor), but an unaudited
+    // decision is surfaced loudly rather than swallowed.
+    console.error("[staff-intelligence] recommendation decision saved but audit write failed", { key, status });
+  }
 
   // A snooze is tracked as "not now" for adoption metrics, with the real status
   // in the payload so the 14-day soak can tell the two apart.

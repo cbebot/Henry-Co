@@ -99,6 +99,14 @@ export interface AnomalyOpts {
    * `support_volume` a collapse can mean a broken form, so callers may opt in.
    */
   direction?: "up" | "both";
+  /**
+   * The smallest spread the detector will divide by. The dashboards chart COUNT
+   * data, where a spread below one item is meaningless: without this floor a
+   * near-empty queue (26 zeros and a 1) turned its next single item into an
+   * "alert" at z=10, while a flat series jumping 0 -> 500 was waved through as
+   * "flat". With the floor, 0 -> 2 is ordinary noise and 0 -> 500 fires.
+   */
+  minScale?: number;
 }
 
 export const DEFAULT_ANOMALY_OPTS: Required<AnomalyOpts> = {
@@ -110,6 +118,7 @@ export const DEFAULT_ANOMALY_OPTS: Required<AnomalyOpts> = {
   minBaseline: 7,
   evaluate: 1,
   direction: "up",
+  minScale: 1,
 };
 
 /** Anything beyond this is a bug in the caller's series, not a real measurement. */
@@ -166,6 +175,7 @@ function sanitizeOpts(opts: AnomalyOpts | undefined): Required<AnomalyOpts> {
     minBaseline: Math.round(bounded(o.minBaseline, d.minBaseline, 2, 10_000)),
     evaluate: Math.round(bounded(o.evaluate, d.evaluate, 1, 1000)),
     direction: o.direction === "both" ? "both" : "up",
+    minScale: bounded(o.minScale, d.minScale, 0.000001, MAX_SERIES_VALUE),
   };
 }
 
@@ -235,12 +245,10 @@ export function detectAnomalies(series: SeriesPoint[], opts?: AnomalyOpts): Anom
       scale = stdev(baseline, centre);
       basis = "stdev_fallback";
     }
-    if (!(scale > 0)) {
-      // Genuinely flat. Nothing can be an outlier of a constant, and claiming
-      // otherwise would fire on the first non-zero value a new queue ever sees.
-      results.push(notDetected(config.series, target.at, target.value, centre, baseline.length, "flat_series"));
-      continue;
-    }
+    if (!(scale > 0)) basis = "flat_series";
+    // Floor the spread (see `minScale`). This is what separates "a second item
+    // in a quiet month" (noise) from "a quiet queue suddenly flooded" (signal).
+    scale = Math.max(scale, config.minScale);
 
     const rawDeviation = (target.value - centre) / scale;
     const deviation = Math.max(-MAX_DEVIATION, Math.min(MAX_DEVIATION, rawDeviation));
