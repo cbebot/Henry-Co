@@ -239,6 +239,7 @@ function RecommendationRow({
 
   const act = (action: RecommendationAction) => {
     setFailed(false);
+    setStale(false);
     startTransition(async () => {
       try {
         const outcome = await onAction(card.key, lens, action);
@@ -264,11 +265,7 @@ function RecommendationRow({
           </Chip>
         </div>
         <span style={{ fontSize: "0.875rem", color: "var(--hc-text-primary)" }}>{fill(template, params)}</span>
-        {stale ? (
-          <span role="status" style={{ fontSize: "0.75rem", color: "var(--hc-text-tertiary)" }}>
-            {copy.recommendation.actions.stale}
-          </span>
-        ) : resolved ? (
+        {resolved ? (
           <span role="status" style={{ fontSize: "0.75rem", color: "var(--hc-text-tertiary)" }}>
             {copy.recommendation.actions[resolved === "accept" ? "accepted" : resolved === "dismiss" ? "dismissed" : "snoozed"]}
           </span>
@@ -287,6 +284,14 @@ function RecommendationRow({
               <a className="hc-intel-link" href={card.href}>
                 {copy.recommendation.actions.open}
               </a>
+            ) : null}
+            {stale ? (
+              // Buttons stay live (round 4): if the refreshed page still shows
+              // this card — e.g. the re-check hit a transient read error — the
+              // operator can simply act again instead of being stuck.
+              <span role="status" style={{ fontSize: "0.75rem", color: "var(--hc-text-tertiary)" }}>
+                {copy.recommendation.actions.stale}
+              </span>
             ) : null}
             {failed ? (
               <span role="alert" style={{ fontSize: "0.75rem", color: "var(--hc-status-danger-text, #B91C1C)" }}>

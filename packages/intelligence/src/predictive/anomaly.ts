@@ -116,6 +116,14 @@ export interface AnomalyOpts {
    * dashboards judge is a count, so this is on by default.
    */
   countData?: boolean;
+  /**
+   * The smallest spread as a FRACTION of the baseline median (round 4). Batch-
+   * journal snapshots re-tally the same entities nightly: they are neither
+   * Poisson (so `countData` is off) nor independent day to day, and with only
+   * `minScale` a flat 200 moving to 204 read as an ALERT. A relative floor says
+   * "a few percent of a stock is not news". 0 disables it (the default).
+   */
+  relativeFloor?: number;
 }
 
 export const DEFAULT_ANOMALY_OPTS: Required<AnomalyOpts> = {
@@ -129,6 +137,7 @@ export const DEFAULT_ANOMALY_OPTS: Required<AnomalyOpts> = {
   direction: "up",
   minScale: 1,
   countData: true,
+  relativeFloor: 0,
 };
 
 /** Anything beyond this is a bug in the caller's series, not a real measurement. */
@@ -187,6 +196,7 @@ function sanitizeOpts(opts: AnomalyOpts | undefined): Required<AnomalyOpts> {
     direction: o.direction === "both" ? "both" : "up",
     minScale: bounded(o.minScale, d.minScale, 0.000001, MAX_SERIES_VALUE),
     countData: o.countData === false ? false : d.countData,
+    relativeFloor: bounded(o.relativeFloor, d.relativeFloor, 0, 1),
   };
 }
 
@@ -262,6 +272,8 @@ export function detectAnomalies(series: SeriesPoint[], opts?: AnomalyOpts): Anom
     scale = Math.max(scale, config.minScale);
     // ...and, for counts, the Poisson floor (see `countData`).
     if (config.countData && centre > 0) scale = Math.max(scale, Math.sqrt(centre));
+    // ...and, for stocks, a floor relative to their level (see `relativeFloor`).
+    if (config.relativeFloor > 0 && centre > 0) scale = Math.max(scale, config.relativeFloor * centre);
 
     const rawDeviation = (target.value - centre) / scale;
     const deviation = Math.max(-MAX_DEVIATION, Math.min(MAX_DEVIATION, rawDeviation));

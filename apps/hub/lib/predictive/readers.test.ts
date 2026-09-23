@@ -48,6 +48,16 @@ describe("V3-42 round 3 — the volume chart is EXACT, and a dormant queue keeps
     assert.ok(daily.includes("return null"));
   });
 
+  it("ROUND-4: only a MISSING table is skipped — a timeout/outage withholds, never zeros", () => {
+    assert.ok(daily.includes("if (results.every((r) => r.missing)) continue;"));
+    assert.equal(daily.includes("results.every((r) => r.count === null)"), false, "'all failed' is not 'absent'");
+    assert.ok(daily.includes("if (countedSources === 0) return null;"), "no counted source => no series");
+    const helper = source.slice(source.indexOf("function isMissingRelation"), source.indexOf("export async function readQueueDailyCounts"));
+    for (const code of ["42P01", "PGRST205"]) assert.ok(helper.includes(code), `${code} is the absent-table degrade`);
+    assert.ok(helper.includes("status === 404"), "a HEAD 404 has no body: the status is the only absent-table signal");
+    for (const transient of ["57014", "53300", "PGRST000"]) assert.equal(helper.includes(transient), false, `${transient} must NOT count as absent`);
+  });
+
   it("an untruncated history starts at `since`, not at the first arrival", () => {
     assert.ok(queueHistory.includes("Math.ceil(since.getTime() / MS_PER_HOUR) * MS_PER_HOUR"));
   });

@@ -342,3 +342,22 @@ test("Poisson floor still fires on a real flood at low volume", () => {
   assert.equal(result.detected, true, "5/day -> 20 is a real spike");
   assert.equal(result.band, "alert");
 });
+
+// ── Adversarial round 4: SNAPSHOT (stock) series use a relative floor ───────
+
+test("ROUND-4: a flat stock drifting 2% is NOT an alert under the relative floor", () => {
+  const flat = Array.from({ length: 27 }, (_, i) => ({ at: new Date(START + i * DAY).toISOString(), value: 200 }));
+  flat.push({ at: new Date(START + 27 * DAY).toISOString(), value: 204 });
+  const bare = detectAnomalies(flat, { series: "dispute_rate", countData: false })[0];
+  assert.equal(bare.detected, true, "without the floor, 2% on a flat line fires (the round-4 defect)");
+  const floored = detectAnomalies(flat, { series: "dispute_rate", countData: false, relativeFloor: 0.05 })[0];
+  assert.equal(floored.detected, false, "with a 5% relative floor, a 2% drift is quiet");
+});
+
+test("ROUND-4: the relative floor still fires on a real jump in a stock", () => {
+  const flat = Array.from({ length: 27 }, (_, i) => ({ at: new Date(START + i * DAY).toISOString(), value: 200 }));
+  flat.push({ at: new Date(START + 27 * DAY).toISOString(), value: 260 });
+  const [result] = detectAnomalies(flat, { series: "dispute_rate", countData: false, relativeFloor: 0.05 });
+  assert.equal(result.detected, true, "+30% on a stock of 200 is news");
+  assert.equal(result.band, "alert");
+});

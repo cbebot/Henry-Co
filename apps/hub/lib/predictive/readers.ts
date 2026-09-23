@@ -147,6 +147,18 @@ export async function readQueueHistory(queue: QueueKey, now: Date): Promise<Queu
 }
 
 /**
+ * Is this source genuinely ABSENT (not yet deployed), as opposed to broken?
+ * A HEAD request has no body, so postgrest-js reports an unknown relation as
+ * `error: null, count: null` with HTTP 404 (round 4) — the status is the only
+ * reliable signal. Error codes are honoured too for non-HEAD transports.
+ */
+function isMissingRelation(error: { code?: string | null } | null, status?: number): boolean {
+  if (status === 404) return true;
+  const code = error?.code ?? "";
+  return code === "42P01" || code === "PGRST205";
+}
+
+/**
  * EXACT arrivals per COMPLETE UTC day, for the staff dashboards' volume chart
  * (V3-42 adversarial round 3).
  *
@@ -167,30 +179,36 @@ export async function readQueueDailyCounts(queue: QueueKey, now: Date): Promise<
   for (let d = QUEUE_HISTORY_DAYS - 1; d >= 1; d -= 1) days.push(todayMs - d * MS_PER_DAY);
 
   const totals = new Map<number, number>(days.map((ms) => [ms, 0]));
+  let countedSources = 0;
   try {
     const admin = createAdminSupabase();
     for (const source of QUEUE_SOURCES[queue]) {
       const results = await Promise.all(
         days.map(async (dayMs) => {
-          const { count, error } = await admin
+          const { count, error, status } = await admin
             .from(source.table)
             .select(source.column, { count: "exact", head: true })
             .gte(source.column, new Date(dayMs).toISOString())
             .lt(source.column, new Date(dayMs + MS_PER_DAY).toISOString());
-          return { dayMs, count: error ? null : count };
+          return { dayMs, count: error ? null : count, missing: isMissingRelation(error, status) };
         }),
       );
-      // A source whose table is absent counts nothing on every day — that is
-      // the documented degrade (the queue simply has no such source yet).
-      if (results.every((r) => r.count === null)) continue;
+      // ONLY a table/column that does not exist is the documented degrade (the
+      // queue has no such source yet). Any other failure — timeout, saturated
+      // pool, outage — withholds the series (round 4: treating "all failed"
+      // as "absent" published 27 days of confident zeros).
+      if (results.every((r) => r.missing)) continue;
       for (const r of results) {
         if (typeof r.count !== "number" || !Number.isFinite(r.count) || r.count < 0) return null;
         totals.set(r.dayMs, (totals.get(r.dayMs) ?? 0) + r.count);
       }
+      countedSources += 1;
     }
   } catch {
     return null;
   }
+  // No source could be counted at all: there is nothing to chart, not zero.
+  if (countedSources === 0) return null;
   return days.map((ms) => ({ date: new Date(ms).toISOString().slice(0, 10), count: totals.get(ms) ?? 0 }));
 }
 

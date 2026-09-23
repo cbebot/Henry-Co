@@ -110,6 +110,9 @@ export const staffIntelligenceModule: StaffDashboardModule = {
   },
 };
 
+/** How batch-journal SNAPSHOT series are judged (see `deriveLensRail`). */
+export const SNAPSHOT_ANOMALY_OPTS = { countData: false, relativeFloor: 0.05 } as const;
+
 /**
  * The ONE derivation of a lens's rail: snapshot -> anomalies on fresh observed
  * series -> candidate cards. The page renders from it, and the write path
@@ -128,11 +131,12 @@ export async function deriveLensRail(supabase: IntelligenceSupabaseClient, lens:
     snapshot.series
       .filter((s) => s.kind === "observed" && isSeriesFresh(s.points, now))
       // Arrival series are Poisson counts; batch-journal snapshots re-tally the
-      // same entities nightly and must not get the Poisson floor (round 3).
+      // same entities nightly: no Poisson floor (round 3), but a 5% relative
+      // floor so a stock drifting a few percent is not an alert (round 4).
       .map((s) => ({
         series: s.key,
         points: s.points,
-        opts: SNAPSHOT_SERIES.has(s.key) ? { countData: false } : undefined,
+        opts: SNAPSHOT_SERIES.has(s.key) ? SNAPSHOT_ANOMALY_OPTS : undefined,
       })),
   );
   const fired = firedAnomalies(anomalies);

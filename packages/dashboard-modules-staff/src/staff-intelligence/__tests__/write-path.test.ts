@@ -182,5 +182,14 @@ test("ROUND-3: a card that changed since render is a distinct 'stale' outcome, n
 
 test("ROUND-3: journal snapshot series are judged WITHOUT the Poisson count floor", () => {
   const s = read("packages/dashboard-modules-staff/src/staff-intelligence/index.tsx");
-  assert.ok(s.includes("SNAPSHOT_SERIES.has(s.key) ? { countData: false }"));
+  assert.ok(s.includes("SNAPSHOT_SERIES.has(s.key) ? SNAPSHOT_ANOMALY_OPTS"));
+  assert.ok(s.includes("SNAPSHOT_ANOMALY_OPTS = { countData: false, relativeFloor: 0.05 }"), "round 4: a relative floor for stocks");
+});
+
+test("ROUND-4: a 'stale' row keeps its buttons, so a still-present card is never stuck", () => {
+  const ui = read("packages/dashboard-modules-staff/src/staff-intelligence/dashboard.tsx");
+  const row = ui.slice(ui.indexOf("function RecommendationRow"), ui.indexOf("export function PredictiveDashboard"));
+  assert.equal(/\{stale \? \([\s\S]{0,200}\) : resolved \?/.test(row), false, "stale must not replace the buttons");
+  assert.ok(row.indexOf("actions.stale") > row.indexOf("actions.snooze"), "the stale note renders beside the live buttons");
+  assert.ok(row.includes("setStale(false)"), "a new attempt clears the note");
 });
