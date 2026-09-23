@@ -64,12 +64,15 @@ string. The issuer block on receipts, invoices and credit notes already does (vi
 still carries the literal — company-hub terms/privacy, studio policies, branded-document legal
 footers, the AI doctrine — which is correct today but will not follow a future rename.
 
-> **Owner action — unresolved:** this file previously recorded a CAC filing in process under
-> "Henry Holdings Limited" (2026-06-01). Shipped receipts and invoices print "Henry Onyx
-> Limited" (`packages/branded-documents` and `packages/payment-surface` read
-> `COMPANY.group.legalName`). Confirm the CAC certificate reads **Henry Onyx Limited**. If it
-> does not, the issuer name on every money document is mismatched against the registered
-> entity — a Paystack/Flutterwave compliance problem, not a docs nit.
+CAC registration is complete. The RC number, TIN and registered office are recorded from the
+official CAC records in `LEGAL.entity` (`packages/config/legal.ts`, since V3-18 #251 on
+2026-06-07), and the issuer block on receipts and invoices prints them from there. This file's
+earlier line ("filing in process as Henry Holdings Limited", 2026-06-01) was superseded then and
+never updated.
+
+> **Still owner-to-confirm** in `LEGAL.entity`: `ndpcRegistration` (the NDPC data-controller
+> registration reference) and `dpo` (data protection officer). Both are placeholders today, and
+> NDPR expects a registered controller (see **Why** above).
 
 **Recommended path:**
 - Nigeria: already in place; verify CAC registration current.
