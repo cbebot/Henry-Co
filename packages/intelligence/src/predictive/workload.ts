@@ -395,3 +395,58 @@ export function forecastWorkload(input: ForecastWorkloadInput): WorkloadForecast
     modelVersion: WORKLOAD_MODEL_VERSION,
   };
 }
+
+/**
+ * V3-42 — the OBSERVED side of a forecast, as bounded daily totals.
+ *
+ * Why this exists: the staff dashboards must chart queue volume, but the tables
+ * behind the queues carry heterogeneous, division-scoped RLS. `support_threads`
+ * has no staff SELECT policy at all (only "users read their own"), and
+ * `platform_moderation_queue` is service-role only. A dashboard reading them
+ * with the viewer's RLS-scoped session would render a silently partial chart —
+ * near-zero for support, permanently empty for moderation — with no error.
+ *
+ * The service-role batch already reads those tables to build the forecast. It
+ * publishes these daily COUNTS alongside it in `workload_forecasts.payload`,
+ * which every staff member may read (`is_staff_in_any()`). Numbers only: no
+ * row, no id, no person ever crosses — so the chart is complete for every
+ * viewer and the dashboards still never touch a service-role client.
+ */
+export interface ObservedDay {
+  /** UTC calendar date, YYYY-MM-DD. */
+  date: string;
+  /** Items that arrived on that day. */
+  count: number;
+}
+
+/** Four weeks — the chart window and the anomaly baseline. */
+export const OBSERVED_DAILY_MAX_DAYS = 28;
+
+export function summarizeObservedDaily(
+  history: ReadonlyArray<QueueObservation>,
+  maxDays: number = OBSERVED_DAILY_MAX_DAYS,
+): ObservedDay[] {
+  // COMPLETE DAYS ONLY (V3-42 adversarial round 2). The history is dense
+  // hourly and spans "now − 28d" to "now", so its first and last calendar days
+  // are PARTIAL: publishing them drew a fabricated dip at both ends of every
+  // chart and fed a ~3-hour "day" to the anomaly detector as if it were whole.
+  // A day is published only when all 24 of its hours were observed.
+  const totals = new Map<string, number>();
+  const hours = new Map<string, Set<number>>();
+  for (const observation of history ?? []) {
+    const ms = Date.parse(observation?.at as string);
+    if (!Number.isFinite(ms)) continue;
+    const at = new Date(ms);
+    const date = at.toISOString().slice(0, 10);
+    totals.set(date, (totals.get(date) ?? 0) + safeCount(observation.count));
+    const seen = hours.get(date) ?? new Set<number>();
+    seen.add(at.getUTCHours());
+    hours.set(date, seen);
+  }
+  const limit = Number.isFinite(maxDays) ? Math.max(1, Math.min(366, Math.floor(maxDays))) : OBSERVED_DAILY_MAX_DAYS;
+  return [...totals.entries()]
+    .filter(([date]) => (hours.get(date)?.size ?? 0) === 24)
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([date, count]) => ({ date, count: Math.round(Math.min(count, MAX_FORECAST_VALUE)) }))
+    .slice(-limit);
+}

@@ -48,7 +48,8 @@ export type StaffModuleSlug =
   | "staff-settings"
   | "staff-marketing"
   // V3-40 — predictive risk review queue (security-division staff only).
-  | "staff-risk";
+  | "staff-risk"
+  | "staff-intelligence";
 
 /**
  * Module scope — division-bound vs cross-division. The shell uses this

@@ -24,6 +24,8 @@ export const PREDICTIVE_TICK_LOCK_TTL_SECONDS = 300;
 /** Bounded reads — a batch must never attempt an unbounded table scan. */
 export const QUEUE_HISTORY_DAYS = 28;
 export const QUEUE_HISTORY_ROW_LIMIT = 5000;
+/** PostgREST max_rows (apps/hub/supabase/config.toml): one page per request. */
+export const QUEUE_HISTORY_PAGE_SIZE = 1000;
 export const SERVICE_UNIT_LIMIT = 400;
 export const TRANSACTION_LIMIT = 400;
 

@@ -23,6 +23,7 @@ import { staffSupportModule } from "./staff-support";
 import { staffModerationModule } from "./staff-moderation";
 import { staffFinanceOperatorModule } from "./staff-finance-operator";
 import { staffSettingsModule } from "./staff-settings";
+import { staffIntelligenceModule } from "./staff-intelligence";
 import { staffRiskModule } from "./staff-risk";
 
 registerStaffModule(staffOverviewModule);
@@ -37,6 +38,7 @@ registerStaffModule(staffSupportModule);
 registerStaffModule(staffModerationModule);
 registerStaffModule(staffFinanceOperatorModule);
 registerStaffModule(staffSettingsModule);
+registerStaffModule(staffIntelligenceModule);
 registerStaffModule(staffRiskModule);
 
 export {

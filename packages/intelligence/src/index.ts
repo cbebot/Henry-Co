@@ -141,6 +141,12 @@ export const HenryEventNames = {
   PREDICTIVE_WORKLOAD_COMPUTED: "henry.predictive.workload.computed",
   PREDICTIVE_QUALITY_AT_RISK_FLAGGED: "henry.predictive.quality.at_risk_flagged",
   PREDICTIVE_DISPUTE_HIGH_LIKELIHOOD: "henry.predictive.dispute.high_likelihood",
+  // Advanced staff dashboards (V3-42). Division 'staff'. Four-segment names —
+  // the spec's "henry.staff_dashboard.viewed" is three and fails the schema.
+  STAFF_DASHBOARD_VIEW_OPENED: "henry.staff_dashboard.view.opened",
+  STAFF_DASHBOARD_RECOMMENDATION_ACCEPTED: "henry.staff_dashboard.recommendation.accepted",
+  STAFF_DASHBOARD_RECOMMENDATION_DISMISSED: "henry.staff_dashboard.recommendation.dismissed",
+  STAFF_DASHBOARD_ANOMALY_SHOWN: "henry.staff_dashboard.anomaly.shown",
 } as const;
 
 export type AnalyticsSink = { emit: (event: HenryEventEnvelope) => void | Promise<void> };
@@ -385,7 +391,11 @@ export type HenryFeatureFlagName =
   // V3-41 — the OPTIONAL staff-narrative slice on top of the deterministic
   // forecast (E-D1-A). Default OFF. Also requires `ai_gateway`; spend is platform
   // COGS on the unified internal ledger, reserve-before-run, degrade-CLOSED.
-  | "predictive_quality_narrative";
+  | "predictive_quality_narrative"
+  // V3-42 (Phase E) — the advanced staff dashboards. Default OFF: the module
+  // stays out of the staff rail. Read-only over V3-40/V3-41 output; it produces
+  // no score and can act on nobody, so this flag alone affects no customer.
+  | "predictive_dashboards";
 
 export type HenryFeatureFlags = Record<HenryFeatureFlagName, boolean>;
 
@@ -475,6 +485,11 @@ export function parseHenryFeatureFlags(env: Record<string, string | undefined>):
       envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_QUALITY_NARRATIVE) ||
       list.has("predictive_quality_narrative") ||
       list.has("predictive_narrative"),
+    // V3-42 advanced staff dashboards — default OFF (dark launch).
+    predictive_dashboards:
+      envBool(env.NEXT_PUBLIC_HENRY_FLAG_PREDICTIVE_DASHBOARDS) ||
+      list.has("predictive_dashboards") ||
+      list.has("staff_intelligence"),
   };
 }
 

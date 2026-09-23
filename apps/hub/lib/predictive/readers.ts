@@ -21,14 +21,23 @@ import "server-only";
  * writes to staff-only tables, and the staff surface re-reads them under RLS.
  */
 
-import type { QualitySignals, QueueKey, QueueObservation, ServiceUnitType, DisputeFeatures } from "@henryco/intelligence";
+import type {
+  DisputeFeatures,
+  ObservedDay,
+  QualitySignals,
+  QueueKey,
+  QueueObservation,
+  ServiceUnitType,
+} from "@henryco/intelligence";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   QUEUE_HISTORY_DAYS,
+  QUEUE_HISTORY_PAGE_SIZE,
   QUEUE_HISTORY_ROW_LIMIT,
   SERVICE_UNIT_LIMIT,
   TRANSACTION_LIMIT,
 } from "./config";
+import { isMissingRelation } from "./postgrest-head";
 
 const MS_PER_HOUR = 3_600_000;
 const MS_PER_DAY = 86_400_000;
@@ -63,35 +72,72 @@ export async function readQueueHistory(queue: QueueKey, now: Date): Promise<Queu
   const since = new Date(now.getTime() - QUEUE_HISTORY_DAYS * MS_PER_DAY);
   const counts = new Map<string, number>();
 
+  // NEWEST-FIRST, paged (V3-42 adversarial round 2). PostgREST caps every
+  // response at max_rows = 1000, so the old single ascending read silently
+  // dropped the MOST RECENT days of any queue above ~36 arrivals/day, and the
+  // densify below turned them into zeros. Reading DESC in pages means a read
+  // that exhausts its budget loses only the OLDEST history.
+  let partialFromMs: number | null = null;
   for (const source of QUEUE_SOURCES[queue]) {
     try {
       const admin = createAdminSupabase();
-      const { data, error } = await admin
-        .from(source.table)
-        .select(source.column)
-        .gte(source.column, since.toISOString())
-        .lte(source.column, now.toISOString())
-        .order(source.column, { ascending: true })
-        .limit(QUEUE_HISTORY_ROW_LIMIT);
-      if (error || !data) continue;
-      // The column name is dynamic, so PostgREST's generated types cannot narrow
-      // the row shape; go through `unknown` and read defensively.
-      for (const row of data as unknown as ReadonlyArray<Record<string, unknown>>) {
-        const raw = row[source.column];
-        if (typeof raw !== "string") continue;
-        const bucket = hourBucket(raw);
-        if (!bucket) continue;
-        counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+      let offset = 0;
+      let oldestMs: number | null = null;
+      let exhausted = false;
+      while (offset < QUEUE_HISTORY_ROW_LIMIT) {
+        const { data, error } = await admin
+          .from(source.table)
+          .select(source.column)
+          .gte(source.column, since.toISOString())
+          .lte(source.column, now.toISOString())
+          .order(source.column, { ascending: false })
+          .range(offset, offset + QUEUE_HISTORY_PAGE_SIZE - 1);
+        if (error || !data) {
+          // A failure on the FIRST page means the source contributed nothing.
+          // A failure mid-read is a TRUNCATION (round 3): its older history is
+          // missing, not zero, so it must cut the history like a spent budget.
+          exhausted = offset === 0;
+          break;
+        }
+        // The column name is dynamic, so PostgREST's generated types cannot narrow
+        // the row shape; go through `unknown` and read defensively.
+        for (const row of data as unknown as ReadonlyArray<Record<string, unknown>>) {
+          const raw = row[source.column];
+          if (typeof raw !== "string") continue;
+          const bucket = hourBucket(raw);
+          if (!bucket) continue;
+          counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+          const ms = Date.parse(bucket);
+          if (oldestMs === null || ms < oldestMs) oldestMs = ms;
+        }
+        offset += data.length;
+        if (data.length < QUEUE_HISTORY_PAGE_SIZE) {
+          exhausted = true;
+          break;
+        }
+      }
+      // The row budget ran out before the source did: its oldest hour is only
+      // partly counted, so the history must start after it.
+      if (!exhausted && oldestMs !== null && (partialFromMs === null || oldestMs > partialFromMs)) {
+        partialFromMs = oldestMs;
       }
     } catch {
       // A missing table or column contributes nothing — never fails the run.
     }
   }
 
+  if (partialFromMs !== null) {
+    for (const key of [...counts.keys()]) if (Date.parse(key) <= partialFromMs) counts.delete(key);
+  }
   if (counts.size === 0) return [];
 
-  // Densify: fill every hour between the first observed hour and `now`.
-  const startMs = Math.min(...[...counts.keys()].map((k) => Date.parse(k)));
+  // Densify: fill every hour between the first fully-read hour and `now`. An
+  // untruncated read covered the whole window back to `since`, so the hours
+  // before the first arrival are KNOWN zeros (round 3: a dormant queue that
+  // suddenly flooded used to start its history at the flood and lose it).
+  const startMs = partialFromMs !== null
+    ? partialFromMs + MS_PER_HOUR
+    : Math.ceil(since.getTime() / MS_PER_HOUR) * MS_PER_HOUR;
   const endMs = Math.floor(now.getTime() / MS_PER_HOUR) * MS_PER_HOUR;
   const out: QueueObservation[] = [];
   for (let ms = startMs; ms <= endMs; ms += MS_PER_HOUR) {
@@ -99,6 +145,60 @@ export async function readQueueHistory(queue: QueueKey, now: Date): Promise<Queu
     out.push({ at, count: counts.get(at) ?? 0 });
   }
   return out;
+}
+
+/**
+ * EXACT arrivals per COMPLETE UTC day, for the staff dashboards' volume chart
+ * (V3-42 adversarial round 3).
+ *
+ * The chart used to be summed from `readQueueHistory`'s row sample, which is
+ * bounded: a burst that filled the row budget erased the very days it
+ * happened on, a busy queue kept only a few days, and a page failure mid-read
+ * drew a false step. Here each day is a `count: "exact", head: true` query —
+ * PostgREST returns the number with NO rows, so max_rows never applies and the
+ * figure is exact at any volume. ~27 tiny queries per source, once a night.
+ *
+ * Fail-closed: if ANY day of ANY source cannot be counted the whole series is
+ * withheld (null). No chart beats a chart with a hole drawn as a zero.
+ * Returns days from the first complete day after `since` through yesterday.
+ */
+export async function readQueueDailyCounts(queue: QueueKey, now: Date): Promise<ObservedDay[] | null> {
+  const todayMs = Date.parse(`${now.toISOString().slice(0, 10)}T00:00:00.000Z`);
+  const days: number[] = [];
+  for (let d = QUEUE_HISTORY_DAYS - 1; d >= 1; d -= 1) days.push(todayMs - d * MS_PER_DAY);
+
+  const totals = new Map<number, number>(days.map((ms) => [ms, 0]));
+  let countedSources = 0;
+  try {
+    const admin = createAdminSupabase();
+    for (const source of QUEUE_SOURCES[queue]) {
+      const results = await Promise.all(
+        days.map(async (dayMs) => {
+          const { count, error, status } = await admin
+            .from(source.table)
+            .select(source.column, { count: "exact", head: true })
+            .gte(source.column, new Date(dayMs).toISOString())
+            .lt(source.column, new Date(dayMs + MS_PER_DAY).toISOString());
+          return { dayMs, count: error ? null : count, missing: isMissingRelation(error, status, count) };
+        }),
+      );
+      // ONLY a table/column that does not exist is the documented degrade (the
+      // queue has no such source yet). Any other failure — timeout, saturated
+      // pool, outage — withholds the series (round 4: treating "all failed"
+      // as "absent" published 27 days of confident zeros).
+      if (results.every((r) => r.missing)) continue;
+      for (const r of results) {
+        if (typeof r.count !== "number" || !Number.isFinite(r.count) || r.count < 0) return null;
+        totals.set(r.dayMs, (totals.get(r.dayMs) ?? 0) + r.count);
+      }
+      countedSources += 1;
+    }
+  } catch {
+    return null;
+  }
+  // No source could be counted at all: there is nothing to chart, not zero.
+  if (countedSources === 0) return null;
+  return days.map((ms) => ({ date: new Date(ms).toISOString().slice(0, 10), count: totals.get(ms) ?? 0 }));
 }
 
 export type ServiceUnitCandidate = {

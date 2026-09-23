@@ -17,9 +17,11 @@ import {
   StaffFinanceOperatorPageServer,
   StaffSettingsPageServer,
   StaffRiskPageServer,
+  StaffIntelligencePageServer,
 } from "@henryco/dashboard-modules-staff";
 
 import { requireTrackCStaffViewer } from "../../_internal/viewer";
+import { handleRecommendationAction } from "../../_actions/intelligence-actions";
 import {
   handleStaffCareBulkAction,
   handleStaffMarketplaceBulkAction,
@@ -68,10 +70,15 @@ export const dynamic = "force-dynamic";
  */
 export default async function TrackCModulePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  // V3-42 selects its role lens from the query string; the module validates it
+  // against the viewer's roles and never trusts the requested value.
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { slug } = await params;
+  const query = (await searchParams) ?? {};
   const viewer = await requireTrackCStaffViewer();
   const eligible = getEligibleStaffModules(viewer);
   const moduleEntry = eligible.find((m) => m.slug === slug);
@@ -196,6 +203,18 @@ export default async function TrackCModulePage({
           bulkActionHandler={handleStaffRiskBulkAction}
           exportHandler={handleStaffRiskExport}
           lifecycleSlot={<RiskLifecycleStrip hasOwnerAccess={viewer.access.hasOwnerAccess} />}
+        />
+      );
+    // V3-42 — advanced staff dashboards. Read-only over V3-40/V3-41 output;
+    // the RLS-scoped client is what keeps each lens inside its role.
+    case "staff-intelligence":
+      return (
+        <StaffIntelligencePageServer
+          viewer={viewer}
+          supabase={supabase as never}
+          requestedLens={typeof query.lens === "string" ? query.lens : null}
+          locale={locale}
+          onRecommendationAction={handleRecommendationAction}
         />
       );
     default:
