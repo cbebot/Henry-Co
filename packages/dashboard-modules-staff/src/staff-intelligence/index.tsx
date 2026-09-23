@@ -30,7 +30,7 @@ import type { AppLocale } from "@henryco/i18n";
 import { detectAnomaliesForSeries, firedAnomalies } from "@henryco/intelligence";
 import { emitEvent } from "@henryco/observability/events";
 import { PredictiveDashboard, type RecommendationAction } from "./dashboard";
-import { loadLensSnapshot, loadRecommendationState, type IntelligenceSupabaseClient } from "./data";
+import { isSeriesFresh, loadLensSnapshot, loadRecommendationState, type IntelligenceSupabaseClient } from "./data";
 import { LENSES, lensesForViewer, resolveLens, type LensCapabilities, type LensKey } from "./lenses";
 import { buildRecommendationRail } from "./recommendations";
 import { STAFF_INTELLIGENCE_PATH, staffIntelligenceEnabled } from "./flags";
@@ -110,6 +110,40 @@ export const staffIntelligenceModule: StaffDashboardModule = {
   },
 };
 
+/**
+ * The ONE derivation of a lens's rail: snapshot -> anomalies on fresh observed
+ * series -> candidate cards. The page renders from it, and the write path
+ * re-runs it (adversarial round 2) so a decision is accepted ONLY for a card
+ * the engine is showing that lens right now: a grammatically valid key for a
+ * card that does not exist yet (Monday 00:01, tomorrow's anomaly) is refused.
+ * It reads through the caller's RLS-scoped client, so a viewer who cannot read
+ * a lens's source tables derives no cards for it and cannot act on one either.
+ */
+export async function deriveLensRail(supabase: IntelligenceSupabaseClient, lens: LensKey, now: Date = new Date()) {
+  const snapshot = await loadLensSnapshot(supabase, lens, now);
+  // Outliers are hunted in what HAPPENED, never in a model's own projection.
+  // A series whose batch has stopped is charted but NOT judged: its last point
+  // is no longer "now" (round 2).
+  const anomalies = detectAnomaliesForSeries(
+    snapshot.series
+      .filter((s) => s.kind === "observed" && isSeriesFresh(s.points, now))
+      .map((s) => ({ series: s.key, points: s.points })),
+  );
+  const fired = firedAnomalies(anomalies);
+  const candidates = buildRecommendationRail({ lens, snapshot, anomalies: fired, state: [] });
+  return { snapshot, anomalies, fired, candidates };
+}
+
+/** Keys of the cards the engine is showing `lens` right now (write-path gate). */
+export async function liveRecommendationKeys(
+  supabase: IntelligenceSupabaseClient,
+  lens: LensKey,
+  now: Date = new Date(),
+): Promise<ReadonlySet<string>> {
+  const { candidates } = await deriveLensRail(supabase, lens, now);
+  return new Set(candidates.map((card) => card.key));
+}
+
 export type StaffIntelligencePageProps = {
   viewer: StaffViewer;
   supabase: IntelligenceSupabaseClient;
@@ -139,16 +173,8 @@ export async function StaffIntelligencePageServer({
   const lens: LensKey = resolveLens(caps, requestedLens);
   const available = lensesForViewer(caps);
 
-  const snapshot = await loadLensSnapshot(supabase, lens);
-
-  // Outliers are hunted in what HAPPENED, never in a model's own projection.
-  const anomalies = detectAnomaliesForSeries(
-    snapshot.series.filter((s) => s.kind === "observed").map((s) => ({ series: s.key, points: s.points })),
-  );
-  const fired = firedAnomalies(anomalies);
-  // Derive the candidate cards, then read persisted decisions for EXACTLY those
-  // keys — a bounded, targeted read no pile of other rows can crowd out.
-  const candidates = buildRecommendationRail({ lens, snapshot, anomalies: fired, state: [] });
+  const now = new Date();
+  const { snapshot, anomalies, fired, candidates } = await deriveLensRail(supabase, lens, now);
   const state = await loadRecommendationState(
     supabase,
     lens,

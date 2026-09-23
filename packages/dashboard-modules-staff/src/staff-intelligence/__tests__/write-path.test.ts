@@ -147,3 +147,20 @@ test("ROUND-1: a write must name a CURRENT key", () => {
   assert.ok(s.includes("isRecommendationKeyCurrent(key, now)"));
   assert.ok(s.indexOf("isRecommendationKeyCurrent(") < s.indexOf('.from("staff_recommendation_state")'));
 });
+
+test("ROUND-2: a write must name a card the engine is showing THAT lens right now", () => {
+  const s = read(WRITE);
+  assert.ok(s.includes("liveRecommendationKeys(session"), "re-derives the rail through the caller's RLS session");
+  assert.ok(s.includes("if (!live.has(key))"), "refuses a key that is not a live card");
+  assert.ok(
+    s.indexOf("live.has(key)") < s.indexOf('.from("staff_recommendation_state")'),
+    "the live-card gate runs BEFORE the write",
+  );
+});
+
+test("ROUND-2: the DATABASE must agree the caller is staff before anything is written", () => {
+  const s = read("apps/staff/lib/intelligence/actor.ts");
+  assert.ok(s.includes('rpc("is_staff_in_any"'), "SQL staff predicate consulted");
+  assert.ok(s.includes("sqlStaff !== true"), "anything but an explicit true is refused");
+  assert.ok(s.includes('rpc("is_staff_in"') && s.includes("sqlSecurity === true"), "trust lens needs the SQL security predicate too");
+});

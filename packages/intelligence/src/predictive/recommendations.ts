@@ -27,7 +27,7 @@
  */
 
 import type { AnomalyResult } from "./anomaly";
-import type { QueueKey, StaffingRecommendation } from "./workload";
+import { QUEUE_KEYS, type QueueKey, type StaffingRecommendation } from "./workload";
 
 /** The four dashboard lenses. Mirrors `staff_recommendation_state.role_scope`. */
 export const RECOMMENDATION_ROLE_SCOPES = ["trust", "finance", "support", "moderation"] as const;
@@ -296,6 +296,35 @@ export function assertHumanActor(status: string, actorId: string | null | undefi
  *  smuggle markup or control characters into an audit log. */
 const RECOMMENDATION_KEY_PATTERN = /^[A-Za-z0-9._-]{3,160}$/;
 
+const WEEK = String.raw`\d{4}-W\d{2}`;
+const DAY = String.raw`\d{4}-\d{2}-\d{2}`;
+/** Queue and series names are plain identifiers; anything else is dropped
+ *  rather than escaped, so no name can ever widen the grammar. */
+const alternatives = (values: readonly string[]): string =>
+  values.filter((v) => /^[a-z][a-z0-9_]*$/.test(v)).join("|");
+
+/**
+ * The EXACT key grammars `deriveRecommendations` emits (adversarial round 2).
+ * Matching only the first two dot-segments let a staffer mint unlimited junk
+ * keys (`workload.staffing.ATTACKER.2026-W39`, `anomaly.x.JUNK.2026-09-22`),
+ * each a new state row skewing the soak metrics. Now a key is one of these
+ * shapes, with a known queue / series, or it is nothing.
+ */
+const KEY_GRAMMAR: ReadonlyArray<{ pattern: RegExp; scope: (m: RegExpMatchArray) => RecommendationRoleScope | null }> = [
+  {
+    pattern: new RegExp(String.raw`^workload\.staffing\.(?:${alternatives(QUEUE_KEYS)})\.${WEEK}$`),
+    scope: () => "support",
+  },
+  { pattern: new RegExp(String.raw`^quality\.at_risk\.${WEEK}$`), scope: () => "support" },
+  { pattern: new RegExp(String.raw`^dispute\.watchlist\.${WEEK}$`), scope: () => "finance" },
+  { pattern: new RegExp(String.raw`^risk\.backlog\.${WEEK}$`), scope: () => "trust" },
+  { pattern: new RegExp(String.raw`^hindsight\.rule\.[a-z][a-z0-9_]{0,47}\.${WEEK}$`), scope: () => "trust" },
+  {
+    pattern: new RegExp(String.raw`^anomaly\.(${alternatives(Object.keys(SERIES_SCOPE))})\.${DAY}$`),
+    scope: (m) => (Object.prototype.hasOwnProperty.call(SERIES_SCOPE, m[1]) ? SERIES_SCOPE[m[1]] : null),
+  },
+];
+
 /**
  * Which lens a recommendation KEY belongs to — derived from the same key shapes
  * `deriveRecommendations` emits, so there is one source of truth.
@@ -308,18 +337,19 @@ const RECOMMENDATION_KEY_PATTERN = /^[A-Za-z0-9._-]{3,160}$/;
  */
 export function recommendationScopeForKey(key: unknown): RecommendationRoleScope | null {
   if (typeof key !== "string" || !RECOMMENDATION_KEY_PATTERN.test(key)) return null;
-  const [kind, second] = key.split(".");
-  if (!second) return null;
-  if (kind === "workload" && second === "staffing") return "support";
-  if (kind === "quality" && second === "at_risk") return "support";
-  if (kind === "dispute" && second === "watchlist") return "finance";
-  if (kind === "risk" && second === "backlog") return "trust";
-  if (kind === "hindsight" && second === "rule") return "trust";
-  if (kind === "anomaly") {
-    return Object.prototype.hasOwnProperty.call(SERIES_SCOPE, second) ? SERIES_SCOPE[second] : null;
+  for (const rule of KEY_GRAMMAR) {
+    const match = key.match(rule.pattern);
+    if (match) return rule.scope(match);
   }
   return null;
 }
+
+/**
+ * Snapshot series are points stamped on the RUN day (a batch journal), so
+ * today's point is real; every other anomaly series counts ARRIVALS and is
+ * only ever judged once its day has completed.
+ */
+const SNAPSHOT_SERIES: ReadonlySet<string> = new Set(["risk_flagged", "dispute_rate", "at_risk_units"]);
 
 /**
  * Is this key's time suffix CURRENT? Backlog cards are keyed by ISO week and
@@ -338,7 +368,15 @@ export function isRecommendationKeyCurrent(key: unknown, now: Date): boolean {
   }
   if (/^\d{4}-\d{2}-\d{2}$/.test(suffix)) {
     const ms = Date.parse(`${suffix}T00:00:00.000Z`);
-    return Number.isFinite(ms) && ms <= nowMs + 86_400_000 && ms >= nowMs - 35 * 86_400_000;
+    // Round-trip: Date.parse rolls "2026-09-31" over to October 1.
+    if (!Number.isFinite(ms) || new Date(ms).toISOString().slice(0, 10) !== suffix) return false;
+    // The newest day the engine can have judged: today for a batch-journal
+    // series, yesterday for an arrival series (round 2 — a wider window let a
+    // lens member mute tomorrow's spike in advance).
+    const series = (key as string).split(".")[1] ?? "";
+    const todayMs = Date.parse(`${now.toISOString().slice(0, 10)}T00:00:00.000Z`);
+    const newestMs = SNAPSHOT_SERIES.has(series) ? todayMs : todayMs - 86_400_000;
+    return ms <= newestMs && ms >= todayMs - 35 * 86_400_000;
   }
   return false;
 }

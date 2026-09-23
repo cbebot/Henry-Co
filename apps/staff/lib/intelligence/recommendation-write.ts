@@ -17,6 +17,8 @@ import "server-only";
  *   1. `assertActorMayActOnLens` — the caller's role must cover the lens;
  *   2. `recommendationScopeForKey` — the KEY must belong to that lens (stops a
  *      trust-shaped key being written under another lens to skew soak metrics);
+ *      ...and the card must be LIVE: the engine, re-run through the caller's
+ *      own RLS-scoped session, must be showing that lens this exact key now;
  *   3. `assertHumanActor` — no state change away from 'open' without an actor;
  *   4. the `staff_recommendation_human_actor` CHECK refuses the row at the DB;
  *   5. every action is written to the audit log with actor + role + key.
@@ -30,6 +32,7 @@ import {
   recommendationScopeForKey,
   type RecommendationRoleScope,
 } from "@henryco/intelligence";
+import { liveRecommendationKeys, type IntelligenceSupabaseClient } from "@henryco/dashboard-modules-staff";
 import { writeAuditLog } from "@henryco/observability/audit-log";
 import { emitEvent } from "@henryco/observability/events";
 import { createStaffAdminSupabase } from "@/lib/supabase/admin";
@@ -55,6 +58,8 @@ export interface RecordRecommendationInput {
   action: RecommendationAction;
   now?: Date;
   env?: Record<string, string | undefined>;
+  /** Test seam: the live card keys for a lens. Defaults to re-deriving the rail. */
+  liveKeys?: (lens: RecommendationRoleScope, now: Date) => Promise<ReadonlySet<string>>;
 }
 
 export async function recordRecommendationAction(
@@ -80,7 +85,20 @@ export async function recordRecommendationAction(
   const now = input.now ?? new Date();
   if (!isRecommendationKeyCurrent(key, now)) throw new Error("That recommendation is no longer current.");
 
-  const status = STATUS_BY_ACTION[input.action];
+  // ...and it must be a card the engine is showing THIS lens right now
+  // (adversarial round 2). Grammar and date checks cannot tell "this week's
+  // card" from "this week's card before it exists": dismissing
+  // `dispute.watchlist.<week>` at Monday 00:01 hid it from the whole team.
+  // Re-deriving through the caller's RLS-scoped session closes that exactly.
+  const session = await createStaffSupabaseServer();
+  const live = input.liveKeys
+    ? await input.liveKeys(input.lens, now)
+    : await liveRecommendationKeys(session as unknown as IntelligenceSupabaseClient, input.lens, now);
+  if (!live.has(key)) throw new Error("That recommendation is no longer current.");
+
+  const status = Object.prototype.hasOwnProperty.call(STATUS_BY_ACTION, input.action)
+    ? STATUS_BY_ACTION[input.action]
+    : undefined;
   if (!status) throw new Error("Unknown recommendation action.");
 
   // Layer 3 — a state change away from 'open' REQUIRES a human actor.
@@ -113,7 +131,6 @@ export async function recordRecommendationAction(
   // non-staff callers; under the service role auth.uid() is NULL, so an admin-
   // client audit raised on every call and was silently swallowed (round 1).
   // `entity_id` is a uuid column, so the key travels in new_values instead.
-  const session = await createStaffSupabaseServer();
   const auditId = await writeAuditLog(session as never, {
     action: `staff.intelligence.recommendation.${status}`,
     entityType: "staff_recommendation",

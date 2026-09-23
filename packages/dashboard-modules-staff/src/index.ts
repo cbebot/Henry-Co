@@ -154,4 +154,6 @@ export {
   type DrillRow,
   type RecommendationStateRow,
   type RecommendationAction,
+  deriveLensRail,
+  liveRecommendationKeys,
 } from "./staff-intelligence";

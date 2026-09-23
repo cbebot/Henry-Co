@@ -227,15 +227,27 @@ async function loadLatestSnapshot(
 ): Promise<{ counts: Record<string, number>; drill: DrillRow[] }> {
   const empty = { counts: {}, drill: [] as DrillRow[] };
   try {
+    // The LATEST batch day comes from an UNFILTERED probe (adversarial round 2).
+    // Taking it from the first band-filtered row meant a night that flagged
+    // NOTHING fell through to the previous day's flagged rows, so the rail and
+    // drill-down showed yesterday's alarm while the chart showed today's zero.
+    const probe = await supabase
+      .from(table)
+      .select(timeColumn)
+      .gte(timeColumn, new Date(now.getTime() - 3 * DAY_MS).toISOString())
+      .order(timeColumn, { ascending: false })
+      .limit(1);
+    if (probe.error || !probe.data || probe.data.length === 0) return empty;
+    const newestDay = dayKey(probe.data[0][timeColumn]);
+    if (!newestDay) return empty;
     const { data, error } = await supabase
       .from(table)
       .select(`${idColumn},${bandColumn},${timeColumn}`)
-      .gte(timeColumn, new Date(now.getTime() - 3 * DAY_MS).toISOString())
+      .gte(timeColumn, `${newestDay}T00:00:00.000Z`)
       .in(bandColumn, bands)
       .order(timeColumn, { ascending: false })
       .limit(SERIES_ROW_LIMIT);
     if (error || !data || data.length === 0) return empty;
-    const newestDay = dayKey(data[0][timeColumn]);
     const seen = new Set<string>();
     const counts: Record<string, number> = {};
     const drill: DrillRow[] = [];
@@ -306,13 +318,48 @@ async function loadLatestForecasts(
   return out;
 }
 
-/** Observed daily volume for a queue, from the batch-published counts, ending
- *  at the last COMPLETE day. */
+/**
+ * Observed daily volume for a queue, from the batch-published counts.
+ *
+ * COVERAGE-AWARE (adversarial round 2). The batch publishes COMPLETE days only,
+ * so the series ends at the last day the forecast actually observed, not at
+ * "yesterday" by the wall clock. Between midnight and the 02:47 run, and after
+ * a missed run, yesterday is simply not plotted: padding it with a zero drew a
+ * false dip and hid real spikes. A day inside the covered range that is
+ * missing is a true zero (the batch history is dense hourly); nothing is ever
+ * invented outside that range, and nothing newer than yesterday is shown.
+ */
 function observedSeries(row: ForecastRow | undefined, now: Date): SeriesPoint[] {
   if (!row || row.observedDaily.length === 0) return [];
   const counts = new Map<string, number>();
   for (const d of row.observedDaily) counts.set(d.date, d.count);
-  return densifyCompleteDays(counts, now, SERIES_WINDOW_DAYS);
+  const yesterdayMs = Date.parse(`${now.toISOString().slice(0, 10)}T00:00:00.000Z`) - DAY_MS;
+  const dates = [...counts.keys()].map((d) => Date.parse(`${d}T00:00:00.000Z`)).filter(Number.isFinite);
+  if (dates.length === 0) return [];
+  const endMs = Math.min(Math.max(...dates), yesterdayMs);
+  const startMs = Math.max(Math.min(...dates), endMs - (SERIES_WINDOW_DAYS - 1) * DAY_MS);
+  const out: SeriesPoint[] = [];
+  for (let ms = startMs; ms <= endMs; ms += DAY_MS) {
+    const key = new Date(ms).toISOString().slice(0, 10);
+    out.push({ at: `${key}T00:00:00.000Z`, value: counts.get(key) ?? 0 });
+  }
+  return out;
+}
+
+/**
+ * A series is judged by the anomaly detector only while its newest point is
+ * RECENT (adversarial round 2). After a batch outage the journal and forecast
+ * series simply stop; evaluating their last point would present a days-old
+ * reading as today's alarm. Two days of slack covers the window between
+ * midnight and the nightly run, when the newest complete day is D-2.
+ */
+export const ANOMALY_FRESHNESS_DAYS = 2;
+
+export function isSeriesFresh(points: ReadonlyArray<SeriesPoint>, now: Date): boolean {
+  const last = points.length > 0 ? Date.parse(points[points.length - 1].at) : Number.NaN;
+  if (!Number.isFinite(last)) return false;
+  const todayMs = Date.parse(`${now.toISOString().slice(0, 10)}T00:00:00.000Z`);
+  return last >= todayMs - ANOMALY_FRESHNESS_DAYS * DAY_MS;
 }
 
 /** The next seven days of a forecast, as daily totals. */

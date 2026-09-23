@@ -25,6 +25,7 @@ import type { QualitySignals, QueueKey, QueueObservation, ServiceUnitType, Dispu
 import { createAdminSupabase } from "@/lib/supabase";
 import {
   QUEUE_HISTORY_DAYS,
+  QUEUE_HISTORY_PAGE_SIZE,
   QUEUE_HISTORY_ROW_LIMIT,
   SERVICE_UNIT_LIMIT,
   TRANSACTION_LIMIT,
@@ -63,35 +64,66 @@ export async function readQueueHistory(queue: QueueKey, now: Date): Promise<Queu
   const since = new Date(now.getTime() - QUEUE_HISTORY_DAYS * MS_PER_DAY);
   const counts = new Map<string, number>();
 
+  // NEWEST-FIRST, paged (V3-42 adversarial round 2). PostgREST caps every
+  // response at max_rows = 1000, so the old single ascending read silently
+  // dropped the MOST RECENT days of any queue above ~36 arrivals/day, and the
+  // densify below turned them into zeros. Reading DESC in pages means a read
+  // that exhausts its budget loses only the OLDEST history.
+  let partialFromMs: number | null = null;
   for (const source of QUEUE_SOURCES[queue]) {
     try {
       const admin = createAdminSupabase();
-      const { data, error } = await admin
-        .from(source.table)
-        .select(source.column)
-        .gte(source.column, since.toISOString())
-        .lte(source.column, now.toISOString())
-        .order(source.column, { ascending: true })
-        .limit(QUEUE_HISTORY_ROW_LIMIT);
-      if (error || !data) continue;
-      // The column name is dynamic, so PostgREST's generated types cannot narrow
-      // the row shape; go through `unknown` and read defensively.
-      for (const row of data as unknown as ReadonlyArray<Record<string, unknown>>) {
-        const raw = row[source.column];
-        if (typeof raw !== "string") continue;
-        const bucket = hourBucket(raw);
-        if (!bucket) continue;
-        counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+      let offset = 0;
+      let oldestMs: number | null = null;
+      let exhausted = false;
+      while (offset < QUEUE_HISTORY_ROW_LIMIT) {
+        const { data, error } = await admin
+          .from(source.table)
+          .select(source.column)
+          .gte(source.column, since.toISOString())
+          .lte(source.column, now.toISOString())
+          .order(source.column, { ascending: false })
+          .range(offset, offset + QUEUE_HISTORY_PAGE_SIZE - 1);
+        if (error || !data) {
+          exhausted = true; // nothing more is readable; keep what we have
+          break;
+        }
+        // The column name is dynamic, so PostgREST's generated types cannot narrow
+        // the row shape; go through `unknown` and read defensively.
+        for (const row of data as unknown as ReadonlyArray<Record<string, unknown>>) {
+          const raw = row[source.column];
+          if (typeof raw !== "string") continue;
+          const bucket = hourBucket(raw);
+          if (!bucket) continue;
+          counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+          const ms = Date.parse(bucket);
+          if (oldestMs === null || ms < oldestMs) oldestMs = ms;
+        }
+        offset += data.length;
+        if (data.length < QUEUE_HISTORY_PAGE_SIZE) {
+          exhausted = true;
+          break;
+        }
+      }
+      // The row budget ran out before the source did: its oldest hour is only
+      // partly counted, so the history must start after it.
+      if (!exhausted && oldestMs !== null && (partialFromMs === null || oldestMs > partialFromMs)) {
+        partialFromMs = oldestMs;
       }
     } catch {
       // A missing table or column contributes nothing — never fails the run.
     }
   }
 
+  if (partialFromMs !== null) {
+    for (const key of [...counts.keys()]) if (Date.parse(key) <= partialFromMs) counts.delete(key);
+  }
   if (counts.size === 0) return [];
 
-  // Densify: fill every hour between the first observed hour and `now`.
-  const startMs = Math.min(...[...counts.keys()].map((k) => Date.parse(k)));
+  // Densify: fill every hour between the first fully-read hour and `now`.
+  const startMs = partialFromMs !== null
+    ? partialFromMs + MS_PER_HOUR
+    : Math.min(...[...counts.keys()].map((k) => Date.parse(k)));
   const endMs = Math.floor(now.getTime() / MS_PER_HOUR) * MS_PER_HOUR;
   const out: QueueObservation[] = [];
   for (let ms = startMs; ms <= endMs; ms += MS_PER_HOUR) {

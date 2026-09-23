@@ -56,13 +56,17 @@ test("bands follow the CONFIGURED thresholds, not a hard-coded magnitude", () =>
   // contract, which is the behaviour that actually matters.
   const points = stableSeries(30, 12, 20, 0.1);
   points.push({ at: new Date(START + 30 * DAY).toISOString(), value: 27 });
+  // This fixture is deliberately TIGHTER than any count process (±10% at 20);
+  // the Poisson floor would rightly call 27 noise, so the banding contract is
+  // pinned with count semantics off.
+  const opts = { series: "support_volume", countData: false } as const;
 
-  const strict = detectAnomalies(points, { series: "support_volume", watchAt: 2.5, alertAt: 3.5 })[0];
+  const strict = detectAnomalies(points, { ...opts, watchAt: 2.5, alertAt: 3.5 })[0];
   assert.equal(strict.detected, true);
   assert.equal(strict.band, "alert", `z=${strict.deviation} clears the 3.5 alert bar`);
 
   // Same point, a far higher alert bar: still an anomaly, but only a watch.
-  const lenient = detectAnomalies(points, { series: "support_volume", watchAt: 2.5, alertAt: 25 })[0];
+  const lenient = detectAnomalies(points, { ...opts, watchAt: 2.5, alertAt: 25 })[0];
   assert.equal(lenient.detected, true);
   assert.equal(lenient.band, "watch", "detected but below the alert bar => watch");
   assert.equal(lenient.deviation, strict.deviation, "the measurement is identical; only the banding moved");
@@ -290,4 +294,51 @@ test("ROUND-1: a FLAT queue suddenly flooded DOES fire", () => {
   assert.equal(a.band, "alert");
   assert.equal(a.basis, "flat_series");
   assert.ok(Number.isFinite(a.deviation) && a.deviation <= 50);
+});
+
+// ── Adversarial round 2: realistic COUNT noise at low volume ────────────────
+
+/** Deterministic Poisson draws (Knuth), seeded — the FP rate must be reproducible. */
+function poissonSeries(length: number, level: number, seed: number): SeriesPoint[] {
+  let state = seed >>> 0 || 1;
+  const rand = (): number => {
+    state = (Math.imul(state ^ (state >>> 15), 2246822507) + 0x9e3779b9) >>> 0;
+    state = Math.imul(state ^ (state >>> 13), 3266489909) >>> 0;
+    return ((state ^ (state >>> 16)) >>> 0) / 4294967296;
+  };
+  return Array.from({ length }, (_, i) => {
+    const limit = Math.exp(-level);
+    let k = 0;
+    let p = rand();
+    while (p > limit) {
+      k += 1;
+      p *= rand();
+    }
+    return { at: new Date(START + i * DAY).toISOString(), value: k };
+  });
+}
+
+test("BACK-TEST: Poisson counts at 1–8/day stay under the 5% watch gate (round 2)", () => {
+  // Round 2 measured 5.1–5.4% at five a day: integer MAD under-states the
+  // noise of small counts. The sqrt(median) floor is what holds this gate.
+  for (const level of [1, 2, 3, 4, 5, 6, 8, 20]) {
+    let watch = 0;
+    let alert = 0;
+    const trials = 2000;
+    for (let i = 0; i < trials; i += 1) {
+      const [result] = detectAnomalies(poissonSeries(28, level, level * 100_003 + i), { series: "support_volume" });
+      if (result.detected) watch += 1;
+      if (result.detected && result.band === "alert") alert += 1;
+    }
+    assert.ok(watch / trials < 0.05, `level ${level}: watch FP ${(watch / trials * 100).toFixed(1)}% must stay < 5%`);
+    assert.ok(alert / trials < 0.01, `level ${level}: alert FP ${(alert / trials * 100).toFixed(1)}% must stay < 1%`);
+  }
+});
+
+test("Poisson floor still fires on a real flood at low volume", () => {
+  const points = poissonSeries(27, 5, 42);
+  points.push({ at: new Date(START + 27 * DAY).toISOString(), value: 20 });
+  const [result] = detectAnomalies(points, { series: "support_volume" });
+  assert.equal(result.detected, true, "5/day -> 20 is a real spike");
+  assert.equal(result.band, "alert");
 });

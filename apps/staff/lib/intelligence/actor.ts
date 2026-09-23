@@ -48,10 +48,22 @@ export async function requireIntelligenceActor(): Promise<IntelligenceStaffActor
   const roles = await getViewerRoles(unified);
   if (!roles.hasStaffAccess) throw new Error("Staff access required.");
 
+  // ...AND the DATABASE must agree (adversarial round 2). The TS resolver also
+  // honours an unclaimed seed membership matched by email, which the SQL
+  // predicates (`user_id = auth.uid()`) do not. Without this, such a user's
+  // decision was saved by the service role while its audit row was refused as
+  // "caller is not staff" — an unaudited decision. Both gates must say yes.
+  const { data: sqlStaff } = await supabase.rpc("is_staff_in_any" as never);
+  if (sqlStaff !== true) throw new Error("Staff access required.");
+
   const viewer = { staffMemberships: roles.staffMemberships };
   const lenses: RecommendationRoleScope[] = ["finance", "support", "moderation"];
-  // The trust lens reads V3-40's security-gated tables; only security staff act on it.
-  if (hasStaffAccessIn(viewer, "security")) lenses.unshift("trust");
+  // The trust lens reads V3-40's security-gated tables; only security staff act
+  // on it — by the TS resolver AND the SQL predicate those tables' RLS uses.
+  if (hasStaffAccessIn(viewer, "security")) {
+    const { data: sqlSecurity } = await supabase.rpc("is_staff_in" as never, { division_key: "security" } as never);
+    if (sqlSecurity === true) lenses.unshift("trust");
+  }
 
   return { userId: user.id, lenses };
 }

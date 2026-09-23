@@ -358,3 +358,56 @@ begin
   end if;
   raise notice 'V3-42 round-1 hardening PASSED (enforcement log, V3-41 tables, trust-row isolation, DELETE, acted_at, uniqueness)';
 end $$;
+
+-- =============================================================================
+-- ROUND-2 HARDENING — the batch journals the dashboards now chart from.
+-- Round 1 moved the trust and support snapshot series onto these journals, so
+-- their gates are now load-bearing for V3-42: `risk_batch_runs` (tier counts)
+-- must stay security-only, `predictive_batch_runs` staff-only.
+-- =============================================================================
+insert into public.risk_batch_runs (model_version, status, counts)
+values ('matrix-test-v1', 'done', '{"tiers":{"review":3,"freeze":1}}'::jsonb);
+
+insert into public.predictive_batch_runs (outcome, counts)
+values ('succeeded', '{"at_risk":2,"dispute_watch":1}'::jsonb);
+
+do $$
+declare
+  violations int := 0;
+  p record;
+  n int;
+begin
+  for p in
+    select * from (values
+      ('anon',          '',            false, false),
+      ('authenticated', '',            false, false),
+      ('authenticated', 'support',     false, true),
+      ('authenticated', 'marketplace', false, true),
+      ('authenticated', 'security',    true,  true)
+    ) as v(rolename, divisions, security, staff)
+  loop
+    perform set_config('test.divisions', p.divisions, true);
+    perform set_config('role', p.rolename, true);
+
+    begin select count(*) into n from public.risk_batch_runs;
+    exception when insufficient_privilege then n := 0; end;
+    if (n > 0) <> p.security then
+      raise warning 'MATRIX VIOLATION: role=% divisions=[%] read % risk_batch_runs rows', p.rolename, p.divisions, n;
+      violations := violations + 1;
+    end if;
+
+    begin select count(*) into n from public.predictive_batch_runs;
+    exception when insufficient_privilege then n := 0; end;
+    if (n > 0) <> p.staff then
+      raise warning 'MATRIX VIOLATION: role=% divisions=[%] read % predictive_batch_runs rows', p.rolename, p.divisions, n;
+      violations := violations + 1;
+    end if;
+
+    perform set_config('role', 'none', true);
+  end loop;
+
+  if violations > 0 then
+    raise exception 'V3-42 ROUND-2 JOURNAL MATRIX FAILED: % violation(s)', violations;
+  end if;
+  raise notice 'V3-42 round-2 journal matrix PASSED (risk_batch_runs security-only, predictive_batch_runs staff-only)';
+end $$;

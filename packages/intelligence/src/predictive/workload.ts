@@ -426,15 +426,26 @@ export function summarizeObservedDaily(
   history: ReadonlyArray<QueueObservation>,
   maxDays: number = OBSERVED_DAILY_MAX_DAYS,
 ): ObservedDay[] {
+  // COMPLETE DAYS ONLY (V3-42 adversarial round 2). The history is dense
+  // hourly and spans "now − 28d" to "now", so its first and last calendar days
+  // are PARTIAL: publishing them drew a fabricated dip at both ends of every
+  // chart and fed a ~3-hour "day" to the anomaly detector as if it were whole.
+  // A day is published only when all 24 of its hours were observed.
   const totals = new Map<string, number>();
+  const hours = new Map<string, Set<number>>();
   for (const observation of history ?? []) {
     const ms = Date.parse(observation?.at as string);
     if (!Number.isFinite(ms)) continue;
-    const date = new Date(ms).toISOString().slice(0, 10);
+    const at = new Date(ms);
+    const date = at.toISOString().slice(0, 10);
     totals.set(date, (totals.get(date) ?? 0) + safeCount(observation.count));
+    const seen = hours.get(date) ?? new Set<number>();
+    seen.add(at.getUTCHours());
+    hours.set(date, seen);
   }
   const limit = Number.isFinite(maxDays) ? Math.max(1, Math.min(366, Math.floor(maxDays))) : OBSERVED_DAILY_MAX_DAYS;
   return [...totals.entries()]
+    .filter(([date]) => (hours.get(date)?.size ?? 0) === 24)
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
     .map(([date, count]) => ({ date, count: Math.round(Math.min(count, MAX_FORECAST_VALUE)) }))
     .slice(-limit);

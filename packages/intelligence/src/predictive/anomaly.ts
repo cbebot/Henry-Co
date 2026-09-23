@@ -107,6 +107,15 @@ export interface AnomalyOpts {
    * "flat". With the floor, 0 -> 2 is ordinary noise and 0 -> 500 fires.
    */
   minScale?: number;
+  /**
+   * Treat the series as COUNTS and never divide by less than the Poisson spread
+   * of its baseline, sqrt(median) (adversarial round 2). At a few items a day
+   * the MAD is a small integer that UNDER-states the real noise (MAD 1 → 1.48
+   * against a true sigma of 2.24 at five a day), which pushed the false "watch"
+   * rate past 5% exactly where operators look most. Every series the staff
+   * dashboards judge is a count, so this is on by default.
+   */
+  countData?: boolean;
 }
 
 export const DEFAULT_ANOMALY_OPTS: Required<AnomalyOpts> = {
@@ -119,6 +128,7 @@ export const DEFAULT_ANOMALY_OPTS: Required<AnomalyOpts> = {
   evaluate: 1,
   direction: "up",
   minScale: 1,
+  countData: true,
 };
 
 /** Anything beyond this is a bug in the caller's series, not a real measurement. */
@@ -176,6 +186,7 @@ function sanitizeOpts(opts: AnomalyOpts | undefined): Required<AnomalyOpts> {
     evaluate: Math.round(bounded(o.evaluate, d.evaluate, 1, 1000)),
     direction: o.direction === "both" ? "both" : "up",
     minScale: bounded(o.minScale, d.minScale, 0.000001, MAX_SERIES_VALUE),
+    countData: o.countData === false ? false : d.countData,
   };
 }
 
@@ -249,6 +260,8 @@ export function detectAnomalies(series: SeriesPoint[], opts?: AnomalyOpts): Anom
     // Floor the spread (see `minScale`). This is what separates "a second item
     // in a quiet month" (noise) from "a quiet queue suddenly flooded" (signal).
     scale = Math.max(scale, config.minScale);
+    // ...and, for counts, the Poisson floor (see `countData`).
+    if (config.countData && centre > 0) scale = Math.max(scale, Math.sqrt(centre));
 
     const rawDeviation = (target.value - centre) / scale;
     const deviation = Math.max(-MAX_DEVIATION, Math.min(MAX_DEVIATION, rawDeviation));

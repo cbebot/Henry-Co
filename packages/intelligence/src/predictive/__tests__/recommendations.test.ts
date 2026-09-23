@@ -359,7 +359,7 @@ test("key resolution refuses anything the engine never emits", () => {
 });
 
 test("a trust-SHAPED key can never be claimed by another lens", () => {
-  for (const key of ["risk.backlog.2026-09-17", "hindsight.rule.item_not_received_reported.2026-09-17", "anomaly.enforcement_actions.2026-09-17"]) {
+  for (const key of ["risk.backlog.2026-W38", "hindsight.rule.item_not_received_reported.2026-W38", "anomaly.enforcement_actions.2026-09-17"]) {
     assert.equal(recommendationScopeForKey(key), "trust");
   }
 });
@@ -399,4 +399,46 @@ test("ROUND-1: prototype names never resolve a series scope", () => {
     anomalies: [anomaly({ series: "toString" }), anomaly({ series: "constructor" }), anomaly({ series: "__proto__" })],
   });
   assert.deepEqual(cards, []);
+});
+
+// ── round-2 regression: exact key grammar, no pre-deciding tomorrow ─────────
+
+test("ROUND-2: only the EXACT engine key grammars resolve to a lens", () => {
+  const junk = [
+    "workload.staffing.ATTACKER_QUEUE.2026-W39",
+    "workload.staffing.a.b.c.d.2026-W39",
+    "workload.staffing.2026-W39",
+    "workload.staffingXsupportX2026-W39",
+    "quality.at_risk.x.2026-W39",
+    "dispute.watchlist.whatever.2026-W39",
+    "anomaly.support_volume.JUNK.PAYLOAD.2026-09-22",
+    "anomalyXsupport_volumeX2026-09-22",
+    "anomaly.x.2026-09-31",
+    "anomaly.__proto__.2026-09-22",
+    "anomaly.constructor.2026-09-22",
+  ];
+  for (const key of junk) assert.equal(recommendationScopeForKey(key), null, `${key} must not resolve`);
+  // ...and every key the engine actually emits still does.
+  const cards = deriveRecommendations({
+    asOf: AS_OF,
+    atRisk: { high: 1, elevated: 0 },
+    disputeWatch: { high: 1, watch: 0 },
+    riskBacklog: { review: 1, freeze: 0 },
+    disputeHindsight: { factor: "delivery_confirmation_gap", disputes: 9, windowDays: 30 },
+  });
+  assert.ok(cards.length > 0);
+  for (const card of cards) assert.equal(recommendationScopeForKey(card.key), card.roleScope, card.key);
+});
+
+test("ROUND-2: an anomaly day is decidable only once the engine can have judged it", () => {
+  const now = new Date("2026-09-23T10:00:00.000Z");
+  // Arrival series: judged after the day completes -> newest is YESTERDAY.
+  assert.equal(isRecommendationKeyCurrent("anomaly.support_volume.2026-09-22", now), true);
+  assert.equal(isRecommendationKeyCurrent("anomaly.support_volume.2026-09-23", now), false, "today is incomplete");
+  assert.equal(isRecommendationKeyCurrent("anomaly.support_volume.2026-09-24", now), false, "tomorrow");
+  // Batch-journal series: the point is stamped on the run day.
+  assert.equal(isRecommendationKeyCurrent("anomaly.risk_flagged.2026-09-23", now), true);
+  assert.equal(isRecommendationKeyCurrent("anomaly.risk_flagged.2026-09-24", now), false);
+  // Rolled-over dates are refused, not reinterpreted.
+  assert.equal(isRecommendationKeyCurrent("anomaly.refund_requests.2026-09-31", now), false);
 });
