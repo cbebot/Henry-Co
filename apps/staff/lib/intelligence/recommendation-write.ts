@@ -41,6 +41,19 @@ import { assertActorMayActOnLens, type IntelligenceStaffActor } from "./actor";
 
 export type RecommendationAction = "accept" | "dismiss" | "snooze";
 
+/**
+ * The card the operator clicked is no longer one the engine shows (midnight,
+ * the nightly batch or the week rolled over since the page rendered). Distinct
+ * from a failure: retrying can never succeed, so the action refreshes the page
+ * instead of inviting a retry (adversarial round 3).
+ */
+export class RecommendationNotLiveError extends Error {
+  constructor() {
+    super("That recommendation is no longer current.");
+    this.name = "RecommendationNotLiveError";
+  }
+}
+
 const STATUS_BY_ACTION: Readonly<Record<RecommendationAction, "accepted" | "dismissed" | "snoozed">> = {
   accept: "accepted",
   dismiss: "dismissed",
@@ -83,7 +96,7 @@ export async function recordRecommendationAction(
   // and anomalies inside the chart window. Refusing future/stale keys stops a
   // lens member pre-dismissing next month's cards for the whole team.
   const now = input.now ?? new Date();
-  if (!isRecommendationKeyCurrent(key, now)) throw new Error("That recommendation is no longer current.");
+  if (!isRecommendationKeyCurrent(key, now)) throw new RecommendationNotLiveError();
 
   // ...and it must be a card the engine is showing THIS lens right now
   // (adversarial round 2). Grammar and date checks cannot tell "this week's
@@ -94,7 +107,7 @@ export async function recordRecommendationAction(
   const live = input.liveKeys
     ? await input.liveKeys(input.lens, now)
     : await liveRecommendationKeys(session as unknown as IntelligenceSupabaseClient, input.lens, now);
-  if (!live.has(key)) throw new Error("That recommendation is no longer current.");
+  if (!live.has(key)) throw new RecommendationNotLiveError();
 
   const status = Object.prototype.hasOwnProperty.call(STATUS_BY_ACTION, input.action)
     ? STATUS_BY_ACTION[input.action]

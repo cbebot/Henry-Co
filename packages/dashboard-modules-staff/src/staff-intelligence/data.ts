@@ -224,6 +224,14 @@ async function loadLatestSnapshot(
   timeColumn: string,
   bands: readonly string[],
   now: Date,
+  /**
+   * How a batch RUN is identified. "exact": the batch stamps every row of a
+   * run with the same instant (V3-41's predictive batch), so the newest run is
+   * exactly the rows at the probe's timestamp — a second run the same day
+   * (manual trigger, duplicated cron) never mixes in the first run's flags
+   * (round 3). "day": one row per entity per day (V3-40's risk upsert).
+   */
+  sameRun: "exact" | "day" = "day",
 ): Promise<{ counts: Record<string, number>; drill: DrillRow[] }> {
   const empty = { counts: {}, drill: [] as DrillRow[] };
   try {
@@ -238,12 +246,13 @@ async function loadLatestSnapshot(
       .order(timeColumn, { ascending: false })
       .limit(1);
     if (probe.error || !probe.data || probe.data.length === 0) return empty;
-    const newestDay = dayKey(probe.data[0][timeColumn]);
-    if (!newestDay) return empty;
-    const { data, error } = await supabase
-      .from(table)
-      .select(`${idColumn},${bandColumn},${timeColumn}`)
-      .gte(timeColumn, `${newestDay}T00:00:00.000Z`)
+    const newestAt = probe.data[0][timeColumn];
+    const newestDay = dayKey(newestAt);
+    if (!newestDay || typeof newestAt !== "string") return empty;
+    const base = supabase.from(table).select(`${idColumn},${bandColumn},${timeColumn}`);
+    const scoped =
+      sameRun === "exact" ? base.eq(timeColumn, newestAt) : base.gte(timeColumn, `${newestDay}T00:00:00.000Z`);
+    const { data, error } = await scoped
       .in(bandColumn, bands)
       .order(timeColumn, { ascending: false })
       .limit(SERIES_ROW_LIMIT);
@@ -423,6 +432,7 @@ export async function loadLensSnapshot(
           "scored_at",
           ["watch", "high"],
           now,
+          "exact",
         ),
       ]);
       return {
@@ -459,6 +469,7 @@ export async function loadLensSnapshot(
           "assessed_at",
           ["elevated", "high"],
           now,
+          "exact",
         ),
       ]);
       const support = forecasts.get("support");

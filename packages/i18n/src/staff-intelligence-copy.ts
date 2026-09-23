@@ -83,6 +83,8 @@ export type StaffIntelligenceCopy = {
       snoozed: string;
       /** Shown when the decision could not be recorded — never a false "Agreed". */
       failed: string;
+      /** The card changed since the page loaded; nothing was saved, page refreshes. */
+      stale: string;
     };
   };
   drill: {
@@ -163,6 +165,7 @@ const EN: StaffIntelligenceCopy = {
       dismissed: "Dismissed",
       snoozed: "Snoozed",
       failed: "That did not save. Please try again.",
+      stale: "This suggestion has changed since the page loaded. Showing the latest.",
     },
   },
   drill: {

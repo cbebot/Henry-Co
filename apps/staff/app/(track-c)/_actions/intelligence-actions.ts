@@ -12,6 +12,7 @@ import { revalidatePath } from "next/cache";
 import type { LensKey } from "@henryco/dashboard-modules-staff";
 import { requireIntelligenceActor } from "@/lib/intelligence/actor";
 import {
+  RecommendationNotLiveError,
   recordRecommendationAction,
   type RecommendationAction,
 } from "@/lib/intelligence/recommendation-write";
@@ -20,10 +21,21 @@ export async function handleRecommendationAction(
   recommendationKey: string,
   lens: LensKey,
   action: RecommendationAction,
-): Promise<void> {
+): Promise<"saved" | "stale"> {
   // Re-derive the caller AND check they may act on this lens. A support
   // operator POSTing against a `trust` card is refused here.
   const actor = await requireIntelligenceActor();
-  await recordRecommendationAction({ actor, recommendationKey, lens, action });
+  try {
+    await recordRecommendationAction({ actor, recommendationKey, lens, action });
+  } catch (error) {
+    // The card changed under the operator. Nothing was written; re-render the
+    // page so the rail shows what the engine shows NOW (round 3).
+    if (error instanceof RecommendationNotLiveError) {
+      revalidatePath("/modules/staff-intelligence");
+      return "stale";
+    }
+    throw error;
+  }
   revalidatePath("/modules/staff-intelligence");
+  return "saved";
 }

@@ -27,7 +27,7 @@ import type { StaffViewer } from "@henryco/auth/staff";
 import { hasStaffAccessIn } from "@henryco/auth/staff";
 import { getStaffIntelligenceCopy } from "@henryco/i18n/server";
 import type { AppLocale } from "@henryco/i18n";
-import { detectAnomaliesForSeries, firedAnomalies } from "@henryco/intelligence";
+import { SNAPSHOT_SERIES, detectAnomaliesForSeries, firedAnomalies } from "@henryco/intelligence";
 import { emitEvent } from "@henryco/observability/events";
 import { PredictiveDashboard, type RecommendationAction } from "./dashboard";
 import { isSeriesFresh, loadLensSnapshot, loadRecommendationState, type IntelligenceSupabaseClient } from "./data";
@@ -127,10 +127,16 @@ export async function deriveLensRail(supabase: IntelligenceSupabaseClient, lens:
   const anomalies = detectAnomaliesForSeries(
     snapshot.series
       .filter((s) => s.kind === "observed" && isSeriesFresh(s.points, now))
-      .map((s) => ({ series: s.key, points: s.points })),
+      // Arrival series are Poisson counts; batch-journal snapshots re-tally the
+      // same entities nightly and must not get the Poisson floor (round 3).
+      .map((s) => ({
+        series: s.key,
+        points: s.points,
+        opts: SNAPSHOT_SERIES.has(s.key) ? { countData: false } : undefined,
+      })),
   );
   const fired = firedAnomalies(anomalies);
-  const candidates = buildRecommendationRail({ lens, snapshot, anomalies: fired, state: [] });
+  const candidates = buildRecommendationRail({ lens, snapshot, anomalies: fired, state: [], now });
   return { snapshot, anomalies, fired, candidates };
 }
 
@@ -154,7 +160,7 @@ export type StaffIntelligencePageProps = {
    * A SERVER ACTION that records a human decision. Never applies anything.
    * Passed to the client component by reference — see dashboard.tsx.
    */
-  onRecommendationAction: (key: string, lens: LensKey, action: RecommendationAction) => Promise<void>;
+  onRecommendationAction: (key: string, lens: LensKey, action: RecommendationAction) => Promise<"saved" | "stale" | void>;
 };
 
 export async function StaffIntelligencePageServer({
@@ -180,7 +186,7 @@ export async function StaffIntelligencePageServer({
     lens,
     candidates.map((card) => card.key),
   );
-  const cards = buildRecommendationRail({ lens, snapshot, anomalies: fired, state });
+  const cards = buildRecommendationRail({ lens, snapshot, anomalies: fired, state, now });
 
   // S5 telemetry. Lens + counts + series KEYS only — never a person, an entity
   // id, a score, or a card's rendered words.

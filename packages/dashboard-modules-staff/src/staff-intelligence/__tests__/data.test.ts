@@ -114,8 +114,8 @@ test("ROUND-2: the latest batch's flagged units are still counted once each", as
   const now = new Date("2026-09-23T10:00:00.000Z");
   const rows: Row[] = [
     { unit_id: "a", risk_band: "high", assessed_at: "2026-09-23T02:50:00.000Z" },
-    { unit_id: "b", risk_band: "elevated", assessed_at: "2026-09-23T02:51:00.000Z" },
-    { unit_id: "c", risk_band: "low", assessed_at: "2026-09-23T02:52:00.000Z" },
+    { unit_id: "b", risk_band: "elevated", assessed_at: "2026-09-23T02:50:00.000Z" },
+    { unit_id: "c", risk_band: "low", assessed_at: "2026-09-23T02:50:00.000Z" },
     { unit_id: "a", risk_band: "high", assessed_at: "2026-09-22T02:50:00.000Z" },
   ];
   const snapshot = await loadLensSnapshot(fakeClient({ quality_assessments: rows }), "support", now);
@@ -130,4 +130,18 @@ test("ROUND-2: a series whose batch stopped is not judged as 'now'", () => {
   assert.equal(isSeriesFresh(at("2026-09-21"), now), true, "before tonight's run, D-2 is the newest");
   assert.equal(isSeriesFresh(at("2026-09-20"), now), false, "three days old: the batch has stopped");
   assert.equal(isSeriesFresh([], now), false);
+});
+
+test("ROUND-3: two predictive runs the same day — only the NEWEST run's flags count", async () => {
+  const now = new Date("2026-09-23T10:00:00.000Z");
+  const rows: Row[] = [
+    // Run 1 (02:47) flagged a and b; run 2 (09:00, manual) cleared b.
+    { unit_id: "a", risk_band: "high", assessed_at: "2026-09-23T02:47:00.000Z" },
+    { unit_id: "b", risk_band: "high", assessed_at: "2026-09-23T02:47:00.000Z" },
+    { unit_id: "a", risk_band: "high", assessed_at: "2026-09-23T09:00:00.000Z" },
+    { unit_id: "b", risk_band: "low", assessed_at: "2026-09-23T09:00:00.000Z" },
+  ];
+  const snapshot = await loadLensSnapshot(fakeClient({ quality_assessments: rows }), "support", now);
+  assert.deepEqual(snapshot.bands.quality, { high: 1 }, "b was cleared by the newest run");
+  assert.deepEqual(snapshot.drill.map((d) => d.id), ["a"]);
 });

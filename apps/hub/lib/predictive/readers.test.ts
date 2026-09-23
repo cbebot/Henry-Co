@@ -32,3 +32,32 @@ describe("V3-42 round 2 — queue history survives the PostgREST row cap", () =>
     assert.ok(queueHistory.includes("partialFromMs + MS_PER_HOUR"));
   });
 });
+
+describe("V3-42 round 3 — the volume chart is EXACT, and a dormant queue keeps its zeros", () => {
+  const daily = source.slice(
+    source.indexOf("export async function readQueueDailyCounts"),
+    source.indexOf("export type ServiceUnitCandidate"),
+  );
+
+  it("counts each day server-side (head: true) so max_rows can never truncate it", () => {
+    assert.ok(daily.includes('count: "exact", head: true'));
+    assert.ok(daily.includes(".lt(source.column"), "each day is a half-open [start, next) window");
+  });
+
+  it("fails CLOSED: any uncountable day withholds the whole series", () => {
+    assert.ok(daily.includes("return null"));
+  });
+
+  it("an untruncated history starts at `since`, not at the first arrival", () => {
+    assert.ok(queueHistory.includes("Math.ceil(since.getTime() / MS_PER_HOUR) * MS_PER_HOUR"));
+  });
+
+  it("a page error after page 1 is a truncation, not a complete read", () => {
+    assert.ok(queueHistory.includes("exhausted = offset === 0"));
+  });
+
+  it("the batch publishes the exact counts, falling back to the sample's complete days", () => {
+    const batch = readFileSync(path.join(HERE, "batch.ts"), "utf8");
+    assert.ok(batch.includes("observedDaily: dailyCounts ?? summarizeObservedDaily(history)"));
+  });
+});

@@ -53,7 +53,9 @@ export type PredictiveDashboardProps = {
    * closure on the server would not serialize across the boundary, so the lens
    * travels as an argument instead of being captured.
    */
-  onAction: (key: string, lens: LensKey, action: RecommendationAction) => Promise<void>;
+  /** Resolves "stale" when the card changed since render: nothing was saved
+   *  and the page is re-rendering, so the row says so instead of "try again". */
+  onAction: (key: string, lens: LensKey, action: RecommendationAction) => Promise<"saved" | "stale" | void>;
 };
 
 /**
@@ -224,6 +226,7 @@ function RecommendationRow({
   const [pending, startTransition] = useTransition();
   const [resolved, setResolved] = useState<RecommendationAction | null>(null);
   const [failed, setFailed] = useState(false);
+  const [stale, setStale] = useState(false);
 
   const templates = copy.recommendation as unknown as Record<string, string>;
   const template =
@@ -238,7 +241,11 @@ function RecommendationRow({
     setFailed(false);
     startTransition(async () => {
       try {
-        await onAction(card.key, lens, action);
+        const outcome = await onAction(card.key, lens, action);
+        if (outcome === "stale") {
+          setStale(true);
+          return;
+        }
         setResolved(action);
       } catch {
         // The decision was not recorded. Leave the buttons live so the operator
@@ -257,7 +264,11 @@ function RecommendationRow({
           </Chip>
         </div>
         <span style={{ fontSize: "0.875rem", color: "var(--hc-text-primary)" }}>{fill(template, params)}</span>
-        {resolved ? (
+        {stale ? (
+          <span role="status" style={{ fontSize: "0.75rem", color: "var(--hc-text-tertiary)" }}>
+            {copy.recommendation.actions.stale}
+          </span>
+        ) : resolved ? (
           <span role="status" style={{ fontSize: "0.75rem", color: "var(--hc-text-tertiary)" }}>
             {copy.recommendation.actions[resolved === "accept" ? "accepted" : resolved === "dismiss" ? "dismissed" : "snoozed"]}
           </span>

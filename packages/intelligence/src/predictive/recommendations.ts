@@ -347,9 +347,12 @@ export function recommendationScopeForKey(key: unknown): RecommendationRoleScope
 /**
  * Snapshot series are points stamped on the RUN day (a batch journal), so
  * today's point is real; every other anomaly series counts ARRIVALS and is
- * only ever judged once its day has completed.
+ * only ever judged once its day has completed. Snapshot series are also NOT
+ * Poisson counts — they re-tally the same scored entities each night, so their
+ * day-to-day noise is far below sqrt(level) and the detector must judge them
+ * with `countData: false` (round 3).
  */
-const SNAPSHOT_SERIES: ReadonlySet<string> = new Set(["risk_flagged", "dispute_rate", "at_risk_units"]);
+export const SNAPSHOT_SERIES: ReadonlySet<string> = new Set(["risk_flagged", "dispute_rate", "at_risk_units"]);
 
 /**
  * Is this key's time suffix CURRENT? Backlog cards are keyed by ISO week and

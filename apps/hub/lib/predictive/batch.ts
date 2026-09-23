@@ -41,7 +41,7 @@ import {
   predictiveBatchEnabled,
 } from "./config";
 import { describeForecast } from "./narrative";
-import { readQueueHistory, readServiceUnits, readTransactions } from "./readers";
+import { readQueueDailyCounts, readQueueHistory, readServiceUnits, readTransactions } from "./readers";
 
 export type PredictiveBatchSkip =
   | "flag_dark"
@@ -121,7 +121,10 @@ export async function runPredictiveBatch(
     const forecasts: WorkloadForecast[] = [];
     for (const queue of QUEUE_KEYS) {
       try {
-        const history = await readQueueHistory(queue, now);
+        const [history, dailyCounts] = await Promise.all([
+          readQueueHistory(queue, now),
+          readQueueDailyCounts(queue, now),
+        ]);
         const forecast = forecastWorkload({ queue, history, asOf: now.toISOString() });
         forecasts.push(forecast);
         const { error } = await admin.from("workload_forecasts").insert({
@@ -135,8 +138,11 @@ export async function runPredictiveBatch(
             // The staff dashboards chart queue volume from here because the
             // source tables are not staff-readable (support_threads has no
             // staff SELECT policy; platform_moderation_queue is service-role
-            // only). Counts per day ONLY — no row, no id, no person.
-            observedDaily: summarizeObservedDaily(history),
+            // only). Counts per day ONLY — no row, no id, no person. EXACT
+            // per-day counts (round 3), not a sum over the bounded row sample;
+            // if they cannot all be counted, the sample's complete days stand
+            // in rather than a hole drawn as zero.
+            observedDaily: dailyCounts ?? summarizeObservedDaily(history),
           },
           sample_size: forecast.sampleSize,
           basis: forecast.basis,

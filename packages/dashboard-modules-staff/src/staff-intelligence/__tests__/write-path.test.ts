@@ -164,3 +164,23 @@ test("ROUND-2: the DATABASE must agree the caller is staff before anything is wr
   assert.ok(s.includes("sqlStaff !== true"), "anything but an explicit true is refused");
   assert.ok(s.includes('rpc("is_staff_in"') && s.includes("sqlSecurity === true"), "trust lens needs the SQL security predicate too");
 });
+
+test("ROUND-3: a card that changed since render is a distinct 'stale' outcome, never 'try again'", () => {
+  const write = read(WRITE);
+  assert.ok(write.includes("class RecommendationNotLiveError"));
+  assert.equal(write.includes('throw new Error("That recommendation is no longer current.")'), false);
+  const action = read(ACTION);
+  assert.ok(action.includes("instanceof RecommendationNotLiveError"));
+  assert.ok(action.includes('return "stale"'));
+  assert.ok(
+    action.indexOf('revalidatePath("/modules/staff-intelligence")') < action.indexOf('return "stale"'),
+    "the page re-renders so the rail shows the current cards",
+  );
+  const ui = read("packages/dashboard-modules-staff/src/staff-intelligence/dashboard.tsx");
+  assert.ok(ui.includes('outcome === "stale"') && ui.includes("actions.stale"));
+});
+
+test("ROUND-3: journal snapshot series are judged WITHOUT the Poisson count floor", () => {
+  const s = read("packages/dashboard-modules-staff/src/staff-intelligence/index.tsx");
+  assert.ok(s.includes("SNAPSHOT_SERIES.has(s.key) ? { countData: false }"));
+});
