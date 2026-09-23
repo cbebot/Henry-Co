@@ -37,6 +37,7 @@ import {
   SERVICE_UNIT_LIMIT,
   TRANSACTION_LIMIT,
 } from "./config";
+import { isMissingRelation } from "./postgrest-head";
 
 const MS_PER_HOUR = 3_600_000;
 const MS_PER_DAY = 86_400_000;
@@ -147,18 +148,6 @@ export async function readQueueHistory(queue: QueueKey, now: Date): Promise<Queu
 }
 
 /**
- * Is this source genuinely ABSENT (not yet deployed), as opposed to broken?
- * A HEAD request has no body, so postgrest-js reports an unknown relation as
- * `error: null, count: null` with HTTP 404 (round 4) — the status is the only
- * reliable signal. Error codes are honoured too for non-HEAD transports.
- */
-function isMissingRelation(error: { code?: string | null } | null, status?: number): boolean {
-  if (status === 404) return true;
-  const code = error?.code ?? "";
-  return code === "42P01" || code === "PGRST205";
-}
-
-/**
  * EXACT arrivals per COMPLETE UTC day, for the staff dashboards' volume chart
  * (V3-42 adversarial round 3).
  *
@@ -190,7 +179,7 @@ export async function readQueueDailyCounts(queue: QueueKey, now: Date): Promise<
             .select(source.column, { count: "exact", head: true })
             .gte(source.column, new Date(dayMs).toISOString())
             .lt(source.column, new Date(dayMs + MS_PER_DAY).toISOString());
-          return { dayMs, count: error ? null : count, missing: isMissingRelation(error, status) };
+          return { dayMs, count: error ? null : count, missing: isMissingRelation(error, status, count) };
         }),
       );
       // ONLY a table/column that does not exist is the documented degrade (the

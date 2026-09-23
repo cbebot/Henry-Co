@@ -183,7 +183,7 @@ test("ROUND-3: a card that changed since render is a distinct 'stale' outcome, n
 test("ROUND-3: journal snapshot series are judged WITHOUT the Poisson count floor", () => {
   const s = read("packages/dashboard-modules-staff/src/staff-intelligence/index.tsx");
   assert.ok(s.includes("SNAPSHOT_SERIES.has(s.key) ? SNAPSHOT_ANOMALY_OPTS"));
-  assert.ok(s.includes("SNAPSHOT_ANOMALY_OPTS = { countData: false, relativeFloor: 0.05 }"), "round 4: a relative floor for stocks");
+  assert.ok(s.includes("SNAPSHOT_ANOMALY_OPTS = { countData: false, relativeFloor: 0.05, minScale: 2 }"), "round 4: a relative floor for stocks");
 });
 
 test("ROUND-4: a 'stale' row keeps its buttons, so a still-present card is never stuck", () => {

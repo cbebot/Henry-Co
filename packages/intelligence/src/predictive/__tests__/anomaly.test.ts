@@ -361,3 +361,12 @@ test("ROUND-4: the relative floor still fires on a real jump in a stock", () => 
   assert.equal(result.detected, true, "+30% on a stock of 200 is news");
   assert.equal(result.band, "alert");
 });
+
+test("ROUND-5: a SMALL stock ticking 5 -> 8 is quiet under the snapshot floors", () => {
+  const opts = { series: "at_risk_units", countData: false, relativeFloor: 0.05, minScale: 2 } as const;
+  const flat = Array.from({ length: 27 }, (_, i) => ({ at: new Date(START + i * DAY).toISOString(), value: 5 }));
+  const tick = [...flat, { at: new Date(START + 27 * DAY).toISOString(), value: 8 }];
+  assert.equal(detectAnomalies(tick, opts)[0].detected, false);
+  const jump = [...flat, { at: new Date(START + 27 * DAY).toISOString(), value: 15 }];
+  assert.equal(detectAnomalies(jump, opts)[0].detected, true, "a tripling is still news");
+});

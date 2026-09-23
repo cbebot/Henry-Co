@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { QUEUE_HISTORY_PAGE_SIZE, QUEUE_HISTORY_ROW_LIMIT } from "./config";
+import { isMissingRelation } from "./postgrest-head";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const source = readFileSync(path.join(HERE, "readers.ts"), "utf8");
@@ -52,9 +53,10 @@ describe("V3-42 round 3 — the volume chart is EXACT, and a dormant queue keeps
     assert.ok(daily.includes("if (results.every((r) => r.missing)) continue;"));
     assert.equal(daily.includes("results.every((r) => r.count === null)"), false, "'all failed' is not 'absent'");
     assert.ok(daily.includes("if (countedSources === 0) return null;"), "no counted source => no series");
-    const helper = source.slice(source.indexOf("function isMissingRelation"), source.indexOf("export async function readQueueDailyCounts"));
+    const helper = readFileSync(path.join(HERE, "postgrest-head.ts"), "utf8");
     for (const code of ["42P01", "PGRST205"]) assert.ok(helper.includes(code), `${code} is the absent-table degrade`);
     assert.ok(helper.includes("status === 404"), "a HEAD 404 has no body: the status is the only absent-table signal");
+    assert.ok(helper.includes("status === 204"), "round 5: postgrest-js rewrites a body-less 404 to 204");
     for (const transient of ["57014", "53300", "PGRST000"]) assert.equal(helper.includes(transient), false, `${transient} must NOT count as absent`);
   });
 
@@ -69,5 +71,24 @@ describe("V3-42 round 3 — the volume chart is EXACT, and a dormant queue keeps
   it("the batch publishes the exact counts, falling back to the sample's complete days", () => {
     const batch = readFileSync(path.join(HERE, "batch.ts"), "utf8");
     assert.ok(batch.includes("observedDaily: dailyCounts ?? summarizeObservedDaily(history)"));
+  });
+});
+
+describe("V3-42 round 5 — absent vs broken, with the real client's HEAD semantics", () => {
+  it("postgrest-js's rewritten HEAD 404 (204, no error, no count) is ABSENT", () => {
+    assert.equal(isMissingRelation(null, 204, null), true);
+    assert.equal(isMissingRelation(null, 404, null), true);
+    assert.equal(isMissingRelation({ code: "PGRST205" }, 404, null), true);
+  });
+
+  it("a successful count, even of zero, is NOT absent", () => {
+    assert.equal(isMissingRelation(null, 200, 0), false);
+    assert.equal(isMissingRelation(null, 206, 12), false);
+  });
+
+  it("a missing column, timeout or outage is BROKEN (fails closed), never absent", () => {
+    assert.equal(isMissingRelation({ code: "" }, 400, null), false);
+    assert.equal(isMissingRelation({ code: "57014" }, 500, null), false);
+    assert.equal(isMissingRelation({ code: "" }, 503, null), false);
   });
 });

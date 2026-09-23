@@ -111,7 +111,10 @@ export const staffIntelligenceModule: StaffDashboardModule = {
 };
 
 /** How batch-journal SNAPSHOT series are judged (see `deriveLensRail`). */
-export const SNAPSHOT_ANOMALY_OPTS = { countData: false, relativeFloor: 0.05 } as const;
+// A stock's spread is floored at max(2 items, 5% of its level): the relative
+// floor quiets large stocks (round 4), the absolute one small ones, where 5% is
+// under one item and a tally of 5 ticking to 8 read as news (round 5).
+export const SNAPSHOT_ANOMALY_OPTS = { countData: false, relativeFloor: 0.05, minScale: 2 } as const;
 
 /**
  * The ONE derivation of a lens's rail: snapshot -> anomalies on fresh observed
