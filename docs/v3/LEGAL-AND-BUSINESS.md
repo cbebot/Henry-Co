@@ -52,7 +52,24 @@ This is the list of things owner+lawyer+accountant work on in parallel with engi
 
 **Blocks:** V3-14, V3-15, V3-16, V3-19, V3-22, V3-65, V3-66, V3-93.
 
-**Current state:** Nigeria registered entity is **Henry Holdings Limited**. CAC name availability has been confirmed and the registration filing is in process as of 2026-06-01; use this legal entity on payment, invoice, receipt, KYB, KYC, privacy, terms, tax, and provider-onboarding surfaces. International entities are not yet established.
+**Current state:** Nigeria registered entity is **Henry Onyx Limited** (owner-confirmed
+2026-09-22). Use this legal entity on payment, invoice, receipt, KYB, KYC, privacy, terms,
+tax, and provider-onboarding surfaces. International entities are not yet established.
+
+In new code, read it from `COMPANY.group.legalName` (`@henryco/config`) rather than writing the
+string. The issuer block on receipts, invoices and credit notes already does (via
+`buildDocumentIssuer`), and `toBrandName()` rewrites the retired "Henry Holdings Limited" /
+"Henry & Co." strings at read-time so legacy CMS and DB rows render the current name (migration
+`20260709093000_brand_purge_company_settings.sql` purges the stored copies). Some policy prose
+still carries the literal — company-hub terms/privacy, studio policies, branded-document legal
+footers, the AI doctrine — which is correct today but will not follow a future rename.
+
+> **Owner action — unresolved:** this file previously recorded a CAC filing in process under
+> "Henry Holdings Limited" (2026-06-01). Shipped receipts and invoices print "Henry Onyx
+> Limited" (`packages/branded-documents` and `packages/payment-surface` read
+> `COMPANY.group.legalName`). Confirm the CAC certificate reads **Henry Onyx Limited**. If it
+> does not, the issuer name on every money document is mismatched against the registered
+> entity — a Paystack/Flutterwave compliance problem, not a docs nit.
 
 **Recommended path:**
 - Nigeria: already in place; verify CAC registration current.
