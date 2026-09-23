@@ -24,6 +24,7 @@ export {
   type LogisticsStaffDispatcherCopy,
 } from "./logistics-staff-dispatcher-copy";
 export { getStaffPredictiveCopy, type StaffPredictiveCopy } from "./staff-predictive-copy";
+export { getStaffIntelligenceCopy, type StaffIntelligenceCopy } from "./staff-intelligence-copy";
 export {
   getLogisticsStaffOwnerCopy,
   type LogisticsStaffOwnerCopy,

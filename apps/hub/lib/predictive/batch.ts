@@ -28,6 +28,7 @@ import {
   assessQuality,
   forecastWorkload,
   scoreDisputeLikelihood,
+  summarizeObservedDaily,
   QUEUE_KEYS,
   type WorkloadForecast,
 } from "@henryco/intelligence";
@@ -130,6 +131,12 @@ export async function runPredictiveBatch(
           payload: {
             perHour: forecast.perHour,
             staffingRecommendation: forecast.staffingRecommendation,
+            // V3-42: the OBSERVED daily arrivals this forecast was built from.
+            // The staff dashboards chart queue volume from here because the
+            // source tables are not staff-readable (support_threads has no
+            // staff SELECT policy; platform_moderation_queue is service-role
+            // only). Counts per day ONLY — no row, no id, no person.
+            observedDaily: summarizeObservedDaily(history),
           },
           sample_size: forecast.sampleSize,
           basis: forecast.basis,

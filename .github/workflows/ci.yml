@@ -112,6 +112,11 @@ jobs:
       - name: Test (@henryco/hub — predictive adapter guards)
         run: pnpm --filter @henryco/hub run test
 
+      # V3-42 — the lens gate (the TS mirror of is_staff_in('security')), the
+      # snooze lifecycle, and operator-copy coverage across all 12 locales.
+      - name: Test (@henryco/dashboard-modules-staff — lens gate + recommendation state)
+        run: pnpm --filter @henryco/dashboard-modules-staff run test
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
 
@@ -468,3 +473,15 @@ jobs:
 
       - name: Prove predictive RLS + no-auto-punishment at runtime (assessed party sees nothing; DB rejects every enforcement verb)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/predictive_rls_behaviour.sql
+
+      # V3-42 ADVANCED STAFF DASHBOARDS (Phase E, Wave E.4) — read-only over the
+      # V3-40 + V3-41 tables applied above, plus the recommendation-state table.
+      # The matrix below is this pass's DEPLOYMENT GATE: it proves, as real
+      # Postgres roles, that a support operator reads ZERO trust-only risk rows
+      # while still reading its own lens — and that no actorless state change is
+      # possible. Locally it is also mutation-tested (7/7 killed).
+      - name: Apply V3-42 staff recommendation state migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260922120000_v3_42_staff_recommendation_state.sql
+
+      - name: Prove the per-role RLS matrix (support staff read 0 risk rows; no actorless accept; writes service-role only)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/staff_intelligence_rls_matrix.sql

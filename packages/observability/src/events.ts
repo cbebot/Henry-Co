@@ -359,6 +359,16 @@ export type HenryEventName =
   | "henry.predictive.workload.computed"
   | "henry.predictive.quality.at_risk_flagged"
   | "henry.predictive.dispute.high_likelihood"
+  // V3-42 advanced staff dashboards (Phase E, Wave E.4). Read-only operator
+  // instrument over V3-40/V3-41 output. NOTE the four-segment forms: the pass
+  // spec writes "henry.staff_dashboard.viewed", which fails the registered
+  // henry.<domain>.<object>.<verb> schema — these are the schema-valid names.
+  // Payloads carry a lens, a recommendation KEY, a series key and counts only —
+  // never PII, never a raw score, never a customer or entity id.
+  | "henry.staff_dashboard.view.opened"
+  | "henry.staff_dashboard.recommendation.accepted"
+  | "henry.staff_dashboard.recommendation.dismissed"
+  | "henry.staff_dashboard.anomaly.shown"
   // payments / provider router — V3-13 foundation lock (vendor-agnostic
   // routing). `intent.*` track the money lifecycle of a payment_intent
   // (created → succeeded | failed → refunded); the outcome axis maps

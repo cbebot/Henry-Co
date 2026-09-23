@@ -6,6 +6,8 @@ import path from "node:path";
 
 import {
   forecastWorkload,
+  summarizeObservedDaily,
+  OBSERVED_DAILY_MAX_DAYS,
   QUEUE_KEYS,
   WORKLOAD_MODEL_VERSION,
   type QueueObservation,
@@ -203,4 +205,51 @@ test("STRUCTURAL: the forecaster has no path to an AI gateway or a wallet", () =
       `the deterministic forecaster must not reference "${forbidden}"`,
     );
   }
+});
+
+// ── V3-42: the observed daily totals the staff dashboards chart ─────────────
+
+test("V3-42 observed daily: hourly arrivals fold into UTC calendar-day totals", () => {
+  const history: QueueObservation[] = [
+    { at: "2026-09-01T00:00:00.000Z", count: 2 },
+    { at: "2026-09-01T13:00:00.000Z", count: 3 },
+    { at: "2026-09-01T23:00:00.000Z", count: 1 },
+    { at: "2026-09-02T09:00:00.000Z", count: 4 },
+  ];
+  assert.deepEqual(summarizeObservedDaily(history), [
+    { date: "2026-09-01", count: 6 },
+    { date: "2026-09-02", count: 4 },
+  ]);
+});
+
+test("V3-42 observed daily: bounded to the chart window, keeping the NEWEST days", () => {
+  const history: QueueObservation[] = Array.from({ length: 60 * 24 }, (_, i) => ({
+    at: new Date(START + i * MS_PER_HOUR).toISOString(),
+    count: 1,
+  }));
+  const days = summarizeObservedDaily(history);
+  assert.equal(days.length, OBSERVED_DAILY_MAX_DAYS);
+  assert.equal(days[days.length - 1].date, new Date(START + (60 * 24 - 1) * MS_PER_HOUR).toISOString().slice(0, 10));
+  assert.ok(days.every((d) => d.count === 24), "each full day holds 24 hourly arrivals");
+});
+
+test("V3-42 observed daily: hostile input degrades — counts are finite whole numbers", () => {
+  const days = summarizeObservedDaily([
+    { at: "not-a-date", count: 5 },
+    { at: "2026-09-01T00:00:00.000Z", count: Number.NaN },
+    { at: "2026-09-01T01:00:00.000Z", count: -40 },
+    { at: "2026-09-01T02:00:00.000Z", count: Number.POSITIVE_INFINITY },
+    { at: "2026-09-01T03:00:00.000Z", count: 1e308 },
+    { at: "2026-09-01T04:00:00.000Z", count: 2.6 },
+  ]);
+  assert.equal(days.length, 1);
+  assert.ok(Number.isFinite(days[0].count) && Number.isInteger(days[0].count));
+  assert.deepEqual(summarizeObservedDaily([]), []);
+  assert.deepEqual(summarizeObservedDaily(undefined as never), []);
+  assert.ok(summarizeObservedDaily([{ at: "2026-09-01T00:00:00.000Z", count: 1 }], Number.NaN).length === 1);
+});
+
+test("V3-42 observed daily: carries COUNTS ONLY — no id, no row, nothing about a person", () => {
+  const [day] = summarizeObservedDaily([{ at: "2026-09-01T00:00:00.000Z", count: 3 }]);
+  assert.deepEqual(Object.keys(day).sort(), ["count", "date"]);
 });

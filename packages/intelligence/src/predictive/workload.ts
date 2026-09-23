@@ -395,3 +395,47 @@ export function forecastWorkload(input: ForecastWorkloadInput): WorkloadForecast
     modelVersion: WORKLOAD_MODEL_VERSION,
   };
 }
+
+/**
+ * V3-42 — the OBSERVED side of a forecast, as bounded daily totals.
+ *
+ * Why this exists: the staff dashboards must chart queue volume, but the tables
+ * behind the queues carry heterogeneous, division-scoped RLS. `support_threads`
+ * has no staff SELECT policy at all (only "users read their own"), and
+ * `platform_moderation_queue` is service-role only. A dashboard reading them
+ * with the viewer's RLS-scoped session would render a silently partial chart —
+ * near-zero for support, permanently empty for moderation — with no error.
+ *
+ * The service-role batch already reads those tables to build the forecast. It
+ * publishes these daily COUNTS alongside it in `workload_forecasts.payload`,
+ * which every staff member may read (`is_staff_in_any()`). Numbers only: no
+ * row, no id, no person ever crosses — so the chart is complete for every
+ * viewer and the dashboards still never touch a service-role client.
+ */
+export interface ObservedDay {
+  /** UTC calendar date, YYYY-MM-DD. */
+  date: string;
+  /** Items that arrived on that day. */
+  count: number;
+}
+
+/** Four weeks — the chart window and the anomaly baseline. */
+export const OBSERVED_DAILY_MAX_DAYS = 28;
+
+export function summarizeObservedDaily(
+  history: ReadonlyArray<QueueObservation>,
+  maxDays: number = OBSERVED_DAILY_MAX_DAYS,
+): ObservedDay[] {
+  const totals = new Map<string, number>();
+  for (const observation of history ?? []) {
+    const ms = Date.parse(observation?.at as string);
+    if (!Number.isFinite(ms)) continue;
+    const date = new Date(ms).toISOString().slice(0, 10);
+    totals.set(date, (totals.get(date) ?? 0) + safeCount(observation.count));
+  }
+  const limit = Number.isFinite(maxDays) ? Math.max(1, Math.min(366, Math.floor(maxDays))) : OBSERVED_DAILY_MAX_DAYS;
+  return [...totals.entries()]
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([date, count]) => ({ date, count: Math.round(Math.min(count, MAX_FORECAST_VALUE)) }))
+    .slice(-limit);
+}

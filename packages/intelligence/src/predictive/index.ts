@@ -8,3 +8,5 @@ export * from "./quality";
 export * from "./dispute";
 export * from "./budget";
 export * from "./projection";
+export * from "./anomaly";
+export * from "./recommendations";
