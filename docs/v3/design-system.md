@@ -263,8 +263,10 @@ studio, account-auth, staff-no-access). Do them one site at a time; keep CI gree
   structured logging, capped heroes (no giant text), single-accent discipline.
 - Domains via `@henryco/config` helpers (`getDivisionUrl`, `getAccountUrl`, …) — **zero
   hardcoded domains**. Strings via `@henryco/i18n` — **zero hardcoded user-facing text**.
-- Footer legal entity = **"Henry Holdings Limited"** (`COMPANY.group.legalName`); brand
-  in copy = **"Henry & Co."**.
+- Footer legal entity = **"Henry Onyx Limited"** (`COMPANY.group.legalName`); brand
+  in copy = **"Henry Onyx"** (`COMPANY.group.name`). Both names previously written
+  here ("Henry Holdings Limited" / "Henry & Co.") are RETIRED — read them from
+  config rather than hardcoding either.
 
 **E. Per-site verification (every site)**
 `pnpm --filter @henryco/<site> typecheck && lint && build` clean · `pnpm a11y:contrast`

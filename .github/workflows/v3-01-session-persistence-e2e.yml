@@ -45,9 +45,23 @@ on:
         required: false
         type: string
 
+# REPO-WIDE, deliberately NOT keyed on github.ref.
+#
+# Every run signs in as the SAME fixture account, and T2 expires its session
+# via expireSession(page, "both") -> admin.auth.admin.signOut(jwt, "global")
+# (setup.ts). A global signOut revokes EVERY refresh token that account holds,
+# including the one another PR's run is relying on at that moment (T1's silent
+# refresh needs it). A per-PR group let such runs overlap, so one PR's T2 could
+# sign another PR's run out mid-test. The account is shared across the whole
+# repo, so the lock has to be too.
+#
+# `cancel-in-progress: false` so a push on one PR never kills another PR's run
+# mid-flight. GitHub keeps at most one PENDING run per group — under a burst the
+# older pending run is cancelled in favour of the newer one, so re-run that
+# PR's check if you need its signal.
 concurrency:
-  group: v3-01-e2e-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: v3-01-e2e-shared-fixture-account
+  cancel-in-progress: false
 
 jobs:
   session-persistence-e2e:

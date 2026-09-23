@@ -52,7 +52,27 @@ This is the list of things owner+lawyer+accountant work on in parallel with engi
 
 **Blocks:** V3-14, V3-15, V3-16, V3-19, V3-22, V3-65, V3-66, V3-93.
 
-**Current state:** Nigeria registered entity is **Henry Holdings Limited**. CAC name availability has been confirmed and the registration filing is in process as of 2026-06-01; use this legal entity on payment, invoice, receipt, KYB, KYC, privacy, terms, tax, and provider-onboarding surfaces. International entities are not yet established.
+**Current state:** Nigeria registered entity is **Henry Onyx Limited** (owner-confirmed
+2026-09-22). Use this legal entity on payment, invoice, receipt, KYB, KYC, privacy, terms,
+tax, and provider-onboarding surfaces. International entities are not yet established.
+
+In new code, read it from `COMPANY.group.legalName` (`@henryco/config`) rather than writing the
+string. The issuer block on receipts, invoices and credit notes already does (via
+`buildDocumentIssuer`), and `toBrandName()` rewrites the retired "Henry Holdings Limited" /
+"Henry & Co." strings at read-time so legacy CMS and DB rows render the current name (migration
+`20260709093000_brand_purge_company_settings.sql` purges the stored copies). Some policy prose
+still carries the literal — company-hub terms/privacy, studio policies, branded-document legal
+footers, the AI doctrine — which is correct today but will not follow a future rename.
+
+CAC registration is complete. The RC number, TIN and registered office are recorded from the
+official CAC records in `LEGAL.entity` (`packages/config/legal.ts`, since V3-18 #251 on
+2026-06-07), and the issuer block on receipts and invoices prints them from there. This file's
+earlier line ("filing in process as Henry Holdings Limited", 2026-06-01) was superseded then and
+never updated.
+
+> **Still owner-to-confirm** in `LEGAL.entity`: `ndpcRegistration` (the NDPC data-controller
+> registration reference) and `dpo` (data protection officer). Both are placeholders today, and
+> NDPR expects a registered controller (see **Why** above).
 
 **Recommended path:**
 - Nigeria: already in place; verify CAC registration current.
