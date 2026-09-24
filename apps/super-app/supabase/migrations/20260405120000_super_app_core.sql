@@ -5,7 +5,7 @@
 -- V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24) — repaired against prod-actual:
 --   * REMOVED the public.profiles table/policies, handle_new_user() and the
 --     on_auth_user_created trigger. Those are PLATFORM-owned and already live on
---     prod (supabase/prod-actual/schema.sql: profiles + 11 policies,
+--     prod (supabase/prod-actual/schema.sql: profiles + its RLS policies,
 --     handle_new_user() inserting id/role='customer'/full_name/phone/is_active,
 --     trigger on auth.users). The old two-column body here would have REPLACED
 --     the live signup function, and because profiles.role is NOT NULL with no
@@ -16,9 +16,14 @@
 --   * REMOVED `create extension pgcrypto`: gen_random_uuid() is core since PG13,
 --     and on Supabase the extension lives in the `extensions` schema.
 --   * Policies are drop-if-exists + create, so the file is re-runnable.
---   * contact_submissions insert is bounded rather than `with check (true)`,
---     and the grants are explicit (anon/authenticated: divisions SELECT,
---     contact_submissions INSERT only).
+--   * contact_submissions is bounded rather than `with check (true)`: raw
+--     char_length caps + non-whitespace content, enforced both as table CHECKs
+--     (covers service-role writes too) and in the insert policy.
+--   * Grants are explicit: anon/authenticated get divisions SELECT and a
+--     COLUMN-level contact_submissions INSERT (name, email, topic, message,
+--     division_slug) — clients cannot choose id or backdate created_at.
+--   * The division seed is insert-if-missing (`on conflict do nothing`), so a
+--     re-apply never overwrites operator edits to existing divisions.
 
 create table if not exists public.divisions (
   id uuid primary key default gen_random_uuid(),
@@ -36,11 +41,21 @@ create table if not exists public.divisions (
 create table if not exists public.contact_submissions (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  name text not null,
-  email text not null,
-  topic text not null,
-  message text not null,
+  name text not null
+    constraint contact_submissions_name_bounded
+    check (char_length(name) between 1 and 200 and btrim(name, E' \t\r\n') <> ''),
+  email text not null
+    constraint contact_submissions_email_shape
+    check (char_length(email) between 3 and 320 and position('@' in email) > 1),
+  topic text not null
+    constraint contact_submissions_topic_bounded
+    check (char_length(topic) between 1 and 200 and btrim(topic, E' \t\r\n') <> ''),
+  message text not null
+    constraint contact_submissions_message_bounded
+    check (char_length(message) between 1 and 5000 and btrim(message, E' \t\r\n') <> ''),
   division_slug text
+    constraint contact_submissions_division_slug_bounded
+    check (division_slug is null or char_length(division_slug) <= 64)
 );
 
 alter table public.divisions enable row level security;
@@ -49,7 +64,8 @@ alter table public.contact_submissions enable row level security;
 revoke all on table public.divisions from anon, authenticated;
 revoke all on table public.contact_submissions from anon, authenticated;
 grant select on table public.divisions to anon, authenticated;
-grant insert on table public.contact_submissions to anon, authenticated;
+grant insert (name, email, topic, message, division_slug)
+  on table public.contact_submissions to anon, authenticated;
 
 drop policy if exists "divisions_select_public" on public.divisions;
 create policy "divisions_select_public" on public.divisions
@@ -60,12 +76,11 @@ drop policy if exists "contact_insert_clients" on public.contact_submissions;
 create policy "contact_insert_clients" on public.contact_submissions
   for insert to anon, authenticated
   with check (
-    length(btrim(name)) between 1 and 200
-    and length(email) between 3 and 320
-    and position('@' in email) > 1
-    and length(btrim(topic)) between 1 and 200
-    and length(btrim(message)) between 1 and 5000
-    and (division_slug is null or length(division_slug) <= 64)
+    char_length(name) between 1 and 200 and btrim(name, E' \t\r\n') <> ''
+    and char_length(email) between 3 and 320 and position('@' in email) > 1
+    and char_length(topic) between 1 and 200 and btrim(topic, E' \t\r\n') <> ''
+    and char_length(message) between 1 and 5000 and btrim(message, E' \t\r\n') <> ''
+    and (division_slug is null or char_length(division_slug) <= 64)
   );
 
 -- Service role bypasses RLS for operational tooling.
@@ -99,12 +114,4 @@ values
    'Building materials, interior finishes, procurement, and engineering support — launching soon.',
    '#4F46E5', 'https://building.henryonyx.com',
    array['building_materials','interior_finishes','construction_supply']::text[])
-on conflict (slug) do update set
-  name = excluded.name,
-  status = excluded.status,
-  featured = excluded.featured,
-  summary = excluded.summary,
-  accent_hex = excluded.accent_hex,
-  destination_url = excluded.destination_url,
-  sectors = excluded.sectors,
-  updated_at = now();
+on conflict (slug) do nothing;

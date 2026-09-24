@@ -2,6 +2,7 @@
 
 **Pass:** V3-ACTIVATION-RUNBOOK-01 · **Compiled:** 2026-09-24 · **Base:** `origin/main @ b1efffe3` (V3-42, #537) · **Prod:** `rzkbgwuznmdxnnhmjazy` — **PAUSED / unreachable at compile time**
 **Type:** documentation only — no code change, no migration-file edit, **no prod connection attempted**. `payments_private` and the money RPCs untouched.
+**Amended by V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24):** the 14 not-apply-ready files were resolved: **6 repaired** (proved clean + re-runnable on the same shadow), **8 retired** as DO-NOT-APPLY. The full local dry-run now clears **84/93** (was 79/93), with zero regressions. See §4 and §8.1. Still no prod contact, and `payments_private` / money RPCs are still untouched.
 
 > **Why this file exists.** Merged-to-main ≠ applied-to-prod (the V3-73 and V3-34 lesson, `docs/v3/automation/RE-GROUNDING-2026-07-24.md:76`). Several passes shipped "flag-dark, committed-not-applied" migrations. Prod is paused, so it can't be queried. This runbook turns everything git knows into (1) one dependency-ordered apply sequence and (2) a single read-only query. The moment Supabase resumes, that query converts every NEEDS-PROD-CONFIRMATION row into ground truth, so the apply session starts from facts, not memory.
 
@@ -13,7 +14,9 @@
 - Candidate status: **4 CONFIRMED-APPLIED** (V3-73, SA-1, SA-2, SA-3 — architect live query, this session) · **1 CONFIRMED-UNAPPLIED** (V3-34 — architect live query, this session) · **88 NEEDS-PROD-CONFIRMATION**. The last column of §3 gives each one's last git-recorded state.
 - **Apply order = global filename-timestamp order, name as tie-break.** This order satisfies every hard dependency edge found in the SQL (§2), and it was **dry-run end-to-end on a local PG17 shadow** built from `supabase/prod-actual/schema.sql` (local only — §8).
 - **SA-4 vs V3-43 (question b):** the two are **DDL-independent**. They share no object, and both orders applied cleanly in the shadow. The retarget is a *runtime* coupling: the operator tick uses V3-43's `workflow_locks` / `internal_ai_spend_ledger`. Apply SA-4 (#72) then V3-43 (#76), both before `FOUNDER_ACTIONS_TRANCHE≥3`. The real constraints sit *around* them: **F2 → F3 → SA-4**, **V3-37-category → SA-4**, and **SA-3 + `ai_free_spend_ledger` → V3-43** (§2).
-- **Not apply-ready as authored — 14 files:** 12 **BLOCKED** (the rooms family is cyclic; 5 PASS-21 care/jobs files reference columns prod doesn't have) + 2 **DO-NOT-APPLY** (`super_app_core` would replace prod's live `handle_new_user()`; `workspace_staff_platform` is superseded). See §4.
+- **Not apply-ready as authored — 14 files, all now resolved (FIX-01, §4):**
+  - **6 REPAIRED → GATED** and proved clean + re-runnable on the shadow: 5 PASS-21 care/jobs files rebound to prod's real columns (`customer_id` / `email`, `candidate_id`), plus `super_app_core`, which no longer touches `profiles` / `handle_new_user()` / `on_auth_user_created`. Its old body would have failed **every** signup.
+  - **8 RETIRED — DO-NOT-APPLY** and moved to `apps/hub/supabase/migrations-retired/` behind a fail-loud guard: the cyclic `@henryco/rooms` family (7; dead code, zero consumers) and the superseded `workspace_staff_platform`.
 - **10 destructive / order-sensitive migrations** get the before/after row-count dry-run treatment (§5). Worst cases: V3-43's fold-and-drop of `ai_free_spend_ledger` + `studio_agency_tick_lock`, and three CHECK re-states that **silently narrow** if applied out of order (shadow-proven).
 - **Day-of:** run the query in §6.2, also saved as `Downloads\V3-ACTIVATION-RUNBOOK-01-DAY-OF-confirm-applied-state.sql`. It's read-only, matches on **normalized name** (never version), and cross-checks each row with a **calibrated object probe**.
 
@@ -69,7 +72,7 @@ The edges come from three sources:
 | — | V3-40 ⇄ V3-41 ⇄ V3-43 (`workflow_locks`) | **order-free**: byte-compatible `create table if not exists` + seed-on-conflict | V3-40 header "converge in either apply order"; shadow ✓ | — |
 | — | SA-4 ⇄ V3-43 | **order-free at DDL** (no shared object) | shadow: both orders ✓ (T3 reverse, main run forward) | — |
 | — | V3-34 ⇄ V3-39 (`customer_preferences`) | independent columns | graph | — |
-| ✗ | `rooms_sessions` ⇄ `rooms_participants` | **CYCLE**: sessions' SELECT policy sub-selects participants; participants FK → sessions | **shadow + PGlite: `relation "public.rooms_participants" does not exist`** | family cannot apply as authored (§4) |
+| ✗ | `rooms_sessions` ⇄ `rooms_participants` | **CYCLE**: sessions' SELECT policy sub-selects participants; participants FK → sessions | **shadow + PGlite: `relation "public.rooms_participants" does not exist`** | family cannot apply as authored. **FIX-01: RETIRED** (dead code; §4) |
 
 **Why filename-timestamp order is the right global order:** every hard edge above (E1–E13) points from an earlier stamp to a later one (e.g. 0610 < 0723, 0620 < 0719, 0705/0720 < 0724, 0709 < 0714), and the order-free pairs don't care. The four-way stamp collision `20260724120000` (V3-35 / V3-38 / V3-39 / V3-43) is internally independent; alphabetical tie-break is used.
 
@@ -82,15 +85,15 @@ The edges come from three sources:
 **Tier:**
 - **NOW** — program activation set.
 - **GATED** — dormant feature family; apply only inside its own launch pass (env/owner gate cited in RECONCILE-01).
-- **BLOCKED** — cannot apply as authored.
-- **DNA** — do not apply.
+- **BLOCKED** — cannot apply as authored. (FIX-01: none remain.)
+- **DNA** — do not apply. **RETIRED** = DNA, and the file has been moved to `apps/hub/supabase/migrations-retired/` behind a fail-loud guard (FIX-01).
 
-`#` is the position in the single global sequence (BLOCKED/DNA are unnumbered). "Local shadow dry-run" = result of applying the file at its position on the prod-actual shadow (§8), then re-applying the whole sequence a second time.
+`#` is the position in the single global sequence (RETIRED/DNA are unnumbered). FIX-01 kept every existing number stable. The 6 repaired files slot in at their filename-timestamp position as **#0** (`super_app_core`) and **#22a, #23a, #23b, #24a, #26a**, so no cross-reference in this runbook or elsewhere shifts. "Local shadow dry-run" = result of applying the file at its position on the prod-actual shadow (§8), then re-applying the whole sequence a second time.
 
 | # | Migration (app) | PR / commit | Creates | Must follow (hard edges) | Tier | Status | Last git-recorded state | Local shadow dry-run | Destructive |
 |---|---|---|---|---|---|---|---|---|---|
-| — | `20260402235500_workspace_staff_platform.sql` (hub) | — `30f67f9a` | `workspace_division_memberships`, `workspace_helper_signals`, `workspace_internal_notes`, `workspace_module_registry` +6 | baseline only | DNA | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21); RECONCILE-01 verdict: “never adopted — superseded by staff_* / *_role_memberships” | ✓ · re-apply ✓ | — |
-| — | `20260405120000_super_app_core.sql` (super-app) | — `30f67f9a` (edited `09cacb70`) | `contact_submissions`, `divisions`, `profiles` | baseline only | DNA | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ policy "profiles_update_self" for table "profiles" already exists | ⚠ **REPLACES live `public.handle_new_user()`** (prod body sets role/phone/is_active — `schema.sql:901`) + re-creates `on_auth_user_created`; policy clash on `profiles` |
+| — | `20260402235500_workspace_staff_platform.sql` (hub → `migrations-retired/`) | — `30f67f9a` | `workspace_division_memberships`, `workspace_helper_signals`, `workspace_internal_notes`, `workspace_module_registry` +6 | baseline only | **RETIRED** (DNA) | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21); RECONCILE-01 verdict: “never adopted — superseded by staff_* / *_role_memberships” | FIX-01: guard aborts by design (as authored it applied ✓ — retired for product reasons, §4) | — |
+| 0 | `20260405120000_super_app_core.sql` (super-app) | — `30f67f9a` (edited `09cacb70`; **repaired FIX-01**) | `contact_submissions`, `divisions` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ (FIX-01; as authored: ✗ policy "profiles_update_self" already exists) | FIX-01: no longer touches `profiles`, `handle_new_user()` or `on_auth_user_created` — signup fields shadow-proven identical to prod-live (§4) |
 | 1 | `20260514120000_logistics_quotes.sql` (logistics) | — `30f67f9a` | `logistics_quotes` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 2 | `20260514120500_logistics_shipment_legs.sql` (logistics) | — `30f67f9a` | `logistics_shipment_legs` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 3 | `20260514121000_logistics_pod.sql` (logistics) | — `30f67f9a` | `logistics_pod_records` | 20260514120500…logistics_shipment_legs.s (logistics_shipment_legs) | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
@@ -108,27 +111,27 @@ The edges come from three sources:
 | 15 | `20260515000000_learn_v3_pass21_player.sql` (learn) | — `30f67f9a` | `learn_assignment_grades`, `learn_assignment_submissions`, `learn_badge_awards`, `learn_badges` +11 | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 16 | `20260515001000_learn_v3_pass21_policies.sql` (learn) | — `30f67f9a` | (alters/grants only) | 20260515000000…learn_v3_pass21_player.sq (learn_assignment_grades, learn_assignment_submissions) | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 17 | `20260515002000_learn_v3_pass21_realtime.sql` (learn) | — `30f67f9a` | (alters/grants only) | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
-| — | `20260515100000_rooms_sessions.sql` (hub) | — `30f67f9a` | `rooms_sessions` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ relation "public.rooms_participants" does not exist | — |
-| — | `20260515100100_rooms_participants.sql` (hub) | — `30f67f9a` | `rooms_participants` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ relation "public.rooms_sessions" does not exist | — |
-| — | `20260515100200_rooms_recordings_consent.sql` (hub) | — `30f67f9a` | `rooms_recordings_consent` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ relation "public.rooms_sessions" does not exist | — |
-| — | `20260515100300_rooms_recordings.sql` (hub) | — `30f67f9a` | `rooms_recordings` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ relation "public.rooms_sessions" does not exist | — |
-| — | `20260515100400_rooms_scorecards.sql` (hub) | — `30f67f9a` | `rooms_scorecards` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ relation "public.rooms_sessions" does not exist | — |
-| — | `20260515100500_rooms_messages.sql` (hub) | — `30f67f9a` | `rooms_messages` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ relation "public.rooms_sessions" does not exist | — |
-| — | `20260515100600_rooms_realtime_publication.sql` (hub) | — `30f67f9a` | (alters/grants only) | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ relation "public.rooms_messages" does not exist | — |
+| — | `20260515100000_rooms_sessions.sql` (hub → `migrations-retired/`) | — `30f67f9a` | `rooms_sessions` | baseline only | **RETIRED** (DNA) | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | RETIRED — moved to `apps/hub/supabase/migrations-retired/`; guard aborts by design (as authored: ✗ relation "public.rooms_participants" does not exist) | — |
+| — | `20260515100100_rooms_participants.sql` (hub → `migrations-retired/`) | — `30f67f9a` | `rooms_participants` | baseline only | **RETIRED** (DNA) | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | RETIRED — moved to `apps/hub/supabase/migrations-retired/`; guard aborts by design (as authored: ✗ relation "public.rooms_sessions" does not exist) | — |
+| — | `20260515100200_rooms_recordings_consent.sql` (hub → `migrations-retired/`) | — `30f67f9a` | `rooms_recordings_consent` | baseline only | **RETIRED** (DNA) | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | RETIRED — moved to `apps/hub/supabase/migrations-retired/`; guard aborts by design (as authored: ✗ relation "public.rooms_sessions" does not exist) | — |
+| — | `20260515100300_rooms_recordings.sql` (hub → `migrations-retired/`) | — `30f67f9a` | `rooms_recordings` | baseline only | **RETIRED** (DNA) | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | RETIRED — moved to `apps/hub/supabase/migrations-retired/`; guard aborts by design (as authored: ✗ relation "public.rooms_sessions" does not exist) | — |
+| — | `20260515100400_rooms_scorecards.sql` (hub → `migrations-retired/`) | — `30f67f9a` | `rooms_scorecards` | baseline only | **RETIRED** (DNA) | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | RETIRED — moved to `apps/hub/supabase/migrations-retired/`; guard aborts by design (as authored: ✗ relation "public.rooms_sessions" does not exist) | — |
+| — | `20260515100500_rooms_messages.sql` (hub → `migrations-retired/`) | — `30f67f9a` | `rooms_messages` | baseline only | **RETIRED** (DNA) | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | RETIRED — moved to `apps/hub/supabase/migrations-retired/`; guard aborts by design (as authored: ✗ relation "public.rooms_sessions" does not exist) | — |
+| — | `20260515100600_rooms_realtime_publication.sql` (hub → `migrations-retired/`) | — `30f67f9a` | (alters/grants only) | baseline only | **RETIRED** (DNA) | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | RETIRED — moved to `apps/hub/supabase/migrations-retired/`; guard aborts by design (as authored: ✗ relation "public.rooms_messages" does not exist) | — |
 | 18 | `20260515120000_care_garment_types.sql` (care) | — `30f67f9a` | `care_garment_types` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 19 | `20260515120000_property_amenities_catalog.sql` (property) | — `30f67f9a` | `property_amenity_catalog`, `property_listing_amenities` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 20 | `20260515120500_care_user_preferences.sql` (care) | — `30f67f9a` | `care_user_preferences` | 20260515120000…care_garment_types.sql (care_garment_types) | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 21 | `20260515120500_property_floorplans.sql` (property) | — `30f67f9a` | `property_floorplans` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 22 | `20260515121000_care_recurring_schedules.sql` (care) | — `30f67f9a` | `care_recurring_schedules` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
-| — | `20260515121000_jobs_interview_rooms.sql` (jobs) | — `30f67f9a` | `jobs_interview_room_events`, `jobs_interview_rooms` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ column app.candidate_user_id does not exist | — |
+| 22a | `20260515121000_jobs_interview_rooms.sql` (jobs) | — `30f67f9a` (**repaired FIX-01**) | `jobs_interview_room_events`, `jobs_interview_rooms` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ (FIX-01; as authored: ✗ column app.candidate_user_id does not exist) | — |
 | 23 | `20260515121000_property_virtual_tours.sql` (property) | — `30f67f9a` | `property_virtual_tours` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
-| — | `20260515121500_care_claims.sql` (care) | — `30f67f9a` | `care_claims` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ column b.user_id does not exist | — |
-| — | `20260515121500_jobs_offer_letters.sql` (jobs) | — `30f67f9a` | `jobs_offer_letter_events`, `jobs_offer_letters` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ column app.candidate_user_id does not exist | — |
+| 23a | `20260515121500_care_claims.sql` (care) | — `30f67f9a` (**repaired FIX-01**) | `care_claims` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ (FIX-01; as authored: ✗ column b.user_id does not exist) | — |
+| 23b | `20260515121500_jobs_offer_letters.sql` (jobs) | — `30f67f9a` (**repaired FIX-01**) | `jobs_offer_letter_events`, `jobs_offer_letters` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ (FIX-01; as authored: ✗ column app.candidate_user_id does not exist) | — |
 | 24 | `20260515121500_property_neighborhood_signals.sql` (property) | — `30f67f9a` | `property_neighborhood_signals` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
-| — | `20260515122000_care_pod_records.sql` (care) | — `30f67f9a` | `care_pod_records` | baseline only | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ column b.user_id does not exist | — |
+| 24a | `20260515122000_care_pod_records.sql` (care) | — `30f67f9a` (**repaired FIX-01**) | `care_pod_records` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ (FIX-01; as authored: ✗ column b.user_id does not exist) | — |
 | 25 | `20260515122000_jobs_salary_benchmarks.sql` (jobs) | — `30f67f9a` | `jobs_salary_benchmarks` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 26 | `20260515122000_property_saved_searches.sql` (property) | — `30f67f9a` | `property_saved_searches` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
-| — | `20260515122500_care_booking_garments.sql` (care) | — `30f67f9a` | `care_booking_garments` | 20260515120000…care_garment_types.sql (care_garment_types); 20260515121500…care_claims.sql (care_claims) | BLOCKED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✗ relation "public.care_claims" does not exist | — |
+| 26a | `20260515122500_care_booking_garments.sql` (care) | — `30f67f9a` (**repaired FIX-01**) | `care_booking_garments` | 20260515120000…care_garment_types.sql (care_garment_types); 20260515121500…care_claims.sql (care_claims) | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ (FIX-01; as authored: ✗ relation "public.care_claims" does not exist) | — |
 | 27 | `20260515122500_jobs_pipeline_extras.sql` (jobs) | — `30f67f9a` | `jobs_application_notes`, `jobs_pipeline_stages` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 28 | `20260515122500_property_inspection_rules.sql` (property) | — `30f67f9a` | `property_inspection_rule_evaluations`, `property_inspection_rules` | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
 | 29 | `20260515123000_care_realtime_publication.sql` (care) | — `30f67f9a` | (alters/grants only) | baseline only | GATED | NEEDS-PROD-CONFIRMATION | last recorded UNAPPLIED — RECONCILE-01 DORMANT (`9851ecdb`, 2026-06-21) | ✓ · re-apply ✓ | — |
@@ -232,6 +235,7 @@ The edges come from three sources:
 
 ### 3.2 · GATED — dormant families (apply only with their launch pass, still in this relative order)
 
+0. `20260405120000_super_app_core.sql` — Expo super-app core (`divisions`, `contact_submissions`) — **repaired FIX-01**; apply only with the super-app launch
 1. `20260514120000_logistics_quotes.sql` — PASS-21 logistics depth
 2. `20260514120500_logistics_shipment_legs.sql` — PASS-21 logistics depth
 3. `20260514121000_logistics_pod.sql` — PASS-21 logistics depth
@@ -254,10 +258,15 @@ The edges come from three sources:
 20. `20260515120500_care_user_preferences.sql` — PASS-21 care depth
 21. `20260515120500_property_floorplans.sql` — PASS-21 property depth
 22. `20260515121000_care_recurring_schedules.sql` — PASS-21 care depth
+22a. `20260515121000_jobs_interview_rooms.sql` — PASS-21 jobs depth (Daily.co interview rooms) — **repaired FIX-01**
 23. `20260515121000_property_virtual_tours.sql` — PASS-21 property depth
+23a. `20260515121500_care_claims.sql` — PASS-21 care depth — **repaired FIX-01**
+23b. `20260515121500_jobs_offer_letters.sql` — PASS-21 jobs depth (SignWell offer letters) — **repaired FIX-01**
 24. `20260515121500_property_neighborhood_signals.sql` — PASS-21 property depth
+24a. `20260515122000_care_pod_records.sql` — PASS-21 care depth — **repaired FIX-01**
 25. `20260515122000_jobs_salary_benchmarks.sql` — PASS-21 jobs depth
 26. `20260515122000_property_saved_searches.sql` — PASS-21 property depth
+26a. `20260515122500_care_booking_garments.sql` — PASS-21 care depth (needs 18 + 23a) — **repaired FIX-01**
 27. `20260515122500_jobs_pipeline_extras.sql` — PASS-21 jobs depth
 28. `20260515122500_property_inspection_rules.sql` — PASS-21 property depth
 29. `20260515123000_care_realtime_publication.sql` — PASS-21 care depth (realtime; re-run after family)
@@ -274,20 +283,28 @@ The edges come from three sources:
 
 ---
 
-## 4 · BLOCKED and DO-NOT-APPLY — 14 files that are not apply-ready as authored
+## 4 · The 14 files that were not apply-ready as authored: outcome (V3-ACTIVATION-RUNBOOK-FIX-01)
 
-These need a **migration fix pass**, which is out of scope here because migration files must not be edited. They're listed so nobody tries a blind apply.
+As compiled, this runbook found **14 files** it couldn't apply: 12 BLOCKED + 2 DO-NOT-APPLY. **V3-ACTIVATION-RUNBOOK-FIX-01** (2026-09-24, repo-only, local shadow, no prod contact) resolved every one of them. **6 were repaired** and proved clean and re-runnable on the same prod-actual PG17 shadow. **8 were retired** as DO-NOT-APPLY: moved out of `supabase/migrations/` into `apps/hub/supabase/migrations-retired/`, each behind a guard that aborts before any DDL. None is left silently broken.
 
-| File | Verdict | Proof | Fix direction (for a future pass) |
+| File | As compiled | Outcome | Proof (local shadow, §8.1) |
 |---|---|---|---|
-| `hub/20260515100000_rooms_sessions.sql` … `20260515100600_rooms_realtime_publication.sql` (7) | **BLOCKED — cyclic** | local PGlite + PG17: sessions → `relation "public.rooms_participants" does not exist`; participants → `relation "public.rooms_sessions" does not exist`; the other 5 cascade | move the participant-subselect policy on `rooms_sessions` into (or after) `rooms_participants` |
-| `care/20260515121500_care_claims.sql`, `care/20260515122000_care_pod_records.sql` | **BLOCKED — schema drift** | shadow: `column b.user_id does not exist`. Prod `care_bookings` has `customer_id`, not `user_id` (`prod-actual/schema.sql`, `create table public.care_bookings`) | rebind to `customer_id` |
-| `care/20260515122500_care_booking_garments.sql` | **BLOCKED — cascade** | `relation "public.care_claims" does not exist` | after the care_claims fix |
-| `jobs/20260515121000_jobs_interview_rooms.sql`, `jobs/20260515121500_jobs_offer_letters.sql` | **BLOCKED — schema drift** | shadow: `column app.candidate_user_id does not exist`. Prod `jobs_applications` has `candidate_id` (no applied migration adds `candidate_user_id` to it) | rebind to `candidate_id` |
-| `super-app/20260405120000_super_app_core.sql` | **DO-NOT-APPLY** | `create or replace function public.handle_new_user()` would **replace prod's live signup trigger function**. Prod's body inserts `role='customer', phone, is_active` (`schema.sql:901-915`); this one inserts `(id, full_name)` only. It also re-creates `on_auth_user_created` (prod has it, `schema.sql:7345`) and adds an anon `insert … with check (true)` policy. The shadow also hits a policy clash on `profiles`. | the Expo program is deferred; this file must be rewritten against prod before it ever applies |
-| `hub/20260402235500_workspace_staff_platform.sql` | **DO-NOT-APPLY (retire)** | RECONCILE-01: "never adopted — superseded by the staff_* / *_role_memberships model". It applies cleanly in the shadow, but it creates 10 orphan `workspace_*` tables. | owner decision: delete the file, or keep it permanently dormant |
+| `care/20260515121500_care_claims.sql` | BLOCKED — `column b.user_id does not exist` | **REPAIRED → GATED #23a** | Prod `care_bookings` has `customer_id` (FK `auth.users`) and `email`. It does **not** have the `user_id` / `email_normalized` pair the file assumed: `account_integration_hardening` meant to add them, but they never landed on prod (`prod-actual/schema.sql:2258`). Ownership is now `b.customer_id = auth.uid()`, or a **NULL-safe** email match: `nullif(lower(trim(b.email)),'') = nullif(lower(trim(jwt email)),'')`. The originals used `coalesce(…,'')` on both sides, which is *true* when both are empty: a phone-auth user (JWT `email: ""`) would have matched every booking with a blank email. Applies ✓, re-applies ✓. RLS matrix ✓ (owner, email-owner, stranger, phone user, foreign-booking claim insert rejected). |
+| `care/20260515122000_care_pod_records.sql` | BLOCKED — same drift | **REPAIRED → GATED #24a** | same rebind; ✓ · re-apply ✓; RLS matrix ✓ |
+| `care/20260515122500_care_booking_garments.sql` | BLOCKED — "cascade" | **REPAIRED → GATED #26a** | It was more than a cascade: the file carries its own `b.user_id` / `b.email_normalized` policy, so it would have failed even after `care_claims` was fixed. Same rebind; ✓ · re-apply ✓; RLS matrix ✓ |
+| `jobs/20260515121000_jobs_interview_rooms.sql` | BLOCKED — `column app.candidate_user_id does not exist` | **REPAIRED → GATED #22a** | Prod `jobs_applications.candidate_id` (FK `auth.users`; no migration ever adds `candidate_user_id` to it). Policy now reads `app.candidate_id = auth.uid()`; ✓ · re-apply ✓; RLS ✓ (candidate sees only their own application's room) |
+| `jobs/20260515121500_jobs_offer_letters.sql` | BLOCKED — same drift | **REPAIRED → GATED #23b** | same rebind; ✓ · re-apply ✓; RLS ✓ |
+| `super-app/20260405120000_super_app_core.sql` | DO-NOT-APPLY — would replace live `handle_new_user()` | **REPAIRED → GATED #0** (apply only with the super-app launch) | **The risk was worse than first recorded.** Prod `profiles.role` is `NOT NULL` with no default, so the old two-column body (`insert (id, full_name)`) would have made **every signup fail**. Shadow proof: `null value in column "role" of relation "profiles" violates not-null constraint`. The repaired file **no longer touches** `profiles`, its policies, `handle_new_user()` or `on_auth_user_created`; those are platform-owned and already live. The super-app client only uses `divisions` + `contact_submissions` (`apps/super-app/src/platform/adapters/supabase/database.supabase.ts`). Its own policies are now drop-if-exists + create, grants are explicit and least-privilege, the contact insert is bounded (was `with check (true)`), and `create extension pgcrypto` is gone. **Proof of identical signup:** after the full sequence, `handle_new_user()` has the same body md5 (`e8929f7c…`), SECURITY DEFINER, `search_path=public`, and the same two `auth.users` triggers. A simulated signup yields exactly the prod-live row: `role=customer, full_name, phone, is_active=t, wallet_balance_ngn=0, is_frozen=f`. |
+| `hub/20260515100000_rooms_sessions.sql` … `20260515100600_rooms_realtime_publication.sql` (7) | BLOCKED — cyclic | **RETIRED — DO-NOT-APPLY** (not repaired: dead code) | `@henryco/rooms` has **zero consumers** on `main`. No app lists it as a dependency or imports it; the one mention, in `apps/jobs/lib/jobs/hiring-suite.ts:353`, is a comment saying its mechanics are *not* applied, and pillar-gap-map P10 calls it "fully built but unconsumed". Gaming chose Supabase Realtime over it for turn-based play (`docs/v3/gaming/ARCHITECTURE.md` §4). Jobs interviews ship on `jobs_interview_rooms`, which never references `rooms_*`. Repairing the cycle would only activate unused schema. If rooms is revived (the real-time gaming phase or live consults), re-author the family so `rooms_participants` exists before the participant-subselect policy on `rooms_sessions` is attached. |
+| `hub/20260402235500_workspace_staff_platform.sql` | DO-NOT-APPLY (superseded) | **RETIRED — DO-NOT-APPLY** | RECONCILE-01 row 10: "never adopted — superseded by the staff_* / *_role_memberships model"; `20260502120000_staff_notifications_audience.sql` calls its tables "dead schema". None of its 10 `workspace_*` tables exist on prod. **Latent references, unchanged by retiring:** `apps/hub/app/lib/internal-comms-access.ts` + `api/owner/internal-comms/{dm,members}` read `workspace_staff_memberships` / `workspace_division_memberships`, and prod's `hq_ic_can_read_thread()` references them on its non-owner `all_owners` branch. Today those reads error and fail closed, so retiring keeps prod exactly as it is. The fix is a code pass that re-points them at `*_role_memberships`, **not** applying this file. |
 
-The GATED realtime files that sit next to blocked tables (`care_realtime_publication` #29, `jobs_realtime_publication` #30) are table-guarded and harmless. Re-run them after their families are fixed.
+**Retirement mechanism.** The 8 files moved to `apps/hub/supabase/migrations-retired/` (`git mv`, history kept), so no Supabase CLI path (`db push` / `db reset`) ever picks them up. Each file also starts with a guard that aborts before any of its DDL runs, whether it's pasted into the SQL editor, sent through `apply_migration`, or run with `psql -f` (§8.1 proves each path). `scripts/ci/schema-drift-check.mjs` still passes after the move.
+
+The GATED realtime files next to these families (`care_realtime_publication` #29, `jobs_realtime_publication` #30) are table-guarded. In global order they run after #22a–#26a, so on a fresh apply they now publish the repaired tables too.
+
+**Pre-existing prod observations surfaced by this pass (not changed here, out of scope):**
+- Prod's own `care_bookings` policy `"Users can view bookings by email"` (`lower(email) = lower(jwt email)`) matches `'' = ''`. A phone-auth user whose JWT carries `email: ""` can read every booking with an empty-string email (shadow-proven, 1 of 1 fixture rows visible). The repaired PASS-21 policies are immune (`nullif`), but the baseline policy needs its own `nullif` fix pass.
+- Prod `handle_new_customer()` inserts `customer_profiles.email` (NOT NULL) from `auth.users.email`, so an auth user with no email (pure phone signup) aborts signup. Relevant only if phone-only auth is ever enabled.
 
 ---
 
@@ -304,7 +321,7 @@ The GATED realtime files that sit next to blocked tables (`care_realtime_publica
 | # | Migration | What it destroys / rewrites | Before → after check (read-only) |
 |---|---|---|---|
 | 1 | **V3-43** `20260724120000_v3_43_workflow_rail` | **DROP TABLE `ai_free_spend_ledger`** (live free-AI spend history) after folding rows into `internal_ai_spend_ledger('free_ai')`; **DROP TABLE `studio_agency_tick_lock`** after folding into `workflow_locks('studio.agency.tick')`; redefines the live `ai_free_spend_today()` / `ai_free_spend_add(bigint)` as wrappers | before: `select count(*), sum(spent_kobo) from ai_free_spend_ledger; select * from studio_agency_tick_lock; select ai_free_spend_today();` after: `select count(*), sum(spent_kobo) from internal_ai_spend_ledger where budget_key='free_ai'` (**must equal before**); `select ai_free_spend_today()` (**must equal before**); `workflow_locks` has `studio.agency.tick` + `hub.operator.tick`; both old tables `to_regclass` NULL. Shadow T3/T4: exact carry-over, and re-apply doesn't double-count. |
-| 2 | **super_app_core** (DNA) | replaces live `handle_new_user()` + trigger | not to be applied (§4) |
+| 2 | **super_app_core** (GATED #0 — repaired FIX-01) | ~~replaces live `handle_new_user()` + trigger~~. **FIX-01:** the file no longer touches `profiles`, `handle_new_user()` or `on_auth_user_created`. It only creates `divisions` + `contact_submissions` and upserts the 8 division seed rows | after: `select md5(prosrc) from pg_proc where oid='public.handle_new_user()'::regprocedure` is **unchanged** from before (§4 proof); `select count(*) from public.divisions` = 8 |
 | 3 | **SA-4** `founder_operator_spine` | drop + re-add (validated) `customer_notifications_category_check` | before: `select category, count(*) from customer_notifications group by 1` → every value must be in SA-4's 28-value list, or the ADD aborts. after: constraint contains `owner.operator.escalation` and `account.recovery.reminder` |
 | 4 | **V3-37** `recovery_notification_category` | drop + re-add the same CHECK | **must precede SA-4 (E5)**. If §6.2 says SA-4 is already applied and V3-37-category is not, **do NOT apply V3-37-category** — SA-4's list already contains `account.recovery.reminder`, and applying it would silently narrow |
 | 5 | `email_provider_allow_ses` | drop + re-add `customer_notifications_email_provider_known` | if postmark is already applied, **skip it** (its set is a subset) — same rule as #4 |
@@ -363,10 +380,14 @@ How it works:
 -- follow-up #2), and (b) a history row does not prove the CURRENT file content
 -- landed (e.g. SA-4 pre-retarget vs post-retarget).
 -- Source of truth for each row: docs/v3/ACTIVATION-RUNBOOK-2026-09-24.md
+-- Amended by V3-ACTIVATION-RUNBOOK-FIX-01: tier 'RETIRED' = file moved to
+-- apps/hub/supabase/migrations-retired/ (expect CONFIRMED-UNAPPLIED; any other
+-- verdict = stop and investigate by hand); the 6 repaired files are 'GATED'
+-- with seq 0 / 22a / 23a / 23b / 24a / 26a. Probes re-calibrated in the shadow.
 -- =============================================================================
 with cand(ord, seq, tier, file, stem, pr, pre_status, objects_present) as (values
-  (  1, '—', 'DNA', '20260402235500_workspace_staff_platform.sql', 'workspace_staff_platform', '—', 'NPC', to_regclass('public.workspace_tasks') is not null),
-  (  2, '—', 'DNA', '20260405120000_super_app_core.sql', 'super_app_core', '—', 'NPC', to_regclass('public.contact_submissions') is not null),
+  (  1, '—', 'RETIRED', '20260402235500_workspace_staff_platform.sql', 'workspace_staff_platform', '—', 'NPC', to_regclass('public.workspace_tasks') is not null),
+  (  2, '0', 'GATED', '20260405120000_super_app_core.sql', 'super_app_core', '—', 'NPC', to_regclass('public.contact_submissions') is not null),
   (  3, '1', 'GATED', '20260514120000_logistics_quotes.sql', 'logistics_quotes', '—', 'NPC', to_regclass('public.logistics_quotes') is not null),
   (  4, '2', 'GATED', '20260514120500_logistics_shipment_legs.sql', 'logistics_shipment_legs', '—', 'NPC', to_regclass('public.logistics_shipment_legs') is not null),
   (  5, '3', 'GATED', '20260514121000_logistics_pod.sql', 'logistics_pod', '—', 'NPC', to_regclass('public.logistics_pod_records') is not null),
@@ -384,27 +405,27 @@ with cand(ord, seq, tier, file, stem, pr, pre_status, objects_present) as (value
   ( 17, '15', 'GATED', '20260515000000_learn_v3_pass21_player.sql', 'learn_v3_pass21_player', '—', 'NPC', to_regclass('public.learn_lesson_playback') is not null),
   ( 18, '16', 'GATED', '20260515001000_learn_v3_pass21_policies.sql', 'learn_v3_pass21_policies', '—', 'NPC', exists(select 1 from pg_policies where schemaname='public' and tablename='learn_lesson_playback')),
   ( 19, '17', 'GATED', '20260515002000_learn_v3_pass21_realtime.sql', 'learn_v3_pass21_realtime', '—', 'NPC', exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='learn_lesson_playback')),
-  ( 20, '—', 'BLOCKED', '20260515100000_rooms_sessions.sql', 'rooms_sessions', '—', 'NPC', to_regclass('public.rooms_sessions') is not null),
-  ( 21, '—', 'BLOCKED', '20260515100100_rooms_participants.sql', 'rooms_participants', '—', 'NPC', to_regclass('public.rooms_participants') is not null),
-  ( 22, '—', 'BLOCKED', '20260515100200_rooms_recordings_consent.sql', 'rooms_recordings_consent', '—', 'NPC', to_regclass('public.rooms_recordings_consent') is not null),
-  ( 23, '—', 'BLOCKED', '20260515100300_rooms_recordings.sql', 'rooms_recordings', '—', 'NPC', to_regclass('public.rooms_recordings') is not null),
-  ( 24, '—', 'BLOCKED', '20260515100400_rooms_scorecards.sql', 'rooms_scorecards', '—', 'NPC', to_regclass('public.rooms_scorecards') is not null),
-  ( 25, '—', 'BLOCKED', '20260515100500_rooms_messages.sql', 'rooms_messages', '—', 'NPC', to_regclass('public.rooms_messages') is not null),
-  ( 26, '—', 'BLOCKED', '20260515100600_rooms_realtime_publication.sql', 'rooms_realtime_publication', '—', 'NPC', exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='rooms_messages')),
+  ( 20, '—', 'RETIRED', '20260515100000_rooms_sessions.sql', 'rooms_sessions', '—', 'NPC', to_regclass('public.rooms_sessions') is not null),
+  ( 21, '—', 'RETIRED', '20260515100100_rooms_participants.sql', 'rooms_participants', '—', 'NPC', to_regclass('public.rooms_participants') is not null),
+  ( 22, '—', 'RETIRED', '20260515100200_rooms_recordings_consent.sql', 'rooms_recordings_consent', '—', 'NPC', to_regclass('public.rooms_recordings_consent') is not null),
+  ( 23, '—', 'RETIRED', '20260515100300_rooms_recordings.sql', 'rooms_recordings', '—', 'NPC', to_regclass('public.rooms_recordings') is not null),
+  ( 24, '—', 'RETIRED', '20260515100400_rooms_scorecards.sql', 'rooms_scorecards', '—', 'NPC', to_regclass('public.rooms_scorecards') is not null),
+  ( 25, '—', 'RETIRED', '20260515100500_rooms_messages.sql', 'rooms_messages', '—', 'NPC', to_regclass('public.rooms_messages') is not null),
+  ( 26, '—', 'RETIRED', '20260515100600_rooms_realtime_publication.sql', 'rooms_realtime_publication', '—', 'NPC', exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='rooms_messages')),
   ( 27, '18', 'GATED', '20260515120000_care_garment_types.sql', 'care_garment_types', '—', 'NPC', to_regclass('public.care_garment_types') is not null),
   ( 28, '19', 'GATED', '20260515120000_property_amenities_catalog.sql', 'property_amenities_catalog', '—', 'NPC', to_regclass('public.property_amenity_catalog') is not null),
   ( 29, '20', 'GATED', '20260515120500_care_user_preferences.sql', 'care_user_preferences', '—', 'NPC', to_regclass('public.care_user_preferences') is not null),
   ( 30, '21', 'GATED', '20260515120500_property_floorplans.sql', 'property_floorplans', '—', 'NPC', to_regclass('public.property_floorplans') is not null),
   ( 31, '22', 'GATED', '20260515121000_care_recurring_schedules.sql', 'care_recurring_schedules', '—', 'NPC', to_regclass('public.care_recurring_schedules') is not null),
-  ( 32, '—', 'BLOCKED', '20260515121000_jobs_interview_rooms.sql', 'jobs_interview_rooms', '—', 'NPC', to_regclass('public.jobs_interview_rooms') is not null),
+  ( 32, '22a', 'GATED', '20260515121000_jobs_interview_rooms.sql', 'jobs_interview_rooms', '—', 'NPC', to_regclass('public.jobs_interview_rooms') is not null),
   ( 33, '23', 'GATED', '20260515121000_property_virtual_tours.sql', 'property_virtual_tours', '—', 'NPC', to_regclass('public.property_virtual_tours') is not null),
-  ( 34, '—', 'BLOCKED', '20260515121500_care_claims.sql', 'care_claims', '—', 'NPC', to_regclass('public.care_claims') is not null),
-  ( 35, '—', 'BLOCKED', '20260515121500_jobs_offer_letters.sql', 'jobs_offer_letters', '—', 'NPC', to_regclass('public.jobs_offer_letters') is not null),
+  ( 34, '23a', 'GATED', '20260515121500_care_claims.sql', 'care_claims', '—', 'NPC', to_regclass('public.care_claims') is not null),
+  ( 35, '23b', 'GATED', '20260515121500_jobs_offer_letters.sql', 'jobs_offer_letters', '—', 'NPC', to_regclass('public.jobs_offer_letters') is not null),
   ( 36, '24', 'GATED', '20260515121500_property_neighborhood_signals.sql', 'property_neighborhood_signals', '—', 'NPC', to_regclass('public.property_neighborhood_signals') is not null),
-  ( 37, '—', 'BLOCKED', '20260515122000_care_pod_records.sql', 'care_pod_records', '—', 'NPC', to_regclass('public.care_pod_records') is not null),
+  ( 37, '24a', 'GATED', '20260515122000_care_pod_records.sql', 'care_pod_records', '—', 'NPC', to_regclass('public.care_pod_records') is not null),
   ( 38, '25', 'GATED', '20260515122000_jobs_salary_benchmarks.sql', 'jobs_salary_benchmarks', '—', 'NPC', to_regclass('public.jobs_salary_benchmarks') is not null),
   ( 39, '26', 'GATED', '20260515122000_property_saved_searches.sql', 'property_saved_searches', '—', 'NPC', to_regclass('public.property_saved_searches') is not null),
-  ( 40, '—', 'BLOCKED', '20260515122500_care_booking_garments.sql', 'care_booking_garments', '—', 'NPC', to_regclass('public.care_booking_garments') is not null),
+  ( 40, '26a', 'GATED', '20260515122500_care_booking_garments.sql', 'care_booking_garments', '—', 'NPC', to_regclass('public.care_booking_garments') is not null),
   ( 41, '27', 'GATED', '20260515122500_jobs_pipeline_extras.sql', 'jobs_pipeline_extras', '—', 'NPC', to_regclass('public.jobs_pipeline_stages') is not null),
   ( 42, '28', 'GATED', '20260515122500_property_inspection_rules.sql', 'property_inspection_rules', '—', 'NPC', to_regclass('public.property_inspection_rules') is not null),
   ( 43, '29', 'GATED', '20260515123000_care_realtime_publication.sql', 'care_realtime_publication', '—', 'NPC', exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='care_recurring_schedules')),
@@ -512,6 +533,14 @@ select (select count(*) from public.ai_free_spend_ledger)                  as fr
 select * from public.studio_agency_tick_lock;
 -- G7: F3 present before SA-4 (E4) — expect true
 select to_regclass('public.founder_action_proposals') is not null as f3_present;
+-- G8 (FIX-01): before GATED #0 super_app_core — expect both true. The file uses
+-- `create table if not exists` + revoke/grant, so a pre-existing hand-made table
+-- of the same name would be silently adopted; stop and investigate if either is false.
+select to_regclass('public.divisions') is null           as divisions_absent,
+       to_regclass('public.contact_submissions') is null as contact_submissions_absent;
+-- G9 (FIX-01): RETIRED files must never have landed — expect all false
+select to_regclass('public.rooms_sessions')   is not null as rooms_present,
+       to_regclass('public.workspace_tasks')  is not null as workspace_platform_present;
 ```
 
 (If G6 errors because `ai_free_spend_ledger` doesn't exist, V3-43 has already folded it. Cross-check §6.2 row #76.)
@@ -582,6 +611,8 @@ Then run the Supabase security advisors. Expect only the by-design zero-policy I
 
 ## Appendix A · Every migration file on `main` (200) — nothing silently dropped
 
+**FIX-01 note:** the same 200 files are still on `main`. 192 live under `apps/*/supabase/migrations/`, and the 8 RETIRED ones now live under `apps/hub/supabase/migrations-retired/` (rows 11, 91–97). Row numbers are unchanged.
+
 Baseline classifications come from RECONCILE-01 (`docs/v3/RECONCILE-01-2026-06-21.md`, commit `9851ecdb`): 73 matched by name + 32 APPLIED_EQUIVALENT = the 105 files classified applied, plus the 2 re-landed SEC-HARDEN-04 files (verified live) = **107 baseline**. The 161 files RECONCILE-01 classified = exactly the migration set at `9851ecdb^` (checked with `git ls-tree`).
 
 | # | File (app) | Classification | Evidence |
@@ -596,12 +627,12 @@ Baseline classifications come from RECONCILE-01 (`docs/v3/RECONCILE-01-2026-06-2
 | 8 | `20260402223000_studio_extensions.sql` (studio) | BASELINE — applied-equivalent | RECONCILE-01 §#4 APPLIED_EQUIVALENT (`9851ecdb`) |
 | 9 | `20260402233000_learn_init.sql` (learn) | BASELINE — applied (history row matched by name) | RECONCILE-01 matched set (73) (`9851ecdb`) |
 | 10 | `20260402233500_learn_policies.sql` (learn) | BASELINE — applied (history row matched by name) | RECONCILE-01 matched set (73) (`9851ecdb`) |
-| 11 | `20260402235500_workspace_staff_platform.sql` (hub) | CANDIDATE #— (DNA) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 11 | `20260402235500_workspace_staff_platform.sql` (hub → `migrations-retired/`) | CANDIDATE #— (**RETIRED**, FIX-01) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 12 | `20260403120000_learn_teacher_applications.sql` (learn) | BASELINE — applied (history row matched by name) | RECONCILE-01 matched set (73) (`9851ecdb`) |
 | 13 | `20260403183000_account_integration_hardening.sql` (hub) | BASELINE — applied-equivalent | RECONCILE-01 §#4 APPLIED_EQUIVALENT (`9851ecdb`) |
 | 14 | `20260405120000_hq_internal_communications.sql` (hub) | BASELINE — applied (history row matched by name) | RECONCILE-01 matched set (73) (`9851ecdb`) |
 | 15 | `20260405120000_studio_brief_domain_intent.sql` (studio) | BASELINE — applied-equivalent | RECONCILE-01 §#4 APPLIED_EQUIVALENT (`9851ecdb`) |
-| 16 | `20260405120000_super_app_core.sql` (super-app) | CANDIDATE #— (DNA) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 16 | `20260405120000_super_app_core.sql` (super-app) | CANDIDATE #0 (GATED — **repaired FIX-01**) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 17 | `20260405123000_hq_internal_comm_members.sql` (hub) | BASELINE — applied (history row matched by name) | RECONCILE-01 matched set (73) (`9851ecdb`) |
 | 18 | `20260405150000_logistics_customer_surface.sql` (hub) | BASELINE — applied-equivalent | RECONCILE-01 §#4 APPLIED_EQUIVALENT (`9851ecdb`) |
 | 19 | `20260406140000_wallet_withdrawals.sql` (hub) | BASELINE — applied-equivalent | RECONCILE-01 §#4 APPLIED_EQUIVALENT (`9851ecdb`) |
@@ -676,13 +707,13 @@ Baseline classifications come from RECONCILE-01 (`docs/v3/RECONCILE-01-2026-06-2
 | 88 | `20260515001000_learn_v3_pass21_policies.sql` (learn) | CANDIDATE #16 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 89 | `20260515002000_learn_v3_pass21_realtime.sql` (learn) | CANDIDATE #17 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 90 | `20260515060000_auth_rls_initplan_storage_policies.sql` (hub) | BASELINE — applied (history row matched by name) | RECONCILE-01 matched set (73) (`9851ecdb`) |
-| 91 | `20260515100000_rooms_sessions.sql` (hub) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 92 | `20260515100100_rooms_participants.sql` (hub) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 93 | `20260515100200_rooms_recordings_consent.sql` (hub) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 94 | `20260515100300_rooms_recordings.sql` (hub) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 95 | `20260515100400_rooms_scorecards.sql` (hub) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 96 | `20260515100500_rooms_messages.sql` (hub) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 97 | `20260515100600_rooms_realtime_publication.sql` (hub) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 91 | `20260515100000_rooms_sessions.sql` (hub → `migrations-retired/`) | CANDIDATE #— (**RETIRED**, FIX-01) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 92 | `20260515100100_rooms_participants.sql` (hub → `migrations-retired/`) | CANDIDATE #— (**RETIRED**, FIX-01) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 93 | `20260515100200_rooms_recordings_consent.sql` (hub → `migrations-retired/`) | CANDIDATE #— (**RETIRED**, FIX-01) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 94 | `20260515100300_rooms_recordings.sql` (hub → `migrations-retired/`) | CANDIDATE #— (**RETIRED**, FIX-01) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 95 | `20260515100400_rooms_scorecards.sql` (hub → `migrations-retired/`) | CANDIDATE #— (**RETIRED**, FIX-01) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 96 | `20260515100500_rooms_messages.sql` (hub → `migrations-retired/`) | CANDIDATE #— (**RETIRED**, FIX-01) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 97 | `20260515100600_rooms_realtime_publication.sql` (hub → `migrations-retired/`) | CANDIDATE #— (**RETIRED**, FIX-01) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 98 | `20260515120000_care_garment_types.sql` (care) | CANDIDATE #18 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 99 | `20260515120000_jobs_taxonomy.sql` (jobs) | BASELINE — applied (history row matched by name) | RECONCILE-01 matched set (73) (`9851ecdb`) |
 | 100 | `20260515120000_property_amenities_catalog.sql` (property) | CANDIDATE #19 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
@@ -690,15 +721,15 @@ Baseline classifications come from RECONCILE-01 (`docs/v3/RECONCILE-01-2026-06-2
 | 102 | `20260515120500_jobs_skill_verifications.sql` (jobs) | BASELINE — applied (history row matched by name) | RECONCILE-01 matched set (73) (`9851ecdb`) |
 | 103 | `20260515120500_property_floorplans.sql` (property) | CANDIDATE #21 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 104 | `20260515121000_care_recurring_schedules.sql` (care) | CANDIDATE #22 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 105 | `20260515121000_jobs_interview_rooms.sql` (jobs) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 105 | `20260515121000_jobs_interview_rooms.sql` (jobs) | CANDIDATE #22a (GATED — **repaired FIX-01**) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 106 | `20260515121000_property_virtual_tours.sql` (property) | CANDIDATE #23 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 107 | `20260515121500_care_claims.sql` (care) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 108 | `20260515121500_jobs_offer_letters.sql` (jobs) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 107 | `20260515121500_care_claims.sql` (care) | CANDIDATE #23a (GATED — **repaired FIX-01**) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 108 | `20260515121500_jobs_offer_letters.sql` (jobs) | CANDIDATE #23b (GATED — **repaired FIX-01**) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 109 | `20260515121500_property_neighborhood_signals.sql` (property) | CANDIDATE #24 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 110 | `20260515122000_care_pod_records.sql` (care) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 110 | `20260515122000_care_pod_records.sql` (care) | CANDIDATE #24a (GATED — **repaired FIX-01**) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 111 | `20260515122000_jobs_salary_benchmarks.sql` (jobs) | CANDIDATE #25 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 112 | `20260515122000_property_saved_searches.sql` (property) | CANDIDATE #26 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
-| 113 | `20260515122500_care_booking_garments.sql` (care) | CANDIDATE #— (BLOCKED) — NEEDS-PROD-CONFIRMATION | catalogued above |
+| 113 | `20260515122500_care_booking_garments.sql` (care) | CANDIDATE #26a (GATED — **repaired FIX-01**) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 114 | `20260515122500_jobs_pipeline_extras.sql` (jobs) | CANDIDATE #27 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 115 | `20260515122500_property_inspection_rules.sql` (property) | CANDIDATE #28 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |
 | 116 | `20260515123000_care_realtime_publication.sql` (care) | CANDIDATE #29 (GATED) — NEEDS-PROD-CONFIRMATION | catalogued above |

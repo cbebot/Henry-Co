@@ -13,11 +13,13 @@
 --     rooms_participants, which FKs back to rooms_sessions (a cycle), so the
 --     first file fails and the other six cascade (runbook §2 ✗, §4).
 -- Moved out of supabase/migrations/ so no CLI path picks it up. The guard
--- below makes a paste into the SQL editor fail before any DDL runs.
+-- below (psql meta-command + DO-block raise) aborts before any DDL runs via
+-- psql -f (with or without ON_ERROR_STOP), the SQL editor or apply_migration.
 -- If rooms is ever revived (real-time gaming phase / live consults), re-author
 -- the family: create rooms_participants' dependency-free shape first, then
 -- attach the participant-subselect policy on rooms_sessions after it exists.
 -- ============================================================================
+\set ON_ERROR_STOP on
 do $retired$
 begin
   raise exception 'RETIRED MIGRATION — DO NOT APPLY: %  (docs/v3/ACTIVATION-RUNBOOK-2026-09-24.md §4)', '20260515100200_rooms_recordings_consent.sql';
