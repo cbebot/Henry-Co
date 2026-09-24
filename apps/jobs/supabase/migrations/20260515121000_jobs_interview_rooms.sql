@@ -37,6 +37,8 @@
 --   the candidate. The table is service-role-only, which is how every shipped
 --   reader/writer already accesses it. A candidate-facing read, if wanted, must
 --   come through a column-limited view or RPC in its launch pass.
+--   Request roles hold no table grants here (SEC-HARDEN-03 convention) and
+--   the policies are scoped `to service_role`.
 --
 -- IDEMPOTENT: yes.
 
@@ -74,6 +76,7 @@ create index if not exists jobs_interview_rooms_status_idx
   on public.jobs_interview_rooms (status);
 
 alter table public.jobs_interview_rooms enable row level security;
+revoke all on table public.jobs_interview_rooms from anon, authenticated;
 
 drop policy if exists "jobs interview rooms: candidate read" on public.jobs_interview_rooms;
 
@@ -81,6 +84,7 @@ drop policy if exists "jobs interview rooms: service role" on public.jobs_interv
 create policy "jobs interview rooms: service role"
   on public.jobs_interview_rooms
   for all
+  to service_role
   using ((select auth.role()) = 'service_role')
   with check ((select auth.role()) = 'service_role');
 
@@ -98,11 +102,13 @@ create index if not exists jobs_interview_room_events_type_idx
   on public.jobs_interview_room_events (event_type);
 
 alter table public.jobs_interview_room_events enable row level security;
+revoke all on table public.jobs_interview_room_events from anon, authenticated;
 
 drop policy if exists "jobs interview room events: service role" on public.jobs_interview_room_events;
 create policy "jobs interview room events: service role"
   on public.jobs_interview_room_events
   for all
+  to service_role
   using ((select auth.role()) = 'service_role')
   with check ((select auth.role()) = 'service_role');
 

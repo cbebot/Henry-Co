@@ -33,6 +33,8 @@
 --   the candidate. The table is service-role-only, which is how every shipped
 --   reader/writer already accesses it. A candidate-facing read, if wanted, must
 --   come through a column-limited view or RPC in its launch pass.
+--   Request roles hold no table grants here (SEC-HARDEN-03 convention) and
+--   the policies are scoped `to service_role`.
 --
 -- IDEMPOTENT: yes.
 
@@ -73,6 +75,7 @@ create index if not exists jobs_offer_letters_provider_envelope_idx
   where provider_envelope_id is not null;
 
 alter table public.jobs_offer_letters enable row level security;
+revoke all on table public.jobs_offer_letters from anon, authenticated;
 
 drop policy if exists "jobs offer letters: candidate read" on public.jobs_offer_letters;
 
@@ -80,6 +83,7 @@ drop policy if exists "jobs offer letters: service role" on public.jobs_offer_le
 create policy "jobs offer letters: service role"
   on public.jobs_offer_letters
   for all
+  to service_role
   using ((select auth.role()) = 'service_role')
   with check ((select auth.role()) = 'service_role');
 
@@ -96,11 +100,13 @@ create index if not exists jobs_offer_letter_events_offer_idx
   on public.jobs_offer_letter_events (offer_letter_id, occurred_at desc);
 
 alter table public.jobs_offer_letter_events enable row level security;
+revoke all on table public.jobs_offer_letter_events from anon, authenticated;
 
 drop policy if exists "jobs offer letter events: service role" on public.jobs_offer_letter_events;
 create policy "jobs offer letter events: service role"
   on public.jobs_offer_letter_events
   for all
+  to service_role
   using ((select auth.role()) = 'service_role')
   with check ((select auth.role()) = 'service_role');
 
