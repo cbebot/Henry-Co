@@ -26,6 +26,9 @@
 --   b.customer_id = auth.uid(), or a NULL-safe email match: nullif(...,'') on
 --   both sides so an empty/absent JWT email (phone-auth users) can never match
 --   a booking whose email is empty/NULL.
+--   Customer INSERT is also pinned to status='submitted' with no owner /
+--   resolution fields, so a direct PostgREST call cannot file a pre-approved
+--   claim (the route already sends 'submitted').
 --
 -- IDEMPOTENT: yes.
 
@@ -78,6 +81,11 @@ create policy "care claims: customer insert own"
   for insert
   with check (
     opened_by_user_id = (select auth.uid())
+    -- FIX-01: a customer files a claim; only staff triage it.
+    and status = 'submitted'
+    and owner_user_id is null
+    and resolution_note is null
+    and resolved_at is null
     and (
       booking_id is null
       or exists (

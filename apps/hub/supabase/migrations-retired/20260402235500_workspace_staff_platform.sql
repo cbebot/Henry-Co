@@ -23,6 +23,9 @@ begin
 end
 $retired$;
 
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 create extension if not exists pgcrypto;
 
 create or replace function public.workspace_set_updated_at()
@@ -296,3 +299,5 @@ drop trigger if exists workspace_helper_signals_updated_at on public.workspace_h
 create trigger workspace_helper_signals_updated_at
 before update on public.workspace_helper_signals
 for each row execute function public.workspace_set_updated_at();
+
+===== end RETIRED BODY ===== */

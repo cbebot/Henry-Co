@@ -20,12 +20,8 @@
 --     without a schema change.
 --
 -- RLS:
---   - Candidate: select rows belonging to their applications.
---   - Employer member: select rows for pipelines under their employer
---     membership (admin client filters; RLS uses simple ownership check
---     via the linked application's candidate_id; broader staff reads
---     route through service-role).
---   - Service role: full.
+--   - Service role only (FIX-01). Candidate / employer access goes through the
+--     app's service-role routes, which gate it; see the FIX-01 note below.
 --
 -- DOWN:
 --   drop table if exists public.jobs_interview_room_events;
@@ -34,7 +30,13 @@
 -- V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24) — rebound to prod-actual columns:
 --   public.jobs_applications has candidate_id (FK auth.users), NOT
 --   candidate_user_id (never added on prod — supabase/prod-actual/schema.sql).
---   The candidate-read policy now checks app.candidate_id = auth.uid().
+--   The original candidate-read policy is REMOVED: on prod, jobs_applications
+--   has RLS on and no SELECT policy for request roles, so its EXISTS sub-select
+--   could never match (dead policy); and if it ever did, it would expose
+--   employer-only columns (employer_notes, employer_token / candidate tokens) to
+--   the candidate. The table is service-role-only, which is how every shipped
+--   reader/writer already accesses it. A candidate-facing read, if wanted, must
+--   come through a column-limited view or RPC in its launch pass.
 --
 -- IDEMPOTENT: yes.
 
@@ -74,24 +76,13 @@ create index if not exists jobs_interview_rooms_status_idx
 alter table public.jobs_interview_rooms enable row level security;
 
 drop policy if exists "jobs interview rooms: candidate read" on public.jobs_interview_rooms;
-create policy "jobs interview rooms: candidate read"
-  on public.jobs_interview_rooms
-  for select
-  using (
-    exists (
-      select 1
-      from public.jobs_applications app
-      where app.id = jobs_interview_rooms.application_id
-        and app.candidate_id = auth.uid()
-    )
-  );
 
 drop policy if exists "jobs interview rooms: service role" on public.jobs_interview_rooms;
 create policy "jobs interview rooms: service role"
   on public.jobs_interview_rooms
   for all
-  using (auth.role() = 'service_role')
-  with check (auth.role() = 'service_role');
+  using ((select auth.role()) = 'service_role')
+  with check ((select auth.role()) = 'service_role');
 
 create table if not exists public.jobs_interview_room_events (
   id uuid primary key default gen_random_uuid(),
@@ -112,8 +103,8 @@ drop policy if exists "jobs interview room events: service role" on public.jobs_
 create policy "jobs interview room events: service role"
   on public.jobs_interview_room_events
   for all
-  using (auth.role() = 'service_role')
-  with check (auth.role() = 'service_role');
+  using ((select auth.role()) = 'service_role')
+  with check ((select auth.role()) = 'service_role');
 
 comment on table public.jobs_interview_rooms is
   'V3 PASS 21 — Daily.co interview rooms (Distinctive Rule #2). One room '

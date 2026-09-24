@@ -26,6 +26,9 @@ begin
 end
 $retired$;
 
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 -- V3 Wave A2 — Rooms infrastructure: rooms_sessions.
 --
 -- The canonical "room exists" row. One per audiovisual + collaborative
@@ -219,3 +222,5 @@ comment on column public.rooms_sessions.metadata is
   'Consumer-defined jsonb. Jobs interviews store '
   '{ jobId, applicationId, scorecardId }; Care consults store { bookingId }; '
   'Studio reviews store { projectId, milestoneId }. No PII keys.';
+
+===== end RETIRED BODY ===== */

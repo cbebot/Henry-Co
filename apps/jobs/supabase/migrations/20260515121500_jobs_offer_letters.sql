@@ -16,10 +16,8 @@
 --   DocuSign) only changes provider + provider_envelope_id.
 --
 -- RLS:
---   - Candidate: select offer letters tied to their application;
---     update signed_at + signature once via service-role-backed RPC
---     (admin client gates the write).
---   - Service role: full.
+--   - Service role only (FIX-01). Candidate / employer access goes through the
+--     app's service-role routes, which gate it; see the FIX-01 note below.
 --
 -- DOWN:
 --   drop table if exists public.jobs_offer_letter_events;
@@ -28,7 +26,13 @@
 -- V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24) — rebound to prod-actual columns:
 --   public.jobs_applications has candidate_id (FK auth.users), NOT
 --   candidate_user_id (never added on prod — supabase/prod-actual/schema.sql).
---   The candidate-read policy now checks app.candidate_id = auth.uid().
+--   The original candidate-read policy is REMOVED: on prod, jobs_applications
+--   has RLS on and no SELECT policy for request roles, so its EXISTS sub-select
+--   could never match (dead policy); and if it ever did, it would expose
+--   employer-only columns (employer_notes, employer_token / candidate tokens) to
+--   the candidate. The table is service-role-only, which is how every shipped
+--   reader/writer already accesses it. A candidate-facing read, if wanted, must
+--   come through a column-limited view or RPC in its launch pass.
 --
 -- IDEMPOTENT: yes.
 
@@ -71,24 +75,13 @@ create index if not exists jobs_offer_letters_provider_envelope_idx
 alter table public.jobs_offer_letters enable row level security;
 
 drop policy if exists "jobs offer letters: candidate read" on public.jobs_offer_letters;
-create policy "jobs offer letters: candidate read"
-  on public.jobs_offer_letters
-  for select
-  using (
-    exists (
-      select 1
-      from public.jobs_applications app
-      where app.id = jobs_offer_letters.application_id
-        and app.candidate_id = auth.uid()
-    )
-  );
 
 drop policy if exists "jobs offer letters: service role" on public.jobs_offer_letters;
 create policy "jobs offer letters: service role"
   on public.jobs_offer_letters
   for all
-  using (auth.role() = 'service_role')
-  with check (auth.role() = 'service_role');
+  using ((select auth.role()) = 'service_role')
+  with check ((select auth.role()) = 'service_role');
 
 create table if not exists public.jobs_offer_letter_events (
   id uuid primary key default gen_random_uuid(),
@@ -108,8 +101,8 @@ drop policy if exists "jobs offer letter events: service role" on public.jobs_of
 create policy "jobs offer letter events: service role"
   on public.jobs_offer_letter_events
   for all
-  using (auth.role() = 'service_role')
-  with check (auth.role() = 'service_role');
+  using ((select auth.role()) = 'service_role')
+  with check ((select auth.role()) = 'service_role');
 
 comment on table public.jobs_offer_letters is
   'V3 PASS 21 — offer letter editor + e-signature (Distinctive Rule #4). '

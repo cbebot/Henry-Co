@@ -81,7 +81,9 @@ begin
 
   -- rooms_messages — subscribed by
   -- packages/rooms/src/realtime/rooms-realtime.tsx (page-scoped chat).
-  if not exists (
+  -- V3-ACTIVATION-RUNBOOK-FIX-01: the rooms family is RETIRED
+  -- (apps/hub/supabase/migrations-retired/); only publish if the table exists.
+  if to_regclass('public.rooms_messages') is not null and not exists (
     select 1
       from pg_publication_tables
      where pubname = 'supabase_realtime'
@@ -93,7 +95,7 @@ begin
 
   -- rooms_participants — subscribed by the rooms provider for
   -- presence + hand-raise.
-  if not exists (
+  if to_regclass('public.rooms_participants') is not null and not exists (
     select 1
       from pg_publication_tables
      where pubname = 'supabase_realtime'

@@ -123,7 +123,7 @@ export function InterviewRoomClient({ sessionId, provider, joinUrl }: Props) {
 
 ## Schema reference
 
-Migrations under `apps/hub/supabase/migrations/`:
+Migrations — **RETIRED (V3-ACTIVATION-RUNBOOK-FIX-01, 2026-09-24)**: moved to `apps/hub/supabase/migrations-retired/` and never applied. The family is cyclic as authored; re-author it before reviving this package (see `docs/v3/ACTIVATION-RUNBOOK-2026-09-24.md` §4). Originally under `apps/hub/supabase/migrations/`:
 
 - `20260515100000_rooms_sessions.sql` — the canonical session row.
 - `20260515100100_rooms_participants.sql` — per-user lifecycle (join/leave/hand-raise).

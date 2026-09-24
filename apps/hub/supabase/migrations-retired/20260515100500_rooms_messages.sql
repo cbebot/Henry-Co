@@ -26,6 +26,9 @@ begin
 end
 $retired$;
 
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 -- V3 Wave A2 — Rooms infrastructure: rooms_messages.
 --
 -- In-room chat stream. One row per message. Markdown body + jsonb
@@ -145,3 +148,5 @@ comment on table public.rooms_messages is
   'participants + owner may SELECT; only the sender may INSERT (and '
   'only on a session they''re on). Updates / deletes blocked from '
   'authenticated paths (audit immutability).';
+
+===== end RETIRED BODY ===== */

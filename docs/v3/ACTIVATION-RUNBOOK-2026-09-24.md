@@ -289,18 +289,27 @@ As compiled, this runbook found **14 files** it couldn't apply: 12 BLOCKED + 2 D
 
 | File | As compiled | Outcome | Proof (local shadow, §8.1) |
 |---|---|---|---|
-| `care/20260515121500_care_claims.sql` | BLOCKED — `column b.user_id does not exist` | **REPAIRED → GATED #23a** | Prod `care_bookings` has `customer_id` (FK `auth.users`) and `email`. It does **not** have the `user_id` / `email_normalized` pair the file assumed: `account_integration_hardening` meant to add them, but they never landed on prod (`prod-actual/schema.sql:2258`). Ownership is now `b.customer_id = auth.uid()`, or a **NULL-safe** email match: `nullif(lower(trim(b.email)),'') = nullif(lower(trim(jwt email)),'')`. The originals used `coalesce(…,'')` on both sides, which is *true* when both are empty: a phone-auth user (JWT `email: ""`) would have matched every booking with a blank email. Applies ✓, re-applies ✓. RLS matrix ✓ (owner, email-owner, stranger, phone user, foreign-booking claim insert rejected). |
+| `care/20260515121500_care_claims.sql` | BLOCKED — `column b.user_id does not exist` | **REPAIRED → GATED #23a** | Prod `care_bookings` has `customer_id` (FK `auth.users`) and `email`. It does **not** have the `user_id` / `email_normalized` pair the file assumed: `account_integration_hardening` meant to add them, but they never landed on prod (`prod-actual/schema.sql:2258`). Ownership is now `b.customer_id = auth.uid()`, or a **NULL-safe** email match: `nullif(lower(trim(b.email)),'') = nullif(lower(trim(jwt email)),'')`. The originals used `coalesce(…,'')` on both sides, which is *true* when both are empty: a phone-auth user (JWT `email: ""`) would have matched every booking with a blank email. Applies ✓, re-applies ✓. Customer INSERT is also pinned to `status='submitted'` with no `owner_user_id` / `resolution_note` / `resolved_at`, so a direct PostgREST call can't file a pre-approved claim (the route already sends `'submitted'`). RLS matrix ✓: owner, email-owner, stranger, phone user; a foreign-booking insert and all 4 pre-triaged insert shapes are rejected. |
 | `care/20260515122000_care_pod_records.sql` | BLOCKED — same drift | **REPAIRED → GATED #24a** | same rebind; ✓ · re-apply ✓; RLS matrix ✓ |
 | `care/20260515122500_care_booking_garments.sql` | BLOCKED — "cascade" | **REPAIRED → GATED #26a** | It was more than a cascade: the file carries its own `b.user_id` / `b.email_normalized` policy, so it would have failed even after `care_claims` was fixed. Same rebind; ✓ · re-apply ✓; RLS matrix ✓ |
-| `jobs/20260515121000_jobs_interview_rooms.sql` | BLOCKED — `column app.candidate_user_id does not exist` | **REPAIRED → GATED #22a** | Prod `jobs_applications.candidate_id` (FK `auth.users`; no migration ever adds `candidate_user_id` to it). Policy now reads `app.candidate_id = auth.uid()`; ✓ · re-apply ✓; RLS ✓ (candidate sees only their own application's room) |
-| `jobs/20260515121500_jobs_offer_letters.sql` | BLOCKED — same drift | **REPAIRED → GATED #23b** | same rebind; ✓ · re-apply ✓; RLS ✓ |
+| `jobs/20260515121000_jobs_interview_rooms.sql` | BLOCKED — `column app.candidate_user_id does not exist` | **REPAIRED → GATED #22a** | Prod `jobs_applications.candidate_id` (FK `auth.users`; no migration ever adds `candidate_user_id` to it). The column rebind alone was not enough. Prod `jobs_applications` has RLS on and **no SELECT policy for request roles**, so a candidate-read policy that sub-selects it can never match (a dead policy). If it ever did match, it would expose employer-only columns (`employer_notes`, `employer_token`). **The candidate-read policy is removed**, and the table is service-role-only. That is how every shipped reader and writer (`apps/jobs/lib/jobs/interview-room.ts`, `offer-letter.ts`: `createAdminSupabase`) already accesses it. `auth.*()` calls are wrapped in `(select …)` (initplan). ✓ · re-apply ✓; RLS ✓ (no request role sees any row; service role full) |
+| `jobs/20260515121500_jobs_offer_letters.sql` | BLOCKED — same drift | **REPAIRED → GATED #23b** | same treatment: candidate-read policy removed (dead on prod + would expose employer fields), so the table is service-role-only; ✓ · re-apply ✓; RLS ✓ |
 | `super-app/20260405120000_super_app_core.sql` | DO-NOT-APPLY — would replace live `handle_new_user()` | **REPAIRED → GATED #0** (apply only with the super-app launch) | **The risk was worse than first recorded.** Prod `profiles.role` is `NOT NULL` with no default, so the old two-column body (`insert (id, full_name)`) would have made **every signup fail**. Shadow proof: `null value in column "role" of relation "profiles" violates not-null constraint`. The repaired file **no longer touches** `profiles`, its policies, `handle_new_user()` or `on_auth_user_created`; those are platform-owned and already live. The super-app client only uses `divisions` + `contact_submissions` (`apps/super-app/src/platform/adapters/supabase/database.supabase.ts`). Its own policies are now drop-if-exists + create, grants are explicit and least-privilege, the contact insert is bounded (was `with check (true)`), and `create extension pgcrypto` is gone. **Proof of identical signup:** after the full sequence, `handle_new_user()` has the same body md5 (`e8929f7c…`), SECURITY DEFINER, `search_path=public`, and the same two `auth.users` triggers. A simulated signup yields exactly the prod-live row: `role=customer, full_name, phone, is_active=t, wallet_balance_ngn=0, is_frozen=f`. |
 | `hub/20260515100000_rooms_sessions.sql` … `20260515100600_rooms_realtime_publication.sql` (7) | BLOCKED — cyclic | **RETIRED — DO-NOT-APPLY** (not repaired: dead code) | `@henryco/rooms` has **zero consumers** on `main`. No app lists it as a dependency or imports it; the one mention, in `apps/jobs/lib/jobs/hiring-suite.ts:353`, is a comment saying its mechanics are *not* applied, and pillar-gap-map P10 calls it "fully built but unconsumed". Gaming chose Supabase Realtime over it for turn-based play (`docs/v3/gaming/ARCHITECTURE.md` §4). Jobs interviews ship on `jobs_interview_rooms`, which never references `rooms_*`. Repairing the cycle would only activate unused schema. If rooms is revived (the real-time gaming phase or live consults), re-author the family so `rooms_participants` exists before the participant-subselect policy on `rooms_sessions` is attached. |
 | `hub/20260402235500_workspace_staff_platform.sql` | DO-NOT-APPLY (superseded) | **RETIRED — DO-NOT-APPLY** | RECONCILE-01 row 10: "never adopted — superseded by the staff_* / *_role_memberships model"; `20260502120000_staff_notifications_audience.sql` calls its tables "dead schema". None of its 10 `workspace_*` tables exist on prod. **Latent references, unchanged by retiring:** `apps/hub/app/lib/internal-comms-access.ts` + `api/owner/internal-comms/{dm,members}` read `workspace_staff_memberships` / `workspace_division_memberships`, and prod's `hq_ic_can_read_thread()` references them on its non-owner `all_owners` branch. Today those reads error and fail closed, so retiring keeps prod exactly as it is. The fix is a code pass that re-points them at `*_role_memberships`, **not** applying this file. |
 
-**Retirement mechanism.** The 8 files moved to `apps/hub/supabase/migrations-retired/` (`git mv`, history kept), so no Supabase CLI path (`db push` / `db reset`) ever picks them up. Each file also starts with a guard that aborts before any of its DDL runs, whether it's pasted into the SQL editor, sent through `apply_migration`, or run with `psql -f` (§8.1 proves each path). `scripts/ci/schema-drift-check.mjs` still passes after the move.
+**Retirement mechanism.** The 8 files moved to `apps/hub/supabase/migrations-retired/` (`git mv`, history kept), so no Supabase CLI path (`db push` / `db reset`) ever picks them up. Each file also starts with a guard (`\set ON_ERROR_STOP on` plus a DO-block `raise exception`), and its original body is wrapped in a block comment, so it's inert history. Nothing runs whether the file is pasted into the SQL editor, sent through `apply_migration`, run with `psql -f` with or without ON_ERROR_STOP, pulled in via `\i`, or fed to a client that strips `\` lines and ignores errors (§8.1). The baseline `20260523190000_realtime_publication_backfill.sql` published `rooms_messages` / `rooms_participants` unconditionally; those two blocks are now `to_regclass`-guarded, so the file replays on a fresh DB. No effect on prod, where it's already applied. `scripts/ci/schema-drift-check.mjs` still passes after the move.
 
 The GATED realtime files next to these families (`care_realtime_publication` #29, `jobs_realtime_publication` #30) are table-guarded. In global order they run after #22a–#26a, so on a fresh apply they now publish the repaired tables too.
+
+**Launch prerequisites for the GATED care/jobs depth families.** The adversarial pass surfaced these. They're authorization-model or app-code decisions, not column repairs, so they're recorded here for the launch pass and weren't guessed at in a migration:
+- **Care rider/manager/support access (#23a, #24a).** `is_staff_in('care')` maps only `owner/admin/superadmin/staff` and `care_*` roles; the `profiles.role` values `rider`, `manager` and `support` are not operators. So `"care pod: rider insert"` never passes for a real rider (`/api/care/pod` inserts with the user session), and managers/support get no claim triage. Pick one rider-identity source before launch: extend `is_staff_in`'s care mapping after reviewing its callers, add a care role-membership table, or insert POD through the service role after an app-side check. Don't trust bare `profiles.role='rider'`: a user with no `profiles` row can self-insert one with any role (`profiles_insert_own`).
+- **Care staff UPDATE is column-unrestricted** (it can rewrite `opened_by_user_id` and amounts, not only the triage columns). Restrict it with column grants or a trigger when triage ships.
+- **App drift in shipped code (not migrations):**
+  - `apps/care/lib/automation/recurring-auto-book.ts:152` inserts `care_bookings.user_id` and omits the NOT NULL `phone_normalized`, so recurring auto-book never books (the error is swallowed as `skippedInvalid`).
+  - `apps/jobs/app/api/jobs/offers/route.ts:82` selects `jobs_applications.candidate_user_id`, so the route always answers 403. It also lacks an employer↔pipeline ownership check, as does `interviews/rooms/[roomId]/notes/route.ts`.
+  - `/api/care/claims` accepts client `evidence_urls`, and `signCareMediaUrl` signs any `media://private/<bucket>/<key>` with the service role (a latent IDOR once `care_claims` is live).
+  - Fix all of these in a code pass **before** activating #23a/#24a/#26a/#22a/#23b.
 
 **Pre-existing prod observations surfaced by this pass (not changed here, out of scope):**
 - Prod's own `care_bookings` policy `"Users can view bookings by email"` (`lower(email) = lower(jwt email)`) matches `'' = ''`. A phone-auth user whose JWT carries `email: ""` can read every booking with an empty-string email (shadow-proven, 1 of 1 fixture rows visible). The repaired PASS-21 policies are immune (`nullif`), but the baseline policy needs its own `nullif` fix pass.
@@ -321,7 +330,7 @@ The GATED realtime files next to these families (`care_realtime_publication` #29
 | # | Migration | What it destroys / rewrites | Before → after check (read-only) |
 |---|---|---|---|
 | 1 | **V3-43** `20260724120000_v3_43_workflow_rail` | **DROP TABLE `ai_free_spend_ledger`** (live free-AI spend history) after folding rows into `internal_ai_spend_ledger('free_ai')`; **DROP TABLE `studio_agency_tick_lock`** after folding into `workflow_locks('studio.agency.tick')`; redefines the live `ai_free_spend_today()` / `ai_free_spend_add(bigint)` as wrappers | before: `select count(*), sum(spent_kobo) from ai_free_spend_ledger; select * from studio_agency_tick_lock; select ai_free_spend_today();` after: `select count(*), sum(spent_kobo) from internal_ai_spend_ledger where budget_key='free_ai'` (**must equal before**); `select ai_free_spend_today()` (**must equal before**); `workflow_locks` has `studio.agency.tick` + `hub.operator.tick`; both old tables `to_regclass` NULL. Shadow T3/T4: exact carry-over, and re-apply doesn't double-count. |
-| 2 | **super_app_core** (GATED #0 — repaired FIX-01) | ~~replaces live `handle_new_user()` + trigger~~. **FIX-01:** the file no longer touches `profiles`, `handle_new_user()` or `on_auth_user_created`. It only creates `divisions` + `contact_submissions` and upserts the 8 division seed rows | after: `select md5(prosrc) from pg_proc where oid='public.handle_new_user()'::regprocedure` is **unchanged** from before (§4 proof); `select count(*) from public.divisions` = 8 |
+| 2 | **super_app_core** (GATED #0 — repaired FIX-01) | ~~replaces live `handle_new_user()` + trigger~~. **FIX-01:** the file no longer touches `profiles`, `handle_new_user()` or `on_auth_user_created`. It only creates `divisions` + `contact_submissions` and inserts the 8 division seed rows if they're missing (`on conflict do nothing`: operator edits survive a re-run, but a deleted or renamed seeded slug is re-inserted, so pause divisions rather than delete them). The CHECK constraints are retrofitted `NOT VALID` if the table pre-exists | after: `select md5(prosrc) from pg_proc where oid='public.handle_new_user()'::regprocedure` is **unchanged** from before (§4 proof); `select count(*) from public.divisions` = 8 |
 | 3 | **SA-4** `founder_operator_spine` | drop + re-add (validated) `customer_notifications_category_check` | before: `select category, count(*) from customer_notifications group by 1` → every value must be in SA-4's 28-value list, or the ADD aborts. after: constraint contains `owner.operator.escalation` and `account.recovery.reminder` |
 | 4 | **V3-37** `recovery_notification_category` | drop + re-add the same CHECK | **must precede SA-4 (E5)**. If §6.2 says SA-4 is already applied and V3-37-category is not, **do NOT apply V3-37-category** — SA-4's list already contains `account.recovery.reminder`, and applying it would silently narrow |
 | 5 | `email_provider_allow_ses` | drop + re-add `customer_notifications_email_provider_known` | if postmark is already applied, **skip it** (its set is a subset) — same rule as #4 |
@@ -526,13 +535,6 @@ select pg_get_constraintdef(oid) as email_provider_check
 from pg_constraint where conname = 'customer_notifications_email_provider_known';
 -- G5: V3-37 reference-data prerequisite (E13) — expect true
 select exists(select 1 from public.data_governance_domains where domain_key = 'identity_account') as v337_domain_present;
--- G6: V3-43 fold baselines (save the output; §5 #1 compares against it)
-select (select count(*) from public.ai_free_spend_ledger)                  as free_rows,
-       (select coalesce(sum(spent_kobo),0) from public.ai_free_spend_ledger) as free_kobo,
-       public.ai_free_spend_today()                                         as free_today;
-select * from public.studio_agency_tick_lock;
--- G7: F3 present before SA-4 (E4) — expect true
-select to_regclass('public.founder_action_proposals') is not null as f3_present;
 -- G8 (FIX-01): before GATED #0 super_app_core — expect both true. The file uses
 -- `create table if not exists` + revoke/grant, so a pre-existing hand-made table
 -- of the same name would be silently adopted; stop and investigate if either is false.
@@ -541,9 +543,16 @@ select to_regclass('public.divisions') is null           as divisions_absent,
 -- G9 (FIX-01): RETIRED files must never have landed — expect all false
 select to_regclass('public.rooms_sessions')   is not null as rooms_present,
        to_regclass('public.workspace_tasks')  is not null as workspace_platform_present;
+-- G7: F3 present before SA-4 (E4) — expect true
+select to_regclass('public.founder_action_proposals') is not null as f3_present;
+-- G6: V3-43 fold baselines (save the output; §5 #1 compares against it)
+select (select count(*) from public.ai_free_spend_ledger)                  as free_rows,
+       (select coalesce(sum(spent_kobo),0) from public.ai_free_spend_ledger) as free_kobo,
+       public.ai_free_spend_today()                                         as free_today;
+select * from public.studio_agency_tick_lock;
 ```
 
-(If G6 errors because `ai_free_spend_ledger` doesn't exist, V3-43 has already folded it. Cross-check §6.2 row #76.)
+(If G6 errors because `ai_free_spend_ledger` doesn't exist, V3-43 has already folded it. Cross-check §6.2 row #76. G6 is deliberately last, after G7–G9, and the SQL editor shows only the final result set, so **run each G block on its own** and record each result.)
 
 ### 6.4 · Post-apply invariants (read-only)
 
@@ -587,14 +596,14 @@ Then run the Supabase security advisors. Expect only the by-design zero-policy I
 ## 8 · How the order was verified (local only — prod was never contacted)
 
 - **Engine:** a throwaway PostgreSQL 17.10 cluster in the job's scratch dir (port 55497), built with the repo's own `scripts/db/build-shadow-db.mjs` steps `reset → bootstrap → apply-prod → apply-fl2`. That's the SCHEMA-TRUTH-01 shadow: `supabase/prod-actual/schema.sql` (captured 2026-06-11/13) plus the 8-file FL2 manifest.
-- **Catch-up:** the snapshot pre-dates later prod applies, so all 107 baseline files and the 13 `prod-actual/captured-migrations` were replayed in timestamp order (two tolerant passes). The only files still failing are re-creations of objects the snapshot already holds (`policy … already exists`) and two early-era, non-candidate files. Local shadow fixes: two missing `storage.buckets` columns (`file_size_limit`, `allowed_mime_types`) were added to the bootstrap stub.
-- **Pass 1:** all 93 candidates applied in §3 order, each in its own transaction → **79 OK / 14 failed**. The failures:
+- **Catch-up:** the snapshot pre-dates later prod applies, so all 107 baseline files and the 13 `prod-actual/captured-migrations` were replayed in timestamp order (two tolerant passes). The only files still failing are re-creations of objects the snapshot already holds (`policy … already exists`) and two early-era, non-candidate files. **Correction (FIX-01, verifier C):** the tolerant second pass also *succeeded* in re-running three early captured migrations (`20260409054321/…054347/…054419`) **after** `sec_harden_02/03`. That re-created 28 world-open `"Service role full access" USING (true)` policies, so this shadow was less locked down than prod: the repo's own `sec_harden_03/04/04b` and `membership` grant invariants fail on it. DDL-apply results are unaffected, but RLS conclusions drawn on it were optimistic. §8.1 re-derives everything on a corrected shadow. Local shadow fixes: two missing `storage.buckets` columns (`file_size_limit`, `allowed_mime_types`) were added to the bootstrap stub.
+- **Pass 1 (as compiled, pre-FIX-01):** all 93 candidates applied in §3 order, each in its own transaction → **79 OK / 14 failed**. The failures:
   - the 12 BLOCKED files (§4);
   - `super_app_core` (DNA);
   - V3-37 `abandoned_tasks`: a schema-only-snapshot artifact that applies once its reference row exists (T1b).
 
   `workspace_staff_platform` (DNA) applied cleanly; it's DNA for product reasons, not SQL ones.
-- **Pass 2:** the whole sequence re-applied → 77 OK. The two new failures, F2 and F3, are the non-idempotent files (§5).
+- **Pass 2 (as compiled, pre-FIX-01):** the whole sequence re-applied → 77 OK. The two new failures, F2 and F3, are the non-idempotent files (§5).
 - **Targeted tests:**
   - T1b — V3-37 with its reference row;
   - T2 / T2b — V3-37-category after SA-4, with a violating row (aborts) and without one (silent narrowing);
@@ -606,6 +615,42 @@ Then run the Supabase security advisors. Expect only the by-design zero-policy I
 - **Day-of query:** executed on the fully-applied and the empty shadow, against a stub `supabase_migrations.schema_migrations` holding names in every plausible prod format (bare stem, `<ts>_stem`, `stem_<ts>`). The verdicts were correct in both, and all 93 probes are calibrated.
 - **Limits, stated plainly:** the shadow is a June snapshot plus replay, **not** prod. It has no row data (hence E13 and the §5 data checks). It can't see anything done to prod after 06-13 outside of git. That's exactly why §6.2 exists.
 - The harness scripts and raw JSON results are kept with the pass report (`.codex-temp/v3-activation-runbook-01/`, untracked).
+
+### 8.1 · V3-ACTIVATION-RUNBOOK-FIX-01 verification (local only — prod never contacted)
+
+Same technique as above: a fresh throwaway PG17.10 cluster (port 55511), with `build-shadow-db.mjs reset → bootstrap → apply-prod → apply-fl2`, then the same two-pass baseline + captured catch-up. It hit the identical 15 snapshot-re-creation leftovers. **Then the hardening order was restored:** `sec_harden_01…06` were re-applied in timestamp order into checkpoint `ckpt2`. The repo's own post-apply invariant suites are the fidelity gate: `sec_harden_03_grant_invariant`, `sec_harden_04_grant_invariant`, `sec_harden_04b_studio_payments_invariant`, `membership_grant_invariant`, `audit_grant_invariant`, `care_payment_guard_invariant`. **They fail 4/6 on the uncorrected checkpoint and pass 6/6 on `ckpt2`. They also pass 6/6 on the fully applied FIX-01 sequence**, so no candidate re-opens anything. All numbers below are on `ckpt2`.
+
+- **Baseline reproduced first** with the unedited files from `b1efffe3`: **79/93 pass 1, 77/93 pass 2**, with the same 14 failures listed above. This holds on the uncorrected and the hardened shadow alike.
+- **After FIX-01:** **84/93 pass 1, 82/93 pass 2.**
+  - Newly OK on both passes: `super_app_core`, `jobs_interview_rooms`, `care_claims`, `jobs_offer_letters`, `care_pod_records`, `care_booking_garments`.
+  - The only file that went OK → FAIL is `workspace_staff_platform`, retired on purpose. **Zero regressions** among the other 78.
+  - The 9 remaining pass-1 failures are the 8 RETIRED files, whose guard fires by design, plus V3-37 `abandoned_tasks`. That one is the schema-only artifact (E13): with prod's `identity_account` reference row present it applies and re-applies ✓ (T1b re-run), so against prod data the sequence clears **85/93**.
+  - An independent adversarial runner (own file list built from the §3 table) reproduced 79/77 → 84/82 file for file.
+- **No collateral change.** A full catalog fingerprint (tables, columns, constraints, indexes, policies, functions, triggers, table and column grants, publications, comments, default ACLs, data hashes) of the originals' run vs the FIX-01 run differs only by:
+  - the objects the 6 repaired files create (9 tables with their indexes, constraints, policies and comments, plus the 8 division seed rows);
+  - the 7 repaired care/jobs tables now in `supabase_realtime`, via #29/#30;
+  - the absence of the 10 `workspace_*` tables.
+  - One more difference is a gain: as authored, `workspace_staff_platform` replaced prod's `workspace_set_updated_at()` and dropped its `search_path` pin, and FIX-01 keeps prod's version.
+  - The catalog after pass 1 equals the catalog after pass 2.
+- **Signup path (`super_app_core`).**
+  - The original file applied whole fails on the `profiles_update_self` clash. Its function part alone makes all 14 simulated signup shapes fail on `profiles.role` NOT NULL.
+  - With FIX-01, `handle_new_user()` (body md5 `e8929f7c…`, SECURITY DEFINER, `search_path=public`, grants), both `auth.users` triggers and all `profiles` policies match prod-live exactly.
+  - The 14-case signup matrix is byte-identical between prod-live and FIX-01-applied-twice. It covers full metadata, no metadata, only name, only phone, empty strings, a pre-existing profile, email casing, non-string metadata, JSON null, unicode, and an attempted role escalation.
+- **`divisions` / `contact_submissions` surface.**
+  - anon and authenticated can SELECT divisions and nothing more. `contact_submissions` gets column-level INSERT only: a client can't choose `id` or backdate `created_at`, and there's no SELECT.
+  - Inserts are bounded by raw length and reject whitespace-only values, both in the policy and as table CHECKs. The CHECKs also bound service-role writes, and they're retrofitted `NOT VALID` onto a pre-existing table (tested with the original file's table and a 20k-character legacy row).
+  - The super-app zod form schema now mirrors these limits.
+  - Re-apply keeps operator edits to seeded divisions.
+- **RLS matrix (care/jobs, on the hardened shadow).** Covers the owner by `customer_id`, the owner by email (case-insensitive), a stranger, and a phone-auth user with JWT `email: ""` or none, against bookings with NULL / `''` / blank email.
+  - Each actor sees exactly its own rows in `care_pod_records` and `care_booking_garments`.
+  - No request role sees any row of `jobs_interview_rooms` / `jobs_offer_letters` (service-role-only by design).
+  - Claim insert on your own booking, and unlinked, works. A foreign booking, a spoofed opener, or any pre-triaged shape (`status≠submitted`, `owner_user_id`, `resolution_note`, `resolved_at`) is rejected by RLS.
+- **Retirement guard.** Every retired file was run through four paths: plain `psql -f` with no ON_ERROR_STOP, `psql -1 -f`, `psql -v ON_ERROR_STOP=1`, and a single multi-statement request (the SQL editor / `apply_migration` shape). It was also run through a fifth: a client that strips `\` lines and continues on error, where the commented-out body leaves the catalog unchanged (8/8).
+  - In all 32 runs (8 files × 4 paths) the process exits non-zero and the catalog is unchanged. psql shows `RETIRED MIGRATION — DO NOT APPLY`; the one-shot request fails at parse on the `\set` line.
+  - Round 1 of the adversarial pass caught that plain `psql -f` used to continue past the DO-block raise. The `\set ON_ERROR_STOP on` line fixes that.
+- **Tooling.** `scripts/ci/schema-drift-check.mjs` exits 0 after the move. Nothing executable references the old paths (Supabase `config.toml` and `apply-hub-migrations.mjs` read only `migrations/`).
+- **§6.2 day-of query.** Re-run on the empty checkpoint and on the fully applied DB: all 93 probes read false before and true after, with no NULLs. RETIRED rows read CONFIRMED-UNAPPLIED, and a RETIRED row with a history entry reads INVESTIGATE. G8 and G9 run.
+- The harness, logs and JSON results are with the pass report (`.codex-temp/v3-activation-runbook-fix-01/`, untracked).
 
 ---
 

@@ -17,13 +17,15 @@
 --     and on Supabase the extension lives in the `extensions` schema.
 --   * Policies are drop-if-exists + create, so the file is re-runnable.
 --   * contact_submissions is bounded rather than `with check (true)`: raw
---     char_length caps + non-whitespace content, enforced both as table CHECKs
---     (covers service-role writes too) and in the insert policy.
+--     char_length caps + not-only-ASCII-whitespace content, enforced both as
+--     table CHECKs (service-role writes too; retrofitted NOT VALID onto an
+--     older table) and in the insert policy.
 --   * Grants are explicit: anon/authenticated get divisions SELECT and a
 --     COLUMN-level contact_submissions INSERT (name, email, topic, message,
 --     division_slug) — clients cannot choose id or backdate created_at.
 --   * The division seed is insert-if-missing (`on conflict do nothing`), so a
---     re-apply never overwrites operator edits to existing divisions.
+--     re-apply never overwrites operator edits to existing divisions (it does
+--     re-insert a seeded slug that was deleted or renamed — pause, don't delete).
 
 create table if not exists public.divisions (
   id uuid primary key default gen_random_uuid(),
@@ -57,6 +59,39 @@ create table if not exists public.contact_submissions (
     constraint contact_submissions_division_slug_bounded
     check (division_slug is null or char_length(division_slug) <= 64)
 );
+
+-- If contact_submissions pre-dates this version (e.g. a staging DB that took the
+-- original file), `create table if not exists` skipped the CHECKs above. Add any
+-- missing one NOT VALID: existing rows are kept, every new/updated row (service
+-- role included) is bounded. No-op on a table this file just created.
+do $checks$
+declare
+  c record;
+begin
+  for c in
+    select * from (values
+      ('contact_submissions_name_bounded',
+       $x$check (char_length(name) between 1 and 200 and btrim(name, E' \t\r\n') <> '')$x$),
+      ('contact_submissions_email_shape',
+       $x$check (char_length(email) between 3 and 320 and position('@' in email) > 1)$x$),
+      ('contact_submissions_topic_bounded',
+       $x$check (char_length(topic) between 1 and 200 and btrim(topic, E' \t\r\n') <> '')$x$),
+      ('contact_submissions_message_bounded',
+       $x$check (char_length(message) between 1 and 5000 and btrim(message, E' \t\r\n') <> '')$x$),
+      ('contact_submissions_division_slug_bounded',
+       $x$check (division_slug is null or char_length(division_slug) <= 64)$x$)
+    ) as t(conname, def)
+  loop
+    if not exists (
+      select 1 from pg_constraint
+      where conrelid = 'public.contact_submissions'::regclass and conname = c.conname
+    ) then
+      execute format('alter table public.contact_submissions add constraint %I %s not valid',
+                     c.conname, c.def);
+    end if;
+  end loop;
+end
+$checks$;
 
 alter table public.divisions enable row level security;
 alter table public.contact_submissions enable row level security;

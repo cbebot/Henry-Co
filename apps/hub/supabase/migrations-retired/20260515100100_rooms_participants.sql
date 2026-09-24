@@ -26,6 +26,9 @@ begin
 end
 $retired$;
 
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 -- V3 Wave A2 — Rooms infrastructure: rooms_participants.
 --
 -- Per-user lifecycle inside a session. One row per (session, user) pair.
@@ -177,3 +180,5 @@ comment on table public.rooms_participants is
   're-joins update rather than duplicate. RLS: SELECT for owner + '
   'participants; INSERT/UPDATE self-only; service role bypasses for '
   'admin cleanup.';
+
+===== end RETIRED BODY ===== */

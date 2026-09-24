@@ -26,6 +26,9 @@ begin
 end
 $retired$;
 
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 -- V3 Wave A2 — Rooms infrastructure: realtime publication.
 --
 -- Add `rooms_messages` and `rooms_participants` to the supabase_realtime
@@ -97,3 +100,5 @@ comment on table public.rooms_participants is
   're-joins update rather than duplicate. RLS: SELECT for owner + '
   'participants; INSERT/UPDATE self-only; service role bypasses for '
   'admin cleanup. Realtime publication: supabase_realtime.';
+
+===== end RETIRED BODY ===== */

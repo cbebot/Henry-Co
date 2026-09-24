@@ -26,6 +26,9 @@ begin
 end
 $retired$;
 
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 -- V3 Wave A2 — Rooms infrastructure: rooms_scorecards.
 --
 -- Interviewer / reviewer scorecards. JSON-driven dimensions so each
@@ -175,3 +178,5 @@ comment on table public.rooms_scorecards is
   'reviewer) — one per pair. RLS: reviewer + session owner + division '
   'staff via is_staff_in() may SELECT; only the reviewer INSERTs / '
   'UPDATEs their own row.';
+
+===== end RETIRED BODY ===== */

@@ -26,6 +26,9 @@ begin
 end
 $retired$;
 
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 -- V3 Wave A2 — Rooms infrastructure: rooms_recordings_consent.
 --
 -- Auditable consent ledger. One row per (session, user) pair recording
@@ -159,3 +162,5 @@ comment on column public.rooms_recordings_consent.consent_text_version is
   'Free-form version tag of the consent copy. Convention: ISO date + '
   'optional suffix, e.g. "2026-05-14" or "2026-05-14.v2". A copy change '
   'increments this so existing consents do not implicitly cover new text.';
+
+===== end RETIRED BODY ===== */

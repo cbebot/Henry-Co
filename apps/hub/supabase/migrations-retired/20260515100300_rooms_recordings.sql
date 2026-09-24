@@ -26,6 +26,9 @@ begin
 end
 $retired$;
 
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 -- V3 Wave A2 — Rooms infrastructure: rooms_recordings.
 --
 -- One row per recording artefact. The provider (Daily / Jitsi) emits the
@@ -140,3 +143,5 @@ comment on table public.rooms_recordings is
   'startRecording time (service role) with a placeholder; UPDATED by '
   'the provider webhook handler with the final url + expires_at. RLS: '
   'participants + owner may SELECT; only service role INSERTs/UPDATEs.';
+
+===== end RETIRED BODY ===== */
