@@ -1,7 +1,24 @@
 -- HenryCo Super App — core public schema (staging-first)
--- Apply with Supabase CLI: `supabase db push` against a staging project only.
-
-create extension if not exists "pgcrypto";
+-- Apply one file at a time (MCP apply_migration / SQL editor); never `supabase db push`
+-- (docs/v3/ACTIVATION-RUNBOOK-2026-09-24.md §2).
+--
+-- V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24) — repaired against prod-actual:
+--   * REMOVED the public.profiles table/policies, handle_new_user() and the
+--     on_auth_user_created trigger. Those are PLATFORM-owned and already live on
+--     prod (supabase/prod-actual/schema.sql: profiles + 11 policies,
+--     handle_new_user() inserting id/role='customer'/full_name/phone/is_active,
+--     trigger on auth.users). The old two-column body here would have REPLACED
+--     the live signup function, and because profiles.role is NOT NULL with no
+--     default, every signup would have failed (shadow-proven:
+--     `null value in column "role" of relation "profiles"`). The super-app
+--     client never reads profiles through this file (it uses divisions +
+--     contact_submissions only), so nothing is lost.
+--   * REMOVED `create extension pgcrypto`: gen_random_uuid() is core since PG13,
+--     and on Supabase the extension lives in the `extensions` schema.
+--   * Policies are drop-if-exists + create, so the file is re-runnable.
+--   * contact_submissions insert is bounded rather than `with check (true)`,
+--     and the grants are explicit (anon/authenticated: divisions SELECT,
+--     contact_submissions INSERT only).
 
 create table if not exists public.divisions (
   id uuid primary key default gen_random_uuid(),
@@ -16,15 +33,6 @@ create table if not exists public.divisions (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.profiles (
-  id uuid primary key references auth.users (id) on delete cascade,
-  full_name text,
-  phone text,
-  country text,
-  preferred_contact text,
-  updated_at timestamptz not null default now()
-);
-
 create table if not exists public.contact_submissions (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -36,45 +44,31 @@ create table if not exists public.contact_submissions (
 );
 
 alter table public.divisions enable row level security;
-alter table public.profiles enable row level security;
 alter table public.contact_submissions enable row level security;
 
+revoke all on table public.divisions from anon, authenticated;
+revoke all on table public.contact_submissions from anon, authenticated;
+grant select on table public.divisions to anon, authenticated;
+grant insert on table public.contact_submissions to anon, authenticated;
+
+drop policy if exists "divisions_select_public" on public.divisions;
 create policy "divisions_select_public" on public.divisions
-  for select using (true);
+  for select to anon, authenticated
+  using (true);
 
-create policy "profiles_select_self" on public.profiles
-  for select using (auth.uid() = id);
-
-create policy "profiles_update_self" on public.profiles
-  for update using (auth.uid() = id);
-
-create policy "profiles_insert_self" on public.profiles
-  for insert with check (auth.uid() = id);
-
+drop policy if exists "contact_insert_clients" on public.contact_submissions;
 create policy "contact_insert_clients" on public.contact_submissions
   for insert to anon, authenticated
-  with check (true);
+  with check (
+    length(btrim(name)) between 1 and 200
+    and length(email) between 3 and 320
+    and position('@' in email) > 1
+    and length(btrim(topic)) between 1 and 200
+    and length(btrim(message)) between 1 and 5000
+    and (division_slug is null or length(division_slug) <= 64)
+  );
 
 -- Service role bypasses RLS for operational tooling.
-
-create or replace function public.handle_new_user()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  insert into public.profiles (id, full_name)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', new.email))
-  on conflict (id) do nothing;
-  return new;
-end;
-$$;
-
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
 
 insert into public.divisions (slug, name, status, featured, summary, accent_hex, destination_url, sectors)
 values

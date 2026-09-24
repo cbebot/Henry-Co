@@ -23,13 +23,18 @@
 --   - Candidate: select rows belonging to their applications.
 --   - Employer member: select rows for pipelines under their employer
 --     membership (admin client filters; RLS uses simple ownership check
---     via the linked application's candidate_user_id; broader staff reads
+--     via the linked application's candidate_id; broader staff reads
 --     route through service-role).
 --   - Service role: full.
 --
 -- DOWN:
 --   drop table if exists public.jobs_interview_room_events;
 --   drop table if exists public.jobs_interview_rooms;
+--
+-- V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24) — rebound to prod-actual columns:
+--   public.jobs_applications has candidate_id (FK auth.users), NOT
+--   candidate_user_id (never added on prod — supabase/prod-actual/schema.sql).
+--   The candidate-read policy now checks app.candidate_id = auth.uid().
 --
 -- IDEMPOTENT: yes.
 
@@ -77,7 +82,7 @@ create policy "jobs interview rooms: candidate read"
       select 1
       from public.jobs_applications app
       where app.id = jobs_interview_rooms.application_id
-        and app.candidate_user_id = auth.uid()
+        and app.candidate_id = auth.uid()
     )
   );
 

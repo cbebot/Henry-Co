@@ -25,6 +25,11 @@
 --   drop table if exists public.jobs_offer_letter_events;
 --   drop table if exists public.jobs_offer_letters;
 --
+-- V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24) — rebound to prod-actual columns:
+--   public.jobs_applications has candidate_id (FK auth.users), NOT
+--   candidate_user_id (never added on prod — supabase/prod-actual/schema.sql).
+--   The candidate-read policy now checks app.candidate_id = auth.uid().
+--
 -- IDEMPOTENT: yes.
 
 create table if not exists public.jobs_offer_letters (
@@ -74,7 +79,7 @@ create policy "jobs offer letters: candidate read"
       select 1
       from public.jobs_applications app
       where app.id = jobs_offer_letters.application_id
-        and app.candidate_user_id = auth.uid()
+        and app.candidate_id = auth.uid()
     )
   );
 
