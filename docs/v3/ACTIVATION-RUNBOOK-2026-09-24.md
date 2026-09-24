@@ -15,10 +15,10 @@
 - **Apply order = global filename-timestamp order, name as tie-break.** This order satisfies every hard dependency edge found in the SQL (§2), and it was **dry-run end-to-end on a local PG17 shadow** built from `supabase/prod-actual/schema.sql` (local only — §8).
 - **SA-4 vs V3-43 (question b):** the two are **DDL-independent**. They share no object, and both orders applied cleanly in the shadow. The retarget is a *runtime* coupling: the operator tick uses V3-43's `workflow_locks` / `internal_ai_spend_ledger`. Apply SA-4 (#72) then V3-43 (#76), both before `FOUNDER_ACTIONS_TRANCHE≥3`. The real constraints sit *around* them: **F2 → F3 → SA-4**, **V3-37-category → SA-4**, and **SA-3 + `ai_free_spend_ledger` → V3-43** (§2).
 - **Not apply-ready as authored — 14 files, all now resolved (FIX-01, §4):**
-  - **6 REPAIRED → GATED** and proved clean + re-runnable on the shadow: 5 PASS-21 care/jobs files. The 3 care files are rebound to prod's real `customer_id` / `email` (NULL-safe email match; the claim insert is pinned to untriaged). The 2 jobs files are made service-role-only: their candidate-read policy was dead on prod and would have exposed employer fields. plus `super_app_core`, which no longer touches `profiles` / `handle_new_user()` / `on_auth_user_created`. Its old body would have failed **every** signup.
+  - **6 REPAIRED → GATED** and proved clean + re-runnable on the shadow: 5 PASS-21 care/jobs files. The 3 care files are rebound to prod's real `customer_id` / `email` (NULL-safe email match; the claim insert is pinned to untriaged). The 2 jobs files are made service-role-only: their candidate-read policy was dead on prod and would have exposed employer fields. The sixth is `super_app_core`, which no longer touches `profiles` / `handle_new_user()` / `on_auth_user_created`. Its old body would have failed **every** signup.
   - **8 RETIRED — DO-NOT-APPLY** and moved to `apps/hub/supabase/migrations-retired/` behind a fail-loud guard: the cyclic `@henryco/rooms` family (7; dead code, zero consumers) and the superseded `workspace_staff_platform`.
 - **10 destructive / order-sensitive migrations** get the before/after row-count dry-run treatment (§5). Worst cases: V3-43's fold-and-drop of `ai_free_spend_ledger` + `studio_agency_tick_lock`, and three CHECK re-states that **silently narrow** if applied out of order (shadow-proven).
-- **Day-of:** run the query in §6.2, also saved as `Downloads\V3-ACTIVATION-RUNBOOK-01-DAY-OF-confirm-applied-state.sql`. It's read-only, matches on **normalized name** (never version), and cross-checks each row with a **calibrated object probe**.
+- **Day-of:** run the query in §6.2, also saved as `Downloads\V3-ACTIVATION-RUNBOOK-FIX-01-DAY-OF-confirm-applied-state.sql`. It's read-only, matches on **normalized name** (never version), and cross-checks each row with a **calibrated object probe**.
 
 ---
 
@@ -363,7 +363,7 @@ Re-runnability: F2 `founder_intelligence` and F3 `founder_action_proposals` are 
 
 ### 6.2 · The single confirmation query (read-only)
 
-Also saved as **`C:\Users\HP VICTUS\Downloads\V3-ACTIVATION-RUNBOOK-01-DAY-OF-confirm-applied-state.sql`**.
+Also saved as **`C:\Users\HP VICTUS\Downloads\V3-ACTIVATION-RUNBOOK-FIX-01-DAY-OF-confirm-applied-state.sql`** (supersedes the RUNBOOK-01 copy; includes the §6.3 guards incl. G8–G10).
 
 How it works:
 - `schema_migrations` is matched on the **name column, normalized**: a leading or trailing 8–14-digit stamp and any `.sql` suffix are stripped.
@@ -640,7 +640,7 @@ Same technique as above: a fresh throwaway PG17.10 cluster (port 55511), with `b
 - **Signup path (`super_app_core`).**
   - The original file applied whole fails on the `profiles_update_self` clash. Its function part alone makes all 14 simulated signup shapes fail on `profiles.role` NOT NULL.
   - With FIX-01, `handle_new_user()` (body md5 `e8929f7c…`, SECURITY DEFINER, `search_path=public`, grants), both `auth.users` triggers and all `profiles` policies match prod-live exactly.
-  - The 14-case signup matrix is byte-identical between prod-live and FIX-01-applied-twice. It covers full metadata, no metadata, only name, only phone, empty strings, a pre-existing profile, email casing, non-string metadata, JSON null, unicode, and an attempted role escalation.
+  - The 14-case signup matrix is byte-identical between prod-live and prod-live with the FIX-01 `super_app_core` applied twice. Against the full 93-file sequence the only extra column is `profiles.verification_level`, which comes from the KYC vault migration (#39), not FIX-01. It covers full metadata, no metadata, only name, only phone, empty strings, a pre-existing profile, email casing, non-string metadata, JSON null, unicode, and an attempted role escalation.
 - **`divisions` / `contact_submissions` surface.**
   - anon and authenticated can SELECT divisions and nothing more. `contact_submissions` gets column-level INSERT only: a client can't choose `id` or backdate `created_at`, and there's no SELECT.
   - Inserts are bounded by raw length and reject whitespace-only values, both in the policy and as table CHECKs. The CHECKs also bound service-role writes, and they're retrofitted `NOT VALID` onto a pre-existing table (tested with the original file's table and a 20k-character legacy row).
