@@ -110,16 +110,18 @@ function normalizeStaffRole(value: string) {
     : null;
 }
 
+// V3-STAFF-SELFGRANT-FIX-01: server-controlled sources only (admin-set app_metadata, then
+// profiles). user_metadata is self-writable and is not an input; an account with no
+// provisioned staff role resolves to "customer" (never in any allowedRoles list) instead
+// of the old "staff" default.
 function resolveLiveStaffRole(input: {
   profileRole?: string | null;
   appRole?: string | null;
-  userRole?: string | null;
 }) {
   return (
     normalizeStaffRole(String(input.appRole || "")) ||
-    normalizeStaffRole(String(input.userRole || "")) ||
     normalizeStaffRole(String(input.profileRole || "")) ||
-    "staff"
+    "customer"
   );
 }
 
@@ -261,7 +263,6 @@ async function validatePostedActor(
     const liveRole = resolveLiveStaffRole({
       profileRole: (profile as any)?.role ?? null,
       appRole: (user as any)?.app_metadata?.role ?? null,
-      userRole: (user as any)?.user_metadata?.role ?? null,
     });
     const currentSessionTs = user?.last_sign_in_at
       ? String(new Date(user.last_sign_in_at).getTime())
@@ -273,9 +274,7 @@ async function validatePostedActor(
 
     if (
       Boolean(
-        (user as any)?.app_metadata?.is_frozen ??
-          (user as any)?.user_metadata?.is_frozen ??
-          (profile as any)?.is_frozen
+        (user as any)?.app_metadata?.is_frozen ?? (profile as any)?.is_frozen
       )
     ) {
       return null;
@@ -296,13 +295,10 @@ async function validatePostedActor(
         role: liveRole,
         full_name: ((profile as any).full_name as string | null) ?? null,
         is_frozen: Boolean(
-          (user as any)?.app_metadata?.is_frozen ??
-            (user as any)?.user_metadata?.is_frozen ??
-            (profile as any).is_frozen
+          (user as any)?.app_metadata?.is_frozen ?? (profile as any).is_frozen
         ),
         force_reauth_after:
           ((user as any)?.app_metadata?.force_reauth_after as string | null) ??
-          ((user as any)?.user_metadata?.force_reauth_after as string | null) ??
           ((profile as any).force_reauth_after as string | null) ??
           null,
       },
@@ -607,13 +603,13 @@ async function countOwners() {
   const authUsers = await supabase.auth.admin.listUsers({ page: 1, perPage: 200 });
   const users = authUsers.data?.users ?? [];
 
+  // Last-owner guard: count only admin-set owners. user_metadata is self-writable, so a
+  // self-declared "owner" must not inflate the count and let the real last owner be removed.
   return users.filter((user) => {
     const appRole = normalizeStaffRole(String(user.app_metadata?.role || ""));
-    const userRole = normalizeStaffRole(String(user.user_metadata?.role || ""));
-    const deletedAt =
-      String(user.app_metadata?.deleted_at || user.user_metadata?.deleted_at || "").trim();
+    const deletedAt = String(user.app_metadata?.deleted_at || "").trim();
     if (deletedAt) return false;
-    return appRole === "owner" || userRole === "owner";
+    return appRole === "owner";
   }).length;
 }
 
@@ -926,7 +922,6 @@ async function findReusableProvisioningSlot(): Promise<ReusableProvisioningSlot 
 
       const role = resolveLiveStaffRole({
         appRole: user.app_metadata?.role ?? null,
-        userRole: user.user_metadata?.role ?? null,
       });
 
       if (role === "owner") continue;
@@ -2345,7 +2340,6 @@ export async function updateStaffRoleAction(formData: FormData) {
   const currentRole = resolveLiveStaffRole({
     profileRole: existingProfile?.role ?? null,
     appRole: (existingUser as any)?.app_metadata?.role ?? null,
-    userRole: (existingUser as any)?.user_metadata?.role ?? null,
   });
 
   if (currentRole === "owner" && role !== "owner") {
@@ -2473,7 +2467,6 @@ export async function setStaffArchivedAction(formData: FormData) {
 
   const currentRole = resolveLiveStaffRole({
     appRole: (existingUser as any)?.app_metadata?.role ?? null,
-    userRole: (existingUser as any)?.user_metadata?.role ?? null,
   });
 
   if (archived && currentRole === "owner") {
@@ -2653,7 +2646,6 @@ export async function createStaffAccountAction(formData: FormData) {
     const currentRole = resolveLiveStaffRole({
       profileRole: existingProfileRole,
       appRole: (user as any)?.app_metadata?.role ?? null,
-      userRole: (user as any)?.user_metadata?.role ?? null,
     });
 
     if (currentRole === "owner" && role !== "owner") {
@@ -2915,7 +2907,6 @@ export async function resendStaffSetupAction(formData: FormData) {
 
   const role = resolveLiveStaffRole({
     appRole: (user as any)?.app_metadata?.role ?? null,
-    userRole: (user as any)?.user_metadata?.role ?? null,
   });
   const archivedAt =
     String((user as any)?.app_metadata?.deleted_at || (user as any)?.user_metadata?.deleted_at || "").trim() ||
@@ -3057,7 +3048,6 @@ export async function deleteStaffAccountAction(formData: FormData) {
   const currentRole = resolveLiveStaffRole({
     profileRole: profile?.role ?? null,
     appRole: (user as any)?.app_metadata?.role ?? null,
-    userRole: (user as any)?.user_metadata?.role ?? null,
   });
 
   if (currentRole === "owner") {

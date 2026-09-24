@@ -594,8 +594,8 @@ function readUserRole(user: AuthUserRecord, matchingPerson?: JsonRecord | null) 
   const henrycoMeta = readNestedRecord(user.app_metadata || null, "henryco");
   return (
     toText(henrycoMeta?.role) ||
+    // Never user_metadata (self-writable) — a user must not self-label in the owner console.
     toText(user.app_metadata?.role) ||
-    toText(user.user_metadata?.role) ||
     toText(matchingPerson?.role_label) ||
     toText(matchingPerson?.role_title) ||
     "staff"

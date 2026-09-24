@@ -157,8 +157,8 @@ async function readAccessSnapshot(user: {
 
   const profileRole =
     normalizeRole(profile?.role) ||
-    normalizeRole(user.app_metadata?.role) ||
-    normalizeRole(user.user_metadata?.role);
+    // V3-STAFF-SELFGRANT-FIX-01: never user_metadata (self-writable via auth.updateUser).
+    normalizeRole(user.app_metadata?.role);
   const ownerRole = normalizeRole(ownerProfile?.role);
   const staffDivisionCount = staffMembershipResults.filter(Boolean).length;
   const hasExplicitStaffMembership = staffDivisionCount > 0;

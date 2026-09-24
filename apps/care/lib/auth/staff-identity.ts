@@ -1,5 +1,5 @@
 import type { User } from "@supabase/supabase-js";
-import { isStaffRole, type StaffRole } from "@/lib/auth/roles";
+import { resolveProvisionedStaffRole, type StaffRole } from "@/lib/auth/roles";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type ProfileRecord = {
@@ -54,11 +54,6 @@ function cleanText(value: unknown) {
   return text || null;
 }
 
-function staffRoleOrDefault(value: unknown, fallback: StaffRole = "staff"): StaffRole {
-  const text = String(value ?? "").trim().toLowerCase();
-  return isStaffRole(text) ? text : fallback;
-}
-
 function pickFirstText(...values: unknown[]) {
   for (const value of values) {
     const text = cleanText(value);
@@ -93,10 +88,11 @@ function isProfileWriteGuardError(error: { message?: string } | null | undefined
 function extractProfileSeed(user?: User | null) {
   const meta = user?.user_metadata ?? {};
 
+  // Cosmetic seed only. The role is NEVER seeded from user_metadata (self-writable) and
+  // never defaulted — see resolveProvisionedStaffRole.
   return {
     full_name: pickFirstText(meta.full_name, meta.name, meta.display_name),
     phone: pickFirstText(meta.phone, meta.phone_number),
-    role: staffRoleOrDefault(meta.role ?? user?.app_metadata?.role, "staff"),
   };
 }
 
@@ -109,7 +105,8 @@ export async function syncStaffIdentity(
   patch: StaffIdentityPatch = {}
 ): Promise<{
   created: boolean;
-  profile: ProfileRecord & { role: StaffRole; is_frozen: boolean };
+  /** role is null only when the sync REFUSED (error set): no provisioned staff role. */
+  profile: ProfileRecord & { role: StaffRole | null; is_frozen: boolean };
   app_role: string | null;
   user_role: string | null;
   auth_role_aligned: boolean;
@@ -136,14 +133,43 @@ export async function syncStaffIdentity(
     ).data ??
     null;
 
+  // V3-STAFF-SELFGRANT-FIX-01: this function writes profiles.role + app_metadata.role with
+  // the SERVICE ROLE, so it must only ever (re)assert a role that is already provisioned
+  // by a server-controlled source. It used to default any account to "staff" — which let
+  // a customer who signed in at the staff login, completed staff password recovery, or was
+  // merely listed by reconcileStaffDirectory() be silently promoted. Now: no provisioned
+  // staff role ⇒ refuse, write nothing.
+  const resolvedRole = resolveProvisionedStaffRole({
+    patchRole: patch.role,
+    appMetadataRole: user?.app_metadata?.role,
+    profileRole: existingProfile?.role,
+  });
+  if (!resolvedRole) {
+    return {
+      created: false,
+      profile: {
+        id: userId,
+        full_name: existingProfile?.full_name ?? null,
+        phone: existingProfile?.phone ?? null,
+        role: null,
+        is_frozen: Boolean(existingProfile?.is_frozen),
+        force_reauth_after: existingProfile?.force_reauth_after ?? null,
+        created_at: existingProfile?.created_at ?? user?.created_at ?? null,
+      },
+      app_role: cleanText(user?.app_metadata?.role),
+      user_role: cleanText(user?.user_metadata?.role),
+      auth_role_aligned: false,
+      deleted_at: cleanText(user?.app_metadata?.deleted_at),
+      error: { message: "This account has no provisioned staff role." },
+      auth_meta_error: null,
+      profile_write_error: null,
+    };
+  }
+
   const seed = extractProfileSeed(user);
   const normalizedForceReauthAfter = normalizeForceReauthAfter(
     patch.force_reauth_after === undefined
-      ? pickFirstText(
-          user?.app_metadata?.force_reauth_after,
-          user?.user_metadata?.force_reauth_after,
-          existingProfile?.force_reauth_after
-        )
+      ? pickFirstText(user?.app_metadata?.force_reauth_after, existingProfile?.force_reauth_after)
       : patch.force_reauth_after,
     user?.last_sign_in_at ?? null
   );
@@ -157,18 +183,11 @@ export async function syncStaffIdentity(
       patch.phone !== undefined
         ? cleanText(patch.phone)
         : pickFirstText(existingProfile?.phone, seed.phone),
-    role: staffRoleOrDefault(
-      patch.role ?? user?.app_metadata?.role ?? user?.user_metadata?.role ?? existingProfile?.role ?? seed.role,
-      "staff"
-    ),
+    role: resolvedRole,
     is_frozen:
       typeof patch.is_frozen === "boolean"
         ? patch.is_frozen
-        : Boolean(
-            user?.app_metadata?.is_frozen ??
-              user?.user_metadata?.is_frozen ??
-              existingProfile?.is_frozen
-          ),
+        : Boolean(user?.app_metadata?.is_frozen ?? existingProfile?.is_frozen),
     force_reauth_after:
       normalizedForceReauthAfter,
     created_at: existingProfile?.created_at ?? user?.created_at ?? null,
@@ -301,20 +320,20 @@ export async function reconcileStaffDirectory(): Promise<StaffDirectorySummary> 
       continue;
     }
 
-    const expectedRole = staffRoleOrDefault(
-      user.app_metadata?.role ?? user.user_metadata?.role ?? existingProfile?.role,
-      "staff"
-    );
-    const expectedFrozen = Boolean(
-      user.app_metadata?.is_frozen ?? user.user_metadata?.is_frozen ?? existingProfile?.is_frozen
-    );
+    // V3-STAFF-SELFGRANT-FIX-01: the directory lists (and repairs) PROVISIONED staff only.
+    // It used to default every auth user to "staff" and sync them with the service role,
+    // so merely opening the owner's staff/security page promoted ordinary customers.
+    const expectedRole = resolveProvisionedStaffRole({
+      appMetadataRole: user.app_metadata?.role,
+      profileRole: existingProfile?.role,
+    });
+    if (!expectedRole) {
+      continue;
+    }
+    const expectedFrozen = Boolean(user.app_metadata?.is_frozen ?? existingProfile?.is_frozen);
     const expectedForceReauthAt =
       normalizeForceReauthAfter(
-        pickFirstText(
-          user.app_metadata?.force_reauth_after,
-          user.user_metadata?.force_reauth_after,
-          existingProfile?.force_reauth_after
-        ),
+        pickFirstText(user.app_metadata?.force_reauth_after, existingProfile?.force_reauth_after),
         user.last_sign_in_at ?? null
       ) ?? null;
     const deletedAt =
@@ -350,6 +369,11 @@ export async function reconcileStaffDirectory(): Promise<StaffDirectorySummary> 
           profile_write_error: null,
         };
 
+    const resultRole = result.profile.role;
+    if (!resultRole) {
+      continue;
+    }
+
     if (result.created) createdProfiles += 1;
     if (needsRepair) syncedAuthMetadata += 1;
 
@@ -360,7 +384,7 @@ export async function reconcileStaffDirectory(): Promise<StaffDirectorySummary> 
       email: user.email ?? null,
       full_name: result.profile.full_name,
       phone: result.profile.phone,
-      role: result.profile.role,
+      role: resultRole,
       app_role: result.app_role,
       user_role: result.user_role,
       auth_role_aligned: result.auth_role_aligned,
@@ -378,13 +402,15 @@ export async function reconcileStaffDirectory(): Promise<StaffDirectorySummary> 
   for (const profile of profileMap.values()) {
     if (hiddenProfileIds.has(profile.id)) continue;
     if (rows.some((row) => row.id === profile.id)) continue;
+    const profileStaffRole = resolveProvisionedStaffRole({ profileRole: profile.role });
+    if (!profileStaffRole) continue;
 
     rows.push({
       id: profile.id,
       email: null,
       full_name: profile.full_name,
       phone: profile.phone,
-      role: staffRoleOrDefault(profile.role, "staff"),
+      role: profileStaffRole,
       app_role: null,
       user_role: null,
       auth_role_aligned: false,

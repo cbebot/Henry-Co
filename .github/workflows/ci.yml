@@ -485,3 +485,23 @@ jobs:
 
       - name: Prove the per-role RLS matrix (support staff read 0 risk rows; no actorless accept; writes service-role only)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/staff_intelligence_rls_matrix.sql
+
+      # V3-STAFF-SELFGRANT-FIX-01 — close the self-granted staff-role hole (identity).
+      # Runs LAST: the fixture reinstalls the prod-actual profiles / owner_profiles /
+      # is_staff_in surface verbatim (replacing the GUC stubs above) and PROVES the hole is
+      # live pre-fix (a profile-less user self-inserts role='staff' => staff in six
+      # divisions), so the invariant is load-bearing. The invariant then attacks as real
+      # request roles: every exploit variant fails; each of the four write-path mechanisms
+      # ALONE stops it; with every write guard stripped the grant-aware read path ALONE
+      # still confers nothing; and every genuine staff/owner path keeps working.
+      - name: Seed V3-STAFF-SELFGRANT-FIX-01 pre-fix surface (prod-actual profiles + is_staff_in) and prove the hole is live
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/staff_selfgrant_min.sql
+
+      - name: Apply V3-STAFF-SELFGRANT-FIX-01 migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql
+
+      - name: Re-apply V3-STAFF-SELFGRANT-FIX-01 migration (idempotency)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql
+
+      - name: Prove V3-STAFF-SELFGRANT-FIX-01 (exploit dead both layers; genuine staff/owner paths intact)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/staff_selfgrant_invariant.sql

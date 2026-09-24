@@ -196,8 +196,8 @@ export async function getWorkspaceViewer(): Promise<WorkspaceViewer> {
 
   const profileRole =
     profile?.role ||
+    // V3-STAFF-SELFGRANT-FIX-01: never user_metadata (self-writable via auth.updateUser).
     (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null) ||
-    (typeof user.user_metadata?.role === "string" ? user.user_metadata.role : null) ||
     null;
 
   const activityDivisions = await readActivityDivisions(user.id);

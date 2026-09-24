@@ -71,26 +71,18 @@ export async function getAuthenticatedProfile() {
     .eq("id", user.id)
     .maybeSingle();
 
+  // V3-STAFF-SELFGRANT-FIX-01: role / freeze / re-auth come only from app_metadata
+  // (admin-API-only) or profiles — never user_metadata, which any signed-in user can
+  // rewrite with supabase.auth.updateUser({ data }).
   const appRole = normalizeRole(user.app_metadata?.role as string | null | undefined);
-  const userRole = normalizeRole(user.user_metadata?.role as string | null | undefined);
-  const effectiveRole =
-    appRole !== "customer"
-      ? appRole
-      : userRole !== "customer"
-      ? userRole
-      : normalizeRole(profile?.role);
+  const effectiveRole = appRole !== "customer" ? appRole : normalizeRole(profile?.role);
 
-  const effectiveFrozen = Boolean(
-    user.app_metadata?.is_frozen ?? user.user_metadata?.is_frozen ?? profile?.is_frozen
-  );
+  const effectiveFrozen = Boolean(user.app_metadata?.is_frozen ?? profile?.is_frozen);
   const effectiveForceReauthAfter =
     normalizeForceReauthAfter(
       (typeof user.app_metadata?.force_reauth_after === "string"
         ? user.app_metadata.force_reauth_after
         : null) ||
-        (typeof user.user_metadata?.force_reauth_after === "string"
-          ? user.user_metadata.force_reauth_after
-          : null) ||
         profile?.force_reauth_after ||
         null,
       user.last_sign_in_at

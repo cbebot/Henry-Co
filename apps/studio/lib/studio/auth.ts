@@ -146,8 +146,8 @@ export async function getStudioViewer(): Promise<StudioViewer> {
 
   const baseRoles = mapSharedRoleToStudioRoles(
     profile?.role ||
-      (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null) ||
-      (typeof user.user_metadata?.role === "string" ? user.user_metadata.role : null)
+      // V3-STAFF-SELFGRANT-FIX-01: never user_metadata (self-writable via auth.updateUser).
+      (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null)
   );
   const membershipRoles = (membershipRows ?? [])
     .map((membership) => String(membership.role || "").trim() as StudioRole)
