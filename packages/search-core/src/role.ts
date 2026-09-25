@@ -25,7 +25,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { readVerifiedProfileRole } from "@henryco/config";
+import { isOperatorMembershipRole, readVerifiedProfileRole } from "@henryco/config";
 
 import type { CollectionDefinition } from "./collections";
 import type { SearchRoleVisibility } from "./types";
@@ -76,13 +76,15 @@ export async function resolveUserRoles(
       // *_role_memberships tables below — `.eq("user_id")` 500s here (no such column).
       supabase.from("profiles").select("role").eq("id", user_id).maybeSingle(),
       // The role-membership tables enforce RLS; service role should be used.
+      // V3-STAFF-SELFGRANT-FIX-01: only ACTIVE rows count (inactive memberships used to).
       supabase
         .from("marketplace_role_memberships")
         .select("role")
-        .eq("user_id", user_id),
-      supabase.from("studio_role_memberships").select("role").eq("user_id", user_id),
-      supabase.from("property_role_memberships").select("role").eq("user_id", user_id),
-      supabase.from("learn_role_memberships").select("role").eq("user_id", user_id),
+        .eq("user_id", user_id)
+        .eq("is_active", true),
+      supabase.from("studio_role_memberships").select("role").eq("user_id", user_id).eq("is_active", true),
+      supabase.from("property_role_memberships").select("role").eq("user_id", user_id).eq("is_active", true),
+      supabase.from("learn_role_memberships").select("role").eq("user_id", user_id).eq("is_active", true),
     ]);
 
     // V3-STAFF-SELFGRANT-FIX-01: a non-customer profiles.role counts only with a live
@@ -121,6 +123,12 @@ export async function resolveUserRoles(
     ];
 
     for (const check of membershipChecks) {
+      // V3-STAFF-SELFGRANT-FIX-01: a customer-facing membership (e.g. the self-served
+      // 'vendor_applicant' row) is not staff — it must never lift the per-user
+      // owner_user_id filter. Same rule as SQL is_staff_in().
+      check.rows = check.rows.filter((row) =>
+        isOperatorMembershipRole((row as { role?: unknown }).role),
+      );
       if (check.rows.length === 0) continue;
       isStaff = true;
       visibility.add("staff");

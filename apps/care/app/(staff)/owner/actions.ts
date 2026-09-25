@@ -2912,7 +2912,7 @@ export async function resendStaffSetupAction(formData: FormData) {
     appRole: (user as any)?.app_metadata?.role ?? null,
   });
   const archivedAt =
-    String((user as any)?.app_metadata?.deleted_at || (user as any)?.user_metadata?.deleted_at || "").trim() ||
+    String((user as any)?.app_metadata?.deleted_at || "").trim() ||
     null;
 
   if (archivedAt) {
@@ -3063,7 +3063,7 @@ export async function deleteStaffAccountAction(formData: FormData) {
   const archived =
     Boolean(profile?.deleted_at) ||
     Boolean(
-      String((user as any)?.app_metadata?.deleted_at || (user as any)?.user_metadata?.deleted_at || "").trim()
+      String((user as any)?.app_metadata?.deleted_at || "").trim()
     );
 
   if (!archived) {
@@ -3082,7 +3082,7 @@ export async function deleteStaffAccountAction(formData: FormData) {
 
     if (!references.hasHistory) {
       const deletedAt =
-        String((existingUser as any)?.app_metadata?.deleted_at || (existingUser as any)?.user_metadata?.deleted_at || "").trim() ||
+        String((existingUser as any)?.app_metadata?.deleted_at || "").trim() ||
         new Date().toISOString();
       const retireResult = await retireStaffAccountIntoProvisioningSlot({
         user: existingUser,

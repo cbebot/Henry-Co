@@ -20,7 +20,7 @@
 
 **Grant record:** `public.staff_role_grants` (user_id-bound, RLS on, no policies, no request-role privileges). It is minted **only** when a trusted role itself *sets* `profiles.role`; a trusted write that leaves `role` untouched never mints one. Existing non-customer rows are backfilled so genuine staff keep access.
 
-- **Layer W (write path), 4 independent mechanisms:** W1 privileges (no request-role INSERT; UPDATE only `full_name/phone/avatar_url`), W2 no INSERT policy, W3 BEFORE trigger, W4 DEFERRED "non-customer role ⇒ active matching grant" constraint trigger. Plus the owner_profiles guard (trigger + column revoke).
+- **Layer W (write path), 4 independent mechanisms:** W1 privileges (no request-role INSERT; UPDATE only `full_name/phone/avatar_url/updated_at`), W2 no INSERT policy, W3 BEFORE trigger, W4 "non-customer role ⇒ active matching grant" constraint trigger. Plus the owner_profiles guard (trigger + column revoke).
 - **Layer R (read path):** every consumer of `profiles.role` requires the grant (`verified_profile_role()`).
 - **App layer:** `user_metadata` is never a role/freeze/re-auth source. Care resolves staff only via the pure, tested `resolveProvisionedStaffRole()`: patch → `app_metadata` → profile, **no default**. With no provisioned role it refuses and writes nothing.
 
@@ -36,6 +36,6 @@
 2. **Apply** `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` right away: one `apply_migration`, named `v3_staff_selfgrant_fix_01`. It refuses to apply unless `postgres` / `service_role` can bypass RLS (trust-anchor precondition). It locks the write path **before** backfilling, and it aborts if any non-customer row ends up without an active matching grant.
 3. Run **`review-staff-grants.sql`** (read-only; R1–R4, one block at a time) **after** the apply, and save every result. Nothing can be self-granted any more, so the list is final. Check that R1 `unbacked_non_customer_rows_expect_0` = 0. In R2, `grant_source = backfill:…` marks every row that existed before the fix.
 4. The owner judges R2 (population A: DB-level staff) and R3 (population B: app-metadata-only staff, e.g. customers the old care reconcile auto-promoted). Put the illegitimate ids into `remediate-self-granted-staff.sql` step 1 → dry run (ROLLBACK) → check step 7 → change the last line to COMMIT → run.
-5. Deploy the app changes. They are safe before or after the migration: the grant-aware reads fall back to today's behavior only while `staff_role_grants` does not exist. They close holes 2–4 independently.
+5. Before deploying the app, check review **R5**: accounts whose staff role lives only in self-writable `user_metadata`. Re-provision any genuine staff among them through the care owner console or the hub invite flow; both set `app_metadata`. Then deploy the app changes. They are safe before or after the migration: the grant-aware reads fall back to today's behavior only while `staff_role_grants` does not exist. They close holes 2–4 independently.
 
 Files: `review-staff-grants.sql`, `remediate-self-granted-staff.sql` (both also in `Downloads\`).

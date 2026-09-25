@@ -35,12 +35,12 @@
 -- DEFENSE IN DEPTH — either layer alone stops the exploit:
 --   LAYER W (write path) — four independent mechanisms on public.profiles:
 --     W1 privileges: request roles hold no INSERT, and UPDATE only on
---        (full_name, phone, avatar_url);
+--        (full_name, phone, avatar_url, updated_at);
 --     W2 RLS: the self-insert policy is dropped (default-deny); anon insert stays gone;
 --     W3 BEFORE INSERT/UPDATE trigger: an untrusted writer may only ever create its own
 --        row as 'customer' and may never change role/id/freeze/re-auth/money columns;
---     W4 DEFERRED constraint trigger: a non-customer profiles.role must be backed by an
---        active, matching staff_role_grants row at COMMIT, whoever wrote it.
+--     W4 constraint trigger: a non-customer profiles.role must be backed by an active,
+--        matching staff_role_grants row at the end of the statement, whoever wrote it.
 --   LAYER R (read path) — is_staff_in(), is_staff_in_any(), current_role(),
 --     current_app_role(), is_property_staff() honour a profiles.role only when an active
 --     staff_role_grants row for the same user_id carries the same role.
@@ -216,7 +216,7 @@ begin
 end
 $fn$;
 
--- ── (5) W4 — DEFERRED invariant: non-customer role ⇒ active matching grant ────
+-- ── (5) W4 — invariant: non-customer role ⇒ active matching grant ─────────────
 -- SECURITY DEFINER only so it can READ staff_role_grants; it never writes.
 create or replace function public.profiles_require_staff_grant()
 returns trigger
@@ -268,11 +268,15 @@ begin
     after insert or update of role, id or delete on public.profiles
     for each row execute function public.profiles_sync_staff_role_grant();
 
-  -- W4 (deferred to COMMIT so a trusted INSERT + its mirrored grant land together)
+  -- W4. INITIALLY IMMEDIATE: it fires at the end of each statement, after the mint
+  -- trigger (name order), so a trusted write and its grant land together — and an
+  -- operator's "disable protect trigger / update / re-enable" transaction never hits
+  -- "pending trigger events". DEFERRABLE, so a multi-statement repair can still
+  -- SET CONSTRAINTS … DEFERRED.
   drop trigger if exists trg_profiles_require_staff_grant on public.profiles;
   create constraint trigger trg_profiles_require_staff_grant
     after insert or update of role, id on public.profiles
-    deferrable initially deferred
+    deferrable initially immediate
     for each row execute function public.profiles_require_staff_grant();
 
   -- W2 — RLS: no request-role INSERT path at all (default-deny). The self-insert policy
@@ -287,7 +291,7 @@ begin
     select 'grant update (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.profiles to authenticated'
     from information_schema.columns c
     where c.table_schema = 'public' and c.table_name = 'profiles'
-      and c.column_name in ('full_name', 'phone', 'avatar_url')
+      and c.column_name in ('full_name', 'phone', 'avatar_url', 'updated_at')
   );
 end $wire$;
 

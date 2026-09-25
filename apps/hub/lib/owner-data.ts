@@ -598,8 +598,10 @@ function readUserRole(user: AuthUserRecord, matchingPerson?: JsonRecord | null) 
     toText(user.app_metadata?.role) ||
     toText(matchingPerson?.role_label) ||
     toText(matchingPerson?.role_title) ||
-    // V3-STAFF-SELFGRANT-FIX-01: an account with no server-set role is a customer, never
-    // "staff" by default (saving the card would otherwise write app_metadata.role=staff).
+    // V3-STAFF-SELFGRANT-FIX-01: an account with no server-set role is shown as a
+    // customer, never as "staff" by default. (StaffMemberCard's role select still
+    // preselects "staff" for roles outside its option list — pre-existing; an owner save
+    // is an explicit owner decision.)
     "customer"
   );
 }

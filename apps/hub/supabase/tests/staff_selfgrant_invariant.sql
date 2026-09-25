@@ -102,8 +102,8 @@ begin
     raise exception 'FAIL §0: a profiles guard trigger is missing/disabled';
   end if;
   if not exists (select 1 from pg_trigger where tgname = 'trg_profiles_require_staff_grant'
-                 and tgdeferrable and tginitdeferred) then
-    raise exception 'FAIL §0: W4 is not DEFERRABLE INITIALLY DEFERRED';
+                 and tgdeferrable and not tginitdeferred) then
+    raise exception 'FAIL §0: W4 is not DEFERRABLE INITIALLY IMMEDIATE';
   end if;
   -- No RLS policy anywhere may read profiles.role inline (it must go through the grant).
   if exists (select 1 from pg_policies

@@ -102,3 +102,22 @@ select op.user_id, op.email, op.role, op.is_active, op.created_at, op.updated_at
 from public.owner_profiles op
 left join public.profiles p on p.id = op.user_id
 order by op.role, op.created_at;
+
+-- ── R5 · user_metadata-only "staff" — REVIEW BEFORE DEPLOYING THE APP CHANGES ──
+-- The app no longer reads user_metadata.role (it is self-writable). An account whose
+-- staff role lives ONLY there — no admin-set app_metadata.role and no grant-backed
+-- profiles.role — loses staff access when the app deploys. No in-repo provisioning path
+-- creates such accounts (care and hub invites set app_metadata), but dashboard- or
+-- hand-made accounts might. For each GENUINE staff member listed here, re-provision
+-- through the care owner console or the hub invite flow (both set app_metadata) BEFORE
+-- the deploy. Everyone else here merely self-declared a role: no action needed.
+select u.id as user_id, u.email,
+       u.raw_user_meta_data ->> 'role' as user_metadata_role,
+       u.raw_app_meta_data ->> 'role'  as app_metadata_role,
+       p.role as profile_role, u.created_at, u.last_sign_in_at
+from auth.users u
+left join public.profiles p on p.id = u.id
+where lower(coalesce(u.raw_user_meta_data ->> 'role', '')) in ('owner','manager','rider','support','staff','admin')
+  and coalesce(u.raw_app_meta_data ->> 'role', '') = ''
+  and lower(coalesce(p.role, 'customer')) = 'customer'
+order by u.last_sign_in_at desc nulls last;

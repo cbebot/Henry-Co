@@ -77,12 +77,14 @@ export async function getAuthenticatedProfile() {
   // (admin-API-only) or profiles — never user_metadata, which any signed-in user can
   // rewrite with supabase.auth.updateUser({ data }).
   const appRole = normalizeRole(user.app_metadata?.role as string | null | undefined);
-  const verifiedProfileRole = await readVerifiedProfileRole(
-    createAdminSupabase(),
-    user.id,
-    profile?.role
-  );
-  const effectiveRole = appRole !== "customer" ? appRole : normalizeRole(verifiedProfileRole);
+  // The grant lookup needs the service role; only pay for it when a non-customer
+  // profiles.role actually has to be verified.
+  const effectiveRole =
+    appRole !== "customer"
+      ? appRole
+      : normalizeRole(profile?.role) === "customer"
+        ? "customer"
+        : normalizeRole(await readVerifiedProfileRole(createAdminSupabase(), user.id, profile?.role));
 
   const effectiveFrozen = Boolean(user.app_metadata?.is_frozen ?? profile?.is_frozen);
   const effectiveForceReauthAfter =
@@ -96,7 +98,6 @@ export async function getAuthenticatedProfile() {
     );
   const effectiveDeletedAt =
     (typeof user.app_metadata?.deleted_at === "string" ? user.app_metadata.deleted_at : null) ||
-    (typeof user.user_metadata?.deleted_at === "string" ? user.user_metadata.deleted_at : null) ||
     null;
   const effectiveFullName =
     profile?.full_name ??

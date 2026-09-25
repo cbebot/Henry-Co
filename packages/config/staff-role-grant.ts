@@ -21,6 +21,26 @@
  * staff_role_grants by design.
  */
 
+/**
+ * Customer-facing *_role_memberships roles — a membership row with one of these is NOT
+ * an operator/staff grant (e.g. /api/marketplace vendor_apply self-serves an active
+ * 'vendor_applicant' row for any caller). Mirrors the exclusion in SQL is_staff_in() /
+ * is_staff_in_any() (migration 20260924120000) and the apps' own *StaffRole sets.
+ */
+export const CUSTOMER_FACING_MEMBERSHIP_ROLES: ReadonlySet<string> = new Set([
+  "buyer",
+  "vendor_applicant",
+  "vendor",
+  "client",
+  "browser",
+  "learner",
+]);
+
+export function isOperatorMembershipRole(role: unknown): boolean {
+  const value = typeof role === "string" ? role.trim().toLowerCase() : "";
+  return value !== "" && !CUSTOMER_FACING_MEMBERSHIP_ROLES.has(value);
+}
+
 export type StaffRoleGrantRow = {
   role?: string | null;
   revoked_at?: string | null;

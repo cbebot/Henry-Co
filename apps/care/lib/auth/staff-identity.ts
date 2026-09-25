@@ -198,7 +198,7 @@ export async function syncStaffIdentity(
   } satisfies ProfileRecord & { role: StaffRole; is_frozen: boolean };
   const deletedAt =
     patch.deleted_at === undefined
-      ? pickFirstText(user?.app_metadata?.deleted_at, user?.user_metadata?.deleted_at)
+      ? pickFirstText(user?.app_metadata?.deleted_at) /* app_metadata only: user_metadata is self-writable and this is copied into app_metadata */
       : cleanText(patch.deleted_at);
 
   let created = false;
@@ -342,7 +342,7 @@ export async function reconcileStaffDirectory(): Promise<StaffDirectorySummary> 
         user.last_sign_in_at ?? null
       ) ?? null;
     const deletedAt =
-      pickFirstText(user.app_metadata?.deleted_at, user.user_metadata?.deleted_at) ?? null;
+      pickFirstText(user.app_metadata?.deleted_at) ?? null;
     const appRole = cleanText(user.app_metadata?.role);
     const userRole = cleanText(user.user_metadata?.role);
     const needsRepair =
