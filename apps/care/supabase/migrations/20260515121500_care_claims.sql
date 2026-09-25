@@ -19,6 +19,17 @@
 --   - Care staff (manager+, support+): SELECT all, UPDATE for triage
 --     + resolution (status, owner_user_id, resolution_note, resolved_at).
 --
+-- V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24) — rebound to prod-actual columns:
+--   public.care_bookings has customer_id (FK auth.users) and email, NOT the
+--   user_id / email_normalized pair this file was written against (those were
+--   never added on prod — supabase/prod-actual/schema.sql). Ownership is now
+--   b.customer_id = auth.uid(), or a NULL-safe email match: nullif(...,'') on
+--   both sides so an empty/absent JWT email (phone-auth users) can never match
+--   a booking whose email is empty/NULL.
+--   Customer INSERT is also pinned to status='submitted' with no owner /
+--   resolution fields, so a direct PostgREST call cannot file a pre-approved
+--   claim (the route already sends 'submitted').
+--
 -- IDEMPOTENT: yes.
 
 create table if not exists public.care_claims (
@@ -70,6 +81,11 @@ create policy "care claims: customer insert own"
   for insert
   with check (
     opened_by_user_id = (select auth.uid())
+    -- FIX-01: a customer files a claim; only staff triage it.
+    and status = 'submitted'
+    and owner_user_id is null
+    and resolution_note is null
+    and resolved_at is null
     and (
       booking_id is null
       or exists (
@@ -77,9 +93,9 @@ create policy "care claims: customer insert own"
         from public.care_bookings b
         where b.id = care_claims.booking_id
           and (
-            b.user_id = (select auth.uid())
-            or lower(coalesce(b.email_normalized, '')) =
-               lower(coalesce(((select auth.jwt()) ->> 'email'), ''))
+            b.customer_id = (select auth.uid())
+            or nullif(lower(trim(b.email)), '') =
+               nullif(lower(trim((select auth.jwt()) ->> 'email')), '')
           )
       )
     )

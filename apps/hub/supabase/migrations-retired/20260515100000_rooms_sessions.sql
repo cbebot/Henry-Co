@@ -1,3 +1,34 @@
+-- ============================================================================
+-- RETIRED — DO NOT APPLY  (V3-ACTIVATION-RUNBOOK-FIX-01, 2026-09-24)
+-- ----------------------------------------------------------------------------
+-- The @henryco/rooms migration family (7 files, 20260515100000..100600) is
+-- retired, not repaired:
+--   * Dead code on main: no app depends on or imports @henryco/rooms
+--     (apps/*/package.json, all app sources); pillar-gap-map P10 records it as
+--     "fully built but unconsumed". Jobs interviews ship on their own
+--     jobs_interview_rooms table (Daily.co), which does not reference rooms_*.
+--   * Gaming chose Supabase Realtime over it for turn-based play
+--     (docs/v3/gaming/ARCHITECTURE.md §4, PHASED-PLAN.md).
+--   * Not applicable as authored: rooms_sessions' SELECT policy sub-selects
+--     rooms_participants, which FKs back to rooms_sessions (a cycle), so the
+--     first file fails and the other six cascade (runbook §2 ✗, §4).
+-- Moved out of supabase/migrations/ so no CLI path picks it up. The guard
+-- below (psql meta-command + DO-block raise) aborts before any DDL runs via
+-- psql -f (with or without ON_ERROR_STOP), the SQL editor or apply_migration.
+-- If rooms is ever revived (real-time gaming phase / live consults), re-author
+-- the family: create rooms_participants' dependency-free shape first, then
+-- attach the participant-subselect policy on rooms_sessions after it exists.
+-- ============================================================================
+\set ON_ERROR_STOP on
+do $retired$
+begin
+  raise exception 'RETIRED MIGRATION — DO NOT APPLY: %  (docs/v3/ACTIVATION-RUNBOOK-2026-09-24.md §4)', '20260515100000_rooms_sessions.sql';
+end
+$retired$;
+
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 -- V3 Wave A2 — Rooms infrastructure: rooms_sessions.
 --
 -- The canonical "room exists" row. One per audiovisual + collaborative
@@ -191,3 +222,5 @@ comment on column public.rooms_sessions.metadata is
   'Consumer-defined jsonb. Jobs interviews store '
   '{ jobId, applicationId, scorecardId }; Care consults store { bookingId }; '
   'Studio reviews store { projectId, milestoneId }. No PII keys.';
+
+===== end RETIRED BODY ===== */
