@@ -1257,7 +1257,7 @@
     ],
     "apps/care/app/(staff)/owner/impersonate/page.tsx": [
       {
-        "line": 186,
+        "line": 192,
         "col": 47,
         "kind": "jsx_text",
         "text": "No impersonation sessions recorded yet.",

@@ -117,6 +117,19 @@ jobs:
       - name: Test (@henryco/dashboard-modules-staff — lens gate + recommendation state)
         run: pnpm --filter @henryco/dashboard-modules-staff run test
 
+      # V3-STAFF-SELFGRANT-FIX-01 — the app-side identity rules: a non-customer
+      # profiles.role counts only with a live staff grant (fail-closed), customer-facing
+      # memberships are never staff, care never defaults a role, the impersonation
+      # session is sealed, and search never treats a vendor applicant as staff.
+      - name: Test (@henryco/config — staff-role grant + membership grant rules)
+        run: pnpm --filter @henryco/config run test
+
+      - name: Test (@henryco/search-core — role isolation + staff-grant resolution)
+        run: pnpm --filter @henryco/search-core run test
+
+      - name: Test (@henryco/care — provisioned-role resolution + sealed impersonation)
+        run: pnpm --filter @henryco/care run test
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
 
@@ -493,8 +506,12 @@ jobs:
       # divisions), so the invariant is load-bearing. The invariant then attacks as real
       # request roles: every exploit variant fails; each of the four write-path mechanisms
       # ALONE stops it; with every write guard stripped the grant-aware read path ALONE
-      # still confers nothing; and every genuine staff/owner path keeps working.
-      - name: Seed V3-STAFF-SELFGRANT-FIX-01 pre-fix surface (prod-actual profiles + is_staff_in) and prove the hole is live
+      # still confers nothing; and every genuine staff/owner path keeps working. Same
+      # class, same proof shape: owner_profiles self-promotion, customer KYC
+      # self-verification (the wallet-withdrawal gate), internal-comms thread escape and
+      # address-KYC self-marking — each proven live pre-fix, closed post-fix, closed by
+      # each layer alone, with the genuine flows intact.
+      - name: Seed V3-STAFF-SELFGRANT-FIX-01 pre-fix surface (prod-actual) and prove all five holes are live
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/staff_selfgrant_min.sql
 
       - name: Apply V3-STAFF-SELFGRANT-FIX-01 migration (fresh)
