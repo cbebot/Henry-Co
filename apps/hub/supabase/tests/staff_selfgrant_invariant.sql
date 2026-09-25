@@ -264,6 +264,35 @@ begin
   end loop;
 end $s2$;
 
+-- ═══ §2b W3 alone guards EVERY non-cosmetic column (round-1 F2) ═════════════
+do $s2b$
+declare
+  c constant uuid := '5e1f0000-0000-4000-8000-000000000005';
+  col text;
+  blocked boolean;
+begin
+  foreach col in array array['is_active = false', 'deleted_at = now()', 'archived_at = now()',
+      'legal_hold_reason = ''x''', 'retention_hold_until = now()', 'force_signout_at = now()',
+      'disabled_reason = ''x''', 'is_frozen = true', 'force_reauth_after = now()',
+      'created_at = ''2000-01-01''', 'wallet_balance_ngn = 999'] loop
+    blocked := false;
+    begin
+      grant update on table public.profiles to authenticated;          -- W1 regressed
+      alter table public.profiles disable trigger trg_profiles_protect_sensitive_fields;
+      begin
+        perform pg_temp.as_user(c);
+        execute format('update public.profiles set %s where id = %L', col, c);
+      exception when insufficient_privilege then blocked := true;
+      end;
+      reset role;
+      raise exception using errcode = 'P0SG5', message = 'rollback';
+    exception when sqlstate 'P0SG5' then null;
+    end;
+    if not blocked then raise exception 'FAIL §2b: W3 let a request role set %', col; end if;
+  end loop;
+  raise notice '§2b W3 alone blocks every non-cosmetic self-edit OK';
+end $s2b$;
+
 -- ═══ §3 LAYER R alone (every write guard removed) ═══════════════════════════
 do $s3$
 declare
@@ -388,6 +417,13 @@ begin
   end if;
   reset role;
 
+  -- G4b a self-served vendor application is NOT marketplace staff (round-1 app finding 1)
+  perform pg_temp.as_user('5e1f0000-0000-4000-8000-00000000000d');
+  if public.is_staff_in('marketplace') or public.is_staff_in_any() then
+    raise exception 'FAIL G4b: vendor_applicant membership reads as staff';
+  end if;
+  reset role;
+
   -- G5 customer: reads own row, edits cosmetic fields, is not staff
   perform pg_temp.as_user(cust_u);
   update public.profiles set full_name = 'Renamed Customer', phone = '+2340000' where id = cust_u;
@@ -476,6 +512,13 @@ begin
     perform pg_temp.as_user(viewer_u);
     update public.owner_profiles set role = 'owner' where user_id = viewer_u;
     raise exception 'FAIL O1: owner_profiles viewer self-promoted';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  begin
+    perform pg_temp.as_user(viewer_u);
+    update public.owner_profiles set email = 'legacy.owner+x@sg.test' where user_id = viewer_u;
+    raise exception 'FAIL O1b: owner_profiles viewer changed its email';
   exception when insufficient_privilege then null;
   end;
   reset role;

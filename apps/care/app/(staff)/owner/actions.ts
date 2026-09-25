@@ -5,6 +5,7 @@ import { createHmac, randomBytes, randomUUID, timingSafeEqual } from "crypto";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { readVerifiedProfileRole } from "@henryco/config";
 import { createStaffAccessLink, findAuthUserByEmail } from "@/lib/auth/recovery-links";
 import { STAFF_LOGIN_ROUTE, STAFF_RECOVERY_ROUTE } from "@/lib/auth/routes";
 import { syncStaffIdentity } from "@/lib/auth/staff-identity";
@@ -261,7 +262,7 @@ async function validatePostedActor(
     }
 
     const liveRole = resolveLiveStaffRole({
-      profileRole: (profile as any)?.role ?? null,
+      profileRole: await readVerifiedProfileRole(supabase, actorUserId, (profile as any)?.role),
       appRole: (user as any)?.app_metadata?.role ?? null,
     });
     const currentSessionTs = user?.last_sign_in_at
@@ -759,7 +760,8 @@ function extractConstraintName(message?: string | null, detail?: string | null) 
 }
 
 function isProvisioningSlotUser(user?: any) {
-  return Boolean(user?.app_metadata?.provisioning_slot ?? user?.user_metadata?.provisioning_slot);
+  // app_metadata only: user_metadata is self-writable, and a slot is recycled into staff.
+  return Boolean(user?.app_metadata?.provisioning_slot);
 }
 
 function isProfilesRoleConstraintBlock(error?: StaffProvisioningAuthError | { message?: string | null; detail?: string | null; constraint?: string | null } | null) {
@@ -917,7 +919,8 @@ async function findReusableProvisioningSlot(): Promise<ReusableProvisioningSlot 
     const users = data.users || [];
 
     for (const user of users) {
-      const deletedAt = String(user.app_metadata?.deleted_at || user.user_metadata?.deleted_at || "").trim();
+      // app_metadata only: a self-set user_metadata.deleted_at must not make a customer a recyclable slot.
+      const deletedAt = String(user.app_metadata?.deleted_at || "").trim();
       if (!deletedAt) continue;
 
       const role = resolveLiveStaffRole({

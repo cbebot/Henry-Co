@@ -598,7 +598,9 @@ function readUserRole(user: AuthUserRecord, matchingPerson?: JsonRecord | null) 
     toText(user.app_metadata?.role) ||
     toText(matchingPerson?.role_label) ||
     toText(matchingPerson?.role_title) ||
-    "staff"
+    // V3-STAFF-SELFGRANT-FIX-01: an account with no server-set role is a customer, never
+    // "staff" by default (saving the card would otherwise write app_metadata.role=staff).
+    "customer"
   );
 }
 
@@ -606,7 +608,7 @@ function readUserDivision(user: AuthUserRecord, matchingPerson?: JsonRecord | nu
   const henrycoMeta = readNestedRecord(user.app_metadata || null, "henryco");
   return (
     normalizeDivisionSlug(henrycoMeta?.division) ||
-    normalizeDivisionSlug(user.user_metadata?.division) ||
+    // never user_metadata.division (self-writable)
     normalizeDivisionSlug(matchingPerson?.division_slug) ||
     null
   );
@@ -635,8 +637,8 @@ function buildWorkforceMembers(dataset: Awaited<ReturnType<typeof getOwnerBaseDa
     const division = readUserDivision(user, matchingPerson);
     const henrycoMeta = readNestedRecord(user.app_metadata || null, "henryco");
     const permissions = [
+      // app_metadata only — user_metadata.permissions is self-writable.
       ...readStringArray(henrycoMeta?.permissions),
-      ...readStringArray(user.user_metadata?.permissions),
     ].filter((value, index, array) => array.indexOf(value) === index);
     const bannedUntil = toDate(user.banned_until);
     const suspended = bannedUntil ? bannedUntil.getTime() > Date.now() : false;

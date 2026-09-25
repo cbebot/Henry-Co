@@ -15,4 +15,5 @@ export * from "./surfaces";
 export * from "./seo";
 export * from "./security-headers";
 export * from "./membership-grant";
+export * from "./staff-role-grant";
 export * from "./deals";

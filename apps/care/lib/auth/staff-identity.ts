@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import { resolveProvisionedStaffRole, type StaffRole } from "@/lib/auth/roles";
+import { readVerifiedProfileRole, readVerifiedProfileRoles } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 
 type ProfileRecord = {
@@ -97,7 +98,8 @@ function extractProfileSeed(user?: User | null) {
 }
 
 function isProvisioningSlotUser(user?: User | null) {
-  return Boolean(user?.app_metadata?.provisioning_slot ?? user?.user_metadata?.provisioning_slot);
+  // app_metadata only: user_metadata is self-writable.
+  return Boolean(user?.app_metadata?.provisioning_slot);
 }
 
 export async function syncStaffIdentity(
@@ -139,10 +141,12 @@ export async function syncStaffIdentity(
   // a customer who signed in at the staff login, completed staff password recovery, or was
   // merely listed by reconcileStaffDirectory() be silently promoted. Now: no provisioned
   // staff role ⇒ refuse, write nothing.
+  // …and the existing profiles.role counts only with a live staff_role_grants row, so a
+  // forged row can never be re-asserted (laundered) through this service-role write.
   const resolvedRole = resolveProvisionedStaffRole({
     patchRole: patch.role,
     appMetadataRole: user?.app_metadata?.role,
-    profileRole: existingProfile?.role,
+    profileRole: await readVerifiedProfileRole(supabase, userId, existingProfile?.role),
   });
   if (!resolvedRole) {
     return {
@@ -306,6 +310,7 @@ export async function reconcileStaffDirectory(): Promise<StaffDirectorySummary> 
   const users = authUsersResult.data?.users ?? [];
   const profiles = (profilesData ?? []) as ProfileRecord[];
   const profileMap = new Map(profiles.map((profile) => [profile.id, profile]));
+  const verifiedProfileRoles = await readVerifiedProfileRoles(supabase, profiles);
   const hiddenProfileIds = new Set<string>();
   const rows: StaffDirectoryRow[] = [];
 
@@ -325,7 +330,7 @@ export async function reconcileStaffDirectory(): Promise<StaffDirectorySummary> 
     // so merely opening the owner's staff/security page promoted ordinary customers.
     const expectedRole = resolveProvisionedStaffRole({
       appMetadataRole: user.app_metadata?.role,
-      profileRole: existingProfile?.role,
+      profileRole: verifiedProfileRoles.get(user.id) ?? null,
     });
     if (!expectedRole) {
       continue;
@@ -402,7 +407,9 @@ export async function reconcileStaffDirectory(): Promise<StaffDirectorySummary> 
   for (const profile of profileMap.values()) {
     if (hiddenProfileIds.has(profile.id)) continue;
     if (rows.some((row) => row.id === profile.id)) continue;
-    const profileStaffRole = resolveProvisionedStaffRole({ profileRole: profile.role });
+    const profileStaffRole = resolveProvisionedStaffRole({
+      profileRole: verifiedProfileRoles.get(profile.id) ?? null,
+    });
     if (!profileStaffRole) continue;
 
     rows.push({

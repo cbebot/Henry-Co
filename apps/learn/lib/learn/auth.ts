@@ -5,6 +5,7 @@ import {
   filterGrantedMemberships,
   isRecoverableSupabaseAuthError,
   resolveUserAvatarFromSources,
+  readVerifiedProfileRole,
 } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getAccountLearnUrl, getSharedAuthUrl } from "@/lib/learn/links";
@@ -168,7 +169,7 @@ export async function getLearnViewer(): Promise<LearnViewer> {
     );
 
     const baseRoles = mapSharedRoleToLearnRoles(
-      profile?.role ||
+      (await readVerifiedProfileRole(admin, user.id, profile?.role)) ||
         // V3-STAFF-SELFGRANT-FIX-01: never user_metadata (self-writable via auth.updateUser).
         (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null)
     );

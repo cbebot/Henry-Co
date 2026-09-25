@@ -6,6 +6,7 @@ import {
   filterGrantedMemberships,
   isRecoverableSupabaseAuthError,
   resolveUserAvatarFromSources,
+  readVerifiedProfileRole,
 } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { getStudioAccountUrl, getStudioLoginUrl } from "@/lib/studio/links";
@@ -145,7 +146,7 @@ export async function getStudioViewer(): Promise<StudioViewer> {
   });
 
   const baseRoles = mapSharedRoleToStudioRoles(
-    profile?.role ||
+    (await readVerifiedProfileRole(admin, user.id, profile?.role)) ||
       // V3-STAFF-SELFGRANT-FIX-01: never user_metadata (self-writable via auth.updateUser).
       (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null)
   );

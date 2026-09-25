@@ -7,7 +7,9 @@ import {
   buildSharedCookieHandlers,
   buildSupabaseCookieOptions,
   resolveRequestCookieDomain,
+  readVerifiedProfileRole,
 } from "@henryco/config";
+import { createAdminSupabase } from "@/lib/supabase";
 import { buildStaffLoginUrl } from "@/lib/auth/routes";
 import { homeForRole, normalizeRole, type AppRole } from "@/lib/auth/roles";
 import { getOptionalEnv } from "@/lib/env";
@@ -75,7 +77,12 @@ export async function getAuthenticatedProfile() {
   // (admin-API-only) or profiles — never user_metadata, which any signed-in user can
   // rewrite with supabase.auth.updateUser({ data }).
   const appRole = normalizeRole(user.app_metadata?.role as string | null | undefined);
-  const effectiveRole = appRole !== "customer" ? appRole : normalizeRole(profile?.role);
+  const verifiedProfileRole = await readVerifiedProfileRole(
+    createAdminSupabase(),
+    user.id,
+    profile?.role
+  );
+  const effectiveRole = appRole !== "customer" ? appRole : normalizeRole(verifiedProfileRole);
 
   const effectiveFrozen = Boolean(user.app_metadata?.is_frozen ?? profile?.is_frozen);
   const effectiveForceReauthAfter =

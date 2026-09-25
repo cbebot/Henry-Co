@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { readVerifiedProfileRole } from "@henryco/config";
 import { syncStaffIdentity } from "@/lib/auth/staff-identity";
 import { canAccessPath } from "@/lib/auth/permissions";
 import { createStaffAccessLink, findAuthUserByEmail } from "@/lib/auth/recovery-links";
@@ -220,7 +221,8 @@ export async function loginAction(formData: FormData) {
   // user_metadata is self-writable (auth.updateUser) and flows into a SERVICE-ROLE
   // profiles write below — trusting it let any user without a profiles row mint staff.
   const seededRole = isStaffRole(user.app_metadata?.role) ? user.app_metadata.role : null;
-  const profileRole = isStaffRole(existingProfile?.role) ? existingProfile.role : null;
+  const verifiedExistingRole = await readVerifiedProfileRole(admin, user.id, existingProfile?.role);
+  const profileRole = isStaffRole(verifiedExistingRole) ? verifiedExistingRole : null;
 
   if (!existingProfile?.id && !seededRole) {
     await supabase.auth.signOut();

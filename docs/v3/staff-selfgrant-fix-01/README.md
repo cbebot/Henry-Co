@@ -32,11 +32,10 @@
 
 ## Day-of (see runbook §6 step "STAFF-SELFGRANT")
 
-1. Run §6.2 and §6.3 **first** and record the verdicts. ⚠ This migration also makes `is_owner()` SECURITY DEFINER, which is exactly §6.2's probe for row #65 `hub_security_hardening`. Take #65's verdict from this pre-apply run; if it said UNAPPLIED, apply #65 anyway later.
-2. Run **`review-staff-grants.sql`** (read-only; R1–R4 one at a time) and save every result.
-3. Apply `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` (one `apply_migration`, name `v3_staff_selfgrant_fix_01`).
-4. Post-apply check: `select count(*) from public.staff_role_grants where revoked_at is null` equals R1 `non_customer_profiles`, and `select public.is_owner()` works as a signed-in user.
-5. The owner reviews R2 (population A) and R3 (population B, app-metadata-only staff), then fills `remediate-self-granted-staff.sql` step 1 → dry run (ROLLBACK) → check step 7 → change to COMMIT → run.
-6. Deploy the app changes: they are safe before or after the migration and close holes 2–4 independently.
+1. Run §6.2 and §6.3 **first**, and record the verdicts, including G10 (auth users with no profiles row = the exposed population). ⚠ This migration also makes `is_owner()` SECURITY DEFINER, which is exactly §6.2's probe for row #65 `hub_security_hardening`. Take #65's verdict from this pre-apply run, and if it said UNAPPLIED, apply #65 anyway.
+2. **Apply** `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` right away: one `apply_migration`, named `v3_staff_selfgrant_fix_01`. It refuses to apply unless `postgres` / `service_role` can bypass RLS (trust-anchor precondition). It locks the write path **before** backfilling, and it aborts if any non-customer row ends up without an active matching grant.
+3. Run **`review-staff-grants.sql`** (read-only; R1–R4, one block at a time) **after** the apply, and save every result. Nothing can be self-granted any more, so the list is final. Check that R1 `unbacked_non_customer_rows_expect_0` = 0. In R2, `grant_source = backfill:…` marks every row that existed before the fix.
+4. The owner judges R2 (population A: DB-level staff) and R3 (population B: app-metadata-only staff, e.g. customers the old care reconcile auto-promoted). Put the illegitimate ids into `remediate-self-granted-staff.sql` step 1 → dry run (ROLLBACK) → check step 7 → change the last line to COMMIT → run.
+5. Deploy the app changes. They are safe before or after the migration: the grant-aware reads fall back to today's behavior only while `staff_role_grants` does not exist. They close holes 2–4 independently.
 
 Files: `review-staff-grants.sql`, `remediate-self-granted-staff.sql` (both also in `Downloads\`).

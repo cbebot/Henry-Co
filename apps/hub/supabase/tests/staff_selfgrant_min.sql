@@ -370,7 +370,8 @@ insert into auth.users (id, email, raw_user_meta_data) values
   ('5e1f0000-0000-4000-8000-000000000008', 'owner.viewer@sg.test',    '{}'),  -- owner_profiles 'viewer' (self-promotion attacker)
   ('5e1f0000-0000-4000-8000-000000000009', 'mkt.staff@sg.test',       '{}'),  -- divisional (marketplace) staff, customer profile
   ('5e1f0000-0000-4000-8000-00000000000a', 'new.staff@sg.test',       '{}'),  -- no row; to be provisioned by the service role
-  ('5e1f0000-0000-4000-8000-00000000000b', 'promotee@sg.test',        '{}')   -- customer; to be promoted by the owner
+  ('5e1f0000-0000-4000-8000-00000000000b', 'promotee@sg.test',        '{}'),  -- customer; to be promoted by the owner
+  ('5e1f0000-0000-4000-8000-00000000000d', 'vendor.applicant@sg.test','{}')   -- customer who self-served a vendor application
 on conflict (id) do nothing;
 insert into public.profiles (id, role, full_name) values
   ('5e1f0000-0000-4000-8000-000000000001', 'staff',    'Legacy Staff'),
@@ -380,7 +381,8 @@ insert into public.profiles (id, role, full_name) values
   ('5e1f0000-0000-4000-8000-000000000005', 'customer', 'A Customer'),
   ('5e1f0000-0000-4000-8000-000000000008', 'customer', 'Owner Viewer'),
   ('5e1f0000-0000-4000-8000-000000000009', 'customer', 'Mkt Staff'),
-  ('5e1f0000-0000-4000-8000-00000000000b', 'customer', 'Promotee')
+  ('5e1f0000-0000-4000-8000-00000000000b', 'customer', 'Promotee'),
+  ('5e1f0000-0000-4000-8000-00000000000d', 'customer', 'Vendor Applicant')
 on conflict (id) do nothing;
 insert into public.owner_profiles (user_id, email, role, is_active) values
   ('5e1f0000-0000-4000-8000-000000000002', 'legacy.owner@sg.test', 'owner',  true),
@@ -390,6 +392,11 @@ insert into public.marketplace_role_memberships (user_id, role, is_active)
 select '5e1f0000-0000-4000-8000-000000000009', 'marketplace_admin', true
 where not exists (select 1 from public.marketplace_role_memberships
                   where user_id = '5e1f0000-0000-4000-8000-000000000009');
+-- what /api/marketplace vendor_apply upserts (service role) for ANY signed-in caller
+insert into public.marketplace_role_memberships (user_id, role, is_active)
+select '5e1f0000-0000-4000-8000-00000000000d', 'vendor_applicant', true
+where not exists (select 1 from public.marketplace_role_memberships
+                  where user_id = '5e1f0000-0000-4000-8000-00000000000d');
 set session_replication_role = origin;
 
 -- ── Load-bearing proof: the hole is LIVE before the fix ──────────────────────
@@ -412,6 +419,17 @@ begin
     raise exception using errcode = 'P0SG1', message = 'rollback';
   exception when sqlstate 'P0SG1' then
     reset role;
+  end;
+  -- and a self-served vendor application reads as marketplace STAFF pre-fix
+  begin
+    perform set_config('request.jwt.claims',
+      '{"sub":"5e1f0000-0000-4000-8000-00000000000d","role":"authenticated"}', true);
+    set local role authenticated;
+    select public.is_staff_in('marketplace') and public.is_staff_in_any() into v_ok;
+    reset role;
+    if not coalesce(v_ok, false) then
+      raise exception 'FIXTURE NOT LOAD-BEARING: vendor applicant was not marketplace staff pre-fix';
+    end if;
   end;
   raise notice 'staff_selfgrant_min: PRE-FIX HOLE CONFIRMED (self-insert role=staff => staff in care/logistics/jobs/hub/staff/account)';
 end $prefix$;

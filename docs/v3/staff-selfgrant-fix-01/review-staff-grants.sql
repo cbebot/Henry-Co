@@ -1,7 +1,10 @@
 -- ============================================================================
 -- V3-STAFF-SELFGRANT-FIX-01 — DAY-OF REVIEW (READ-ONLY). Runbook §6.3 "G10b".
--- Run in the Supabase SQL editor BEFORE applying
--- 20260924120000_v3_staff_selfgrant_fix_01.sql. Changes nothing.
+-- Run in the Supabase SQL editor AFTER applying
+-- 20260924120000_v3_staff_selfgrant_fix_01.sql (the apply closes the write path first,
+-- so this list is final — nothing can be self-granted after it). Changes nothing.
+-- R2's grant_source 'backfill:v3_staff_selfgrant_fix_01' marks every row that existed
+-- before the fix: exactly the population the owner must judge.
 --
 -- The SQL editor shows only the LAST result set, so run each numbered block on its
 -- own and save every result. The owner then decides, row by row, which accounts are
@@ -22,7 +25,11 @@ select
     left join public.profiles p on p.id = u.id
     where lower(coalesce(u.raw_app_meta_data ->> 'role', '')) in ('owner','manager','rider','support','staff')
       and lower(coalesce(p.role, 'customer')) = 'customer')                           as app_metadata_only_staff,
-  (select count(*) from public.owner_profiles where role <> 'owner')                  as owner_console_non_owner_rows;
+  (select count(*) from public.owner_profiles where role <> 'owner')                  as owner_console_non_owner_rows,
+  (select count(*) from public.staff_role_grants where revoked_at is null)            as active_grants,
+  (select count(*) from public.profiles p where lower(p.role) <> 'customer'
+     and not exists (select 1 from public.staff_role_grants g where g.user_id = p.id
+                     and g.revoked_at is null and g.role = lower(p.role)))            as unbacked_non_customer_rows_expect_0;
 
 -- ── R2 · Every non-customer profiles row, with evidence (population A) ───────
 -- verdict_hint is a HINT, not a verdict:
@@ -54,6 +61,8 @@ select
   u.last_sign_in_at,
   (u.email_confirmed_at is not null)                     as email_confirmed,
   p.is_active, p.is_frozen,
+  g.source                                               as grant_source,
+  (g.revoked_at is null)                                 as grant_active,
   case
     when coalesce(u.raw_app_meta_data ->> 'role', '') = ''                        then 'SELF-INSERT-SHAPED'
     when lower(u.raw_app_meta_data ->> 'role') <> lower(p.role)                   then 'METADATA-MISMATCH'
@@ -62,6 +71,7 @@ select
 from public.profiles p
 join auth.users u on u.id = p.id
 left join public.owner_profiles op on op.user_id = p.id
+left join public.staff_role_grants g on g.user_id = p.id
 where lower(p.role) <> 'customer'
 order by verdict_hint, p.created_at desc;
 

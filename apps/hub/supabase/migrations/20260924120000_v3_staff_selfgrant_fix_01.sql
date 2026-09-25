@@ -56,10 +56,29 @@
 -- script (docs/v3/staff-selfgrant-fix-01/remediate-self-granted-staff.sql).
 -- ─────────────────────────────────────────────────────────────────────────────
 
+-- ── (0) Preconditions — the trust anchor must hold on THIS platform ──────────
+-- Signup (handle_new_user) and the owner RPCs are SECURITY DEFINER bodies owned by
+-- postgres; they are "trusted" only if their owner can bypass RLS. On a platform where
+-- that is false the W3 guard would reject every signup — so refuse to apply instead.
 do $guard$
+declare
+  v_bad text;
 begin
-  if to_regclass('public.profiles') is null then
-    raise notice 'V3-STAFF-SELFGRANT-FIX-01: public.profiles absent — nothing to do';
+  select string_agg(r.rolname, ', ') into v_bad
+  from pg_catalog.pg_roles r
+  where r.rolname in ('postgres', 'service_role')
+    and not (r.rolsuper or r.rolbypassrls);
+  if v_bad is not null then
+    raise exception 'V3-STAFF-SELFGRANT-FIX-01: role(s) % lack BYPASSRLS/SUPERUSER — trust anchor would not hold', v_bad;
+  end if;
+  select string_agg(p.oid::regprocedure::text || ' owned by ' || r.rolname, ', ') into v_bad
+  from pg_catalog.pg_proc p
+  join pg_catalog.pg_roles r on r.oid = p.proowner
+  where p.oid in (to_regprocedure('public.handle_new_user()'),
+                  to_regprocedure('public.admin_set_profile_role(uuid,text)'))
+    and not (r.rolsuper or r.rolbypassrls);
+  if v_bad is not null then
+    raise exception 'V3-STAFF-SELFGRANT-FIX-01: % — its owner cannot bypass RLS, so the guard would block it', v_bad;
   end if;
 end $guard$;
 
@@ -85,17 +104,6 @@ alter table public.staff_role_grants enable row level security;
 revoke all on table public.staff_role_grants from public, anon, authenticated;
 grant select, insert, update, delete on table public.staff_role_grants to service_role;
 
--- ── (2) Backfill genuine staff BEFORE any guard can reject their rows ────────
-do $backfill$
-begin
-  if to_regclass('public.profiles') is null then return; end if;
-  insert into public.staff_role_grants (user_id, role, source, granted_by_role)
-  select p.id, lower(p.role), 'backfill:v3_staff_selfgrant_fix_01', current_user
-  from public.profiles p
-  where lower(coalesce(p.role, '')) not in ('', 'customer')
-    and exists (select 1 from auth.users u where u.id = p.id)
-  on conflict (user_id) do nothing;
-end $backfill$;
 
 -- ── (3) W3 — BEFORE INSERT/UPDATE guard on profiles (SECURITY INVOKER) ───────
 create or replace function public.profiles_block_self_grant()
@@ -122,23 +130,14 @@ begin
       raise exception 'profiles: a request role may only create a customer profile'
         using errcode = '42501';
     end if;
-    -- A self-created row always starts from server defaults for every sensitive column.
-    new.role := 'customer';
-    new.wallet_balance_ngn := 0;
-    new.is_active := true;
-    new.is_frozen := false;
-    new.frozen_at := null;
-    new.frozen_reason := null;
-    new.forced_signout_at := null;
-    new.force_signout_at := null;
-    new.force_reauth_after := null;
-    new.disabled_reason := null;
-    new.archived_at := null;
-    new.archive_reason := null;
-    new.deleted_at := null;
-    new.deleted_reason := null;
-    new.retention_hold_until := null;
-    new.legal_hold_reason := null;
+    -- A self-created row always starts from server defaults for every sensitive column
+    -- (jsonb_populate_record ignores keys a given schema does not have).
+    new := jsonb_populate_record(new, jsonb_build_object(
+      'role', 'customer', 'wallet_balance_ngn', 0, 'is_active', true, 'is_frozen', false,
+      'frozen_at', null, 'frozen_reason', null, 'forced_signout_at', null,
+      'force_signout_at', null, 'force_reauth_after', null, 'disabled_reason', null,
+      'archived_at', null, 'archive_reason', null, 'deleted_at', null,
+      'deleted_reason', null, 'retention_hold_until', null, 'legal_hold_reason', null));
     return new;
   end if;
 
@@ -150,8 +149,12 @@ begin
     raise exception 'profiles: role changes go through admin_set_profile_role() or the service role'
       using errcode = '42501';
   end if;
-  if new.wallet_balance_ngn is distinct from old.wallet_balance_ngn then
-    raise exception 'profiles: wallet_balance_ngn is server-controlled' using errcode = '42501';
+  -- Every other column (freeze, re-auth, lifecycle, legal hold, money, created_at, …) is
+  -- server-controlled: a request role may change ONLY the cosmetic columns.
+  if (to_jsonb(new) - array['full_name', 'phone', 'avatar_url', 'updated_at'])
+     is distinct from (to_jsonb(old) - array['full_name', 'phone', 'avatar_url', 'updated_at']) then
+    raise exception 'profiles: only full_name, phone and avatar_url are self-editable'
+      using errcode = '42501';
   end if;
   return new;
 end
@@ -288,6 +291,23 @@ begin
   );
 end $wire$;
 
+-- ── (5b) Backfill genuine staff — AFTER the write path is locked down ─────────
+-- Ordering matters (adversarial round 1, F1): the lockdown above takes ACCESS EXCLUSIVE
+-- on profiles (DROP POLICY), so no request-role self-insert can land between the
+-- lockdown and this backfill. Anything that committed BEFORE the migration is backfilled
+-- and surfaces in the post-apply review (review-staff-grants.sql R2, grant source
+-- 'backfill:…') for the owner's remediation decision.
+do $backfill$
+begin
+  if to_regclass('public.profiles') is null then return; end if;
+  insert into public.staff_role_grants (user_id, role, source, granted_by_role)
+  select p.id, lower(p.role), 'backfill:v3_staff_selfgrant_fix_01', current_user
+  from public.profiles p
+  where lower(coalesce(p.role, '')) not in ('', 'customer')
+    and exists (select 1 from auth.users u where u.id = p.id)
+  on conflict (user_id) do nothing;
+end $backfill$;
+
 -- ── (6a) is_owner() — same predicate, SECURITY DEFINER ───────────────────────
 -- PRE-EXISTING BUG (reproduced on the prod-actual shadow): is_owner() is SECURITY
 -- INVOKER and reads owner_profiles, whose policy owner_profiles_select_self_or_owner
@@ -332,8 +352,9 @@ begin
   end if;
   if new.role is distinct from old.role
      or new.is_active is distinct from old.is_active
-     or new.user_id is distinct from old.user_id then
-    raise exception 'owner_profiles: role/is_active/user_id are owner-controlled'
+     or new.user_id is distinct from old.user_id
+     or new.email is distinct from old.email then
+    raise exception 'owner_profiles: role/is_active/user_id/email are owner-controlled'
       using errcode = '42501';
   end if;
   return new;
@@ -388,22 +409,29 @@ as $function$
       lower(coalesce(division_key, '')) as div,
       nullif(lower(coalesce(role_key, '')), '') as r
   ),
+  -- V3-STAFF-SELFGRANT-FIX-01: customer-facing membership roles are NOT staff. A
+  -- vendor application self-serves an active marketplace 'vendor_applicant' row, which
+  -- used to make is_staff_in('marketplace') true. Mirrors the apps' own *StaffRole sets.
   divisional as (
     select 'marketplace'::text as division, lower(role) as role
     from public.marketplace_role_memberships
     where is_active = true and user_id = (select uid from caller)
+      and lower(role) not in ('buyer', 'vendor_applicant', 'vendor')
     union all
     select 'studio'::text, lower(role)
     from public.studio_role_memberships
     where is_active = true and user_id = (select uid from caller)
+      and lower(role) <> 'client'
     union all
     select 'property'::text, lower(role)
     from public.property_role_memberships
     where is_active = true and user_id = (select uid from caller)
+      and lower(role) <> 'browser'
     union all
     select 'learn'::text, lower(role)
     from public.learn_role_memberships
     where is_active = true and user_id = (select uid from caller)
+      and lower(role) <> 'learner'
   ),
   -- V3-STAFF-SELFGRANT-FIX-01: a legacy profiles.role counts ONLY when a server-issued,
   -- user_id-bound staff_role_grants row carries the same role. A self-set column alone
@@ -470,22 +498,27 @@ as $function$
   with caller as (
     select auth.uid() as uid
   ),
+  -- Customer-facing membership roles are not staff (see is_staff_in above).
   divisional as (
     select 1
     from public.marketplace_role_memberships
     where is_active = true and user_id = (select uid from caller)
+      and lower(role) not in ('buyer', 'vendor_applicant', 'vendor')
     union all
     select 1
     from public.studio_role_memberships
     where is_active = true and user_id = (select uid from caller)
+      and lower(role) <> 'client'
     union all
     select 1
     from public.property_role_memberships
     where is_active = true and user_id = (select uid from caller)
+      and lower(role) <> 'browser'
     union all
     select 1
     from public.learn_role_memberships
     where is_active = true and user_id = (select uid from caller)
+      and lower(role) <> 'learner'
   ),
   legacy_profile as (
     -- Legacy fallback: care, logistics, jobs, hub, staff, account,
@@ -573,5 +606,26 @@ begin
       using ((select public.verified_profile_role()) = 'owner');
   end if;
 end $policies$;
+
+-- ── (9) Final consistency assertion ───────────────────────────────────────────
+-- After the backfill, every non-customer profiles.role must carry an active matching
+-- grant (so the app's grant-aware reads and the SQL read layer agree). Anything else
+-- aborts the whole apply.
+do $final$
+declare
+  v_n int;
+begin
+  if to_regclass('public.profiles') is null then return; end if;
+  select count(*) into v_n
+  from public.profiles p
+  where lower(coalesce(p.role, '')) not in ('', 'customer')
+    and not exists (
+      select 1 from public.staff_role_grants g
+      where g.user_id = p.id and g.revoked_at is null and g.role = lower(p.role)
+    );
+  if v_n > 0 then
+    raise exception 'V3-STAFF-SELFGRANT-FIX-01: % non-customer profiles row(s) lack an active matching grant', v_n;
+  end if;
+end $final$;
 
 -- end of migration --

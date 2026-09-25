@@ -6,6 +6,7 @@ import {
   filterGrantedMemberships,
   getAccountUrl,
   normalizeEmail,
+  readVerifiedProfileRole,
   type MembershipGrantRow,
 } from "@henryco/config";
 
@@ -155,9 +156,11 @@ async function readAccessSnapshot(user: {
         ).data
       : null);
 
+  // V3-STAFF-SELFGRANT-FIX-01: a non-customer profiles.role counts only with a live
+  // staff_role_grants row; never user_metadata (self-writable via auth.updateUser).
+  const verifiedProfileRole = await readVerifiedProfileRole(admin, user.id, profile?.role);
   const profileRole =
-    normalizeRole(profile?.role) ||
-    // V3-STAFF-SELFGRANT-FIX-01: never user_metadata (self-writable via auth.updateUser).
+    normalizeRole(verifiedProfileRole) ||
     normalizeRole(user.app_metadata?.role);
   const ownerRole = normalizeRole(ownerProfile?.role);
   const staffDivisionCount = staffMembershipResults.filter(Boolean).length;
@@ -237,7 +240,10 @@ async function readStaffMemberships(
     if (row) memberships.push(row);
   }
 
-  const profileRole = normalizeRole(profile.data?.role);
+  // V3-STAFF-SELFGRANT-FIX-01: legacy divisions only for a grant-verified profiles.role.
+  const profileRole = normalizeRole(
+    await readVerifiedProfileRole(admin, user.id, profile.data?.role),
+  );
   if (profileRole && INTERNAL_PROFILE_ROLES.has(profileRole)) {
     // Mirror the SQL function's legacy_resolved CTE — these divisions
     // confer access through the legacy profile role rather than a

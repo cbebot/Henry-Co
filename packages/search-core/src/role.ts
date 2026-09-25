@@ -25,6 +25,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { readVerifiedProfileRole } from "@henryco/config";
 
 import type { CollectionDefinition } from "./collections";
 import type { SearchRoleVisibility } from "./types";
@@ -84,7 +85,11 @@ export async function resolveUserRoles(
       supabase.from("learn_role_memberships").select("role").eq("user_id", user_id),
     ]);
 
-    const profileRole = String(profile.data?.role ?? "").toLowerCase();
+    // V3-STAFF-SELFGRANT-FIX-01: a non-customer profiles.role counts only with a live
+    // staff_role_grants row (fails closed; passes through only before the migration).
+    const profileRole = String(
+      (await readVerifiedProfileRole(supabase, user_id, profile.data?.role)) ?? ""
+    ).toLowerCase();
     if (
       profileRole === "owner" ||
       profileRole === "platform_owner" ||

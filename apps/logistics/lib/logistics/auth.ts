@@ -1,7 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-import { filterGrantedMemberships, isRecoverableSupabaseAuthError } from "@henryco/config";
+import { filterGrantedMemberships, isRecoverableSupabaseAuthError, readVerifiedProfileRole } from "@henryco/config";
 import { normalizeEmail } from "@/lib/env";
 import { getLogisticsSharedLoginUrl } from "@/lib/logistics-public-links";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -107,7 +107,7 @@ export async function getLogisticsViewer(): Promise<LogisticsViewer> {
   });
 
   const baseRoles = mapSharedRoleToLogisticsRoles(
-    profile?.role ||
+    (await readVerifiedProfileRole(admin, user.id, profile?.role)) ||
       // V3-STAFF-SELFGRANT-FIX-01: never user_metadata (self-writable via auth.updateUser).
       (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null)
   );

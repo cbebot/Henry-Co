@@ -9,6 +9,7 @@ import {
   filterGrantedMemberships,
   isRecoverableSupabaseAuthError,
   resolveRequestCookieDomain,
+  readVerifiedProfileRole,
 } from "@henryco/config";
 import { createAdminSupabase } from "@/app/lib/supabase-admin";
 import {
@@ -195,7 +196,7 @@ export async function getWorkspaceViewer(): Promise<WorkspaceViewer> {
     .maybeSingle<SharedProfile>();
 
   const profileRole =
-    profile?.role ||
+    (await readVerifiedProfileRole(admin, user.id, profile?.role)) ||
     // V3-STAFF-SELFGRANT-FIX-01: never user_metadata (self-writable via auth.updateUser).
     (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null) ||
     null;
