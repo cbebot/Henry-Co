@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { readVerifiedProfileRole } from "@henryco/config";
 import { syncStaffIdentity } from "@/lib/auth/staff-identity";
 import { canAccessPath } from "@/lib/auth/permissions";
 import { createStaffAccessLink, findAuthUserByEmail } from "@/lib/auth/recovery-links";
@@ -216,12 +217,12 @@ export async function loginAction(formData: FormData) {
     });
   }
 
-  const seededRole = isStaffRole(user.app_metadata?.role)
-    ? user.app_metadata.role
-    : isStaffRole(user.user_metadata?.role)
-    ? user.user_metadata.role
-    : null;
-  const profileRole = isStaffRole(existingProfile?.role) ? existingProfile.role : null;
+  // V3-STAFF-SELFGRANT-FIX-01: only the admin-set app_metadata may seed a staff role.
+  // user_metadata is self-writable (auth.updateUser) and flows into a SERVICE-ROLE
+  // profiles write below — trusting it let any user without a profiles row mint staff.
+  const seededRole = isStaffRole(user.app_metadata?.role) ? user.app_metadata.role : null;
+  const verifiedExistingRole = await readVerifiedProfileRole(admin, user.id, existingProfile?.role);
+  const profileRole = isStaffRole(verifiedExistingRole) ? verifiedExistingRole : null;
 
   if (!existingProfile?.id && !seededRole) {
     await supabase.auth.signOut();
@@ -451,10 +452,7 @@ export async function sendRecoveryLinkAction(formData: FormData) {
     });
   }
 
-  const role =
-    (isStaffRole(authUser.app_metadata?.role) ? authUser.app_metadata.role : null) ||
-    (isStaffRole(authUser.user_metadata?.role) ? authUser.user_metadata.role : null) ||
-    null;
+  const role = isStaffRole(authUser.app_metadata?.role) ? authUser.app_metadata.role : null;
 
   const recoveryResult = await sendPasswordRecoveryEmail(email, {
     staffName:
@@ -559,10 +557,7 @@ export async function completeRecoveryPasswordAction(formData: FormData) {
     // best-effort identity cleanup after password recovery
   }
 
-  const role = normalizeRole(
-    (authUser.app_metadata?.role as string | null | undefined) ??
-      (authUser.user_metadata?.role as string | null | undefined)
-  );
+  const role = normalizeRole(authUser.app_metadata?.role as string | null | undefined);
   const destination = homeForRole(role);
 
   await writeSecurityLog({

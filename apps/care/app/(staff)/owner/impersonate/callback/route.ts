@@ -6,11 +6,13 @@ import {
   buildSupabaseCookieOptions,
   getSharedCookieDomain,
 } from "@henryco/config";
+import { safeRelativeRedirect } from "@/lib/auth/impersonation-session";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const tokenHash = searchParams.get("token_hash");
-  const next = searchParams.get("next") || "/";
+  // Same-origin paths only (was an open redirect: next=https://… or //…).
+  const next = safeRelativeRedirect(searchParams.get("next"));
 
   if (!tokenHash) {
     return NextResponse.redirect(new URL("/owner", request.url));

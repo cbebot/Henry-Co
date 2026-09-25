@@ -6,6 +6,7 @@ import {
   isRecoverableSupabaseAuthError,
   normalizeEmail,
   resolveUserAvatarFromSources,
+  readVerifiedProfileRole,
 } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -146,9 +147,9 @@ export async function getPropertyViewer(): Promise<PropertyViewer> {
     "browser",
     ...memberships.map((membership) => membership.role),
     ...mapLegacyRole(
-      profile?.role ||
-        (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null) ||
-        (typeof user.user_metadata?.role === "string" ? user.user_metadata.role : null)
+      (await readVerifiedProfileRole(admin, user.id, profile?.role)) ||
+        // V3-STAFF-SELFGRANT-FIX-01 (closes FIRE PROP-1): never user_metadata.
+        (typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null)
     ),
   ]);
 

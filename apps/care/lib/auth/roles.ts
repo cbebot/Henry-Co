@@ -31,6 +31,27 @@ export function normalizeRole(value: string | null | undefined): AppRole {
   return "customer";
 }
 
+/**
+ * V3-STAFF-SELFGRANT-FIX-01 — the ONE answer to "is this account provisioned care staff,
+ * and as what?". Server-controlled sources only, in precedence order: an explicit
+ * owner-issued patch, the admin-API-only app_metadata.role, the existing profiles.role.
+ * user_metadata is self-writable (supabase.auth.updateUser) and is deliberately NOT an
+ * input. There is NO default: an account with no provisioned staff role resolves to null,
+ * and callers must refuse rather than write a role.
+ */
+export function resolveProvisionedStaffRole(sources: {
+  patchRole?: unknown;
+  appMetadataRole?: unknown;
+  profileRole?: unknown;
+}): StaffRole | null {
+  for (const value of [sources.patchRole, sources.appMetadataRole, sources.profileRole]) {
+    if (typeof value !== "string") continue;
+    const role = value.trim().toLowerCase();
+    if (isStaffRole(role)) return role;
+  }
+  return null;
+}
+
 export function isOwner(role: string | null | undefined) {
   return normalizeRole(role) === "owner";
 }

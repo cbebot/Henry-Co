@@ -1,7 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
-import { getDivisionUrl } from "@henryco/config";
+import { getDivisionUrl, readVerifiedProfileRoles } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { normalizeEmail, slugify } from "@/lib/env";
 import { uploadJobsCandidateDocument } from "@/lib/jobs/media";
@@ -248,6 +248,12 @@ async function getInternalAlertRecipients() {
     admin.auth.admin.listUsers({ page: 1, perPage: 200 }),
   ]);
 
+  // V3-STAFF-SELFGRANT-FIX-01: only grant-verified staff receive internal alerts.
+  const verifiedStaffRoles = await readVerifiedProfileRoles(
+    admin,
+    (profilesRes.data ?? []) as Array<{ id: string; role?: string | null }>
+  );
+
   const emailByUserId = new Map<string, string>();
   for (const user of usersRes.data?.users ?? []) {
     if (user.id && user.email) {
@@ -264,7 +270,9 @@ async function getInternalAlertRecipients() {
         email: asText(item.email as string) || emailByUserId.get(asText(item.user_id as string)) || "",
       };
     }),
-    ...(profilesRes.data ?? []).map((row) => {
+    ...(profilesRes.data ?? [])
+      .filter((row) => verifiedStaffRoles.get(asText((row as Record<string, unknown>).id as string)) != null)
+      .map((row) => {
       const item = row as Record<string, unknown>;
       return {
         userId: asText(item.id as string),

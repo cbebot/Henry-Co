@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { User } from "@supabase/supabase-js";
+import { readVerifiedProfileRoles } from "@henryco/config";
 import type { StaffRole } from "@/lib/auth/roles";
 import { sendAdminNotificationEmail } from "@/lib/email/send";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -29,8 +30,14 @@ async function getStaffAlertRecipients(roles: StaffRole[]) {
   ]);
   const authUsers = authUsersResult.data?.users ?? [];
   const authUserMap = new Map(authUsers.map((user) => [user.id, user]));
+  // V3-STAFF-SELFGRANT-FIX-01: only grant-verified staff receive staff alerts.
+  const verifiedRoles = await readVerifiedProfileRoles(
+    supabase,
+    ((profileRows ?? []) as Array<{ id: string; role?: string | null }>)
+  );
 
   return ((profileRows ?? []) as Array<Record<string, unknown>>)
+    .filter((row) => verifiedRoles.get(String(row.id || "")) != null)
     .map((row) => ({
       id: cleanText(String(row.id || "")),
       email: cleanText(authUserMap.get(String(row.id || ""))?.email),
