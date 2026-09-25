@@ -114,6 +114,43 @@ begin
       where (coalesce(qual, '') || coalesce(with_check, '')) ~* 'from\s+(public\.)?profiles\M'
         and (coalesce(qual, '') || coalesce(with_check, '')) ~* 'role');
   end if;
+  -- Every privilege layer must be REAL: a column-level revoke under a table-level grant
+  -- is a no-op, so check effective column privileges, not the revoke statements.
+  if has_column_privilege('authenticated', 'public.owner_profiles', 'role', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.owner_profiles', 'is_active', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.owner_profiles', 'user_id', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.owner_profiles', 'email', 'UPDATE')
+     or has_table_privilege('anon', 'public.owner_profiles', 'INSERT,UPDATE,DELETE') then
+    raise exception 'FAIL §0: owner_profiles privilege layer is not effective';
+  end if;
+  if has_column_privilege('authenticated', 'public.customer_profiles', 'verification_status', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.customer_profiles', 'is_verified', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.customer_profiles', 'verification_reviewer_id', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.customer_profiles', 'deleted_at', 'UPDATE')
+     or has_table_privilege('authenticated', 'public.customer_profiles', 'INSERT')
+     or has_table_privilege('anon', 'public.customer_profiles', 'INSERT,UPDATE,DELETE') then
+    raise exception 'FAIL §0: customer_profiles KYC privilege layer is not effective';
+  end if;
+  if not has_column_privilege('authenticated', 'public.customer_profiles', 'full_name', 'UPDATE') then
+    raise exception 'FAIL §0: customer lost UPDATE(full_name)';
+  end if;
+  if has_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'thread_id', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'role', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'role', 'INSERT')
+     or has_table_privilege('anon', 'public.hq_internal_comm_thread_members', 'INSERT,UPDATE,DELETE') then
+    raise exception 'FAIL §0: hq_internal_comm_thread_members privilege layer is not effective';
+  end if;
+  if has_table_privilege('authenticated', 'public.profiles', 'TRIGGER')
+     or has_table_privilege('anon', 'public.profiles', 'TRIGGER')
+     or has_table_privilege('anon', 'public.user_addresses', 'INSERT,UPDATE,DELETE') then
+    raise exception 'FAIL §0: request roles still hold TRIGGER on profiles / anon writes on user_addresses';
+  end if;
+  if (select count(*) from pg_trigger where tgname in
+      ('trg_owner_profiles_block_self_promotion', 'trg_hq_ic_members_block_self_escalation',
+       'trg_customer_profiles_block_self_privilege', 'trg_user_addresses_guard_kyc')
+      and tgenabled <> 'D') <> 4 then
+    raise exception 'FAIL §0: a same-class guard trigger is missing/disabled';
+  end if;
   if position('staff_role_grants' in pg_get_functiondef('public.is_staff_in(text,text)'::regprocedure)) = 0
      or position('staff_role_grants' in pg_get_functiondef('public.is_staff_in_any()'::regprocedure)) = 0 then
     raise exception 'FAIL §0: is_staff_in/_any do not require the grant';
@@ -545,5 +582,285 @@ begin
   end if;
   raise notice '§6 owner_profiles OK';
 end $s6$;
+
+-- ═══ §7 customer_profiles KYC (money: the wallet-withdrawal KYC gate) ═══════════
+do $s7$
+declare
+  c     constant uuid := '5e1f0000-0000-4000-8000-000000000005';
+  owner constant uuid := '5e1f0000-0000-4000-8000-000000000002';
+  mech  text;
+  blocked boolean;
+begin
+  -- K1 full stack: the exploit + every privileged column
+  foreach mech in array array[
+      'verification_status = ''verified''', 'is_verified = true',
+      'verification_reviewer_id = ''' || owner || '''', 'verification_reviewed_at = now()',
+      'verification_note = ''ok''', 'verification_submitted_at = now()', 'is_active = false',
+      'deleted_at = now()', 'legal_hold_reason = null', 'referral_code = ''STOLEN''',
+      'email = ''victim@sg.test''', 'onboarded_at = now()', 'id = ''' || owner || ''''] loop
+    begin
+      perform pg_temp.as_user(c);
+      execute format('update public.customer_profiles set %s where id = %L', mech, c);
+      raise exception 'FAIL K1: customer_profiles self-update of [%] succeeded', mech;
+    exception when insufficient_privilege then null;
+    end;
+    reset role;
+  end loop;
+  -- K1b the platform never lets a request role create a profile row
+  begin
+    perform pg_temp.as_user('5e1f0000-0000-4000-8000-000000000006');
+    insert into public.customer_profiles (id, email, verification_status)
+    values ('5e1f0000-0000-4000-8000-000000000006', 'x@sg.test', 'verified');
+    raise exception 'FAIL K1b: request-role customer_profiles insert succeeded';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  -- K2 each layer ALONE
+  foreach mech in array array['privileges', 'trigger'] loop
+    blocked := false;
+    begin
+      if mech = 'privileges' then
+        alter table public.customer_profiles disable trigger trg_customer_profiles_block_self_privilege;
+      else
+        grant update on table public.customer_profiles to authenticated;
+      end if;
+      begin
+        perform pg_temp.as_user(c);
+        update public.customer_profiles set verification_status = 'verified', is_verified = true where id = c;
+      exception when insufficient_privilege then blocked := true;
+      end;
+      reset role;
+      raise exception using errcode = 'P0SG7', message = 'rollback';
+    exception when sqlstate 'P0SG7' then null;
+    end;
+    if not blocked then raise exception 'FAIL K2: % alone did NOT stop KYC self-verification', mech; end if;
+  end loop;
+  -- K3 genuine: cosmetic self-edit works; KYC state untouched
+  perform pg_temp.as_user(c);
+  update public.customer_profiles set full_name = 'Renamed', language = 'fr', currency = 'USD' where id = c;
+  reset role;
+  if (select full_name from public.customer_profiles where id = c) <> 'Renamed'
+     or (select verification_status from public.customer_profiles where id = c) <> 'none' then
+    raise exception 'FAIL K3: cosmetic self-edit broke or KYC changed';
+  end if;
+  -- K4 genuine: the platform (service role — kyc-review-write / staff KYC review) approves KYC
+  perform pg_temp.as_service();
+  update public.customer_profiles
+     set verification_status = 'verified', is_verified = true, verification_reviewer_id = owner,
+         verification_reviewed_at = now()
+   where id = c;
+  reset role;
+  if (select verification_status from public.customer_profiles where id = c) <> 'verified' then
+    raise exception 'FAIL K4: service-role KYC approval did not apply';
+  end if;
+  -- K5 …and the customer cannot then tamper with the reviewer fields or revert-and-reverify
+  begin
+    perform pg_temp.as_user(c);
+    update public.customer_profiles set verification_note = 'self-edited' where id = c;
+    raise exception 'FAIL K5: customer edited reviewer note';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  raise notice '§7 customer_profiles KYC K1-K5 OK';
+end $s7$;
+
+-- ═══ §8 user_addresses KYC ═══════════════════════════════════════════════════════
+do $s8$
+declare
+  c   constant uuid := '5e1f0000-0000-4000-8000-000000000005';
+  a1  constant uuid := '5e1f0000-0000-4000-8000-0000000000a1';   -- unverified
+  a2  constant uuid := '5e1f0000-0000-4000-8000-0000000000a2';   -- platform-verified
+  new_id uuid;
+  r record;
+begin
+  -- A1 a self-created address is never pre-verified (coerced, not an error — the app's
+  --    insert payload never carries kyc_* anyway)
+  perform pg_temp.as_user(c);
+  insert into public.user_addresses (user_id, label, country, city, street, kyc_verified,
+                                     kyc_verified_at, kyc_match_score, kyc_match_method)
+  values (c, 'shop', 'NG', 'Abuja', '3 Forged Ave', true, now(), 0.999, 'forged')
+  returning id into new_id;
+  reset role;
+  select * into r from public.user_addresses where id = new_id;
+  if r.kyc_verified or r.kyc_verified_at is not null or r.kyc_match_score is not null or r.kyc_match_method is not null then
+    raise exception 'FAIL A1: self-inserted address kept forged KYC evidence: %', row_to_json(r);
+  end if;
+  -- A2/A3 no self-upgrade of any KYC evidence
+  begin
+    perform pg_temp.as_user(c);
+    update public.user_addresses set kyc_verified = true where id = a1;
+    raise exception 'FAIL A2: address self-verified';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  begin
+    perform pg_temp.as_user(c);
+    update public.user_addresses set kyc_match_score = 0.999, kyc_match_method = 'forged' where id = a1;
+    raise exception 'FAIL A3: KYC match evidence self-set';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  -- A4 genuine: a cosmetic edit keeps platform verification
+  perform pg_temp.as_user(c);
+  update public.user_addresses set full_name = 'Front desk', phone = '+2348000000000' where id = a2;
+  reset role;
+  if not (select kyc_verified from public.user_addresses where id = a2) then
+    raise exception 'FAIL A4: cosmetic edit dropped platform KYC verification';
+  end if;
+  -- A5 genuine app flow: editing the street WITH the app's own reset succeeds…
+  perform pg_temp.as_user(c);
+  update public.user_addresses
+     set street = '2B Platform-Verified Road', kyc_verified = false, kyc_verified_at = null,
+         kyc_match_score = null, kyc_match_method = null
+   where id = a2;
+  reset role;
+  if (select kyc_verified from public.user_addresses where id = a2) then
+    raise exception 'FAIL A5: app-style reset did not apply';
+  end if;
+  -- A6 …and moving an address WITHOUT the reset (direct API) invalidates KYC anyway
+  perform pg_temp.as_service();
+  update public.user_addresses set kyc_verified = true, kyc_verified_at = now(), kyc_match_score = 0.9,
+         kyc_match_method = 'auto' where id = a2;               -- the platform re-verifies (genuine)
+  reset role;
+  if not (select kyc_verified from public.user_addresses where id = a2) then
+    raise exception 'FAIL A6: service-role verification did not apply';
+  end if;
+  perform pg_temp.as_user(c);
+  update public.user_addresses set coordinates_lat = 9.05, coordinates_lng = 7.49,
+         formatted_address = 'somewhere else' where id = a2;
+  reset role;
+  if (select kyc_verified from public.user_addresses where id = a2) then
+    raise exception 'FAIL A6: moved address kept its KYC verification';
+  end if;
+  -- A7 no moving an address to another user
+  begin
+    perform pg_temp.as_user(c);
+    update public.user_addresses set user_id = '5e1f0000-0000-4000-8000-000000000001' where id = a1;
+    raise exception 'FAIL A7: address moved to another user';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  raise notice '§8 user_addresses KYC A1-A7 OK';
+end $s8$;
+
+-- ═══ §9 internal-comms membership — no escape into other threads ═══════════════
+do $s9$
+declare
+  staff constant uuid := '5e1f0000-0000-4000-8000-000000000001';   -- observer of the care thread
+  owner constant uuid := '5e1f0000-0000-4000-8000-000000000002';
+  t_own constant uuid := '5e1f0000-0000-4000-8000-0000000000f1';   -- owners-only
+  t_care constant uuid := '5e1f0000-0000-4000-8000-0000000000f2';
+  mech text;
+  blocked boolean;
+begin
+  -- H1/H2 full stack
+  foreach mech in array array['thread_id = ''' || t_own || '''', 'role = ''member''', 'role = ''owner''',
+                              'user_id = ''' || owner || '''', 'joined_at = now() - interval ''1 year'''] loop
+    begin
+      perform pg_temp.as_user(staff);
+      execute format('update public.hq_internal_comm_thread_members set %s where user_id = %L and thread_id = %L',
+                     mech, staff, t_care);
+      raise exception 'FAIL H1: member self-update [%] succeeded', mech;
+    exception when insufficient_privilege then null;
+    end;
+    reset role;
+  end loop;
+  -- H2 the FILTERLESS shape (no WHERE/RETURNING → no new-row SELECT-policy check) —
+  --    the one that actually escapes pre-fix
+  begin
+    perform pg_temp.as_user(staff);
+    update public.hq_internal_comm_thread_members set thread_id = t_own, role = 'member';
+    raise exception 'FAIL H2: filterless membership move succeeded';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  perform pg_temp.as_user(staff);
+  if public.hq_ic_can_read_thread(t_own) or public.hq_ic_can_write_thread(t_own) then
+    raise exception 'FAIL H1: observer reached the owners-only thread';
+  end if;
+  reset role;
+  -- H3 each layer ALONE stops the escape
+  foreach mech in array array['privileges', 'trigger'] loop
+    blocked := false;
+    begin
+      if mech = 'privileges' then
+        alter table public.hq_internal_comm_thread_members disable trigger trg_hq_ic_members_block_self_escalation;
+      else
+        grant update on table public.hq_internal_comm_thread_members to authenticated;
+      end if;
+      begin
+        -- FILTERLESS on purpose: RLS's new-row SELECT check is also SQLSTATE 42501, so a
+        -- filtered update could "pass" here because of RLS and mask a broken layer.
+        perform pg_temp.as_user(staff);
+        update public.hq_internal_comm_thread_members set thread_id = t_own, role = 'member';
+      exception when insufficient_privilege then blocked := true;
+      end;
+      reset role;
+      raise exception using errcode = 'P0SG9', message = 'rollback';
+    exception when sqlstate 'P0SG9' then null;
+    end;
+    if not blocked then raise exception 'FAIL H3: % alone did NOT stop the thread escape', mech; end if;
+  end loop;
+  -- H4 genuine: a member manages its own read/pin/mute state
+  perform pg_temp.as_user(staff);
+  update public.hq_internal_comm_thread_members set last_read_at = now(), pinned = true, muted = true
+   where user_id = staff and thread_id = t_care;
+  reset role;
+  if not (select pinned from public.hq_internal_comm_thread_members where user_id = staff and thread_id = t_care) then
+    raise exception 'FAIL H4: member could not pin its own membership';
+  end if;
+  -- H5 genuine: the owner self-joins the owners-only thread (RLS: it can read it) as a
+  --    plain member; a privileged self-join role is refused
+  begin
+    perform pg_temp.as_user(owner);
+    insert into public.hq_internal_comm_thread_members (thread_id, user_id, role) values (t_own, owner, 'owner');
+    raise exception 'FAIL H5: self-join with a privileged role succeeded';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  perform pg_temp.as_user(owner);
+  insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_own, owner);
+  reset role;
+  if (select role from public.hq_internal_comm_thread_members where user_id = owner and thread_id = t_own) <> 'member' then
+    raise exception 'FAIL H5: owner self-join did not land as member';
+  end if;
+  -- H6 genuine: the platform (service role — internal-comms routes) sets any role
+  perform pg_temp.as_service();
+  update public.hq_internal_comm_thread_members set role = 'admin' where user_id = owner and thread_id = t_own;
+  reset role;
+  if (select role from public.hq_internal_comm_thread_members where user_id = owner and thread_id = t_own) <> 'admin' then
+    raise exception 'FAIL H6: service-role membership role change failed';
+  end if;
+  raise notice '§9 internal-comms membership H1-H6 OK';
+end $s9$;
+
+-- ═══ §10 owner_profiles — each layer ALONE ═════════════════════════════════════
+do $s10$
+declare
+  viewer_u constant uuid := '5e1f0000-0000-4000-8000-000000000008';
+  mech text;
+  blocked boolean;
+begin
+  foreach mech in array array['privileges', 'trigger'] loop
+    blocked := false;
+    begin
+      if mech = 'privileges' then
+        alter table public.owner_profiles disable trigger trg_owner_profiles_block_self_promotion;
+      else
+        grant update on table public.owner_profiles to authenticated;
+      end if;
+      begin
+        perform pg_temp.as_user(viewer_u);
+        update public.owner_profiles set role = 'owner' where user_id = viewer_u;
+      exception when insufficient_privilege then blocked := true;
+      end;
+      reset role;
+      raise exception using errcode = 'P0SGA', message = 'rollback';
+    exception when sqlstate 'P0SGA' then null;
+    end;
+    if not blocked then raise exception 'FAIL O3: % alone did NOT stop owner self-promotion', mech; end if;
+  end loop;
+  raise notice '§10 owner_profiles privilege + trigger each alone OK';
+end $s10$;
 
 select 'V3-STAFF-SELFGRANT-FIX-01 invariant: ALL SECTIONS PASSED' as result;

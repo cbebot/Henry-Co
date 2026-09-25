@@ -356,6 +356,187 @@ $function$ $f$;
   grant select, insert, update, delete on table public.owner_profiles to anon, authenticated, service_role;
 end $ci_fns$;
 
+-- ── CI only: the same-class surfaces closed by migration sections 10–12, verbatim from
+--    supabase/prod-actual/schema.sql (each created only where absent, so the shadow keeps
+--    its real definitions). Prod grants every request role table-level DML on all three. ─
+do $ci_sweep$
+begin
+  if to_regclass('public.customer_profiles') is null then
+    create table public.customer_profiles (
+      id uuid primary key references auth.users (id) on delete cascade,
+      email text not null,
+      full_name text, phone text, avatar_url text, date_of_birth date, gender text,
+      language text default 'en', currency text default 'NGN', timezone text default 'Africa/Lagos',
+      is_verified boolean default false, is_active boolean default true,
+      last_seen_at timestamptz, onboarded_at timestamptz,
+      created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
+      country text, contact_preference text default 'email', referral_code text,
+      verification_status text not null default 'none',
+      verification_submitted_at timestamptz, verification_reviewed_at timestamptz,
+      verification_reviewer_id uuid, verification_note text,
+      archived_at timestamptz, archive_reason text, deleted_at timestamptz, deleted_reason text,
+      retention_hold_until timestamptz, legal_hold_reason text
+    );
+    alter table public.customer_profiles enable row level security;
+    create policy "Users can update own profile" on public.customer_profiles for update to public
+      using ((select auth.uid()) = id);
+    create policy "Users can view own profile" on public.customer_profiles for select to public
+      using ((select auth.uid()) = id);
+    create policy "Service role full access to customer_profiles" on public.customer_profiles for all to public
+      using ((select auth.role()) = 'service_role');
+    grant select, insert, update, delete, truncate, references, trigger on table public.customer_profiles
+      to anon, authenticated, service_role;
+  end if;
+
+  if to_regclass('public.user_addresses') is null then
+    if to_regtype('public.user_address_label') is null then
+      create type public.user_address_label as enum ('home', 'office', 'shop', 'warehouse',
+        'alternative_1', 'alternative_2', 'legacy_imported_1', 'legacy_imported_2',
+        'legacy_imported_3', 'legacy_imported_4');
+    end if;
+    create table public.user_addresses (
+      id uuid primary key default gen_random_uuid(),
+      user_id uuid not null,
+      label public.user_address_label not null,
+      full_name text, phone text,
+      country text not null, state text, city text not null, street text not null,
+      postal_code text, coordinates_lat numeric(9,6), coordinates_lng numeric(9,6),
+      google_place_id text, formatted_address text,
+      kyc_verified boolean not null default false, kyc_verified_at timestamptz,
+      kyc_match_score numeric(4,3), kyc_match_method text, kyc_submission_id uuid,
+      is_default boolean not null default false, is_one_shot boolean not null default false,
+      created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+    );
+    alter table public.user_addresses enable row level security;
+    create policy user_addresses_owner_select on public.user_addresses for select to authenticated
+      using (user_id = (select auth.uid()));
+    create policy user_addresses_owner_insert on public.user_addresses for insert to authenticated
+      with check (user_id = (select auth.uid()));
+    create policy user_addresses_owner_update on public.user_addresses for update to authenticated
+      using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+    create policy user_addresses_owner_delete on public.user_addresses for delete to authenticated
+      using (user_id = (select auth.uid()));
+    grant select, insert, update, delete, truncate, references, trigger on table public.user_addresses
+      to anon, authenticated, service_role;
+  end if;
+
+  if to_regclass('public.hq_internal_comm_threads') is null then
+    create table public.hq_internal_comm_threads (
+      id uuid primary key default gen_random_uuid(),
+      slug text not null, kind text not null default 'group', title text not null, division text,
+      created_at timestamptz not null default timezone('utc', now()),
+      updated_at timestamptz not null default timezone('utc', now()),
+      visibility text not null default 'members_only'
+    );
+  end if;
+  if to_regclass('public.workspace_staff_memberships') is null then
+    create table public.workspace_staff_memberships (user_id uuid, is_active boolean default true);
+  end if;
+  if to_regclass('public.workspace_division_memberships') is null then
+    create table public.workspace_division_memberships (user_id uuid, is_active boolean default true, division text);
+  end if;
+  if to_regclass('public.hq_internal_comm_thread_members') is null then
+    create table public.hq_internal_comm_thread_members (
+      thread_id uuid not null, user_id uuid not null, role text not null default 'member',
+      last_read_at timestamptz, pinned boolean not null default false, muted boolean not null default false,
+      joined_at timestamptz not null default timezone('utc', now()),
+      primary key (thread_id, user_id)
+    );
+    alter table public.hq_internal_comm_thread_members enable row level security;
+    grant select, insert, update, delete, truncate, references, trigger
+      on table public.hq_internal_comm_thread_members to anon, authenticated, service_role;
+  end if;
+
+  if to_regprocedure('public.hq_ic_can_read_thread(uuid)') is null then
+    execute $f$
+CREATE OR REPLACE FUNCTION public.hq_ic_can_read_thread(p_thread_id uuid)
+ RETURNS boolean LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO 'public'
+AS $function$
+declare
+  uid uuid := auth.uid();
+  t record;
+begin
+  if uid is null then
+    return false;
+  end if;
+  if exists (
+    select 1 from public.hq_internal_comm_thread_members m
+    where m.thread_id = p_thread_id and m.user_id = uid
+  ) then
+    return true;
+  end if;
+  select id, visibility, division, kind into t
+  from public.hq_internal_comm_threads
+  where id = p_thread_id;
+  if not found then
+    return false;
+  end if;
+  if t.visibility is distinct from 'all_owners' then
+    return false;
+  end if;
+  if exists (
+    select 1 from public.owner_profiles o
+    where o.user_id = uid and o.is_active and lower(trim(o.role)) in ('owner', 'admin')
+  ) then
+    return true;
+  end if;
+  if t.division is null then
+    return exists (
+      select 1 from public.workspace_staff_memberships w
+      where w.user_id = uid and w.is_active = true
+    );
+  end if;
+  return exists (
+    select 1 from public.workspace_division_memberships d
+    where d.user_id = uid and d.is_active and d.division = t.division
+  );
+end;
+$function$ $f$;
+    execute $f$
+CREATE OR REPLACE FUNCTION public.hq_ic_can_write_thread(p_thread_id uuid)
+ RETURNS boolean LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO 'public'
+AS $function$
+declare
+  uid uuid := auth.uid();
+  t record;
+begin
+  if uid is null then
+    return false;
+  end if;
+  select id, visibility, kind into t
+  from public.hq_internal_comm_threads
+  where id = p_thread_id;
+  if not found then
+    return false;
+  end if;
+  if exists (
+    select 1 from public.hq_internal_comm_thread_members m
+    where m.thread_id = p_thread_id and m.user_id = uid and m.role is distinct from 'observer'
+  ) then
+    return true;
+  end if;
+  if t.visibility = 'all_owners' then
+    return exists (
+      select 1 from public.owner_profiles o
+      where o.user_id = uid and o.is_active and lower(trim(o.role)) in ('owner', 'admin')
+    );
+  end if;
+  return false;
+end;
+$function$ $f$;
+  end if;
+
+  if not exists (select 1 from pg_policies where tablename = 'hq_internal_comm_thread_members'
+                 and policyname = 'hq_ic_members_update') then
+    create policy hq_ic_members_insert on public.hq_internal_comm_thread_members for insert to authenticated
+      with check ((user_id = (select auth.uid())) and hq_ic_can_read_thread(thread_id));
+    create policy hq_ic_members_select on public.hq_internal_comm_thread_members for select to authenticated
+      using (hq_ic_can_read_thread(thread_id));
+    create policy hq_ic_members_update on public.hq_internal_comm_thread_members for update to authenticated
+      using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+  end if;
+end $ci_sweep$;
+
 -- ── Personas (both environments). Seeded as the platform, triggers bypassed, so the
 --    pre-fix state is exactly "these rows already exist on prod". ─────────────
 set session_replication_role = replica;
@@ -397,6 +578,27 @@ insert into public.marketplace_role_memberships (user_id, role, is_active)
 select '5e1f0000-0000-4000-8000-00000000000d', 'vendor_applicant', true
 where not exists (select 1 from public.marketplace_role_memberships
                   where user_id = '5e1f0000-0000-4000-8000-00000000000d');
+-- same-class surfaces (sections 10–12)
+insert into public.customer_profiles (id, email, full_name) values
+  ('5e1f0000-0000-4000-8000-000000000005', 'customer@sg.test',     'A Customer'),
+  ('5e1f0000-0000-4000-8000-000000000001', 'legacy.staff@sg.test', 'Legacy Staff'),
+  ('5e1f0000-0000-4000-8000-000000000002', 'legacy.owner@sg.test', 'Legacy Owner')
+on conflict (id) do nothing;
+insert into public.user_addresses
+  (id, user_id, label, country, city, street, kyc_verified, kyc_verified_at, kyc_match_score, kyc_match_method)
+values
+  ('5e1f0000-0000-4000-8000-0000000000a1', '5e1f0000-0000-4000-8000-000000000005', 'home',
+   'NG', 'Lagos', '1 Unverified Street', false, null, null, null),
+  ('5e1f0000-0000-4000-8000-0000000000a2', '5e1f0000-0000-4000-8000-000000000005', 'office',
+   'NG', 'Lagos', '2 Platform-Verified Road', true, now(), 0.950, 'auto')
+on conflict (id) do nothing;
+insert into public.hq_internal_comm_threads (id, slug, kind, title, division, visibility) values
+  ('5e1f0000-0000-4000-8000-0000000000f1', 'sg-owners-only', 'group', 'Owners only', null,   'all_owners'),
+  ('5e1f0000-0000-4000-8000-0000000000f2', 'sg-care-team',   'group', 'Care team',   'care', 'members_only')
+on conflict do nothing;
+insert into public.hq_internal_comm_thread_members (thread_id, user_id, role) values
+  ('5e1f0000-0000-4000-8000-0000000000f2', '5e1f0000-0000-4000-8000-000000000001', 'observer')
+on conflict do nothing;
 set session_replication_role = origin;
 
 -- ── Load-bearing proof: the hole is LIVE before the fix ──────────────────────
@@ -431,5 +633,56 @@ begin
       raise exception 'FIXTURE NOT LOAD-BEARING: vendor applicant was not marketplace staff pre-fix';
     end if;
   end;
-  raise notice 'staff_selfgrant_min: PRE-FIX HOLE CONFIRMED (self-insert role=staff => staff in care/logistics/jobs/hub/staff/account)';
+  -- same class: a customer self-verifies KYC (the wallet-withdrawal gate reads this column)
+  begin
+    perform set_config('request.jwt.claims',
+      '{"sub":"5e1f0000-0000-4000-8000-000000000005","role":"authenticated"}', true);
+    set local role authenticated;
+    update public.customer_profiles
+       set verification_status = 'verified', is_verified = true
+     where id = '5e1f0000-0000-4000-8000-000000000005';
+    reset role;
+    if (select verification_status from public.customer_profiles
+        where id = '5e1f0000-0000-4000-8000-000000000005') is distinct from 'verified' then
+      raise exception 'FIXTURE NOT LOAD-BEARING: customer could not self-verify KYC pre-fix';
+    end if;
+    raise exception using errcode = 'P0SG1', message = 'rollback';
+  exception when sqlstate 'P0SG1' then
+    reset role;
+  end;
+  -- same class: an OBSERVER of a care thread moves its membership into the owners-only
+  -- thread as a writer. NOTE the shape: a FILTERED PATCH is stopped by PostgreSQL's
+  -- new-row SELECT-policy check, but a FILTERLESS PATCH (no WHERE/RETURNING — what
+  -- PostgREST sends for PATCH /hq_internal_comm_thread_members without filters) is not.
+  begin
+    perform set_config('request.jwt.claims',
+      '{"sub":"5e1f0000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+    set local role authenticated;
+    update public.hq_internal_comm_thread_members
+       set thread_id = '5e1f0000-0000-4000-8000-0000000000f1', role = 'member';
+    select public.hq_ic_can_write_thread('5e1f0000-0000-4000-8000-0000000000f1') into v_ok;
+    reset role;
+    if not coalesce(v_ok, false) then
+      raise exception 'FIXTURE NOT LOAD-BEARING: member could not escape into the owners-only thread pre-fix';
+    end if;
+    raise exception using errcode = 'P0SG1', message = 'rollback';
+  exception when sqlstate 'P0SG1' then
+    reset role;
+  end;
+  -- same class: an address owner self-marks an address KYC-verified
+  begin
+    perform set_config('request.jwt.claims',
+      '{"sub":"5e1f0000-0000-4000-8000-000000000005","role":"authenticated"}', true);
+    set local role authenticated;
+    update public.user_addresses set kyc_verified = true, kyc_match_score = 0.999
+     where id = '5e1f0000-0000-4000-8000-0000000000a1';
+    reset role;
+    if not (select kyc_verified from public.user_addresses where id = '5e1f0000-0000-4000-8000-0000000000a1') then
+      raise exception 'FIXTURE NOT LOAD-BEARING: address could not be self-verified pre-fix';
+    end if;
+    raise exception using errcode = 'P0SG1', message = 'rollback';
+  exception when sqlstate 'P0SG1' then
+    reset role;
+  end;
+  raise notice 'staff_selfgrant_min: PRE-FIX HOLES CONFIRMED (staff self-grant in 6 divisions; vendor_applicant = staff; KYC self-verify; internal-comms escape; address KYC self-verify)';
 end $prefix$;

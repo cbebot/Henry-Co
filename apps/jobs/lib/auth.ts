@@ -2,8 +2,13 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { normalizeEmail } from "@/lib/env";
-import { isRecoverableSupabaseAuthError, resolveUserAvatarFromSources } from "@henryco/config";
+import {
+  isRecoverableSupabaseAuthError,
+  readVerifiedProfileRole,
+  resolveUserAvatarFromSources,
+} from "@henryco/config";
 import { getSharedAccountLoginUrl, normalizeJobsPath } from "@/lib/account";
+import { createAdminSupabase } from "@/lib/supabase";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getCandidateProfileByUserId, getEmployerMembershipsByUser, getInternalProfile } from "@/lib/jobs/data";
 import type { JobsRole, JobsViewer } from "@/lib/jobs/types";
@@ -48,10 +53,17 @@ export async function getJobsViewer(): Promise<JobsViewer> {
     getCandidateProfileByUserId(user.id),
   ]);
 
-  const internalRole =
-    (typeof ownerProfile?.role === "string" ? ownerProfile.role : null) ||
-    (typeof profile?.role === "string" ? profile.role : null) ||
-    null;
+  // V3-STAFF-SELFGRANT-FIX-01: an owner_profiles row counts only while ACTIVE (a
+  // deactivated owner row used to keep jobs owner/admin), and a non-customer
+  // profiles.role only with a live staff_role_grants row (it used to be read raw).
+  const activeOwnerRole =
+    ownerProfile?.is_active === true && typeof ownerProfile.role === "string" ? ownerProfile.role : null;
+  const verifiedProfileRole = await readVerifiedProfileRole(
+    createAdminSupabase(),
+    user.id,
+    typeof profile?.role === "string" ? profile.role : null
+  );
+  const internalRole = activeOwnerRole || verifiedProfileRole || null;
 
   const roles: JobsRole[] = ["candidate"];
 

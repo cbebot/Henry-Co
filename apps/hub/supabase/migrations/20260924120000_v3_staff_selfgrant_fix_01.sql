@@ -21,6 +21,14 @@
 --     owner_profiles row (viewer/editor) rewrite its own role to 'owner' => is_owner()
 --     => admin_set_profile_role() => a "legitimate" staff grant. Closed here too, because
 --     it is a back door into the trust anchor below.
+--   * Same class, found by the max-effort platform sweep (sections 10–12): a member of any
+--     internal-comms thread could move its membership into an owners-only thread; ANY
+--     signed-in user could self-set customer_profiles KYC (verification_status='verified'
+--     passes the WALLET-WITHDRAWAL KYC gate); an address owner could self-mark an address
+--     KYC-verified. Each is closed with the same trust anchor.
+--   * GOTCHA this file corrects: a COLUMN-level REVOKE is a no-op while the role holds the
+--     TABLE-level privilege (prod grants table-level DML to anon/authenticated), so every
+--     privilege layer here revokes table-level and re-grants only the safe columns.
 --
 -- THE PRINCIPLE (PR #349): privilege comes from a server-controlled, user_id-bound grant
 -- record — never from a self-settable column.
@@ -254,6 +262,11 @@ do $wire$
 begin
   if to_regclass('public.profiles') is null then return; end if;
 
+  -- No write may interleave with the lockdown + backfill: in a single-transaction apply
+  -- this holds every concurrent INSERT/UPDATE/DELETE on profiles until COMMIT (reads are
+  -- unaffected); in autocommit the lockdown below commits before the backfill runs.
+  lock table public.profiles in share row exclusive mode;
+
   -- W3
   drop trigger if exists trg_profiles_block_self_grant on public.profiles;
   create trigger trg_profiles_block_self_grant
@@ -285,20 +298,23 @@ begin
   drop policy if exists profiles_insert_own on public.profiles;
 
   -- W1 — privileges: request roles may not INSERT, and may UPDATE only cosmetic columns.
-  revoke insert, delete, truncate on table public.profiles from anon, authenticated;
+  -- (A COLUMN-level revoke is a no-op while a TABLE-level privilege exists, so the
+  -- table-level UPDATE is revoked and only the cosmetic columns are re-granted.)
+  revoke insert, delete, truncate, trigger, references on table public.profiles from anon, authenticated;
   revoke update on table public.profiles from anon, authenticated;
-  execute (
+  execute coalesce((
     select 'grant update (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.profiles to authenticated'
     from information_schema.columns c
     where c.table_schema = 'public' and c.table_name = 'profiles'
       and c.column_name in ('full_name', 'phone', 'avatar_url', 'updated_at')
-  );
+  ), 'select 1');
 end $wire$;
 
 -- ── (5b) Backfill genuine staff — AFTER the write path is locked down ─────────
--- Ordering matters (adversarial round 1, F1): the lockdown above takes ACCESS EXCLUSIVE
--- on profiles (DROP POLICY), so no request-role self-insert can land between the
--- lockdown and this backfill. Anything that committed BEFORE the migration is backfilled
+-- Ordering matters (adversarial round 1, F1): the lockdown above holds an explicit
+-- SHARE ROW EXCLUSIVE lock on profiles (single-transaction apply) and has revoked every
+-- request-role write path, so no self-insert can land between the lockdown and this
+-- backfill. Anything that committed BEFORE the migration is backfilled
 -- and surfaces in the post-apply review (review-staff-grants.sql R2, grant source
 -- 'backfill:…') for the owner's remediation decision.
 do $backfill$
@@ -373,9 +389,20 @@ begin
   create trigger trg_owner_profiles_block_self_promotion
     before update on public.owner_profiles
     for each row execute function public.owner_profiles_block_self_promotion();
-  -- Privilege layer too (identical to 20260710180000_hub_security_hardening HUB-2, which
-  -- may or may not be applied yet): role / is_active are never request-role writable.
-  revoke update (role, is_active) on public.owner_profiles from anon, authenticated;
+  -- Privilege layer. NOTE: a COLUMN-level `revoke update (role, is_active)` — the form
+  -- 20260710180000_hub_security_hardening HUB-2 uses — is a NO-OP while the request roles
+  -- hold TABLE-level UPDATE (prod grants it; verified on the prod-actual shadow). So the
+  -- table-level UPDATE is revoked and only the self-editable cosmetic columns re-granted.
+  -- No app code writes owner_profiles through a session client (all reads; role changes go
+  -- through the service role), so this narrows nothing genuine. anon never writes it.
+  revoke update, truncate, trigger, references on table public.owner_profiles from anon, authenticated;
+  revoke insert, delete on table public.owner_profiles from anon;
+  execute coalesce((
+    select 'grant update (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.owner_profiles to authenticated'
+    from information_schema.columns c
+    where c.table_schema = 'public' and c.table_name = 'owner_profiles'
+      and c.column_name in ('full_name', 'updated_at')
+  ), 'select 1');
 end $owner$;
 
 -- ── (7) LAYER R — every profiles.role consumer requires the grant ────────────
@@ -611,7 +638,189 @@ begin
   end if;
 end $policies$;
 
--- ── (9) Final consistency assertion ───────────────────────────────────────────
+-- ── (10) hq_internal_comm_thread_members — no self-escalation into other threads ─
+-- SAME CLASS (max-effort sweep, 2026-09-25): hq_ic_members_update checks only
+-- user_id = auth.uid() and request roles hold TABLE-level UPDATE, so any member of ANY
+-- thread could rewrite its own row's thread_id to an owners-only thread and role to a
+-- writer role — reading and posting in private owner communications. HUB-3 of
+-- 20260710180000_hub_security_hardening tried to close this with a COLUMN-level revoke,
+-- which is a no-op under the table-level grant. Every app write here uses the service
+-- role (internal-comms routes / internal-comms-access.ts), so nothing genuine narrows.
+create or replace function public.hq_ic_members_block_self_escalation()
+returns trigger
+language plpgsql
+set search_path = pg_catalog, public
+as $fn$
+declare
+  v_trusted boolean;
+begin
+  select coalesce(r.rolsuper or r.rolbypassrls, false) into v_trusted
+  from pg_catalog.pg_roles r where r.rolname = current_user;
+  if coalesce(v_trusted, false) then
+    return new;
+  end if;
+  if tg_op = 'INSERT' then
+    -- A self-join (RLS already requires hq_ic_can_read_thread) is always least-privileged.
+    if lower(coalesce(new.role, 'member')) not in ('member', 'observer') then
+      raise exception 'hq_internal_comm_thread_members: a self-join may only be member/observer'
+        using errcode = '42501';
+    end if;
+    return new;
+  end if;
+  if new.thread_id is distinct from old.thread_id
+     or new.user_id is distinct from old.user_id
+     or new.role is distinct from old.role
+     or new.joined_at is distinct from old.joined_at then
+    raise exception 'hq_internal_comm_thread_members: thread, member and role are server-controlled'
+      using errcode = '42501';
+  end if;
+  return new;
+end
+$fn$;
+revoke all on function public.hq_ic_members_block_self_escalation() from public, anon, authenticated;
+
+do $hqic$
+begin
+  if to_regclass('public.hq_internal_comm_thread_members') is null then return; end if;
+  drop trigger if exists trg_hq_ic_members_block_self_escalation on public.hq_internal_comm_thread_members;
+  create trigger trg_hq_ic_members_block_self_escalation
+    before insert or update on public.hq_internal_comm_thread_members
+    for each row execute function public.hq_ic_members_block_self_escalation();
+  revoke insert, update, delete, truncate, trigger, references
+    on table public.hq_internal_comm_thread_members from anon, authenticated;
+  execute coalesce((
+    select 'grant insert (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.hq_internal_comm_thread_members to authenticated'
+    from information_schema.columns c
+    where c.table_schema = 'public' and c.table_name = 'hq_internal_comm_thread_members'
+      and c.column_name in ('thread_id', 'user_id', 'last_read_at', 'pinned', 'muted')
+  ), 'select 1');
+  execute coalesce((
+    select 'grant update (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.hq_internal_comm_thread_members to authenticated'
+    from information_schema.columns c
+    where c.table_schema = 'public' and c.table_name = 'hq_internal_comm_thread_members'
+      and c.column_name in ('last_read_at', 'pinned', 'muted')
+  ), 'select 1');
+end $hqic$;
+
+-- ── (11) customer_profiles — KYC / lifecycle / identity are server-controlled ──
+-- SAME CLASS, MONEY-CRITICAL (max-effort sweep, 2026-09-25; reproduced on the
+-- prod-actual shadow): "Users can update own profile" checks only auth.uid() = id and
+-- request roles hold TABLE-level UPDATE, so any signed-in user could
+--   PATCH /rest/v1/customer_profiles?id=eq.<me>
+--     {verification_status:'verified', is_verified:true, verification_reviewer_id:<owner>}
+-- and pass requireVerification() — the KYC gate on WALLET WITHDRAWALS
+-- (apps/account/app/api/wallet/withdrawal/request/route.ts) — and the trust tier.
+-- Every app write to customer_profiles uses the service role (verification.ts,
+-- kyc-review-write.ts, staff KYC review, account-profile.ts, care-sync.ts, referral…),
+-- so request roles keep only the cosmetic/preference columns. Two independent layers:
+-- privileges (below) and this ALLOWLIST trigger (new privileged columns default-deny).
+create or replace function public.customer_profiles_block_self_privilege()
+returns trigger
+language plpgsql
+set search_path = pg_catalog, public
+as $fn$
+declare
+  v_trusted boolean;
+  c_self_editable constant text[] := array[
+    'full_name', 'phone', 'avatar_url', 'date_of_birth', 'gender', 'language',
+    'currency', 'timezone', 'country', 'contact_preference', 'updated_at'];
+begin
+  select coalesce(r.rolsuper or r.rolbypassrls, false) into v_trusted
+  from pg_catalog.pg_roles r where r.rolname = current_user;
+  if coalesce(v_trusted, false) then
+    return new;
+  end if;
+  if tg_op = 'INSERT' then
+    raise exception 'customer_profiles: rows are created by the platform' using errcode = '42501';
+  end if;
+  if (to_jsonb(new) - c_self_editable) is distinct from (to_jsonb(old) - c_self_editable) then
+    raise exception 'customer_profiles: verification, lifecycle and identity fields are server-controlled'
+      using errcode = '42501';
+  end if;
+  return new;
+end
+$fn$;
+revoke all on function public.customer_profiles_block_self_privilege() from public, anon, authenticated;
+
+do $cp$
+begin
+  if to_regclass('public.customer_profiles') is null then return; end if;
+  drop trigger if exists trg_customer_profiles_block_self_privilege on public.customer_profiles;
+  create trigger trg_customer_profiles_block_self_privilege
+    before insert or update on public.customer_profiles
+    for each row execute function public.customer_profiles_block_self_privilege();
+  revoke insert, update, delete, truncate, trigger, references
+    on table public.customer_profiles from anon, authenticated;
+  execute coalesce((
+    select 'grant update (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.customer_profiles to authenticated'
+    from information_schema.columns c
+    where c.table_schema = 'public' and c.table_name = 'customer_profiles'
+      and c.column_name in ('full_name', 'phone', 'avatar_url', 'date_of_birth', 'gender', 'language',
+                            'currency', 'timezone', 'country', 'contact_preference', 'updated_at')
+  ), 'select 1');
+end $cp$;
+
+-- ── (12) user_addresses — KYC evidence can only be DOWNGRADED by its owner ─────
+-- SAME CLASS: user_addresses_owner_insert/update check only user_id = auth.uid(), so an
+-- owner could insert/mark an address kyc_verified = true (the "KYC verified" badge and the
+-- AddressSelector requireKycVerified filter). The account addresses route legitimately
+-- writes through the user session and RESETS kyc_* when an address is edited, so a
+-- column-privilege lock would break it; this trigger instead lets request roles only
+-- ever downgrade KYC evidence, never pre-verify a new address, and — defending the
+-- app's own rule in the database — invalidates KYC whenever the location changes.
+create or replace function public.user_addresses_guard_kyc()
+returns trigger
+language plpgsql
+set search_path = pg_catalog, public
+as $fn$
+declare
+  v_trusted boolean;
+  v_reset constant jsonb := jsonb_build_object(
+    'kyc_verified', false, 'kyc_verified_at', null, 'kyc_match_score', null,
+    'kyc_match_method', null, 'kyc_submission_id', null);
+  c_location constant text[] := array[
+    'country', 'state', 'city', 'street', 'postal_code', 'coordinates_lat',
+    'coordinates_lng', 'google_place_id', 'formatted_address'];
+begin
+  select coalesce(r.rolsuper or r.rolbypassrls, false) into v_trusted
+  from pg_catalog.pg_roles r where r.rolname = current_user;
+  if coalesce(v_trusted, false) then
+    return new;
+  end if;
+  if tg_op = 'INSERT' then
+    return jsonb_populate_record(new, v_reset);   -- a self-created address is never pre-verified
+  end if;
+  if new.id is distinct from old.id or new.user_id is distinct from old.user_id then
+    raise exception 'user_addresses: id/user_id are immutable' using errcode = '42501';
+  end if;
+  if (new.kyc_verified and not coalesce(old.kyc_verified, false))
+     or (new.kyc_verified_at   is distinct from old.kyc_verified_at   and new.kyc_verified_at   is not null)
+     or (new.kyc_match_score   is distinct from old.kyc_match_score   and new.kyc_match_score   is not null)
+     or (new.kyc_match_method  is distinct from old.kyc_match_method  and new.kyc_match_method  is not null)
+     or (new.kyc_submission_id is distinct from old.kyc_submission_id and new.kyc_submission_id is not null) then
+    raise exception 'user_addresses: KYC verification is set by the platform, never by the account owner'
+      using errcode = '42501';
+  end if;
+  if exists (select 1 from unnest(c_location) k where (to_jsonb(new) -> k) is distinct from (to_jsonb(old) -> k)) then
+    new := jsonb_populate_record(new, v_reset);
+  end if;
+  return new;
+end
+$fn$;
+revoke all on function public.user_addresses_guard_kyc() from public, anon, authenticated;
+
+do $ua$
+begin
+  if to_regclass('public.user_addresses') is null then return; end if;
+  drop trigger if exists trg_user_addresses_guard_kyc on public.user_addresses;
+  create trigger trg_user_addresses_guard_kyc
+    before insert or update on public.user_addresses
+    for each row execute function public.user_addresses_guard_kyc();
+  revoke insert, update, delete, truncate, trigger, references on table public.user_addresses from anon;
+  revoke truncate, trigger, references on table public.user_addresses from authenticated;
+end $ua$;
+
+-- ── (13) Final consistency assertion ──────────────────────────────────────────
 -- After the backfill, every non-customer profiles.role must carry an active matching
 -- grant (so the app's grant-aware reads and the SQL read layer agree). Anything else
 -- aborts the whole apply.

@@ -1,41 +1,122 @@
-# V3-STAFF-SELFGRANT-FIX-01 — close the self-granted staff-role hole
+# V3-STAFF-SELFGRANT-FIX-01 — close the self-granted staff-role hole (and its class)
 
-**Class:** I-risk (identity) · privilege escalation · **blast radius:** care, logistics, jobs, hub, staff, account (+ property/learn/studio app gates)
-**Status:** repo-only; migration **HELD for the owner's go**. Prod was paused and never touched. Money untouched.
+**Class:** I-risk (identity) · privilege self-grant · **blast radius:** care, logistics, jobs, hub, staff, account (+ property/learn/studio/marketplace app gates, customer KYC, internal comms)
+**Status:** repo-only. Migration **HELD for the owner's go**. Prod was paused and never touched. Money objects untouched (proven by digest).
 
-## What was wrong
+## 1 · What was wrong
+
+Every row below was **reproduced on the prod-actual shadow** (except #4, which was traced in code). CI proves each is live pre-fix, so the tests are load-bearing.
 
 | # | Hole | Where | Reachable by |
 |---|------|-------|--------------|
-| 1 | `profiles_insert_own` checked only `id = auth.uid()`. The role guard `trg_profiles_protect_sensitive_fields` fires on UPDATE only. So a user **with no profiles row** could `POST /rest/v1/profiles {id, role:'staff'\|'owner'}`, and `is_staff_in()` (plus `is_staff_in_any`, `current_role`, `current_app_role`, `is_property_staff`, and 3 inline owner policies) trusted the bare column. | DB | any signed-in user without a row |
-| 2 | Care `syncStaffIdentity()` **defaulted any account to `"staff"`** and read the self-writable `user_metadata.role`. It then wrote `profiles.role` + `app_metadata.role` with the **service role**. | `apps/care/lib/auth/staff-identity.ts` | any customer who signs in at care's staff login, or submits the staff password-recovery form. Also *every* listed user whenever the owner opened care's staff/security page (`reconcileStaffDirectory`) |
-| 3 | Care `getAuthenticatedProfile()` and owner-actions `resolveLiveStaffRole()` ranked `user_metadata.role` **above** `profiles.role`. | care | any signed-in care user (`auth.updateUser({data:{role:'owner'}})`) |
-| 4 | 8 more resolvers: `profile?.role \|\| app_metadata.role \|\| user_metadata.role`. | staff, hub, logistics, property, learn, studio, `@henryco/auth` | users without a profiles row |
-| 5 | `owner_profiles_update_own` let a viewer/editor rewrite its own `role` to `owner`. That makes `is_owner()` true, which unlocks `admin_set_profile_role()`. | DB | owner-console viewers/editors |
-| — | (pre-existing, fixed on the way) `is_owner()` recursed through `owner_profiles` RLS ("stack depth limit exceeded") for every request-role path that touched it, including a user reading their own `profiles` row. | DB | — |
+| 1 | `profiles_insert_own` checked only `id = auth.uid()`, and the role guard fires on UPDATE only. A user **with no profiles row** could `POST /rest/v1/profiles {id, role:'staff'\|'owner'}`, and `is_staff_in()` / `is_staff_in_any()` / `current_role()` / `current_app_role()` / `is_property_staff()` plus 3 inline owner policies trusted the bare column. Staff in 6 divisions; `owner` also gave `is_platform_staff()`, which reaches the **refund route** for other customers' real payments. | DB | any signed-in user without a row |
+| 2 | Care `syncStaffIdentity()` **defaulted any account to `"staff"`** and read the self-writable `user_metadata.role`, then wrote `profiles.role` + `app_metadata.role` with the **service role**. | care | a customer at the staff sign-in or the staff password-recovery form; **every** listed user whenever the owner opened care's staff/security page |
+| 3 | `user_metadata.role` ranked above `profiles.role` in care `getAuthenticatedProfile` / `resolveLiveStaffRole`, and was a fallback in 8 more resolvers. | care, staff, hub, logistics, property, learn, studio, `@henryco/auth` | any signed-in user |
+| 4 | **Jobs** read the raw `profiles.role`, and an **inactive** `owner_profiles` row still granted jobs owner/admin. | jobs | a self-granted row; a deactivated owner |
+| 5 | Customer-facing memberships counted as staff in SQL `is_staff_in`, `@henryco/auth`, **search** and the staff-intelligence gate. A self-served `vendor_applicant` became marketplace staff, which in search meant **cross-user** workflow, notification and support-thread results. | DB + app | anyone who submits a vendor application |
+| 6 | `owner_profiles_update_own` let a viewer/editor rewrite its own `role` to `owner`. (#65's column-level revoke is a **no-op** under the table-level grant.) | DB | owner-console viewers/editors |
+| 7 | **Care impersonation:** `endImpersonationAction` had no auth and trusted a plain-JSON cookie naming `ownerUserId`, then minted a sign-in link for that user, so a **forged cookie meant an owner sign-in**. The callback also had an open redirect. | care | anyone who can post the server action |
+| 8 | **Customer KYC:** `"Users can update own profile"` + table-level UPDATE let a user self-set `verification_status='verified'` (even forging the reviewer). That passes the **wallet-withdrawal KYC gate**. | DB | any signed-in user |
+| 9 | **Internal comms:** a member of *any* thread could move its membership into an **owners-only** thread as a writer (filterless PATCH), or turn observer into member. #65's HUB-3 revoke is a no-op. | DB | any thread member |
+| 10 | **Address KYC:** an owner could insert or mark an address `kyc_verified`. Display-only today. | DB | any signed-in user |
+| — | Pre-existing: `is_owner()` recursed through RLS ("stack depth limit exceeded") for every request-role read that touched it. | DB | — |
 
-## The fix — defense in depth, either layer alone holds
+**GOTCHA behind #6 and #9:** a **column-level REVOKE does nothing while the role holds the table-level privilege**, and prod grants table-level DML to `anon`/`authenticated`. Every privilege layer here revokes at table level and re-grants only safe columns, and §0 of the invariant checks the *effective* column privileges.
 
-**Trust anchor:** a write is trusted iff the executing SQL role could bypass RLS anyway (`rolsuper OR rolbypassrls`): service_role, postgres, and SECURITY DEFINER RPC bodies. It is read from `current_user` inside SECURITY INVOKER triggers, which a client cannot forge.
+## 2 · The fix — defense in depth (each layer alone proven)
 
-**Grant record:** `public.staff_role_grants` (user_id-bound, RLS on, no policies, no request-role privileges). It is minted **only** when a trusted role itself *sets* `profiles.role`; a trusted write that leaves `role` untouched never mints one. Existing non-customer rows are backfilled so genuine staff keep access.
+**Trust anchor.** A write is trusted only if the executing SQL role could bypass RLS anyway (`rolsuper OR rolbypassrls`): service_role, postgres, and SECURITY DEFINER bodies. It is read from `current_user` in SECURITY INVOKER triggers, which a client cannot forge. A precondition guard refuses to apply the migration if this doesn't hold on the platform.
 
-- **Layer W (write path), 4 independent mechanisms:** W1 privileges (no request-role INSERT; UPDATE only `full_name/phone/avatar_url/updated_at`), W2 no INSERT policy, W3 BEFORE trigger, W4 "non-customer role ⇒ active matching grant" constraint trigger. Plus the owner_profiles guard (trigger + column revoke).
-- **Layer R (read path):** every consumer of `profiles.role` requires the grant (`verified_profile_role()`).
-- **App layer:** `user_metadata` is never a role/freeze/re-auth source. Care resolves staff only via the pure, tested `resolveProvisionedStaffRole()`: patch → `app_metadata` → profile, **no default**. With no provisioned role it refuses and writes nothing.
+**Staff grant record.** `public.staff_role_grants` is user_id-bound, has RLS on, no policies, and no request-role privileges.
+- It is minted **only** when a trusted writer *sets* `profiles.role`; unchanged-role writes never mint it, so nothing can be laundered through it.
+- Existing rows are backfilled **after** the write path is locked; a `SHARE ROW EXCLUSIVE` lock covers single-transaction applies.
+- A final assertion checks that every non-customer row is backed by a grant.
 
-## Proof (local only)
+**Staff role — layer W** (each alone proven):
+- W1: privileges.
+- W2: no INSERT policy.
+- W3: BEFORE trigger; request roles can only create their own customer row and edit only cosmetic columns.
+- W4: IMMEDIATE constraint trigger, "non-customer role ⇒ active matching grant".
 
-- Prod-actual shadow (PG17 private cluster): hole reproduced pre-fix. Post-fix: every exploit variant is rejected; **each of W1–W4 alone** blocks; **layer R alone** (all write guards stripped) confers nothing, including a laundering attempt; all genuine paths G1–G11 work, plus owner-console O1–O2. Migration is idempotent (applied twice).
-- The full CI SQL chain (76 steps) replays green locally. CI now runs `staff_selfgrant_min.sql` → migration ×2 → `staff_selfgrant_invariant.sql`.
-- Money: md5 over the 30 money / `payments_private` function definitions + ACLs, and the money-table ACLs, is identical before and after.
+**Staff role — layer R** (alone proven):
+- SQL: every `profiles.role` consumer requires the grant via `verified_profile_role()`; `is_staff_in` / `_any` ignore customer-facing membership roles.
+- App: `@henryco/config` `readVerifiedProfileRole` / `readVerifiedProfileRoles` / `isOperatorMembershipRole` (tested) in every resolver: auth viewer, 8 divisions, jobs, care, search, and staff/support/impersonation lists.
+  - Lookups fail closed, except "relation does not exist" (pre-migration), so app and DB deploy in either order.
+- `user_metadata` is never a source for role, freeze, re-auth, deleted or slot state. Care resolves staff only through `resolveProvisionedStaffRole` (patch → `app_metadata` → verified profile, **no default**) and refuses rather than writes.
 
-## Day-of (see runbook §6 step "STAFF-SELFGRANT")
+**Same-class guards**, each with privileges + trigger and each layer alone proven:
 
-1. Run §6.2 and §6.3 **first**, and record the verdicts, including G10 (auth users with no profiles row = the exposed population). ⚠ This migration also makes `is_owner()` SECURITY DEFINER, which is exactly §6.2's probe for row #65 `hub_security_hardening`. Take #65's verdict from this pre-apply run, and if it said UNAPPLIED, apply #65 anyway.
-2. **Apply** `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` right away: one `apply_migration`, named `v3_staff_selfgrant_fix_01`. It refuses to apply unless `postgres` / `service_role` can bypass RLS (trust-anchor precondition). It locks the write path **before** backfilling, and it aborts if any non-customer row ends up without an active matching grant.
-3. Run **`review-staff-grants.sql`** (read-only; R1–R4, one block at a time) **after** the apply, and save every result. Nothing can be self-granted any more, so the list is final. Check that R1 `unbacked_non_customer_rows_expect_0` = 0. In R2, `grant_source = backfill:…` marks every row that existed before the fix.
-4. The owner judges R2 (population A: DB-level staff) and R3 (population B: app-metadata-only staff, e.g. customers the old care reconcile auto-promoted). Put the illegitimate ids into `remediate-self-granted-staff.sql` step 1 → dry run (ROLLBACK) → check step 7 → change the last line to COMMIT → run.
-5. Before deploying the app, check review **R5**: accounts whose staff role lives only in self-writable `user_metadata`. Re-provision any genuine staff among them through the care owner console or the hub invite flow; both set `app_metadata`. Then deploy the app changes. They are safe before or after the migration: the grant-aware reads fall back to today's behavior only while `staff_role_grants` does not exist. They close holes 2–4 independently.
+| Surface | Privilege layer | Trigger |
+|---|---|---|
+| `owner_profiles` | table-level UPDATE revoked; only `full_name`/`updated_at` | `role` / `is_active` / `user_id` / `email` are owner-controlled |
+| internal-comms membership | column-level INSERT/UPDATE on harmless columns | thread, member and role server-controlled; self-join member/observer only |
+| customer KYC | only cosmetic/preference columns | **allowlist**; new privileged columns default-deny |
+| address KYC | *(session edits legitimately reset KYC, so trigger + RLS only)* | downgrade-only; a new address is never pre-verified; moving an address invalidates it |
 
-Files: `review-staff-grants.sql`, `remediate-self-granted-staff.sql` (both also in `Downloads\`).
+**Care impersonation:**
+- The cookie is HMAC-sealed with an expiry. No public secret fallback; it fails closed.
+- Ending requires the current session to be the impersonated target and the owner to still be an owner.
+- The callback accepts only same-origin redirects.
+
+## 3 · Proof (local only)
+
+**Prod-actual shadow:**
+- Every hole above is reproduced pre-fix.
+- Post-fix, invariant §0–§10 pass: every exploit variant blocked, **each mechanism alone** stops it, **layer R alone** confers nothing (including laundering), and genuine paths G1–G11, K3–K4, A4–A6, H4–H6 and O2 work.
+- The migration is idempotent (applied twice).
+
+**CI:**
+- The **full CI SQL chain (76 steps) replays green locally.**
+- CI runs `staff_selfgrant_min.sql` (proves every hole live), then the migration ×2, then `staff_selfgrant_invariant.sql`.
+
+**Money:** digests are identical pre/post: 30 money / `payments_private` functions + ACLs, 116 money relations + ACLs, and all money-table triggers.
+
+**Unit tests:** `@henryco/config` 73/73 (11 new), care 14/14 (all new), search-core 44/44 (5 new).
+
+**Typecheck + ESLint:** clean on every touched app and package, except a pre-existing `packages/lifecycle` JSX config error in search-core.
+
+## 4 · Day-of (runbook §6.1 step 3a)
+
+1. Run §6.2 / §6.3 **first** and record them.
+   - ⚠ This migration makes `is_owner()` SECURITY DEFINER, which is exactly §6.2's probe for row #65. Take #65's verdict from this pre-apply run.
+   - If #65 is unapplied, still apply it; its HUB-2/HUB-3 column revokes are no-ops, and this migration does them properly.
+2. **Apply** `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` as one `apply_migration`, named `v3_staff_selfgrant_fix_01`.
+3. Run **`review-staff-grants.sql` R1–R9** (read-only) **after** the apply, one block at a time, and save each result.
+   - R1: `unbacked_non_customer_rows_expect_0` must be 0.
+   - R2: every pre-fix staff row (`grant_source = backfill:…`).
+   - R3: app-metadata-only staff.
+   - R5: user_metadata-only staff.
+   - **R6: KYC verified without an approved submission, with their withdrawals.**
+   - R7: address KYC evidence.
+   - R8: non-owners in owners-only threads.
+   - **R9: forged `succeeded` payment intents (money escalation).**
+4. The owner judges each list, then fills `remediate-self-granted-staff.sql` step 1 with `reset_kyc`, `deactivate_memberships` and `revoke_sessions` per row → dry run (ROLLBACK) → check step 8 → COMMIT.
+5. Before deploying the app: re-provision any genuine staff listed in R5. Then deploy.
+
+## 5 · Money escalation — held for the owner (NOT changed here)
+
+**`payment_intents`:** a signed-in user can INSERT their own intent with **`status='succeeded'`** and any amount (reproduced on the shadow).
+- The policy checks only `user_id`, and the transition/freeze triggers fire on **UPDATE** only.
+- The refund route is **not** exploitable with such a row: it needs platform staff plus a provider-confirmed attempt.
+- Other consumers read `status` (owner revenue dashboards, finance ledger, marketplace sale reconcile, studio agency state machine, care card-rail, wallet top-up sync). Their exposure is being traced read-only.
+- It is a money-spine table, so under the pass's "don't touch money" rule the fix is the owner's decision in a money window. Candidates: a BEFORE INSERT trigger forcing `status='pending'` for request roles, or no request-role INSERT (initiate intents only through the server).
+- Detection: review R9.
+
+## 6 · Out of scope, recorded for a follow-up (platform "self-writable privilege" sweep)
+
+**Self-writable trust columns found by the sweep** (evidence in the report):
+- `property_listings` owner-set `status` / `trust_badges` (fake "Verified" listings);
+- `businesses` owner-set `verified_at`;
+- `care_reviews` insert `is_approved`;
+- `jobs_experience_verifications` / `jobs_reference_checks` self-verified credentials;
+- `studio_project_messages` `sender_role` spoofing;
+- legacy `orders` / `order_items` client totals/status.
+
+**Owner-flow and gate defects:**
+- Jobs employer membership email match is unverified (PR #349 class, 4 call sites).
+- `learn_is_staff` / `studio_is_staff` count any active membership.
+- Care slot-retire leaves DB staff for deleted accounts, and **care role changes never reach `profiles.role`** (the protect trigger blocks service-role updates), so offboarding needs the remediation script.
+- `packages/auth` `requireUnifiedViewer` trusts an `x-supabase-user` header (only unimported gates use it).
+- The care owner-action signing secret falls back to the anon key.
+
+Files: `review-staff-grants.sql`, `remediate-self-granted-staff.sql` (both also in `Downloads\V3-STAFF-SELFGRANT-FIX-01-*`).

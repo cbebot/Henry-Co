@@ -2340,8 +2340,10 @@ export async function updateStaffRoleAction(formData: FormData) {
   const { data: existingUserResult } = await supabase.auth.admin.getUserById(id);
   const existingUser = existingUserResult?.user;
 
+  // V3-STAFF-SELFGRANT-FIX-01: a forged profiles.role='owner' must not trip the
+  // last-owner guard and stop the real owner from demoting it.
   const currentRole = resolveLiveStaffRole({
-    profileRole: existingProfile?.role ?? null,
+    profileRole: await readVerifiedProfileRole(supabase, id, existingProfile?.role ?? null),
     appRole: (existingUser as any)?.app_metadata?.role ?? null,
   });
 
@@ -2644,7 +2646,7 @@ export async function createStaffAccountAction(formData: FormData) {
       .select("role")
       .eq("id", user.id)
       .maybeSingle();
-    existingProfileRole = existingProfile?.role ?? null;
+    existingProfileRole = await readVerifiedProfileRole(supabase, user.id, existingProfile?.role ?? null);
 
     const currentRole = resolveLiveStaffRole({
       profileRole: existingProfileRole,
@@ -3049,7 +3051,7 @@ export async function deleteStaffAccountAction(formData: FormData) {
   }
 
   const currentRole = resolveLiveStaffRole({
-    profileRole: profile?.role ?? null,
+    profileRole: await readVerifiedProfileRole(supabase, id, profile?.role ?? null),
     appRole: (user as any)?.app_metadata?.role ?? null,
   });
 
