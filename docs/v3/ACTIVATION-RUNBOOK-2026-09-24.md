@@ -2,6 +2,7 @@
 
 **Pass:** V3-ACTIVATION-RUNBOOK-01 · **Compiled:** 2026-09-24 · **Base:** `origin/main @ b1efffe3` (V3-42, #537) · **Prod:** `rzkbgwuznmdxnnhmjazy` — **PAUSED / unreachable at compile time**
 **Type:** documentation only — no code change, no migration-file edit, **no prod connection attempted**. `payments_private` and the money RPCs untouched.
+**Amended by V3-STAFF-SELFGRANT-FIX-01 (2026-09-25, PR #540):** the §4 `profiles` self-insert escalation is **fixed** by a new NOW row (**#80**, `20260924120000_v3_staff_selfgrant_fix_01.sql`, HELD for the owner's go) plus app changes. It has a day-of step in §6.1 (**3a**), a post-apply review, **G10b**, in §6.3, and post-apply checks in §6.4. Still no prod contact; money untouched.
 **Amended by V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24):** the 14 not-apply-ready files were resolved: **6 repaired** (proved clean + re-runnable on the same shadow), **8 retired** as DO-NOT-APPLY. The full local dry-run now clears **84/93** (was 79/93), with zero regressions. See §4 and §8.1. Still no prod contact, and `payments_private` / money RPCs are still untouched.
 
 > **Why this file exists.** Merged-to-main ≠ applied-to-prod (the V3-73 and V3-34 lesson, `docs/v3/automation/RE-GROUNDING-2026-07-24.md:76`). Several passes shipped "flag-dark, committed-not-applied" migrations. Prod is paused, so it can't be queried. This runbook turns everything git knows into (1) one dependency-ordered apply sequence and (2) a single read-only query. The moment Supabase resumes, that query converts every NEEDS-PROD-CONFIRMATION row into ground truth, so the apply session starts from facts, not memory.
@@ -185,6 +186,7 @@ The edges come from three sources:
 | 77 | `20260725120000_v3_40_risk_scores_and_models.sql` (hub) | #533 `ff3951ee` | `model_versions`, `risk_batch_runs`, `risk_enforcement_log`, `risk_scores` +1 | baseline only | NOW | NEEDS-PROD-CONFIRMATION | RECORDED UNAPPLIED — header “committed-NOT-applied until owner activation” (`ff3951ee`) | ✓ · re-apply ✓ | — |
 | 78 | `20260902120000_v3_41_predictive_quality_workload.sql` (hub) | #534 `c0efba66` | `dispute_likelihoods`, `predictive_batch_runs`, `quality_assessments`, `workflow_locks` +1 | baseline only | NOW | NEEDS-PROD-CONFIRMATION | RECORDED UNAPPLIED — header + `c0efba66` body “committed, NOT applied” | ✓ · re-apply ✓ | — |
 | 79 | `20260922120000_v3_42_staff_recommendation_state.sql` (hub) | #537 `b1efffe3` | `staff_recommendation_state` | 20260725120000_v3_40_risk_scores_and_mod — runtime reads V3-40/V3-41 tables (migration itself independent); 20260902120000_v3_41_predictive_quality_ — runtime reads | NOW | NEEDS-PROD-CONFIRMATION | RECORDED UNAPPLIED — header “committed-NOT-applied until owner activation” (`b1efffe3`) | ✓ · re-apply ✓ | — |
+| 80 | `20260924120000_v3_staff_selfgrant_fix_01.sql` (hub) | #540 | `staff_role_grants` | DDL-independent of every other row; its `is_owner()` SECURITY DEFINER change is **identical** to #65, which is also §6.2's probe for #65 (read #65's verdict from the pre-apply §6.2 run) | NOW — **HELD (owner go)**, apply at §6.1 step 3a | CONFIRMED-UNAPPLIED (new file, 2026-09-25) | UNAPPLIED — prod paused since authoring | ✓ · re-apply ✓ (prod-actual shadow + full CI chain) | redefines live `is_staff_in` / `is_staff_in_any` / `current_role` / `current_app_role` / `is_property_staff` / `is_owner` + 3 owner-read policies; drops `profiles_insert_own`; revokes request-role INSERT/UPDATE on `profiles` (UPDATE kept for `full_name`/`phone`/`avatar_url`/`updated_at`). Precondition guard + final assertion abort the apply on inconsistency |
 
 ### 3.1 · NOW — the operational list (apply in this order, skipping anything §6.2 reports as applied)
 
@@ -228,6 +230,7 @@ The edges come from three sources:
 77. `20260725120000_v3_40_risk_scores_and_models.sql` — V3-40 predictive fraud & risk (#533)
 78. `20260902120000_v3_41_predictive_quality_workload.sql` — V3-41 predictive quality & workload (#534)
 79. `20260922120000_v3_42_staff_recommendation_state.sql` — V3-42 predictive staff dashboards (#537)
+80. `20260924120000_v3_staff_selfgrant_fix_01.sql` — V3-STAFF-SELFGRANT-FIX-01 close the self-granted staff-role hole (#540) · **HELD (owner go) — apply FIRST, at §6.1 step 3a, not in this sequence position**
 
 **Money-spine rows (#47, #59, #60) are out of this pass's authority.** They create or redefine `payments_private` / ledger RPCs. Apply them only in an owner-authorized money window using the `docs/v3/ai/APPLY-v3-ai-01-metered-billing.md` pattern (journal digest before/after, DR = CR). #47 is already recorded applied (2026-07-03).
 **HELD rows (#48–#50)** need the owner's prod verification first; their file headers say "Apply only after the owner verifies on prod".
@@ -304,7 +307,18 @@ The GATED realtime files next to these families (`care_realtime_publication` #29
 
 **Launch prerequisites for the GATED care/jobs depth families.** The adversarial pass surfaced these. They're authorization-model or app-code decisions, not column repairs, so they're recorded here for the launch pass and weren't guessed at in a migration:
 - **Care rider/manager/support access (#23a, #24a).** `is_staff_in('care')` maps only `owner/admin/superadmin/staff` and `care_*` roles; the `profiles.role` values `rider`, `manager` and `support` are not operators. So `"care pod: rider insert"` never passes for a real rider (`/api/care/pod` inserts with the user session), and managers/support get no claim triage. Pick one rider-identity source before launch: extend `is_staff_in`'s care mapping after reviewing its callers, add a care role-membership table, or insert POD through the service role after an app-side check. Don't trust bare `profiles.role`; see the next bullet.
-- **⚠ Pre-existing platform gap: `profiles` self-insert escalation (affects every `is_staff_in` surface, not only these files).** `profiles_insert_own` checks only `id = auth.uid()`, `profiles_role_check` allows `staff` and `owner`, and `trg_profiles_protect_sensitive_fields` fires on UPDATE only. So a signed-in user **with no `profiles` row** can insert one with `role='staff'`, and `is_staff_in('care'|'logistics'|'jobs'|'hub'|'staff'|'account')` then returns true. Shadow-proven: the same user went from reading 0 to 1 foreign `care_claims` rows. `handle_new_user()` creates the row at signup, so the exposure is limited to auth users who lack one. **Day-of:** run §6.3 G10 and record the count. **Fix pass (platform, before any #23a/#24a/#26a launch):** guard `role` on INSERT with a trigger, or revoke INSERT on `profiles.role` from `authenticated`.
+- **⚠ Pre-existing platform gap: `profiles` self-insert escalation (affects every `is_staff_in` surface, not only these files).** `profiles_insert_own` checks only `id = auth.uid()`, `profiles_role_check` allows `staff` and `owner`, and `trg_profiles_protect_sensitive_fields` fires on UPDATE only. So a signed-in user **with no `profiles` row** can insert one with `role='staff'`, and `is_staff_in('care'|'logistics'|'jobs'|'hub'|'staff'|'account')` then returns true. Shadow-proven: the same user went from reading 0 to 1 foreign `care_claims` rows. `handle_new_user()` creates the row at signup, so the exposure is limited to auth users who lack one. **Day-of:** run §6.3 G10 and record the count. **✅ FIXED by V3-STAFF-SELFGRANT-FIX-01 (PR #540; NOW row #80, applied at §6.1 step 3a).**
+  - **Trust anchor.** A new server-issued, user_id-bound `staff_role_grants` record. It is minted only when a BYPASSRLS/superuser writer sets `profiles.role`.
+  - **Write path, four independent guards.** No request-role INSERT privilege or policy. A BEFORE trigger allows only customer self-rows and cosmetic self-edits. A constraint trigger enforces "non-customer role ⇒ active matching grant".
+  - **Read path.** `is_staff_in` / `_any`, `current_role`, `current_app_role`, `is_property_staff` and 3 inline owner policies all require the grant. The app reads the grant-verified role via `@henryco/config` `readVerifiedProfileRole`.
+  - **Proven locally, both layers.** Each write guard alone stops the exploit, and so does the read path alone.
+  - **Same-class holes closed in the same pass:**
+    - care's service-role `syncStaffIdentity` defaulted any account to `staff`;
+    - `user_metadata.role` trusted in 10+ resolvers;
+    - vendor-applicant memberships counted as staff in SQL, auth and search (a cross-user search leak);
+    - `owner_profiles` self-promotion;
+    - a forgeable care impersonation cookie that led to an owner sign-in.
+  - **Existing rows** are backfilled as grants. The owner decides which are illegitimate from G10b, and the held remediation script demotes them.
 - **Care staff UPDATE is column-unrestricted** (it can rewrite `opened_by_user_id` and amounts, not only the triage columns). Restrict it with column grants or a trigger when triage ships.
 - **App drift in shipped code (not migrations):**
   - `apps/care/lib/automation/recurring-auto-book.ts:152` inserts `care_bookings.user_id` and omits the NOT NULL `phone_normalized`, so recurring auto-book never books (the error is swallowed as `skippedInvalid`).
@@ -357,6 +371,17 @@ Re-runnability: F2 `founder_intelligence` and F3 `founder_action_proposals` are 
    - **CONFIRMED-UNAPPLIED** → apply candidate.
    - **INVESTIGATE** → a history row exists but the objects don't. Stop and diff that row's file against prod before anything else.
 3. **Run §6.3** (read-only guards and preflight).
+3a. **STAFF-SELFGRANT (security, HELD for the owner's go; apply before any other NOW row):**
+   1. With §6.2 and §6.3 recorded, apply row #80 `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` as a single `apply_migration`, named `v3_staff_selfgrant_fix_01`.
+      - It refuses to apply unless `postgres` / `service_role` have BYPASSRLS/SUPERUSER (trust-anchor precondition).
+      - It locks the `profiles` write path **before** backfilling grants.
+      - It aborts if any non-customer row lacks an active matching grant.
+      - ⚠ It makes `is_owner()` SECURITY DEFINER, which is exactly §6.2's probe for #65. **Use #65's verdict from the pre-apply §6.2 run**, and if it was UNAPPLIED, still apply #65 in step 4.
+   2. Run §6.4's STAFF-SELFGRANT checks.
+   3. Run **G10b** = `docs/v3/staff-selfgrant-fix-01/review-staff-grants.sql` (read-only, R1–R5, each block on its own; also in `Downloads\V3-STAFF-SELFGRANT-FIX-01-1-review-staff-grants-READONLY.sql`) and save every result.
+   4. The owner judges R2 (DB-level staff; `grant_source = backfill:…` marks every pre-fix row) and R3 (app-metadata-only staff).
+   5. Fill `remediate-self-granted-staff.sql` step 1 (`Downloads\V3-STAFF-SELFGRANT-FIX-01-2-remediate-HELD-dryrun.sql`) → dry run (ends in ROLLBACK) → check step 7 → change the last line to COMMIT → run.
+   6. Before deploying the PR #540 app changes, re-provision any genuine staff listed in R5 (role only in `user_metadata`).
 4. Apply the **NOW** rows that are CONFIRMED-UNAPPLIED, **in §3.1 order**, one at a time, and run §5's before/after treatment where it applies. Money rows (#47/#59/#60) and HELD rows (#48–#50) go in their own owner windows.
 5. Re-run §6.2. Every applied NOW row must now read CONFIRMED-APPLIED.
 6. Run §6.4 (post-apply invariants).
@@ -488,7 +513,8 @@ with cand(ord, seq, tier, file, stem, pr, pre_status, objects_present) as (value
   ( 90, '76', 'NOW', '20260724120000_v3_43_workflow_rail.sql', 'v3_43_workflow_rail', '#527', 'NPC', to_regclass('public.workflow_jobs') is not null and to_regclass('public.internal_ai_spend_ledger') is not null),
   ( 91, '77', 'NOW', '20260725120000_v3_40_risk_scores_and_models.sql', 'v3_40_risk_scores_and_models', '#533', 'NPC', to_regclass('public.risk_scores') is not null),
   ( 92, '78', 'NOW', '20260902120000_v3_41_predictive_quality_workload.sql', 'v3_41_predictive_quality_workload', '#534', 'NPC', to_regclass('public.workload_forecasts') is not null),
-  ( 93, '79', 'NOW', '20260922120000_v3_42_staff_recommendation_state.sql', 'v3_42_staff_recommendation_state', '#537', 'NPC', to_regclass('public.staff_recommendation_state') is not null)
+  ( 93, '79', 'NOW', '20260922120000_v3_42_staff_recommendation_state.sql', 'v3_42_staff_recommendation_state', '#537', 'NPC', to_regclass('public.staff_recommendation_state') is not null),
+  ( 94, '80', 'NOW', '20260924120000_v3_staff_selfgrant_fix_01.sql', 'v3_staff_selfgrant_fix_01', '#540', 'CU', to_regclass('public.staff_role_grants') is not null)
 ),
 hist as (
   select version, name,
@@ -545,6 +571,9 @@ select to_regclass('public.divisions') is null           as divisions_absent,
 -- self-insert escalation (§4). Record the number; > 0 means the platform fix is urgent.
 select count(*) as auth_users_without_profile
 from auth.users u where not exists (select 1 from public.profiles p where p.id = u.id);
+-- G10b (STAFF-SELFGRANT): run AFTER §6.1 step 3a (the apply), not here. Use
+-- docs/v3/staff-selfgrant-fix-01/review-staff-grants.sql R1–R5. R1 must show
+-- unbacked_non_customer_rows_expect_0 = 0, and R2 lists every pre-fix non-customer row for the owner.
 -- G9 (FIX-01): RETIRED files must never have landed — expect all false
 select to_regclass('public.rooms_sessions')   is not null as rooms_present,
        to_regclass('public.workspace_tasks')  is not null as workspace_platform_present;
@@ -583,6 +612,25 @@ select
   to_regclass('public.staff_recommendation_state') is not null as v342,
   (select string_agg(lock_key, ',' order by lock_key) from public.workflow_locks) as lock_keys; -- hub.operator.tick,hub.predictive.tick,hub.risk.score,studio.agency.tick
 ```
+
+**STAFF-SELFGRANT post-apply checks (after §6.1 step 3a; read-only, all expect `t`):**
+
+```sql
+select
+  to_regclass('public.staff_role_grants') is not null                                   as grants_table,
+  not has_table_privilege('authenticated', 'public.profiles', 'insert')                 as no_self_insert,
+  not has_column_privilege('authenticated', 'public.profiles', 'role', 'update')        as no_self_role_update,
+  not exists (select 1 from pg_policies where tablename = 'profiles' and cmd in ('INSERT','ALL')) as no_insert_policy,
+  (select count(*) from pg_trigger where tgrelid = 'public.profiles'::regclass and tgname in
+     ('trg_profiles_block_self_grant','trg_profiles_mint_staff_grant','trg_profiles_require_staff_grant')) = 3 as guards,
+  position('staff_role_grants' in pg_get_functiondef('public.is_staff_in(text,text)'::regprocedure)) > 0 as is_staff_in_needs_grant,
+  (select prosecdef from pg_proc where oid = 'public.is_owner()'::regprocedure)       as is_owner_secdef,
+  not exists (select 1 from public.profiles p where lower(p.role) <> 'customer' and not exists (
+     select 1 from public.staff_role_grants g where g.user_id = p.id and g.revoked_at is null
+       and g.role = lower(p.role)))                                                        as every_staff_row_backed;
+```
+
+Then, signed in as a genuine staff member and as the owner, open the care, staff and hub dashboards, which must load exactly as before. The money digest must be unchanged: the migration touches no money object.
 
 Then run the Supabase security advisors. Expect only the by-design zero-policy INFO lines on the deny-RLS tables, plus the `learn_is_staff` search_path note from §5.
 
