@@ -189,13 +189,16 @@ export async function runRecurringAutoBookSweep(
       summary.skippedInvalid += 1;
       continue;
     }
-    // A next_run_at dated before today (a paused schedule resuming, or a
-    // missed cron day) books from now: never a pickup dated in the past, and
-    // the schedule resumes on its cadence rather than booking once per missed
-    // period. Runs dated today or later are unchanged.
-    const nextRun = scheduledRun < startOfUtcDay(now) ? now : scheduledRun;
+    // A run scheduled before today (a paused schedule resuming, or a missed
+    // cron day) is carried out today: its pickup is never dated in the past,
+    // and the schedule resumes on its cadence from now instead of booking once
+    // per missed period. Runs dated today or later are unchanged. The tracking
+    // code stays keyed on the scheduled run, so a retry of the same run (for
+    // example after a failed next_run_at update) always takes the duplicate
+    // path instead of booking again.
+    const runAt = scheduledRun < startOfUtcDay(now) ? now : scheduledRun;
 
-    const trackingCode = computeTrackingCode(row.id, nextRun);
+    const trackingCode = computeTrackingCode(row.id, scheduledRun);
 
     const { data: existing } = await admin
       .from("care_bookings")
@@ -205,7 +208,7 @@ export async function runRecurringAutoBookSweep(
 
     if (existing?.id) {
       // Advance next_run forward so we don't keep re-considering this row.
-      const advanced = advanceNextRunAt(nextRun, row.cadence).toISOString();
+      const advanced = advanceNextRunAt(runAt, row.cadence).toISOString();
       await admin
         .from("care_recurring_schedules")
         .update({
@@ -251,7 +254,7 @@ export async function runRecurringAutoBookSweep(
       service_type: serviceType,
       item_summary: itemSummary,
       pickup_address: pickupAddress,
-      pickup_date: nextRun.toISOString().slice(0, 10),
+      pickup_date: runAt.toISOString().slice(0, 10),
       pickup_slot: pickupSlot,
       special_instructions: specialInstructions,
       status: "booked",
@@ -271,7 +274,7 @@ export async function runRecurringAutoBookSweep(
       continue;
     }
 
-    const advanced = advanceNextRunAt(nextRun, row.cadence).toISOString();
+    const advanced = advanceNextRunAt(runAt, row.cadence).toISOString();
     await admin
       .from("care_recurring_schedules")
       .update({
