@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
-  signCareMediaUrl,
+  signCareClaimEvidenceForOwner,
   uploadCareClaimEvidence,
 } from "@/lib/care-media-store";
 
@@ -13,25 +13,25 @@ import {
  * logistics /api/claims (commit b667567d). Accepts either:
  *
  *   - application/json  — { booking_id?, reason, description?,
- *                          evidence_urls?: string[], garment_label?,
- *                          requested_amount_minor?, currency? }
+ *                          garment_label?, requested_amount_minor?,
+ *                          currency? }
  *   - multipart/form-data — same fields plus `evidence_<n>` File
- *                           entries (up to 5, image only, 10MB each)
- *                           which are uploaded to Cloudinary on the
- *                           server and converted to secure URLs.
+ *                           entries (up to 5, JPG/PNG/WebP, 8MB each)
+ *                           which the server uploads to the private
+ *                           care-documents bucket.
  *
  * Insert is RLS-gated by `care claims: customer insert own`. The
  * server route also asserts:
  *   - authenticated caller
  *   - reason length 4..240
  *   - description length 0..2000
- *   - at most 5 evidence entries (URLs OR file uploads combined)
+ *   - at most 5 evidence files
  *
- * Cloudinary uploads use the existing `uploadCareImage` helper, which
- * already enforces 8MB image cap + JPG/PNG/WebP MIME (the contract's
- * C6 gate names 10MB; we keep the established cap because the image
- * helper already validates content-type and size with consistent
- * error messages).
+ * Evidence is file uploads only (V3-CARE-JOBS-PREAPPLY-FIX-01). Signed
+ * evidence URLs are minted with the service role, which can read any
+ * private object, so a caller-supplied `evidence_urls` entry is refused:
+ * the only evidence refs a claim can hold are the ones this route mints
+ * under the caller's own user id, and reads sign only those.
  */
 
 export const runtime = "nodejs";
@@ -47,25 +47,13 @@ function cleanText(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function cleanUrlArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((entry) => cleanText(entry))
-    .filter((entry) => entry.length > 0 && entry.length < 1024);
-}
-
 /**
- * Resolve the stored `evidence_urls` (now `media://private/...` references for
- * new claims, legacy absolute URLs for older rows) to renderable, short-lived
- * signed URLs before returning them to the client. Private refs must be signed
- * server-side — a raw ref would be unusable in an <img>/<a>.
+ * True when the caller sent evidence references of their own: a non-empty
+ * `evidence_urls` array, or any non-empty `evidence_urls` form value.
  */
-async function signEvidenceUrls(value: unknown): Promise<string[]> {
-  if (!Array.isArray(value)) return [];
-  const signed = await Promise.all(
-    value.map((entry) => signCareMediaUrl(typeof entry === "string" ? entry : "")),
-  );
-  return signed.filter((url) => url.length > 0);
+function hasCallerEvidenceRefs(value: unknown): boolean {
+  if (Array.isArray(value)) return value.length > 0;
+  return cleanText(value).length > 0;
 }
 
 export async function POST(request: NextRequest) {
@@ -88,7 +76,7 @@ export async function POST(request: NextRequest) {
   let garmentLabel: string | null = null;
   let reason = "";
   let description: string | null = null;
-  let evidenceUrls: string[] = [];
+  let callerEvidenceRefs = false;
   let requestedAmountMinor = 0;
   let currency = "NGN";
   const uploadedFiles: File[] = [];
@@ -107,7 +95,7 @@ export async function POST(request: NextRequest) {
     garmentLabel = cleanText(body.garment_label).slice(0, MAX_GARMENT_LABEL) || null;
     reason = cleanText(body.reason);
     description = cleanText(body.description).slice(0, MAX_DESCRIPTION) || null;
-    evidenceUrls = cleanUrlArray(body.evidence_urls);
+    callerEvidenceRefs = hasCallerEvidenceRefs(body.evidence_urls);
     const amount = Number(body.requested_amount_minor ?? 0);
     requestedAmountMinor = Number.isFinite(amount) ? Math.max(0, Math.round(amount)) : 0;
     currency = cleanText(body.currency).slice(0, 6) || "NGN";
@@ -119,14 +107,7 @@ export async function POST(request: NextRequest) {
     reason = cleanText(form.get("reason"));
     description =
       cleanText(form.get("description")).slice(0, MAX_DESCRIPTION) || null;
-    const evidenceJson = cleanText(form.get("evidence_urls"));
-    if (evidenceJson) {
-      try {
-        evidenceUrls = cleanUrlArray(JSON.parse(evidenceJson));
-      } catch {
-        evidenceUrls = [];
-      }
-    }
+    callerEvidenceRefs = form.getAll("evidence_urls").some(hasCallerEvidenceRefs);
     const amount = Number(form.get("requested_amount_minor") ?? 0);
     requestedAmountMinor = Number.isFinite(amount) ? Math.max(0, Math.round(amount)) : 0;
     currency = cleanText(form.get("currency")).slice(0, 6) || "NGN";
@@ -149,23 +130,34 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (evidenceUrls.length + uploadedFiles.length > MAX_EVIDENCE) {
+  if (callerEvidenceRefs) {
     return NextResponse.json(
       {
         ok: false,
-        error: `Up to ${MAX_EVIDENCE} evidence files / URLs per claim.`,
+        error: "Attach evidence as photo files.",
       },
       { status: 400 },
     );
   }
 
+  if (uploadedFiles.length > MAX_EVIDENCE) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: `Up to ${MAX_EVIDENCE} evidence files per claim.`,
+      },
+      { status: 400 },
+    );
+  }
+
+  const evidenceUrls: string[] = [];
   if (uploadedFiles.length > 0) {
     try {
       for (const file of uploadedFiles) {
-        // SENSITIVE: claim-evidence photos now land in the RLS-private
+        // SENSITIVE: claim-evidence photos land in the RLS-private
         // care-documents bucket as a `media://private/...` reference (signed at
-        // read time) instead of a publicly dereferenceable CDN URL.
-        const ref = await uploadCareClaimEvidence(file, `claim-${user.id.slice(0, 8)}`);
+        // read time), under the caller's own user id from the session.
+        const ref = await uploadCareClaimEvidence(file, user.id);
         evidenceUrls.push(ref);
       }
     } catch (error) {
@@ -233,13 +225,16 @@ export async function POST(request: NextRequest) {
     ok: true,
     claim: {
       ...data,
-      evidence_urls: await signEvidenceUrls(data.evidence_urls),
+      evidence_urls: await signCareClaimEvidenceForOwner(data.evidence_urls, user.id),
     },
   });
 }
 
 /**
- * GET /api/care/claims — list the caller's claims. RLS limits scope.
+ * GET /api/care/claims — list the caller's own claims. The query is
+ * pinned to `opened_by_user_id = caller` (RLS would also hand care staff
+ * every claim here), and evidence is signed only when it is the caller's
+ * own upload.
  */
 export async function GET(request: NextRequest) {
   const supabase = await createSupabaseServer();
@@ -263,6 +258,7 @@ export async function GET(request: NextRequest) {
     .select(
       "id, booking_id, garment_label, reason, description, evidence_urls, requested_amount_minor, currency, status, resolved_at, created_at, updated_at",
     )
+    .eq("opened_by_user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -277,7 +273,7 @@ export async function GET(request: NextRequest) {
   const claims = await Promise.all(
     (data ?? []).map(async (claim) => ({
       ...claim,
-      evidence_urls: await signEvidenceUrls(claim.evidence_urls),
+      evidence_urls: await signCareClaimEvidenceForOwner(claim.evidence_urls, user.id),
     })),
   );
 

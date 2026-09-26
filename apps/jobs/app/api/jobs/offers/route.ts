@@ -1,19 +1,28 @@
 import { NextResponse } from "next/server";
-import { getJobsViewer } from "@/lib/auth";
 import {
   issueOfferLetter,
   type IssueOfferLetterInput,
 } from "@/lib/jobs/offer-letter";
+import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
+import { getApplicationContext } from "@/lib/jobs/hiring-suite";
+import { actingBusinessOwnsApplication } from "@/lib/jobs/hiring-authz";
 import { createAdminSupabase } from "@/lib/supabase";
 
 /**
  * V3 PASS 21 — POST /api/jobs/offers — issue an offer letter
  * (Distinctive Rule #4 + Mandatory APIs §G).
  *
- * Requires:
- *   - Authenticated employer / admin / owner.
- *   - applicationId resolvable to a pipeline under the employer's
- *     membership (or the viewer is platform staff).
+ * Requires (V3-CARE-JOBS-PREAPPLY-FIX-01), gated exactly like the secure
+ * sibling hiring routes (/api/hiring/interviews, /api/employer/hiring/*):
+ *   - A signed-in caller acting as a BUSINESS (personal -> 403). The
+ *     acting context is resolved from the session and its business
+ *     membership is re-verified live; nothing in the request names the
+ *     actor or the business.
+ *   - The application's pipeline must be OWNED by that acting business
+ *     (cross-business -> 403). business_id is the only trusted owner key;
+ *     "has some employer membership" never authorizes a specific pipeline.
+ *   - No platform-staff bypass: an offer letter is an employer-authored
+ *     document, so only the owning business issues it.
  *
  * Returns the persisted jobs_offer_letters row (status=draft, provider
  * resolved by SIGNWELL_API_KEY presence).
@@ -26,26 +35,16 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    const viewer = await getJobsViewer();
-    if (!viewer.user) {
+    const ctx = await resolveHiringActingContext();
+    if (!ctx.userId) {
       return NextResponse.json(
         { error: "unauthorized", message: "Sign in to issue offers." },
         { status: 401 },
       );
     }
-
-    const isStaff =
-      viewer.roles.includes("admin") ||
-      viewer.roles.includes("owner") ||
-      viewer.roles.includes("moderator");
-
-    if (
-      !isStaff &&
-      !viewer.roles.includes("employer") &&
-      viewer.employerMemberships.length === 0
-    ) {
+    if (ctx.kind !== "business") {
       return NextResponse.json(
-        { error: "forbidden", message: "Employer membership required." },
+        { error: "forbidden", message: "This action requires a business account." },
         { status: 403 },
       );
     }
@@ -74,14 +73,24 @@ export async function POST(request: Request) {
       );
     }
 
-    // Resolve candidate + pipeline for membership / addressing.
+    // Ownership gate: the application's pipeline must belong to the business
+    // the caller is acting as. Unknown ids get the same 403 as foreign ones.
+    const appCtx = await getApplicationContext(applicationId);
+    if (!appCtx || !actingBusinessOwnsApplication(ctx, appCtx)) {
+      return NextResponse.json(
+        { error: "forbidden", message: "Application not visible." },
+        { status: 403 },
+      );
+    }
+
+    // Candidate addressing for the offer. Only real jobs_applications columns
+    // (the candidate's user id is `candidate_id`; there is no
+    // `candidate_user_id`, and selecting it failed every request).
     const admin = createAdminSupabase();
     const { data: appRow, error: appError } = await admin
       .from("jobs_applications")
-      .select(
-        "id, candidate_user_id, candidate_name, candidate_email, pipeline_id, jobs_hiring_pipelines:pipeline_id ( id, job_title )",
-      )
-      .eq("id", applicationId)
+      .select("id, candidate_name, candidate_email")
+      .eq("id", appCtx.applicationId)
       .maybeSingle();
 
     if (appError || !appRow) {
@@ -98,21 +107,13 @@ export async function POST(request: Request) {
         : "Candidate";
     const candidateEmail =
       typeof row.candidate_email === "string" ? row.candidate_email : "";
-    const pipelineRow = Array.isArray(row.jobs_hiring_pipelines)
-      ? (row.jobs_hiring_pipelines as Record<string, unknown>[])[0]
-      : (row.jobs_hiring_pipelines as Record<string, unknown> | null);
-    const pipelineTitle =
-      pipelineRow && typeof pipelineRow.job_title === "string"
-        ? pipelineRow.job_title
-        : "the role";
-    const pipelineId =
-      typeof row.pipeline_id === "string" ? row.pipeline_id : null;
+    const pipelineTitle = appCtx.jobTitle || "the role";
 
     const terms = (payload.terms || {}) as Record<string, unknown>;
     const issueInput: IssueOfferLetterInput = {
-      applicationId,
-      pipelineId,
-      issuedByUserId: viewer.user.id,
+      applicationId: appCtx.applicationId,
+      pipelineId: appCtx.pipelineId || null,
+      issuedByUserId: ctx.userId,
       candidateName,
       candidateEmail,
       position:

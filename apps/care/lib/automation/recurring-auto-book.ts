@@ -1,5 +1,6 @@
 import "server-only";
 
+import { normalizeEmail, normalizePhone } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 
 /**
@@ -16,9 +17,20 @@ import { createAdminSupabase } from "@/lib/supabase";
  * forward by the cadence and writes `last_run_at` + `last_booking_id`.
  *
  * Idempotent guard: the inserted booking carries a tracking_code
- * derived from `RECUR-{schedule_id_first_8}-{yyyymmdd}`. If a booking
+ * derived from `RECUR-{SCHEDULE_ID_FIRST_8}-{yyyymmdd}`. If a booking
  * with that tracking_code already exists, the row is skipped — re-runs
  * within the same calendar day do not double-book.
+ *
+ * The booking row matches prod `care_bookings` (V3-CARE-JOBS-PREAPPLY-FIX-01):
+ * the owner link is `customer_id` (there is no `user_id` column), and the
+ * NOT NULL `phone` / `phone_normalized` / `pickup_address` / `pickup_slot`
+ * are always supplied. `status` / `payment_status` use the values the table's
+ * CHECK constraints allow ('booked' / 'unpaid', as the public booking flow
+ * writes). Quote and payment amounts keep their column defaults; money is
+ * settled later through the guarded payment path, never here. Phone, name and
+ * email fall back to the schedule owner's customer profile, like an
+ * authenticated booking. A schedule that still cannot supply a phone, an
+ * address and a slot is counted as skippedInvalid and retried next sweep.
  *
  * Returns a summary with counts so the orchestrator can roll it into
  * the larger automation summary.
@@ -47,6 +59,12 @@ type ScheduleRow = {
   next_run_at: string | null;
 };
 
+type OwnerProfile = {
+  full_name: string | null;
+  phone: string | null;
+  email: string | null;
+};
+
 export type RecurringAutoBookSummary = {
   scheduledRunsConsidered: number;
   bookingsCreated: number;
@@ -58,7 +76,9 @@ function computeTrackingCode(scheduleId: string, runAt: Date): string {
   const yyyy = runAt.getUTCFullYear();
   const mm = String(runAt.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(runAt.getUTCDate()).padStart(2, "0");
-  return `RECUR-${scheduleId.slice(0, 8)}-${yyyy}${mm}${dd}`;
+  // Upper-case: the track and pay surfaces upper-case the code a customer
+  // enters and match it exactly.
+  return `RECUR-${scheduleId.slice(0, 8).toUpperCase()}-${yyyy}${mm}${dd}`;
 }
 
 function advanceNextRunAt(current: Date, cadence: string): Date {
@@ -67,9 +87,53 @@ function advanceNextRunAt(current: Date, cadence: string): Date {
 }
 
 function payloadString(payload: Record<string, unknown>, key: string): string | null {
-  const value = payload[key];
+  const value = payload?.[key];
   if (typeof value === "string" && value.trim()) return value.trim();
   return null;
+}
+
+/** First candidate that normalizes to a usable phone (5+ digits, as create_care_booking requires). */
+function resolvePhone(
+  ...candidates: Array<string | null | undefined>
+): { phone: string; phoneNormalized: string } | null {
+  for (const candidate of candidates) {
+    const phone = String(candidate ?? "").trim();
+    const phoneNormalized = normalizePhone(phone);
+    if (phone && phoneNormalized && phoneNormalized.length >= 5) {
+      return { phone, phoneNormalized };
+    }
+  }
+  return null;
+}
+
+/**
+ * Render the stored pickup address (a string, or an address object shaped
+ * like `user_addresses`) as the single line `care_bookings.pickup_address`
+ * holds. Null when nothing usable is stored.
+ */
+function formatPickupAddress(value: unknown): string | null {
+  let line = "";
+  if (typeof value === "string") {
+    line = value.trim();
+  } else if (value && typeof value === "object" && !Array.isArray(value)) {
+    const record = value as Record<string, unknown>;
+    const text = (key: string) =>
+      typeof record[key] === "string" ? (record[key] as string).trim() : "";
+    line =
+      text("formatted_address") ||
+      [text("street") || text("line1") || text("address"), text("city"), text("state"), text("country")]
+        .filter(Boolean)
+        .join(", ");
+  }
+  return line.length >= 5 ? line : null;
+}
+
+/** The schedule's pickup window, else its time of day (HH:MM). */
+function resolvePickupSlot(row: ScheduleRow): string | null {
+  const window = String(row.pickup_window ?? "").trim();
+  if (window) return window;
+  const time = String(row.time_of_day ?? "").trim();
+  return /^\d{2}:\d{2}/.test(time) ? time.slice(0, 5) : null;
 }
 
 export async function runRecurringAutoBookSweep(
@@ -102,6 +166,19 @@ export async function runRecurringAutoBookSweep(
   const scheduleRows = (rows ?? []) as ScheduleRow[];
   summary.scheduledRunsConsidered = scheduleRows.length;
 
+  // Owner fallbacks for contact details, one read for the whole sweep.
+  const ownerIds = [...new Set(scheduleRows.map((row) => row.user_id).filter(Boolean))];
+  const ownerProfiles = new Map<string, OwnerProfile>();
+  if (ownerIds.length > 0) {
+    const { data: profileRows } = await admin
+      .from("customer_profiles")
+      .select("id, full_name, phone, email")
+      .in("id", ownerIds);
+    for (const profile of (profileRows ?? []) as Array<OwnerProfile & { id: string }>) {
+      ownerProfiles.set(profile.id, profile);
+    }
+  }
+
   for (const row of scheduleRows) {
     const nextRun = row.next_run_at ? new Date(row.next_run_at) : now;
     if (Number.isNaN(nextRun.getTime())) {
@@ -133,9 +210,19 @@ export async function runRecurringAutoBookSweep(
       continue;
     }
 
+    const owner = ownerProfiles.get(row.user_id) ?? null;
+    const contact = resolvePhone(row.contact_phone, owner?.phone);
+    const pickupAddress = formatPickupAddress(row.pickup_address);
+    const pickupSlot = resolvePickupSlot(row);
+    if (!row.user_id || !contact || !pickupAddress || !pickupSlot) {
+      summary.skippedInvalid += 1;
+      continue;
+    }
+
     const customerName =
       payloadString(row.service_payload, "customer_name") ??
       payloadString(row.service_payload, "name") ??
+      (owner?.full_name?.trim() || null) ??
       "Recurring customer";
     const serviceType =
       payloadString(row.service_payload, "service_type") ?? "garment_care";
@@ -144,24 +231,22 @@ export async function runRecurringAutoBookSweep(
       "Recurring care service";
     const specialInstructions =
       payloadString(row.service_payload, "special_instructions") ?? row.notes;
-    const pickupAddress =
-      typeof row.pickup_address === "string"
-        ? row.pickup_address
-        : JSON.stringify(row.pickup_address ?? {});
 
     const insertPayload = {
       tracking_code: trackingCode,
-      user_id: row.user_id,
+      customer_id: row.user_id,
       customer_name: customerName,
-      phone: row.contact_phone,
+      email: normalizeEmail(owner?.email) || null,
+      phone: contact.phone,
+      phone_normalized: contact.phoneNormalized,
       service_type: serviceType,
       item_summary: itemSummary,
       pickup_address: pickupAddress,
       pickup_date: nextRun.toISOString().slice(0, 10),
-      pickup_slot: row.pickup_window,
+      pickup_slot: pickupSlot,
       special_instructions: specialInstructions,
-      status: "scheduled",
-      payment_status: "pending",
+      status: "booked",
+      payment_status: "unpaid",
       created_at: now.toISOString(),
       updated_at: now.toISOString(),
     };
