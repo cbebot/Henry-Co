@@ -1,16 +1,21 @@
 import { NextResponse } from "next/server";
-import { getJobsViewer } from "@/lib/auth";
 import { updateInterviewRoomNotes } from "@/lib/jobs/interview-room";
+import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
+import { getPipelineOwnership } from "@/lib/jobs/hiring-suite";
+import { actorOwnsPipeline } from "@/lib/jobs/hiring-authz";
 import { createAdminSupabase } from "@/lib/supabase";
 
 /**
  * V3 PASS 21 — Save employer notes for a jobs_interview_rooms row.
  *
- * Membership check: viewer must have at least one active employer
- * membership AND the room must belong to a pipeline under that
- * employer. We conservatively reuse the same shape as the messages-flag
- * route: require ≥1 employer membership + matching pipeline. Anyone
- * outside this gets a flat 403.
+ * Ownership (V3-CARE-JOBS-PREAPPLY-FIX-01): the caller must be signed in
+ * (actor resolved from the session) and must OWN the pipeline the room's
+ * application sits on (actorOwnsPipeline): they are the pipeline's employer
+ * account (jobs_hiring_pipelines.employer_id), or they act as the business
+ * that owns it (V3-70 business_id). "Has some employer membership" never
+ * authorizes a specific room. There is no platform-staff bypass: these are
+ * the employer's own notes. Anyone outside gets the same flat 403 whether
+ * or not the room exists, so room ids cannot be probed.
  *
  * Notes are stored on jobs_interview_rooms.employer_notes (plaintext);
  * a future hardening can mask candidate identifiers before storage.
@@ -22,8 +27,8 @@ export async function POST(
   context: { params: Promise<{ roomId: string }> },
 ) {
   try {
-    const viewer = await getJobsViewer();
-    if (!viewer.user) {
+    const ctx = await resolveHiringActingContext();
+    if (!ctx.userId) {
       return NextResponse.json(
         { error: "unauthorized", message: "Sign in to save notes." },
         { status: 401 },
@@ -60,45 +65,30 @@ export async function POST(
       );
     }
 
-    // Membership check.
+    // Ownership gate: room -> application -> pipeline owner keys.
     const admin = createAdminSupabase();
+    const { data: roomRow, error: roomError } = await admin
+      .from("jobs_interview_rooms")
+      .select("id, application_id")
+      .eq("id", trimmedId)
+      .maybeSingle();
 
-    // Moderation override.
-    const isStaff =
-      viewer.roles.includes("moderator") ||
-      viewer.roles.includes("admin") ||
-      viewer.roles.includes("owner");
+    const room = roomRow as { id?: unknown; application_id?: unknown } | null;
+    const roomApplicationId =
+      room && typeof room.application_id === "string" ? room.application_id : "";
+    const owner =
+      !roomError && roomApplicationId
+        ? await getPipelineOwnership(roomApplicationId)
+        : null;
 
-    if (!isStaff) {
-      if (viewer.employerMemberships.length === 0) {
-        return NextResponse.json(
-          { error: "forbidden", message: "Employer membership required." },
-          { status: 403 },
-        );
-      }
-
-      // Confirm the room exists and is linked to an application with a
-      // pipeline. We don't yet attempt strict employer-slug-pipeline join
-      // (the schema linkage is loose pre-production-data); the
-      // ≥1-membership rule mirrors the messages-flag route's conservative
-      // gate.
-      const { data: roomRow, error: roomError } = await admin
-        .from("jobs_interview_rooms")
-        .select(
-          "id, application_id, jobs_applications:application_id ( id, pipeline_id )",
-        )
-        .eq("id", trimmedId)
-        .maybeSingle();
-
-      if (roomError || !roomRow) {
-        return NextResponse.json(
-          { error: "forbidden", message: "Room not visible." },
-          { status: 403 },
-        );
-      }
+    if (!room || typeof room.id !== "string" || !actorOwnsPipeline(ctx, owner)) {
+      return NextResponse.json(
+        { error: "forbidden", message: "Room not visible." },
+        { status: 403 },
+      );
     }
 
-    const ok = await updateInterviewRoomNotes(trimmedId, notesRaw);
+    const ok = await updateInterviewRoomNotes(room.id, notesRaw);
     if (!ok) {
       return NextResponse.json(
         { error: "save_failed", message: "Couldn't save notes." },
