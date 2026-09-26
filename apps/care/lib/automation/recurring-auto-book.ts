@@ -16,10 +16,14 @@ import { createAdminSupabase } from "@/lib/supabase";
  * `service_payload` + `pickup_address`, then advances `next_run_at`
  * forward by the cadence and writes `last_run_at` + `last_booking_id`.
  *
- * Idempotent guard: the inserted booking carries a tracking_code
- * derived from `RECUR-{SCHEDULE_ID_FIRST_8}-{yyyymmdd}`. If a booking
- * with that tracking_code already exists, the row is skipped — re-runs
- * within the same calendar day do not double-book.
+ * Idempotent guard: each run is keyed by the tracking code
+ * `RECUR-{SCHEDULE_ID}-{yyyymmdd}`, built from the whole schedule id and the
+ * run's stored `next_run_at`. A schedule with no `next_run_at` yet (new, or
+ * saved again without one) first claims `now` with a conditional update, so
+ * the key always comes from a stored value. A retry of the same run (after a
+ * failed schedule update, a timeout, or a concurrent sweep) finds that code,
+ * or hits its UNIQUE constraint, and advances the schedule instead of booking
+ * again.
  *
  * The booking row matches prod `care_bookings` (V3-CARE-JOBS-PREAPPLY-FIX-01):
  * the owner link is `customer_id` (there is no `user_id` column), and the
@@ -76,9 +80,11 @@ function computeTrackingCode(scheduleId: string, runAt: Date): string {
   const yyyy = runAt.getUTCFullYear();
   const mm = String(runAt.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(runAt.getUTCDate()).padStart(2, "0");
-  // Upper-case: the track and pay surfaces upper-case the code a customer
-  // enters and match it exactly.
-  return `RECUR-${scheduleId.slice(0, 8).toUpperCase()}-${yyyy}${mm}${dd}`;
+  // The whole schedule id, not a prefix: two schedules never share a code, so
+  // one schedule's run is never mistaken for another's. Upper-case: the track
+  // and pay surfaces upper-case the code a customer enters and match it
+  // exactly.
+  return `RECUR-${scheduleId.replace(/-/g, "").toUpperCase()}-${yyyy}${mm}${dd}`;
 }
 
 function startOfUtcDay(value: Date): Date {
@@ -140,6 +146,32 @@ function resolvePickupSlot(row: ScheduleRow): string | null {
   return /^\d{2}:\d{2}/.test(time) ? time.slice(0, 5) : null;
 }
 
+/**
+ * Move the schedule past a run that has its booking. If this write fails,
+ * `next_run_at` still names the same run, so the next sweep finds the booking
+ * by its tracking code and advances then; nothing is booked twice.
+ */
+async function recordRun(
+  admin: ReturnType<typeof createAdminSupabase>,
+  row: ScheduleRow,
+  runAt: Date,
+  bookingId: string,
+  now: Date,
+): Promise<void> {
+  const { error } = await admin
+    .from("care_recurring_schedules")
+    .update({
+      next_run_at: advanceNextRunAt(runAt, row.cadence).toISOString(),
+      last_run_at: now.toISOString(),
+      last_booking_id: bookingId,
+      updated_at: now.toISOString(),
+    })
+    .eq("id", row.id);
+  if (error) {
+    console.error("[care:recurring-auto-book] schedule update failed", row.id, error.message);
+  }
+}
+
 export async function runRecurringAutoBookSweep(
   now: Date = new Date(),
 ): Promise<RecurringAutoBookSummary> {
@@ -184,7 +216,43 @@ export async function runRecurringAutoBookSweep(
   }
 
   for (const row of scheduleRows) {
-    const scheduledRun = row.next_run_at ? new Date(row.next_run_at) : now;
+    const owner = ownerProfiles.get(row.user_id) ?? null;
+    const contact = resolvePhone(row.contact_phone, owner?.phone);
+    const pickupAddress = formatPickupAddress(row.pickup_address);
+    const pickupSlot = resolvePickupSlot(row);
+    const bookable = Boolean(row.user_id && contact && pickupAddress && pickupSlot);
+
+    // The run is always a stored next_run_at, so every retry of it computes
+    // the same tracking code. A schedule without one claims `now` first: only
+    // when it can book (a schedule that cannot is left untouched), and only
+    // while next_run_at is still empty, so a concurrent sweep or edit wins
+    // cleanly and this sweep leaves the row for the next one.
+    let storedRun = row.next_run_at;
+    if (!storedRun) {
+      if (!bookable) {
+        summary.skippedInvalid += 1;
+        continue;
+      }
+      const claimedAt = now.toISOString();
+      const { data: claimed, error: claimError } = await admin
+        .from("care_recurring_schedules")
+        .update({ next_run_at: claimedAt, updated_at: claimedAt })
+        .eq("id", row.id)
+        .is("next_run_at", null)
+        .select("id");
+      if (claimError) {
+        console.error("[care:recurring-auto-book] run claim failed", row.id, claimError.message);
+        summary.skippedInvalid += 1;
+        continue;
+      }
+      if (!claimed || claimed.length === 0) {
+        summary.skippedDuplicates += 1;
+        continue;
+      }
+      storedRun = claimedAt;
+    }
+
+    const scheduledRun = new Date(storedRun);
     if (Number.isNaN(scheduledRun.getTime())) {
       summary.skippedInvalid += 1;
       continue;
@@ -193,9 +261,8 @@ export async function runRecurringAutoBookSweep(
     // cron day) is carried out today: its pickup is never dated in the past,
     // and the schedule resumes on its cadence from now instead of booking once
     // per missed period. Runs dated today or later are unchanged. The tracking
-    // code stays keyed on the scheduled run, so a retry of the same run (for
-    // example after a failed next_run_at update) always takes the duplicate
-    // path instead of booking again.
+    // code stays keyed on the stored run, so a retry of the same run always
+    // takes the duplicate path instead of booking again.
     const runAt = scheduledRun < startOfUtcDay(now) ? now : scheduledRun;
 
     const trackingCode = computeTrackingCode(row.id, scheduledRun);
@@ -207,25 +274,12 @@ export async function runRecurringAutoBookSweep(
       .maybeSingle();
 
     if (existing?.id) {
-      // Advance next_run forward so we don't keep re-considering this row.
-      const advanced = advanceNextRunAt(runAt, row.cadence).toISOString();
-      await admin
-        .from("care_recurring_schedules")
-        .update({
-          next_run_at: advanced,
-          last_run_at: now.toISOString(),
-          last_booking_id: existing.id,
-          updated_at: now.toISOString(),
-        })
-        .eq("id", row.id);
+      // This run already has its booking: advance past it, book nothing.
+      await recordRun(admin, row, runAt, existing.id, now);
       summary.skippedDuplicates += 1;
       continue;
     }
 
-    const owner = ownerProfiles.get(row.user_id) ?? null;
-    const contact = resolvePhone(row.contact_phone, owner?.phone);
-    const pickupAddress = formatPickupAddress(row.pickup_address);
-    const pickupSlot = resolvePickupSlot(row);
     if (!row.user_id || !contact || !pickupAddress || !pickupSlot) {
       summary.skippedInvalid += 1;
       continue;
@@ -274,17 +328,7 @@ export async function runRecurringAutoBookSweep(
       continue;
     }
 
-    const advanced = advanceNextRunAt(runAt, row.cadence).toISOString();
-    await admin
-      .from("care_recurring_schedules")
-      .update({
-        next_run_at: advanced,
-        last_run_at: now.toISOString(),
-        last_booking_id: inserted.id,
-        updated_at: now.toISOString(),
-      })
-      .eq("id", row.id);
-
+    await recordRun(admin, row, runAt, inserted.id, now);
     summary.bookingsCreated += 1;
   }
 

@@ -2,7 +2,8 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { claimEvidenceOwner } from "./care-media-store";
 
-// Run: node --conditions=react-server --import tsx --test apps/care/lib/care-media-store.test.ts
+// Run from apps/care (so the `@/` path alias resolves):
+//   node --conditions=react-server --import tsx --test lib/care-media-store.test.ts
 // (the module is server-only; the react-server condition resolves the no-op guard).
 //
 // V3-CARE-JOBS-PREAPPLY-FIX-01. claimEvidenceOwner is the owner-binding grammar
