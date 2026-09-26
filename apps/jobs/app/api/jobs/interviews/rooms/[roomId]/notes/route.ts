@@ -1,21 +1,21 @@
 import { NextResponse } from "next/server";
 import { updateInterviewRoomNotes } from "@/lib/jobs/interview-room";
 import { resolveHiringActingContext } from "@/lib/jobs/hiring-guard";
-import { getApplicationContext } from "@/lib/jobs/hiring-suite";
-import { actingBusinessOwnsApplication } from "@/lib/jobs/hiring-authz";
+import { getPipelineOwnership } from "@/lib/jobs/hiring-suite";
+import { actorOwnsPipeline } from "@/lib/jobs/hiring-authz";
 import { createAdminSupabase } from "@/lib/supabase";
 
 /**
  * V3 PASS 21 — Save employer notes for a jobs_interview_rooms row.
  *
- * Ownership (V3-CARE-JOBS-PREAPPLY-FIX-01), gated like the secure sibling
- * hiring routes: the caller must be signed in and acting as a BUSINESS
- * (session-resolved, membership re-verified live), and the room's
- * application must sit on a pipeline OWNED by that business. business_id
- * is the only trusted owner key; "has some employer membership" never
- * authorizes a specific room. There is no platform-staff bypass: these
- * are the employer's own notes. Anyone outside gets the same flat 403
- * whether or not the room exists, so room ids cannot be probed.
+ * Ownership (V3-CARE-JOBS-PREAPPLY-FIX-01): the caller must be signed in
+ * (actor resolved from the session) and must OWN the pipeline the room's
+ * application sits on (actorOwnsPipeline): they are the pipeline's employer
+ * account (jobs_hiring_pipelines.employer_id), or they act as the business
+ * that owns it (V3-70 business_id). "Has some employer membership" never
+ * authorizes a specific room. There is no platform-staff bypass: these are
+ * the employer's own notes. Anyone outside gets the same flat 403 whether
+ * or not the room exists, so room ids cannot be probed.
  *
  * Notes are stored on jobs_interview_rooms.employer_notes (plaintext);
  * a future hardening can mask candidate identifiers before storage.
@@ -32,12 +32,6 @@ export async function POST(
       return NextResponse.json(
         { error: "unauthorized", message: "Sign in to save notes." },
         { status: 401 },
-      );
-    }
-    if (ctx.kind !== "business") {
-      return NextResponse.json(
-        { error: "forbidden", message: "This action requires a business account." },
-        { status: 403 },
       );
     }
 
@@ -71,7 +65,7 @@ export async function POST(
       );
     }
 
-    // Ownership gate: room -> application -> pipeline -> owning business.
+    // Ownership gate: room -> application -> pipeline owner keys.
     const admin = createAdminSupabase();
     const { data: roomRow, error: roomError } = await admin
       .from("jobs_interview_rooms")
@@ -82,12 +76,12 @@ export async function POST(
     const room = roomRow as { id?: unknown; application_id?: unknown } | null;
     const roomApplicationId =
       room && typeof room.application_id === "string" ? room.application_id : "";
-    const appCtx =
+    const owner =
       !roomError && roomApplicationId
-        ? await getApplicationContext(roomApplicationId)
+        ? await getPipelineOwnership(roomApplicationId)
         : null;
 
-    if (!room || typeof room.id !== "string" || !actingBusinessOwnsApplication(ctx, appCtx)) {
+    if (!room || typeof room.id !== "string" || !actorOwnsPipeline(ctx, owner)) {
       return NextResponse.json(
         { error: "forbidden", message: "Room not visible." },
         { status: 403 },

@@ -81,6 +81,10 @@ function computeTrackingCode(scheduleId: string, runAt: Date): string {
   return `RECUR-${scheduleId.slice(0, 8).toUpperCase()}-${yyyy}${mm}${dd}`;
 }
 
+function startOfUtcDay(value: Date): Date {
+  return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+}
+
 function advanceNextRunAt(current: Date, cadence: string): Date {
   const days = ADVANCE_BY_CADENCE_DAYS[cadence] ?? 7;
   return new Date(current.getTime() + days * 24 * 60 * 60 * 1000);
@@ -180,11 +184,16 @@ export async function runRecurringAutoBookSweep(
   }
 
   for (const row of scheduleRows) {
-    const nextRun = row.next_run_at ? new Date(row.next_run_at) : now;
-    if (Number.isNaN(nextRun.getTime())) {
+    const scheduledRun = row.next_run_at ? new Date(row.next_run_at) : now;
+    if (Number.isNaN(scheduledRun.getTime())) {
       summary.skippedInvalid += 1;
       continue;
     }
+    // A next_run_at dated before today (a paused schedule resuming, or a
+    // missed cron day) books from now: never a pickup dated in the past, and
+    // the schedule resumes on its cadence rather than booking once per missed
+    // period. Runs dated today or later are unchanged.
+    const nextRun = scheduledRun < startOfUtcDay(now) ? now : scheduledRun;
 
     const trackingCode = computeTrackingCode(row.id, nextRun);
 

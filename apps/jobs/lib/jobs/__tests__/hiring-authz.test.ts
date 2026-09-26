@@ -23,6 +23,7 @@ import {
   normalizeInterviewType,
   normalizeScheduleInterviewInput,
   actingBusinessOwnsApplication,
+  actorOwnsPipeline,
   decideHiringConvoRole,
 } from "../hiring-authz";
 
@@ -153,6 +154,51 @@ describe("actingBusinessOwnsApplication (JOB-1 / JOB-3 ownership gate)", () => {
   it("denies when the application is missing or has no business", () => {
     assert.equal(actingBusinessOwnsApplication(owning, null), false);
     assert.equal(actingBusinessOwnsApplication(owning, { businessId: null }), false);
+  });
+});
+
+describe("actorOwnsPipeline (V3-CARE-JOBS-PREAPPLY-FIX-01 offers + interview-notes gate)", () => {
+  // Employer A owns the pipeline: employer_id = uA (prod today), business_id = bizA (V3-70).
+  const ownerKeys = { employerId: "uA", businessId: "bizA" };
+  const prodOwnerKeys = { employerId: "uA", businessId: null }; // business_id absent/unbound on prod
+
+  const ownerPersonal = { kind: "personal" as const, userId: "uA" };
+  const ownerAsBusiness = { kind: "business" as const, userId: "uA", businessId: "bizA", role: "owner" as const };
+  const teamMember = { kind: "business" as const, userId: "uT", businessId: "bizA", role: "member" as const };
+  const otherEmployer = { kind: "personal" as const, userId: "uB" };
+  const otherBusiness = { kind: "business" as const, userId: "uB", businessId: "bizB", role: "owner" as const };
+  const anonymous = { kind: "personal" as const, userId: "" };
+
+  it("allows the pipeline's employer account, in a personal context (prod: no business_id)", () => {
+    assert.equal(actorOwnsPipeline(ownerPersonal, prodOwnerKeys), true);
+    assert.equal(actorOwnsPipeline(ownerPersonal, ownerKeys), true);
+  });
+  it("allows the employer acting as their business, and a member of the owning business", () => {
+    assert.equal(actorOwnsPipeline(ownerAsBusiness, ownerKeys), true);
+    assert.equal(actorOwnsPipeline(teamMember, ownerKeys), true);
+  });
+  it("denies another employer (personal context)", () => {
+    assert.equal(actorOwnsPipeline(otherEmployer, ownerKeys), false);
+    assert.equal(actorOwnsPipeline(otherEmployer, prodOwnerKeys), false);
+  });
+  it("denies another business, including against an unbound (null business_id) pipeline", () => {
+    assert.equal(actorOwnsPipeline(otherBusiness, ownerKeys), false);
+    assert.equal(actorOwnsPipeline(otherBusiness, prodOwnerKeys), false);
+  });
+  it("denies a team member when the pipeline is not bound to their business", () => {
+    assert.equal(actorOwnsPipeline(teamMember, prodOwnerKeys), false);
+  });
+  it("denies anonymous callers and unresolved pipelines", () => {
+    assert.equal(actorOwnsPipeline(anonymous, ownerKeys), false);
+    assert.equal(actorOwnsPipeline(anonymous, { employerId: "", businessId: null }), false);
+    assert.equal(actorOwnsPipeline(ownerPersonal, null), false);
+  });
+  it("never matches a null or empty owner key against the caller", () => {
+    assert.equal(actorOwnsPipeline(ownerPersonal, { employerId: null, businessId: null }), false);
+    assert.equal(
+      actorOwnsPipeline({ kind: "business", userId: "uA", businessId: "", role: "owner" }, { employerId: null, businessId: "" }),
+      false,
+    );
   });
 });
 

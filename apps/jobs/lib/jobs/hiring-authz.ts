@@ -138,6 +138,44 @@ export function actingBusinessOwnsApplication(
   );
 }
 
+/**
+ * Owner keys of a hiring pipeline, read server-side (never from the request).
+ * `employerId` is `jobs_hiring_pipelines.employer_id` (FK auth.users — the
+ * employer account that owns the pipeline on prod today). `businessId` is the
+ * V3-70 `business_id` (null until that migration applies and the pipeline is
+ * bound to a business).
+ */
+export type PipelineOwnerKeys = {
+  employerId: string | null;
+  businessId: string | null;
+};
+
+/**
+ * V3-CARE-JOBS-PREAPPLY-FIX-01 — may this session actor act on this pipeline's
+ * applications (offer letters, interview-room notes)? True only when:
+ *   - the session user IS the pipeline's employer account (direct identity
+ *     match on an FK-to-auth.users column no request can write — never slug or
+ *     membership inference; an employer_id that is not a user id simply never
+ *     matches), OR
+ *   - the caller acts as a business AND that business owns the pipeline
+ *     (the same rule as actingBusinessOwnsApplication).
+ * Everything else — anonymous, another employer, another business, a pipeline
+ * that could not be resolved — is denied.
+ */
+export function actorOwnsPipeline(
+  ctx: ActingContext,
+  owner: PipelineOwnerKeys | null,
+): boolean {
+  if (!owner || !ctx.userId) return false;
+  if (owner.employerId && owner.employerId === ctx.userId) return true;
+  // Non-empty on both sides: an empty business id never matches another one.
+  return (
+    ctx.kind === "business" &&
+    Boolean(owner.businessId) &&
+    owner.businessId === ctx.businessId
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Conversation participant gate (JOB-2)                              */
 /* ------------------------------------------------------------------ */
