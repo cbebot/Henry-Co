@@ -11,6 +11,7 @@
 -- Touches only: public.profiles (role, force_reauth_after), public.staff_role_grants,
 -- public.customer_profiles (KYC fields, only where reset_kyc), the four
 -- *_role_memberships tables (is_active, only where deactivate_memberships),
+-- public.owner_profiles (is_active, only where deactivate_console),
 -- auth.users (raw_app_meta_data / raw_user_meta_data role keys), auth.sessions (only where
 -- revoke_sessions). No money table, no payments_private, no money RPC. Pending
 -- withdrawals of KYC-reset accounts are a MONEY decision — see the review R6 note.
@@ -27,19 +28,21 @@ create temp table _sg_demote (
   allow_active_owner     boolean not null default false, -- demote even an ACTIVE owner-console owner
   reset_kyc              boolean not null default false, -- R6: self-set KYC → back to 'none'
   deactivate_memberships boolean not null default false, -- also switch off *_role_memberships
+  deactivate_console     boolean not null default false, -- R4: switch off its owner-console row
   revoke_sessions        boolean not null default true   -- sign the account out everywhere
 ) on commit drop;
 
 -- One line per account ABOVE the placeholder:
---   (user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, revoke_sessions)
+--   (user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, deactivate_console, revoke_sessions)
 -- e.g.
---   ('00000000-0000-0000-0000-000000000000', 'R2 SELF-INSERT-SHAPED; unknown to owner', false, false, false, true),
---   ('00000000-0000-0000-0000-000000000000', 'R6 self-verified KYC',                   false, true,  false, true),
-insert into _sg_demote (user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, revoke_sessions)
-select v.user_id::uuid, v.reason, v.allow_active_owner, v.reset_kyc, v.deactivate_memberships, v.revoke_sessions
+--   ('00000000-0000-0000-0000-000000000000', 'R2 SELF-INSERT-SHAPED; unknown to owner', false, false, false, false, true),
+--   ('00000000-0000-0000-0000-000000000000', 'R6 self-verified KYC',                   false, true,  false, false, true),
+--   ('00000000-0000-0000-0000-000000000000', 'R4 self-promoted console owner',         true,  false, false, true,  true),
+insert into _sg_demote (user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, deactivate_console, revoke_sessions)
+select v.user_id::uuid, v.reason, v.allow_active_owner, v.reset_kyc, v.deactivate_memberships, v.deactivate_console, v.revoke_sessions
 from (values
-  (null, 'PLACEHOLDER — keep this last line; it is filtered out', false, false, false, true)
-) as v(user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, revoke_sessions)
+  (null, 'PLACEHOLDER — keep this last line; it is filtered out', false, false, false, false, true)
+) as v(user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, deactivate_console, revoke_sessions)
 where v.user_id is not null;
 
 -- ── 2 · Safety rails ────────────────────────────────────────────────────────
@@ -64,6 +67,13 @@ begin
   ) then
     raise exception 'REMEDIATION: an id is an ACTIVE owner-console owner — refusing (set allow_active_owner only if intended)';
   end if;
+  if not exists (
+    select 1 from public.owner_profiles op
+    where op.is_active and op.role in ('owner', 'admin')
+      and op.user_id not in (select user_id from _sg_demote)
+  ) then
+    raise exception 'REMEDIATION: no active console owner would remain outside this list — refusing';
+  end if;
 end $rails$;
 
 -- ── 3 · Before-state (kept for the step-8 diff) ─────────────────────────────
@@ -71,11 +81,14 @@ create temp table _sg_before on commit drop as
 select d.user_id, u.email, p.role as profile_role,
        u.raw_app_meta_data ->> 'role'  as app_metadata_role,
        u.raw_user_meta_data ->> 'role' as user_metadata_role,
-       cp.verification_status         as kyc_status
+       cp.verification_status         as kyc_status,
+       op.role                        as console_role,
+       op.is_active                   as console_active
 from _sg_demote d
 join auth.users u on u.id = d.user_id
 left join public.profiles p on p.id = d.user_id
-left join public.customer_profiles cp on cp.id = d.user_id;
+left join public.customer_profiles cp on cp.id = d.user_id
+left join public.owner_profiles op on op.user_id = d.user_id;
 
 -- ── 4 · Authorize the role change the way the platform does ──────────────────
 -- trg_profiles_protect_sensitive_fields requires a JWT subject that is_owner(); the SQL
@@ -88,7 +101,8 @@ begin
   select op.user_id into v_owner
   from public.owner_profiles op
   where op.is_active and op.role in ('owner', 'admin')
-  order by op.created_at
+    and op.user_id not in (select user_id from _sg_demote)   -- never borrow a listed identity
+  order by op.created_at, op.user_id
   limit 1;
   if v_owner is null then
     raise exception 'REMEDIATION: no active owner_profiles owner to authorize the role change';
@@ -145,12 +159,18 @@ end $memberships$;
 update auth.users u
    set raw_app_meta_data = coalesce(u.raw_app_meta_data, '{}'::jsonb) - 'role' - 'staff_role'
  where u.id in (select user_id from _sg_demote)
-   and (lower(coalesce(u.raw_app_meta_data ->> 'role', ''))       in ('owner','manager','rider','support','staff')
-     or lower(coalesce(u.raw_app_meta_data ->> 'staff_role', '')) in ('owner','manager','rider','support','staff'));
+   and (lower(trim(coalesce(u.raw_app_meta_data ->> 'role', '')))       in ('owner','manager','rider','support','staff')
+     or lower(trim(coalesce(u.raw_app_meta_data ->> 'staff_role', ''))) in ('owner','manager','rider','support','staff'));
 update auth.users u
    set raw_user_meta_data = coalesce(u.raw_user_meta_data, '{}'::jsonb) - 'role'
  where u.id in (select user_id from _sg_demote)
-   and lower(coalesce(u.raw_user_meta_data ->> 'role', '')) in ('owner','manager','rider','support','staff');
+   and lower(trim(coalesce(u.raw_user_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff');
+
+-- 6e · Owner-console row (R4: e.g. a viewer that promoted itself before the fix)
+update public.owner_profiles op
+   set is_active = false
+ where op.user_id in (select user_id from _sg_demote where deactivate_console)
+   and op.is_active;
 
 -- 6d · Sign the account out everywhere (refresh tokens cascade with their sessions)
 do $sessions$
@@ -176,12 +196,19 @@ begin
     end if;
   end if;
   if exists (select 1 from auth.users u join _sg_demote d on d.user_id = u.id
-             where lower(coalesce(u.raw_app_meta_data ->> 'role', '')) in ('owner','manager','rider','support','staff')) then
+             where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')) then
     raise exception 'REMEDIATION: a listed account still has a staff app_metadata.role';
   end if;
   if exists (select 1 from public.customer_profiles cp join _sg_demote d on d.user_id = cp.id
              where d.reset_kyc and (cp.verification_status <> 'none' or cp.is_verified)) then
     raise exception 'REMEDIATION: a KYC reset did not apply';
+  end if;
+  if exists (select 1 from public.owner_profiles op join _sg_demote d on d.user_id = op.user_id
+             where d.deactivate_console and op.is_active) then
+    raise exception 'REMEDIATION: a console row is still active';
+  end if;
+  if not exists (select 1 from public.owner_profiles where is_active and role in ('owner', 'admin')) then
+    raise exception 'REMEDIATION: no active console owner would remain';
   end if;
 end $assert$;
 
@@ -190,14 +217,16 @@ select b.user_id, b.email,
        b.profile_role        as before_profile_role,  p.role                          as after_profile_role,
        b.app_metadata_role   as before_app_role,      u.raw_app_meta_data ->> 'role'  as after_app_role,
        b.kyc_status          as before_kyc,           cp.verification_status          as after_kyc,
+       b.console_active      as before_console,       op.is_active                    as after_console,
        p.force_reauth_after,
-       d.reset_kyc, d.deactivate_memberships, d.revoke_sessions,
+       d.reset_kyc, d.deactivate_memberships, d.deactivate_console, d.revoke_sessions,
        d.reason
 from _sg_before b
 join _sg_demote d on d.user_id = b.user_id
 join auth.users u on u.id = b.user_id
 left join public.profiles p on p.id = b.user_id
 left join public.customer_profiles cp on cp.id = b.user_id
+left join public.owner_profiles op on op.user_id = b.user_id
 order by b.email;
 
 -- ── 9 · DRY RUN by default. Change to COMMIT only after the owner approves step 8.

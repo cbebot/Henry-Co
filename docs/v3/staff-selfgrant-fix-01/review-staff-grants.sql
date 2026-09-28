@@ -20,12 +20,19 @@ select
   (select count(*) from public.profiles where lower(role) = 'owner')                  as role_owner,
   (select count(*) from public.profiles p join auth.users u on u.id = p.id
     where lower(p.role) <> 'customer'
-      and coalesce(u.raw_app_meta_data ->> 'role', '') = '')                          as self_insert_shaped,
+      and trim(coalesce(u.raw_app_meta_data ->> 'role', '')) = '')                    as self_insert_shaped,
   (select count(*) from auth.users u
     left join public.profiles p on p.id = u.id
-    where lower(coalesce(u.raw_app_meta_data ->> 'role', '')) in ('owner','manager','rider','support','staff')
+    where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')
       and lower(coalesce(p.role, 'customer')) = 'customer')                           as app_metadata_only_staff,
   (select count(*) from public.owner_profiles where role <> 'owner')                  as owner_console_non_owner_rows,
+  (select count(*) from public.owner_profiles where is_active and role in ('owner', 'admin')) as active_console_owners,
+  (select count(*) from public.owner_profiles op
+     left join public.profiles p on p.id = op.user_id
+     left join auth.users u on u.id = op.user_id
+    where op.is_active and op.role in ('owner', 'admin')
+      and lower(coalesce(p.role, '')) <> 'owner'
+      and lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) <> 'owner')   as console_owners_without_platform_owner_signal,
   (select count(*) from public.staff_role_grants where revoked_at is null)            as active_grants,
   (select count(*) from public.profiles p where lower(p.role) <> 'customer'
      and not exists (select 1 from public.staff_role_grants g where g.user_id = p.id
@@ -64,8 +71,8 @@ select
   g.source                                               as grant_source,
   (g.revoked_at is null)                                 as grant_active,
   case
-    when coalesce(u.raw_app_meta_data ->> 'role', '') = ''                        then 'SELF-INSERT-SHAPED'
-    when lower(u.raw_app_meta_data ->> 'role') <> lower(p.role)                   then 'METADATA-MISMATCH'
+    when trim(coalesce(u.raw_app_meta_data ->> 'role', '')) = ''                  then 'SELF-INSERT-SHAPED'
+    when lower(trim(u.raw_app_meta_data ->> 'role')) <> lower(p.role)             then 'METADATA-MISMATCH'
     else 'PROVISIONED-SHAPED'
   end                                                    as verdict_hint
 from public.profiles p
@@ -92,16 +99,32 @@ select
 from auth.users u
 left join public.profiles p on p.id = u.id
 left join public.owner_profiles op on op.user_id = u.id
-where lower(coalesce(u.raw_app_meta_data ->> 'role', '')) in ('owner','manager','rider','support','staff')
+where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')
   and lower(coalesce(p.role, 'customer')) = 'customer'
 order by u.created_at desc;
 
 -- ── R4 · Owner-console rows (the owner_profiles self-promotion vector) ──────
+-- Before the fix, a console viewer/editor could rewrite its OWN row to role='owner'.
+-- Such a row looks like any active owner, so the hint flags an active owner/admin row
+-- with NO platform-owner signal elsewhere (profiles.role and admin-set app_metadata.role
+-- both not 'owner'), and a row changed after creation. The owner judges each; the
+-- remediation script can deactivate a console row (deactivate_console = true).
 select op.user_id, op.email, op.role, op.is_active, op.created_at, op.updated_at,
-       p.role as profile_role
+       p.role                              as profile_role,
+       u.raw_app_meta_data ->> 'role'      as app_metadata_role,
+       case
+         when op.is_active and op.role in ('owner', 'admin')
+          and lower(coalesce(p.role, '')) <> 'owner'
+          and lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) <> 'owner'
+           then 'CONSOLE-OWNER-WITHOUT-PLATFORM-OWNER-SIGNAL'
+         when op.updated_at > op.created_at + interval '1 second'
+           then 'ROW-CHANGED-AFTER-CREATION'
+         else ''
+       end                                 as review_hint
 from public.owner_profiles op
 left join public.profiles p on p.id = op.user_id
-order by op.role, op.created_at;
+left join auth.users u on u.id = op.user_id
+order by (op.is_active and op.role in ('owner', 'admin')) desc, op.role, op.created_at;
 
 -- ── R5 · user_metadata-only "staff" — REVIEW BEFORE DEPLOYING THE APP CHANGES ──
 -- The app no longer reads user_metadata.role (it is self-writable). An account whose
@@ -117,8 +140,8 @@ select u.id as user_id, u.email,
        p.role as profile_role, u.created_at, u.last_sign_in_at
 from auth.users u
 left join public.profiles p on p.id = u.id
-where lower(coalesce(u.raw_user_meta_data ->> 'role', '')) in ('owner','manager','rider','support','staff','admin')
-  and coalesce(u.raw_app_meta_data ->> 'role', '') = ''
+where lower(trim(coalesce(u.raw_user_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff','admin')
+  and trim(coalesce(u.raw_app_meta_data ->> 'role', '')) = ''
   and lower(coalesce(p.role, 'customer')) = 'customer'
 order by u.last_sign_in_at desc nulls last;
 

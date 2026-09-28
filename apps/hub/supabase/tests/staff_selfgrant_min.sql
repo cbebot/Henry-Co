@@ -599,6 +599,12 @@ on conflict do nothing;
 insert into public.hq_internal_comm_thread_members (thread_id, user_id, role) values
   ('5e1f0000-0000-4000-8000-0000000000f2', '5e1f0000-0000-4000-8000-000000000001', 'observer')
 on conflict do nothing;
+-- persona 04 (support) is active workspace staff: it can READ division-less owners-only
+-- threads (hq_ic_can_read_thread) but not WRITE them — the round-4 F2 read→write case.
+insert into public.workspace_staff_memberships (user_id, is_active)
+select '5e1f0000-0000-4000-8000-000000000004', true
+where not exists (select 1 from public.workspace_staff_memberships
+                  where user_id = '5e1f0000-0000-4000-8000-000000000004');
 set session_replication_role = origin;
 
 -- ── Load-bearing proof: the hole is LIVE before the fix ──────────────────────

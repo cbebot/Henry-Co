@@ -120,7 +120,8 @@ begin
      or has_column_privilege('authenticated', 'public.owner_profiles', 'is_active', 'UPDATE')
      or has_column_privilege('authenticated', 'public.owner_profiles', 'user_id', 'UPDATE')
      or has_column_privilege('authenticated', 'public.owner_profiles', 'email', 'UPDATE')
-     or has_table_privilege('anon', 'public.owner_profiles', 'INSERT,UPDATE,DELETE') then
+     or has_table_privilege('anon', 'public.owner_profiles', 'INSERT,UPDATE,DELETE')
+     or has_table_privilege('authenticated', 'public.owner_profiles', 'INSERT,DELETE') then
     raise exception 'FAIL §0: owner_profiles privilege layer is not effective';
   end if;
   if has_column_privilege('authenticated', 'public.customer_profiles', 'verification_status', 'UPDATE')
@@ -580,6 +581,26 @@ begin
   if (select role from public.owner_profiles where user_id = viewer_u) <> 'editor' then
     raise exception 'FAIL O2: service-role owner-console role change failed';
   end if;
+  -- O4/O5 (round-4 F1): not even a current owner adds or removes console rows from a
+  -- session — a self-promoted owner cannot entrench itself or delete the real owner.
+  begin
+    perform pg_temp.as_user(owner_u);
+    insert into public.owner_profiles (user_id, email, role, is_active)
+    values ('5e1f0000-0000-4000-8000-000000000005', 'customer@sg.test', 'owner', true);
+    raise exception 'FAIL O4: owner session inserted a console owner';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  begin
+    perform pg_temp.as_user(owner_u);
+    delete from public.owner_profiles where user_id = viewer_u;
+    raise exception 'FAIL O5: owner session deleted a console row';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  if not exists (select 1 from public.owner_profiles where user_id = viewer_u) then
+    raise exception 'FAIL O5: console row vanished';
+  end if;
   raise notice '§6 owner_profiles OK';
 end $s6$;
 
@@ -831,7 +852,44 @@ begin
   if (select role from public.hq_internal_comm_thread_members where user_id = owner and thread_id = t_own) <> 'admin' then
     raise exception 'FAIL H6: service-role membership role change failed';
   end if;
-  raise notice '§9 internal-comms membership H1-H6 OK';
+  -- H7 (round-4 F2): a workspace-staff READER of the owners-only thread may self-join,
+  --    but only as an observer — the join must not turn read access into write access.
+  perform pg_temp.as_user('5e1f0000-0000-4000-8000-000000000004');
+  if not public.hq_ic_can_read_thread(t_own) or public.hq_ic_can_write_thread(t_own) then
+    raise exception 'FAIL H7 setup: persona 04 should read but not write the owners-only thread';
+  end if;
+  insert into public.hq_internal_comm_thread_members (thread_id, user_id)
+  values (t_own, '5e1f0000-0000-4000-8000-000000000004');
+  if public.hq_ic_can_write_thread(t_own) then
+    raise exception 'FAIL H7: a read-only self-join gained write access';
+  end if;
+  reset role;
+  if (select role from public.hq_internal_comm_thread_members
+      where user_id = '5e1f0000-0000-4000-8000-000000000004' and thread_id = t_own) <> 'observer' then
+    raise exception 'FAIL H7: read-only self-join did not land as observer';
+  end if;
+  -- H8 (round-4 F3): with RLS switched OFF, the trigger alone still refuses adding
+  --    someone else, or joining an unreadable thread
+  foreach mech in array array['other_user', 'unreadable_thread'] loop
+    blocked := false;
+    begin
+      alter table public.hq_internal_comm_thread_members disable row level security;
+      begin
+        perform pg_temp.as_user(staff);
+        if mech = 'other_user' then
+          insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_care, owner);
+        else
+          insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_own, staff);
+        end if;
+      exception when insufficient_privilege then blocked := true;
+      end;
+      reset role;
+      raise exception using errcode = 'P0SG9', message = 'rollback';
+    exception when sqlstate 'P0SG9' then null;
+    end;
+    if not blocked then raise exception 'FAIL H8: trigger alone let a request role insert [%]', mech; end if;
+  end loop;
+  raise notice '§9 internal-comms membership H1-H8 OK';
 end $s9$;
 
 -- ═══ §10 owner_profiles — each layer ALONE ═════════════════════════════════════
@@ -839,6 +897,7 @@ do $s10$
 declare
   viewer_u constant uuid := '5e1f0000-0000-4000-8000-000000000008';
   mech text;
+  verb text;
   blocked boolean;
 begin
   foreach mech in array array['privileges', 'trigger'] loop
@@ -860,7 +919,35 @@ begin
     end;
     if not blocked then raise exception 'FAIL O3: % alone did NOT stop owner self-promotion', mech; end if;
   end loop;
-  raise notice '§10 owner_profiles privilege + trigger each alone OK';
+  -- Round-4 F1: RLS alone PERMITS a current owner to insert/delete console rows
+  -- (owner_profiles_owner_write is is_owner()), so privileges and trigger must EACH hold.
+  foreach mech in array array['privileges', 'trigger'] loop
+    foreach verb in array array['insert', 'delete'] loop
+      blocked := false;
+      begin
+        if mech = 'privileges' then
+          alter table public.owner_profiles disable trigger trg_owner_profiles_block_self_promotion;
+        else
+          grant insert, delete on table public.owner_profiles to authenticated;
+        end if;
+        begin
+          perform pg_temp.as_user('5e1f0000-0000-4000-8000-000000000002');
+          if verb = 'insert' then
+            insert into public.owner_profiles (user_id, email, role, is_active)
+            values ('5e1f0000-0000-4000-8000-000000000005', 'customer@sg.test', 'owner', true);
+          else
+            delete from public.owner_profiles where user_id = viewer_u;
+          end if;
+        exception when insufficient_privilege then blocked := true;
+        end;
+        reset role;
+        raise exception using errcode = 'P0SGA', message = 'rollback';
+      exception when sqlstate 'P0SGA' then null;
+      end;
+      if not blocked then raise exception 'FAIL O6: % alone did NOT stop an owner-session %', mech, verb; end if;
+    end loop;
+  end loop;
+  raise notice '§10 owner_profiles privilege + trigger each alone OK (update, insert, delete)';
 end $s10$;
 
 select 'V3-STAFF-SELFGRANT-FIX-01 invariant: ALL SECTIONS PASSED' as result;

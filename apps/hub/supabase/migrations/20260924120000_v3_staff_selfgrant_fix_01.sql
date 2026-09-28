@@ -352,7 +352,8 @@ as $function$
   );
 $function$;
 
--- ── (6) owner_profiles — a holder may not promote / re-activate / re-bind itself ─
+-- ── (6) owner_profiles — the console is platform-managed: no request-role insert,
+--        delete, promotion, re-activation or re-binding (owners included) ──────────
 create or replace function public.owner_profiles_block_self_promotion()
 returns trigger
 language plpgsql
@@ -364,17 +365,24 @@ begin
   select coalesce(r.rolsuper or r.rolbypassrls, false) into v_trusted
   from pg_catalog.pg_roles r where r.rolname = current_user;
   if coalesce(v_trusted, false) then
-    return new;
+    return coalesce(new, old);
   end if;
-  -- is_owner() evaluates the caller's CURRENT (pre-statement) owner_profiles state.
-  if public.is_owner() then
-    return new;
+  -- The owner console is managed by the platform (service role / SQL editor): no app
+  -- code writes owner_profiles through a user session. A request role — even a current
+  -- owner — may never add or remove console rows, nor change who/what a row grants.
+  -- (Round-4 F1: an account that self-promoted through the pre-fix hole must not be
+  -- able to entrench itself or delete the real owner's row.)
+  if tg_op = 'INSERT' then
+    raise exception 'owner_profiles: console rows are created by the platform' using errcode = '42501';
+  end if;
+  if tg_op = 'DELETE' then
+    raise exception 'owner_profiles: console rows are removed by the platform' using errcode = '42501';
   end if;
   if new.role is distinct from old.role
      or new.is_active is distinct from old.is_active
      or new.user_id is distinct from old.user_id
      or new.email is distinct from old.email then
-    raise exception 'owner_profiles: role/is_active/user_id/email are owner-controlled'
+    raise exception 'owner_profiles: role/is_active/user_id/email are platform-controlled'
       using errcode = '42501';
   end if;
   return new;
@@ -387,7 +395,7 @@ begin
   if to_regclass('public.owner_profiles') is null then return; end if;
   drop trigger if exists trg_owner_profiles_block_self_promotion on public.owner_profiles;
   create trigger trg_owner_profiles_block_self_promotion
-    before update on public.owner_profiles
+    before insert or update or delete on public.owner_profiles
     for each row execute function public.owner_profiles_block_self_promotion();
   -- Privilege layer. NOTE: a COLUMN-level `revoke update (role, is_active)` — the form
   -- 20260710180000_hub_security_hardening HUB-2 uses — is a NO-OP while the request roles
@@ -395,8 +403,7 @@ begin
   -- table-level UPDATE is revoked and only the self-editable cosmetic columns re-granted.
   -- No app code writes owner_profiles through a session client (all reads; role changes go
   -- through the service role), so this narrows nothing genuine. anon never writes it.
-  revoke update, truncate, trigger, references on table public.owner_profiles from anon, authenticated;
-  revoke insert, delete on table public.owner_profiles from anon;
+  revoke insert, update, delete, truncate, trigger, references on table public.owner_profiles from anon, authenticated;
   execute coalesce((
     select 'grant update (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.owner_profiles to authenticated'
     from information_schema.columns c
@@ -660,10 +667,24 @@ begin
     return new;
   end if;
   if tg_op = 'INSERT' then
-    -- A self-join (RLS already requires hq_ic_can_read_thread) is always least-privileged.
+    -- Second layer to RLS (round-4 F3): a request role may only add ITSELF, and only to a
+    -- thread it can already read.
+    if new.user_id is distinct from auth.uid() then
+      raise exception 'hq_internal_comm_thread_members: a request role may only add itself'
+        using errcode = '42501';
+    end if;
+    if not public.hq_ic_can_read_thread(new.thread_id) then
+      raise exception 'hq_internal_comm_thread_members: thread is not readable by the caller'
+        using errcode = '42501';
+    end if;
     if lower(coalesce(new.role, 'member')) not in ('member', 'observer') then
       raise exception 'hq_internal_comm_thread_members: a self-join may only be member/observer'
         using errcode = '42501';
+    end if;
+    -- Round-4 F2: a self-join never grants more than the caller already has — someone who
+    -- can READ the thread but not WRITE it joins as an observer, not as a writing member.
+    if not public.hq_ic_can_write_thread(new.thread_id) then
+      new.role := 'observer';
     end if;
     return new;
   end if;
