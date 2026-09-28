@@ -19,6 +19,8 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 | 8 | **Customer KYC:** `"Users can update own profile"` + table-level UPDATE let a user self-set `verification_status='verified'` (even forging the reviewer). That passes the **wallet-withdrawal KYC gate**. | DB | any signed-in user |
 | 9 | **Internal comms:** a member of *any* thread could move its membership into an **owners-only** thread as a writer (filterless PATCH), or turn observer into member. #65's HUB-3 revoke is a no-op. | DB | any thread member |
 | 10 | **Address KYC:** an owner could insert or mark an address `kyc_verified`. Display-only today. | DB | any signed-in user |
+| 11 | **Care owner-action token:** the signed hidden fields that authorize owner actions were a **session-unbound bearer token**. It was rendered into the owner page, stayed valid until the owner's next sign-in (surviving sign-out), and its secret fell back to the **public** anon key and then a hard-coded string. The impersonation callback's prefix-only redirect check could also be bypassed with a tab or newline (`/<TAB>/evil.example`). | care | anyone holding a copied token; anyone who can craft the callback link |
+| 12 | **Owner console, after promotion:** `authenticated` kept table-level INSERT/DELETE on `owner_profiles`, gated only by RLS `is_owner()`. So an account that had self-promoted (#6) could add owners or delete the real owner's row. Internal-comms self-joins also let a thread **reader** join as a **writer**. | DB | a self-promoted console owner; a workspace-staff reader |
 | — | Pre-existing: `is_owner()` recursed through RLS ("stack depth limit exceeded") for every request-role read that touched it. | DB | — |
 
 **GOTCHA behind #6 and #9:** a **column-level REVOKE does nothing while the role holds the table-level privilege**, and prod grants table-level DML to `anon`/`authenticated`. Every privilege layer here revokes at table level and re-grants only safe columns, and §0 of the invariant checks the *effective* column privileges.
@@ -48,15 +50,16 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 | Surface | Privilege layer | Trigger |
 |---|---|---|
-| `owner_profiles` | table-level UPDATE revoked; only `full_name`/`updated_at` | `role` / `is_active` / `user_id` / `email` are owner-controlled |
-| internal-comms membership | column-level INSERT/UPDATE on harmless columns | thread, member and role server-controlled; self-join member/observer only |
+| `owner_profiles` | no request-role INSERT/DELETE; UPDATE only `full_name`/`updated_at` | **platform-managed**: every untrusted insert/delete, and any `role`/`is_active`/`user_id`/`email` change, is refused, owners included (the console is managed through the service role) |
+| internal-comms membership | column-level INSERT/UPDATE on harmless columns | thread, member and role server-controlled. A self-join adds only the caller, only to a readable thread, and **never exceeds existing rights** (a reader joins as an observer) |
 | customer KYC | only cosmetic/preference columns | **allowlist**; new privileged columns default-deny |
 | address KYC | *(session edits legitimately reset KYC, so trigger + RLS only)* | downgrade-only; a new address is never pre-verified; moving an address invalidates it |
 
-**Care impersonation:**
-- The cookie is HMAC-sealed with an expiry. No public secret fallback; it fails closed.
-- Ending requires the current session to be the impersonated target and the owner to still be an owner.
-- The callback accepts only same-origin redirects.
+**Care impersonation and owner actions:**
+- The impersonation cookie is HMAC-sealed with an expiry. Ending requires the current session to be the impersonated target and the owner to still be an owner.
+- The callback redirect is parsed against a sentinel origin and only the canonical path is returned. Control characters, backslashes and leading whitespace are rejected, and the canonical form is re-checked (fuzzed with 15 edge cases).
+- Signed owner-action fields must match the **current cookie session**, so a copied token is useless.
+- One server-only secret (`apps/care/lib/auth/signing-secret.ts`) serves both, with no public or hard-coded fallback; unset means fail closed.
 
 ## 3 · Proof (local only)
 
@@ -71,7 +74,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 **Money:** digests are identical pre/post: 30 money / `payments_private` functions + ACLs, 116 money relations + ACLs, and all money-table triggers.
 
-**Unit tests:** `@henryco/config` 73/73 (11 new), care 14/14 (all new), search-core 44/44 (5 new).
+**Unit tests:** `@henryco/config` 73/73 (11 new), care 19/19 (16 new), search-core 44/44 (5 new). All three suites run in CI.
 
 **Typecheck + ESLint:** clean on every touched app and package, except a pre-existing `packages/lifecycle` JSX config error in search-core.
 
@@ -90,7 +93,10 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
    - R7: address KYC evidence.
    - R8: non-owners in owners-only threads.
    - **R9: forged `succeeded` payment intents (money escalation).**
-4. The owner judges each list, then fills `remediate-self-granted-staff.sql` step 1 with `reset_kyc`, `deactivate_memberships` and `revoke_sessions` per row → dry run (ROLLBACK) → check step 8 → COMMIT.
+   - **R1 `console_owners_without_platform_owner_signal` / R4 `review_hint`:** an active console owner with no platform-owner signal, i.e. a viewer or editor that promoted itself before the fix.
+4. The owner judges each list, then fills `remediate-self-granted-staff.sql` step 1, one row per account: `(user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, deactivate_console, revoke_sessions)`. Then dry run (ROLLBACK) → check step 8 → COMMIT.
+   - It refuses an empty list, an unflagged active owner, and any run that would leave **no** active console owner.
+   - It authorizes the role change under an active owner that is **not** on the list, needs no DDL, and reverts the borrowed identity at the end.
 5. Before deploying the app: re-provision any genuine staff listed in R5. Then deploy.
 
 ## 5 · Money escalation — held for the owner (NOT changed here)
@@ -112,11 +118,21 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 - `studio_project_messages` `sender_role` spoofing;
 - legacy `orders` / `order_items` client totals/status.
 
+**Owner decision (HIGH, pre-existing): approved learn instructors are staff.**
+- `learn_is_staff()` is true for any active `learn_role_memberships` row, so an **approved external instructor** gets ALL on the 29 policies that use it: `learn_payments`, `learn_certificates`, `learn_enrollments`, and more.
+- The app-layer review reproduced an instructor issuing a certificate to another user through the direct API. Instructors also count as staff for `is_staff_in_any()`, search (cross-user results) and the staff workspace.
+- It is **not a self-grant**: it needs owner approval of a teacher application.
+- It is also **by design in part**: `apps/staff/lib/roles.ts:334` maps instructors to a learn workspace role, and the staff workspace's learn queue reads `learn_courses` through the user session (`apps/staff/app/(track-c)/modules/[slug]/page.tsx:89`). Narrowing `learn_is_staff()` in this pass would therefore break a designed instructor path, so it was **not** changed here.
+- Recommended pass (LEARN-INSTRUCTOR-SCOPE):
+  - (a) `learn_payments` / `learn_certificates` / `learn_enrollments` / `learn_settings` writable only by internal academy roles;
+  - (b) instructor-scoped policies (own courses only);
+  - (c) decide whether instructors are "staff" for `is_staff_in_any()` and search, and exclude `instructor` there if not;
+  - (d) the same review for `studio_is_staff()` (counts any active membership; no self-serve path creates studio rows today).
+
 **Owner-flow and gate defects:**
 - Jobs employer membership email match is unverified (PR #349 class, 4 call sites).
-- `learn_is_staff` / `studio_is_staff` count any active membership.
 - Care slot-retire leaves DB staff for deleted accounts, and **care role changes never reach `profiles.role`** (the protect trigger blocks service-role updates), so offboarding needs the remediation script.
-- `packages/auth` `requireUnifiedViewer` trusts an `x-supabase-user` header (only unimported gates use it).
-- The care owner-action signing secret falls back to the anon key.
+- `packages/auth` `requireUnifiedViewer` trusts an `x-supabase-user` header. Only unimported gates use it; strip the header at the edge before anything imports them.
+- *(Fixed in this pass: the care owner-action secret's public-key fallback, see #11.)*
 
 Files: `review-staff-grants.sql`, `remediate-self-granted-staff.sql` (both also in `Downloads\V3-STAFF-SELFGRANT-FIX-01-*`).
