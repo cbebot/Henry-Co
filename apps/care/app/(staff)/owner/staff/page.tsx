@@ -21,6 +21,7 @@ import PendingSubmitButton from "@/components/forms/PendingSubmitButton";
 
 import { reconcileStaffDirectory } from "@/lib/auth/staff-identity";
 import { requireRoles } from "@/lib/auth/server";
+import { careServerSigningSecret } from "@/lib/auth/signing-secret";
 import { getCarePublicLocale } from "@/lib/locale-server";
 import { logProtectedPageAccess } from "@/lib/security/logger";
 import { createAdminSupabase } from "@/lib/supabase";
@@ -46,17 +47,12 @@ export const metadata: Metadata = {
 
 const ROLE_OPTIONS = ["owner", "manager", "rider", "support", "staff"] as const;
 
-function getOwnerActionSecret() {
-  return (
-    process.env.OWNER_ACTION_SIGNING_SECRET ||
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "local-owner-action-secret"
-  );
-}
-
 function createOwnerActionSignature(actorUserId: string, actorRole: string, actorTs: string) {
-  return createHmac("sha256", getOwnerActionSecret())
+  // Server-only secret (no public / hard-coded fallback). Unset ⇒ no signature: the
+  // owner actions then authorize through the owner's own session instead.
+  const secret = careServerSigningSecret();
+  if (!secret) return "";
+  return createHmac("sha256", secret)
     .update(`${actorUserId}:${actorRole}:${actorTs}`)
     .digest("hex");
 }

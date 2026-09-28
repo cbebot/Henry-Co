@@ -65,4 +65,20 @@ describe("safeRelativeRedirect — no open redirect from the callback", () => {
       assert.equal(safeRelativeRedirect(bad as string), "/");
     }
   });
+  it("is not fooled by control characters the URL parser strips (tab / LF / CR)", () => {
+    // WHATWG URL parsing removes ASCII tab/newline, so "/<TAB>/evil" becomes "//evil".
+    for (const bad of ["/\t/evil.example", "/\n/evil.example", "/\r/evil.example",
+                       "/\t\\evil.example", " //evil.example", "/%09/evil.example".replace("%09", "\t")]) {
+      const out = safeRelativeRedirect(bad);
+      assert.equal(new URL(out, "https://care.example").host, "care.example", `escaped via ${JSON.stringify(bad)}`);
+    }
+  });
+  it("whatever it returns always resolves same-origin", () => {
+    for (const probe of ["/owner", "/owner?x=1#y", "/\t/evil.example", "/..//evil.example", "/%2F%2Fevil.example",
+                         "/\\\\evil.example", "///evil.example", "/owner/../staff", "/owner?next=//evil.example#//x",
+                         "/ /evil.example", "/　/evil.example", "/\u0000/evil.example", "/./..//evil.example",
+                         "/%5C%5Cevil.example", "/owner\u0085/x"]) {
+      assert.equal(new URL(safeRelativeRedirect(probe), "https://care.example").host, "care.example", probe);
+    }
+  });
 });

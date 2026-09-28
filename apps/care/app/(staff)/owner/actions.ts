@@ -10,6 +10,7 @@ import { createStaffAccessLink, findAuthUserByEmail } from "@/lib/auth/recovery-
 import { STAFF_LOGIN_ROUTE, STAFF_RECOVERY_ROUTE } from "@/lib/auth/routes";
 import { syncStaffIdentity } from "@/lib/auth/staff-identity";
 import { getAuthenticatedProfile } from "@/lib/auth/server";
+import { careServerSigningSecret } from "@/lib/auth/signing-secret";
 import { isServiceBookingRecord } from "@/lib/care-booking-shared";
 import { normalizeCareSettings } from "@/lib/care-settings-shared";
 import {
@@ -159,12 +160,8 @@ function finish(route: string, state: "ok" | "error" | "warn" | "info", message:
 }
 
 function getOwnerActionSecret() {
-  return (
-    process.env.OWNER_ACTION_SIGNING_SECRET ||
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "local-owner-action-secret"
-  );
+  // Server-only secrets; no public / hard-coded fallback (empty = fail closed).
+  return careServerSigningSecret();
 }
 
 function signOwnerAction(actorUserId: string, actorRole: string, actorTs: string) {
@@ -238,11 +235,24 @@ async function validatePostedActor(
       return null;
     }
 
+    if (!getOwnerActionSecret()) {
+      return null;
+    }
+
     const expectedSig = signOwnerAction(actorUserId, actorRole, actorTs);
     const sigOk = safeEqualText(actorSig, expectedSig);
     const isDev = process.env.NODE_ENV !== "production";
 
     if (!sigOk && !isDev) {
+      return null;
+    }
+
+    // V3-STAFF-SELFGRANT-FIX-01: the signed fields are rendered into the owner page, so on
+    // their own they are a copyable bearer token that outlives sign-out (valid until the
+    // owner's next sign-in). Bind them to the CURRENT cookie session: only the signed-in
+    // actor can use its own token.
+    const session = await getActionAuthenticatedProfile();
+    if (!session || session.user.id !== actorUserId) {
       return null;
     }
 

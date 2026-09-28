@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { careServerSigningSecret } from "./signing-secret";
 
 /**
  * V3-STAFF-SELFGRANT-FIX-01 — the owner-impersonation cookie, sealed.
@@ -60,14 +61,35 @@ export function openImpersonationSession(
   return session;
 }
 
-/** A redirect target that can never leave the current origin. */
+const REDIRECT_CHECK_BASE = "https://redirect-check.invalid";
+
+/**
+ * A redirect target that can never leave the current origin.
+ *
+ * Prefix checks alone are not enough: the WHATWG URL parser (which the callback's
+ * `new URL(next, request.url)` uses) silently strips ASCII tab/CR/LF and treats "\" as
+ * "/", so "/<TAB>/evil.example" passes a startsWith("//") test and still lands off-origin.
+ * So: reject control characters, backslashes and leading whitespace outright, parse
+ * against a sentinel origin, and return only the canonical path+query+hash — re-checked,
+ * because normalisation can itself produce a protocol-relative form ("/..//evil").
+ */
 export function safeRelativeRedirect(next: string | null | undefined, fallback = "/"): string {
-  const value = typeof next === "string" ? next.trim() : "";
-  if (!value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return fallback;
-  return value;
+  const raw = typeof next === "string" ? next : "";
+  if (!raw.startsWith("/") || /[\u0000-\u001f\u007f\\]/.test(raw)) return fallback;
+  let parsed: URL;
+  try {
+    parsed = new URL(raw, REDIRECT_CHECK_BASE);
+  } catch {
+    return fallback;
+  }
+  if (parsed.origin !== REDIRECT_CHECK_BASE) return fallback;
+  const canonical = parsed.pathname + parsed.search + parsed.hash;
+  if (!canonical.startsWith("/") || canonical.startsWith("//")) return fallback;
+  if (new URL(canonical, REDIRECT_CHECK_BASE).origin !== REDIRECT_CHECK_BASE) return fallback;
+  return canonical;
 }
 
 /** Owner-action secret without public fallbacks: fail closed when unset. */
 export function impersonationSigningSecret(): string {
-  return process.env.OWNER_ACTION_SIGNING_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+  return careServerSigningSecret();
 }
