@@ -65,7 +65,10 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 **Prod-actual shadow:**
 - Every hole above is reproduced pre-fix.
-- Post-fix, invariant §0–§10 pass: every exploit variant blocked, **each mechanism alone** stops it, **layer R alone** confers nothing (including laundering), and genuine paths G1–G11, K3–K4, A4–A6, H4–H6 and O2 work.
+- Post-fix, invariant §0–§10 pass.
+  - Every exploit variant is blocked, and **each mechanism alone** stops it, including owner-session insert/delete on the console (O4–O6), a read-only self-join (H7), and a trigger-only check with RLS disabled (H8).
+  - **Layer R alone** confers nothing, including laundering.
+  - Genuine paths G1–G11, K3–K4, A4–A6, H4–H6 and O2 work.
 - The migration is idempotent (applied twice).
 
 **CI:**
