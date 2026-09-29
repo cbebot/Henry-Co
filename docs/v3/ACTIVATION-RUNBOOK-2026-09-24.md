@@ -2,7 +2,9 @@
 
 **Pass:** V3-ACTIVATION-RUNBOOK-01 · **Compiled:** 2026-09-24 · **Base:** `origin/main @ b1efffe3` (V3-42, #537) · **Prod:** `rzkbgwuznmdxnnhmjazy` — **PAUSED / unreachable at compile time**
 **Type:** documentation only — no code change, no migration-file edit, **no prod connection attempted**. `payments_private` and the money RPCs untouched.
-**Amended by V3-STAFF-SELFGRANT-FIX-01 (2026-09-25, PR #540):** the §4 `profiles` self-insert escalation is **fixed**, together with its whole "self-writable column confers privilege" class (owner console, customer KYC, internal comms, address KYC). This is a new NOW row (**#80**, `20260924120000_v3_staff_selfgrant_fix_01.sql`, HELD for the owner's go) plus app changes.
+**Amended by V3-STAFF-SELFGRANT-FIX-01 (2026-09-25, updated 2026-09-29, PR #540):** the §4 `profiles` self-insert escalation is **fixed**, together with its whole "self-writable column confers privilege" class (owner console, customer KYC, internal comms, address KYC). This is a new NOW row (**#80**, `20260924120000_v3_staff_selfgrant_fix_01.sql`, HELD for the owner's go) plus app changes.
+- **Order:** the PR #540 app goes live **before** the migration (§6.1 step 3a.0).
+- The owner console and internal-comms memberships are platform-managed, and an owner-level comms membership counts only while its holder is an active console owner.
 - Day-of step: §6.1 **3a**.
 - Forensic review: **G10b** R1–R9 in §6.3.
 - Post-apply checks: §6.4.
@@ -222,7 +224,7 @@ The edges come from three sources:
 62. `20260709093000_brand_purge_company_settings.sql` — Brand purge of company settings rows (data rewrite)
 63. `20260710140000_founder_intelligence.sql` — F2 Founder Intelligence tables
 64. `20260710160000_founder_action_proposals.sql` — F3 governed write-action rail
-65. `20260710180000_hub_security_hardening.sql` — F5 FIRE-HUB owner-gate fixes HUB-1..4 · ⚠ its HUB-2 / HUB-3 **column-level** revokes are **no-ops** while `anon`/`authenticated` hold table-level UPDATE (shadow-proven, V3-STAFF-SELFGRANT-FIX-01). Row #80 enforces both properly (table-level revoke + safe-column re-grant + trigger), so apply #65 for HUB-1/HUB-4 but don't rely on it for HUB-2/HUB-3.
+65. `20260710180000_hub_security_hardening.sql` — F5 FIRE-HUB owner-gate fixes HUB-1..4 · ⚠ its HUB-2 / HUB-3 **column-level** revokes are **no-ops** while `anon`/`authenticated` hold table-level UPDATE (shadow-proven, V3-STAFF-SELFGRANT-FIX-01). Row #80 supersedes both: the owner console and internal-comms memberships become platform-managed (table-level revoke, safe-column re-grant, trigger). Applying #65 after #80 is harmless: its `is_owner()` is identical and its revokes remove nothing. So apply #65 for HUB-1/HUB-4, but don't rely on it for HUB-2/HUB-3.
 66. `20260714090000_email_provider_allow_postmark.sql` — email_provider CHECK +postmark (Postmark migration #500)
 67. `20260714093000_harden_account_set_updated_at_search_path.sql` — Advisor 0011 — pin account_set_updated_at search_path
 68. `20260718120000_studio_brief_flow_persistence.sql` — SA-1 studio brief flow persistence  ·  **CONFIRMED-APPLIED** (skip)
@@ -327,9 +329,10 @@ The GATED realtime files next to these families (`care_realtime_publication` #29
     - a forgeable care impersonation cookie that led to an owner sign-in;
     - the jobs viewer reading raw `profiles.role` and inactive owner rows;
     - **customer KYC self-verification** (`customer_profiles.verification_status` was self-writable, which passes the **wallet-withdrawal KYC gate**);
-    - an **internal-comms thread escape** (a filterless PATCH moved a membership into an owners-only thread);
-    - address-KYC self-marking.
-  - **Existing rows** are backfilled as grants. The owner decides which are illegitimate from G10b R1–R9, and the held remediation script demotes them, resets self-set KYC and revokes sessions.
+    - an **internal-comms thread escape** (a filterless PATCH moved a membership into an owners-only thread), self-joins, and owner-level memberships that outlived the owner;
+    - address-KYC self-marking;
+    - care's old staff directory copying a self-set `user_metadata.role` into `app_metadata.role` whenever the owner opened care's staff or security page (review R3).
+  - **Existing rows** are backfilled as grants. The owner decides which are illegitimate from G10b R1–R9. The held remediation script demotes them, resets self-set KYC, switches off self-promoted console rows together with their comms memberships, and makes every listed account sign in again.
   - **Money escalation (NOT changed; owner's money window):** any signed-in user can INSERT a `payment_intents` row with `status='succeeded'`. It is detected by G10b R9; see `docs/v3/staff-selfgrant-fix-01/README.md` §5.
 - **Care staff UPDATE is column-unrestricted** (it can rewrite `opened_by_user_id` and amounts, not only the triage columns). Restrict it with column grants or a trigger when triage ships.
 - **App drift in shipped code (not migrations):**
@@ -384,6 +387,9 @@ Re-runnability: F2 `founder_intelligence` and F3 `founder_action_proposals` are 
    - **INVESTIGATE** → a history row exists but the objects don't. Stop and diff that row's file against prod before anything else.
 3. **Run §6.3** (read-only guards and preflight).
 3a. **STAFF-SELFGRANT (security, HELD for the owner's go; apply before any other NOW row):**
+   0. **App first.** The PR #540 build must be the live deployment before Supabase serves traffic; it runs on the pre-migration schema.
+      - ⚠ A pre-#540 care build with a reachable database keeps assigning staff roles through the service role, which the fix trusts. Every render of `/owner/staff` or `/owner/security`, and its staff sign-in and recovery, copy a self-set `user_metadata.role` into `app_metadata.role` or default the account to `staff`. Never open those pages on a pre-#540 build.
+      - If a pre-#540 build was live against the resumed database, re-run R1–R3 once #540 is live, and remediate anything new.
    1. With §6.2 and §6.3 recorded, apply row #80 `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` as a single `apply_migration`, named `v3_staff_selfgrant_fix_01`.
       - It refuses to apply unless `postgres` / `service_role` have BYPASSRLS/SUPERUSER (trust-anchor precondition).
       - It locks the `profiles` write path **before** backfilling grants.
@@ -392,14 +398,18 @@ Re-runnability: F2 `founder_intelligence` and F3 `founder_action_proposals` are 
    2. Run §6.4's STAFF-SELFGRANT checks.
    3. Run **G10b** = `docs/v3/staff-selfgrant-fix-01/review-staff-grants.sql` (read-only, **R1–R9**, each block on its own; also in `Downloads\V3-STAFF-SELFGRANT-FIX-01-1-review-staff-grants-READONLY.sql`) and save every result. R1 `unbacked_non_customer_rows_expect_0` must be 0.
    4. The owner judges:
-      - R2: DB-level staff; `grant_source = backfill:…` marks every pre-fix row.
-      - R3: app-metadata-only staff.
+      - R2: DB-level staff; `grant_source = backfill:…` marks every pre-fix row, and `…, NO-RECORD` has no owner-console provisioning record.
+      - R3: app-metadata-only staff. `review_hint` `NO-RECORD` / `NO-RECORD-DEFAULT` is the old care directory's shape (R1 `app_metadata_staff_without_record`).
+      - R4: console owners. `CONSOLE-OWNER-WITHOUT-PLATFORM-OWNER-SIGNAL` / `CONSOLE-OWNER-PROFILE-ROLE-ONLY`: `profiles.role` alone is not an owner signal (it was self-settable), and the second may be your own account.
       - **R6: KYC marked verified without an approved submission, with those accounts' withdrawal requests.** Pending withdrawals of self-verified accounts are a money decision.
       - R7: address KYC evidence.
-      - R8: non-owners in owners-only threads.
+      - R8: every internal-comms membership held by a non-owner, `OWNER-LEVEL-ROW` first.
       - **R9: `succeeded` payment intents with no provider-confirmed attempt** (money escalation).
-   5. Fill `remediate-self-granted-staff.sql` step 1 (`Downloads\V3-STAFF-SELFGRANT-FIX-01-2-remediate-HELD-dryrun.sql`). Each row is `(user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, revoke_sessions)`. Then: dry run (ends in ROLLBACK) → check step 8 → change the last line to COMMIT → run. It needs no DDL: it authorizes the role change under an active owner's claims for that one transaction.
-   6. Before deploying the PR #540 app changes, re-provision any genuine staff listed in R5 (role only in `user_metadata`).
+   5. Fill `remediate-self-granted-staff.sql` step 1 (`Downloads\V3-STAFF-SELFGRANT-FIX-01-2-remediate-HELD-dryrun.sql`). Each row is `(user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, deactivate_console, revoke_sessions)`. Then: dry run (ends in ROLLBACK) → check step 8 → change the last line to COMMIT → run.
+      - It runs only after step 1, and needs no DDL.
+      - It refuses an empty list, an unflagged active owner, an active console owner listed without `deactivate_console`, and any run that would leave no active console owner.
+      - `deactivate_console` also removes the account's internal-comms memberships. Every listed account is made to sign in again.
+   6. R5 (role only in `user_metadata`): re-provision each genuine account **on the #540 build** (care owner console → add staff with that email and role, or the hub invite flow), never through a pre-#540 care build.
 4. Apply the **NOW** rows that are CONFIRMED-UNAPPLIED, **in §3.1 order**, one at a time, and run §5's before/after treatment where it applies. Money rows (#47/#59/#60) and HELD rows (#48–#50) go in their own owner windows.
 5. Re-run §6.2. Every applied NOW row must now read CONFIRMED-APPLIED.
 6. Run §6.4 (post-apply invariants).
@@ -589,8 +599,8 @@ select to_regclass('public.divisions') is null           as divisions_absent,
 -- self-insert escalation (§4). Record the number; > 0 means the platform fix is urgent.
 select count(*) as auth_users_without_profile
 from auth.users u where not exists (select 1 from public.profiles p where p.id = u.id);
--- G10b (STAFF-SELFGRANT): run AFTER §6.1 step 3a (the apply), not here. Use
--- docs/v3/staff-selfgrant-fix-01/review-staff-grants.sql R1–R5. R1 must show
+-- G10b (STAFF-SELFGRANT): run AFTER §6.1 step 3a (the apply, with the PR #540 app live),
+-- not here. Use docs/v3/staff-selfgrant-fix-01/review-staff-grants.sql R1–R9. R1 must show
 -- unbacked_non_customer_rows_expect_0 = 0, and R2 lists every pre-fix non-customer row for the owner.
 -- G9 (FIX-01): RETIRED files must never have landed — expect all false
 select to_regclass('public.rooms_sessions')   is not null as rooms_present,
@@ -651,12 +661,17 @@ select
   not has_column_privilege('authenticated', 'public.customer_profiles', 'verification_status', 'update') as kyc_locked,
   not has_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'thread_id', 'update') as comms_thread_locked,
   not has_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'role', 'update')      as comms_role_locked,
+  not has_any_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'insert')         as comms_no_self_join,
+  not exists (select 1 from pg_policies where tablename = 'hq_internal_comm_thread_members'
+                and cmd in ('INSERT','ALL'))                                                         as comms_no_insert_policy,
+  position('v_member_role' in pg_get_functiondef('public.hq_ic_can_read_thread(uuid)'::regprocedure)) > 0 as comms_owner_rows_need_owner,
+  not has_table_privilege('authenticated', 'public.owner_profiles', 'insert,delete')                 as console_platform_managed,
   (select count(*) from pg_trigger where tgname in ('trg_owner_profiles_block_self_promotion',
      'trg_hq_ic_members_block_self_escalation','trg_customer_profiles_block_self_privilege',
      'trg_user_addresses_guard_kyc')) = 4                                                   as same_class_guards;
 ```
 
-Then, signed in as a genuine staff member and as the owner, open the care, staff and hub dashboards, which must load exactly as before. The money digest must be unchanged: the migration touches no money object.
+Then, signed in as a genuine staff member and as the owner, open the care, staff and hub dashboards and the owner's internal-comms threads, which must load exactly as before. The money digest must be unchanged: the migration touches no money object.
 
 Then run the Supabase security advisors. Expect only the by-design zero-policy INFO lines on the deny-RLS tables, plus the `learn_is_staff` search_path note from §5.
 
