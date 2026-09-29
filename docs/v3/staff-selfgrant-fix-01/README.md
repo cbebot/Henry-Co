@@ -43,7 +43,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 **Staff role — layer R** (alone proven):
 - SQL: every `profiles.role` consumer requires the grant via `verified_profile_role()`; `is_staff_in` / `_any` ignore customer-facing membership roles.
 - App: `@henryco/config` `readVerifiedProfileRole` / `readVerifiedProfileRoles` / `isOperatorMembershipRole` (tested) in every resolver: auth viewer, 8 divisions, jobs, care, search, and staff/support/impersonation lists.
-  - Lookups fail closed, except "relation does not exist" (pre-migration), so app and DB deploy in either order.
+  - Lookups fail closed, except "relation does not exist" (pre-migration), so the app runs on the pre-migration schema. Deploy it **first** (§4).
 - `user_metadata` is never a source for role, freeze, re-auth, deleted or slot state. Care resolves staff only through `resolveProvisionedStaffRole` (patch → `app_metadata` → verified profile, **no default**) and refuses rather than writes.
 
 **Same-class guards**, each with privileges + trigger and each layer alone proven:
@@ -83,6 +83,14 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 ## 4 · Day-of (runbook §6.1 step 3a)
 
+**Order: the PR #540 app first, then the migration, then the review.**
+
+0. **Make the #540 build the live deployment before Supabase serves traffic.** It runs on the pre-migration schema: a missing grants table falls back to today's profile-role reading.
+   - ⚠ **Why the order matters.** A pre-#540 care build with a reachable database keeps assigning staff roles through the service role, and those writes are trusted:
+     - every render of `/owner/staff` or `/owner/security` re-runs the old reconcile over the first 200 accounts;
+     - staff sign-in and recovery run it for whoever signs in there;
+     - it copies a self-set `user_metadata.role` into `app_metadata.role`, and defaults everyone else to `staff`.
+   - If a pre-#540 build was ever live against the resumed database, re-run R1–R3 once #540 is live, and remediate anything new.
 1. Run §6.2 / §6.3 **first** and record them.
    - ⚠ This migration makes `is_owner()` SECURITY DEFINER, which is exactly §6.2's probe for row #65. Take #65's verdict from this pre-apply run.
    - If #65 is unapplied, still apply it; its HUB-2/HUB-3 column revokes are no-ops, and this migration does them properly.
@@ -91,6 +99,9 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
    - R1: `unbacked_non_customer_rows_expect_0` must be 0.
    - R2: every pre-fix staff row (`grant_source = backfill:…`).
    - R3: app-metadata-only staff.
+     - `review_hint` `NO-RECORD` / `NO-RECORD-DEFAULT` marks an account with no owner-console provisioning record. That is the old reconcile's shape: a copied self-set role, or the `staff` default.
+     - The evidence is `care_security_logs` + `staff_audit_logs`, which request roles cannot write.
+     - R1 `app_metadata_staff_without_record` counts these accounts. R2 adds the same `NO-RECORD` qualifier.
    - R5: user_metadata-only staff.
    - **R6: KYC verified without an approved submission, with their withdrawals.**
    - R7: address KYC evidence.
@@ -100,7 +111,9 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 4. The owner judges each list, then fills `remediate-self-granted-staff.sql` step 1, one row per account: `(user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, deactivate_console, revoke_sessions)`. Then dry run (ROLLBACK) → check step 8 → COMMIT.
    - It refuses an empty list, an unflagged active owner, and any run that would leave **no** active console owner.
    - It authorizes the role change under an active owner that is **not** on the list, needs no DDL, and reverts the borrowed identity at the end.
-5. Before deploying the app: re-provision any genuine staff listed in R5. Then deploy.
+5. R5: re-provision each genuine account **on the #540 build**, never through a pre-#540 care build.
+   - Use care owner console → add staff with that email and role (it re-provisions an existing account), or the hub invite flow.
+   - Until then the account has no staff access; nothing else changes for it.
 
 ## 5 · Money escalation — held for the owner (NOT changed here)
 

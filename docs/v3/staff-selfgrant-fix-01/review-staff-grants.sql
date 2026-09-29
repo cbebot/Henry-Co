@@ -1,8 +1,11 @@
 -- ============================================================================
 -- V3-STAFF-SELFGRANT-FIX-01 — DAY-OF REVIEW (READ-ONLY). Runbook §6.3 "G10b".
 -- Run in the Supabase SQL editor AFTER applying
--- 20260924120000_v3_staff_selfgrant_fix_01.sql (the apply closes the write path first,
--- so this list is final — nothing can be self-granted after it). Changes nothing.
+-- 20260924120000_v3_staff_selfgrant_fix_01.sql AND once the PR #540 app is the live
+-- deployment. The apply closes every client write path, but a pre-#540 care build still
+-- assigns staff roles through the service role, which is trusted: its /owner/staff and
+-- /owner/security pages and its staff sign-in/recovery default accounts to 'staff'.
+-- Taken with #540 live, this list is final. Changes nothing.
 -- R2's grant_source 'backfill:v3_staff_selfgrant_fix_01' marks every row that existed
 -- before the fix: exactly the population the owner must judge.
 --
@@ -25,6 +28,17 @@ select
     left join public.profiles p on p.id = u.id
     where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')
       and lower(coalesce(p.role, 'customer')) = 'customer')                           as app_metadata_only_staff,
+  (select count(*) from auth.users u
+    left join public.profiles p on p.id = u.id
+    where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')
+      and lower(coalesce(p.role, 'customer')) = 'customer'
+      and coalesce(u.raw_app_meta_data ->> 'provisioning_slot', 'false') <> 'true'
+      and not exists (select 1 from public.care_security_logs l
+                      where l.event_type in ('staff_created', 'staff_updated_from_owner_directory', 'staff_role_updated')
+                        and l.success is not false and l.details ->> 'target_user_id' = u.id::text)
+      and not exists (select 1 from public.staff_audit_logs a
+                      where a.entity = 'staff' and a.action in ('staff.invite', 'staff.update')
+                        and a.entity_id = u.id::text))                              as app_metadata_staff_without_record,
   (select count(*) from public.owner_profiles where role <> 'owner')                  as owner_console_non_owner_rows,
   (select count(*) from public.owner_profiles where is_active and role in ('owner', 'admin')) as active_console_owners,
   (select count(*) from public.owner_profiles op
@@ -48,6 +62,9 @@ select
 --                        but so does an ordinary user that the pre-fix
 --                        reconcileStaffDirectory() auto-promoted when the owner opened the
 --                        care staff page. Check owner_console / memberships / email / activity.
+--   …, NO-RECORD         no owner-console provisioning record (provisioning_records = 0,
+--                        see R3). Not proof on its own: dashboard-made and older accounts
+--                        have none either.
 select
   p.id                                                   as user_id,
   u.email,
@@ -70,24 +87,46 @@ select
   p.is_active, p.is_frozen,
   g.source                                               as grant_source,
   (g.revoked_at is null)                                 as grant_active,
+  ev.provisioning_records,
   case
     when trim(coalesce(u.raw_app_meta_data ->> 'role', '')) = ''                  then 'SELF-INSERT-SHAPED'
     when lower(trim(u.raw_app_meta_data ->> 'role')) <> lower(p.role)             then 'METADATA-MISMATCH'
+    when ev.provisioning_records = 0                                               then 'PROVISIONED-SHAPED, NO-RECORD'
     else 'PROVISIONED-SHAPED'
   end                                                    as verdict_hint
 from public.profiles p
 join auth.users u on u.id = p.id
 left join public.owner_profiles op on op.user_id = p.id
 left join public.staff_role_grants g on g.user_id = p.id
+cross join lateral (
+  select (select count(*) from public.care_security_logs l
+            where l.event_type in ('staff_created', 'staff_updated_from_owner_directory', 'staff_role_updated')
+              and l.success is not false
+              and l.details ->> 'target_user_id' = p.id::text)
+       + (select count(*) from public.staff_audit_logs a
+            where a.entity = 'staff' and a.action in ('staff.invite', 'staff.update')
+              and a.entity_id = p.id::text) as provisioning_records
+) ev
 where lower(p.role) <> 'customer'
 order by verdict_hint, p.created_at desc;
 
 -- ── R3 · App-metadata-only staff (population B) ──────────────────────────────
 -- Accounts whose admin-set app_metadata.role is a staff role but whose profiles row is
 -- 'customer' or missing. The DB (is_staff_in) never treated these as staff, but the care
--- app does: care resolves app_metadata.role first. The pre-fix reconcileStaffDirectory()
--- and care staff sign-in / recovery wrote app_metadata.role='staff' for ordinary customers
--- whose profiles UPDATE the guard rejected. Genuine staff normally have BOTH set.
+-- app does: care resolves app_metadata.role first. The pre-fix care code wrote
+-- app_metadata.role for ORDINARY accounts with the service role: reconcileStaffDirectory()
+-- ran over the first 200 accounts on every render of care's /owner/staff and
+-- /owner/security pages (and staff sign-in/recovery ran it for whoever signed in there).
+-- It copied a SELF-SET user_metadata.role (e.g. 'owner') into app_metadata and defaulted
+-- everyone else to 'staff'.
+-- Genuine staff are provisioned through care's owner console (care_security_logs) or the
+-- hub owner console (staff_audit_logs). Both write a record that request roles cannot
+-- forge (RLS on, no insert policy). review_hint is a HINT, not a verdict:
+--   NO-RECORD           no provisioning record. The role may be a copied self-set one
+--                       (compare user_metadata_role); dashboard-made accounts have none too.
+--   NO-RECORD-DEFAULT   no provisioning record and role 'staff': the old reconcile default.
+--   PROVISIONING-SLOT   a retired account care keeps for reuse, not a person: leave it.
+--   RECORDED            provisioned through an owner console.
 select
   u.id                                 as user_id,
   u.email,
@@ -95,13 +134,29 @@ select
   u.raw_user_meta_data ->> 'role'      as user_metadata_role,
   p.role                               as profile_role,
   op.role                              as owner_console_role,
+  ev.provisioning_records,
+  case
+    when coalesce(u.raw_app_meta_data ->> 'provisioning_slot', 'false') = 'true' then 'PROVISIONING-SLOT'
+    when ev.provisioning_records > 0                                              then 'RECORDED'
+    when lower(trim(u.raw_app_meta_data ->> 'role')) = 'staff'                    then 'NO-RECORD-DEFAULT'
+    else 'NO-RECORD'
+  end                                  as review_hint,
   u.created_at, u.last_sign_in_at
 from auth.users u
 left join public.profiles p on p.id = u.id
 left join public.owner_profiles op on op.user_id = u.id
+cross join lateral (
+  select (select count(*) from public.care_security_logs l
+            where l.event_type in ('staff_created', 'staff_updated_from_owner_directory', 'staff_role_updated')
+              and l.success is not false
+              and l.details ->> 'target_user_id' = u.id::text)
+       + (select count(*) from public.staff_audit_logs a
+            where a.entity = 'staff' and a.action in ('staff.invite', 'staff.update')
+              and a.entity_id = u.id::text) as provisioning_records
+) ev
 where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')
   and lower(coalesce(p.role, 'customer')) = 'customer'
-order by u.created_at desc;
+order by review_hint, u.created_at desc;
 
 -- ── R4 · Owner-console rows (the owner_profiles self-promotion vector) ──────
 -- Before the fix, a console viewer/editor could rewrite its OWN row to role='owner'.
@@ -126,14 +181,16 @@ left join public.profiles p on p.id = op.user_id
 left join auth.users u on u.id = op.user_id
 order by (op.is_active and op.role in ('owner', 'admin')) desc, op.role, op.created_at;
 
--- ── R5 · user_metadata-only "staff" — REVIEW BEFORE DEPLOYING THE APP CHANGES ──
+-- ── R5 · user_metadata-only "staff" ──────────────────────────────────────────
 -- The app no longer reads user_metadata.role (it is self-writable). An account whose
 -- staff role lives ONLY there — no admin-set app_metadata.role and no grant-backed
--- profiles.role — loses staff access when the app deploys. No in-repo provisioning path
+-- profiles.role — has no staff access on the PR #540 build. No in-repo provisioning path
 -- creates such accounts (care and hub invites set app_metadata), but dashboard- or
--- hand-made accounts might. For each GENUINE staff member listed here, re-provision
--- through the care owner console or the hub invite flow (both set app_metadata) BEFORE
--- the deploy. Everyone else here merely self-declared a role: no action needed.
+-- hand-made accounts might. For each GENUINE staff member listed here, re-provision on
+-- the #540 build: care owner console → add staff with that email and role (it
+-- re-provisions an existing account), or the hub invite flow. Never through a pre-#540
+-- care build: its staff page re-runs the old reconcile over 200 accounts. Everyone else
+-- here merely self-declared a role: no action needed.
 select u.id as user_id, u.email,
        u.raw_user_meta_data ->> 'role' as user_metadata_role,
        u.raw_app_meta_data ->> 'role'  as app_metadata_role,

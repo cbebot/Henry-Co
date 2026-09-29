@@ -2479,8 +2479,16 @@ export async function setStaffArchivedAction(formData: FormData) {
 
   const { data: existingUserResult } = await supabase.auth.admin.getUserById(id);
   const existingUser = existingUserResult?.user;
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("id, role")
+    .eq("id", id)
+    .maybeSingle();
 
+  // A grant-backed profiles.role='owner' counts too, so the last-owner guard below
+  // also protects an owner whose role was never mirrored into app_metadata.
   const currentRole = resolveLiveStaffRole({
+    profileRole: await readVerifiedProfileRole(supabase, id, existingProfile?.role ?? null),
     appRole: (existingUser as any)?.app_metadata?.role ?? null,
   });
 
@@ -2920,7 +2928,13 @@ export async function resendStaffSetupAction(formData: FormData) {
     finish(route, "error", "Staff account could not be resolved for setup delivery.");
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, role")
+    .eq("id", id)
+    .maybeSingle();
   const role = resolveLiveStaffRole({
+    profileRole: await readVerifiedProfileRole(supabase, id, profile?.role ?? null),
     appRole: (user as any)?.app_metadata?.role ?? null,
   });
   const archivedAt =
