@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { resolveProvisionedStaffRole } from "./roles";
+import { countProvisionedOwners, resolveProvisionedStaffRole } from "./roles";
 
 // V3-STAFF-SELFGRANT-FIX-01: the ONE decision for "is this account provisioned staff?".
 // Only server-controlled sources count (an explicit owner-issued patch, the admin-API-only
@@ -43,5 +43,52 @@ describe("resolveProvisionedStaffRole", () => {
   it("has no user_metadata input at all (type-level contract)", () => {
     // @ts-expect-error — userMetadataRole is deliberately not a parameter.
     assert.equal(resolveProvisionedStaffRole({ userMetadataRole: "owner" }), null);
+  });
+});
+
+// The last-owner guard counts owners by the same precedence the owner console uses for
+// the target (admin-set app_metadata, then the grant-verified profile role), so a second
+// owner whose role lives only in profiles still counts. Archived accounts and self-writable
+// user_metadata never count.
+describe("countProvisionedOwners", () => {
+  const verified = (entries: Array<[string, string | null]>) => new Map(entries);
+
+  it("counts an app_metadata owner and a grant-verified profile-only owner", () => {
+    const users = [
+      { id: "o1", app_metadata: { role: "owner" } },
+      { id: "o2", app_metadata: {} },
+    ];
+    assert.equal(countProvisionedOwners(users, verified([["o2", "owner"]])), 2);
+  });
+
+  it("does not count a profile owner without grant evidence", () => {
+    const users = [{ id: "o1", app_metadata: { role: "owner" } }, { id: "x", app_metadata: {} }];
+    assert.equal(countProvisionedOwners(users, verified([["x", null]])), 1);
+  });
+
+  it("never counts user_metadata", () => {
+    const users = [{ id: "u", app_metadata: {}, user_metadata: { role: "owner" } }];
+    assert.equal(countProvisionedOwners(users, verified([])), 0);
+  });
+
+  it("skips archived accounts", () => {
+    const users = [
+      { id: "o1", app_metadata: { role: "owner", deleted_at: "2026-09-01T00:00:00Z" } },
+      { id: "o2", app_metadata: {} },
+    ];
+    assert.equal(countProvisionedOwners(users, verified([["o2", "owner"]])), 1);
+  });
+
+  it("follows the console precedence: an app_metadata staff role wins over a profile owner", () => {
+    const users = [{ id: "m", app_metadata: { role: "manager" } }];
+    assert.equal(countProvisionedOwners(users, verified([["m", "owner"]])), 0);
+  });
+
+  it("counts each account once", () => {
+    const users = [
+      { id: "o1", app_metadata: { role: "owner" } },
+      { id: "o1", app_metadata: { role: "owner" } },
+    ];
+    assert.equal(countProvisionedOwners(users, verified([])), 1);
   });
 });

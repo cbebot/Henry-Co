@@ -67,9 +67,11 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- ── (0) Preconditions — the trust anchor must hold on THIS platform ──────────
--- Signup (handle_new_user) and the owner RPCs are SECURITY DEFINER bodies owned by
--- postgres; they are "trusted" only if their owner can bypass RLS. On a platform where
--- that is false the W3 guard would reject every signup — so refuse to apply instead.
+-- Every SQL-side writer of a table this file locks is a SECURITY DEFINER body: signup
+-- (handle_new_user -> profiles, handle_new_customer -> customer_profiles) and the owner
+-- RPCs (admin_set_profile_role / _frozen, admin_force_reauth -> profiles). Each is
+-- "trusted" only if it runs as its owner and that owner can bypass RLS. Were either false,
+-- the guards below would reject every signup or owner action — so refuse to apply instead.
 do $guard$
 declare
   v_bad text;
@@ -81,14 +83,20 @@ begin
   if v_bad is not null then
     raise exception 'V3-STAFF-SELFGRANT-FIX-01: role(s) % lack BYPASSRLS/SUPERUSER — trust anchor would not hold', v_bad;
   end if;
-  select string_agg(p.oid::regprocedure::text || ' owned by ' || r.rolname, ', ') into v_bad
+  select string_agg(p.oid::regprocedure::text
+                    || case when not p.prosecdef then ' is not SECURITY DEFINER'
+                            else ' is owned by ' || r.rolname || ', which cannot bypass RLS' end, ', ')
+    into v_bad
   from pg_catalog.pg_proc p
   join pg_catalog.pg_roles r on r.oid = p.proowner
   where p.oid in (to_regprocedure('public.handle_new_user()'),
-                  to_regprocedure('public.admin_set_profile_role(uuid,text)'))
-    and not (r.rolsuper or r.rolbypassrls);
+                  to_regprocedure('public.handle_new_customer()'),
+                  to_regprocedure('public.admin_set_profile_role(uuid,text)'),
+                  to_regprocedure('public.admin_set_profile_frozen(uuid,boolean)'),
+                  to_regprocedure('public.admin_force_reauth(uuid)'))
+    and not (p.prosecdef and (r.rolsuper or r.rolbypassrls));
   if v_bad is not null then
-    raise exception 'V3-STAFF-SELFGRANT-FIX-01: % — its owner cannot bypass RLS, so the guard would block it', v_bad;
+    raise exception 'V3-STAFF-SELFGRANT-FIX-01: % — the guards would block it, so this file refuses to apply', v_bad;
   end if;
 end $guard$;
 

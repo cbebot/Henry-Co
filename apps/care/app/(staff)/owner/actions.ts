@@ -5,8 +5,9 @@ import { createHmac, randomBytes, randomUUID, timingSafeEqual } from "crypto";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { readVerifiedProfileRole } from "@henryco/config";
+import { readVerifiedProfileRole, readVerifiedProfileRoles } from "@henryco/config";
 import { createStaffAccessLink, findAuthUserByEmail } from "@/lib/auth/recovery-links";
+import { countProvisionedOwners } from "@/lib/auth/roles";
 import { STAFF_LOGIN_ROUTE, STAFF_RECOVERY_ROUTE } from "@/lib/auth/routes";
 import { syncStaffIdentity } from "@/lib/auth/staff-identity";
 import { getAuthenticatedProfile } from "@/lib/auth/server";
@@ -612,16 +613,22 @@ async function upsertProfilePatch(
 async function countOwners() {
   const supabase = getAdminSupabase();
   const authUsers = await supabase.auth.admin.listUsers({ page: 1, perPage: 200 });
-  const users = authUsers.data?.users ?? [];
+  const users = [...(authUsers.data?.users ?? [])];
 
-  // Last-owner guard: count only admin-set owners. user_metadata is self-writable, so a
-  // self-declared "owner" must not inflate the count and let the real last owner be removed.
-  return users.filter((user) => {
-    const appRole = normalizeStaffRole(String(user.app_metadata?.role || ""));
-    const deletedAt = String(user.app_metadata?.deleted_at || "").trim();
-    if (deletedAt) return false;
-    return appRole === "owner";
-  }).length;
+  // Last-owner guard: owners through server-controlled sources only — admin-set
+  // app_metadata.role, else a grant-verified profiles.role, the precedence used for the
+  // target. user_metadata is self-writable, so a self-declared "owner" never inflates the
+  // count and lets the real last owner be removed.
+  const { data: ownerProfiles } = await supabase.from("profiles").select("id, role").eq("role", "owner");
+  const profileRows = (ownerProfiles ?? []) as Array<{ id: string; role: string | null }>;
+  const verifiedProfileRoles = await readVerifiedProfileRoles(supabase, profileRows);
+  const listed = new Set(users.map((user) => user.id));
+  for (const row of profileRows) {
+    if (listed.has(row.id) || verifiedProfileRoles.get(row.id) !== "owner") continue;
+    const { data } = await supabase.auth.admin.getUserById(row.id);
+    if (data?.user) users.push(data.user);
+  }
+  return countProvisionedOwners(users, verifiedProfileRoles);
 }
 
 async function getPricingRow(pricingId: string) {

@@ -52,6 +52,28 @@ export function resolveProvisionedStaffRole(sources: {
   return null;
 }
 
+/**
+ * Last-owner guard: how many accounts are owners through a server-controlled source,
+ * resolved with the same precedence the owner console applies to the target
+ * (app_metadata.role, then the grant-verified profiles.role). Archived accounts
+ * (app_metadata.deleted_at) never count, and user_metadata is never read.
+ */
+export function countProvisionedOwners(
+  users: ReadonlyArray<{ id: string; app_metadata?: Record<string, unknown> | null }>,
+  verifiedProfileRoles: ReadonlyMap<string, string | null>
+): number {
+  const owners = new Set<string>();
+  for (const user of users) {
+    if (String(user.app_metadata?.deleted_at ?? "").trim()) continue;
+    const role = resolveProvisionedStaffRole({
+      appMetadataRole: user.app_metadata?.role,
+      profileRole: verifiedProfileRoles.get(user.id) ?? null,
+    });
+    if (role === "owner") owners.add(user.id);
+  }
+  return owners.size;
+}
+
 export function isOwner(role: string | null | undefined) {
   return normalizeRole(role) === "owner";
 }

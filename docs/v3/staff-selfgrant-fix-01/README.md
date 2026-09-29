@@ -28,7 +28,10 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 ## 2 · The fix — defense in depth (each layer alone proven)
 
-**Trust anchor.** A write is trusted only if the executing SQL role could bypass RLS anyway (`rolsuper OR rolbypassrls`): service_role, postgres, and SECURITY DEFINER bodies. It is read from `current_user` in SECURITY INVOKER triggers, which a client cannot forge. A precondition guard refuses to apply the migration if this doesn't hold on the platform.
+**Trust anchor.** A write is trusted only if the executing SQL role could bypass RLS anyway (`rolsuper OR rolbypassrls`): service_role, postgres, and SECURITY DEFINER bodies. It is read from `current_user` in SECURITY INVOKER triggers, which a client cannot forge.
+- A precondition guard refuses to apply the migration unless `postgres` and `service_role` can bypass RLS.
+- It also requires every SQL-side writer of a locked table to be SECURITY DEFINER with such an owner. These are signup (`handle_new_user`, `handle_new_customer`) and the owner RPCs (`admin_set_profile_role` / `_frozen`, `admin_force_reauth`).
+- Otherwise the guards would reject every signup or owner action, so the migration refuses to apply instead (proven both ways on the shadow).
 
 **Staff grant record.** `public.staff_role_grants` is user_id-bound, has RLS on, no policies, and no request-role privileges.
 - It is minted **only** when a trusted writer *sets* `profiles.role`; unchanged-role writes never mint it, so nothing can be laundered through it.
@@ -46,6 +49,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 - App: `@henryco/config` `readVerifiedProfileRole` / `readVerifiedProfileRoles` / `isOperatorMembershipRole` (tested) in every resolver: auth viewer, 8 divisions, jobs, care, search, and staff/support/impersonation lists.
   - Lookups fail closed, except "relation does not exist" (pre-migration), so the app runs on the pre-migration schema. Deploy it **first** (§4).
 - `user_metadata` is never a source for role, freeze, re-auth, deleted or slot state. Care resolves staff only through `resolveProvisionedStaffRole` (patch → `app_metadata` → verified profile, **no default**) and refuses rather than writes.
+- Care's last-owner guard counts owners by that same precedence (`countProvisionedOwners`, tested). A second owner whose role lives only in the grant-backed `profiles.role` still counts, so the remaining owner can archive or demote it.
 
 **Same-class guards**, each with privileges + trigger and each layer alone proven:
 
@@ -80,7 +84,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 **Money:** digests are identical pre/post: 30 money / `payments_private` functions + ACLs, 116 money relations + ACLs, and all money-table triggers.
 
-**Unit tests:** `@henryco/config` 73/73 (11 new), care 19/19 (16 new), search-core 44/44 (5 new). All three suites run in CI.
+**Unit tests:** `@henryco/config` 73/73 (11 new), care 25/25 (22 new), search-core 44/44 (5 new). All three suites run in CI.
 
 **Typecheck + ESLint:** clean on every touched app and package, except a pre-existing `packages/lifecycle` JSX config error in search-core.
 
@@ -117,6 +121,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
    - It refuses to run before the migration is applied (before it, an account could undo several actions itself).
    - It refuses an empty list, an unflagged active owner, an active console owner listed without `deactivate_console`, and any run that would leave **no** active console owner.
    - `deactivate_console` also removes the account's internal-comms memberships (step 7 asserts none remain). Every listed account is made to sign in again.
+   - The dry run performs every write, including those to `auth.users` (prod may carry triggers the shadow lacks), then rolls back. Read any error it reports before switching to COMMIT.
    - It authorizes the role change under an active owner that is **not** on the list, needs no DDL, and reverts the borrowed identity at the end.
 5. R5: re-provision each genuine account **on the #540 build**, never through a pre-#540 care build.
    - Use care owner console → add staff with that email and role (it re-provisions an existing account), or the hub invite flow.
@@ -154,8 +159,19 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 **Owner-flow and gate defects:**
 - Jobs employer membership email match is unverified (PR #349 class, 4 call sites).
+- **Audit trail for customer actions (low, a consequence of #5).**
+  - `add_audit_log_v2` requires `is_staff_in_any()`, so best-effort session audits by users whose only memberships are customer-facing (vendor, buyer, studio client) are now skipped. Every call site swallows the error, so no action fails.
+  - Before the fix, those rows were written only for users who happened to hold such a membership.
+  - If the trail is wanted, record customer-action audits through a service-role writer that sets the actor explicitly. Do not widen `is_staff_in_any`.
+  - Call sites: studio proposal sign, revisions, milestones, asset unlock/download/packs, agency client review; marketplace report; account customize.
 - Care slot-retire leaves DB staff for deleted accounts, and **care role changes never reach `profiles.role`** (the protect trigger blocks service-role updates), so offboarding needs the remediation script.
 - `packages/auth` `requireUnifiedViewer` trusts an `x-supabase-user` header. Only unimported gates use it; strip the header at the edge before anything imports them.
 - *(Fixed in this pass: the care owner-action secret's public-key fallback, see #11.)*
+
+**Internal comms (recorded by round 6; pre-existing, not a self-grant):**
+- **Safety-critical functions.** `hq_internal_comm_messages`, `_attachments` and `_presence` keep prod's table-level DML for `authenticated`. Their RLS rests entirely on `hq_ic_can_read_thread` / `hq_ic_can_write_thread` (and the storage bucket policies call the same functions). Treat any edit to those two functions as security-critical, and re-run invariant §9.
+- **Presence self-insert (low).** `hq_ic_presence_upsert` checks only `user_id = auth.uid()`, so a signed-in user can write its **own** presence row against any thread id.
+  - It confers no read or write: presence SELECT is gated by `hq_ic_can_read_thread`, and another user's id is refused.
+  - To close it, add `thread_id is null or hq_ic_can_read_thread(thread_id)` to the presence INSERT/UPDATE checks in a separate pass.
 
 Files: `review-staff-grants.sql`, `remediate-self-granted-staff.sql` (both also in `Downloads\V3-STAFF-SELFGRANT-FIX-01-*`).
