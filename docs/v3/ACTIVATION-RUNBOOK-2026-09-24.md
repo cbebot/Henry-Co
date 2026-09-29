@@ -391,7 +391,8 @@ Re-runnability: F2 `founder_intelligence` and F3 `founder_action_proposals` are 
       - ⚠ A pre-#540 care build with a reachable database keeps assigning staff roles through the service role, which the fix trusts. Every render of `/owner/staff` or `/owner/security`, and its staff sign-in and recovery, copy a self-set `user_metadata.role` into `app_metadata.role` or default the account to `staff`. Never open those pages on a pre-#540 build.
       - If a pre-#540 build was live against the resumed database, re-run R1–R3 once #540 is live, and remediate anything new.
    1. With §6.2 and §6.3 recorded, apply row #80 `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` as a single `apply_migration`, named `v3_staff_selfgrant_fix_01`.
-      - It refuses to apply unless `postgres` / `service_role` have BYPASSRLS/SUPERUSER (trust-anchor precondition).
+      - It refuses to apply unless `postgres` / `service_role` have BYPASSRLS/SUPERUSER (trust-anchor precondition). It also refuses unless every SQL-side writer of a locked table (signup, the owner RPCs) is SECURITY DEFINER with such an owner, and the locked tables' owners have it too. Otherwise signup, owner actions or auth-user deletion would break.
+      - It must run as **one transaction**, so a refusal leaves nothing behind: `apply_migration` does this, and with `psql` use `--single-transaction -v ON_ERROR_STOP=1`.
       - It locks the `profiles` write path **before** backfilling grants.
       - It aborts if any non-customer row lacks an active matching grant.
       - ⚠ It makes `is_owner()` SECURITY DEFINER, which is exactly §6.2's probe for #65. **Use #65's verdict from the pre-apply §6.2 run**, and if it was UNAPPLIED, still apply #65 in step 4.
