@@ -135,6 +135,7 @@ function resolveLiveStaffRole(input: {
 }
 
 const OWNER_SELF_DEMOTION_MESSAGE = "Owner cannot remove their own owner role.";
+const OWNER_SELF_FREEZE_MESSAGE = "You cannot freeze your own owner account.";
 
 function staffRoleHome(role: string) {
   if (role === "owner") return "/owner";
@@ -204,6 +205,11 @@ async function getActionAuthenticatedProfile(): Promise<ActionAuth | null> {
     const auth = await getAuthenticatedProfile();
 
     if (!auth?.user || !auth?.profile) {
+      return null;
+    }
+
+    // An archived (offboarded) account acts on nothing, as on every page (requireRoles).
+    if (auth.profile.deleted_at || isArchivedAccount(auth.user.app_metadata)) {
       return null;
     }
 
@@ -277,6 +283,10 @@ async function validatePostedActor(
     const user = userResult?.user;
 
     if (!profile?.id && !user?.id) {
+      return null;
+    }
+
+    if (isArchivedAccount((user as any)?.app_metadata)) {
       return null;
     }
 
@@ -2452,7 +2462,7 @@ export async function setStaffFrozenAction(formData: FormData) {
   const frozen = asText(formData, "frozen") === "true";
 
   if (!id) finish(route, "error", "Missing user id.");
-  if (id === auth.profile.id) finish(route, "error", "You cannot freeze your own owner account.");
+  if (id === auth.profile.id) finish(route, "error", OWNER_SELF_FREEZE_MESSAGE);
 
   const nowIso = new Date().toISOString();
 
@@ -2708,6 +2718,9 @@ export async function createStaffAccountAction(formData: FormData) {
 
     if (user.id === auth.profile.id && role !== "owner") {
       finish(route, "error", OWNER_SELF_DEMOTION_MESSAGE);
+    }
+    if (user.id === auth.profile.id && !isActive) {
+      finish(route, "error", OWNER_SELF_FREEZE_MESSAGE);
     }
 
     if (
