@@ -137,9 +137,20 @@ begin
   end if;
   if has_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'thread_id', 'UPDATE')
      or has_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'role', 'UPDATE')
-     or has_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'role', 'INSERT')
-     or has_table_privilege('anon', 'public.hq_internal_comm_thread_members', 'INSERT,UPDATE,DELETE') then
+     or has_any_column_privilege('authenticated', 'public.hq_internal_comm_thread_members', 'INSERT')
+     or has_any_column_privilege('anon', 'public.hq_internal_comm_thread_members', 'INSERT,UPDATE')
+     or has_table_privilege('anon', 'public.hq_internal_comm_thread_members', 'DELETE') then
     raise exception 'FAIL §0: hq_internal_comm_thread_members privilege layer is not effective';
+  end if;
+  -- memberships are platform-managed: no request-role INSERT policy may remain
+  if exists (select 1 from pg_policies where schemaname = 'public'
+             and tablename = 'hq_internal_comm_thread_members' and cmd in ('INSERT', 'ALL')) then
+    raise exception 'FAIL §0: an INSERT policy remains on hq_internal_comm_thread_members';
+  end if;
+  -- an owner-level membership must require an active console row (section 10b)
+  if position('v_member_role' in pg_get_functiondef('public.hq_ic_can_read_thread(uuid)'::regprocedure)) = 0
+     or position('v_member_role' in pg_get_functiondef('public.hq_ic_can_write_thread(uuid)'::regprocedure)) = 0 then
+    raise exception 'FAIL §0: hq_ic_can_read_thread / hq_ic_can_write_thread are not the section-10b versions';
   end if;
   if has_table_privilege('authenticated', 'public.profiles', 'TRIGGER')
      or has_table_privilege('anon', 'public.profiles', 'TRIGGER')
@@ -769,8 +780,12 @@ do $s9$
 declare
   staff constant uuid := '5e1f0000-0000-4000-8000-000000000001';   -- observer of the care thread
   owner constant uuid := '5e1f0000-0000-4000-8000-000000000002';
+  mgr constant uuid := '5e1f0000-0000-4000-8000-000000000003';
+  reader constant uuid := '5e1f0000-0000-4000-8000-000000000004';  -- workspace staff: reads t_own
+  viewer constant uuid := '5e1f0000-0000-4000-8000-000000000008';  -- console viewer, stale owner-level row in t_lead
   t_own constant uuid := '5e1f0000-0000-4000-8000-0000000000f1';   -- owners-only
   t_care constant uuid := '5e1f0000-0000-4000-8000-0000000000f2';
+  t_lead constant uuid := '5e1f0000-0000-4000-8000-0000000000f3';  -- leadership (members_only)
   mech text;
   blocked boolean;
 begin
@@ -830,66 +845,148 @@ begin
   if not (select pinned from public.hq_internal_comm_thread_members where user_id = staff and thread_id = t_care) then
     raise exception 'FAIL H4: member could not pin its own membership';
   end if;
-  -- H5 genuine: the owner self-joins the owners-only thread (RLS: it can read it) as a
-  --    plain member; a privileged self-join role is refused
-  begin
-    perform pg_temp.as_user(owner);
-    insert into public.hq_internal_comm_thread_members (thread_id, user_id, role) values (t_own, owner, 'owner');
-    raise exception 'FAIL H5: self-join with a privileged role succeeded';
-  exception when insufficient_privilege then null;
-  end;
-  reset role;
-  perform pg_temp.as_user(owner);
-  insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_own, owner);
-  reset role;
-  if (select role from public.hq_internal_comm_thread_members where user_id = owner and thread_id = t_own) <> 'member' then
-    raise exception 'FAIL H5: owner self-join did not land as member';
-  end if;
-  -- H6 genuine: the platform (service role — internal-comms routes) sets any role
+  -- H5 (round 5, G2): memberships are platform-managed — nobody adds one itself, not even
+  --    an owner joining an owners-only thread it can read, with or without a role
+  foreach mech in array array['with_role', 'default_role'] loop
+    begin
+      perform pg_temp.as_user(owner);
+      if mech = 'with_role' then
+        insert into public.hq_internal_comm_thread_members (thread_id, user_id, role) values (t_own, owner, 'owner');
+      else
+        insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_own, owner);
+      end if;
+      raise exception 'FAIL H5: owner self-join [%] succeeded', mech;
+    exception when insufficient_privilege then null;
+    end;
+    reset role;
+  end loop;
+  -- H6 genuine: the platform (service role — the internal-comms routes) adds members and
+  --    sets any role; the owner reads, writes and posts through it
   perform pg_temp.as_service();
+  insert into public.hq_internal_comm_thread_members (thread_id, user_id, role) values (t_own, owner, 'member');
   update public.hq_internal_comm_thread_members set role = 'admin' where user_id = owner and thread_id = t_own;
   reset role;
   if (select role from public.hq_internal_comm_thread_members where user_id = owner and thread_id = t_own) <> 'admin' then
-    raise exception 'FAIL H6: service-role membership role change failed';
+    raise exception 'FAIL H6: service-role membership add / role change failed';
   end if;
-  -- H7 (round-4 F2): a workspace-staff READER of the owners-only thread may self-join,
-  --    but only as an observer — the join must not turn read access into write access.
-  perform pg_temp.as_user('5e1f0000-0000-4000-8000-000000000004');
+  perform pg_temp.as_user(owner);
+  if not (public.hq_ic_can_read_thread(t_own) and public.hq_ic_can_write_thread(t_own)) then
+    raise exception 'FAIL H6: the owner lost access to its owners-only thread';
+  end if;
+  if to_regclass('public.hq_internal_comm_messages') is not null then
+    insert into public.hq_internal_comm_messages (thread_id, author_id, body) values (t_own, owner, 'owner post');
+  end if;
+  reset role;
+  -- H7 a workspace-staff READER of the owners-only thread keeps reading it, cannot write
+  --    it, and can no longer join it (round-4 F2 capped such a join at observer; round 5
+  --    removes it)
+  perform pg_temp.as_user(reader);
   if not public.hq_ic_can_read_thread(t_own) or public.hq_ic_can_write_thread(t_own) then
     raise exception 'FAIL H7 setup: persona 04 should read but not write the owners-only thread';
   end if;
-  insert into public.hq_internal_comm_thread_members (thread_id, user_id)
-  values (t_own, '5e1f0000-0000-4000-8000-000000000004');
-  if public.hq_ic_can_write_thread(t_own) then
-    raise exception 'FAIL H7: a read-only self-join gained write access';
-  end if;
+  begin
+    insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_own, reader);
+    raise exception 'FAIL H7: a thread reader added itself as a member';
+  exception when insufficient_privilege then null;
+  end;
   reset role;
-  if (select role from public.hq_internal_comm_thread_members
-      where user_id = '5e1f0000-0000-4000-8000-000000000004' and thread_id = t_own) <> 'observer' then
-    raise exception 'FAIL H7: read-only self-join did not land as observer';
+  if exists (select 1 from public.hq_internal_comm_thread_members where user_id = reader and thread_id = t_own) then
+    raise exception 'FAIL H7: a reader membership exists';
   end if;
-  -- H8 (round-4 F3): with RLS switched OFF, the trigger alone still refuses adding
-  --    someone else, or joining an unreadable thread
-  foreach mech in array array['other_user', 'unreadable_thread'] loop
+  -- H8 each layer ALONE refuses the most permissive self-join (own row, readable thread,
+  --    default role): the privilege layer, the absent INSERT policy, and the trigger
+  foreach mech in array array['privileges', 'no_insert_policy', 'trigger'] loop
     blocked := false;
     begin
-      alter table public.hq_internal_comm_thread_members disable row level security;
+      if mech = 'privileges' then
+        alter table public.hq_internal_comm_thread_members disable trigger trg_hq_ic_members_block_self_escalation;
+        alter table public.hq_internal_comm_thread_members disable row level security;
+      elsif mech = 'no_insert_policy' then
+        alter table public.hq_internal_comm_thread_members disable trigger trg_hq_ic_members_block_self_escalation;
+        grant insert on table public.hq_internal_comm_thread_members to authenticated;
+      else
+        grant insert on table public.hq_internal_comm_thread_members to authenticated;
+        alter table public.hq_internal_comm_thread_members disable row level security;
+      end if;
       begin
-        perform pg_temp.as_user(staff);
-        if mech = 'other_user' then
-          insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_care, owner);
-        else
-          insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_own, staff);
-        end if;
+        perform pg_temp.as_user(reader);
+        insert into public.hq_internal_comm_thread_members (thread_id, user_id) values (t_own, reader);
       exception when insufficient_privilege then blocked := true;
       end;
       reset role;
       raise exception using errcode = 'P0SG9', message = 'rollback';
     exception when sqlstate 'P0SG9' then null;
     end;
-    if not blocked then raise exception 'FAIL H8: trigger alone let a request role insert [%]', mech; end if;
+    if not blocked then raise exception 'FAIL H8: % alone let a request role add itself', mech; end if;
   end loop;
-  raise notice '§9 internal-comms membership H1-H8 OK';
+  -- H9 (round 5, G1): an owner-level membership counts only while its holder IS an active
+  --    console owner. Viewer 08 holds the one the hub sync left in the leadership thread
+  --    (fixture): no read, no write, no message.
+  perform pg_temp.as_user(viewer);
+  if public.hq_ic_can_read_thread(t_lead) or public.hq_ic_can_write_thread(t_lead) then
+    raise exception 'FAIL H9: a stale owner-level membership still grants access';
+  end if;
+  reset role;
+  if to_regclass('public.hq_internal_comm_messages') is not null then
+    perform pg_temp.as_service();
+    insert into public.hq_internal_comm_messages (thread_id, author_id, body)
+    values (t_lead, owner, 'leadership only');
+    reset role;
+    perform pg_temp.as_user(viewer);
+    if (select count(*) from public.hq_internal_comm_messages where thread_id = t_lead) <> 0 then
+      raise exception 'FAIL H9: the stale member read leadership messages';
+    end if;
+    begin
+      insert into public.hq_internal_comm_messages (thread_id, author_id, body) values (t_lead, viewer, 'x');
+      raise exception 'FAIL H9: the stale member posted in the leadership thread';
+    exception when insufficient_privilege then null;
+    end;
+    reset role;
+  end if;
+  -- genuine: a platform-added 'member' (e.g. a staff member an owner DMs) and an
+  -- 'observer' behave exactly as before
+  perform pg_temp.as_service();
+  insert into public.hq_internal_comm_thread_members (thread_id, user_id, role) values (t_lead, mgr, 'member');
+  reset role;
+  perform pg_temp.as_user(mgr);
+  if not (public.hq_ic_can_read_thread(t_lead) and public.hq_ic_can_write_thread(t_lead)) then
+    raise exception 'FAIL H9: a platform-added member lost access';
+  end if;
+  if to_regclass('public.hq_internal_comm_messages') is not null then
+    if (select count(*) from public.hq_internal_comm_messages where thread_id = t_lead) = 0 then
+      raise exception 'FAIL H9: a platform-added member cannot read the thread messages';
+    end if;
+  end if;
+  reset role;
+  perform pg_temp.as_user(staff);
+  if not public.hq_ic_can_read_thread(t_care) or public.hq_ic_can_write_thread(t_care) then
+    raise exception 'FAIL H9: an observer membership changed behaviour';
+  end if;
+  reset role;
+  -- genuine: the same owner-level row works while 08 IS an owner (the platform promotes
+  -- it) and stops the moment the platform deactivates the console row (offboarding)
+  begin
+    perform pg_temp.as_service();
+    update public.owner_profiles set role = 'owner' where user_id = viewer;
+    reset role;
+    perform pg_temp.as_user(viewer);
+    if not (public.hq_ic_can_read_thread(t_lead) and public.hq_ic_can_write_thread(t_lead)) then
+      raise exception 'FAIL H9: an active owner lost its owner-level membership';
+    end if;
+    reset role;
+    perform pg_temp.as_service();
+    update public.owner_profiles set is_active = false where user_id = viewer;
+    reset role;
+    perform pg_temp.as_user(viewer);
+    if public.hq_ic_can_read_thread(t_lead) or public.hq_ic_can_write_thread(t_lead) then
+      raise exception 'FAIL H9: an offboarded owner kept its owner-level membership';
+    end if;
+    reset role;
+    raise exception using errcode = 'P0SG9', message = 'rollback';
+  exception when sqlstate 'P0SG9' then null;
+  end;
+  reset role;
+  raise notice '§9 internal-comms membership H1-H9 OK';
 end $s9$;
 
 -- ═══ §10 owner_profiles — each layer ALONE ═════════════════════════════════════

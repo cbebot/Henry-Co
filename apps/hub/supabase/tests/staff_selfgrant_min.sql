@@ -594,10 +594,14 @@ values
 on conflict (id) do nothing;
 insert into public.hq_internal_comm_threads (id, slug, kind, title, division, visibility) values
   ('5e1f0000-0000-4000-8000-0000000000f1', 'sg-owners-only', 'group', 'Owners only', null,   'all_owners'),
-  ('5e1f0000-0000-4000-8000-0000000000f2', 'sg-care-team',   'group', 'Care team',   'care', 'members_only')
+  ('5e1f0000-0000-4000-8000-0000000000f2', 'sg-care-team',   'group', 'Care team',   'care', 'members_only'),
+  ('5e1f0000-0000-4000-8000-0000000000f3', 'sg-leadership',  'group', 'Leadership',  null,   'members_only')
 on conflict do nothing;
+-- f3 · the owner-level membership the hub sync (syncThreadMembers(activeOwnerIds)) leaves
+-- behind for console viewer 08 after it promoted itself to owner — round 5, G1.
 insert into public.hq_internal_comm_thread_members (thread_id, user_id, role) values
-  ('5e1f0000-0000-4000-8000-0000000000f2', '5e1f0000-0000-4000-8000-000000000001', 'observer')
+  ('5e1f0000-0000-4000-8000-0000000000f2', '5e1f0000-0000-4000-8000-000000000001', 'observer'),
+  ('5e1f0000-0000-4000-8000-0000000000f3', '5e1f0000-0000-4000-8000-000000000008', 'owner')
 on conflict do nothing;
 -- persona 04 (support) is active workspace staff: it can READ division-less owners-only
 -- threads (hq_ic_can_read_thread) but not WRITE them — the round-4 F2 read→write case.
@@ -690,5 +694,42 @@ begin
   exception when sqlstate 'P0SG1' then
     reset role;
   end;
-  raise notice 'staff_selfgrant_min: PRE-FIX HOLES CONFIRMED (staff self-grant in 6 divisions; vendor_applicant = staff; KYC self-verify; internal-comms escape; address KYC self-verify)';
+  -- same class (round 5, G2): a READER of an owners-only thread self-joins it and so
+  -- gains write access (the join takes the column default role 'member').
+  begin
+    perform set_config('request.jwt.claims',
+      '{"sub":"5e1f0000-0000-4000-8000-000000000004","role":"authenticated"}', true);
+    set local role authenticated;
+    insert into public.hq_internal_comm_thread_members (thread_id, user_id)
+    values ('5e1f0000-0000-4000-8000-0000000000f1', '5e1f0000-0000-4000-8000-000000000004');
+    select public.hq_ic_can_write_thread('5e1f0000-0000-4000-8000-0000000000f1') into v_ok;
+    reset role;
+    if not coalesce(v_ok, false) then
+      raise exception 'FIXTURE NOT LOAD-BEARING: a thread reader could not self-join as a writer pre-fix';
+    end if;
+    raise exception using errcode = 'P0SG1', message = 'rollback';
+  exception when sqlstate 'P0SG1' then
+    reset role;
+  end;
+  -- same class (round 5, G1): console viewer 08 is not an owner, yet the owner-level
+  -- membership left behind in the leadership thread still reads and writes it.
+  begin
+    -- checked as the platform: the pre-fix is_owner() recurses under a request role
+    if exists (select 1 from public.owner_profiles o
+               where o.user_id = '5e1f0000-0000-4000-8000-000000000008'
+                 and o.is_active and lower(trim(o.role)) in ('owner', 'admin')) then
+      raise exception 'FIXTURE SETUP: persona 08 must not be an active console owner';
+    end if;
+    perform set_config('request.jwt.claims',
+      '{"sub":"5e1f0000-0000-4000-8000-000000000008","role":"authenticated"}', true);
+    set local role authenticated;
+    select public.hq_ic_can_read_thread('5e1f0000-0000-4000-8000-0000000000f3')
+       and public.hq_ic_can_write_thread('5e1f0000-0000-4000-8000-0000000000f3')
+      into v_ok;
+    reset role;
+    if not coalesce(v_ok, false) then
+      raise exception 'FIXTURE NOT LOAD-BEARING: a stale owner-level membership did not grant access pre-fix';
+    end if;
+  end;
+  raise notice 'staff_selfgrant_min: PRE-FIX HOLES CONFIRMED (staff self-grant in 6 divisions; vendor_applicant = staff; KYC self-verify; internal-comms escape; address KYC self-verify; comms self-join; stale owner membership)';
 end $prefix$;

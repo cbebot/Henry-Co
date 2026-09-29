@@ -42,11 +42,16 @@ select
   (select count(*) from public.owner_profiles where role <> 'owner')                  as owner_console_non_owner_rows,
   (select count(*) from public.owner_profiles where is_active and role in ('owner', 'admin')) as active_console_owners,
   (select count(*) from public.owner_profiles op
-     left join public.profiles p on p.id = op.user_id
      left join auth.users u on u.id = op.user_id
     where op.is_active and op.role in ('owner', 'admin')
-      and lower(coalesce(p.role, '')) <> 'owner'
-      and lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) <> 'owner')   as console_owners_without_platform_owner_signal,
+      and lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) <> 'owner'
+      and not exists (select 1 from public.staff_role_grants g
+                      where g.user_id = op.user_id and g.revoked_at is null and g.role = 'owner'
+                        and g.source not like 'backfill:%'))   as console_owners_without_platform_owner_signal,
+  (select count(*) from public.hq_internal_comm_thread_members m
+    where lower(m.role) in ('owner', 'admin')
+      and not exists (select 1 from public.owner_profiles o where o.user_id = m.user_id
+                      and o.is_active and o.role in ('owner', 'admin')))       as owner_level_comms_rows_of_non_owners,
   (select count(*) from public.staff_role_grants where revoked_at is null)            as active_grants,
   (select count(*) from public.profiles p where lower(p.role) <> 'customer'
      and not exists (select 1 from public.staff_role_grants g where g.user_id = p.id
@@ -161,17 +166,31 @@ order by review_hint, u.created_at desc;
 -- ── R4 · Owner-console rows (the owner_profiles self-promotion vector) ──────
 -- Before the fix, a console viewer/editor could rewrite its OWN row to role='owner'.
 -- Such a row looks like any active owner, so the hint flags an active owner/admin row
--- with NO platform-owner signal elsewhere (profiles.role and admin-set app_metadata.role
--- both not 'owner'), and a row changed after creation. The owner judges each; the
--- remediation script can deactivate a console row (deactivate_console = true).
+-- with NO platform-owner signal, and a row changed after creation. A platform-owner
+-- signal is an admin-set app_metadata.role = 'owner' or an owner grant minted AFTER the
+-- fix (grant_source not 'backfill:…'). profiles.role = 'owner' alone is NOT one: it was
+-- self-settable before the fix and the backfill only mirrors it — check grant_source and
+-- profile_after_auth_seconds (a profile created long after the account suggests a
+-- self-insert). review_hint:
+--   CONSOLE-OWNER-WITHOUT-PLATFORM-OWNER-SIGNAL  no owner evidence outside the console row.
+--   CONSOLE-OWNER-PROFILE-ROLE-ONLY              the only other evidence is profiles.role =
+--                                                'owner' (may be your own account — or a
+--                                                console viewer that also self-inserted it).
+--   ROW-CHANGED-AFTER-CREATION                   any other row edited after creation.
+-- The owner judges each; the remediation script can deactivate a console row
+-- (deactivate_console = true), which also removes its internal-comms memberships.
 select op.user_id, op.email, op.role, op.is_active, op.created_at, op.updated_at,
        p.role                              as profile_role,
+       g.source                            as grant_source,
+       round(extract(epoch from (p.created_at - u.created_at)))::bigint as profile_after_auth_seconds,
        u.raw_app_meta_data ->> 'role'      as app_metadata_role,
        case
          when op.is_active and op.role in ('owner', 'admin')
-          and lower(coalesce(p.role, '')) <> 'owner'
           and lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) <> 'owner'
-           then 'CONSOLE-OWNER-WITHOUT-PLATFORM-OWNER-SIGNAL'
+          and not coalesce(g.revoked_at is null and g.role = 'owner' and g.source not like 'backfill:%', false)
+           then case when lower(coalesce(p.role, '')) = 'owner'
+                     then 'CONSOLE-OWNER-PROFILE-ROLE-ONLY'
+                     else 'CONSOLE-OWNER-WITHOUT-PLATFORM-OWNER-SIGNAL' end
          when op.updated_at > op.created_at + interval '1 second'
            then 'ROW-CHANGED-AFTER-CREATION'
          else ''
@@ -179,6 +198,7 @@ select op.user_id, op.email, op.role, op.is_active, op.created_at, op.updated_at
 from public.owner_profiles op
 left join public.profiles p on p.id = op.user_id
 left join auth.users u on u.id = op.user_id
+left join public.staff_role_grants g on g.user_id = op.user_id
 order by (op.is_active and op.role in ('owner', 'admin')) desc, op.role, op.created_at;
 
 -- ── R5 · user_metadata-only "staff" ──────────────────────────────────────────
@@ -242,18 +262,35 @@ from public.user_addresses a
 where a.kyc_verified
 order by (a.kyc_match_method is null and a.kyc_submission_id is null) desc, a.kyc_verified_at desc nulls last;
 
--- ── R8 · Internal-comms memberships in owners-only threads held by non-owners ──
--- The (now closed) escape moved a membership row into an all_owners thread with a
--- FILTERLESS update. A member of an all_owners thread who is not an active owner is the
--- signature; the app itself adds members via the service role (check the owner knows).
-select m.thread_id, t.slug, t.title, t.visibility, m.user_id, m.role, m.joined_at,
-       (select op.role from public.owner_profiles op where op.user_id = m.user_id and op.is_active) as owner_console_role
-from public.hq_internal_comm_thread_members m
-join public.hq_internal_comm_threads t on t.id = m.thread_id
-where t.visibility = 'all_owners'
-  and not exists (select 1 from public.owner_profiles op
-                  where op.user_id = m.user_id and op.is_active and op.role in ('owner', 'admin'))
-order by m.joined_at desc;
+-- ── R8 · Internal-comms memberships held by accounts that are not active owners ──
+-- The hub adds members only through owner-gated routes: owners get the membership role
+-- 'owner' (leadership/broadcast sync, activity, DM initiator) and a DM target gets
+-- 'member'. Before the fix a member could also move its row into an owners-only thread
+-- (filterless update) or add itself to a thread it could read. review_hint, a HINT:
+--   OWNER-LEVEL-ROW     role owner/admin held by a non-owner: left by the hub while the
+--                       account was (or had made itself) an owner. The fix already
+--                       ignores it; deactivate_console in the remediation removes it.
+--   OWNERS-ONLY-THREAD  any row in an all_owners thread held by a non-owner.
+--   OTHER               check the owner knows why the account is in the thread.
+--   DM                  a DM row: usually a staff member an owner wrote to.
+select x.* from (
+  select m.thread_id, t.slug, t.title, t.kind, t.visibility, m.user_id, u.email, m.role, m.joined_at,
+         op.role as owner_console_role, op.is_active as owner_console_active,
+         case
+           when lower(m.role) in ('owner', 'admin') then 'OWNER-LEVEL-ROW'
+           when t.visibility = 'all_owners'         then 'OWNERS-ONLY-THREAD'
+           when t.kind = 'dm'                       then 'DM'
+           else 'OTHER'
+         end as review_hint
+  from public.hq_internal_comm_thread_members m
+  join public.hq_internal_comm_threads t on t.id = m.thread_id
+  left join auth.users u on u.id = m.user_id
+  left join public.owner_profiles op on op.user_id = m.user_id
+  where not exists (select 1 from public.owner_profiles o
+                    where o.user_id = m.user_id and o.is_active and o.role in ('owner', 'admin'))
+) x
+order by case x.review_hint when 'OWNER-LEVEL-ROW' then 1 when 'OWNERS-ONLY-THREAD' then 2
+                            when 'OTHER' then 3 else 4 end, x.joined_at desc;
 
 -- ── R9 · MONEY (escalation, read-only): 'succeeded' payment intents with NO provider-
 --    confirmed attempt. A signed-in user can INSERT their own payment_intents row with

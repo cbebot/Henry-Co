@@ -25,7 +25,9 @@
 --     internal-comms thread could move its membership into an owners-only thread; ANY
 --     signed-in user could self-set customer_profiles KYC (verification_status='verified'
 --     passes the WALLET-WITHDRAWAL KYC gate); an address owner could self-mark an address
---     KYC-verified. Each is closed with the same trust anchor.
+--     KYC-verified. Each is closed with the same trust anchor. Internal-comms
+--     memberships become platform-managed (no self-join), and an owner-level membership
+--     counts only while its holder is an active console owner (section 10b).
 --   * GOTCHA this file corrects: a COLUMN-level REVOKE is a no-op while the role holds the
 --     TABLE-level privilege (prod grants table-level DML to anon/authenticated), so every
 --     privilege layer here revokes table-level and re-grants only the safe columns.
@@ -645,14 +647,20 @@ begin
   end if;
 end $policies$;
 
--- ── (10) hq_internal_comm_thread_members — no self-escalation into other threads ─
+-- ── (10) hq_internal_comm_thread_members — memberships are platform-managed ────
 -- SAME CLASS (max-effort sweep, 2026-09-25): hq_ic_members_update checks only
 -- user_id = auth.uid() and request roles hold TABLE-level UPDATE, so any member of ANY
 -- thread could rewrite its own row's thread_id to an owners-only thread and role to a
 -- writer role — reading and posting in private owner communications. HUB-3 of
 -- 20260710180000_hub_security_hardening tried to close this with a COLUMN-level revoke,
--- which is a no-op under the table-level grant. Every app write here uses the service
--- role (internal-comms routes / internal-comms-access.ts), so nothing genuine narrows.
+-- which is a no-op under the table-level grant.
+-- Round 5 (G2): the request-role self-join (hq_ic_members_insert) is removed too. A
+-- membership row is standing access that nothing re-checks, so a self-join outlived the
+-- right behind it (a revoked staff reader, a thread made members-only) and raced
+-- visibility changes. Every app write here uses the service role (the requireOwner-gated
+-- internal-comms routes / internal-comms-access.ts) and the browser client only reads,
+-- so nothing genuine narrows. Three layers, each alone sufficient: no request-role
+-- INSERT privilege, no INSERT policy, and this trigger refusing any untrusted INSERT.
 create or replace function public.hq_ic_members_block_self_escalation()
 returns trigger
 language plpgsql
@@ -667,26 +675,8 @@ begin
     return new;
   end if;
   if tg_op = 'INSERT' then
-    -- Second layer to RLS (round-4 F3): a request role may only add ITSELF, and only to a
-    -- thread it can already read.
-    if new.user_id is distinct from auth.uid() then
-      raise exception 'hq_internal_comm_thread_members: a request role may only add itself'
-        using errcode = '42501';
-    end if;
-    if not public.hq_ic_can_read_thread(new.thread_id) then
-      raise exception 'hq_internal_comm_thread_members: thread is not readable by the caller'
-        using errcode = '42501';
-    end if;
-    if lower(coalesce(new.role, 'member')) not in ('member', 'observer') then
-      raise exception 'hq_internal_comm_thread_members: a self-join may only be member/observer'
-        using errcode = '42501';
-    end if;
-    -- Round-4 F2: a self-join never grants more than the caller already has — someone who
-    -- can READ the thread but not WRITE it joins as an observer, not as a writing member.
-    if not public.hq_ic_can_write_thread(new.thread_id) then
-      new.role := 'observer';
-    end if;
-    return new;
+    raise exception 'hq_internal_comm_thread_members: memberships are added by the platform'
+      using errcode = '42501';
   end if;
   if new.thread_id is distinct from old.thread_id
      or new.user_id is distinct from old.user_id
@@ -707,21 +697,128 @@ begin
   create trigger trg_hq_ic_members_block_self_escalation
     before insert or update on public.hq_internal_comm_thread_members
     for each row execute function public.hq_ic_members_block_self_escalation();
+  -- No request-role INSERT at all (round 5, G2); UPDATE only on the member's own
+  -- read/pin/mute state (the hq_ic_members_update policy pins user_id = auth.uid()).
   revoke insert, update, delete, truncate, trigger, references
     on table public.hq_internal_comm_thread_members from anon, authenticated;
-  execute coalesce((
-    select 'grant insert (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.hq_internal_comm_thread_members to authenticated'
-    from information_schema.columns c
-    where c.table_schema = 'public' and c.table_name = 'hq_internal_comm_thread_members'
-      and c.column_name in ('thread_id', 'user_id', 'last_read_at', 'pinned', 'muted')
-  ), 'select 1');
   execute coalesce((
     select 'grant update (' || string_agg(quote_ident(c.column_name), ', ') || ') on table public.hq_internal_comm_thread_members to authenticated'
     from information_schema.columns c
     where c.table_schema = 'public' and c.table_name = 'hq_internal_comm_thread_members'
       and c.column_name in ('last_read_at', 'pinned', 'muted')
   ), 'select 1');
+  drop policy if exists hq_ic_members_insert on public.hq_internal_comm_thread_members;
 end $hqic$;
+
+-- ── (10b) An owner-level thread membership counts only while its holder IS an owner ──
+-- Round 5 (G1, reproduced on the prod-actual shadow): the hub gives the membership role
+-- 'owner' only to active console owners — syncThreadMembers(activeOwnerIds), the
+-- activity upsert and the DM initiator, all behind requireOwner — but nothing removes
+-- the row when the console row is deactivated. hq_ic_can_read_thread /
+-- hq_ic_can_write_thread honoured it anyway, so a console account that promoted itself
+-- before the fix kept reading and posting in the owners' leadership thread, DMs and
+-- attachments after the remediation deactivated it; so would any offboarded owner.
+-- Both functions now honour an 'owner'/'admin' membership only while the caller holds
+-- an active owner/admin console row (the is_owner() predicate); 'member'/'manager'
+-- (e.g. a staff member an owner DMs) and 'observer' rows behave exactly as before.
+-- Every other branch is prod's text unchanged — including the non-owner all_owners
+-- branch that reads the retired workspace_* tables (it errors and fails closed on prod
+-- today; runbook §4, 20260402235500). CREATE OR REPLACE keeps the existing grants.
+create or replace function public.hq_ic_can_read_thread(p_thread_id uuid)
+returns boolean
+language plpgsql
+stable security definer
+set search_path to 'public'
+as $function$
+declare
+  uid uuid := auth.uid();
+  t record;
+  v_member_role text;
+begin
+  if uid is null then
+    return false;
+  end if;
+  select lower(trim(m.role)) into v_member_role
+  from public.hq_internal_comm_thread_members m
+  where m.thread_id = p_thread_id and m.user_id = uid;
+  if found and (
+    v_member_role not in ('owner', 'admin')
+    or exists (
+      select 1 from public.owner_profiles o
+      where o.user_id = uid and o.is_active and lower(trim(o.role)) in ('owner', 'admin')
+    )
+  ) then
+    return true;
+  end if;
+  select id, visibility, division, kind into t
+  from public.hq_internal_comm_threads
+  where id = p_thread_id;
+  if not found then
+    return false;
+  end if;
+  if t.visibility is distinct from 'all_owners' then
+    return false;
+  end if;
+  if exists (
+    select 1 from public.owner_profiles o
+    where o.user_id = uid and o.is_active and lower(trim(o.role)) in ('owner', 'admin')
+  ) then
+    return true;
+  end if;
+  if t.division is null then
+    return exists (
+      select 1 from public.workspace_staff_memberships w
+      where w.user_id = uid and w.is_active = true
+    );
+  end if;
+  return exists (
+    select 1 from public.workspace_division_memberships d
+    where d.user_id = uid and d.is_active and d.division = t.division
+  );
+end;
+$function$;
+
+create or replace function public.hq_ic_can_write_thread(p_thread_id uuid)
+returns boolean
+language plpgsql
+stable security definer
+set search_path to 'public'
+as $function$
+declare
+  uid uuid := auth.uid();
+  t record;
+  v_member_role text;
+begin
+  if uid is null then
+    return false;
+  end if;
+  select id, visibility, kind into t
+  from public.hq_internal_comm_threads
+  where id = p_thread_id;
+  if not found then
+    return false;
+  end if;
+  select lower(trim(m.role)) into v_member_role
+  from public.hq_internal_comm_thread_members m
+  where m.thread_id = p_thread_id and m.user_id = uid;
+  if found and v_member_role <> 'observer' and (
+    v_member_role not in ('owner', 'admin')
+    or exists (
+      select 1 from public.owner_profiles o
+      where o.user_id = uid and o.is_active and lower(trim(o.role)) in ('owner', 'admin')
+    )
+  ) then
+    return true;
+  end if;
+  if t.visibility = 'all_owners' then
+    return exists (
+      select 1 from public.owner_profiles o
+      where o.user_id = uid and o.is_active and lower(trim(o.role)) in ('owner', 'admin')
+    );
+  end if;
+  return false;
+end;
+$function$;
 
 -- ── (11) customer_profiles — KYC / lifecycle / identity are server-controlled ──
 -- SAME CLASS, MONEY-CRITICAL (max-effort sweep, 2026-09-25; reproduced on the

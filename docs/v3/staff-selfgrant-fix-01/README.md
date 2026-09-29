@@ -21,6 +21,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 | 10 | **Address KYC:** an owner could insert or mark an address `kyc_verified`. Display-only today. | DB | any signed-in user |
 | 11 | **Care owner-action token:** the signed hidden fields that authorize owner actions were a **session-unbound bearer token**. It was rendered into the owner page, stayed valid until the owner's next sign-in (surviving sign-out), and its secret fell back to the **public** anon key and then a hard-coded string. The impersonation callback's prefix-only redirect check could also be bypassed with a tab or newline (`/<TAB>/evil.example`). | care | anyone holding a copied token; anyone who can craft the callback link |
 | 12 | **Owner console, after promotion:** `authenticated` kept table-level INSERT/DELETE on `owner_profiles`, gated only by RLS `is_owner()`. So an account that had self-promoted (#6) could add owners or delete the real owner's row. Internal-comms self-joins also let a thread **reader** join as a **writer**. | DB | a self-promoted console owner; a workspace-staff reader |
+| 13 | **Comms access outlived the right behind it** (round 5):<br>• The hub adds active console owners to the leadership thread and DMs with the membership role `owner`, and never removes them. `hq_ic_can_read_thread` / `_write_thread` honoured those rows after the console row was deactivated, so an account that promoted itself (#6) and was then remediated kept reading and posting in the owners' threads, DMs and attachments. An offboarded owner would too.<br>• Any self-join likewise outlived a revoked reader. | DB | a remediated self-promoted owner; any former owner; a former reader |
 | — | Pre-existing: `is_owner()` recursed through RLS ("stack depth limit exceeded") for every request-role read that touched it. | DB | — |
 
 **GOTCHA behind #6 and #9:** a **column-level REVOKE does nothing while the role holds the table-level privilege**, and prod grants table-level DML to `anon`/`authenticated`. Every privilege layer here revokes at table level and re-grants only safe columns, and §0 of the invariant checks the *effective* column privileges.
@@ -51,7 +52,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 | Surface | Privilege layer | Trigger |
 |---|---|---|
 | `owner_profiles` | no request-role INSERT/DELETE; UPDATE only `full_name`/`updated_at` | **platform-managed**: every untrusted insert/delete, and any `role`/`is_active`/`user_id`/`email` change, is refused, owners included (the console is managed through the service role) |
-| internal-comms membership | column-level INSERT/UPDATE on harmless columns | thread, member and role server-controlled. A self-join adds only the caller, only to a readable thread, and **never exceeds existing rights** (a reader joins as an observer) |
+| internal-comms membership | **no request-role INSERT**, and no INSERT policy; UPDATE only on the member's own read/pin/mute state | **platform-managed**: every untrusted insert is refused; thread, member and role are immutable. `hq_ic_can_read_thread` / `_write_thread` honour an `owner`/`admin` membership **only while its holder is an active console owner** (§10b) |
 | customer KYC | only cosmetic/preference columns | **allowlist**; new privileged columns default-deny |
 | address KYC | *(session edits legitimately reset KYC, so trigger + RLS only)* | downgrade-only; a new address is never pre-verified; moving an address invalidates it |
 
@@ -66,9 +67,11 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 **Prod-actual shadow:**
 - Every hole above is reproduced pre-fix.
 - Post-fix, invariant §0–§10 pass.
-  - Every exploit variant is blocked, and **each mechanism alone** stops it, including owner-session insert/delete on the console (O4–O6), a read-only self-join (H7), and a trigger-only check with RLS disabled (H8).
+  - Every exploit variant is blocked, and **each mechanism alone** stops it. This includes owner-session insert/delete on the console (O4–O6), and a self-join refused by the privilege layer, the missing INSERT policy and the trigger, each alone (H8).
+  - A stale owner-level membership grants nothing: no read, no write, no message (H9). It works again only while its holder is an active owner, and stops the moment the console row is deactivated.
+  - The fixture proves both round-5 holes live pre-fix.
   - **Layer R alone** confers nothing, including laundering.
-  - Genuine paths G1–G11, K3–K4, A4–A6, H4–H6 and O2 work.
+  - Genuine paths G1–G11, K3–K4, A4–A6, H4, H6, H9 (platform-added members, observers, active owners) and O2 work.
 - The migration is idempotent (applied twice).
 
 **CI:**
@@ -105,11 +108,15 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
    - R5: user_metadata-only staff.
    - **R6: KYC verified without an approved submission, with their withdrawals.**
    - R7: address KYC evidence.
-   - R8: non-owners in owners-only threads.
+   - R8: every internal-comms membership held by an account that is not an active console owner. `OWNER-LEVEL-ROW` sorts first; the fix already ignores such a row.
    - **R9: forged `succeeded` payment intents (money escalation).**
    - **R1 `console_owners_without_platform_owner_signal` / R4 `review_hint`:** an active console owner with no platform-owner signal, i.e. a viewer or editor that promoted itself before the fix.
+     - A platform-owner signal is an admin-set `app_metadata.role = 'owner'`, or an owner grant minted after the fix.
+     - `profiles.role = 'owner'` alone does not count: it was self-settable, and the backfill only mirrors it. Such a row reads `CONSOLE-OWNER-PROFILE-ROLE-ONLY`, which may be your own account; check `grant_source` and `profile_after_auth_seconds`.
 4. The owner judges each list, then fills `remediate-self-granted-staff.sql` step 1, one row per account: `(user_id, reason, allow_active_owner, reset_kyc, deactivate_memberships, deactivate_console, revoke_sessions)`. Then dry run (ROLLBACK) → check step 8 → COMMIT.
-   - It refuses an empty list, an unflagged active owner, and any run that would leave **no** active console owner.
+   - It refuses to run before the migration is applied (before it, an account could undo several actions itself).
+   - It refuses an empty list, an unflagged active owner, an active console owner listed without `deactivate_console`, and any run that would leave **no** active console owner.
+   - `deactivate_console` also removes the account's internal-comms memberships (step 7 asserts none remain). Every listed account is made to sign in again.
    - It authorizes the role change under an active owner that is **not** on the list, needs no DDL, and reverts the borrowed identity at the end.
 5. R5: re-provision each genuine account **on the #540 build**, never through a pre-#540 care build.
    - Use care owner console → add staff with that email and role (it re-provisions an existing account), or the hub invite flow.

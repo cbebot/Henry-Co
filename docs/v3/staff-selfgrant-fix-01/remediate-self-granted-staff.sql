@@ -6,12 +6,14 @@
 --
 -- SAFE BY DEFAULT: ends with ROLLBACK — the first run is a dry run that shows the
 -- before/after (step 8). Change the last line to COMMIT only after the owner approves.
--- Works BEFORE or AFTER 20260924120000_v3_staff_selfgrant_fix_01.sql is applied.
+-- Run it AFTER 20260924120000_v3_staff_selfgrant_fix_01.sql is applied (step 2 refuses
+-- otherwise): before the fix, an account could undo several of these actions itself.
 -- No DDL, no table ownership needed, no ACCESS EXCLUSIVE lock.
 -- Touches only: public.profiles (role, force_reauth_after), public.staff_role_grants,
 -- public.customer_profiles (KYC fields, only where reset_kyc), the four
 -- *_role_memberships tables (is_active, only where deactivate_memberships),
 -- public.owner_profiles (is_active, only where deactivate_console),
+-- public.hq_internal_comm_thread_members (rows, only where deactivate_console),
 -- auth.users (raw_app_meta_data / raw_user_meta_data role keys), auth.sessions (only where
 -- revoke_sessions). No money table, no payments_private, no money RPC. Pending
 -- withdrawals of KYC-reset accounts are a MONEY decision — see the review R6 note.
@@ -50,6 +52,11 @@ do $rails$
 declare
   v_n int;
 begin
+  if to_regclass('public.staff_role_grants') is null
+     or not exists (select 1 from pg_trigger where tgname = 'trg_owner_profiles_block_self_promotion')
+     or not exists (select 1 from pg_trigger where tgname = 'trg_profiles_block_self_grant') then
+    raise exception 'REMEDIATION: apply 20260924120000_v3_staff_selfgrant_fix_01.sql first';
+  end if;
   select count(*) into v_n from _sg_demote;
   if v_n = 0 then
     raise exception 'REMEDIATION: _sg_demote is empty — add the owner-reviewed user ids in step 1';
@@ -67,6 +74,13 @@ begin
   ) then
     raise exception 'REMEDIATION: an id is an ACTIVE owner-console owner — refusing (set allow_active_owner only if intended)';
   end if;
+  if exists (
+    select 1 from _sg_demote d
+    join public.owner_profiles op on op.user_id = d.user_id and op.is_active and op.role in ('owner','admin')
+    where d.allow_active_owner and not d.deactivate_console
+  ) then
+    raise exception 'REMEDIATION: an ACTIVE console owner on the list must also set deactivate_console — otherwise it stays an owner';
+  end if;
   if not exists (
     select 1 from public.owner_profiles op
     where op.is_active and op.role in ('owner', 'admin')
@@ -83,7 +97,9 @@ select d.user_id, u.email, p.role as profile_role,
        u.raw_user_meta_data ->> 'role' as user_metadata_role,
        cp.verification_status         as kyc_status,
        op.role                        as console_role,
-       op.is_active                   as console_active
+       op.is_active                   as console_active,
+       (select count(*) from public.hq_internal_comm_thread_members m
+         where m.user_id = d.user_id)  as comms_memberships
 from _sg_demote d
 join auth.users u on u.id = d.user_id
 left join public.profiles p on p.id = d.user_id
@@ -117,6 +133,12 @@ update public.profiles p
        force_reauth_after = timezone('utc', now())
  where p.id in (select user_id from _sg_demote)
    and lower(p.role) <> 'customer';
+-- every listed account re-authenticates, including one whose profile is already
+-- 'customer' (e.g. a self-promoted console account)
+update public.profiles p
+   set force_reauth_after = timezone('utc', now())
+ where p.id in (select user_id from _sg_demote)
+   and (p.force_reauth_after is null or p.force_reauth_after < timezone('utc', now()) - interval '1 minute');
 
 do $revoke$
 begin
@@ -162,6 +184,11 @@ update auth.users u
    and (lower(trim(coalesce(u.raw_app_meta_data ->> 'role', '')))       in ('owner','manager','rider','support','staff')
      or lower(trim(coalesce(u.raw_app_meta_data ->> 'staff_role', ''))) in ('owner','manager','rider','support','staff'));
 update auth.users u
+   set raw_app_meta_data = coalesce(u.raw_app_meta_data, '{}'::jsonb)
+         || jsonb_build_object('force_reauth_after',
+              to_char(timezone('utc', now()), 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'))
+ where u.id in (select user_id from _sg_demote);
+update auth.users u
    set raw_user_meta_data = coalesce(u.raw_user_meta_data, '{}'::jsonb) - 'role'
  where u.id in (select user_id from _sg_demote)
    and lower(trim(coalesce(u.raw_user_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff');
@@ -171,6 +198,18 @@ update public.owner_profiles op
    set is_active = false
  where op.user_id in (select user_id from _sg_demote where deactivate_console)
    and op.is_active;
+
+-- 6f · Internal-comms memberships of a deactivated console account (round 5, G1): the
+--      hub added it to the owners' threads and DMs while it was an owner. The fix
+--      already ignores an owner-level row once the console row is off; this removes
+--      every row, including plain 'member' rows it gained the same way.
+do $comms$
+begin
+  if to_regclass('public.hq_internal_comm_thread_members') is not null then
+    execute 'delete from public.hq_internal_comm_thread_members
+             where user_id in (select user_id from _sg_demote where deactivate_console)';
+  end if;
+end $comms$;
 
 -- 6d · Sign the account out everywhere (refresh tokens cascade with their sessions)
 do $sessions$
@@ -207,6 +246,10 @@ begin
              where d.deactivate_console and op.is_active) then
     raise exception 'REMEDIATION: a console row is still active';
   end if;
+  if exists (select 1 from public.hq_internal_comm_thread_members m join _sg_demote d on d.user_id = m.user_id
+             where d.deactivate_console) then
+    raise exception 'REMEDIATION: a deactivated console account still holds internal-comms memberships';
+  end if;
   if not exists (select 1 from public.owner_profiles where is_active and role in ('owner', 'admin')) then
     raise exception 'REMEDIATION: no active console owner would remain';
   end if;
@@ -218,6 +261,8 @@ select b.user_id, b.email,
        b.app_metadata_role   as before_app_role,      u.raw_app_meta_data ->> 'role'  as after_app_role,
        b.kyc_status          as before_kyc,           cp.verification_status          as after_kyc,
        b.console_active      as before_console,       op.is_active                    as after_console,
+       b.comms_memberships   as before_comms,
+       (select count(*) from public.hq_internal_comm_thread_members m where m.user_id = b.user_id) as after_comms,
        p.force_reauth_after,
        d.reset_kyc, d.deactivate_memberships, d.deactivate_console, d.revoke_sessions,
        d.reason
