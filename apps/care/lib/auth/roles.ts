@@ -64,7 +64,7 @@ export function countProvisionedOwners(
 ): number {
   const owners = new Set<string>();
   for (const user of users) {
-    if (String(user.app_metadata?.deleted_at ?? "").trim()) continue;
+    if (isArchivedAccount(user.app_metadata)) continue;
     const role = resolveProvisionedStaffRole({
       appMetadataRole: user.app_metadata?.role,
       profileRole: verifiedProfileRoles.get(user.id) ?? null,
@@ -72,6 +72,24 @@ export function countProvisionedOwners(
     if (role === "owner") owners.add(user.id);
   }
   return owners.size;
+}
+
+/** An account the owner console has archived (admin-set app_metadata.deleted_at). */
+export function isArchivedAccount(appMetadata: Record<string, unknown> | null | undefined): boolean {
+  return String(appMetadata?.deleted_at ?? "").trim() !== "";
+}
+
+/**
+ * Whether an owner-console change must pass the last-owner check: it takes owner access
+ * away from an ACTIVE owner. An archived owner is not counted as active, so removing it
+ * can never lower the count.
+ */
+export function needsLastOwnerCheck(input: {
+  currentRole: string | null | undefined;
+  archived: boolean;
+  removesOwner: boolean;
+}): boolean {
+  return input.currentRole === "owner" && !input.archived && input.removesOwner;
 }
 
 export function isOwner(role: string | null | undefined) {

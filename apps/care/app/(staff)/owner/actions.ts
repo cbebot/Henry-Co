@@ -2,12 +2,18 @@
 "use server";
 
 import { createHmac, randomBytes, randomUUID, timingSafeEqual } from "crypto";
+import type { User } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { readVerifiedProfileRole, readVerifiedProfileRoles } from "@henryco/config";
 import { createStaffAccessLink, findAuthUserByEmail } from "@/lib/auth/recovery-links";
-import { countProvisionedOwners } from "@/lib/auth/roles";
+import {
+  countProvisionedOwners,
+  isArchivedAccount,
+  needsLastOwnerCheck,
+  resolveProvisionedStaffRole,
+} from "@/lib/auth/roles";
 import { STAFF_LOGIN_ROUTE, STAFF_RECOVERY_ROUTE } from "@/lib/auth/routes";
 import { syncStaffIdentity } from "@/lib/auth/staff-identity";
 import { getAuthenticatedProfile } from "@/lib/auth/server";
@@ -116,17 +122,19 @@ function normalizeStaffRole(value: string) {
 // V3-STAFF-SELFGRANT-FIX-01: server-controlled sources only (admin-set app_metadata, then
 // profiles). user_metadata is self-writable and is not an input; an account with no
 // provisioned staff role resolves to "customer" (never in any allowedRoles list) instead
-// of the old "staff" default.
+// of the old "staff" default. It is the same resolver the last-owner count uses, so the
+// target's role and the count can never disagree.
 function resolveLiveStaffRole(input: {
   profileRole?: string | null;
   appRole?: string | null;
 }) {
   return (
-    normalizeStaffRole(String(input.appRole || "")) ||
-    normalizeStaffRole(String(input.profileRole || "")) ||
+    resolveProvisionedStaffRole({ appMetadataRole: input.appRole, profileRole: input.profileRole }) ??
     "customer"
   );
 }
+
+const OWNER_SELF_DEMOTION_MESSAGE = "Owner cannot remove their own owner role.";
 
 function staffRoleHome(role: string) {
   if (role === "owner") return "/owner";
@@ -612,8 +620,16 @@ async function upsertProfilePatch(
 
 async function countOwners() {
   const supabase = getAdminSupabase();
-  const authUsers = await supabase.auth.admin.listUsers({ page: 1, perPage: 200 });
-  const users = [...(authUsers.data?.users ?? [])];
+  // Every account, not only the newest page: an older owner held only in app_metadata
+  // must still count. A failed or cut-off listing can only lower the count, which blocks.
+  const users: User[] = [];
+  for (let page = 1; page <= 50; page += 1) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) break;
+    const batch = data?.users ?? [];
+    users.push(...batch);
+    if (batch.length < 200) break;
+  }
 
   // Last-owner guard: owners through server-controlled sources only — admin-set
   // app_metadata.role, else a grant-verified profiles.role, the precedence used for the
@@ -2346,7 +2362,7 @@ export async function updateStaffRoleAction(formData: FormData) {
   }
 
   if (id === auth.profile.id && role !== "owner") {
-    finish(route, "error", "Owner cannot remove their own owner role.");
+    finish(route, "error", OWNER_SELF_DEMOTION_MESSAGE);
   }
 
   const { data: existingProfile } = await supabase
@@ -2364,7 +2380,13 @@ export async function updateStaffRoleAction(formData: FormData) {
     appRole: (existingUser as any)?.app_metadata?.role ?? null,
   });
 
-  if (currentRole === "owner" && role !== "owner") {
+  if (
+    needsLastOwnerCheck({
+      currentRole,
+      archived: isArchivedAccount((existingUser as any)?.app_metadata),
+      removesOwner: role !== "owner",
+    })
+  ) {
     const ownerCount = await countOwners();
 
     if (ownerCount <= 1) {
@@ -2499,7 +2521,13 @@ export async function setStaffArchivedAction(formData: FormData) {
     appRole: (existingUser as any)?.app_metadata?.role ?? null,
   });
 
-  if (archived && currentRole === "owner") {
+  if (
+    needsLastOwnerCheck({
+      currentRole,
+      archived: isArchivedAccount((existingUser as any)?.app_metadata),
+      removesOwner: archived,
+    })
+  ) {
     const ownerCount = await countOwners();
     if (ownerCount <= 1) {
       finish(
@@ -2678,7 +2706,17 @@ export async function createStaffAccountAction(formData: FormData) {
       appRole: (user as any)?.app_metadata?.role ?? null,
     });
 
-    if (currentRole === "owner" && role !== "owner") {
+    if (user.id === auth.profile.id && role !== "owner") {
+      finish(route, "error", OWNER_SELF_DEMOTION_MESSAGE);
+    }
+
+    if (
+      needsLastOwnerCheck({
+        currentRole,
+        archived: isArchivedAccount((user as any)?.app_metadata),
+        removesOwner: role !== "owner",
+      })
+    ) {
       const ownerCount = await countOwners();
       if (ownerCount <= 1) {
         finish(
@@ -3086,7 +3124,13 @@ export async function deleteStaffAccountAction(formData: FormData) {
     appRole: (user as any)?.app_metadata?.role ?? null,
   });
 
-  if (currentRole === "owner") {
+  if (
+    needsLastOwnerCheck({
+      currentRole,
+      archived: isArchivedAccount((user as any)?.app_metadata),
+      removesOwner: true,
+    })
+  ) {
     const ownerCount = await countOwners();
     if (ownerCount <= 1) {
       finish(route, "error", "Assign another owner before permanently deleting this owner account.");

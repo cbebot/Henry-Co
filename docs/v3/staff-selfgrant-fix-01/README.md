@@ -32,6 +32,8 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 - A precondition guard refuses to apply the migration unless `postgres` and `service_role` can bypass RLS.
 - It also requires every SQL-side writer of a locked table to be SECURITY DEFINER with such an owner. These are signup (`handle_new_user`, `handle_new_customer`) and the owner RPCs (`admin_set_profile_role` / `_frozen`, `admin_force_reauth`).
 - Otherwise the guards would reject every signup or owner action, so the migration refuses to apply instead (proven both ways on the shadow).
+- The owners of the locked tables must be trusted too. Foreign-key actions, such as deleting an auth user, run as the referencing table's owner.
+- The grant mirror runs as the writer, so the migration lets `postgres` and the owners of the two role writers write `staff_role_grants`. That makes signup work even where those functions have a BYPASSRLS owner that is not a superuser. Proven on the shadow, including that signup fails without the grant.
 
 **Staff grant record.** `public.staff_role_grants` is user_id-bound, has RLS on, no policies, and no request-role privileges.
 - It is minted **only** when a trusted writer *sets* `profiles.role`; unchanged-role writes never mint it, so nothing can be laundered through it.
@@ -49,7 +51,11 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 - App: `@henryco/config` `readVerifiedProfileRole` / `readVerifiedProfileRoles` / `isOperatorMembershipRole` (tested) in every resolver: auth viewer, 8 divisions, jobs, care, search, and staff/support/impersonation lists.
   - Lookups fail closed, except "relation does not exist" (pre-migration), so the app runs on the pre-migration schema. Deploy it **first** (§4).
 - `user_metadata` is never a source for role, freeze, re-auth, deleted or slot state. Care resolves staff only through `resolveProvisionedStaffRole` (patch → `app_metadata` → verified profile, **no default**) and refuses rather than writes.
-- Care's last-owner guard counts owners by that same precedence (`countProvisionedOwners`, tested). A second owner whose role lives only in the grant-backed `profiles.role` still counts, so the remaining owner can archive or demote it.
+- Care's last-owner guard counts owners by that same precedence (`countProvisionedOwners`, tested).
+  - A second owner whose role lives only in the grant-backed `profiles.role` still counts, so the remaining owner can archive or demote it.
+  - It pages through every account, not only the newest 200.
+  - It skips archived owners (`needsLastOwnerCheck`), which are not active owners.
+  - "Add staff" refuses an owner's self-demotion, as update-role already did.
 
 **Same-class guards**, each with privileges + trigger and each layer alone proven:
 
@@ -84,7 +90,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 **Money:** digests are identical pre/post: 30 money / `payments_private` functions + ACLs, 116 money relations + ACLs, and all money-table triggers.
 
-**Unit tests:** `@henryco/config` 73/73 (11 new), care 25/25 (22 new), search-core 44/44 (5 new). All three suites run in CI.
+**Unit tests:** `@henryco/config` 73/73 (11 new), care 29/29 (26 new), search-core 44/44 (5 new). All three suites run in CI.
 
 **Typecheck + ESLint:** clean on every touched app and package, except a pre-existing `packages/lifecycle` JSX config error in search-core.
 
@@ -102,6 +108,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
    - ⚠ This migration makes `is_owner()` SECURITY DEFINER, which is exactly §6.2's probe for row #65. Take #65's verdict from this pre-apply run.
    - If #65 is unapplied, still apply it; its HUB-2/HUB-3 column revokes are no-ops, and this migration does them properly.
 2. **Apply** `apps/hub/supabase/migrations/20260924120000_v3_staff_selfgrant_fix_01.sql` as one `apply_migration`, named `v3_staff_selfgrant_fix_01`.
+   - It must run as one transaction, so a §0 refusal leaves nothing behind. `apply_migration` does this; with `psql`, use `--single-transaction -v ON_ERROR_STOP=1`.
 3. Run **`review-staff-grants.sql` R1–R9** (read-only) **after** the apply, one block at a time, and save each result.
    - R1: `unbacked_non_customer_rows_expect_0` must be 0.
    - R2: every pre-fix staff row (`grant_source = backfill:…`).
@@ -167,6 +174,10 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 - Care slot-retire leaves DB staff for deleted accounts, and **care role changes never reach `profiles.role`** (the protect trigger blocks service-role updates), so offboarding needs the remediation script.
 - `packages/auth` `requireUnifiedViewer` trusts an `x-supabase-user` header. Only unimported gates use it; strip the header at the edge before anything imports them.
 - *(Fixed in this pass: the care owner-action secret's public-key fallback, see #11.)*
+
+**Pre-existing defects found on the way (identical before and after this pass):**
+- **Address default-setting fails.** `POST /api/addresses/set-default`, and creating an address as default when one exists, both fail with "cannot unset is_default on the only default address". That error comes from the nested demote inside `user_addresses_enforce_default`. Its insert branch also calls an unqualified `uuid_nil()`, which lives only in `extensions`.
+- **No UI to end an impersonation.** `ImpersonationBanner`, the only caller of `endImpersonationAction`, is never rendered.
 
 **Internal comms (recorded by round 6; pre-existing, not a self-grant):**
 - **Safety-critical functions.** `hq_internal_comm_messages`, `_attachments` and `_presence` keep prod's table-level DML for `authenticated`. Their RLS rests entirely on `hq_ic_can_read_thread` / `hq_ic_can_write_thread` (and the storage bucket policies call the same functions). Treat any edit to those two functions as security-critical, and re-run invariant §9.

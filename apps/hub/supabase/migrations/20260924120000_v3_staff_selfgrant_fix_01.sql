@@ -98,6 +98,19 @@ begin
   if v_bad is not null then
     raise exception 'V3-STAFF-SELFGRANT-FIX-01: % — the guards would block it, so this file refuses to apply', v_bad;
   end if;
+  -- Foreign-key actions (e.g. deleting an auth user sets a KYC reviewer to NULL, or
+  -- removes a console row) run as the owner of the referencing table, so each locked
+  -- table's owner must be trusted too.
+  select string_agg(c.oid::regclass::text || ' is owned by ' || r.rolname, ', ') into v_bad
+  from pg_catalog.pg_class c
+  join pg_catalog.pg_roles r on r.oid = c.relowner
+  where c.oid in (to_regclass('public.profiles'), to_regclass('public.customer_profiles'),
+                  to_regclass('public.owner_profiles'), to_regclass('public.hq_internal_comm_thread_members'),
+                  to_regclass('public.user_addresses'))
+    and not (r.rolsuper or r.rolbypassrls);
+  if v_bad is not null then
+    raise exception 'V3-STAFF-SELFGRANT-FIX-01: % — foreign-key actions run as the table owner and the guards would block them, so this file refuses to apply', v_bad;
+  end if;
 end $guard$;
 
 -- ── (1) The grant record ─────────────────────────────────────────────────────
@@ -121,6 +134,24 @@ comment on table public.staff_role_grants is
 alter table public.staff_role_grants enable row level security;
 revoke all on table public.staff_role_grants from public, anon, authenticated;
 grant select, insert, update, delete on table public.staff_role_grants to service_role;
+-- The grant mirror (section 4) is SECURITY INVOKER, so a trusted writer mints and revokes
+-- grants as itself: postgres (SQL editor, remediation) and the owners of the two SQL-side
+-- role writers (signup, admin_set_profile_role), which section 0 verified are trusted.
+-- For the table's owner or a superuser this is a no-op.
+do $grant_writers$
+declare
+  v_role name;
+begin
+  for v_role in
+    select r.rolname from pg_catalog.pg_roles r where r.rolname = 'postgres'
+    union
+    select pg_catalog.pg_get_userbyid(p.proowner) from pg_catalog.pg_proc p
+    where p.oid in (to_regprocedure('public.handle_new_user()'),
+                    to_regprocedure('public.admin_set_profile_role(uuid,text)'))
+  loop
+    execute format('grant select, insert, update on table public.staff_role_grants to %I', v_role);
+  end loop;
+end $grant_writers$;
 
 
 -- ── (3) W3 — BEFORE INSERT/UPDATE guard on profiles (SECURITY INVOKER) ───────

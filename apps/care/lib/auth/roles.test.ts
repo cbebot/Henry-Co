@@ -1,6 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { countProvisionedOwners, resolveProvisionedStaffRole } from "./roles";
+import {
+  countProvisionedOwners,
+  isArchivedAccount,
+  needsLastOwnerCheck,
+  resolveProvisionedStaffRole,
+} from "./roles";
 
 // V3-STAFF-SELFGRANT-FIX-01: the ONE decision for "is this account provisioned staff?".
 // Only server-controlled sources count (an explicit owner-issued patch, the admin-API-only
@@ -90,5 +95,33 @@ describe("countProvisionedOwners", () => {
       { id: "o1", app_metadata: { role: "owner" } },
     ];
     assert.equal(countProvisionedOwners(users, verified([])), 1);
+  });
+
+  it("ignores a non-string app_metadata.role, like the console's own resolution", () => {
+    const users = [{ id: "m", app_metadata: { role: ["manager"] } }];
+    assert.equal(countProvisionedOwners(users, verified([["m", "owner"]])), 1);
+  });
+});
+
+describe("isArchivedAccount", () => {
+  it("is true only for a non-blank app_metadata.deleted_at", () => {
+    assert.equal(isArchivedAccount({ deleted_at: "2026-09-01T00:00:00Z" }), true);
+    assert.equal(isArchivedAccount({ deleted_at: "  " }), false);
+    assert.equal(isArchivedAccount({}), false);
+    assert.equal(isArchivedAccount(null), false);
+  });
+});
+
+// Removing owner access from an ACTIVE owner must leave another active owner. An archived
+// owner is not counted as active, so removing it can never lower the count.
+describe("needsLastOwnerCheck", () => {
+  it("checks when an active owner loses owner access", () => {
+    assert.equal(needsLastOwnerCheck({ currentRole: "owner", archived: false, removesOwner: true }), true);
+  });
+
+  it("skips an archived owner, a non-owner, and a change that keeps owner access", () => {
+    assert.equal(needsLastOwnerCheck({ currentRole: "owner", archived: true, removesOwner: true }), false);
+    assert.equal(needsLastOwnerCheck({ currentRole: "manager", archived: false, removesOwner: true }), false);
+    assert.equal(needsLastOwnerCheck({ currentRole: "owner", archived: false, removesOwner: false }), false);
   });
 });
