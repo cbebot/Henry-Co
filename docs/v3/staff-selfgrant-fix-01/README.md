@@ -56,11 +56,12 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
   - It pages through up to 10,000 accounts, not only the newest 200. Past that it can only undercount, which blocks.
   - It skips archived owners (`needsLastOwnerCheck`), which are not active owners.
   - "Add staff" refuses an owner demoting or deactivating itself, as update-role and freeze already did.
-- An archived (offboarded) account acts on nothing.
+- At care's app gates, an archived (offboarded) account acts on nothing.
   - Both owner-console auth paths refuse it.
   - The owner API routes (care media, WhatsApp health) also refuse an archived, frozen or re-login-pending session, through the same `sessionBlockReason` that every page (`requireRoles`) uses.
+  - A care freeze or archive does **not** revoke database-level staff access (`is_staff_in` reads the grant-backed role), which is an owner decision, §6. Offboarding someone completely also needs the remediation script.
 - **A freeze now holds.** Care's sign-in used to patch the stale `profiles.is_frozen` / `force_reauth_after` (the protect trigger refuses care's profile writes) over the live `app_metadata`, so a frozen account was unfrozen at its next sign-in. The sign-in no longer patches them, and sign-in's existing frozen check refuses the account.
-- **"Add staff" reads its checkboxes correctly** (`readFormFlag`, tested). The form posts a hidden `false` before each checkbox, and the action read only the first value. Every UI submission therefore provisioned the account frozen, never sent the setup email, and froze an owner editing its own account. The sign-in bug above had been masking this.
+- **"Add staff" reads its checkboxes correctly** (`readFormFlag`, tested). The form posts a hidden `false` before each checkbox, and the action read only the first value. Every UI submission therefore provisioned the account frozen and never sent the setup email. An owner editing its own account through the UI was frozen; after the self-freeze guard, the edit was refused instead. The sign-in bug above had been masking this.
 
 **Same-class guards**, each with privileges + trigger and each layer alone proven:
 
@@ -183,7 +184,28 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 **Pre-existing defects found on the way (identical before and after this pass):**
 - **Address default-setting fails.** `POST /api/addresses/set-default`, and creating an address as default when one exists, both fail with "cannot unset is_default on the only default address". That error comes from the nested demote inside `user_addresses_enforce_default`. Its insert branch also calls an unqualified `uuid_nil()`, which lives only in `extensions`.
 - **No UI to end an impersonation.** `ImpersonationBanner`, the only caller of `endImpersonationAction`, is never rendered.
-- **Care owner console, concurrent removals.** Two owners demoting each other at the same moment can both see a count of 2. Closing this needs server-side serialization (e.g. an advisory lock around the check and the write).
+- **Care owner console, concurrent changes.** Two owners demoting each other at the same moment can both see a count of 2. Two owners freezing each other at the same moment both stay frozen, now that a freeze lasts. Closing this needs server-side serialization, e.g. an advisory lock around the check and the write.
+  - Recovery in the meantime: in SQL, set `auth.users.raw_app_meta_data -> 'is_frozen'` to false for one owner.
+
+**Owner decision (MEDIUM, pre-existing): a care freeze or archive does not revoke database-level staff access.**
+- Care stores a freeze and an archive in `app_metadata`. `is_staff_in('care')` (and every division) reads the grant-backed `profiles.role`.
+- So a frozen or archived legacy staffer whose role is grant-backed keeps database staff access through any session they can still obtain, e.g. a recovery link. Examples are `GET /api/care/claims` (every customer's claims) and `POST /api/care/pod`.
+- The options:
+  - (a) make `is_staff_in` / `verified_profile_role()` honour `app_metadata.is_frozen` / `deleted_at`. This is cross-division: a care freeze would then revoke hub, marketplace and other staff access too.
+  - (b) keep a freeze as an app-level suspension, and **offboard through the remediation script**, which demotes the role, revokes the grant and ends sessions.
+- A guard on those two routes alone would not close the database path, so it was not added.
+
+**Freeze precedence and other residual items (pre-existing, low):**
+- **Freezes go through the care console.** Care reads `app_metadata.is_frozen` first and `profiles.is_frozen` only as a fallback.
+  - The protect trigger refuses care's `profiles` writes, so `app_metadata` is the only store the console can set and clear.
+  - "Frozen if either source says so" would permanently lock accounts whose legacy profile freeze the console already lifted.
+  - A freeze issued in SQL must set `auth.users.raw_app_meta_data` (`is_frozen`, `force_reauth_after`) and delete the account's `auth.sessions` rows. Alternatively, make `admin_set_profile_frozen` also write `raw_app_meta_data`.
+- **Idle sessions.**
+  - A session that never loads a page survives a freeze followed by an unfreeze, because unfreezing clears `force_reauth_after`.
+  - It also survives a forced re-login once the account signs in elsewhere, because the check uses the account-wide `last_sign_in_at`.
+  - Fix: have unfreeze set `force_reauth_after` to now, or revoke sessions when forcing (as the remediation script does).
+- **Profile-only freeze readers.** `startImpersonationAction`, `getStaffAlertRecipients` and `getSupportAgents` read only `profiles.is_frozen`. So a console-frozen staffer can still be impersonated, receive booking or support alert emails, and be assigned support threads. Fix: `app_metadata` first, as the gates do.
+- **Owner self-edit through "Add staff".** It forces the owner's own re-login and, by default, emails the owner a setup link. Fix: skip both when the target is the acting owner.
 - **Care session path, non-string role.** `getAuthenticatedProfile` still coerces a non-string `app_metadata.role` with `String()`. Only the service role can set that value, so this affects malformed admin data only.
 
 **Internal comms (recorded by round 6; pre-existing, not a self-grant):**
