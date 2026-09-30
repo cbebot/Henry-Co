@@ -169,13 +169,17 @@ describe("actorOwnsPipeline (V3-CARE-JOBS-PREAPPLY-FIX-01 offers + interview-not
   const otherBusiness = { kind: "business" as const, userId: "uB", businessId: "bizB", role: "owner" as const };
   const anonymous = { kind: "personal" as const, userId: "" };
 
-  it("allows the pipeline's employer account, in a personal context (prod: no business_id)", () => {
+  it("allows the pipeline's employer account while the pipeline is not bound to a business (prod)", () => {
     assert.equal(actorOwnsPipeline(ownerPersonal, prodOwnerKeys), true);
-    assert.equal(actorOwnsPipeline(ownerPersonal, ownerKeys), true);
+    assert.equal(actorOwnsPipeline(ownerAsBusiness, prodOwnerKeys), true);
   });
   it("allows the employer acting as their business, and a member of the owning business", () => {
     assert.equal(actorOwnsPipeline(ownerAsBusiness, ownerKeys), true);
     assert.equal(actorOwnsPipeline(teamMember, ownerKeys), true);
+  });
+  it("once the pipeline is bound to a business, its creator's employer_id alone no longer passes", () => {
+    // The creator in a personal context — including one who has left the business.
+    assert.equal(actorOwnsPipeline(ownerPersonal, ownerKeys), false);
   });
   it("denies another employer (personal context)", () => {
     assert.equal(actorOwnsPipeline(otherEmployer, ownerKeys), false);

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import {
+  MAX_CLAIM_EVIDENCE,
   signCareClaimEvidenceForOwner,
   uploadCareClaimEvidence,
 } from "@/lib/care-media-store";
@@ -37,7 +38,6 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const MAX_EVIDENCE = 5;
 const MAX_REASON = 240;
 const MIN_REASON = 4;
 const MAX_DESCRIPTION = 2000;
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     requestedAmountMinor = Number.isFinite(amount) ? Math.max(0, Math.round(amount)) : 0;
     currency = cleanText(form.get("currency")).slice(0, 6) || "NGN";
 
-    for (let i = 0; i < MAX_EVIDENCE; i += 1) {
+    for (let i = 0; i < MAX_CLAIM_EVIDENCE; i += 1) {
       const entry = form.get(`evidence_${i}`);
       if (entry instanceof File && entry.size > 0) {
         uploadedFiles.push(entry);
@@ -140,11 +140,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (uploadedFiles.length > MAX_EVIDENCE) {
+  if (uploadedFiles.length > MAX_CLAIM_EVIDENCE) {
     return NextResponse.json(
       {
         ok: false,
-        error: `Up to ${MAX_EVIDENCE} evidence files per claim.`,
+        error: `Up to ${MAX_CLAIM_EVIDENCE} evidence files per claim.`,
       },
       { status: 400 },
     );

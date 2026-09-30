@@ -48,6 +48,9 @@ let bucketsEnsured = false;
  */
 const CLAIM_EVIDENCE_PREFIX = "claims";
 
+/** Evidence files one claim carries (the claims route enforces it at upload). */
+export const MAX_CLAIM_EVIDENCE = 5;
+
 const USER_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 function escapeRegExp(value: string): string {
@@ -283,8 +286,10 @@ export async function signCareClaimEvidenceForOwner(
   if (!USER_ID_PATTERN.test(owner)) return [];
 
   const store = getCareMediaStore();
+  // At most one claim's worth of evidence: a row written straight through
+  // PostgREST can hold any number of refs, and each one is a signing request.
   const signed = await Promise.all(
-    values.map(async (value) => {
+    values.slice(0, MAX_CLAIM_EVIDENCE).map(async (value) => {
       if (claimEvidenceOwner(value) !== owner) return "";
       try {
         return await store.signedUrl(value as string);

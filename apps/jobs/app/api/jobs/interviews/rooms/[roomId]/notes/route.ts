@@ -10,9 +10,10 @@ import { createAdminSupabase } from "@/lib/supabase";
  *
  * Ownership (V3-CARE-JOBS-PREAPPLY-FIX-01): the caller must be signed in
  * (actor resolved from the session) and must OWN the pipeline the room's
- * application sits on (actorOwnsPipeline): they are the pipeline's employer
- * account (jobs_hiring_pipelines.employer_id), or they act as the business
- * that owns it (V3-70 business_id). "Has some employer membership" never
+ * application sits on (actorOwnsPipeline): they act as the business the
+ * pipeline is bound to (V3-70 business_id), or, for a pipeline not bound to a
+ * business (every pipeline on prod today), they are its employer account
+ * (jobs_hiring_pipelines.employer_id). "Has some employer membership" never
  * authorizes a specific room. There is no platform-staff bypass: these are
  * the employer's own notes. Anyone outside gets the same flat 403 whether
  * or not the room exists, so room ids cannot be probed.

@@ -17,11 +17,11 @@ import { createAdminSupabase } from "@/lib/supabase";
  *     (resolveHiringActingContext); nothing in the request names the actor,
  *     the employer or the business.
  *   - The caller must OWN the application's pipeline (actorOwnsPipeline):
- *     they are the pipeline's employer account (jobs_hiring_pipelines
- *     .employer_id — how pipelines are owned on prod today), or they act as
- *     the business that owns it (V3-70 business_id). Another employer or
- *     business -> 403. "Has some employer membership" never authorizes a
- *     specific pipeline.
+ *     they act as the business the pipeline is bound to (V3-70 business_id),
+ *     or, for a pipeline not bound to a business (every pipeline on prod
+ *     today), they are its employer account (jobs_hiring_pipelines
+ *     .employer_id). Another employer or business -> 403. "Has some employer
+ *     membership" never authorizes a specific pipeline.
  *   - No platform-staff bypass: an offer letter is an employer-authored
  *     document, so only the pipeline's owner issues it.
  *
