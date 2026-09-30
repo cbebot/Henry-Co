@@ -18,6 +18,7 @@ import { STAFF_LOGIN_ROUTE, STAFF_RECOVERY_ROUTE } from "@/lib/auth/routes";
 import { syncStaffIdentity } from "@/lib/auth/staff-identity";
 import { getAuthenticatedProfile } from "@/lib/auth/server";
 import { careServerSigningSecret } from "@/lib/auth/signing-secret";
+import { readFormFlag } from "@/lib/form-flags";
 import { isServiceBookingRecord } from "@/lib/care-booking-shared";
 import { normalizeCareSettings } from "@/lib/care-settings-shared";
 import {
@@ -2686,8 +2687,9 @@ export async function createStaffAccountAction(formData: FormData) {
   const fullName = asNullableText(formData, "full_name");
   const phone = asNullableText(formData, "phone");
   const role = normalizeStaffRole(asText(formData, "role"));
-  const isActive = asText(formData, "is_active") !== "false";
-  const sendInvite = asText(formData, "send_invite") !== "false";
+  // Every submitted value: the form posts a hidden "false" before each checkbox.
+  const isActive = readFormFlag(formData.getAll("is_active"), true);
+  const sendInvite = readFormFlag(formData.getAll("send_invite"), true);
 
   if (!email || !role) {
     finish(route, "error", "Email and role are required for staff setup.");

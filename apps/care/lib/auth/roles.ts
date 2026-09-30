@@ -92,6 +92,27 @@ export function needsLastOwnerCheck(input: {
   return input.currentRole === "owner" && !input.archived && input.removesOwner;
 }
 
+/**
+ * Why a signed-in staff session may not act, in the order pages check it: archived
+ * ("disabled"), frozen, or a forced re-login issued after its last sign-in. Pages
+ * (requireRoles) redirect with the reason; API routes answer 403.
+ */
+export function sessionBlockReason(input: {
+  deletedAt?: string | null;
+  isFrozen?: boolean | null;
+  forceReauthAfter?: string | null;
+  lastSignInAt?: string | null;
+}): "disabled" | "frozen" | "reauth" | null {
+  if (input.deletedAt) return "disabled";
+  if (input.isFrozen) return "frozen";
+  if (input.forceReauthAfter) {
+    const lastSignInAt = input.lastSignInAt ? new Date(input.lastSignInAt).getTime() : 0;
+    const forceAt = new Date(input.forceReauthAfter).getTime();
+    if (forceAt && lastSignInAt && lastSignInAt < forceAt) return "reauth";
+  }
+  return null;
+}
+
 export function isOwner(role: string | null | undefined) {
   return normalizeRole(role) === "owner";
 }

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test lib/auth/roles.test.ts lib/auth/impersonation-session.test.ts lib/payments/card-math.test.ts"
+    "test": "tsx --test lib/auth/roles.test.ts lib/auth/impersonation-session.test.ts lib/form-flags.test.ts lib/payments/card-math.test.ts"
   },
   "dependencies": {
     "@henryco/auth": "workspace:^",

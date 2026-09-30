@@ -5,6 +5,7 @@ import {
   isArchivedAccount,
   needsLastOwnerCheck,
   resolveProvisionedStaffRole,
+  sessionBlockReason,
 } from "./roles";
 
 // V3-STAFF-SELFGRANT-FIX-01: the ONE decision for "is this account provisioned staff?".
@@ -123,5 +124,28 @@ describe("needsLastOwnerCheck", () => {
     assert.equal(needsLastOwnerCheck({ currentRole: "owner", archived: true, removesOwner: true }), false);
     assert.equal(needsLastOwnerCheck({ currentRole: "manager", archived: false, removesOwner: true }), false);
     assert.equal(needsLastOwnerCheck({ currentRole: "owner", archived: false, removesOwner: false }), false);
+  });
+});
+
+// One definition of "this session may not act", shared by pages (requireRoles redirects
+// with the reason) and API routes (403).
+describe("sessionBlockReason", () => {
+  const signedIn = "2026-09-20T10:00:00.000Z";
+
+  it("allows an active session", () => {
+    assert.equal(sessionBlockReason({ lastSignInAt: signedIn }), null);
+    assert.equal(
+      sessionBlockReason({ forceReauthAfter: "2026-09-19T00:00:00.000Z", lastSignInAt: signedIn }),
+      null
+    );
+  });
+
+  it("blocks an archived, then a frozen, then a re-login-pending session, in that order", () => {
+    assert.equal(sessionBlockReason({ deletedAt: "2026-09-01T00:00:00Z", isFrozen: true }), "disabled");
+    assert.equal(sessionBlockReason({ isFrozen: true, lastSignInAt: signedIn }), "frozen");
+    assert.equal(
+      sessionBlockReason({ forceReauthAfter: "2026-09-21T00:00:00.000Z", lastSignInAt: signedIn }),
+      "reauth"
+    );
   });
 });

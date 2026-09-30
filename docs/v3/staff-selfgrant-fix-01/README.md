@@ -56,7 +56,11 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
   - It pages through up to 10,000 accounts, not only the newest 200. Past that it can only undercount, which blocks.
   - It skips archived owners (`needsLastOwnerCheck`), which are not active owners.
   - "Add staff" refuses an owner demoting or deactivating itself, as update-role and freeze already did.
-- An archived (offboarded) account acts on nothing: both owner-console auth paths refuse it, as every page already did.
+- An archived (offboarded) account acts on nothing.
+  - Both owner-console auth paths refuse it.
+  - The owner API routes (care media, WhatsApp health) also refuse an archived, frozen or re-login-pending session, through the same `sessionBlockReason` that every page (`requireRoles`) uses.
+- **A freeze now holds.** Care's sign-in used to patch the stale `profiles.is_frozen` / `force_reauth_after` (the protect trigger refuses care's profile writes) over the live `app_metadata`, so a frozen account was unfrozen at its next sign-in. The sign-in no longer patches them, and sign-in's existing frozen check refuses the account.
+- **"Add staff" reads its checkboxes correctly** (`readFormFlag`, tested). The form posts a hidden `false` before each checkbox, and the action read only the first value. Every UI submission therefore provisioned the account frozen, never sent the setup email, and froze an owner editing its own account. The sign-in bug above had been masking this.
 
 **Same-class guards**, each with privileges + trigger and each layer alone proven:
 
@@ -91,7 +95,7 @@ Every row below was **reproduced on the prod-actual shadow** (except #4, which w
 
 **Money:** digests are identical pre/post: 30 money / `payments_private` functions + ACLs, 116 money relations + ACLs, and all money-table triggers.
 
-**Unit tests:** `@henryco/config` 73/73 (11 new), care 29/29 (26 new), search-core 44/44 (5 new). All three suites run in CI.
+**Unit tests:** `@henryco/config` 73/73 (11 new), care 34/34 (31 new), search-core 44/44 (5 new). All three suites run in CI.
 
 **Typecheck + ESLint:** clean on every touched app and package, except a pre-existing `packages/lifecycle` JSX config error in search-core.
 

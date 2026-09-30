@@ -258,11 +258,10 @@ export async function loginAction(formData: FormData) {
         : null,
     user,
     role: seededRole ?? profileRole ?? undefined,
-    is_frozen:
-      existingProfile?.is_frozen === null || existingProfile?.is_frozen === undefined
-        ? undefined
-        : Boolean(existingProfile.is_frozen),
-    force_reauth_after: existingProfile?.force_reauth_after ?? undefined,
+    // V3-STAFF-SELFGRANT-FIX-01: no is_frozen / force_reauth_after patch. The owner console
+    // records a freeze or a forced re-login in app_metadata (its profiles writes are refused
+    // by the protect trigger), so the profiles row is stale; patching from it unfroze a
+    // frozen account at its next sign-in. The sync keeps app_metadata, then the profile.
   });
 
   if (identity.error) {
