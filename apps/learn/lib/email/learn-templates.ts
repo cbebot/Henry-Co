@@ -241,7 +241,8 @@ async function getOwnerRecipients() {
 
   return (data.users ?? [])
     .filter((user) => {
-      const role = String(user.app_metadata?.role || user.user_metadata?.role || "").toLowerCase();
+      // Never user_metadata (self-writable): a self-declared owner must not get owner mail.
+      const role = String(user.app_metadata?.role || "").toLowerCase();
       return role === "owner" || role === "manager";
     })
     .map((user) => extractEmailAddress(user.email))

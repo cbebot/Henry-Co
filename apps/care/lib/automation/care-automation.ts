@@ -208,8 +208,9 @@ async function getOwnerRecipients() {
     for (const user of users) {
       const role = cleanText(
         String(
+          // Never user_metadata (self-writable): a self-declared "owner" must not
+          // receive the owner revenue summaries.
           user.app_metadata?.staff_role ||
-            user.user_metadata?.role ||
             user.app_metadata?.role ||
             ""
         )

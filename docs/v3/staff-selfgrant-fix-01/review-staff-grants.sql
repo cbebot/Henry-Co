@@ -1,0 +1,308 @@
+-- ============================================================================
+-- V3-STAFF-SELFGRANT-FIX-01 — DAY-OF REVIEW (READ-ONLY). Runbook §6.3 "G10b".
+-- Run in the Supabase SQL editor AFTER applying
+-- 20260924120000_v3_staff_selfgrant_fix_01.sql AND once the PR #540 app is the live
+-- deployment. The apply closes every client write path, but a pre-#540 care build still
+-- assigns staff roles through the service role, which is trusted: its /owner/staff and
+-- /owner/security pages and its staff sign-in/recovery default accounts to 'staff'.
+-- Taken with #540 live, this list is final. Changes nothing.
+-- R2's grant_source 'backfill:v3_staff_selfgrant_fix_01' marks every row that existed
+-- before the fix: exactly the population the owner must judge.
+--
+-- The SQL editor shows only the LAST result set, so run each numbered block on its
+-- own and save every result. The owner then decides, row by row, which accounts are
+-- genuine staff and which go into remediate-self-granted-staff.sql.
+-- ============================================================================
+
+-- ── R1 · Headline counts ─────────────────────────────────────────────────────
+select
+  (select count(*) from auth.users u
+    where not exists (select 1 from public.profiles p where p.id = u.id))            as g10_auth_users_without_profile,
+  (select count(*) from public.profiles where lower(role) <> 'customer')              as non_customer_profiles,
+  (select count(*) from public.profiles where lower(role) = 'staff')                  as role_staff,
+  (select count(*) from public.profiles where lower(role) = 'owner')                  as role_owner,
+  (select count(*) from public.profiles p join auth.users u on u.id = p.id
+    where lower(p.role) <> 'customer'
+      and trim(coalesce(u.raw_app_meta_data ->> 'role', '')) = '')                    as self_insert_shaped,
+  (select count(*) from auth.users u
+    left join public.profiles p on p.id = u.id
+    where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')
+      and lower(coalesce(p.role, 'customer')) = 'customer')                           as app_metadata_only_staff,
+  (select count(*) from auth.users u
+    left join public.profiles p on p.id = u.id
+    where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')
+      and lower(coalesce(p.role, 'customer')) = 'customer'
+      and coalesce(u.raw_app_meta_data ->> 'provisioning_slot', 'false') <> 'true'
+      and not exists (select 1 from public.care_security_logs l
+                      where l.event_type in ('staff_created', 'staff_updated_from_owner_directory', 'staff_role_updated')
+                        and l.success is not false and l.details ->> 'target_user_id' = u.id::text)
+      and not exists (select 1 from public.staff_audit_logs a
+                      where a.entity = 'staff' and a.action in ('staff.invite', 'staff.update')
+                        and a.entity_id = u.id::text))                              as app_metadata_staff_without_record,
+  (select count(*) from public.owner_profiles where role <> 'owner')                  as owner_console_non_owner_rows,
+  (select count(*) from public.owner_profiles where is_active and role in ('owner', 'admin')) as active_console_owners,
+  (select count(*) from public.owner_profiles op
+     left join auth.users u on u.id = op.user_id
+    where op.is_active and op.role in ('owner', 'admin')
+      and lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) <> 'owner'
+      and not exists (select 1 from public.staff_role_grants g
+                      where g.user_id = op.user_id and g.revoked_at is null and g.role = 'owner'
+                        and g.source not like 'backfill:%'))   as console_owners_without_platform_owner_signal,
+  (select count(*) from public.hq_internal_comm_thread_members m
+    where lower(m.role) in ('owner', 'admin')
+      and not exists (select 1 from public.owner_profiles o where o.user_id = m.user_id
+                      and o.is_active and o.role in ('owner', 'admin')))       as owner_level_comms_rows_of_non_owners,
+  (select count(*) from public.staff_role_grants where revoked_at is null)            as active_grants,
+  (select count(*) from public.profiles p where lower(p.role) <> 'customer'
+     and not exists (select 1 from public.staff_role_grants g where g.user_id = p.id
+                     and g.revoked_at is null and g.role = lower(p.role)))            as unbacked_non_customer_rows_expect_0;
+
+-- ── R2 · Every non-customer profiles row, with evidence (population A) ───────
+-- verdict_hint is a HINT, not a verdict:
+--   SELF-INSERT-SHAPED   app_metadata.role is empty. A PostgREST self-insert cannot set
+--                        app_metadata, while care's provisioning (syncStaffIdentity) always
+--                        writes it. Strongest signal of the hole being used.
+--   METADATA-MISMATCH    app_metadata.role disagrees with profiles.role.
+--   PROVISIONED-SHAPED   app_metadata.role matches. Genuine care provisioning looks like this,
+--                        but so does an ordinary user that the pre-fix
+--                        reconcileStaffDirectory() auto-promoted when the owner opened the
+--                        care staff page. Check owner_console / memberships / email / activity.
+--   …, NO-RECORD         no owner-console provisioning record (provisioning_records = 0,
+--                        see R3). Not proof on its own: dashboard-made and older accounts
+--                        have none either.
+select
+  p.id                                                   as user_id,
+  u.email,
+  p.role                                                 as profile_role,
+  u.raw_app_meta_data ->> 'role'                         as app_metadata_role,
+  u.raw_user_meta_data ->> 'role'                        as user_metadata_role,
+  op.role                                                as owner_console_role,
+  op.is_active                                           as owner_console_active,
+  (select string_agg(x, ', ') from (
+      select 'marketplace:' || role x from public.marketplace_role_memberships m where m.user_id = p.id and m.is_active
+      union all select 'studio:' || role from public.studio_role_memberships m where m.user_id = p.id and m.is_active
+      union all select 'property:' || role from public.property_role_memberships m where m.user_id = p.id and m.is_active
+      union all select 'learn:' || role from public.learn_role_memberships m where m.user_id = p.id and m.is_active
+   ) mm)                                                 as active_division_memberships,
+  u.created_at                                           as auth_created_at,
+  p.created_at                                           as profile_created_at,
+  round(extract(epoch from (p.created_at - u.created_at)))::bigint as profile_after_auth_seconds,
+  u.last_sign_in_at,
+  (u.email_confirmed_at is not null)                     as email_confirmed,
+  p.is_active, p.is_frozen,
+  g.source                                               as grant_source,
+  (g.revoked_at is null)                                 as grant_active,
+  ev.provisioning_records,
+  case
+    when trim(coalesce(u.raw_app_meta_data ->> 'role', '')) = ''                  then 'SELF-INSERT-SHAPED'
+    when lower(trim(u.raw_app_meta_data ->> 'role')) <> lower(p.role)             then 'METADATA-MISMATCH'
+    when ev.provisioning_records = 0                                               then 'PROVISIONED-SHAPED, NO-RECORD'
+    else 'PROVISIONED-SHAPED'
+  end                                                    as verdict_hint
+from public.profiles p
+join auth.users u on u.id = p.id
+left join public.owner_profiles op on op.user_id = p.id
+left join public.staff_role_grants g on g.user_id = p.id
+cross join lateral (
+  select (select count(*) from public.care_security_logs l
+            where l.event_type in ('staff_created', 'staff_updated_from_owner_directory', 'staff_role_updated')
+              and l.success is not false
+              and l.details ->> 'target_user_id' = p.id::text)
+       + (select count(*) from public.staff_audit_logs a
+            where a.entity = 'staff' and a.action in ('staff.invite', 'staff.update')
+              and a.entity_id = p.id::text) as provisioning_records
+) ev
+where lower(p.role) <> 'customer'
+order by verdict_hint, p.created_at desc;
+
+-- ── R3 · App-metadata-only staff (population B) ──────────────────────────────
+-- Accounts whose admin-set app_metadata.role is a staff role but whose profiles row is
+-- 'customer' or missing. The DB (is_staff_in) never treated these as staff, but the care
+-- app does: care resolves app_metadata.role first. The pre-fix care code wrote
+-- app_metadata.role for ORDINARY accounts with the service role: reconcileStaffDirectory()
+-- ran over the first 200 accounts on every render of care's /owner/staff and
+-- /owner/security pages (and staff sign-in/recovery ran it for whoever signed in there).
+-- It copied a SELF-SET user_metadata.role (e.g. 'owner') into app_metadata and defaulted
+-- everyone else to 'staff'.
+-- Genuine staff are provisioned through care's owner console (care_security_logs) or the
+-- hub owner console (staff_audit_logs). Both write a record that request roles cannot
+-- forge (RLS on, no insert policy). review_hint is a HINT, not a verdict:
+--   NO-RECORD           no provisioning record. The role may be a copied self-set one
+--                       (compare user_metadata_role); dashboard-made accounts have none too.
+--   NO-RECORD-DEFAULT   no provisioning record and role 'staff': the old reconcile default.
+--   PROVISIONING-SLOT   a retired account care keeps for reuse, not a person: leave it.
+--   RECORDED            provisioned through an owner console.
+select
+  u.id                                 as user_id,
+  u.email,
+  u.raw_app_meta_data ->> 'role'       as app_metadata_role,
+  u.raw_user_meta_data ->> 'role'      as user_metadata_role,
+  p.role                               as profile_role,
+  op.role                              as owner_console_role,
+  ev.provisioning_records,
+  case
+    when coalesce(u.raw_app_meta_data ->> 'provisioning_slot', 'false') = 'true' then 'PROVISIONING-SLOT'
+    when ev.provisioning_records > 0                                              then 'RECORDED'
+    when lower(trim(u.raw_app_meta_data ->> 'role')) = 'staff'                    then 'NO-RECORD-DEFAULT'
+    else 'NO-RECORD'
+  end                                  as review_hint,
+  u.created_at, u.last_sign_in_at
+from auth.users u
+left join public.profiles p on p.id = u.id
+left join public.owner_profiles op on op.user_id = u.id
+cross join lateral (
+  select (select count(*) from public.care_security_logs l
+            where l.event_type in ('staff_created', 'staff_updated_from_owner_directory', 'staff_role_updated')
+              and l.success is not false
+              and l.details ->> 'target_user_id' = u.id::text)
+       + (select count(*) from public.staff_audit_logs a
+            where a.entity = 'staff' and a.action in ('staff.invite', 'staff.update')
+              and a.entity_id = u.id::text) as provisioning_records
+) ev
+where lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff')
+  and lower(coalesce(p.role, 'customer')) = 'customer'
+order by review_hint, u.created_at desc;
+
+-- ── R4 · Owner-console rows (the owner_profiles self-promotion vector) ──────
+-- Before the fix, a console viewer/editor could rewrite its OWN row to role='owner'.
+-- Such a row looks like any active owner, so the hint flags an active owner/admin row
+-- with NO platform-owner signal, and a row changed after creation. A platform-owner
+-- signal is an admin-set app_metadata.role = 'owner' or an owner grant minted AFTER the
+-- fix (grant_source not 'backfill:…'). profiles.role = 'owner' alone is NOT one: it was
+-- self-settable before the fix and the backfill only mirrors it — check grant_source and
+-- profile_after_auth_seconds (a profile created long after the account suggests a
+-- self-insert). review_hint:
+--   CONSOLE-OWNER-WITHOUT-PLATFORM-OWNER-SIGNAL  no owner evidence outside the console row.
+--   CONSOLE-OWNER-PROFILE-ROLE-ONLY              the only other evidence is profiles.role =
+--                                                'owner' (may be your own account — or a
+--                                                console viewer that also self-inserted it).
+--   ROW-CHANGED-AFTER-CREATION                   any other row edited after creation.
+-- The owner judges each; the remediation script can deactivate a console row
+-- (deactivate_console = true), which also removes its internal-comms memberships.
+select op.user_id, op.email, op.role, op.is_active, op.created_at, op.updated_at,
+       p.role                              as profile_role,
+       g.source                            as grant_source,
+       round(extract(epoch from (p.created_at - u.created_at)))::bigint as profile_after_auth_seconds,
+       u.raw_app_meta_data ->> 'role'      as app_metadata_role,
+       case
+         when op.is_active and op.role in ('owner', 'admin')
+          and lower(trim(coalesce(u.raw_app_meta_data ->> 'role', ''))) <> 'owner'
+          and not coalesce(g.revoked_at is null and g.role = 'owner' and g.source not like 'backfill:%', false)
+           then case when lower(coalesce(p.role, '')) = 'owner'
+                     then 'CONSOLE-OWNER-PROFILE-ROLE-ONLY'
+                     else 'CONSOLE-OWNER-WITHOUT-PLATFORM-OWNER-SIGNAL' end
+         when op.updated_at > op.created_at + interval '1 second'
+           then 'ROW-CHANGED-AFTER-CREATION'
+         else ''
+       end                                 as review_hint
+from public.owner_profiles op
+left join public.profiles p on p.id = op.user_id
+left join auth.users u on u.id = op.user_id
+left join public.staff_role_grants g on g.user_id = op.user_id
+order by (op.is_active and op.role in ('owner', 'admin')) desc, op.role, op.created_at;
+
+-- ── R5 · user_metadata-only "staff" ──────────────────────────────────────────
+-- The app no longer reads user_metadata.role (it is self-writable). An account whose
+-- staff role lives ONLY there — no admin-set app_metadata.role and no grant-backed
+-- profiles.role — has no staff access on the PR #540 build. No in-repo provisioning path
+-- creates such accounts (care and hub invites set app_metadata), but dashboard- or
+-- hand-made accounts might. For each GENUINE staff member listed here, re-provision on
+-- the #540 build: care owner console → add staff with that email and role (it
+-- re-provisions an existing account), or the hub invite flow. Never through a pre-#540
+-- care build: its staff page re-runs the old reconcile over 200 accounts. Everyone else
+-- here merely self-declared a role: no action needed.
+select u.id as user_id, u.email,
+       u.raw_user_meta_data ->> 'role' as user_metadata_role,
+       u.raw_app_meta_data ->> 'role'  as app_metadata_role,
+       p.role as profile_role, u.created_at, u.last_sign_in_at
+from auth.users u
+left join public.profiles p on p.id = u.id
+where lower(trim(coalesce(u.raw_user_meta_data ->> 'role', ''))) in ('owner','manager','rider','support','staff','admin')
+  and trim(coalesce(u.raw_app_meta_data ->> 'role', '')) = ''
+  and lower(coalesce(p.role, 'customer')) = 'customer'
+order by u.last_sign_in_at desc nulls last;
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- FORENSICS for the same-class holes closed in sections 10–12 (read-only).
+-- They answer "was this ALREADY exploited?" — each needs an owner decision.
+-- ═════════════════════════════════════════════════════════════════════════════
+
+-- ── R6 · KYC marked verified WITHOUT an approved, reviewer-signed submission ──
+-- Genuine approval (apps/hub/lib/kyc-review-write.ts) sets verification_status =
+-- 'verified' only when a customer_verification_submissions row is 'approved'. A verified
+-- profile with no such row was very likely SELF-SET through the (now closed) direct
+-- update — and passed the wallet-withdrawal KYC gate. Their withdrawal requests are
+-- listed alongside: freezing/reviewing them is a MONEY decision for the owner (the
+-- remediation script only resets KYC, with reset_kyc = true).
+select cp.id as user_id, cp.email, cp.verification_status, cp.is_verified,
+       cp.verification_reviewer_id, cp.verification_reviewed_at,
+       (select count(*) from public.customer_verification_submissions s
+         where s.user_id = cp.id)                                              as submissions_total,
+       (select count(*) from public.customer_wallet_withdrawal_requests w
+         where w.user_id = cp.id)                                              as withdrawal_requests,
+       (select coalesce(sum(w.amount_kobo), 0) from public.customer_wallet_withdrawal_requests w
+         where w.user_id = cp.id)                                              as withdrawal_kobo_total,
+       (select string_agg(distinct w.status, ', ') from public.customer_wallet_withdrawal_requests w
+         where w.user_id = cp.id)                                              as withdrawal_statuses
+from public.customer_profiles cp
+where (lower(coalesce(cp.verification_status, '')) = 'verified' or cp.is_verified is true)
+  and not exists (
+    select 1 from public.customer_verification_submissions s
+    where s.user_id = cp.id and lower(s.status) = 'approved' and s.reviewer_id is not null
+  )
+order by withdrawal_kobo_total desc, cp.verification_reviewed_at desc nulls last;
+
+-- ── R7 · Addresses marked KYC-verified — the evidence behind each ─────────────
+-- Display-only today (no flow sets AddressSelector requireKycVerified), so this is lower
+-- priority; rows with no match method/score/submission are the suspicious ones.
+select a.id, a.user_id, a.label, a.city, a.kyc_verified_at, a.kyc_match_method,
+       a.kyc_match_score, a.kyc_submission_id,
+       (select s.status from public.customer_verification_submissions s where s.id = a.kyc_submission_id) as submission_status
+from public.user_addresses a
+where a.kyc_verified
+order by (a.kyc_match_method is null and a.kyc_submission_id is null) desc, a.kyc_verified_at desc nulls last;
+
+-- ── R8 · Internal-comms memberships held by accounts that are not active owners ──
+-- The hub adds members only through owner-gated routes: owners get the membership role
+-- 'owner' (leadership/broadcast sync, activity, DM initiator) and a DM target gets
+-- 'member'. Before the fix a member could also move its row into an owners-only thread
+-- (filterless update) or add itself to a thread it could read. review_hint, a HINT:
+--   OWNER-LEVEL-ROW     role owner/admin held by a non-owner: left by the hub while the
+--                       account was (or had made itself) an owner. The fix already
+--                       ignores it; deactivate_console in the remediation removes it.
+--   OWNERS-ONLY-THREAD  any row in an all_owners thread held by a non-owner.
+--   OTHER               check the owner knows why the account is in the thread.
+--   DM                  a DM row: usually a staff member an owner wrote to.
+select x.* from (
+  select m.thread_id, t.slug, t.title, t.kind, t.visibility, m.user_id, u.email, m.role, m.joined_at,
+         op.role as owner_console_role, op.is_active as owner_console_active,
+         case
+           when lower(m.role) in ('owner', 'admin') then 'OWNER-LEVEL-ROW'
+           when t.visibility = 'all_owners'         then 'OWNERS-ONLY-THREAD'
+           when t.kind = 'dm'                       then 'DM'
+           else 'OTHER'
+         end as review_hint
+  from public.hq_internal_comm_thread_members m
+  join public.hq_internal_comm_threads t on t.id = m.thread_id
+  left join auth.users u on u.id = m.user_id
+  left join public.owner_profiles op on op.user_id = m.user_id
+  where not exists (select 1 from public.owner_profiles o
+                    where o.user_id = m.user_id and o.is_active and o.role in ('owner', 'admin'))
+) x
+order by case x.review_hint when 'OWNER-LEVEL-ROW' then 1 when 'OWNERS-ONLY-THREAD' then 2
+                            when 'OTHER' then 3 else 4 end, x.joined_at desc;
+
+-- ── R9 · MONEY (escalation, read-only): 'succeeded' payment intents with NO provider-
+--    confirmed attempt. A signed-in user can INSERT their own payment_intents row with
+--    status 'succeeded' (insert policy checks only user_id; the transition/freeze triggers
+--    fire on UPDATE only). payment_intents is money-spine — NOT changed by this pass; the
+--    owner decides the fix (see docs/v3/staff-selfgrant-fix-01/README.md "Money escalation").
+select pi.id, pi.user_id, pi.amount_minor, pi.currency, pi.method, pi.status, pi.division,
+       pi.provider_reference, pi.created_at,
+       (select count(*) from public.payment_attempts a where a.intent_id = pi.id)            as attempts,
+       (select string_agg(distinct a.status, ', ') from public.payment_attempts a where a.intent_id = pi.id) as attempt_statuses
+from public.payment_intents pi
+where lower(pi.status) in ('succeeded', 'refund_processing', 'refunded')
+  and not exists (select 1 from public.payment_attempts a
+                  where a.intent_id = pi.id and lower(a.status) in ('succeeded', 'success', 'successful'))
+order by pi.created_at desc;

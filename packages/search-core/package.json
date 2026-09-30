@@ -21,7 +21,7 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --test src/__tests__/palette-ranker.test.ts src/__tests__/role-isolation.test.ts src/__tests__/diversity-cap.test.ts src/__tests__/collection-tuning.test.ts src/__tests__/synonyms.test.ts",
+    "test": "tsx --test src/__tests__/palette-ranker.test.ts src/__tests__/role-isolation.test.ts src/__tests__/diversity-cap.test.ts src/__tests__/collection-tuning.test.ts src/__tests__/synonyms.test.ts src/__tests__/role-staff-grant.test.ts",
     "test:ranker": "tsx --test src/__tests__/palette-ranker.test.ts",
     "test:role-isolation": "tsx --test src/__tests__/role-isolation.test.ts",
     "test:diversity": "tsx --test src/__tests__/diversity-cap.test.ts",

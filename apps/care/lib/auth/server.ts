@@ -7,9 +7,11 @@ import {
   buildSharedCookieHandlers,
   buildSupabaseCookieOptions,
   resolveRequestCookieDomain,
+  readVerifiedProfileRole,
 } from "@henryco/config";
+import { createAdminSupabase } from "@/lib/supabase";
 import { buildStaffLoginUrl } from "@/lib/auth/routes";
-import { homeForRole, normalizeRole, type AppRole } from "@/lib/auth/roles";
+import { homeForRole, normalizeRole, sessionBlockReason, type AppRole } from "@/lib/auth/roles";
 import { getOptionalEnv } from "@/lib/env";
 
 export type AuthProfile = {
@@ -71,33 +73,31 @@ export async function getAuthenticatedProfile() {
     .eq("id", user.id)
     .maybeSingle();
 
+  // V3-STAFF-SELFGRANT-FIX-01: role / freeze / re-auth come only from app_metadata
+  // (admin-API-only) or profiles — never user_metadata, which any signed-in user can
+  // rewrite with supabase.auth.updateUser({ data }).
   const appRole = normalizeRole(user.app_metadata?.role as string | null | undefined);
-  const userRole = normalizeRole(user.user_metadata?.role as string | null | undefined);
+  // The grant lookup needs the service role; only pay for it when a non-customer
+  // profiles.role actually has to be verified.
   const effectiveRole =
     appRole !== "customer"
       ? appRole
-      : userRole !== "customer"
-      ? userRole
-      : normalizeRole(profile?.role);
+      : normalizeRole(profile?.role) === "customer"
+        ? "customer"
+        : normalizeRole(await readVerifiedProfileRole(createAdminSupabase(), user.id, profile?.role));
 
-  const effectiveFrozen = Boolean(
-    user.app_metadata?.is_frozen ?? user.user_metadata?.is_frozen ?? profile?.is_frozen
-  );
+  const effectiveFrozen = Boolean(user.app_metadata?.is_frozen ?? profile?.is_frozen);
   const effectiveForceReauthAfter =
     normalizeForceReauthAfter(
       (typeof user.app_metadata?.force_reauth_after === "string"
         ? user.app_metadata.force_reauth_after
         : null) ||
-        (typeof user.user_metadata?.force_reauth_after === "string"
-          ? user.user_metadata.force_reauth_after
-          : null) ||
         profile?.force_reauth_after ||
         null,
       user.last_sign_in_at
     );
   const effectiveDeletedAt =
     (typeof user.app_metadata?.deleted_at === "string" ? user.app_metadata.deleted_at : null) ||
-    (typeof user.user_metadata?.deleted_at === "string" ? user.user_metadata.deleted_at : null) ||
     null;
   const effectiveFullName =
     profile?.full_name ??
@@ -118,6 +118,22 @@ export async function getAuthenticatedProfile() {
   };
 }
 
+/**
+ * Why this session may not act (archived, frozen, forced re-login pending), or null.
+ * requireRoles redirects with the reason; API routes answer 403.
+ */
+export function blockReasonForSession(auth: {
+  user: { last_sign_in_at?: string | null };
+  profile: AuthProfile;
+}) {
+  return sessionBlockReason({
+    deletedAt: auth.profile.deleted_at,
+    isFrozen: auth.profile.is_frozen,
+    forceReauthAfter: auth.profile.force_reauth_after,
+    lastSignInAt: auth.user.last_sign_in_at,
+  });
+}
+
 export async function requireRoles(allowed: AppRole[]) {
   const auth = await getAuthenticatedProfile();
 
@@ -125,29 +141,12 @@ export async function requireRoles(allowed: AppRole[]) {
     redirect(buildStaffLoginUrl());
   }
 
-  if (auth.profile.deleted_at) {
+  // Archived, frozen, or a forced re-login pending: the one definition API routes share.
+  const blocked = blockReasonForSession(auth);
+  if (blocked) {
     const supabase = await getServerSupabase();
     await supabase.auth.signOut();
-    redirect(buildStaffLoginUrl(null, { reason: "disabled" }));
-  }
-
-  if (auth.profile.is_frozen) {
-    const supabase = await getServerSupabase();
-    await supabase.auth.signOut();
-    redirect(buildStaffLoginUrl(null, { reason: "frozen" }));
-  }
-
-  if (auth.profile.force_reauth_after) {
-    const lastSignInAt = auth.user.last_sign_in_at
-      ? new Date(auth.user.last_sign_in_at).getTime()
-      : 0;
-    const forceAt = new Date(auth.profile.force_reauth_after).getTime();
-
-    if (forceAt && lastSignInAt && lastSignInAt < forceAt) {
-      const supabase = await getServerSupabase();
-      await supabase.auth.signOut();
-      redirect(buildStaffLoginUrl(null, { reason: "reauth" }));
-    }
+    redirect(buildStaffLoginUrl(null, { reason: blocked }));
   }
 
   if (!allowed.includes(auth.profile.role)) {

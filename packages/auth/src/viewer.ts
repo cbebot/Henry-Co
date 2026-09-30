@@ -5,7 +5,9 @@ import { headers } from "next/headers";
 import {
   filterGrantedMemberships,
   getAccountUrl,
+  isOperatorMembershipRole,
   normalizeEmail,
+  readVerifiedProfileRole,
   type MembershipGrantRow,
 } from "@henryco/config";
 
@@ -117,15 +119,20 @@ async function readAccessSnapshot(user: {
           try {
             const { data, error } = await admin
               .from(table)
-              .select("user_id, normalized_email, is_active")
+              .select("role, user_id, normalized_email, is_active")
               .eq("is_active", true)
               .or(filter);
             if (error) return false;
+            // V3-STAFF-SELFGRANT-FIX-01: customer-facing roles (vendor_applicant, …)
+            // are not staff grants — same rule as SQL is_staff_in_any().
+            const operatorRows = ((data ?? []) as Array<{ role?: string | null }>).filter(
+              (row) => isOperatorMembershipRole(row.role),
+            );
             // Shared grant rule: a bound row matches only its owner; an
             // unclaimed (user_id null) seed grants only to a verified,
             // matching mailbox.
             return (
-              filterGrantedMemberships((data ?? []) as MembershipGrantRow[], {
+              filterGrantedMemberships(operatorRows as MembershipGrantRow[], {
                 userId: user.id,
                 normalizedEmail: normalizedEmailAddress,
                 emailVerified,
@@ -155,10 +162,12 @@ async function readAccessSnapshot(user: {
         ).data
       : null);
 
+  // V3-STAFF-SELFGRANT-FIX-01: a non-customer profiles.role counts only with a live
+  // staff_role_grants row; never user_metadata (self-writable via auth.updateUser).
+  const verifiedProfileRole = await readVerifiedProfileRole(admin, user.id, profile?.role);
   const profileRole =
-    normalizeRole(profile?.role) ||
-    normalizeRole(user.app_metadata?.role) ||
-    normalizeRole(user.user_metadata?.role);
+    normalizeRole(verifiedProfileRole) ||
+    normalizeRole(user.app_metadata?.role);
   const ownerRole = normalizeRole(ownerProfile?.role);
   const staffDivisionCount = staffMembershipResults.filter(Boolean).length;
   const hasExplicitStaffMembership = staffDivisionCount > 0;
@@ -219,7 +228,9 @@ async function readStaffMemberships(
           // Shared grant rule: bound rows match only their owner; an unclaimed
           // (user_id null) seed grants only to a verified, matching mailbox.
           const granted = filterGrantedMemberships(
-            (data ?? []) as Array<MembershipGrantRow & { role: string | null }>,
+            ((data ?? []) as Array<MembershipGrantRow & { role: string | null }>).filter((row) =>
+              isOperatorMembershipRole(row.role),
+            ),
             { userId: user.id, normalizedEmail: normalizedEmailAddress, emailVerified }
           );
           if (!granted.length) return null;
@@ -237,7 +248,10 @@ async function readStaffMemberships(
     if (row) memberships.push(row);
   }
 
-  const profileRole = normalizeRole(profile.data?.role);
+  // V3-STAFF-SELFGRANT-FIX-01: legacy divisions only for a grant-verified profiles.role.
+  const profileRole = normalizeRole(
+    await readVerifiedProfileRole(admin, user.id, profile.data?.role),
+  );
   if (profileRole && INTERNAL_PROFILE_ROLES.has(profileRole)) {
     // Mirror the SQL function's legacy_resolved CTE — these divisions
     // confer access through the legacy profile role rather than a

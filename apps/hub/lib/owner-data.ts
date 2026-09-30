@@ -594,11 +594,15 @@ function readUserRole(user: AuthUserRecord, matchingPerson?: JsonRecord | null) 
   const henrycoMeta = readNestedRecord(user.app_metadata || null, "henryco");
   return (
     toText(henrycoMeta?.role) ||
+    // Never user_metadata (self-writable) — a user must not self-label in the owner console.
     toText(user.app_metadata?.role) ||
-    toText(user.user_metadata?.role) ||
     toText(matchingPerson?.role_label) ||
     toText(matchingPerson?.role_title) ||
-    "staff"
+    // V3-STAFF-SELFGRANT-FIX-01: an account with no server-set role is shown as a
+    // customer, never as "staff" by default. (StaffMemberCard's role select still
+    // preselects "staff" for roles outside its option list — pre-existing; an owner save
+    // is an explicit owner decision.)
+    "customer"
   );
 }
 
@@ -606,7 +610,7 @@ function readUserDivision(user: AuthUserRecord, matchingPerson?: JsonRecord | nu
   const henrycoMeta = readNestedRecord(user.app_metadata || null, "henryco");
   return (
     normalizeDivisionSlug(henrycoMeta?.division) ||
-    normalizeDivisionSlug(user.user_metadata?.division) ||
+    // never user_metadata.division (self-writable)
     normalizeDivisionSlug(matchingPerson?.division_slug) ||
     null
   );
@@ -635,8 +639,8 @@ function buildWorkforceMembers(dataset: Awaited<ReturnType<typeof getOwnerBaseDa
     const division = readUserDivision(user, matchingPerson);
     const henrycoMeta = readNestedRecord(user.app_metadata || null, "henryco");
     const permissions = [
+      // app_metadata only — user_metadata.permissions is self-writable.
       ...readStringArray(henrycoMeta?.permissions),
-      ...readStringArray(user.user_metadata?.permissions),
     ].filter((value, index, array) => array.indexOf(value) === index);
     const bannedUntil = toDate(user.banned_until);
     const suspended = bannedUntil ? bannedUntil.getTime() > Date.now() : false;

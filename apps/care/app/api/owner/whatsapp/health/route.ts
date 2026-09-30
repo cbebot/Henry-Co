@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedProfile } from "@/lib/auth/server";
+import { blockReasonForSession, getAuthenticatedProfile } from "@/lib/auth/server";
 import { getWhatsAppDiagnostics } from "@/lib/support/whatsapp-observability";
 import {
   getWhatsAppHealthStatus,
@@ -29,7 +29,7 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: "Authentication is required." }, { status: 401 });
   }
 
-  if (!canRead(auth.profile.role)) {
+  if (!canRead(auth.profile.role) || blockReasonForSession(auth)) {
     return NextResponse.json({ ok: false, error: "Not allowed." }, { status: 403 });
   }
 
@@ -54,6 +54,10 @@ export async function POST(req: Request) {
 
   if (!isOwner(auth.profile.role)) {
     return NextResponse.json({ ok: false, error: "Only the owner can run WhatsApp mutations." }, { status: 403 });
+  }
+
+  if (blockReasonForSession(auth)) {
+    return NextResponse.json({ ok: false, error: "Not allowed." }, { status: 403 });
   }
 
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;

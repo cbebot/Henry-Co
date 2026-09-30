@@ -6,6 +6,7 @@ import {
   isRecoverableSupabaseAuthError,
   normalizeEmail,
   resolveUserAvatarFromSources,
+  readVerifiedProfileRole,
 } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { buildSharedAccountLoginUrl } from "@/lib/marketplace/shared-account";
@@ -114,7 +115,7 @@ export async function getMarketplaceViewer(): Promise<MarketplaceViewerContext> 
 
   // Bootstrap fallback only while the marketplace role table is missing or unreadable.
   const fallbackRoles: MarketplaceRole[] = [];
-  const legacyRole = String(profile?.role || user.app_metadata?.role || "").toLowerCase();
+  const legacyRole = String((await readVerifiedProfileRole(admin, user.id, profile?.role)) || user.app_metadata?.role || "").toLowerCase();
 
   if (membershipError) {
     if (legacyRole === "owner") fallbackRoles.push("marketplace_owner");

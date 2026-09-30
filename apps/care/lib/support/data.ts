@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
+import { readVerifiedProfileRoles } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 import { buildCarePublicUrl } from "@/lib/care-links";
 import { getCareSettings } from "@/lib/care-data";
@@ -865,7 +866,14 @@ export async function getSupportAgents() {
     .eq("is_frozen", false)
     .order("full_name", { ascending: true });
 
+  // V3-STAFF-SELFGRANT-FIX-01: only grant-verified staff are assignable support agents.
+  const verifiedRoles = await readVerifiedProfileRoles(
+    supabase,
+    (data ?? []) as Array<{ id: string; role?: string | null }>
+  );
+
   return ((data ?? []) as Array<Record<string, unknown>>)
+    .filter((row) => verifiedRoles.get(String(row.id || "")) != null)
     .map((row) => ({
       id: String(row.id || ""),
       fullName: String(row.full_name || "").trim() || "Staff member",

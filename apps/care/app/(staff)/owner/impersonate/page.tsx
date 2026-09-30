@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Shield, ShieldCheck, Snowflake, UserCheck } from "lucide-react";
+import { readVerifiedProfileRoles } from "@henryco/config";
 import { requireRoles } from "@/lib/auth/server";
 import { createAdminSupabase } from "@/lib/supabase";
 import { logProtectedPageAccess } from "@/lib/security/logger";
@@ -79,9 +80,14 @@ export default async function OwnerImpersonatePage() {
       .limit(20),
   ]);
 
-  const staffProfiles: StaffProfile[] = (staffResult.data ?? []).filter(
-    (p) => p.id !== auth.profile.id
+  // V3-STAFF-SELFGRANT-FIX-01: list only grant-verified staff, under their verified role.
+  const verifiedRoles = await readVerifiedProfileRoles(
+    supabase,
+    (staffResult.data ?? []) as Array<{ id: string; role?: string | null }>
   );
+  const staffProfiles: StaffProfile[] = (staffResult.data ?? [])
+    .filter((p) => p.id !== auth.profile.id && verifiedRoles.get(p.id) != null)
+    .map((p) => ({ ...p, role: verifiedRoles.get(p.id) ?? p.role }));
   const auditLog: AuditEntry[] = auditResult.data ?? [];
 
   // Group by role

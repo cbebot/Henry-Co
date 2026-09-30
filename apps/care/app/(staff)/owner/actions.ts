@@ -2,13 +2,23 @@
 "use server";
 
 import { createHmac, randomBytes, randomUUID, timingSafeEqual } from "crypto";
+import type { User } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { readVerifiedProfileRole, readVerifiedProfileRoles } from "@henryco/config";
 import { createStaffAccessLink, findAuthUserByEmail } from "@/lib/auth/recovery-links";
+import {
+  countProvisionedOwners,
+  isArchivedAccount,
+  needsLastOwnerCheck,
+  resolveProvisionedStaffRole,
+} from "@/lib/auth/roles";
 import { STAFF_LOGIN_ROUTE, STAFF_RECOVERY_ROUTE } from "@/lib/auth/routes";
 import { syncStaffIdentity } from "@/lib/auth/staff-identity";
 import { getAuthenticatedProfile } from "@/lib/auth/server";
+import { careServerSigningSecret } from "@/lib/auth/signing-secret";
+import { readFormFlag } from "@/lib/form-flags";
 import { isServiceBookingRecord } from "@/lib/care-booking-shared";
 import { normalizeCareSettings } from "@/lib/care-settings-shared";
 import {
@@ -110,18 +120,23 @@ function normalizeStaffRole(value: string) {
     : null;
 }
 
+// V3-STAFF-SELFGRANT-FIX-01: server-controlled sources only (admin-set app_metadata, then
+// profiles). user_metadata is self-writable and is not an input; an account with no
+// provisioned staff role resolves to "customer" (never in any allowedRoles list) instead
+// of the old "staff" default. It is the same resolver the last-owner count uses, so the
+// target's role and the count can never disagree.
 function resolveLiveStaffRole(input: {
   profileRole?: string | null;
   appRole?: string | null;
-  userRole?: string | null;
 }) {
   return (
-    normalizeStaffRole(String(input.appRole || "")) ||
-    normalizeStaffRole(String(input.userRole || "")) ||
-    normalizeStaffRole(String(input.profileRole || "")) ||
-    "staff"
+    resolveProvisionedStaffRole({ appMetadataRole: input.appRole, profileRole: input.profileRole }) ??
+    "customer"
   );
 }
+
+const OWNER_SELF_DEMOTION_MESSAGE = "Owner cannot remove their own owner role.";
+const OWNER_SELF_FREEZE_MESSAGE = "You cannot freeze your own owner account.";
 
 function staffRoleHome(role: string) {
   if (role === "owner") return "/owner";
@@ -156,12 +171,8 @@ function finish(route: string, state: "ok" | "error" | "warn" | "info", message:
 }
 
 function getOwnerActionSecret() {
-  return (
-    process.env.OWNER_ACTION_SIGNING_SECRET ||
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "local-owner-action-secret"
-  );
+  // Server-only secrets; no public / hard-coded fallback (empty = fail closed).
+  return careServerSigningSecret();
 }
 
 function signOwnerAction(actorUserId: string, actorRole: string, actorTs: string) {
@@ -195,6 +206,11 @@ async function getActionAuthenticatedProfile(): Promise<ActionAuth | null> {
     const auth = await getAuthenticatedProfile();
 
     if (!auth?.user || !auth?.profile) {
+      return null;
+    }
+
+    // An archived (offboarded) account acts on nothing, as on every page (requireRoles).
+    if (auth.profile.deleted_at || isArchivedAccount(auth.user.app_metadata)) {
       return null;
     }
 
@@ -235,11 +251,24 @@ async function validatePostedActor(
       return null;
     }
 
+    if (!getOwnerActionSecret()) {
+      return null;
+    }
+
     const expectedSig = signOwnerAction(actorUserId, actorRole, actorTs);
     const sigOk = safeEqualText(actorSig, expectedSig);
     const isDev = process.env.NODE_ENV !== "production";
 
     if (!sigOk && !isDev) {
+      return null;
+    }
+
+    // V3-STAFF-SELFGRANT-FIX-01: the signed fields are rendered into the owner page, so on
+    // their own they are a copyable bearer token that outlives sign-out (valid until the
+    // owner's next sign-in). Bind them to the CURRENT cookie session: only the signed-in
+    // actor can use its own token.
+    const session = await getActionAuthenticatedProfile();
+    if (!session || session.user.id !== actorUserId) {
       return null;
     }
 
@@ -258,10 +287,13 @@ async function validatePostedActor(
       return null;
     }
 
+    if (isArchivedAccount((user as any)?.app_metadata)) {
+      return null;
+    }
+
     const liveRole = resolveLiveStaffRole({
-      profileRole: (profile as any)?.role ?? null,
+      profileRole: await readVerifiedProfileRole(supabase, actorUserId, (profile as any)?.role),
       appRole: (user as any)?.app_metadata?.role ?? null,
-      userRole: (user as any)?.user_metadata?.role ?? null,
     });
     const currentSessionTs = user?.last_sign_in_at
       ? String(new Date(user.last_sign_in_at).getTime())
@@ -273,9 +305,7 @@ async function validatePostedActor(
 
     if (
       Boolean(
-        (user as any)?.app_metadata?.is_frozen ??
-          (user as any)?.user_metadata?.is_frozen ??
-          (profile as any)?.is_frozen
+        (user as any)?.app_metadata?.is_frozen ?? (profile as any)?.is_frozen
       )
     ) {
       return null;
@@ -296,13 +326,10 @@ async function validatePostedActor(
         role: liveRole,
         full_name: ((profile as any).full_name as string | null) ?? null,
         is_frozen: Boolean(
-          (user as any)?.app_metadata?.is_frozen ??
-            (user as any)?.user_metadata?.is_frozen ??
-            (profile as any).is_frozen
+          (user as any)?.app_metadata?.is_frozen ?? (profile as any).is_frozen
         ),
         force_reauth_after:
           ((user as any)?.app_metadata?.force_reauth_after as string | null) ??
-          ((user as any)?.user_metadata?.force_reauth_after as string | null) ??
           ((profile as any).force_reauth_after as string | null) ??
           null,
       },
@@ -604,17 +631,31 @@ async function upsertProfilePatch(
 
 async function countOwners() {
   const supabase = getAdminSupabase();
-  const authUsers = await supabase.auth.admin.listUsers({ page: 1, perPage: 200 });
-  const users = authUsers.data?.users ?? [];
+  // Every account, not only the newest page: an older owner held only in app_metadata
+  // must still count. A failed or cut-off listing can only lower the count, which blocks.
+  const users: User[] = [];
+  for (let page = 1; page <= 50; page += 1) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) break;
+    const batch = data?.users ?? [];
+    users.push(...batch);
+    if (batch.length < 200) break;
+  }
 
-  return users.filter((user) => {
-    const appRole = normalizeStaffRole(String(user.app_metadata?.role || ""));
-    const userRole = normalizeStaffRole(String(user.user_metadata?.role || ""));
-    const deletedAt =
-      String(user.app_metadata?.deleted_at || user.user_metadata?.deleted_at || "").trim();
-    if (deletedAt) return false;
-    return appRole === "owner" || userRole === "owner";
-  }).length;
+  // Last-owner guard: owners through server-controlled sources only — admin-set
+  // app_metadata.role, else a grant-verified profiles.role, the precedence used for the
+  // target. user_metadata is self-writable, so a self-declared "owner" never inflates the
+  // count and lets the real last owner be removed.
+  const { data: ownerProfiles } = await supabase.from("profiles").select("id, role").eq("role", "owner");
+  const profileRows = (ownerProfiles ?? []) as Array<{ id: string; role: string | null }>;
+  const verifiedProfileRoles = await readVerifiedProfileRoles(supabase, profileRows);
+  const listed = new Set(users.map((user) => user.id));
+  for (const row of profileRows) {
+    if (listed.has(row.id) || verifiedProfileRoles.get(row.id) !== "owner") continue;
+    const { data } = await supabase.auth.admin.getUserById(row.id);
+    if (data?.user) users.push(data.user);
+  }
+  return countProvisionedOwners(users, verifiedProfileRoles);
 }
 
 async function getPricingRow(pricingId: string) {
@@ -763,7 +804,8 @@ function extractConstraintName(message?: string | null, detail?: string | null) 
 }
 
 function isProvisioningSlotUser(user?: any) {
-  return Boolean(user?.app_metadata?.provisioning_slot ?? user?.user_metadata?.provisioning_slot);
+  // app_metadata only: user_metadata is self-writable, and a slot is recycled into staff.
+  return Boolean(user?.app_metadata?.provisioning_slot);
 }
 
 function isProfilesRoleConstraintBlock(error?: StaffProvisioningAuthError | { message?: string | null; detail?: string | null; constraint?: string | null } | null) {
@@ -921,12 +963,12 @@ async function findReusableProvisioningSlot(): Promise<ReusableProvisioningSlot 
     const users = data.users || [];
 
     for (const user of users) {
-      const deletedAt = String(user.app_metadata?.deleted_at || user.user_metadata?.deleted_at || "").trim();
+      // app_metadata only: a self-set user_metadata.deleted_at must not make a customer a recyclable slot.
+      const deletedAt = String(user.app_metadata?.deleted_at || "").trim();
       if (!deletedAt) continue;
 
       const role = resolveLiveStaffRole({
         appRole: user.app_metadata?.role ?? null,
-        userRole: user.user_metadata?.role ?? null,
       });
 
       if (role === "owner") continue;
@@ -2331,7 +2373,7 @@ export async function updateStaffRoleAction(formData: FormData) {
   }
 
   if (id === auth.profile.id && role !== "owner") {
-    finish(route, "error", "Owner cannot remove their own owner role.");
+    finish(route, "error", OWNER_SELF_DEMOTION_MESSAGE);
   }
 
   const { data: existingProfile } = await supabase
@@ -2342,13 +2384,20 @@ export async function updateStaffRoleAction(formData: FormData) {
   const { data: existingUserResult } = await supabase.auth.admin.getUserById(id);
   const existingUser = existingUserResult?.user;
 
+  // V3-STAFF-SELFGRANT-FIX-01: a forged profiles.role='owner' must not trip the
+  // last-owner guard and stop the real owner from demoting it.
   const currentRole = resolveLiveStaffRole({
-    profileRole: existingProfile?.role ?? null,
+    profileRole: await readVerifiedProfileRole(supabase, id, existingProfile?.role ?? null),
     appRole: (existingUser as any)?.app_metadata?.role ?? null,
-    userRole: (existingUser as any)?.user_metadata?.role ?? null,
   });
 
-  if (currentRole === "owner" && role !== "owner") {
+  if (
+    needsLastOwnerCheck({
+      currentRole,
+      archived: isArchivedAccount((existingUser as any)?.app_metadata),
+      removesOwner: role !== "owner",
+    })
+  ) {
     const ownerCount = await countOwners();
 
     if (ownerCount <= 1) {
@@ -2414,7 +2463,7 @@ export async function setStaffFrozenAction(formData: FormData) {
   const frozen = asText(formData, "frozen") === "true";
 
   if (!id) finish(route, "error", "Missing user id.");
-  if (id === auth.profile.id) finish(route, "error", "You cannot freeze your own owner account.");
+  if (id === auth.profile.id) finish(route, "error", OWNER_SELF_FREEZE_MESSAGE);
 
   const nowIso = new Date().toISOString();
 
@@ -2470,13 +2519,26 @@ export async function setStaffArchivedAction(formData: FormData) {
 
   const { data: existingUserResult } = await supabase.auth.admin.getUserById(id);
   const existingUser = existingUserResult?.user;
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("id, role")
+    .eq("id", id)
+    .maybeSingle();
 
+  // A grant-backed profiles.role='owner' counts too, so the last-owner guard below
+  // also protects an owner whose role was never mirrored into app_metadata.
   const currentRole = resolveLiveStaffRole({
+    profileRole: await readVerifiedProfileRole(supabase, id, existingProfile?.role ?? null),
     appRole: (existingUser as any)?.app_metadata?.role ?? null,
-    userRole: (existingUser as any)?.user_metadata?.role ?? null,
   });
 
-  if (archived && currentRole === "owner") {
+  if (
+    needsLastOwnerCheck({
+      currentRole,
+      archived: isArchivedAccount((existingUser as any)?.app_metadata),
+      removesOwner: archived,
+    })
+  ) {
     const ownerCount = await countOwners();
     if (ownerCount <= 1) {
       finish(
@@ -2625,8 +2687,9 @@ export async function createStaffAccountAction(formData: FormData) {
   const fullName = asNullableText(formData, "full_name");
   const phone = asNullableText(formData, "phone");
   const role = normalizeStaffRole(asText(formData, "role"));
-  const isActive = asText(formData, "is_active") !== "false";
-  const sendInvite = asText(formData, "send_invite") !== "false";
+  // Every submitted value: the form posts a hidden "false" before each checkbox.
+  const isActive = readFormFlag(formData.getAll("is_active"), true);
+  const sendInvite = readFormFlag(formData.getAll("send_invite"), true);
 
   if (!email || !role) {
     finish(route, "error", "Email and role are required for staff setup.");
@@ -2648,15 +2711,27 @@ export async function createStaffAccountAction(formData: FormData) {
       .select("role")
       .eq("id", user.id)
       .maybeSingle();
-    existingProfileRole = existingProfile?.role ?? null;
+    existingProfileRole = await readVerifiedProfileRole(supabase, user.id, existingProfile?.role ?? null);
 
     const currentRole = resolveLiveStaffRole({
       profileRole: existingProfileRole,
       appRole: (user as any)?.app_metadata?.role ?? null,
-      userRole: (user as any)?.user_metadata?.role ?? null,
     });
 
-    if (currentRole === "owner" && role !== "owner") {
+    if (user.id === auth.profile.id && role !== "owner") {
+      finish(route, "error", OWNER_SELF_DEMOTION_MESSAGE);
+    }
+    if (user.id === auth.profile.id && !isActive) {
+      finish(route, "error", OWNER_SELF_FREEZE_MESSAGE);
+    }
+
+    if (
+      needsLastOwnerCheck({
+        currentRole,
+        archived: isArchivedAccount((user as any)?.app_metadata),
+        removesOwner: role !== "owner",
+      })
+    ) {
       const ownerCount = await countOwners();
       if (ownerCount <= 1) {
         finish(
@@ -2913,12 +2988,17 @@ export async function resendStaffSetupAction(formData: FormData) {
     finish(route, "error", "Staff account could not be resolved for setup delivery.");
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, role")
+    .eq("id", id)
+    .maybeSingle();
   const role = resolveLiveStaffRole({
+    profileRole: await readVerifiedProfileRole(supabase, id, profile?.role ?? null),
     appRole: (user as any)?.app_metadata?.role ?? null,
-    userRole: (user as any)?.user_metadata?.role ?? null,
   });
   const archivedAt =
-    String((user as any)?.app_metadata?.deleted_at || (user as any)?.user_metadata?.deleted_at || "").trim() ||
+    String((user as any)?.app_metadata?.deleted_at || "").trim() ||
     null;
 
   if (archivedAt) {
@@ -3055,12 +3135,17 @@ export async function deleteStaffAccountAction(formData: FormData) {
   }
 
   const currentRole = resolveLiveStaffRole({
-    profileRole: profile?.role ?? null,
+    profileRole: await readVerifiedProfileRole(supabase, id, profile?.role ?? null),
     appRole: (user as any)?.app_metadata?.role ?? null,
-    userRole: (user as any)?.user_metadata?.role ?? null,
   });
 
-  if (currentRole === "owner") {
+  if (
+    needsLastOwnerCheck({
+      currentRole,
+      archived: isArchivedAccount((user as any)?.app_metadata),
+      removesOwner: true,
+    })
+  ) {
     const ownerCount = await countOwners();
     if (ownerCount <= 1) {
       finish(route, "error", "Assign another owner before permanently deleting this owner account.");
@@ -3070,7 +3155,7 @@ export async function deleteStaffAccountAction(formData: FormData) {
   const archived =
     Boolean(profile?.deleted_at) ||
     Boolean(
-      String((user as any)?.app_metadata?.deleted_at || (user as any)?.user_metadata?.deleted_at || "").trim()
+      String((user as any)?.app_metadata?.deleted_at || "").trim()
     );
 
   if (!archived) {
@@ -3089,7 +3174,7 @@ export async function deleteStaffAccountAction(formData: FormData) {
 
     if (!references.hasHistory) {
       const deletedAt =
-        String((existingUser as any)?.app_metadata?.deleted_at || (existingUser as any)?.user_metadata?.deleted_at || "").trim() ||
+        String((existingUser as any)?.app_metadata?.deleted_at || "").trim() ||
         new Date().toISOString();
       const retireResult = await retireStaffAccountIntoProvisioningSlot({
         user: existingUser,

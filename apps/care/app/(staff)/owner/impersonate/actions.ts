@@ -2,7 +2,14 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { requireRoles } from "@/lib/auth/server";
+import { readVerifiedProfileRole } from "@henryco/config";
+import { getAuthenticatedProfile, requireRoles } from "@/lib/auth/server";
+import {
+  IMPERSONATION_MAX_AGE_SECONDS,
+  impersonationSigningSecret,
+  openImpersonationSession,
+  sealImpersonationSession,
+} from "@/lib/auth/impersonation-session";
 import { createAdminSupabase } from "@/lib/supabase";
 import { logSecurityEvent } from "@/lib/security/logger";
 import { homeForRole, normalizeRole } from "@/lib/auth/roles";
@@ -37,23 +44,27 @@ export async function startImpersonationAction(input: { targetUserId: string }) 
   const { data: targetUser } = await supabase.auth.admin.getUserById(targetProfile.id);
   if (!targetUser?.user?.email) throw new Error("Target user has no email address.");
 
+  // V3-STAFF-SELFGRANT-FIX-01: the session is HMAC-sealed (was plain JSON — a forged
+  // cookie let anyone "end" an impersonation into the owner's account).
   const cookieStore = await cookies();
   cookieStore.set(
     IMPERSONATION_COOKIE,
-    JSON.stringify({
-      ownerUserId: auth.profile.id,
-      ownerEmail: auth.user.email,
-      targetUserId: targetProfile.id,
-      targetName: targetProfile.full_name,
-      targetRole: targetProfile.role,
-      startedAt: new Date().toISOString(),
-    }),
+    sealImpersonationSession(
+      {
+        ownerUserId: auth.profile.id,
+        targetUserId: targetProfile.id,
+        targetName: targetProfile.full_name,
+        targetRole: targetProfile.role,
+        startedAt: new Date().toISOString(),
+      },
+      impersonationSigningSecret()
+    ),
     {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 3600,
+      maxAge: IMPERSONATION_MAX_AGE_SECONDS,
     }
   );
 
@@ -81,7 +92,15 @@ export async function endImpersonationAction() {
     redirect("/owner");
   }
 
-  const session = JSON.parse(raw);
+  // V3-STAFF-SELFGRANT-FIX-01: this action mints a sign-in link for the OWNER, so it
+  // must only honour a genuine, unexpired, sealed session — ended by the impersonated
+  // account itself — whose owner is still an owner. Anything else: drop the cookie.
+  const session = openImpersonationSession(raw, impersonationSigningSecret());
+  const current = await getAuthenticatedProfile();
+  if (!session || !current?.user?.id || current.user.id !== session.targetUserId) {
+    cookieStore.delete(IMPERSONATION_COOKIE);
+    redirect("/login");
+  }
 
   await logSecurityEvent({
     event_type: "owner_impersonation_end",
@@ -99,8 +118,16 @@ export async function endImpersonationAction() {
 
   const supabase = createAdminSupabase();
   const { data: ownerUser } = await supabase.auth.admin.getUserById(session.ownerUserId);
+  const { data: ownerProfile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", session.ownerUserId)
+    .maybeSingle();
+  const ownerStillOwner =
+    normalizeRole(ownerUser?.user?.app_metadata?.role as string | undefined) === "owner" ||
+    (await readVerifiedProfileRole(supabase, session.ownerUserId, ownerProfile?.role)) === "owner";
 
-  if (ownerUser?.user?.email) {
+  if (ownerStillOwner && ownerUser?.user?.email) {
     const { data: magic } = await supabase.auth.admin.generateLink({
       type: "magiclink",
       email: ownerUser.user.email,

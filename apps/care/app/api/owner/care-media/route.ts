@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedProfile } from "@/lib/auth/server";
+import { blockReasonForSession, getAuthenticatedProfile } from "@/lib/auth/server";
 import { normalizeRole } from "@/lib/auth/roles";
 import { uploadCareImage, uploadCareVideo } from "@/lib/cloudinary";
 
@@ -18,7 +18,7 @@ function sanitizeFolder(value: string) {
 
 export async function POST(request: Request) {
   const auth = await getAuthenticatedProfile();
-  if (!auth?.user || normalizeRole(auth.profile.role) !== "owner") {
+  if (!auth?.user || normalizeRole(auth.profile.role) !== "owner" || blockReasonForSession(auth)) {
     return NextResponse.json({ ok: false, error: "Access denied." }, { status: 403 });
   }
 
