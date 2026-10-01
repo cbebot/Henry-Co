@@ -13,10 +13,16 @@
 --   2. a BEFORE INSERT trigger refuses any insert by the request roles regardless of grants (the FL1
 --      lesson: default privileges can re-grant), and for service_role forces the row to be born
 --      `pending` with no provider_reference (the route sets the reference by UPDATE after routing).
--- Superuser sessions (migrations, the CI proofs that seed captured intents, the shadow rehearsal) are
--- exempt. Nothing else changes: the A2 transition trigger, the money freeze and the guarded RPCs are
--- untouched, and every existing insert path (the account route, the division rails) inserts without a
--- status and without a provider_reference, so no live behaviour changes.
+-- True superuser sessions (the native-PG CI proofs and the local seam harness, which run as the
+-- superuser `postgres`) are exempt. Nothing else changes: the A2 transition trigger, the money freeze
+-- and the guarded RPCs are untouched, and every existing insert path (the account route, the division
+-- rails) inserts without a status and without a provider_reference, so no live behaviour changes.
+--
+-- Threat model, stated plainly: this guard closes the PostgREST request roles and forces the server
+-- rail to a `pending` birth. A connection that already holds the direct database credential can edit
+-- the ledger itself; it is not what this trigger defends against, which is why there is no GUC or
+-- role-based escape hatch (an earlier draft had one; any session can SET a custom setting, and over a
+-- transaction pooler a session-level SET travels to the next client).
 
 -- 1. Request roles may not insert intents at all.
 drop policy if exists payment_intents_insert_own on public.payment_intents;
@@ -25,9 +31,16 @@ revoke insert on table public.payment_intents from anon, authenticated;
 -- 2. Birth guard. SECURITY INVOKER on purpose: inside a SECURITY DEFINER function `current_user`
 -- is the definer, not the role performing the insert, so the request-role check would never fire.
 -- The body touches nothing privileged (pg_roles is world-readable), so invoker rights suffice.
--- Exemptions: a true superuser session (native-PG proofs, the shadow rehearsal) or an explicit
--- `set app.allow_intent_seed = 'on'` for a non-superuser rehearsal that must seed captured intents
--- (Supabase's `postgres` is not a true superuser). Nothing in production sets that GUC.
+-- Exemption: a true superuser session only. A non-superuser rehearsal that must seed a captured
+-- intent (Supabase's `postgres` is not a superuser) disables this trigger explicitly inside its own
+-- transaction —
+--   begin;
+--   alter table public.payment_intents disable trigger payment_intents_enforce_birth;
+--   insert into public.payment_intents (...) values (... 'succeeded' ...);
+--   alter table public.payment_intents enable trigger payment_intents_enforce_birth;
+--   commit;
+-- which needs table ownership (service_role has none) and is visible in the DDL log. The seam
+-- harness (apps/account/scripts/prove-refund-seam.mts) wraps its step 1 this way in the hardening PR.
 create or replace function payments_private.enforce_payment_intent_birth()
 returns trigger language plpgsql security invoker set search_path = public, pg_temp as $$
 declare
@@ -38,8 +51,8 @@ begin
       using errcode = 'insufficient_privilege';
   end if;
   select rolsuper into v_super from pg_roles where rolname = current_user;
-  if coalesce(v_super, false) or coalesce(current_setting('app.allow_intent_seed', true), '') = 'on' then
-    return new; -- proofs and rehearsals seed captured intents deliberately
+  if coalesce(v_super, false) then
+    return new; -- superuser proofs seed captured intents deliberately
   end if;
   if new.status is distinct from 'pending' then
     raise exception 'a payment_intent is born pending; status % is set only by the guarded RPCs', new.status

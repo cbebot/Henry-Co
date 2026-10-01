@@ -20,6 +20,26 @@ do $$ begin
   raise notice 'PROOF b1 OK: request roles cannot insert payment_intents';
 end $$;
 
+-- The CI bootstrap reproduces Supabase's default EXECUTE grant on functions only
+-- (_bootstrap_supabase_env.sql:76); on prod, service_role holds table DML through the platform's
+-- default table grants. Mirror that here (idempotent) so (b2) exercises the trigger, not a missing
+-- table grant: without it the insert dies with 42501 before any BEFORE ROW trigger runs.
+grant select, insert on table public.payment_intents to service_role;
+
+-- (b0) the trigger exists and is enabled, and no session-level escape hatch is set
+do $$ begin
+  if not exists (
+    select 1 from pg_trigger where tgname = 'payment_intents_enforce_birth'
+      and tgrelid = 'public.payment_intents'::regclass and tgenabled <> 'D'
+  ) then
+    raise exception 'PROOF b0 FAILED: payment_intents_enforce_birth is missing or disabled';
+  end if;
+  if current_setting('app.allow_intent_seed', true) is not null then
+    raise exception 'PROOF b0 FAILED: a seed escape hatch is set in this session';
+  end if;
+  raise notice 'PROOF b0 OK: birth trigger present and enabled';
+end $$;
+
 -- (b2) as service_role, an intent born `succeeded` is refused; a `pending` one is accepted
 set role service_role;
 do $$ begin
@@ -43,7 +63,9 @@ do $$ begin
 end $$;
 reset role;
 
--- (b3) the authenticated role is refused by the trigger even if a grant were ever re-added
+-- (b3) the authenticated role is refused by the TRIGGER even if a grant were ever re-added.
+-- RLS with no insert policy raises the same SQLSTATE (42501), so the proof must read the message:
+-- only the trigger says "server rail only". A dropped or mis-wired trigger therefore fails here.
 grant insert on table public.payment_intents to authenticated; -- simulate a future re-grant
 set role authenticated;
 do $$ begin
@@ -52,10 +74,13 @@ do $$ begin
     values ('000000ee-0000-0000-0000-0000000000ee', 5000, 'NGN', 'NG', 'card', 'birth-auth');
     raise exception 'PROOF b3 FAILED: authenticated inserted an intent';
   exception when insufficient_privilege then
+    if sqlerrm not like '%server rail only%' then
+      raise exception 'PROOF b3 FAILED: refused by RLS or grants, not by the birth trigger (%)', sqlerrm;
+    end if;
     raise notice 'PROOF b3 OK: the trigger refuses the request role regardless of grants';
   end;
 end $$;
 reset role;
 revoke insert on table public.payment_intents from authenticated; -- restore the end state
 
-select 'PAYMENT_INTENTS BIRTH GUARD (b1)no-request-role-insert (b2)born-pending (b3)trigger-backstop === ALL PROVEN' as result;
+select 'PAYMENT_INTENTS BIRTH GUARD (b0)trigger-present (b1)no-request-role-insert (b2)born-pending (b3)trigger-backstop === ALL PROVEN' as result;
