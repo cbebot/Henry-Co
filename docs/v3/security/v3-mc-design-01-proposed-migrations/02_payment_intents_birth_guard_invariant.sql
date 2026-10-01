@@ -26,16 +26,13 @@ end $$;
 -- table grant: without it the insert dies with 42501 before any BEFORE ROW trigger runs.
 grant select, insert on table public.payment_intents to service_role;
 
--- (b0) the trigger exists and is enabled, and no session-level escape hatch is set
+-- (b0) the trigger exists and is enabled (the migration defines no escape hatch; nothing to probe)
 do $$ begin
   if not exists (
     select 1 from pg_trigger where tgname = 'payment_intents_enforce_birth'
       and tgrelid = 'public.payment_intents'::regclass and tgenabled <> 'D'
   ) then
     raise exception 'PROOF b0 FAILED: payment_intents_enforce_birth is missing or disabled';
-  end if;
-  if current_setting('app.allow_intent_seed', true) is not null then
-    raise exception 'PROOF b0 FAILED: a seed escape hatch is set in this session';
   end if;
   raise notice 'PROOF b0 OK: birth trigger present and enabled';
 end $$;

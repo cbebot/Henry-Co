@@ -36,8 +36,9 @@ Two findings about today's `main` worth knowing before any of it is built:
 ## 0. Live findings on `main` (read this first)
 
 Grounding the design found money holes that exist on `main` today, outside the multi-currency scope.
-LF-1 and LF-2 were raised by the round-1 reviewers; round 2 added LF-5, LF-6 and LF-7 (items 3–5
-below). Each was re-verified line by line (design §1.5).
+LF-1 and LF-2 were raised by the round-1 reviewers; round 2 added LF-5, LF-6 and LF-7; round 3 added
+LF-8 and LF-9 (items 3–7 below). Each was re-verified line by line (design §1.5); LF-5, LF-6 and LF-8
+were also reproduced by execution against the real function bodies.
 
 1. **LF-1, critical — any signed-in user can insert a `succeeded` payment intent.**
    `payment_intents_insert_own` lets `authenticated` insert its own rows
@@ -86,8 +87,26 @@ below). Each was re-verified line by line (design §1.5).
    ledger stays "balanced". The division card flags are dark in prod today (design §1.4), so this is
    latent until M6 lights studio. Fix: a wallet-funding marker on the intent, a key refusal at
    `/topup/init`, and one allocation per intent by primary key (`intent_allocations`), M-NOW item 4.
+6. **LF-8, high (live NGN rail; owner-action-conditional) — a partial refund before the top-up
+   credit yields the full credit plus the refund.** `initiate_payment_refund` takes a wallet hold
+   only for a funding request already `verified` (`20260611130000:290-294`); while the request is
+   still `pending_verification` a partial refund posts and returns the intent to `succeeded`; the
+   user's next wallet load runs the reconciler, which needs only `succeeded` + an equal amount and
+   credits the full amount through `credit_wallet_topup`, which never reads `payment_refunds`.
+   ₦3,000 in, ₦5,000 of obligations on a ₦5,000 top-up with a ₦2,000 refund; both reconciliation
+   readers stay "true". Reproduced by execution. Fix: `credit_wallet_topup` and the division
+   allocation claim raise `refund_exists`; `initiate_payment_refund` refuses `topup_not_credited`
+   for an uncredited rail request (M-NOW item 4).
+7. **LF-9, medium (provider-conditional) — an attempt-level failure consumes the success dedup
+   key.** `apply_payment_webhook` inserts `(provider, reference)` first for every status; Paystack
+   maps `abandoned` and Flutterwave maps a per-attempt `failed` / `cancelled` to terminal `failed`,
+   which has no exit. A buyer who closes the checkout, returns (finalize applies `failed`) and then
+   completes the same reference produces a `charge.success` that is `duplicate`. Whether a provider
+   lets the same reference be completed afterwards is confirmed in the settle test. Fix: `failed`
+   applies are keyed `<reference>:failed` and `failed → succeeded` is a legal provider-confirmed edge
+   (M-NOW item 8).
 
-All five go first in the build plan (M-NOW) and need the owner's decision D-MC-00.
+All seven go first in the build plan (M-NOW) and need the owner's decision D-MC-00.
 
 ---
 
@@ -182,4 +201,22 @@ cluster, so the CI-shape findings are executed results.
 New owner decisions from this round: D-MC-13 (mismatch resolution: refund in full), D-MC-14 (late
 capture applied and refunded, never fulfilled); D-MC-05 extended to NGN processor-fee VAT.
 
-### Round 3 — pending (launched against revision 3)
+### Round 3 — 63 findings (0 critical, 9 high, 31 medium, 23 low); all fixed in revision 4
+
+Three of the five reviewers rebuilt the CI money chain plus the held migration and proof on a scratch
+PostgreSQL cluster and ran scenario SQL against the real function bodies; the chain-shape findings,
+the overload ambiguity, the trigger-arithmetic overflow and the LF-8 path are executed results. The
+held migration and proof passed (b0–b3) with every later suite green in all three runs.
+
+| Lens | Findings | What changed in the design |
+|---|---|---|
+| Claims auditor | 11 (0 high, 4 medium, 7 low): `customer_wallet_transactions` has no `currency` column (prod carries `settlement_currency`), so the MC-CI-01 rule and two reader fixes were unsatisfiable as written; a credit note minted before the LF-6 catch-up carries VAT 0 for ever; `supabase db push` would sweep 19 unrelated pending migrations into the money apply; the MC-CI-02 literal allowlist counts were wrong (measured: payout RPCs 2/1/1, `credit_wallet_topup` 2, refund functions 3/1, comments counted); anchor slips (`vat_reconciliation` netting at `:246-251, 257`; the live A2 trigger and `advance_payment_intent` definitions are in `20260605123000`, not the dropped public copies); the day-one baseline list was self-contradictory; the proof's b0 probed a setting the trigger no longer reads; no CI position for the lock migration; the pre-apply check omitted `customer_wallets.currency`; the M-NOW catch-up on the prod signature of `post_sale_revenue` was unstated and M4 never dropped the old overload | MC-CI-01 names each table's currency column; §8.3 `credit_note_pending` rule; §11 per-file apply in version order (the FL2 method) with the pending set listed; MC-CI-02 allowlist by measured count, comments stripped; anchors re-pointed; baseline rule restated (generated pre-M1, shrunk in the M1 PR; `.single()` reads exempt); b0 simplified; lock migration between `ci.yml:224` and `:231`; pre-apply check widened; M-NOW (7) states the `p_source_event_id = intent id` reading and M4 drops the old signature |
+| Ledger / VAT / reporting | 13 (2 high, 6 medium, 5 low): the lock migration named `20260706110000_…` would be clobbered on any version-ordered apply because it extended the birth-guard function a higher-versioned file owns; **LF-8** — a partial refund before the top-up credit yields the full credit plus the refund (live NGN rail; reproduced); the LF-6 catch-up took no intent lock (a concurrent refund webhook leaves a share unreversed); the catch-up must be sequential with remainders recomputed (333 / 333 / 334 drifts by a unit otherwise); the overload ambiguity (reproduced, 42725); `ledger_consolidated` overflows `bigint` at a $614,892 balance; the tag-consistency proof is red on the chain's own fixture sources; VAT re-carved from the payer gross over-states VAT on mixed carts; a credit note before the catch-up; the per-movement reversal cap must be cumulative per sale; MC-CI-01's "no scalar equals the mixed sum" contradicted the kept global scalars; the payout proof cannot run on the FK-bearing shadow; the pre-apply check and the plausibility band had gaps; LF-6 needs the marketplace card flag (dark) and a partial refund | §5.4 separate `enforce_payment_intent_currency` trigger function + MC-CI-12 version-order replay; §1.5 LF-8 + §7.1 `refund_exists` / `topup_not_credited` + MC-INV-14; §4.3 intent lock and sequential catch-up; §6.3 drop-first rule + one overload per name; §4.6 `numeric`; §4.5 `(source, source_event_id)` allowlist; §9.1 VAT from the converted standard-rated base; §8.3; §4.4 cumulative cap; §4.1 global scalars dropped with the five readers amended; payout proof seeds `auth.users`; §11 pre-apply check widened; §5.5 band against the display feed; LF-6 relabelled latent |
+| FX / rounding / units | 10 (1 high, 4 medium, 5 low): the sweeper's verify-then-decide was not total — Paystack `abandoned` became a terminal `failed` with no exit and a later capture raised and looped, a Flutterwave never-charged `tx_ref` stayed `pending` for ever and a capture days later was fulfilled at a stale rate; the §5.4 formula transcribed literally is `double precision` (`10^e`) or overflows `bigint` at ₦10,818 for KES (executed); VAT re-carved from the payer gross VATs exempt lines; the late-capture refund was route-side after the commit; the sweeper would cancel NGN bank-transfer top-ups at 60 minutes; claim currency is free text and multi-intent bookings were unhandled; `tax_inclusive` must follow the VAT regime, not the builder; the §5.3 bound is 102.5 cents; the rate rounding runs on a float cross-rate; three precision gaps (live-gross check at reconcile, M7 USD wallet funding cannot carry an NGN snapshot, the Flutterwave `: 0` fallback) | §5.2 rewritten: scope (non-NGN card), total decision table incl. `notFound`, `failed` attempt-level with `<reference>:failed` keys, late capture by time inside the RPC and atomic with its exception row and refund claim, SQL-side refusals, new-start block; §5.4 `numeric` multiplication form with KES/XOF/USD range fixtures; §9.1 standard-rated base + regime-derived `tax_inclusive`; §8.1 NGN-only claims + multi-intent allocation; §5.3 102.5 bound + `BigInt` rate from decimal text; §5.2 live-gross check; §5.4 identity path; §6.3 Flutterwave fallback; D-MC-15 |
+| Provider / refund / receipt | 15 (2 high, 8 medium, 5 low): **LF-9** — an attempt-level `failed` consumes the success dedup key (Paystack `abandoned`, Flutterwave per-attempt failures), stranding a later capture on the same reference; the Paystack confirmed figure ignores the customer-bears-fee setting (`requested_amount`); `advance_payment_intent` lacks `pending → cancelled`; `failed` on a sweeper-cancelled intent raises and loops; LF-5's fix makes webhook-first common and drops the Paystack fee the finalize carries; the late-capture auto-refund had no idempotent anchor and sat outside the apply transaction; the routes cannot write `payment_exceptions` / `payment_disputes` (DML revoked); signature changes left the old overloads; exception-path intents were never terminalised and a transient re-verify failure landed a good charge in an exception; `refund_unverified` had no resolution path; the Paystack exception-refund match used the wrong identifier and bypassed the dispute gate; the mock and `FinalizeResult` contract broke under the figure check; the sweeper was live on NGN; `fee_unreconciled` had no parameter to arrive through; `RefundParams` lacks `currency` | §1.5 LF-9 + §5.2 keys and edges; §6.3 Paystack bearer identity + optional figures + mock echo + re-verify-failure = 500 + figure check before the advance + `<reference>:exception` key + resolver cancels the intent + sweeper skips open exceptions; §5.2 whitelist edges; `already_terminal`; §6.5 `fee_unreported` + catch-up on `duplicate`; §5.2 atomic late capture; §6.3 `record_payment_exception` / `open_payment_dispute` RPCs; drop-first; §8.1 resolver actions; §6.3 both identifiers + dispute check + adopt-don't-redrive on the owner route; `p_fee_status`; `RefundParams.currency`; scope |
+| Wallet / payout / CI / build order | 14 (3 high, 8 medium, 3 low): the lock-migration clobber (independently found); MC-CI-05/06 "extend" suites that run before the migrations they need; the overload ambiguity (executed); the bootstrap default-privileges statement placed after its own `create table`s grants nothing to the wallet tables (executed both placements); three unlisted fixture sources; the global scalars kept in `ledger_reconciliation`; `select("*")` makes the "must also name currency" test vacuous and the 12-line window misses the N24 fold; `claim_intent_allocation` must be idempotent per `(kind, ref)` (the claim and the flip run on different connections); no marker backfill for pre-existing intents; payout fees have no intent for `post_fee_correction`; the LF-3 shrink-only baseline is red on the first wallet checkout; the `created_at` ordering test is clock-dependent (UTC vs local defaults); `division is null` would refuse every legitimate top-up; `FL2_SET` lacks the AI and July files | §5.4 separate trigger; MC-CI-05/06 as new suites after :249; drop-first; MC-CI-11 bootstrap statement before the first `create table` + `has_table_privilege` assertions; §4.5 allowlist; §4.1 scalars dropped; MC-CI-01 rewritten (table-specific column, `*` reads baselined, `.single()` exempt, function-scoped folds); §7.1 idempotent claim, backfill, identity binding, marker alone; §7.3 `post_withdrawal_fee_correction`; §4.5 explained delta; MC-CI-11 `FL2_SET` |
+
+New in this revision: MC-INV-14 (one allocation per intent, none after a refund, time decides late
+capture); D-MC-15 (NGN intent expiry is a separate pass); LF-8 and LF-9.
+
+### Round 4 — pending (launched against revision 4)
