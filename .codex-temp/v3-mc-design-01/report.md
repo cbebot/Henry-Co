@@ -33,6 +33,34 @@ Two findings about today's `main` worth knowing before any of it is built:
    July ledger migration applied, the first USD charge would post correctly in USD and then be added to
    NGN figures by all three. M1 fixes them before any currency can be enabled.
 
+## 0. Two live findings on `main` (read this first)
+
+Grounding the design found two money holes that exist on `main` today, outside the multi-currency
+scope. Both were raised by the round-1 reviewers and re-verified line by line (design §1.5).
+
+1. **LF-1, critical — any signed-in user can insert a `succeeded` payment intent.**
+   `payment_intents_insert_own` lets `authenticated` insert its own rows
+   (`20260529120000_payment_intents.sql:235-237`), the status CHECK admits every status at insert,
+   no BEFORE INSERT trigger exists, and `sec_harden_08` keeps the `authenticated` INSERT grant
+   (`20260627213858:30-32`). The wallet top-up reconciler credits the wallet for any `succeeded`
+   intent whose `idempotency_key` equals the user's own funding-request reference
+   (`apps/account/lib/wallet-topup-port.ts:80-93` → `credit_wallet_topup`, which checks no settlement
+   entry), so a user can self-credit any amount on the live rail and withdraw it through finance
+   review (automatically once `WALLET_AUTO_PAYOUT` is on). Studio and care flip their record to paid
+   on a `succeeded` intent found by `metadata`; marketplace posts revenue. `ledger_reconciliation`
+   stays "balanced". Proposed held fix (not applied, not in CI):
+   `docs/v3/security/v3-mc-design-01-proposed-migrations/01_payment_intents_birth_guard.sql` + proof.
+2. **LF-2, critical, provider-conditional — no confirmed-amount check, and a replay re-routes with
+   the new body amount.** The intents route re-routes a still-`pending` intent with the body's amount
+   on an idempotency replay and overwrites `provider_reference` (`intents/route.ts:69-93, 110-114,
+   170-173`); finalize and the webhook never compare the provider's verified amount/currency to the
+   intent (`finalize/route.ts:52-59`, `webhooks/[provider]/route.ts:215-222`;
+   `apply_payment_webhook` takes none). Where the provider accepts re-initialising an unpaid
+   reference for a smaller amount, the buyer pays the small amount and the books credit the frozen
+   one. Fix specified in design §6.3 (M-NOW).
+
+Both go first in the build plan (M-NOW) and need the owner's decision D-MC-00.
+
 ---
 
 ## 1. Grounding method
@@ -94,4 +122,19 @@ re-derived by independent adversarial agents (§5 below).
 
 ## 5. Adversarial rounds
 
-(filled in below as rounds complete)
+Each round: five independent read-only reviewers (claims auditor; ledger/VAT/reporting; FX/rounding/
+units; provider/refund/receipt; wallet/payout/CI/build order), each told to re-derive every claim
+from the files and to find a money-losing path, with the instruction to answer `NO FINDINGS` when
+nothing lands. Every finding was re-verified against the files before the design changed.
+
+### Round 1 — 51 findings (2 critical-on-main, 2 critical-in-design, 9 high, 24 medium, 14 low); all fixed in revision 2
+
+| Lens | Findings | What changed in the design |
+|---|---|---|
+| Claims auditor | 5 (2 medium, 3 low): the July migrations' "PR #499 / 2026-07-16" provenance was a shallow-clone graft artefact; the Paystack adapter has no currency guard (the design said both adapters fail closed); the inventory missed the `'NGN'` literals on the refund row (`:341`) and the credit-note insert (`:787`); `ledger_accounts` is 9 codes on `main`, not 8; the CI step wording | §1.4 provenance corrected; §1.3/§6.6 Paystack row corrected and the guard made an M3 item; N7/N8 literals added; §1.1 account count; §10 step wording |
+| Ledger / VAT / reporting | 10: `fail_payment_refund` re-credits the NGN wallet unconditionally; `credit_wallet_topup` ignores a consumed key and still moves the balance (the design's "shared key prevents a double post" was backwards); owner-command revenue readers (`division-revenue.ts`, `since-last-looked.ts`, `owner-data.ts`, `OwnerMoneyStrip`, staff finance) sum intents across currencies and the guard pattern could not catch `+=` folds; M0 before M1 contaminates the books; `post_sale_revenue` trusts the caller's gross/event; `ledger_consolidated` could not honour as-of, direction or exponent; the FIRS figure netted unconfirmed foreign fee VAT; per-currency "balanced" is a tautology; payout proof p7 reads the global `accounts` list; `customer_wallets.currency` has no CHECK | §7.1 currency assertions + `posted` checks + dispatch by family; distinct source names (§7.2); N5a readers + mechanical select/fold rule (MC-CI-01); M0+M1 one apply, lock first; `post_sale_revenue(intent_id, vat)` derives gross+currency; §4.6 as-of balances, snapshot ids, `currency_exponents`, STABLE; §4.4 `in_return` and a separate foreign-input-VAT line; §4.5 per-(account,currency) expectations + tag-consistency proof; `accounts` dropped and p7 amended; CHECKs on wallet and request tables |
+| FX / rounding / units | 13: **LF-1** (forged intent birth) and **LF-2** (no confirmed-amount check + replay re-route) on `main`; the frozen quote is a free option with NGN-denominated obligations exposed; the exponent guard scope missed every N11 file and eight more sites; freshness measured on the fetch clock behind the Next Data Cache; receipt line items in kobo on a foreign-currency document; partial-refund amounts' currency undefined; refunds after a treasury sweep and chargebacks unmodelled; disabling a currency left in-flight intents; `rate_e8` rounded half-up could land below the reference; display seams could double- or identity-convert; the env-var grep would be red on day one; three unpinned details (NGN spread, snapshot direction, key name) | §1.5 + M-NOW + the held migration; §6.3 confirmed-amount check; §5.2 capture window, sweeper, `late_capture`, one open intent per record, card-only non-NGN, honest exposure statement, D-MC-11/12; MC-CI-04 scope + per-site baseline + single formatter rule; `rate_as_of` + no-store fetch; §9.1 charge-currency breakdown with largest-remainder residual; §8.1 `p_currency` + frozen-rate conversion of NGN claims; §8.2 balance check + treasury rule; §6.7 chargeback alarm; disable cancels pending; rate rounded up + CHECK; `buildCurrencySnapshot` null on fallback, `convertWalletDisplay(from, to)`; grep scoped to env reads; NGN spread CHECK, pinned snapshot direction, `fx_charge_snapshot` key |
+| Provider / refund / receipt | 11: MC-INV-08 described a check that does not exist; the enable gate was circular (a settle-test charge could not exist while disabled); no receipt or credit-note issuance path exists on `main` (documents route renders legacy invoices; no credit-note type; no caller); a reported fee ≥ gross would raise-loop the webhook and strand the charge; the Flutterwave fee identity silently drops an inconsistent fee (phantom cash in the auto-convert case); the balance oracle is settlement-blind; refund webhooks carry no currency and Paystack's decimal-string amount parses to null; the marketplace port hard-codes NGN and ×100; the Paystack units claim; the refund email fallback; the mock-registration interaction with the provider-currency gate and a citation slip | §6.3; `settle_test_user_id` + validated enable (§5.4); §9.1 issuance path, credit-note minting at the apply site, proof fixtures; §6.5 `fee_dropped` and `feeStatus` fatal on verify; §6.4 settlement-record oracle + fee-line assertion; §8.1 `apply_refund_webhook(p_currency)`, null-amount refusal for non-NGN, RPC returns amount+currency; M6 lists the port lines and `post_sale_revenue` has no default; §6.6; adapter-declared currency sets; citation fixed |
+| Wallet / payout / CI / build order | 12: **critical** mis-routed wallet family (NGN settle/release/fail on a USD row credits the NGN wallet and consumes the shared key); a non-NGN wallet-funding intent could exist between G3 and M7; M0 before M1; CI bootstrap `customer_wallets` lacks `currency`; MC-CI-01's SQL scan red on immutable migrations; MC-CI-02's literal allowlist incomplete and bypassable; transfer fee currency raise-loop; hold/cap reads with no currency predicate; `sec_harden_08` grant pattern keeps `service_role` DML and the studio wallet checkout writes balances with no ledger post; env-var grep red on comments; per-file exponent baseline hides new sites; limit rows could be in the wrong exponent | §7.1 assertions + dispatch; §5.4 wallet-funding clause in the birth guard; M0+M1 one apply; MC-CI-11 bootstrap shape; MC-CI-01 scoped to reader function bodies with by-construction exemptions; MC-CI-02 behavioural-first with an explicit (function, count) allowlist and dedicated NGN hold/release functions; §7.3 `fee_unreconciled`; N24 readers currency-scoped; ledger-pattern grants for the new tables + LF-3 recorded; env grep scoped; per-site baselines; exponent test on limit rows |
+
+### Round 2 — pending (launched against revision 2)
