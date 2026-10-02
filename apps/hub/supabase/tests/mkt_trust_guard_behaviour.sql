@@ -907,8 +907,24 @@ begin
     end if;
   end;
 
+  -- an approved, reviewed document of the wrong kind (proof of address) is not identity
+  insert into public.customer_verification_submissions (user_id, document_type, status, reviewer_id)
+    values (inst, 'proof_of_address', 'approved', staff);
+  begin
+    set local role service_role;
+    insert into public.marketplace_payout_requests (reference, vendor_id, amount, status, requested_by)
+      values ('MKT-TRUST-T-M2B', v_inst_vendor, 1000, 'requested', inst);
+    reset role;
+    raise warning 'VIOLATION M2b: a non-identity document unlocked a payout'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_payout_identity_guard:%' then
+      raise warning 'VIOLATION M2b: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+
   -- a submission nobody reviewed is not identity either
-  insert into public.customer_verification_submissions (user_id, document_type, status) values (inst, 'national_id', 'approved');
+  insert into public.customer_verification_submissions (user_id, document_type, status) values (inst, 'government_id', 'approved');
   begin
     set local role service_role;
     insert into public.marketplace_payout_requests (reference, vendor_id, amount, status, requested_by)
@@ -923,7 +939,8 @@ begin
   end;
 
   -- reviewed by staff: now it is identity
-  update public.customer_verification_submissions set reviewer_id = staff where user_id = inst;
+  update public.customer_verification_submissions set reviewer_id = staff
+   where user_id = inst and document_type = 'government_id';
   begin
     set local role service_role;
     insert into public.marketplace_payout_requests (reference, vendor_id, amount, status, requested_by)

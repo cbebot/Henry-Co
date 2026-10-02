@@ -250,7 +250,10 @@ $$;
 -- Identity verified, for the payout gate. customer_profiles.verification_status
 -- alone is NOT trusted: the table's own-row UPDATE policy lets a user write that
 -- column on production today. A staff-reviewed submission is required as well —
--- customer_verification_submissions is writable by service-role only.
+-- customer_verification_submissions is writable by service-role only. The rule
+-- mirrors the three KYC review writers (account, staff, hub): a profile becomes
+-- `verified` when a `government_id` or `selfie` submission is approved by a
+-- reviewer.
 create or replace function public.marketplace_gate_identity_verified(p_user uuid)
 returns boolean
 language sql
@@ -266,7 +269,8 @@ as $$
     and exists (
       select 1 from public.customer_verification_submissions s
       where s.user_id = p_user
-        and lower(coalesce(s.status, '')) in ('approved', 'verified')
+        and lower(coalesce(s.status, '')) = 'approved'
+        and s.document_type in ('government_id', 'selfie')
         and s.reviewer_id is not null
     );
 $$;

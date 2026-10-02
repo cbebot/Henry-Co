@@ -492,7 +492,7 @@ jobs:
       # binds service_role too. The behaviour file runs each attack as a real
       # Postgres role (direct live write, forged verdict, IDOR, clean -> prohibited
       # edit, the upsert path, media swap, probation caps, payout identity). Locally
-      # it is mutation-tested: 55/55 mutants of the migration turn it red.
+      # it is mutation-tested: every mutant of the migration turns it red.
       - name: Seed the marketplace tables the instant-publish guard hangs on (V3-MKT-TRUST-01)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/mkt_trust_min.sql
 
