@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import {
   shouldAutoFlag,
@@ -11,6 +11,18 @@ import { getMarketplaceViewer } from "@/lib/marketplace/auth";
 import { sendMarketplaceEvent } from "@/lib/marketplace/notifications";
 import { createAdminSupabase } from "@/lib/supabase";
 import type { MarketplaceSellerDocumentRecord } from "@/lib/marketplace/types";
+import {
+  formatMarketplaceTrustTemplate,
+  getMarketplaceTrustCopy,
+  type AppLocale,
+} from "@henryco/i18n/server";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { emitGateEvent } from "@/lib/marketplace/publish-gate/events";
+import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
+import { describeReasons } from "@/lib/marketplace/publish-gate/messages";
+import { instantOnboard } from "@/lib/marketplace/publish-gate/onboarding";
+import { evaluateStorePolicy, type StoreProfileVerdict } from "@/lib/marketplace/publish-gate/policy";
+import { syncVendorTrustScore } from "@/lib/marketplace/trust";
 
 export const runtime = "nodejs";
 
@@ -146,12 +158,16 @@ export async function POST(request: Request) {
       ? payload.plan
       : null;
   const missingCriticalDocuments = ["founderIdentity", "payoutProof"].filter((key) => !documents[key]?.fileUrl);
+  // V3-MKT-TRUST-01 — with instant publish on, identity documents are not a gate to
+  // SELLING any more: identity is checked at the first payout instead. With the
+  // flag off this is false and every check below runs exactly as before.
+  const instantPublish = isInstantPublishEnabled();
 
   if (mode === "submit" && (!storeName || !storeSlug || !legalName)) {
     return NextResponse.json({ error: "Store identity is incomplete." }, { status: 400 });
   }
 
-  if (mode === "submit" && missingCriticalDocuments.length > 0) {
+  if (mode === "submit" && !instantPublish && missingCriticalDocuments.length > 0) {
     return NextResponse.json(
       {
         error:
@@ -216,6 +232,47 @@ export async function POST(request: Request) {
         },
         { status: 422 }
       );
+    }
+  }
+
+  // V3-MKT-TRUST-01 — the store profile goes through the same deterministic content
+  // rules a listing does. A refusal is answered here, before anything is saved,
+  // exactly like the story screen above. Flag ON only.
+  let storeVerdict: StoreProfileVerdict | null = null;
+  let gateLocale: AppLocale = "en";
+  if (instantPublish && mode === "submit") {
+    gateLocale = await getMarketplacePublicLocale();
+    const trustCopy = getMarketplaceTrustCopy(gateLocale);
+    storeVerdict = evaluateStorePolicy({ storeName, categoryFocus, story, locale: gateLocale });
+    if (storeVerdict.outcome === "reject") {
+      await emitGateEvent({
+        admin: createAdminSupabase(),
+        name: "henry.marketplace.seller_gate.decided",
+        outcome: "rejected",
+        actorId: viewer.user.id,
+        payload: { reasons: storeVerdict.reasons },
+      });
+      const fixes = describeReasons({ reasons: storeVerdict.reasons, caps: null, locale: gateLocale, copy: trustCopy })
+        .map((reason) => reason.fix)
+        .join(" ");
+      return NextResponse.json(
+        {
+          error: formatMarketplaceTrustTemplate(trustCopy.onboarding.rejectedBody, { reasons: fixes }),
+          code: "store-rejected",
+          reasons: storeVerdict.reasons,
+        },
+        { status: 422 },
+      );
+    }
+    // A handle that already belongs to another store is refused up front (the
+    // database function refuses it again, atomically, when the store is opened).
+    const { data: handleOwner } = await createAdminSupabase()
+      .from("marketplace_vendors")
+      .select("id, owner_user_id")
+      .eq("slug", storeSlug.toLowerCase())
+      .maybeSingle();
+    if (handleOwner?.id && String(handleOwner.owner_user_id || "") !== viewer.user.id) {
+      return NextResponse.json({ error: trustCopy.onboarding.handleTaken, code: "store-handle-taken" }, { status: 409 });
     }
   }
 
@@ -288,7 +345,70 @@ export async function POST(request: Request) {
     );
   }
 
-  if (mode === "submit") {
+  // V3-MKT-TRUST-01 — instant onboarding. The application above is saved as
+  // "submitted" exactly as before; with the flag on and a clean profile the
+  // database opens the store atomically (vendor, role, probation, verdict). Any
+  // other answer leaves the application in the queue for a person, and the
+  // legacy notifications below run unchanged.
+  let onboarding: { opened: boolean; notice: { title: string; body: string } } | null = null;
+  if (instantPublish && mode === "submit" && storeVerdict) {
+    const trustCopy = getMarketplaceTrustCopy(gateLocale);
+    const result = await instantOnboard(admin, {
+      actorId: viewer.user.id,
+      applicationId: String(application.id),
+      verdict: storeVerdict,
+      moderationDetail: storeVerdict.moderationDetail,
+    });
+    if (result.kind === "opened" || result.kind === "already_seller") {
+      onboarding = {
+        opened: true,
+        notice: { title: trustCopy.onboarding.openedTitle, body: trustCopy.onboarding.openedBody },
+      };
+    } else {
+      onboarding = {
+        opened: false,
+        notice: { title: trustCopy.result.heldTitle, body: trustCopy.onboarding.heldBody },
+      };
+    }
+    if (result.kind === "opened") {
+      // Seed the trust snapshot, as the human approval path does. Best-effort.
+      void syncVendorTrustScore(result.vendorId, "vendor_application_approved").catch(() => {});
+      await sendMarketplaceEvent({
+        event: "vendor_application_approved",
+        userId: viewer.user.id,
+        normalizedEmail: normalizeEmail(viewer.user.email),
+        recipientEmail: viewer.user.email,
+        recipientPhone: phone || null,
+        actorUserId: null,
+        actorEmail: null,
+        entityType: "vendor_application",
+        entityId: String(application.id),
+        payload: {
+          storeName: String(application.store_name || storeName),
+          note: null,
+        },
+      });
+      await sendMarketplaceEvent({
+        event: "owner_alert",
+        recipientEmail:
+          process.env.MARKETPLACE_OWNER_ALERT_EMAIL ||
+          process.env.RESEND_SUPPORT_INBOX ||
+          BRAND_EMAILS.marketplace,
+        actorUserId: viewer.user.id,
+        actorEmail: viewer.user.email,
+        entityType: "vendor_application",
+        entityId: String(application.id),
+        payload: {
+          note: `Store ${String(application.store_name || storeName)} was opened by the publish gate. Identity is checked at the first payout.`,
+        },
+      });
+      // The catalogue snapshot is cached; the new store must be in it now.
+      revalidateTag("marketplace-home", { expire: 0 });
+      revalidatePath("/vendor/products");
+    }
+  }
+
+  if (mode === "submit" && !onboarding?.opened) {
     await admin.from("marketplace_role_memberships").upsert({
       user_id: viewer.user.id,
       normalized_email: normalizeEmail(viewer.user.email),
@@ -335,6 +455,7 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     mode,
-    application,
+    application: onboarding?.opened ? { ...application, status: "approved" } : application,
+    ...(onboarding ? { onboarding } : {}),
   });
 }

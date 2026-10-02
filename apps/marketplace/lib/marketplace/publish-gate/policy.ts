@@ -240,6 +240,37 @@ export function evaluateListingPolicy(input: ListingGateInput): GateVerdict {
   };
 }
 
+export interface StoreProfileVerdict {
+  outcome: GateOutcome;
+  reasons: GateReasonCode[];
+  /** Machine tokens from the content ruleset (stored with the onboarding verdict; never raw text). */
+  moderationDetail: string[];
+}
+
+/**
+ * The deterministic check on a store profile at onboarding: the same content
+ * ruleset a listing gets, over the name, the category focus and the story.
+ * Identity documents are NOT part of it — identity is checked at the payout.
+ */
+export function evaluateStorePolicy(input: {
+  storeName: string;
+  categoryFocus: string;
+  story: string;
+  locale: string;
+}): StoreProfileVerdict {
+  const text = [input.storeName, input.categoryFocus, input.story]
+    .map((part) => String(part ?? "").trim())
+    .filter(Boolean)
+    .join("\n");
+  const content = runDeterministic(
+    { contentType: "marketplace_listing", contentId: "store-profile", text, locale: input.locale || "en" },
+    { ruleset: "listing_v2" },
+  );
+  const moderationDetail = [...(content.detail ?? [])];
+  const reasons = normalizeReasons(codesFromModerationDetail(moderationDetail));
+  return { outcome: composeOutcome(reasons), reasons, moderationDetail };
+}
+
 const AI_REASON_MAP: Record<string, HoldReason> = {
   ai_flagged_scam: "ai_flagged_scam",
   ai_flagged_nsfw: "ai_flagged_nsfw",

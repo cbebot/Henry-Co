@@ -4,6 +4,7 @@ import { getStaffQueueData } from "@/lib/marketplace/data";
 import { staffNav } from "@/lib/marketplace/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { financePayoutBlockDetail } from "@/lib/marketplace/publish-gate/surfaces";
 import {
   CheckCircle2,
   XCircle,
@@ -16,10 +17,18 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default async function FinancePage() {
+export default async function FinancePage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const locale = await getMarketplacePublicLocale();
   await requireMarketplaceRoles(["marketplace_owner", "marketplace_admin", "finance"], "/finance");
   const data = await getStaffQueueData();
+  // V3-MKT-TRUST-01 — a payout decision the identity gate refused comes back here
+  // with a code; say why instead of failing silently.
+  const params = (await searchParams) ?? {};
+  const payoutBlock = financePayoutBlockDetail(typeof params.error === "string" ? params.error : null, locale);
 
   const pendingPayments = (data.payments as Array<Record<string, unknown>>).filter(
     (p) => !["verified", "failed"].includes(String(p.status ?? ""))
@@ -38,6 +47,14 @@ export default async function FinancePage() {
       nav={staffNav("/finance", "/finance", locale)}
     >
       <div className="space-y-8">
+        {payoutBlock ? (
+          <div
+            role="alert"
+            className="market-paper rounded-[1.5rem] border border-[var(--market-line)] px-5 py-4 text-sm leading-7 text-[var(--market-paper-white)]"
+          >
+            {payoutBlock}
+          </div>
+        ) : null}
 
         {/* ── Payment verification ── */}
         <section className="space-y-4">

@@ -194,11 +194,15 @@ describe("payoutEligibility", () => {
     assert.deepEqual(payoutEligibility({ facts: facts(), riskGated: false }), { eligible: true, reasons: [] });
   });
 
-  it("identity is required — for an instant store and for a human-approved one alike", () => {
-    for (const instantOnboarded of [true, false]) {
-      const result = payoutEligibility({ facts: facts({ identityVerified: false, instantOnboarded }), riskGated: false });
-      assert.deepEqual(result, { eligible: false, reasons: ["identity_unverified"] });
-    }
+  it("a store opened by instant onboarding must verify identity before a payout", () => {
+    const result = payoutEligibility({ facts: facts({ identityVerified: false, instantOnboarded: true }), riskGated: false });
+    assert.deepEqual(result, { eligible: false, reasons: ["identity_unverified"] });
+  });
+
+  it("a store a person approved already handed over its documents: it is not asked again", () => {
+    // Mirrors the database trigger, which only binds stores with a probation row.
+    const result = payoutEligibility({ facts: facts({ identityVerified: false, instantOnboarded: false }), riskGated: false });
+    assert.deepEqual(result, { eligible: true, reasons: [] });
   });
 
   it("a staff-applied risk hold blocks, on its own and together with identity", () => {
@@ -209,11 +213,22 @@ describe("payoutEligibility", () => {
     );
   });
 
-  it("a store that is missing or not active is not eligible", () => {
+  it("a store that does not exist is not eligible", () => {
     assert.deepEqual(payoutEligibility({ facts: facts({ vendorFound: false }), riskGated: false }).reasons, ["seller_not_active"]);
-    assert.deepEqual(payoutEligibility({ facts: facts({ vendorStatus: "suspended" }), riskGated: false }).reasons, [
-      "seller_not_active",
-    ]);
+  });
+
+  it("a store's status is finance's call, as it always was: the gate does not second-guess it", () => {
+    assert.deepEqual(payoutEligibility({ facts: facts({ vendorStatus: "suspended" }), riskGated: false }), {
+      eligible: true,
+      reasons: [],
+    });
+  });
+
+  it("a staff risk hold blocks a human-approved store too", () => {
+    assert.deepEqual(
+      payoutEligibility({ facts: facts({ instantOnboarded: false, identityVerified: false }), riskGated: true }).reasons,
+      ["risk_hold_active"],
+    );
   });
 
   it("fails closed when the facts could not be read", () => {

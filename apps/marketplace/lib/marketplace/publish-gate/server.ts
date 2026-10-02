@@ -239,21 +239,41 @@ export async function ensureImageFingerprints(
   try {
     const { data } = await admin
       .from("marketplace_image_fingerprints")
-      .select("ref, sha256, phash, phash_aux")
+      .select("ref, sha256, phash, phash_aux, bytes, vendor_id")
       .in(
         "ref",
         candidates.map((item) => item.ref),
       );
-    type Row = { ref: string; sha256: string; phash: string | number | null; phash_aux: string | number | null };
+    type Row = {
+      ref: string;
+      sha256: string;
+      phash: string | number | null;
+      phash_aux: string | number | null;
+      bytes: number | null;
+      vendor_id: string | null;
+    };
     for (const row of (data ?? []) as Row[]) {
-      known.set(
-        row.ref,
-        hashKeys(
-          row.sha256,
-          row.phash === null ? null : String(row.phash),
-          row.phash_aux === null ? null : String(row.phash_aux),
-        ),
-      );
+      const pos = row.phash === null ? null : String(row.phash);
+      const neg = row.phash_aux === null ? null : String(row.phash_aux);
+      known.set(row.ref, hashKeys(row.sha256, pos, neg));
+      // Uploaded before the store existed (or by staff): attribute it now. The
+      // database only ever fills an EMPTY owner, so this cannot take a picture
+      // from a store that already has it.
+      if (row.vendor_id === null) {
+        const uploader = candidates.find((item) => item.ref === row.ref)?.uploader;
+        if (uploader) {
+          await registerFingerprint(admin, {
+            ref: row.ref,
+            fingerprint: {
+              sha256: row.sha256,
+              phash: pos !== null && neg !== null ? { pos, neg } : null,
+              bytes: Number(row.bytes ?? 0),
+            },
+            uploaderId: uploader,
+            vendorId: input.vendorId,
+          });
+        }
+      }
     }
   } catch {
     // The registry could not be read: fingerprint everything again (idempotent).
@@ -351,6 +371,34 @@ export function knownBadImageHashes(
       .map((value) => value.trim().toLowerCase())
       .filter(Boolean),
   );
+}
+
+// ---------------------------------------------------------------------------
+// Buyers
+// ---------------------------------------------------------------------------
+
+/**
+ * True when a cart line points at a listing that is not live any more (taken
+ * down for review, held, or removed). A hide only removes a listing from the
+ * storefront; without this a cart that already held it could still buy it.
+ * Read only. A failed read answers "no": a soft, reversible measure must not
+ * stop every checkout when the database blinks.
+ */
+export async function cartHasUnavailableListing(admin: GateAdmin, productIds: ReadonlyArray<string>): Promise<boolean> {
+  const ids = Array.from(new Set(productIds.filter(Boolean)));
+  if (ids.length === 0) return false;
+  try {
+    const { data, error } = await admin.from("marketplace_products").select("id, approval_status").in("id", ids);
+    if (error || !data) return false;
+    const live = new Set(
+      (data as Array<{ id: string; approval_status: string | null }>)
+        .filter((row) => row.approval_status === "approved")
+        .map((row) => String(row.id)),
+    );
+    return ids.some((id) => !live.has(id));
+  } catch {
+    return false;
+  }
 }
 
 // ---------------------------------------------------------------------------

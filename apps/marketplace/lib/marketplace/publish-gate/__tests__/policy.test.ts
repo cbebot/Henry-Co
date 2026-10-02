@@ -7,6 +7,7 @@ import {
   applyAiSignal,
   codesFromModerationDetail,
   evaluateListingPolicy,
+  evaluateStorePolicy,
   mergeDbVerdict,
   unavailableVerdict,
   type GateVerdict,
@@ -334,6 +335,55 @@ describe("a picture another store had first", () => {
     assert.ok(verdict.reasons.includes("duplicate_image_other_seller"));
     assert.ok(verdict.reasons.includes("duplicate_image_same_seller"));
     assert.equal(verdictOf({ seller: onProbation(), images: matched("same_seller") }).outcome, "publish");
+  });
+});
+
+describe("the store profile check at onboarding", () => {
+  const profile = (overrides: Partial<Parameters<typeof evaluateStorePolicy>[0]> = {}) =>
+    evaluateStorePolicy({
+      storeName: "Adaeze Home & Kitchen",
+      categoryFocus: "Kitchenware and small appliances",
+      story: "We source durable kitchenware and test every appliance before it ships. Orders leave within a day.",
+      locale: "en",
+      ...overrides,
+    });
+
+  it("an ordinary store profile opens — with no identity document anywhere in the input", () => {
+    const verdict = profile();
+    assert.equal(verdict.outcome, "publish");
+    assert.deepEqual(verdict.reasons.filter((code) => reasonClass(code) !== "signal"), []);
+  });
+
+  it("contact details in the story are refused, however they are written", () => {
+    for (const story of [
+      "Great store. Call 08031234567 to order.",
+      "Great store. Reach us on o8o 3123 4567 any time.",
+      "Great store. WhatsApp zero eight zero three one two three four five six seven.",
+    ]) {
+      const verdict = profile({ story });
+      assert.equal(verdict.outcome, "reject", story);
+      assert.ok(verdict.reasons.includes("contact_details"), story);
+    }
+  });
+
+  it("payment steering and prohibited goods are refused", () => {
+    assert.ok(profile({ story: "Pay me directly by bank transfer only and skip the fee." }).reasons.includes("off_platform_payment"));
+    assert.equal(profile({ storeName: "AK-47 rifles and ammo depot" }).outcome === "publish", false);
+  });
+
+  it("an ambiguous profile goes to a person rather than opening", () => {
+    const verdict = profile({ categoryFocus: "Replica football jerseys" });
+    assert.equal(verdict.outcome, "hold");
+    assert.ok(verdict.reasons.includes("restricted_item_review"));
+  });
+
+  it("the store name is screened too, not just the story", () => {
+    assert.equal(profile({ storeName: "Call 08031234567 Stores" }).outcome, "reject");
+  });
+
+  it("stores only machine tokens, never the text it read", () => {
+    const verdict = profile({ story: "Great store. Call 08031234567 to order." });
+    for (const token of verdict.moderationDetail) assert.ok(!/0803/.test(token), token);
   });
 });
 

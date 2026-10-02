@@ -4,6 +4,7 @@ import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { sellerWizardInstantCopy } from "@/lib/marketplace/publish-gate/surfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,11 @@ export default async function SellerApplicationVerificationPage() {
       description="Step 2 captures the trust story, KYC context, and service standards that determine whether the store is ready for approval."
       {...accountWorkspaceNav("/account/seller-application", locale)}
     >
-      <SellerApplicationWizard step="verification" initialApplication={data.application} />
+      <SellerApplicationWizard
+        step="verification"
+        initialApplication={data.application}
+        instant={sellerWizardInstantCopy(locale)}
+      />
     </WorkspaceShell>
   );
 }

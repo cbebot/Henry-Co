@@ -132,6 +132,8 @@ export type MarketplaceTrustCopy = {
     openedTitle: string;
     openedBody: string;
     documentsOptional: string;
+    optionalBadge: string;
+    reviewNote: string;
     submitLabel: string;
     heldBody: string;
     /** "{reasons}" */
@@ -146,6 +148,10 @@ export type MarketplaceTrustCopy = {
     reviewHint: string;
     reportsReason: string;
     riskReason: string;
+  };
+  buyer: {
+    itemUnavailableTitle: string;
+    itemUnavailableBody: string;
   };
   owner: {
     kicker: string;
@@ -377,6 +383,8 @@ const EN: MarketplaceTrustCopy = {
     openedTitle: "Your store is open.",
     openedBody: "Add your first listing now. Identity is checked once, before your first payout.",
     documentsOptional: "Optional for now. You can open your store today and verify your identity before your first payout.",
+    optionalBadge: "Optional",
+    reviewNote: "Your store opens the moment you submit, as long as it passes our checks. Identity is checked once, before your first payout.",
     submitLabel: "Open my store",
     heldBody: "Your application is with our team. We will confirm your store shortly.",
     rejectedBody: "Change this and submit again: {reasons}",
@@ -389,6 +397,10 @@ const EN: MarketplaceTrustCopy = {
     reviewHint: "Our team is reviewing it. Nothing was deleted, and it returns if the review clears it.",
     reportsReason: "Reported by several buyers",
     riskReason: "Held by our risk team",
+  },
+  buyer: {
+    itemUnavailableTitle: "An item in your cart is no longer available",
+    itemUnavailableBody: "It was taken down after you added it. Remove it to check out the rest.",
   },
   owner: {
     kicker: "Marketplace trust",
@@ -514,6 +526,8 @@ const FR: DeepPartial<MarketplaceTrustCopy> = {
     openedTitle: "Votre boutique est ouverte.",
     openedBody: "Ajoutez votre première annonce. L'identité est vérifiée une seule fois, avant votre premier versement.",
     documentsOptional: "Facultatif pour l'instant. Ouvrez votre boutique aujourd'hui et vérifiez votre identité avant votre premier versement.",
+    optionalBadge: "Facultatif",
+    reviewNote: "Votre boutique ouvre dès l'envoi si elle passe nos contrôles. L'identité est vérifiée une seule fois, avant votre premier versement.",
     submitLabel: "Ouvrir ma boutique",
     heldBody: "Votre demande est entre les mains de notre équipe. Nous confirmons votre boutique sous peu.",
     rejectedBody: "Modifiez ceci puis envoyez à nouveau : {reasons}",
@@ -526,6 +540,10 @@ const FR: DeepPartial<MarketplaceTrustCopy> = {
     reviewHint: "Notre équipe l'examine. Rien n'a été supprimé, et elle revient si l'examen la valide.",
     reportsReason: "Signalée par plusieurs acheteurs",
     riskReason: "Retenue par notre équipe des risques",
+  },
+  buyer: {
+    itemUnavailableTitle: "Un article de votre panier n'est plus disponible",
+    itemUnavailableBody: "Il a été retiré après son ajout. Supprimez-le pour commander le reste.",
   },
   owner: {
     kicker: "Confiance Marketplace",
@@ -651,6 +669,8 @@ const ES: DeepPartial<MarketplaceTrustCopy> = {
     openedTitle: "Tu tienda está abierta.",
     openedBody: "Añade tu primer anuncio. La identidad se comprueba una vez, antes de tu primer pago.",
     documentsOptional: "Opcional por ahora. Abre tu tienda hoy y verifica tu identidad antes de tu primer pago.",
+    optionalBadge: "Opcional",
+    reviewNote: "Tu tienda abre en cuanto envías la solicitud, si pasa nuestras comprobaciones. La identidad se comprueba una vez, antes de tu primer pago.",
     submitLabel: "Abrir mi tienda",
     heldBody: "Tu solicitud está con nuestro equipo. Confirmamos tu tienda en breve.",
     rejectedBody: "Cambia esto y envíala de nuevo: {reasons}",
@@ -663,6 +683,10 @@ const ES: DeepPartial<MarketplaceTrustCopy> = {
     reviewHint: "Nuestro equipo lo está revisando. No se borró nada y vuelve si la revisión lo aprueba.",
     reportsReason: "Denunciado por varios compradores",
     riskReason: "Retenido por nuestro equipo de riesgos",
+  },
+  buyer: {
+    itemUnavailableTitle: "Un artículo de tu carrito ya no está disponible",
+    itemUnavailableBody: "Se retiró después de que lo añadieras. Quítalo para comprar el resto.",
   },
   owner: {
     kicker: "Confianza de Marketplace",
@@ -788,6 +812,8 @@ const PT: DeepPartial<MarketplaceTrustCopy> = {
     openedTitle: "A sua loja está aberta.",
     openedBody: "Adicione o seu primeiro anúncio. A identidade é verificada uma vez, antes do seu primeiro pagamento.",
     documentsOptional: "Opcional por agora. Abra a sua loja hoje e verifique a identidade antes do primeiro pagamento.",
+    optionalBadge: "Opcional",
+    reviewNote: "A sua loja abre assim que submeter, desde que passe nas nossas verificações. A identidade é verificada uma vez, antes do primeiro pagamento.",
     submitLabel: "Abrir a minha loja",
     heldBody: "A sua candidatura está com a nossa equipa. Confirmamos a sua loja em breve.",
     rejectedBody: "Altere isto e envie de novo: {reasons}",
@@ -800,6 +826,10 @@ const PT: DeepPartial<MarketplaceTrustCopy> = {
     reviewHint: "A nossa equipa está a analisá-lo. Nada foi apagado, e regressa se a análise o aprovar.",
     reportsReason: "Denunciado por vários compradores",
     riskReason: "Retido pela nossa equipa de risco",
+  },
+  buyer: {
+    itemUnavailableTitle: "Um artigo do seu carrinho já não está disponível",
+    itemUnavailableBody: "Foi retirado depois de o adicionar. Remova-o para finalizar o resto.",
   },
   owner: {
     kicker: "Confiança do Marketplace",
@@ -925,6 +955,8 @@ const DE: DeepPartial<MarketplaceTrustCopy> = {
     openedTitle: "Ihr Shop ist eröffnet.",
     openedBody: "Legen Sie Ihr erstes Angebot an. Die Identität wird einmal geprüft, vor Ihrer ersten Auszahlung.",
     documentsOptional: "Vorerst optional. Eröffnen Sie Ihren Shop heute und bestätigen Sie Ihre Identität vor der ersten Auszahlung.",
+    optionalBadge: "Optional",
+    reviewNote: "Ihr Shop öffnet mit dem Absenden, sofern er unsere Prüfungen besteht. Die Identität wird einmal geprüft, vor Ihrer ersten Auszahlung.",
     submitLabel: "Meinen Shop eröffnen",
     heldBody: "Ihre Bewerbung liegt bei unserem Team. Wir bestätigen Ihren Shop in Kürze.",
     rejectedBody: "Ändern Sie das und senden Sie erneut: {reasons}",
@@ -937,6 +969,10 @@ const DE: DeepPartial<MarketplaceTrustCopy> = {
     reviewHint: "Unser Team prüft es. Nichts wurde gelöscht, und es kehrt zurück, wenn die Prüfung es freigibt.",
     reportsReason: "Von mehreren Käufern gemeldet",
     riskReason: "Von unserem Risikoteam zurückgehalten",
+  },
+  buyer: {
+    itemUnavailableTitle: "Ein Artikel in Ihrem Warenkorb ist nicht mehr verfügbar",
+    itemUnavailableBody: "Er wurde nach dem Hinzufügen entfernt. Entfernen Sie ihn, um den Rest zu bestellen.",
   },
   owner: {
     kicker: "Marketplace-Vertrauen",
@@ -1062,6 +1098,8 @@ const IT: DeepPartial<MarketplaceTrustCopy> = {
     openedTitle: "Il tuo negozio è aperto.",
     openedBody: "Aggiungi il tuo primo annuncio. L'identità viene verificata una volta, prima del primo pagamento.",
     documentsOptional: "Facoltativo per ora. Apri il negozio oggi e verifica l'identità prima del primo pagamento.",
+    optionalBadge: "Facoltativo",
+    reviewNote: "Il negozio apre appena invii la richiesta, se supera i nostri controlli. L'identità viene verificata una volta, prima del primo pagamento.",
     submitLabel: "Apri il mio negozio",
     heldBody: "La tua richiesta è al nostro team. Confermiamo il negozio a breve.",
     rejectedBody: "Modifica e invia di nuovo: {reasons}",
@@ -1074,6 +1112,10 @@ const IT: DeepPartial<MarketplaceTrustCopy> = {
     reviewHint: "Il nostro team lo sta esaminando. Nulla è stato eliminato, e torna online se la verifica lo approva.",
     reportsReason: "Segnalato da più acquirenti",
     riskReason: "Trattenuto dal nostro team rischi",
+  },
+  buyer: {
+    itemUnavailableTitle: "Un articolo nel carrello non è più disponibile",
+    itemUnavailableBody: "È stato rimosso dopo l'aggiunta. Eliminalo per acquistare il resto.",
   },
   owner: {
     kicker: "Fiducia Marketplace",
@@ -1200,6 +1242,8 @@ const AR: DeepPartial<MarketplaceTrustCopy> = {
     openedTitle: "متجرك مفتوح.",
     openedBody: "أضف أول إعلان الآن. تُوثَّق الهوية مرة واحدة قبل أول سحب.",
     documentsOptional: "اختياري الآن. افتح متجرك اليوم ووثّق هويتك قبل أول سحب.",
+    optionalBadge: "اختياري",
+    reviewNote: "يُفتح متجرك فور الإرسال ما دام يجتاز فحوصنا. تُوثَّق الهوية مرة واحدة قبل أول سحب.",
     submitLabel: "افتح متجري",
     heldBody: "طلبك لدى فريقنا. نؤكد متجرك قريبًا.",
     rejectedBody: "عدّل التالي ثم أرسل من جديد: {reasons}",
@@ -1212,6 +1256,10 @@ const AR: DeepPartial<MarketplaceTrustCopy> = {
     reviewHint: "يراجعه فريقنا. لم يُحذف شيء، ويعود إن أجازته المراجعة.",
     reportsReason: "أبلغ عنه عدة مشترين",
     riskReason: "أوقفه فريق المخاطر لدينا",
+  },
+  buyer: {
+    itemUnavailableTitle: "أحد منتجات سلتك لم يعد متاحًا",
+    itemUnavailableBody: "أُزيل بعد إضافته. احذفه لإتمام شراء الباقي.",
   },
   owner: {
     kicker: "ثقة السوق",
@@ -1338,6 +1386,8 @@ const ZH: DeepPartial<MarketplaceTrustCopy> = {
     openedTitle: "您的店铺已开张。",
     openedBody: "现在就添加第一个商品。身份只需在首次提现前验证一次。",
     documentsOptional: "目前可选。今天即可开店，在首次提现前完成身份验证。",
+    optionalBadge: "可选",
+    reviewNote: "只要通过检查，提交后店铺立即开通。身份只需在首次提现前验证一次。",
     submitLabel: "开通我的店铺",
     heldBody: "您的申请已交给我们的团队。我们会尽快确认您的店铺。",
     rejectedBody: "请修改后重新提交：{reasons}",
@@ -1350,6 +1400,10 @@ const ZH: DeepPartial<MarketplaceTrustCopy> = {
     reviewHint: "我们的团队正在审核。没有任何内容被删除，审核通过即恢复。",
     reportsReason: "被多位买家举报",
     riskReason: "被我们的风控团队暂停",
+  },
+  buyer: {
+    itemUnavailableTitle: "购物车中有商品已不可购买",
+    itemUnavailableBody: "该商品在您加入后被下架。请移除后再结算其余商品。",
   },
   owner: {
     kicker: "市场信任",

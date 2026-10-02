@@ -15,10 +15,24 @@ import type {
 
 type SellerWizardStep = "start" | "verification" | "review";
 
+/**
+ * V3-MKT-TRUST-01 — set by the server page only when instant publish is on.
+ * Identity documents stop being a condition for opening a store (identity is
+ * checked at the first payout), and the copy that says otherwise is swapped for
+ * these pre-localized strings. Absent → the wizard is exactly what it was.
+ */
+export type SellerWizardInstantCopy = {
+  documentsOptional: string;
+  optionalBadge: string;
+  reviewNote: string;
+  submitLabel: string;
+};
+
 type SellerApplicationWizardProps = {
   step: SellerWizardStep;
   initialApplication: MarketplaceVendorApplication | null;
   initialPlan?: string | null;
+  instant?: SellerWizardInstantCopy | null;
 };
 
 type FormState = {
@@ -143,6 +157,7 @@ export function SellerApplicationWizard({
   step,
   initialApplication,
   initialPlan = null,
+  instant = null,
 }: SellerApplicationWizardProps) {
   const { pushToast } = useMarketplaceRuntime();
   const router = useRouter();
@@ -174,10 +189,12 @@ export function SellerApplicationWizard({
 
   const missingCriticalDocuments = useMemo(
     () =>
-      documentRequirements
-        .filter((item) => item.required && !form.documents[item.key]?.fileUrl)
-        .map((item) => item.label),
-    [form.documents]
+      instant
+        ? []
+        : documentRequirements
+            .filter((item) => item.required && !form.documents[item.key]?.fileUrl)
+            .map((item) => item.label),
+    [form.documents, instant]
   );
 
   useEffect(() => {
@@ -248,6 +265,19 @@ export function SellerApplicationWizard({
 
     if (response.ok) {
       setSubmitState("submitted");
+      // The server may answer with the gate's own outcome (store opened, or held
+      // for a person). When it does, that message is the acknowledgement.
+      const answer = (await response.json().catch(() => null)) as {
+        onboarding?: { opened?: boolean; notice?: { title?: string; body?: string } };
+      } | null;
+      if (answer?.onboarding?.notice?.title) {
+        const opened = answer.onboarding.opened === true;
+        pushToast(answer.onboarding.notice.title, opened ? "success" : "info", answer.onboarding.notice.body, {
+          chime: opened,
+        });
+        router.push(opened ? "/vendor/products/new" : "/account/seller-application?submitted=1");
+        return;
+      }
       // A major completion — the Onyx chime acknowledges it. (Body brand-fixed
       // from the retired "HenryCo" surface name while consolidating.)
       pushToast("Seller application submitted", "success", "Review has started.", {
@@ -434,11 +464,17 @@ export function SellerApplicationWizard({
                     <p className="text-xs uppercase tracking-[0.18em] text-[var(--market-muted)]">Live trust gating</p>
                   </div>
                 </div>
+                {instant ? (
+                  <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--market-muted)]">
+                    <p>{instant.documentsOptional}</p>
+                  </div>
+                ) : (
                 <div className="mt-4 space-y-3 text-sm leading-7 text-[var(--market-muted)]">
                   <p>Founder identity and payout proof are required before we can complete your verification review.</p>
                   <p>Business registration is recommended for faster approval and fewer clarification requests.</p>
                   <p>Your uploaded documents are stored securely and used only to verify your store during review.</p>
                 </div>
+                )}
               </div>
             </div>
 
@@ -462,16 +498,18 @@ export function SellerApplicationWizard({
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold text-[var(--market-paper-white)]">{item.label}</p>
-                        <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{item.help}</p>
+                        <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">
+                          {instant && item.required ? instant.documentsOptional : item.help}
+                        </p>
                       </div>
                       <span
                         className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
-                          item.required
+                          item.required && !instant
                             ? "bg-[rgba(255,171,151,0.12)] text-[var(--market-alert)]"
                             : "bg-[color:var(--home-accent-soft)] text-[color:var(--home-accent-text)]"
                         }`}
                       >
-                        {item.required ? "Required" : "Recommended"}
+                        {instant && item.required ? instant.optionalBadge : item.required ? "Required" : "Recommended"}
                       </span>
                     </div>
 
@@ -595,10 +633,16 @@ export function SellerApplicationWizard({
               </div>
             ) : null}
 
+            {instant ? (
+              <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-soft-olive)] p-5 text-sm leading-7 text-[var(--market-paper-white)]">
+                {instant.reviewNote}
+              </div>
+            ) : (
             <div className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--market-soft-olive)] p-5 text-sm leading-7 text-[var(--market-paper-white)]">
               Once you submit, your application goes to our team for review and your documents are stored securely. Publishing
               stays locked until you&rsquo;re approved.
             </div>
+            )}
           </div>
         ) : null}
 
@@ -639,7 +683,9 @@ export function SellerApplicationWizard({
                   ? "Submitting..."
                   : submitState === "submitted"
                     ? "Submitted"
-                    : "Submit seller application"}
+                    : instant
+                      ? instant.submitLabel
+                      : "Submit seller application"}
               </ActionButton>
             )}
           </div>

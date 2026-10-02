@@ -7,6 +7,8 @@ import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { approvalStatusLabel, listingGuidance } from "@/lib/marketplace/vendor/listing-guidance";
 import { formatVendorMoney } from "@/lib/marketplace/vendor/money";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { GateNote, ListingGateLine, ProbationPanel } from "@/components/marketplace/vendor/gate-panels";
+import { listingGateView, loadVendorGateSurface } from "@/lib/marketplace/publish-gate/surfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,9 @@ export default async function VendorProductsPage() {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/products");
   const data = await getVendorWorkspaceData();
+  // V3-MKT-TRUST-01 — null unless instant publish is on; then each listing shows
+  // how it stands with the gate, and a new store sees its limits.
+  const gate = await loadVendorGateSurface(data.vendor.id, locale);
 
   return (
     <WorkspaceShell
@@ -43,7 +48,9 @@ export default async function VendorProductsPage() {
               <article key={product.id} className="market-paper rounded-[1.9rem] p-6">
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                   <div className="space-y-3">
-                    <p className="market-kicker">{approvalStatusLabel(product.approvalStatus, t)}</p>
+                    <p className="market-kicker">
+                      {gate ? listingGateView(gate, product, locale).label : approvalStatusLabel(product.approvalStatus, t)}
+                    </p>
                     <h2 className="text-2xl font-semibold tracking-tight text-[var(--market-ink)]">{product.title}</h2>
                     <p className="text-sm leading-7 text-[var(--market-muted)]">{product.summary || product.description}</p>
                     <div className="flex flex-wrap gap-3 text-sm text-[var(--market-muted)]">
@@ -56,9 +63,13 @@ export default async function VendorProductsPage() {
                       <span>{t("{count} in stock").replace("{count}", String(product.stock))}</span>
                       <span>{product.leadTime || t("Lead time pending")}</span>
                     </div>
-                    <p className="text-sm leading-6 text-[var(--market-muted)]">
-                      {listingGuidance(product.filterData, t)}
-                    </p>
+                    {gate ? (
+                      <ListingGateLine view={listingGateView(gate, product, locale)} />
+                    ) : (
+                      <p className="text-sm leading-6 text-[var(--market-muted)]">
+                        {listingGuidance(product.filterData, t)}
+                      </p>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-3">
                     <Link href={`/product/${product.slug}`} className="market-button-secondary rounded-full px-4 py-2 text-sm font-semibold">
@@ -74,6 +85,16 @@ export default async function VendorProductsPage() {
           </section>
 
           <aside className="space-y-4">
+            {gate && gate.progress && gate.seller ? (
+              <ProbationPanel
+                copy={gate.copy.probation}
+                progress={gate.progress}
+                caps={gate.seller.probation.caps}
+                priceCeiling={gate.money(gate.seller.probation.caps.maxPrice)}
+                verifyHref={gate.verifyHref}
+              />
+            ) : null}
+            {gate ? <GateNote>{gate.copy.action.formIntro}</GateNote> : null}
             <article className="market-paper rounded-[1.9rem] p-6">
               <p className="market-kicker">{t("Catalog guidance")}</p>
               <div className="mt-5 space-y-4">

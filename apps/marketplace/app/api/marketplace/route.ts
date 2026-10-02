@@ -48,6 +48,8 @@ import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
 import { instantListingUpsert } from "@/lib/marketplace/publish-gate/listing-write";
 import { gateNotice } from "@/lib/marketplace/publish-gate/messages";
 import { isPolicyViolation } from "@/lib/marketplace/publish-gate/reasons";
+import { payoutBlockCode, readPayoutGate } from "@/lib/marketplace/publish-gate/payout";
+import { cartHasUnavailableListing, guardHint } from "@/lib/marketplace/publish-gate/server";
 import {
   bumpConversation,
   findOrCreateConversation,
@@ -548,6 +550,18 @@ export async function POST(request: Request) {
           .eq("cart_id", cartId);
         if (itemsError || !cartItems?.length) {
           return redirectTo(request, "/cart?error=empty-cart");
+        }
+
+        // V3-MKT-TRUST-01 — a listing taken down for review must not be buyable from
+        // a cart it was already in. Flag ON only; a read, never a write, and it runs
+        // before any order or payment object exists.
+        if (isInstantPublishEnabled()) {
+          const cartLineProductIds = (cartItems as Array<Record<string, unknown>>)
+            .map((item) => String(item.product_id || ""))
+            .filter(Boolean);
+          if (await cartHasUnavailableListing(admin, cartLineProductIds)) {
+            return redirectTo(request, "/cart?error=item-unavailable");
+          }
         }
 
         const orderNo = makeRef("MKT-ORD");
@@ -2563,6 +2577,18 @@ export async function POST(request: Request) {
         const vendorId = viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId;
         if (!vendorId) return redirectTo(request, "/vendor/payouts?error=missing-vendor");
 
+        // V3-MKT-TRUST-01 — identity stands in front of the money. Flag ON only: a
+        // store opened by instant onboarding must have a verified identity, and a
+        // staff-applied risk hold pauses any store's payout. It can only refuse —
+        // it reads two facts and writes nothing. If the gate is not installed on
+        // this database it reports `available: false` and nothing changes.
+        if (isInstantPublishEnabled()) {
+          const payoutGate = await readPayoutGate(admin, { vendorId, actorId: viewer.user.id, stage: "request" });
+          if (payoutGate.available && payoutGate.blocked) {
+            return redirectTo(request, `/vendor/payouts?error=${payoutBlockCode(payoutGate.reasons)}`);
+          }
+        }
+
         const { data: openRequest } = await admin
           .from("marketplace_payout_requests")
           .select("id, reference, status")
@@ -2609,7 +2635,7 @@ export async function POST(request: Request) {
         }
 
         const reference = makeRef("MKT-PAY");
-        const { data: payout } = await admin
+        const { data: payout, error: payoutInsertError } = await admin
           .from("marketplace_payout_requests")
           .insert({
             reference,
@@ -2620,6 +2646,15 @@ export async function POST(request: Request) {
           } as never)
           .select("id")
           .maybeSingle();
+        // V3-MKT-TRUST-01 — the database can refuse this request (the payout identity
+        // guard, whatever the flag says). When it does, NOTHING else may be written
+        // for it: no settlement group is marked requested, no notice goes out.
+        if (payoutInsertError) {
+          return redirectTo(
+            request,
+            `/vendor/payouts?error=${guardHint(payoutInsertError) === "identity_unverified" ? "identity-required" : "request-failed"}`,
+          );
+        }
 
         await admin
           .from("marketplace_order_groups")
@@ -2987,6 +3022,22 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (!payout) return redirectTo(request, "/finance?error=missing-payout");
 
+        // V3-MKT-TRUST-01 — the same wall in front of the finance decision. Flag ON
+        // only, and only for the two decisions that move a payout forward.
+        if (isInstantPublishEnabled() && (decision === "approved" || decision === "released")) {
+          const payoutGate = await readPayoutGate(admin, {
+            vendorId: String(payout.vendor_id),
+            actorId: viewer.user?.id ?? null,
+            stage: "decision",
+          });
+          if (payoutGate.available && payoutGate.blocked) {
+            return redirectTo(
+              request,
+              `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=payout-${payoutBlockCode(payoutGate.reasons)}`,
+            );
+          }
+        }
+
         const requestedStatuses = decision === "released" ? ["requested", "approved"] : ["requested"];
         const groupDecisionStatus =
           decision === "approved"
@@ -3002,7 +3053,7 @@ export async function POST(request: Request) {
           .eq("vendor_id", payout.vendor_id)
           .in("payout_status", requestedStatuses);
 
-        await admin
+        const { error: payoutDecisionError } = await admin
           .from("marketplace_payout_requests")
           .update({
             status: decision,
@@ -3011,6 +3062,17 @@ export async function POST(request: Request) {
             review_note: note || null,
           } as never)
           .eq("id", payoutId);
+        // V3-MKT-TRUST-01 — if the database refused the decision (the payout identity
+        // guard), the settlement groups must not be moved and the seller must not be
+        // told a payout was approved.
+        if (payoutDecisionError) {
+          return redirectTo(
+            request,
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=payout-${
+              guardHint(payoutDecisionError) === "identity_unverified" ? "identity-required" : "decision-failed"
+            }`,
+          );
+        }
 
         await admin
           .from("marketplace_order_groups")

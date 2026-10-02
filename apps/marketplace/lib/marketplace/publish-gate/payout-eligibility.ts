@@ -8,6 +8,12 @@
 // whose "identity verified" is deliberately stricter than the profile column —
 // that column can be written by its own user on production today, so a
 // staff-reviewed identity document is required as well.
+//
+// WHO THE IDENTITY RULE BINDS. A store opened by instant onboarding never passed
+// a human identity review, so it must verify before its first payout. A store a
+// person approved the old way handed over its identity documents at application
+// time; it is not asked again. This is exactly the rule the database trigger on
+// marketplace_payout_requests enforces — the two walls agree by construction.
 
 export type PayoutBlockReason =
   | "identity_unverified"
@@ -66,9 +72,9 @@ export function payoutEligibility(input: {
 
   if (input.facts === null) {
     reasons.push("eligibility_unavailable");
-  } else if (!input.facts.vendorFound || input.facts.vendorStatus !== "approved") {
+  } else if (!input.facts.vendorFound) {
     reasons.push("seller_not_active");
-  } else if (!input.facts.identityVerified) {
+  } else if (input.facts.instantOnboarded && !input.facts.identityVerified) {
     reasons.push("identity_unverified");
   }
 

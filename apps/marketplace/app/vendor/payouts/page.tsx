@@ -14,6 +14,8 @@ import {
 import { formatVendorMoney } from "@/lib/marketplace/vendor/money";
 import { formatDate } from "@/lib/utils";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { PayoutGatePanel } from "@/components/marketplace/vendor/gate-panels";
+import { loadPayoutGateView, payoutBlockDetail } from "@/lib/marketplace/publish-gate/surfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +28,9 @@ export default async function VendorPayoutsPage({
   const t = (text: string) => translateSurfaceLabel(locale, text);
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/payouts");
   const [data, params] = await Promise.all([getVendorWorkspaceData(), searchParams]);
+  // V3-MKT-TRUST-01 — null unless instant publish is on AND this store cannot be
+  // paid yet (identity not verified, or a staff review is open).
+  const payoutGate = await loadPayoutGateView(data.vendor.id, locale);
   // Settlement rows carry whole naira; the display seam takes kobo.
   const money = (naira: number) => formatVendorMoney(Math.round(naira * 100), locale);
 
@@ -36,7 +41,7 @@ export default async function VendorPayoutsPage({
     params.requested === "1"
       ? { kind: "success" }
       : errorCode
-        ? { kind: "error", detail: payoutRequestErrorDetail(errorCode, t) }
+        ? { kind: "error", detail: payoutRequestErrorDetail(errorCode, t) ?? payoutBlockDetail(errorCode, locale) }
         : null;
 
   const balances = [
@@ -62,6 +67,8 @@ export default async function VendorPayoutsPage({
           </article>
         ))}
       </section>
+
+      {payoutGate ? <PayoutGatePanel view={payoutGate} /> : null}
 
       <PayoutRequestForm
         outcome={outcome}
