@@ -159,7 +159,9 @@ create table if not exists public.marketplace_image_fingerprints (
   bytes bigint,
   uploader_user_id uuid,
   vendor_id uuid,
-  created_at timestamptz not null default timezone('utc', now())
+  -- Wall-clock, not transaction time: "who had this picture first" is decided on
+  -- this column, so two registrations in one transaction must still order.
+  created_at timestamptz not null default clock_timestamp()
 );
 
 create index if not exists marketplace_image_fingerprints_sha_idx
@@ -340,6 +342,7 @@ declare
   v_media text[];
   v_caps jsonb;
   v_count integer;
+  v_human_hold boolean := false;
 begin
   -- 1. Not live after this write: unconstrained.
   if new.approval_status is distinct from 'approved' then
@@ -382,16 +385,14 @@ begin
    limit 1
    for update;
 
-  if v_verdict_id is not null then
-    -- A hide that needs a human cannot be lifted by an engine verdict.
-    if exists (
-      select 1 from public.marketplace_listing_enforcement e
-      where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
-    ) then
-      raise exception 'marketplace_publish_guard: listing "%" has an open enforcement hold', new.slug
-        using errcode = 'P0001', hint = 'enforcement_hold_active';
-    end if;
+  -- A hide that needs a human cannot be lifted by an engine verdict: while one is
+  -- open the engine verdict is simply not usable, and only (B) can publish.
+  v_human_hold := exists (
+    select 1 from public.marketplace_listing_enforcement e
+    where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
+  );
 
+  if v_verdict_id is not null and not v_human_hold then
     -- Going live: every image already attached must be one the verdict covers.
     if tg_op = 'UPDATE' and not v_was_live and exists (
       select 1 from public.marketplace_product_media m
@@ -460,6 +461,11 @@ begin
     return new;
   end if;
 
+  if v_human_hold then
+    raise exception 'marketplace_publish_guard: listing "%" has an open enforcement hold', new.slug
+      using errcode = 'P0001', hint = 'enforcement_hold_active';
+  end if;
+
   raise exception 'marketplace_publish_guard: no recorded gate verdict for listing "%"', new.slug
     using errcode = 'P0001', hint = 'verdict_required';
 end;
@@ -521,7 +527,12 @@ begin
    limit 1
    for update;
 
-  if v_verdict_id is not null then
+  -- Mirrors the guard exactly: an engine verdict is not what published this row
+  -- if a staff-only hide was open — the staff branch was.
+  if v_verdict_id is not null and not exists (
+    select 1 from public.marketplace_listing_enforcement e
+    where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
+  ) then
     update public.marketplace_listing_gate_verdicts v
        set consumed_at = timezone('utc', now()),
            product_id = new.id,
@@ -1058,9 +1069,17 @@ begin
 end;
 $$;
 
--- For each of the given refs: is the same picture (identical bytes, or a
--- perceptual near-match) already attached to ANOTHER listing? `relation` says
--- whether that listing belongs to another seller or to this one.
+-- For each of the given refs: does this picture belong to someone else, or is it
+-- already on another of this seller's listings?
+--
+--   other_seller — (a) the object itself was uploaded by another store (a copied
+--                  reference), or (b) another store registered the same picture
+--                  (identical bytes, or a perceptual near-match) FIRST.
+--   same_seller  — the picture is already attached to a different listing of this
+--                  store.
+--
+-- "First" matters: when a copier re-uploads a seller's photo, the ORIGINAL owner
+-- must not be the one who gets flagged. Order is the fingerprint's created_at.
 create or replace function public.marketplace_gate_image_matches(
   p_vendor_id uuid,
   p_slug text,
@@ -1073,61 +1092,64 @@ security definer
 set search_path = public, pg_temp
 as $$
   with mine as (
-    select f.ref, f.sha256, f.phash, f.uploader_user_id, f.vendor_id
+    select f.ref, f.sha256, f.phash, f.vendor_id, f.created_at
     from public.marketplace_image_fingerprints f
     where f.ref = any (coalesce(p_refs, '{}'::text[]))
   ),
-  candidates as (
+  foreign_ref as (
+    select m.ref, 'other_seller'::text as relation, 0 as distance
+    from mine m
+    where m.vendor_id is not null and m.vendor_id is distinct from p_vendor_id
+  ),
+  twins as (
     select
-      mine.ref as ref,
-      other.ref as match_ref,
-      case when other.sha256 = mine.sha256 then 0
-           else bit_count((other.phash # mine.phash)::bit(64))::integer end as distance,
-      other.vendor_id as registered_vendor
-    from mine
-    join public.marketplace_image_fingerprints other
-      on other.ref <> mine.ref
+      m.ref,
+      o.ref as twin_ref,
+      o.vendor_id as twin_vendor,
+      o.created_at as twin_created,
+      m.created_at as my_created,
+      case when o.sha256 = m.sha256 then 0
+           else bit_count((o.phash # m.phash)::bit(64))::integer end as distance
+    from mine m
+    join public.marketplace_image_fingerprints o
+      on o.ref <> m.ref
      and (
-       other.sha256 = mine.sha256
+       o.sha256 = m.sha256
        or (
-         other.phash is not null and mine.phash is not null
-         and bit_count((other.phash # mine.phash)::bit(64)) <= greatest(0, least(coalesce(p_max_distance, 6), 16))
+         o.phash is not null and m.phash is not null
+         and bit_count((o.phash # m.phash)::bit(64)) <= greatest(0, least(coalesce(p_max_distance, 6), 16))
        )
      )
-    union all
-    -- The very same object attached elsewhere (a copied reference).
-    select mine.ref, mine.ref, 0, mine.vendor_id
-    from mine
   ),
-  used as (
-    select
-      c.ref,
-      c.match_ref,
-      c.distance,
-      p.id as product_id,
-      p.slug as product_slug,
-      p.vendor_id as product_vendor
-    from candidates c
-    join public.marketplace_product_media m on m.url = c.match_ref
-    join public.marketplace_products p on p.id = m.product_id
-    where p.slug is distinct from p_slug
+  other_first as (
+    select t.ref, 'other_seller'::text as relation, t.distance
+    from twins t
+    where t.twin_vendor is not null
+      and t.twin_vendor is distinct from p_vendor_id
+      and t.twin_created <= t.my_created
   ),
-  registered_elsewhere as (
-    select c.ref, c.match_ref, c.distance, null::uuid as product_id, null::text as product_slug,
-           c.registered_vendor as product_vendor
-    from candidates c
-    where c.match_ref <> c.ref
-      and c.registered_vendor is not null
-      and c.registered_vendor is distinct from p_vendor_id
+  own_reuse as (
+    select s.ref, 'same_seller'::text as relation, s.distance
+    from (
+      select m.ref, m.ref as attached_ref, 0 as distance from mine m
+      union all
+      select t.ref, t.twin_ref, t.distance from twins t where t.twin_vendor is not distinct from p_vendor_id
+    ) s
+    join public.marketplace_product_media md on md.url = s.attached_ref
+    join public.marketplace_products p on p.id = md.product_id
+    where p.vendor_id is not distinct from p_vendor_id
+      and p.slug is distinct from p_slug
   ),
   combined as (
-    select * from used
+    select * from foreign_ref
     union all
-    select * from registered_elsewhere
+    select * from other_first
+    union all
+    select * from own_reuse
   )
   select coalesce(jsonb_agg(distinct jsonb_build_object(
     'ref', combined.ref,
-    'relation', case when combined.product_vendor is distinct from p_vendor_id then 'other_seller' else 'same_seller' end,
+    'relation', combined.relation,
     'distance', combined.distance
   )), '[]'::jsonb)
   from combined;
