@@ -16,18 +16,21 @@ resolution + charge-amount seams with tests. What it does not have is everything
 FX seam with freshness, spread, integer rounding and a persisted snapshot; provider currency capability
 in routing; per-currency wallets; in-currency refunds, credit notes and receipts; and reconciliation
 readers that stop summing kobo with cents the moment a second currency posts. The design grounds all six
-legs on the real spine (every claim carries a `file:line`), lists the twenty NGN locks and the build step
-that widens each, specifies twelve invariants as CI rules with red conditions, orders the build by money
-risk (readers and the DB-level currency lock first, money movement last), and surfaces ten owner
-decisions, each tied to the gate it blocks.
+legs on the real spine (every claim carries a `file:line`), lists the thirty NGN locks and the build step
+that widens each, states fourteen invariants and specifies twelve of them as CI rules with red
+conditions, orders the build by money risk (the hardening of `main` first, then the readers and the
+DB-level currency lock, money movement last), and surfaces seventeen owner decisions (D-MC-00 to
+D-MC-16), each tied to the gate it blocks.
 
-Two findings about today's `main` worth knowing before any of it is built:
+Two structural facts about today's `main` worth knowing before any of it is built (the eight live
+money findings, LF-1, LF-2 and LF-5 to LF-10, are in §0 and come first in the build plan):
 
 1. **The charge-currency interlock exists on paper only.** `parseChargeCurrencies` is a pure parser
    with tests; no code in `apps/` reads a `CHARGE_CURRENCIES` env var, and the account intents route
    accepts any of the 15 codes in `CURRENCY_MAP`. Today the only thing stopping a non-NGN intent is the
-   provider account configuration. The design moves the lock into the database
-   (`payments_private.charge_currency_policy` + a `payment_intents` trigger) as build step M1.
+   provider account configuration. The design moves the lock into the database: the birth guard
+   (M-NOW, held migration) and `payments_private.charge_currency_policy` + its own `payment_intents`
+   trigger (M1).
 2. **Three readers still sum across currencies**: `wallet_ledger_reconciliation`, `vat_reconciliation`
    (which labels its global result `NGN`), and the owner finance console's TS re-derivation. With the
    July ledger migration applied, the first USD charge would post correctly in USD and then be added to
@@ -119,7 +122,7 @@ All eight go first in the build plan (M-NOW and M6) and need the owner's decisio
 
 ## 1. Grounding method
 
-Read, in full, before writing a line of design: the seven money migrations
+Read, in full, before writing a line of design: the eight money migrations
 (`20260529120000` payment_intents → `20260605123000` isolation → `20260607120000` ledger →
 `20260607130000` documents → `20260607140000` VAT → `20260611130000` refunds → `20260706120000`
 multi-currency ledger → `20260706130000` payout rail), their eight CI proof suites and the CI job that
@@ -156,16 +159,16 @@ re-derived by independent adversarial agents (§5 below).
 
 | Claim | Where in the design |
 |---|---|
-| Ledger design | §4 — per-currency books (built), two FX accounts with no v1 writer, posting rules per event, VAT in-currency with per-currency `vat_reconciliation`, per-currency `wallet_ledger_reconciliation`, hub reader per-currency, read-only consolidation at explicit reporting rates |
-| FX design | §5 — one server-only seam `resolvePayerCharge`, 30-minute rate max age, no fallback/stale charges, 15-minute quote TTL, integer `rate_e8` + `spread_bps` with a `BigInt` ceiling, per-currency floors, DB policy table as the only allowlist, append-only `fx_rate_snapshots`, snapshot frozen with the intent |
-| Provider design | §6 — `PROVIDER_CURRENCIES` joins the routing rule, acquiring-country routing kept, in-currency settlement required in v1, the owner's live settle test as the oracle (`getBalance` before/after + refund step), fees in-currency |
-| Wallet design | §7 — NGN wallets untouched (one row per user stays), per-currency wallets as separate tables with mirrored RPCs, same-currency withdrawals only, no cross-currency moves |
-| Refund design | §8 — charge currency, charged figure, never re-converted; row-currency trigger; in-currency postings; credit notes tied to the posting currency; refund leg proven before a currency can be enabled |
-| Receipt design | §9 — in-currency documents with the posting-currency tie, exponent-correct rendering, money emails made currency-aware, optional NGN-equivalent line pending the accountant |
-| Invariants as CI rules | §10 — MC-CI-01…12, each with mechanism and red condition, appended to the existing money CI job; the live settle test explicitly an owner gate, not CI |
-| Ordered M-risk build plan | §11 — M0 verify prod → M1 readers + DB lock (no money moves) → M2 FX seam → M3 provider capability → M4 refund/credit-note legs → M5 receipt leg → M6 rails dark → G3 owner gate (first currency) → M7 wallets/payouts → M8 reporting |
-| Owner decisions | §12 — D-MC-01…10, each with a recommendation and the gate it blocks |
-| Hazard register | §13 — the money-losing paths (rounding leakage, rate-move arbitrage, double conversion, refund loss, unit mix-ups, mixed books, phantom cash, posted FX) and what closes each |
+| Ledger design | §4 — per-currency books (built), two FX accounts with no v1 writer, posting rules per event, `intent_allocations` (`wallet` / `division`) with `post_sale_revenue` keyed to the `division` row and the LF-6 catch-up under the intent lock, VAT in-currency with per-currency `vat_reconciliation`, per-currency `wallet_ledger_reconciliation`, the readers migration dropping the global scalars (only p7 and mc6 amended), per-(account, currency) expectations with the explained delta, hub reader per-currency, read-only consolidation at explicit reporting rates |
+| FX design | §5 — one server-only seam `resolvePayerCharge`, freshness on the feed's own timestamp (75-minute max age, 15-minute quote TTL, 90-minute insert bound), no fallback or stale charges, integer `rate_e8` + `spread_bps` with the rate rounded up and the multiplication-form recomputation, per-currency floors, DB policy table as the only allowlist behind its own currency-guard trigger plus the birth guard, append-only `fx_rate_snapshots` frozen with the intent, the 75-minute sweeper over non-NGN card intents (7-day cancelled re-verify) with the total verify-then-decide table, late capture decided by provider capture time inside the RPC and atomic with its exception row and refund claim |
+| Provider design | §6 — `PROVIDER_CURRENCIES` + adapter-declared sets join the routing rule, acquiring-country routing kept, in-currency settlement required in v1, the confirmed-amount check in `apply_payment_webhook` (dedup first, figure check, then advance) with the `payment_exceptions` path and two-phase owner resolution, fees in-currency incl. `customer_borne` and the `fee_unreported` catch-up, chargebacks to `payment_disputes`, the owner's live settle test as the oracle (settlement record + fee line + refund step) |
+| Wallet design | §7 — NGN wallets untouched (one row per user stays) and the NGN RPCs refuse other currencies; wallet-funding identity bound through `customer_wallet_funding_requests.payment_intent_id` (pre-generated intent id, request CAS bind, strict equality in `credit_wallet_topup`); one allocation per intent, none after a refund; `topup_not_credited` for partial refunds only; terminal `needs_review` + the owner sync route; per-currency wallets as separate tables with mirrored RPCs (M7), same-currency withdrawals only, no cross-currency moves |
+| Refund design | §8 — charge currency, charged figure, never re-converted; row-currency trigger (widened in M2 so the late-capture claim can exist); `claim_refund_provider_call` CAS before any provider refund call with the sweeper as the only driver; in-currency postings; credit notes keyed by allocation kind and tied to the posting currency; refund leg proven before a currency can be enabled |
+| Receipt design | §9 — in-currency documents with the posting-currency tie, `tax_inclusive` from the VAT regime, VAT from the converted standard-rated base, exponent-correct rendering, money emails made currency-aware, optional NGN-equivalent line pending the accountant |
+| Invariants as CI rules | §3 MC-INV-01…14 as the principles; §10 — MC-CI-01…12, each with mechanism and red condition, appended to the existing money CI job (plus the version-order replay); the live settle test explicitly an owner gate, not CI |
+| Ordered M-risk build plan | §11 — M-NOW hardening of `main` (separate PR: birth guard, confirmed-amount check, allocations, wallet identity, the LF closures) → M0 + M1 one prod apply (lock first, the July migrations, then readers + payout hardening) → M2 FX seam → M3 provider capability → M4 refund/credit-note legs → M5 receipt leg → M6 rails dark → G3 owner gate (first currency) → M7 wallets/payouts → M8 reporting |
+| Owner decisions | §12 — D-MC-00…16, each with a recommendation and the gate it blocks |
+| Hazard register | §13 — the money-losing paths (rounding leakage, rate-move arbitrage, double conversion, refund loss, unit mix-ups, mixed books, phantom cash, posted FX, forged intents, late capture, double allocation) and what closes each |
 
 ## 4. Verification run in this pass
 
