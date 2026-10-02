@@ -22,8 +22,8 @@ conditions, orders the build by money risk (the hardening of `main` first, then 
 DB-level currency lock, money movement last), and surfaces seventeen owner decisions (D-MC-00 to
 D-MC-16), each tied to the gate it blocks.
 
-Two structural facts about today's `main` worth knowing before any of it is built (the eight live
-money findings, LF-1, LF-2 and LF-5 to LF-10, are in §0 and come first in the build plan):
+Two structural facts about today's `main` worth knowing before any of it is built (the nine live
+money findings, LF-1, LF-2 and LF-5 to LF-11, are in §0 and come first in the build plan):
 
 1. **The charge-currency interlock exists on paper only.** `parseChargeCurrencies` is a pure parser
    with tests; no code in `apps/` reads a `CHARGE_CURRENCIES` env var, and the account intents route
@@ -40,7 +40,7 @@ money findings, LF-1, LF-2 and LF-5 to LF-10, are in §0 and come first in the b
 
 Grounding the design found money holes that exist on `main` today, outside the multi-currency scope.
 LF-1 and LF-2 were raised by the round-1 reviewers; round 2 added LF-5, LF-6 and LF-7; round 3 added
-LF-8 and LF-9; round 4 added LF-10 (items 3–8 below). Each was re-verified line by line (design
+LF-8 and LF-9; round 4 added LF-10; round 5 added LF-11 (items 3–9 below). Each was re-verified line by line (design
 §1.5); LF-5, LF-6 and LF-8 were also reproduced by execution against the real function bodies.
 
 1. **LF-1, critical — any signed-in user can insert a `succeeded` payment intent.**
@@ -114,9 +114,23 @@ LF-8 and LF-9; round 4 added LF-10 (items 3–8 below). Each was re-verified lin
    (`studio/card-rail.ts:190-197`) and the care flip's RPC posts nothing to the ledger. Their
    captures sit in `payments_clearing` for ever and `vat_reconciliation` never sees their output
    VAT (under-remit). Fix: M6 wires both to `post_sale_revenue` on every path, NGN included, through
-   the one-allocation rule; the back-fill of live NGN sales is the owner's call (D-MC-16).
+   the one-allocation rule; the back-fill of live NGN sales is the owner's call (D-MC-16). Round 5
+   added that care does post — to its own NGN, major-unit ledger (`care_journal_entries`), a second
+   book the spine's readers never see, so a care card sale records its cash twice across the two
+   books; D-MC-16 now also asks which book is the record.
+9. **LF-11, high (live on the NGN rail; provider-conditional) — a lost refund response unwinds a
+   refund the provider made.** The staff refund route treats every non-`ok` adapter result as a
+   synchronous rejection (`refund/route.ts:202-221`), including a retryable transport error or 5xx
+   returned after the provider created the refund (`paystack-provider.ts:108-109, 117-118`;
+   `flutterwave-provider.ts:159-160, 168-169`): `fail_payment_refund` re-credits the wallet hold
+   and reverts the intent to `succeeded` (`20260611130000:399-432`), and the `refund.processed`
+   that follows finds no row in flight and is logged as an orphan with a 200 (`:498-508`;
+   `webhooks/[provider]/route.ts:181-187`). The customer then holds the re-credited, withdrawable
+   balance and the provider's cash for one top-up. Fix: unwind only on a definitive rejection; a
+   retryable error leaves the row claimed and answers 503 for the sweeper's 15-minute rule; a
+   `processed` outcome against a `failed` row is an exception, never a log (M-NOW item 13).
 
-All eight go first in the build plan (M-NOW and M6) and need the owner's decision D-MC-00.
+All nine go first in the build plan (M-NOW and M6) and need the owner's decision D-MC-00.
 
 ---
 
@@ -159,16 +173,16 @@ re-derived by independent adversarial agents (§5 below).
 
 | Claim | Where in the design |
 |---|---|
-| Ledger design | §4 — per-currency books (built), two FX accounts with no v1 writer, posting rules per event, `intent_allocations` (`wallet` / `division`) with `post_sale_revenue` keyed to the `division` row and the LF-6 catch-up under the intent lock, VAT in-currency with per-currency `vat_reconciliation`, per-currency `wallet_ledger_reconciliation`, the readers migration dropping the global scalars (only p7 and mc6 amended), per-(account, currency) expectations with the explained delta, hub reader per-currency, read-only consolidation at explicit reporting rates |
+| Ledger design | §4 — per-currency books (built), two FX accounts with no v1 writer, posting rules per event, `intent_allocations` (`wallet` / `division`) with `post_sale_revenue` keyed to the `division` row, the LF-6 catch-up under the intent lock and `refunds_present` parking the record, VAT in-currency with per-currency `vat_reconciliation`, per-currency `wallet_ledger_reconciliation`, the readers migration dropping the global scalars (only p7 and mc6 amended), per-(account, currency) expectations with the explained delta, hub reader per-currency, read-only consolidation at explicit reporting rates |
 | FX design | §5 — one server-only seam `resolvePayerCharge`, freshness on the feed's own timestamp (75-minute max age, 15-minute quote TTL, 90-minute insert bound), no fallback or stale charges, integer `rate_e8` + `spread_bps` with the rate rounded up and the multiplication-form recomputation, per-currency floors, DB policy table as the only allowlist behind its own currency-guard trigger plus the birth guard, append-only `fx_rate_snapshots` frozen with the intent, the 75-minute sweeper over non-NGN card intents (7-day cancelled re-verify) with the total verify-then-decide table, late capture decided by provider capture time inside the RPC and atomic with its exception row and refund claim |
-| Provider design | §6 — `PROVIDER_CURRENCIES` + adapter-declared sets join the routing rule, acquiring-country routing kept, in-currency settlement required in v1, the confirmed-amount check in `apply_payment_webhook` (dedup first, figure check, then advance) with the `payment_exceptions` path and two-phase owner resolution, fees in-currency incl. `customer_borne` and the `fee_unreported` catch-up, chargebacks to `payment_disputes`, the owner's live settle test as the oracle (settlement record + fee line + refund step) |
-| Wallet design | §7 — NGN wallets untouched (one row per user stays) and the NGN RPCs refuse other currencies; wallet-funding identity bound through `customer_wallet_funding_requests.payment_intent_id` (pre-generated intent id, request CAS bind, strict equality in `credit_wallet_topup`); one allocation per intent, none after a refund; `topup_not_credited` for partial refunds only; terminal `needs_review` + the owner sync route; per-currency wallets as separate tables with mirrored RPCs (M7), same-currency withdrawals only, no cross-currency moves |
-| Refund design | §8 — charge currency, charged figure, never re-converted; row-currency trigger (widened in M2 so the late-capture claim can exist); `claim_refund_provider_call` CAS before any provider refund call with the sweeper as the only driver; in-currency postings; credit notes keyed by allocation kind and tied to the posting currency; refund leg proven before a currency can be enabled |
+| Provider design | §6 — `PROVIDER_CURRENCIES` + adapter-declared sets join the routing rule, acquiring-country routing kept, in-currency settlement required in v1, the confirmed-amount check in `apply_payment_webhook` (dedup first, figure check, then advance) with the `payment_exceptions` path and two-phase owner resolution, fees in-currency incl. `customer_borne` and the `fee_unreported` catch-up, chargebacks to `payment_disputes` with an outcome, the lost-dispute posting and cap, the wallet-funding dispute hold, the owner's live settle test as the oracle (settlement record + fee line + refund step) |
+| Wallet design | §7 — NGN wallets untouched (one row per user stays) and the NGN RPCs refuse other currencies; wallet-funding identity bound through `customer_wallet_funding_requests.payment_intent_id` (pre-generated intent id, the intent inserted first then the request CAS-bound, strict equality and the intent lock in `credit_wallet_topup`); one allocation per intent, none after a refund; `topup_not_credited` for partial refunds only; terminal `needs_review` + the owner sync route; per-currency wallets as separate tables with mirrored RPCs (M7), same-currency withdrawals only, no cross-currency moves |
+| Refund design | §8 — charge currency, charged figure, never re-converted; row-currency trigger (widened in M2 so the late-capture claim can exist); `claim_refund_provider_call` / `claim_exception_refund_provider_call` CAS on a durable row before any provider refund call with the sweeper as the only driver, `cancelled` only on the provider's confirmation, the staff route unwinding only on a definitive rejection (LF-11); in-currency postings; credit notes keyed by allocation kind and tied to the posting currency; refund leg proven before a currency can be enabled |
 | Receipt design | §9 — in-currency documents with the posting-currency tie, `tax_inclusive` from the VAT regime, VAT from the converted standard-rated base, exponent-correct rendering, money emails made currency-aware, optional NGN-equivalent line pending the accountant |
 | Invariants as CI rules | §3 MC-INV-01…14 as the principles; §10 — MC-CI-01…12, each with mechanism and red condition, appended to the existing money CI job (plus the version-order replay); the live settle test explicitly an owner gate, not CI |
 | Ordered M-risk build plan | §11 — M-NOW hardening of `main` (separate PR: birth guard, confirmed-amount check, allocations, wallet identity, the LF closures) → M0 + M1 one prod apply (lock first, the July migrations, then readers + payout hardening) → M2 FX seam → M3 provider capability → M4 refund/credit-note legs → M5 receipt leg → M6 rails dark → G3 owner gate (first currency) → M7 wallets/payouts → M8 reporting |
 | Owner decisions | §12 — D-MC-00…16, each with a recommendation and the gate it blocks |
-| Hazard register | §13 — the money-losing paths (rounding leakage, rate-move arbitrage, double conversion, refund loss, unit mix-ups, mixed books, phantom cash, posted FX, forged intents, late capture, double allocation) and what closes each |
+| Hazard register | §13 — the money-losing paths (rounding leakage, rate-move arbitrage, double conversion, refund loss, unit mix-ups, mixed books, phantom cash, posted FX, forged intents, late capture, double allocation, lost chargebacks, a lost refund response) and what closes each |
 
 ## 4. Verification run in this pass
 
@@ -246,4 +260,22 @@ books gap on `main` (LF-10).
 
 New in this revision: LF-10 and D-MC-16 (studio and care revenue + output VAT on every path).
 
-### Round 5 — pending (launched against revision 5)
+### Round 5 — 30 findings (0 critical, 4 high, 10 medium, 16 low); all fixed in revision 6
+
+All five lenses ran to completion from the files. One finding is live on `main` (LF-11); one
+corrects the grounding itself (the care app's own ledger).
+
+| Lens | Findings | What changed in the design |
+|---|---|---|
+| Claims auditor | 5 (0 high, 1 medium, 4 low): the care app runs a second double-entry ledger (`care_journal_entries`: NGN, major units, no VAT account) that LF-10 described as "posts nothing" and the design never mentioned — on a care card sale the cash is recorded in both books; four anchors (an ambiguous `20260627120000` prefix, the fixture lines, `division-sale.ts:83`, the CI job's extent) | §1.1 care-ledger row; LF-10, M6, D-MC-16 and §13 reworded around which book is the record; anchors corrected |
+| Ledger / VAT / reporting | 4 (1 high, 2 medium, 1 low): after a partial refund before the sale, the LF-6 catch-up posts the right books but `finalizeSettled` still releases the order and the vendor payout at the full gross (MC-INV-14 and §4.3 contradicted each other); the credit-note dispatch had no "no allocation row" case and the catch-up's `credit_note_already_issued` raise would loop `reconcileDivisionSale`; a lost chargeback stayed in cash and VAT with the soak gate green; `post_fee_correction` had no precondition, so a correction on the wrong intent posted a second fee | `post_sale_revenue` returns `refunds_present` → `needs_review`, MC-INV-14 reworded; §8.3 no-row case + mint-or-verify + finance action; §6.7 outcome + lost-dispute posting + cap; §4.3 fee-correction guard |
+| FX / rounding / units / status | 6 (0 high, 1 medium, 5 low): the late-capture exception row was refused by the design's own `record_payment_exception` rule and had no closure; `failed` on a `pending` intent would raise on A2 (no `pending → failed`); legacy `failed` dedup rows keep the bare key, so a later capture on an old session is swallowed as `duplicate`; the customer-borne surcharge was never refunded on a late capture; a restart cancelled a completable session blind; the recomputation clause was NULL-vacuous for a currency without an exponent row | §5.2 direct insert before the status write + closure on the full refund; the in-transaction advance; the M-NOW re-key; surcharge-inclusive refunds (D-MC-14); the verify-first restart; `into strict` + `coalesce` + FK |
+| Provider / refund / receipt | 9 (2 high, 4 medium, 3 low): an exception refund had no durable row (the cap trigger refuses a `payment_refunds` row for an uncaptured intent) and `cancelled` was written before the provider confirmed the refund; refund-side exceptions were unclaimable under the charge-side status rule; **LF-11** — the staff route unwinds a refund on a retryable transport error after the provider created it (live on the NGN rail); the refund block lifted at dispute closure instead of outcome; no hold on a charged-back top-up; a failed full refund of an uncredited top-up left the request invisible; Flutterwave's refund currency check against the intent rather than the confirmed figure; the resolver committing against a refused inner call; credit notes lost on a transient failure | §6.3 `exception_refunds` + kind-dispatched phase one + `cancelled` on confirmation; §8.1 LF-11 rule + `refund_after_failed`; §6.7 outcome, posting, cap, hold; §7.1 `cancelled_by_refund` restore; the resolver raises unless applied; `credit_note_pending` on every apply + soak gate |
+| Wallet / payout / CI / build order | 6 (1 high, 2 medium, 3 low): the request was to be bound **before** the intent existed, through a plain foreign key over two auto-committed PostgREST statements (23503 on every fresh top-up of the live rail); a credit and a full refund could both commit with no intent lock and an id-only `finalizeVerified`; the failed-full-refund stranding (independently); the MC-CI-10 CHECK re-add would fail validation; the backfill referenced division tables absent at `ci.yml:211`; the studio and care flips were told to call a `payments_private` RPC with no direct-pg rail | §5.4 insert-then-bind + port self-heal; §7.1 intent lock + CAS; savepoint seeding; no division-table reference; the shared pooled-pg client in M-NOW (4) |
+
+New in this revision: LF-11; `exception_refunds`; the dispute outcome, posting, cap and
+wallet-funding hold (D-MC-10 narrowed to representment, fees and cross-currency chargebacks); the
+care-local ledger in §1.1 (D-MC-16 widened to which book is the record); `refunds_present` and the
+reworded MC-INV-14; `chargebacks` in the chart.
+
+### Round 6 — pending (launched against revision 6)

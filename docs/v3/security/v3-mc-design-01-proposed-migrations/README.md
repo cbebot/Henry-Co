@@ -19,8 +19,10 @@ Not included here (they span TypeScript and SQL and belong to the hardening PR i
 `apply_payment_webhook` confirmed-amount parameters and the `pending → processing` advance (LF-5),
 `payment_exceptions`, the intents-route replay fix, the settlement-entry requirement in the
 reconcilers, the one-allocation guard with the new `customer_wallet_funding_requests.payment_intent_id`
-column (LF-7), the no-allocation-after-refund rule (LF-8), the `:failed` dedup keys (LF-9) and the
-`post_sale_revenue` catch-up (LF-6) — design §6.3, §7.1, §5.2, §4.3 and §11 M-NOW. Sequencing note: this migration redefines nothing the two July
+column (LF-7), the no-allocation-after-refund rule (LF-8), the `:failed` dedup keys (LF-9) with the re-key of the legacy rows, the `post_sale_revenue`
+catch-up (LF-6) with `refunds_present`, the `exception_refunds` row and the kind-dispatched resolver
+(§6.3), the staff refund route's unwind-only-on-rejection rule (LF-11), and the insert-then-bind order
+with the intent lock in the wallet RPCs (§5.4, §7.1) — design §6.3, §7.1, §5.2, §4.3 and §11 M-NOW. Sequencing note: this migration redefines nothing the two July
 money files (`20260706120000`, `20260706130000`) also define, so it cannot be clobbered by them;
 every later RPC hardening must be timestamped after the file that last defined the function (design
 §7.1), and the M1 currency guard is a **separate** trigger function (`enforce_payment_intent_currency`,
