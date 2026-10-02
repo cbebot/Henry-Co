@@ -44,6 +44,7 @@ import { clipBody, screenMessageBody } from "@/lib/messaging/screen-message";
 import { createMarketplaceMessagingAdapter } from "@/lib/messaging/adapter";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
+import { createListingAiScan } from "@/lib/marketplace/publish-gate/ai";
 import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
 import { instantListingUpsert } from "@/lib/marketplace/publish-gate/listing-write";
 import { gateNotice } from "@/lib/marketplace/publish-gate/messages";
@@ -1754,6 +1755,8 @@ export async function POST(request: Request) {
             locale: gateLocale,
             publicBaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
             extraUploaders: [viewer.user.id],
+            // Null unless the optional AI screen is switched on; it can only ADD a hold.
+            aiScan: createListingAiScan(),
             resolveImageUrl: resolveMarketplaceImageUrl,
           });
 

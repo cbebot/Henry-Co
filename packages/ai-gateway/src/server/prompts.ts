@@ -13,6 +13,7 @@ import {
   buildStudioMessageRefinePrompt,
   buildStudioBriefCoachPrompt,
 } from "../studio-prompts";
+import { buildListingScreenPrompt } from "../listing-screen";
 
 // The draft surface inherits the shared doctrine (premium concierge; honesty; declines
 // competitors/anti-company; opacity) and adds its structured-output task. Output is
@@ -510,6 +511,8 @@ const PROMPT_BUILDERS: Partial<Record<AiSurfaceKey, (task: AiTask, policy: AiSur
   "intelligence.deep.listing": buildDeepListingPrompt,
   // Founder Intelligence F2 — the owner-only executive assistant.
   "hub.founder.assist": buildFounderAssistPrompt,
+  // V3-MKT-TRUST-01 — the instant-publish listing screen (platform-invoked, non-billable).
+  "marketplace.listing.screen": buildListingScreenPrompt,
 };
 
 export function buildPrompt(task: AiTask, policy: AiSurfacePolicy): AiPromptParts {
