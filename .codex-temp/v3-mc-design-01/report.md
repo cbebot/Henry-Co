@@ -37,8 +37,8 @@ Two findings about today's `main` worth knowing before any of it is built:
 
 Grounding the design found money holes that exist on `main` today, outside the multi-currency scope.
 LF-1 and LF-2 were raised by the round-1 reviewers; round 2 added LF-5, LF-6 and LF-7; round 3 added
-LF-8 and LF-9 (items 3–7 below). Each was re-verified line by line (design §1.5); LF-5, LF-6 and LF-8
-were also reproduced by execution against the real function bodies.
+LF-8 and LF-9; round 4 added LF-10 (items 3–8 below). Each was re-verified line by line (design
+§1.5); LF-5, LF-6 and LF-8 were also reproduced by execution against the real function bodies.
 
 1. **LF-1, critical — any signed-in user can insert a `succeeded` payment intent.**
    `payment_intents_insert_own` lets `authenticated` insert its own rows
@@ -105,8 +105,15 @@ were also reproduced by execution against the real function bodies.
    lets the same reference be completed afterwards is confirmed in the settle test. Fix: `failed`
    applies are keyed `<reference>:failed` and `failed → succeeded` is a legal provider-confirmed edge
    (M-NOW item 8).
+8. **LF-10, medium (books; latent until a division card flag is on) — studio and care card sales
+   never reach revenue or output VAT.** The only caller of `post_sale_revenue` is the marketplace
+   port (`sale-reconcile-port.ts:186-190`); the studio flip is a raw status update
+   (`studio/card-rail.ts:190-197`) and the care flip's RPC posts nothing to the ledger. Their
+   captures sit in `payments_clearing` for ever and `vat_reconciliation` never sees their output
+   VAT (under-remit). Fix: M6 wires both to `post_sale_revenue` on every path, NGN included, through
+   the one-allocation rule; the back-fill of live NGN sales is the owner's call (D-MC-16).
 
-All seven go first in the build plan (M-NOW) and need the owner's decision D-MC-00.
+All eight go first in the build plan (M-NOW and M6) and need the owner's decision D-MC-00.
 
 ---
 
@@ -219,4 +226,21 @@ held migration and proof passed (b0–b3) with every later suite green in all th
 New in this revision: MC-INV-14 (one allocation per intent, none after a refund, time decides late
 capture); D-MC-15 (NGN intent expiry is a separate pass); LF-8 and LF-9.
 
-### Round 4 — pending (launched against revision 4)
+### Round 4 — 47 findings (0 critical, 6 high, 19 medium, 22 low); all fixed in revision 5
+
+The first two launches of this round died when the session's usage window ran out, before any
+reviewer had produced a report; the third launch, after the reset, ran all five lenses to completion
+with the reviewers working from the files (no chain rebuild). One finding surfaced another latent
+books gap on `main` (LF-10).
+
+| Lens | Findings | What changed in the design |
+|---|---|---|
+| Claims auditor | 7 (0 high, 2 medium, 5 low): the MC-CI-02 literal allowlist omitted four functions that keep `'NGN'` until M4 or M1 (red at the M-NOW gate as written); the identity binding referenced a column that exists nowhere and a clause a BEFORE INSERT trigger cannot satisfy; N7 said M1 where the rest said M-NOW; `schema.sql:5534` is `reference`, the nullable `currency` is `:5535`; D-MC-05 reused the output-VAT anchor; the FL2 manifest's per-file apply is at `:397-399`; `pending → cancelled` already exists in the trigger and the mirror | MC-CI-02 allowlist completed; §5.4 column + sequence (with the other lenses); N7; three anchors; §5.2 whitelist wording |
+| Ledger / VAT / reporting | 8 (1 high, 3 medium, 4 low): the identity clause breaks the live NGN top-up rail at birth after M1 (independently found); the §4.5 clearing expectation is red while a wallet-refund hold is in flight; `intent_allocations` by primary key collides with the M6 studio/care sale posts, and today studio and care never post a sale at all — their output VAT never reaches the books (**LF-10**); the currency trigger lacked the superuser exemption the chain's USD fixtures need; an earlier partial's pending credit note is never minted once a later refund completes the intent with no sale leg; MC-CI-02 allowlist (independently); the CI bootstrap funding-request table lacks `metadata` / `verified_at`; `fail_payment_refund` locks refund row → intent, opposite to the webhook | §5.4 null-tolerant clause + strict equality in `credit_wallet_topup`; §4.5 hold term; §7.1 two allocation kinds with `post_sale_revenue` requiring the `division` row; §1.5 LF-10 + M6 + D-MC-16; §5.4 superuser exemption; §8.3 mint-all-pending on `refunded`; MC-CI-11 bootstrap shape; §6.3 intent-first lock |
+| FX / rounding / units | 9 (0 high, 4 medium, 5 low): out-of-order `failed` after `succeeded` raises and loops under the `:failed` keys; late capture judged on our apply time turns every on-time payment during an outage of more than 15 minutes into a refund, and a 60-minute cancel voids the 75-minute grace; cancelled sessions are never re-verified (a capture with a lost webhook is money with no record); the exception resolver refunds at the provider before checking the intent; the identity binding cannot pass BEFORE INSERT (independently); the payer VAT base is not a sub-sum of the printed lines; the receipt's `tax_minor` equality is by construction only; the exposure window is 165 minutes, not 150, and a capture after a disable was not late by rule; two drivers of the late-capture provider refund | §5.2 `already_terminal` outside `pending` / `processing`; `p_captured_at` from the signed body and the sweeper at 75 minutes; 7-day `cancelled` re-verify; §6.3 two-phase resolution + `superseded`; §5.4 pre-generated id; §9.1 `standardBasePayer` once at the seam + discounted fixture; receipt VAT tie; D-MC-03 165 min + disable → late; `claim_refund_provider_call` |
+| Provider / refund / receipt | 14 (2 high, 5 medium, 7 low): no durable claim before a provider refund call (Flutterwave has no list: two drivers = two refunds, a crash = a refund that never completes); the M2 late-capture claim creates a non-NGN refund row against the NGN-only CHECK two steps before M4 (raise loop); `failed` after `succeeded` (independently); the sweeper's table needs the raw provider status and `notFound`, which the contract lacks; `failed` intents never leave the sweep set; a customer-borne Paystack fee makes `fee_unreported` red for ever and the catch-up posts the surcharge as our fee; a refund-side `amount_mismatch` has no resolver action that can complete it; `credit_note_pending` strands studio/care partial refunds; `uuid5` is not callable on the chain or in `payments_private`'s search path; two incompatible resolver signatures; the dedup / figure-check order was unpinned; refund-side exceptions not deduplicated and a Flutterwave transport failure logged as a bad signature; a chargeback during an in-flight refund; the callback page shows "succeeded" on a mismatch | §5.2 `claim_refund_provider_call` + sweeper-only driver; refund-row widening moved to M2 + non-raise claim result; §6.6 contract additions; `failed → cancelled` after the window; §6.5 `customer_borne`; §6.3 adoption of the provider figure; §8.3 by allocation kind; `md5` key; one signature; dedup-first + per-kind exception key + idempotent `record_payment_exception`; 500 on transport failure; §6.7 `dispute_during_refund`; finalize `status: 'exception'` + §4.5 open-exception line |
+| Wallet / payout / CI / build order | 9 (2 high, 4 medium, 3 low): the identity clause unsatisfiable (independently); `payment_intent_id` exists nowhere and the CI funding-request table lacks `metadata` — the M-NOW migration could not apply at `ci.yml:211` as written; `topup_not_credited` refused the one safe refund (full) and finance had no way to run the sync for a user; three of the five "amended readers" would be vacuous before the readers migration; every new RPC refusal becomes a per-page-load retry loop in the reconcilers; MC-CI-10's non-NGN negative rows cannot be seeded under the M1 CHECK; `credit_wallet_topup` assigned to two steps; the backfill could bind a staged division intent; `post_withdrawal_fee_correction` re-admits the refused figure | §5.4 / §7.1 column + index + guarded backfill (`division = 'account'` only); `topup_not_credited` partial-only + full refund cancels the request + owner sync route; §4.1 p7 + mc6 only; §7.1 terminal `needs_review`; MC-CI-10 seeds under a dropped CHECK; §4.3 M-NOW owns `credit_wallet_topup`; §7.3 correction guards |
+
+New in this revision: LF-10 and D-MC-16 (studio and care revenue + output VAT on every path).
+
+### Round 5 — pending (launched against revision 5)
