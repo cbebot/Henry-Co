@@ -45,9 +45,12 @@ import { createMarketplaceMessagingAdapter } from "@/lib/messaging/adapter";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
 import { createListingAiScan } from "@/lib/marketplace/publish-gate/ai";
+import { emitGateEvent } from "@/lib/marketplace/publish-gate/events";
 import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
+import { classifyImage } from "@/lib/marketplace/publish-gate/image-refs";
 import { instantListingUpsert } from "@/lib/marketplace/publish-gate/listing-write";
 import { gateNotice } from "@/lib/marketplace/publish-gate/messages";
+import { evaluateStorePolicy } from "@/lib/marketplace/publish-gate/policy";
 import { isPolicyViolation } from "@/lib/marketplace/publish-gate/reasons";
 import { payoutBlockCode, readPayoutGate } from "@/lib/marketplace/publish-gate/payout";
 import { cartHasUnavailableListing, guardHint } from "@/lib/marketplace/publish-gate/server";
@@ -2903,6 +2906,56 @@ export async function POST(request: Request) {
             `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=missing-vendor`,
             { message: "Your store record could not be found.", code: "missing-vendor", status: 404 }
           );
+        }
+
+        // V3-MKT-TRUST-01 — a store's name and description are in front of buyers
+        // too, and with instant publish on no person reads them first. They go
+        // through the same deterministic content rules as a listing; anything but
+        // a clean result is refused and nothing is written. The hero picture must
+        // be a first-party upload (or the one the store already has). Flag ON only.
+        if (isInstantPublishEnabled()) {
+          const storeLocale = await getMarketplacePublicLocale();
+          const storeVerdict = evaluateStorePolicy({
+            storeName: text(formData, "name"),
+            categoryFocus: "",
+            story: text(formData, "description"),
+            locale: storeLocale,
+          });
+          const postedHero = text(formData, "hero_image_url");
+          let heroRefused = false;
+          if (postedHero && classifyImage(postedHero, process.env.NEXT_PUBLIC_SUPABASE_URL).ref === null) {
+            const { data: currentStore } = await admin
+              .from("marketplace_vendors")
+              .select("hero_image_url")
+              .eq("id", vendorId)
+              .maybeSingle();
+            heroRefused = String((currentStore as { hero_image_url?: string | null } | null)?.hero_image_url ?? "") !== postedHero;
+          }
+          if (storeVerdict.outcome !== "publish" || heroRefused) {
+            const storeReasons = heroRefused
+              ? [...storeVerdict.reasons, "image_not_first_party" as const]
+              : storeVerdict.reasons;
+            await emitGateEvent({
+              admin,
+              name: "henry.marketplace.seller_gate.decided",
+              outcome: "rejected",
+              actorId: viewer.user?.id ?? null,
+              payload: { subject: "store_profile", vendorId: String(vendorId), reasons: storeReasons },
+            });
+            const refusal = gateNotice({
+              locale: storeLocale,
+              outcome: "reject",
+              reasons: storeReasons,
+              liveEdit: false,
+              caps: null,
+            });
+            return respondError(
+              json,
+              request,
+              `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=store-profile-refused`,
+              { message: refusal.body, code: "store-profile-refused", status: 422 },
+            );
+          }
         }
 
         await admin

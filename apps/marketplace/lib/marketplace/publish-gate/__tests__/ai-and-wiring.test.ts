@@ -282,6 +282,19 @@ describe("the flag is the only switch: every wired path is behind it", () => {
     assert.ok(codeOnly(UPLOAD).includes('if (scope === "product" && isInstantPublishEnabled()) {'));
   });
 
+  it("a store's name and description are screened too (flag ON), and nothing is written when refused", () => {
+    const code = codeOnly(ROUTE);
+    const start = code.indexOf('case "vendor_store_update": {');
+    const end = code.indexOf('case "vendor_delivery_promise_upsert": {');
+    const handler = code.slice(start, end);
+    const screen = handler.indexOf("evaluateStorePolicy({");
+    const write = handler.indexOf('.from("marketplace_vendors")\n          .update({');
+    assert.ok(screen > 0 && write > 0, "both the screen and the write must exist");
+    assert.ok(screen < write, "the screen must come before the write");
+    assert.ok(handler.includes('if (storeVerdict.outcome !== "publish" || heroRefused) {'));
+    assert.ok(handler.indexOf("if (isInstantPublishEnabled()) {") < screen);
+  });
+
   it("the actor is always the session's user, never a posted value", () => {
     const code = codeOnly(ROUTE);
     const start = code.indexOf("const instant = await instantListingUpsert({");
