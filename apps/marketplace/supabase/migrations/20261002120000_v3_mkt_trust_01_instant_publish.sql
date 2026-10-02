@@ -94,7 +94,9 @@ create table if not exists public.marketplace_listing_gate_verdicts (
   signals jsonb not null default '{}'::jsonb,
   engine_version text not null default 'unknown',
   actor_user_id uuid,
-  -- 'go_live' | 'live_edit', stamped when a publish verdict is consumed.
+  -- 'go_live' | 'live_edit', stamped when a publish verdict is consumed. `consumed_at`
+  -- is wall-clock time (clock_timestamp), not transaction time: the STANDING verdict
+  -- of a listing is its most recently consumed one, so two in one transaction must order.
   transition text check (transition is null or transition in ('go_live', 'live_edit')),
   created_at timestamptz not null default now(),
   expires_at timestamptz,
@@ -543,7 +545,7 @@ begin
     where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
   ) then
     update public.marketplace_listing_gate_verdicts v
-       set consumed_at = now(),
+       set consumed_at = clock_timestamp(),
            product_id = new.id,
            transition = case when v_was_live then 'live_edit' else 'go_live' end
      where v.id = v_verdict_id;
@@ -577,7 +579,7 @@ begin
      '{}'::text[], 'db_guard',
      case when v_company then null else new.reviewed_by end,
      case when v_was_live then 'live_edit' else 'go_live' end,
-     now());
+     clock_timestamp());
 
   if not v_company then
     update public.marketplace_listing_enforcement e
@@ -967,11 +969,58 @@ begin
   values
     ('listing', v_row.id, v_row.vendor_id, v_row.slug, public.marketplace_listing_content_hash(v_row),
      v_media, 'publish', 'rescan', '{}'::text[],
-     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), now())
+     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), clock_timestamp())
   returning id into v_id;
 
   return jsonb_build_object('recorded', true, 'verdict_id', v_id);
 end;
+$$;
+
+-- Live listings whose standing verdict was minted under ANOTHER engine version —
+-- the content ruleset has moved since they were let through. Oldest first, so a
+-- bounded sweep makes progress. Read only.
+--
+-- `origin` is who ORIGINALLY let the listing through: the source of its latest
+-- consumed publish verdict that is not itself a re-scan. The sweep only takes
+-- down what the engine approved; a listing a person approved goes back to a
+-- person, however many clean re-scans it has had since.
+drop function if exists public.marketplace_gate_rescan_candidates(text, integer);
+create or replace function public.marketplace_gate_rescan_candidates(
+  p_engine_version text,
+  p_limit integer default 100
+) returns table (product_id uuid, slug text, vendor_id uuid, source text, engine_version text, origin text)
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select p.id, p.slug, p.vendor_id, s.source, s.engine_version, o.source
+    from public.marketplace_products p
+    join lateral (
+      select v.source, v.engine_version
+        from public.marketplace_listing_gate_verdicts v
+       where v.product_id = p.id
+         and v.subject_type = 'listing'
+         and v.outcome = 'publish'
+         and v.consumed_at is not null
+       order by v.consumed_at desc, v.created_at desc
+       limit 1
+    ) s on true
+    left join lateral (
+      select v.source
+        from public.marketplace_listing_gate_verdicts v
+       where v.product_id = p.id
+         and v.subject_type = 'listing'
+         and v.outcome = 'publish'
+         and v.consumed_at is not null
+         and v.source <> 'rescan'
+       order by v.consumed_at desc, v.created_at desc
+       limit 1
+    ) o on true
+   where p.approval_status = 'approved'
+     and s.engine_version is distinct from p_engine_version
+   order by p.updated_at asc nulls first, p.id
+   limit greatest(1, least(coalesce(p_limit, 100), 500));
 $$;
 
 -- ---------------------------------------------------------------------------
@@ -1298,7 +1347,7 @@ begin
     ('seller', v_vendor_id, v_slug,
      encode(sha256(convert_to(v_slug || '|' || btrim(v_app.store_name) || '|' || coalesce(v_app.story, ''), 'UTF8')), 'hex'),
      'publish', 'policy_engine', coalesce(p_reasons, '{}'::text[]), coalesce(p_signals, '{}'::jsonb),
-     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), p_actor, now())
+     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), p_actor, clock_timestamp())
   returning id into v_verdict_id;
 
   insert into public.marketplace_seller_probation (vendor_id, owner_user_id, onboarding_verdict_id)
@@ -1419,6 +1468,7 @@ revoke all on function public.marketplace_payout_identity_guard() from public, a
 revoke all on function public.marketplace_gate_seller_state(uuid, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_listing_verdict(uuid, uuid, jsonb, text[], text, text[], jsonb, text, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_rescan(uuid, text) from public, anon, authenticated;
+revoke all on function public.marketplace_gate_rescan_candidates(text, integer) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_hide_listing(uuid, text, text[], jsonb, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid, bigint) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_image_matches(uuid, text, text[], integer) from public, anon, authenticated;
@@ -1429,6 +1479,7 @@ grant execute on function public.marketplace_gate_probation_caps() to service_ro
 grant execute on function public.marketplace_gate_seller_state(uuid, text) to service_role;
 grant execute on function public.marketplace_gate_record_listing_verdict(uuid, uuid, jsonb, text[], text, text[], jsonb, text, text) to service_role;
 grant execute on function public.marketplace_gate_record_rescan(uuid, text) to service_role;
+grant execute on function public.marketplace_gate_rescan_candidates(text, integer) to service_role;
 grant execute on function public.marketplace_gate_hide_listing(uuid, text, text[], jsonb, text) to service_role;
 grant execute on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid, bigint) to service_role;
 grant execute on function public.marketplace_gate_image_matches(uuid, text, text[], integer) to service_role;

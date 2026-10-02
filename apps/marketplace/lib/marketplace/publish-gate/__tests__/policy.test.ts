@@ -6,8 +6,12 @@ import type { AiScanResult } from "@henryco/moderation";
 import {
   applyAiSignal,
   codesFromModerationDetail,
+  REPORTS_HIDE_THRESHOLD,
+  REPORTS_WINDOW_DAYS,
+  countIndependentReporters,
   evaluateListingPolicy,
   evaluateStorePolicy,
+  rescanDecision,
   mergeDbVerdict,
   unavailableVerdict,
   type GateVerdict,
@@ -384,6 +388,82 @@ describe("the store profile check at onboarding", () => {
   it("stores only machine tokens, never the text it read", () => {
     const verdict = profile({ story: "Great store. Call 08031234567 to order." });
     for (const token of verdict.moderationDetail) assert.ok(!/0803/.test(token), token);
+  });
+});
+
+describe("the sweep's decisions on an already-live listing", () => {
+  it("takes down an unambiguous violation the ENGINE let through", () => {
+    for (const origin of ["policy_engine", "backfill"]) {
+      const decision = rescanDecision({ codes: ["contact_details", "thin_listing"], origin });
+      assert.deepEqual(decision, { action: "hide", reasons: ["contact_details"] });
+    }
+  });
+
+  it("never takes down a listing a PERSON approved — it goes back to a person", () => {
+    for (const origin of ["staff_review", "pre_guard_backfill", "platform_catalog", "rescan", null, "something_new"]) {
+      const decision = rescanDecision({ codes: ["prohibited_goods"], origin });
+      assert.equal(decision.action, "review", String(origin));
+      assert.deepEqual(decision.reasons, ["prohibited_goods"]);
+    }
+  });
+
+  it("an ambiguous finding is a person's call, never a take-down", () => {
+    const decision = rescanDecision({ codes: ["restricted_item_review", "profanity"], origin: "policy_engine" });
+    assert.equal(decision.action, "review");
+    assert.deepEqual(decision.reasons, ["restricted_item_review", "profanity"]);
+  });
+
+  it("validation and limit codes are not policy violations: they never take a live listing down", () => {
+    for (const code of ["incomplete_listing", "price_invalid", "plan_listing_limit", "probation_daily_cap", "seller_not_active"] as const) {
+      assert.equal(rescanDecision({ codes: [code], origin: "policy_engine" }).action, "clear", code);
+    }
+  });
+
+  it("a clean listing is cleared, signals and all", () => {
+    assert.deepEqual(rescanDecision({ codes: ["thin_listing", "urgency_language"], origin: "policy_engine" }), {
+      action: "clear",
+      reasons: [],
+    });
+  });
+
+  const at = (day: number) => new Date(Date.UTC(2026, 9, day)).toISOString();
+  const none = new Set<string>();
+
+  it("counts people, not reports", () => {
+    const reports = [
+      { reporterId: "a", createdAt: at(1) },
+      { reporterId: "a", createdAt: at(2) },
+      { reporterId: "a", createdAt: at(3) },
+      { reporterId: "b", createdAt: at(3) },
+    ];
+    assert.equal(countIndependentReporters(reports, { since: null, excluded: none }), 2);
+  });
+
+  it("anonymous reports and other sellers never count", () => {
+    const reports = [
+      { reporterId: null, createdAt: at(1) },
+      { reporterId: "seller-1", createdAt: at(1) },
+      { reporterId: "seller-2", createdAt: at(1) },
+      { reporterId: "buyer-1", createdAt: at(1) },
+    ];
+    assert.equal(countIndependentReporters(reports, { since: null, excluded: new Set(["seller-1", "seller-2"]) }), 1);
+  });
+
+  it("reports older than the last resolved take-down are not reused", () => {
+    const reports = [
+      { reporterId: "a", createdAt: at(1) },
+      { reporterId: "b", createdAt: at(2) },
+      { reporterId: "c", createdAt: at(3) },
+      { reporterId: "d", createdAt: at(9) },
+    ];
+    assert.equal(countIndependentReporters(reports, { since: null, excluded: none }), 4);
+    assert.equal(countIndependentReporters(reports, { since: at(5), excluded: none }), 1);
+    assert.equal(countIndependentReporters(reports, { since: at(9), excluded: none }), 0);
+  });
+
+  it("the threshold is three independent buyers in fourteen days", () => {
+    assert.equal(REPORTS_HIDE_THRESHOLD, 3);
+    assert.equal(REPORTS_WINDOW_DAYS, 14);
   });
 });
 

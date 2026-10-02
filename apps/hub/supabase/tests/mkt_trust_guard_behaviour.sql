@@ -1276,6 +1276,88 @@ begin
     reset role;
   end;
 
+  -- ===== P. re-scan candidates =============================================
+  -- A listing let through under engine version "test".
+  set local role service_role;
+  v := public.marketplace_gate_record_listing_verdict(
+    a_user, va, public.mkt_trust_test_listing('mkt-trust-t-p1', 'Rescan kettle', 7000),
+    '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+  insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+    values ('mkt-trust-t-p1', va, 'Rescan kettle', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-p1', 7000, 'approved')
+    returning id into v_pid;
+  -- ...and one that is NOT live.
+  insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+    values ('mkt-trust-t-p2', va, 'Rescan draft', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-p2', 7000, 'draft');
+  reset role;
+
+  set local role service_role;
+  select count(*) into v_n from public.marketplace_gate_rescan_candidates('test', 500) c where c.slug = 'mkt-trust-t-p1';
+  reset role;
+  if v_n <> 0 then
+    raise warning 'VIOLATION P1: a listing under the CURRENT engine version was offered for re-scan'; violations := violations + 1;
+  end if;
+
+  set local role service_role;
+  select count(*) into v_n from public.marketplace_gate_rescan_candidates('test-2', 500) c
+   where c.slug = 'mkt-trust-t-p1' and c.source = 'policy_engine' and c.engine_version = 'test'
+     and c.origin = 'policy_engine';
+  reset role;
+  if v_n <> 1 then
+    raise warning 'VIOLATION P2: a listing under an OLDER engine version was not offered for re-scan'; violations := violations + 1;
+  end if;
+
+  set local role service_role;
+  select count(*) into v_n from public.marketplace_gate_rescan_candidates('test-2', 500) c where c.slug = 'mkt-trust-t-p2';
+  reset role;
+  if v_n <> 0 then
+    raise warning 'VIOLATION P3: a listing that is not live was offered for re-scan'; violations := violations + 1;
+  end if;
+
+  -- A clean re-scan refreshes the standing verdict: it is not offered again.
+  set local role service_role;
+  perform public.marketplace_gate_record_rescan(v_pid, 'test-2');
+  select count(*) into v_n from public.marketplace_gate_rescan_candidates('test-2', 500) c where c.slug = 'mkt-trust-t-p1';
+  reset role;
+  if v_n <> 0 then
+    raise warning 'VIOLATION P4: a re-scanned listing was offered again'; violations := violations + 1;
+  end if;
+
+  -- After a clean re-scan the listing still remembers who ORIGINALLY approved it:
+  -- at the next ruleset change it is offered again with that origin, not "rescan".
+  set local role service_role;
+  select count(*) into v_n from public.marketplace_gate_rescan_candidates('test-3', 500) c
+   where c.slug = 'mkt-trust-t-p1' and c.source = 'rescan' and c.origin = 'policy_engine';
+  reset role;
+  if v_n <> 1 then
+    raise warning 'VIOLATION P4b: the original approver was lost after a re-scan'; violations := violations + 1;
+  end if;
+
+  -- A listing a PERSON approved keeps that origin (the sweep must not auto-hide it).
+  set local role service_role;
+  select count(*) into v_n from public.marketplace_gate_rescan_candidates('test-3', 500) c
+   where c.origin = 'staff_review';
+  reset role;
+  if v_n < 1 then
+    raise warning 'VIOLATION P4c: no staff-approved listing reported its origin as staff_review'; violations := violations + 1;
+  end if;
+
+  -- The limit is honoured and never unbounded.
+  set local role service_role;
+  select count(*) into v_n from public.marketplace_gate_rescan_candidates('no-such-version', 1);
+  reset role;
+  if v_n > 1 then
+    raise warning 'VIOLATION P5: the candidate limit was ignored (% rows for limit 1)', v_n; violations := violations + 1;
+  end if;
+
+  begin
+    set local role authenticated;
+    perform count(*) from public.marketplace_gate_rescan_candidates('test', 10);
+    reset role;
+    raise warning 'VIOLATION P6: authenticated listed re-scan candidates'; violations := violations + 1;
+  exception when insufficient_privilege then
+    reset role;
+  end;
+
   if violations > 0 then
     raise exception 'V3-MKT-TRUST-01 guard behaviour FAILED: % violation(s)', violations;
   end if;

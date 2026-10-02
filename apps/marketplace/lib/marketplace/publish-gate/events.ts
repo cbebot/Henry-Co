@@ -9,7 +9,7 @@ import "server-only";
 import { emitEvent, persistEvent, type HenryEventName } from "@henryco/observability";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-type GateEventOutcome = "approved" | "pending" | "rejected" | "blocked" | "failed" | "removed" | "resolved";
+type GateEventOutcome = "approved" | "pending" | "rejected" | "blocked" | "failed" | "removed" | "resolved" | "completed";
 
 export function outcomeToEvent(outcome: "publish" | "hold" | "reject"): GateEventOutcome {
   if (outcome === "publish") return "approved";

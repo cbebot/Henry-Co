@@ -18,7 +18,9 @@ import type { MarketplaceVendor } from "../types";
 import {
   composeOutcome,
   isGateReasonCode,
+  isPolicyViolation,
   normalizeReasons,
+  reasonClass,
   type GateOutcome,
   type GateReasonCode,
   type HoldReason,
@@ -269,6 +271,60 @@ export function evaluateStorePolicy(input: {
   const moderationDetail = [...(content.detail ?? [])];
   const reasons = normalizeReasons(codesFromModerationDetail(moderationDetail));
   return { outcome: composeOutcome(reasons), reasons, moderationDetail };
+}
+
+// ---- after publish: the sweep's decisions (pure) --------------------------------
+
+export type RescanAction = "hide" | "review" | "clear";
+
+/**
+ * What a re-scan of an ALREADY-LIVE listing does with what it found.
+ *
+ *   hide    an unambiguous violation, on a listing the ENGINE let through;
+ *   review  anything a person should look at: an ambiguous finding, or any
+ *           finding at all on a listing a PERSON approved — the sweep never
+ *           overrules a human decision;
+ *   clear   nothing found.
+ */
+export function rescanDecision(input: {
+  codes: ReadonlyArray<GateReasonCode>;
+  /** Source of the verdict that originally let the listing through. */
+  origin: string | null;
+}): { action: RescanAction; reasons: GateReasonCode[] } {
+  const codes = normalizeReasons(input.codes);
+  const violations = codes.filter(isPolicyViolation);
+  const ambiguous = codes.filter((code) => reasonClass(code) === "hold");
+  const engineApproved = input.origin === "policy_engine" || input.origin === "backfill";
+  if (violations.length > 0 && engineApproved) return { action: "hide", reasons: violations };
+  if (violations.length > 0 || ambiguous.length > 0) return { action: "review", reasons: [...violations, ...ambiguous] };
+  return { action: "clear", reasons: [] };
+}
+
+/** Independent buyers who must report a listing before it is taken down for review. */
+export const REPORTS_HIDE_THRESHOLD = 3;
+export const REPORTS_WINDOW_DAYS = 14;
+
+/**
+ * How many DIFFERENT people reported a listing, counting only reports that are
+ * newer than its last resolved take-down and that did not come from an excluded
+ * account (other sellers: a competitor must not be able to pull a rival's
+ * listing). An anonymous report (no reporter id) never counts.
+ */
+export function countIndependentReporters(
+  reports: ReadonlyArray<{ reporterId: string | null; createdAt: string }>,
+  options: { since: string | null; excluded: ReadonlySet<string> },
+): number {
+  const since = options.since ? new Date(options.since).getTime() : null;
+  const people = new Set<string>();
+  for (const report of reports) {
+    if (!report.reporterId || options.excluded.has(report.reporterId)) continue;
+    if (since !== null) {
+      const at = new Date(report.createdAt).getTime();
+      if (!Number.isFinite(at) || at <= since) continue;
+    }
+    people.add(report.reporterId);
+  }
+  return people.size;
 }
 
 const AI_REASON_MAP: Record<string, HoldReason> = {
