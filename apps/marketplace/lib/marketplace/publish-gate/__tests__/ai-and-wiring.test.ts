@@ -106,7 +106,7 @@ describe("the optional AI screen", () => {
 
   it("only sends pictures served from this deployment's own storage", () => {
     const code = codeOnly(AI);
-    assert.ok(code.includes('parsed.protocol === "https:" && parsed.host.toLowerCase() === host'));
+    assert.ok(code.includes('parsed.protocol === "https:" && classifyImage(url, publicBases).ref !== null'));
   });
 });
 

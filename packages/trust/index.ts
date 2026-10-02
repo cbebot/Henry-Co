@@ -7,6 +7,7 @@ export {
 
 export {
   detectContactDetails,
+  foldForScreening,
   type ContactConfidence,
   type ContactDetailsResult,
   type ContactHit,

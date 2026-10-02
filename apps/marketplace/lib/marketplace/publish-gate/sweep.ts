@@ -298,6 +298,9 @@ async function sweepPolicy(admin: GateAdmin, summary: TrustSweepSummary): Promis
 // 2. Reports
 // ---------------------------------------------------------------------------
 
+/** A reporter's account must be at least this old to count towards a take-down. */
+export const REPORTER_MIN_ACCOUNT_AGE_DAYS = 7;
+
 async function sweepReports(admin: GateAdmin, summary: TrustSweepSummary, now: Date): Promise<void> {
   const windowStart = new Date(now.getTime() - REPORTS_WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString();
   let rows: Array<{ content_id: string; reporter_id: string | null; reason_code: string; created_at: string }> = [];
@@ -345,17 +348,35 @@ async function sweepReports(admin: GateAdmin, summary: TrustSweepSummary, now: D
   // Other sellers do not count towards a take-down: a competitor (or a ring of
   // them) must not be able to pull a rival's listing by reporting it.
   const reporterIds = Array.from(new Set(rows.map((row) => row.reporter_id).filter((id): id is string => Boolean(id))));
+  // Nor do accounts made for the purpose: a reporter counts only when the account
+  // existed for a week before the first report in the window. If either read
+  // fails, nothing is taken down on this pass — a take-down is never decided on
+  // a list of reporters that could not be checked.
   const sellers = new Set<string>();
   try {
-    const { data } = await admin
+    const { data, error } = await admin
       .from("marketplace_role_memberships")
       .select("user_id")
       .eq("role", "vendor")
       .eq("is_active", true)
       .in("user_id", reporterIds);
+    if (error) return;
     for (const row of (data ?? []) as Array<{ user_id: string | null }>) if (row.user_id) sellers.add(String(row.user_id));
+
+    const cutoff = now.getTime() - REPORTER_MIN_ACCOUNT_AGE_DAYS * 24 * 60 * 60 * 1000;
+    const established = new Set<string>();
+    const { data: profiles, error: profileError } = await admin
+      .from("customer_profiles")
+      .select("id, created_at")
+      .in("id", reporterIds);
+    if (profileError) return;
+    for (const row of (profiles ?? []) as Array<{ id: string; created_at: string | null }>) {
+      const created = row.created_at ? new Date(row.created_at).getTime() : Number.NaN;
+      if (Number.isFinite(created) && created <= cutoff) established.add(String(row.id));
+    }
+    for (const id of reporterIds) if (!established.has(id)) sellers.add(id);
   } catch {
-    // If the roles cannot be read, nobody is excluded.
+    return;
   }
 
   const judged = await judgedUpTo(admin, Array.from(reportsByProduct.keys()), "reports", "lastReportAt");

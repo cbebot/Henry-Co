@@ -24,11 +24,12 @@ import type { AiScanResult } from "@henryco/moderation";
 import { MARKETPLACE_IMAGE_BUCKET } from "../media-image";
 import type { MarketplaceVendor } from "../types";
 import { fingerprintImageBytes, type ImageFingerprint } from "./image-fingerprint";
-import { classifyImage, classifyImageSet, storageKeyOf } from "./image-refs";
+import { classifyImage, classifyImageSet, storageKeyOf, type PublicMediaBases } from "./image-refs";
 import { buildListingRow, type HashedListingRow, type ListingDraft } from "./listing-row";
 import {
   applyAiSignal,
   evaluateListingPolicy,
+  listingText,
   mergeDbVerdict,
   unavailableVerdict,
   type GateVerdict,
@@ -360,6 +361,49 @@ export async function readImageMatches(
   }
 }
 
+/**
+ * The pictures the listing's STANDING verdict covers — the only ones an edit may
+ * keep without their being checked again. Anything else on the row (for example
+ * something a draft save put there) is treated as newly posted. A failed read
+ * answers "none": nothing is waved through on a guess.
+ */
+export async function readStandingMediaRefs(admin: GateAdmin, productId: string): Promise<string[]> {
+  try {
+    const { data, error } = await admin
+      .from("marketplace_listing_gate_verdicts")
+      .select("media_refs")
+      .eq("product_id", productId)
+      .eq("subject_type", "listing")
+      .eq("outcome", "publish")
+      .not("consumed_at", "is", null)
+      .order("consumed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error || !data) return [];
+    const refs = (data as { media_refs?: unknown }).media_refs;
+    return Array.isArray(refs) ? refs.filter((ref): ref is string => typeof ref === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+/** How many times the optional AI screen has run for this store in the last 24 hours. Null when unknown. */
+export async function countRecentAiScreens(admin: GateAdmin, vendorId: string): Promise<number | null> {
+  try {
+    const { count, error } = await admin
+      .from("marketplace_listing_gate_verdicts")
+      .select("id", { count: "exact", head: true })
+      .eq("vendor_id", vendorId)
+      .eq("subject_type", "listing")
+      .eq("signals->>aiConsulted", "true")
+      .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+    if (error) return null;
+    return count ?? 0;
+  } catch {
+    return null;
+  }
+}
+
 /** Deploy-time list of banned image hashes: sha256 hex, or a perceptual hash written "<pos>:<neg>". */
 export function knownBadImageHashes(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
@@ -451,6 +495,8 @@ export async function recordListingVerdict(
 /** The optional AI step. Implemented by ./ai; absent, dark or failing means "no signal". */
 export type ListingAiScan = (input: {
   actorId: string;
+  /** The store, for the per-store daily limit. */
+  vendorId: string;
   slug: string;
   text: string;
   imageUrls: ReadonlyArray<string>;
@@ -470,7 +516,7 @@ export interface ListingGateRequest {
   existingCurrency?: string | null;
   openDisputeCount: number;
   locale: string;
-  publicBaseUrl: string | null | undefined;
+  publicBaseUrl: PublicMediaBases;
   source?: "policy_engine" | "backfill";
   /** Staff acting for a store (or the backfill operator) may use their own uploads too. */
   extraUploaders?: ReadonlyArray<string>;
@@ -571,6 +617,7 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
 
   const policyInput: ListingGateInput = {
     listing: {
+      slug: draft.slug,
       title: draft.title,
       summary: draft.summary,
       description: draft.description,
@@ -589,6 +636,7 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
       matches,
       hashes: fingerprints.hashes,
       knownBadHashes: knownBadImageHashes(),
+      unfingerprinted: fingerprints.missing,
     },
     seller,
     vendor: request.vendor,
@@ -606,8 +654,10 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
     try {
       ai = await request.aiScan({
         actorId: request.actorId,
+        vendorId: request.vendorId,
         slug: draft.slug,
-        text: [draft.title, draft.summary, draft.description].filter(Boolean).join("\n"),
+        // Everything the deterministic rules read, so no field is screened by one layer only.
+        text: listingText(policyInput.listing),
         imageUrls: images.refs
           .map((ref) => request.resolveImageUrl?.(ref) ?? null)
           .filter((url): url is string => typeof url === "string" && url.length > 0),

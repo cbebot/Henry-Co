@@ -24,10 +24,10 @@ import { guardHint, isMissingRpc, readStaffRiskHold, type GateAdmin } from "./se
 
 export type InstantOnboardResult =
   | { kind: "opened"; vendorId: string; slug: string; identityVerified: boolean }
-  | { kind: "already_seller"; vendorId: string | null }
+  | { kind: "already_seller"; vendorId: string | null; vendorStatus: string | null }
   | {
       kind: "review";
-      why: "held" | "handle_taken" | "gate_not_installed" | "error";
+      why: "held" | "handle_taken" | "prior_decision" | "gate_not_installed" | "error";
       reasons: GateReasonCode[];
     };
 
@@ -104,7 +104,9 @@ export async function instantOnboard(
       ? ("gate_not_installed" as const)
       : guardHint(error) === "store_handle_taken"
         ? ("handle_taken" as const)
-        : ("error" as const);
+        : guardHint(error) === "prior_human_decision"
+          ? ("prior_decision" as const)
+          : ("error" as const);
     await emitGateEvent({
       admin,
       name: "henry.marketplace.seller_gate.decided",
@@ -138,7 +140,11 @@ export async function instantOnboard(
   }
 
   if (payload.why === "already_seller") {
-    return { kind: "already_seller", vendorId: typeof payload.vendor_id === "string" ? payload.vendor_id : null };
+    return {
+      kind: "already_seller",
+      vendorId: typeof payload.vendor_id === "string" ? payload.vendor_id : null,
+      vendorStatus: typeof payload.vendor_status === "string" ? payload.vendor_status : null,
+    };
   }
 
   await emitGateEvent({

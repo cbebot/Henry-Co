@@ -22,6 +22,7 @@ declare
   v_ok boolean;
   v_cfg text[];
   v_secdef boolean;
+  r record;
 begin
   -- 1 + 2. tables
   for t in select unnest(array[
@@ -78,6 +79,8 @@ begin
     'public.marketplace_products_publish_record()',
     'public.marketplace_product_media_guard()',
     'public.marketplace_payout_identity_guard()',
+    'public.marketplace_product_variant_guard()',
+    'public.marketplace_vendors_probation_enroll()',
     'public.marketplace_gate_seller_state(uuid,text)',
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
@@ -130,6 +133,8 @@ begin
     'public.marketplace_products_publish_record()',
     'public.marketplace_product_media_guard()',
     'public.marketplace_payout_identity_guard()',
+    'public.marketplace_product_variant_guard()',
+    'public.marketplace_vendors_probation_enroll()',
     'public.marketplace_gate_seller_state(uuid,text)',
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
@@ -196,6 +201,43 @@ begin
   ) then
     raise warning 'VIOLATION: payout identity guard trigger missing or disabled'; violations := violations + 1;
   end if;
+  -- the payout guard must see EVERY update (a request re-pointed to another store), not only `update of status`
+  if exists (
+    select 1 from pg_trigger tg
+    where tg.tgrelid = 'public.marketplace_payout_requests'::regclass and tg.tgname = 'marketplace_payout_identity_guard'
+      and tg.tgattr::text <> ''
+  ) then
+    raise warning 'VIOLATION: payout identity guard is limited to a column list'; violations := violations + 1;
+  end if;
+  if not exists (
+    select 1 from pg_trigger tg
+    where tg.tgrelid = 'public.marketplace_product_variants'::regclass and tg.tgname = 'marketplace_product_variant_guard'
+      and not tg.tgisinternal and tg.tgenabled = 'O'
+      and (tg.tgtype & 2) = 2 and (tg.tgtype & 4) = 4 and (tg.tgtype & 16) = 16 and (tg.tgtype & 1) = 1
+  ) then
+    raise warning 'VIOLATION: variant guard trigger missing or disabled'; violations := violations + 1;
+  end if;
+  if not exists (
+    select 1 from pg_trigger tg
+    where tg.tgrelid = 'public.marketplace_vendors'::regclass and tg.tgname = 'marketplace_vendors_probation_enroll'
+      and not tg.tgisinternal and tg.tgenabled = 'O'
+      and (tg.tgtype & 2) = 0 and (tg.tgtype & 4) = 4 and (tg.tgtype & 1) = 1
+  ) then
+    raise warning 'VIOLATION: probation enrolment trigger missing or disabled'; violations := violations + 1;
+  end if;
+
+  -- 6b. no request role may add a trigger to, or truncate, a guarded table
+  for r in
+    select t.tbl, ro.rolname, pr.priv
+      from (values ('public.marketplace_products'), ('public.marketplace_product_media'),
+                   ('public.marketplace_product_variants'), ('public.marketplace_payout_requests'),
+                   ('public.marketplace_vendors')) t(tbl)
+     cross join (values ('anon'), ('authenticated'), ('service_role')) ro(rolname)
+     cross join (values ('TRIGGER'), ('TRUNCATE')) pr(priv)
+     where has_table_privilege(ro.rolname, t.tbl, pr.priv)
+  loop
+    raise warning 'VIOLATION: % holds % on %', r.rolname, r.priv, r.tbl; violations := violations + 1;
+  end loop;
 
   -- 7. one active hide per listing
   if not exists (

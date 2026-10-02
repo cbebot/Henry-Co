@@ -78,9 +78,9 @@ export default async function OwnerMarketplaceTrustPage({
     <div className="space-y-6 acct-fade-in">
       <OwnerPageHeader eyebrow={`${brand} · ${owner.kicker}`} title={owner.title} description={owner.body} />
 
-      {done === "restored" ? <OwnerNotice tone="good" title={owner.restored} body={owner.body} /> : null}
-      {done === "upheld" ? <OwnerNotice tone="info" title={owner.upheld} body={owner.body} /> : null}
-      {done === "failed" ? <OwnerNotice tone="critical" title={owner.actionFailed} body={owner.body} /> : null}
+      {done === "restored" ? <OwnerNotice tone="good" title={owner.restored} body={owner.restoredBody} /> : null}
+      {done === "upheld" ? <OwnerNotice tone="info" title={owner.upheld} body={owner.upheldBody} /> : null}
+      {done === "failed" ? <OwnerNotice tone="critical" title={owner.actionFailed} body={owner.actionFailedBody} /> : null}
       {done === "staff-role" ? (
         <OwnerNotice tone="warning" title={owner.actionFailed} body={owner.staffRoleRequired} />
       ) : null}

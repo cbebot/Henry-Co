@@ -81,6 +81,7 @@ What stays, deliberately:
 | `MARKETPLACE_INSTANT_PUBLISH_AI` | marketplace | `1` adds the optional AI screen. Also needs the AI gateway switch and V3-43 applied. |
 | `MARKETPLACE_TRUST_AI_DAILY_BUDGET_KOBO` | marketplace | daily ceiling for that screen. Default 100,000 (₦1,000). |
 | `MARKETPLACE_KNOWN_BAD_IMAGE_HASHES` | marketplace | optional comma-separated list of banned image hashes (sha256). |
+| `MEDIA_PUBLIC_BASE_URL` | marketplace | already supported: if pictures are served through a delivery base in front of storage, the gate treats that base as first-party too. |
 | `CRON_SECRET` | marketplace | already set; the hourly automation cron now also runs the take-down sweep when the flag is on. |
 
 ## Optional dependencies
@@ -115,12 +116,30 @@ commit;
 Stock, rating, review count, the featured flag and the paid "Henry Onyx Verified" badge are not
 content and can be changed freely.
 
+**Variants of a live listing.** A variant's options, price and SKU cannot be added or changed
+while its listing is live, and the gate never publishes a listing that carries variants by itself
+— a person approves it. To change variants by hand, use the same three steps as above (take it out
+of the catalogue, change, approve). Stock and status of a variant can be changed freely.
+
+**Deleting a category, a brand or a store that a live listing points at.** Those deletes clear the
+reference on the listing, which is a content change with no decision behind it, so the database
+refuses the delete. Take the listings out of the catalogue first (or move them), then delete.
+
+**A listing's id cannot be changed.**
+
+**A store approved without documents is on probation.** With the flag on, identity and payout
+documents are optional on an application. If you approve one that has none, the store opens with
+the new-store limits and needs a verified identity before its first payout, exactly like a store
+the gate opened.
+
 **The dev demo seed** (`apps/marketplace/scripts/seed-marketplace.mjs`) inserts demo vendor
 listings as already approved; against a database with this migration those rows are refused. The
 production catalogue bootstrap is unaffected (company inventory is allowed).
 
 **A hand approval needs a staff account.** Approving a listing from the hub or the marketplace
 console is refused unless the acting account holds a marketplace staff role. Step 4 lists who does.
+(The approval also carries the time it was made; if an account on that list is still refused, the
+application server's clock is more than a few minutes away from the database's.)
 
 **The plan allowance still applies.** A store on the launch plan can hold three listings. That is
 the existing commercial limit; the new-store limits sit on top of it.
@@ -140,5 +159,8 @@ it lands, append:
   resized or mirrored copies, not crops or overlays. Details and measurements: design doc §3.8.
 - The report-based take-down needs V3-25's tables. Its public reporting screens, appeals and the
   moderation queue's own interface are V3-MKT-TRUST-02.
-- The optional AI screen is not deduplicated: re-publishing the same listing calls it again. The
-  daily budget bounds the cost.
+- The optional AI screen is not deduplicated: re-publishing the same listing calls it again. One
+  store can trigger at most 12 screens a day, and the daily budget bounds the total.
+- The content rules are a deterministic floor. They do not read a number spelled only in Pidgin,
+  Yoruba, Igbo or Hausa words, a number written backwards, or anything inside a picture. Details:
+  design doc §3.9.

@@ -26,6 +26,8 @@ with fn(sig, rpc) as (
     ('public.marketplace_products_publish_record()', false),
     ('public.marketplace_product_media_guard()', false),
     ('public.marketplace_payout_identity_guard()', false),
+    ('public.marketplace_product_variant_guard()', false),
+    ('public.marketplace_vendors_probation_enroll()', false),
     ('public.marketplace_gate_seller_state(uuid,text)', true),
     ('public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)', true),
     ('public.marketplace_gate_record_rescan(uuid,text)', true),
@@ -84,7 +86,9 @@ trg(tbl_name, trg_name) as (
   values ('marketplace_products', 'marketplace_products_publish_guard'),
          ('marketplace_products', 'marketplace_products_publish_record'),
          ('marketplace_product_media', 'marketplace_product_media_guard'),
-         ('marketplace_payout_requests', 'marketplace_payout_identity_guard')
+         ('marketplace_payout_requests', 'marketplace_payout_identity_guard'),
+         ('marketplace_product_variants', 'marketplace_product_variant_guard'),
+         ('marketplace_vendors', 'marketplace_vendors_probation_enroll')
 ),
 trigger_checks as (
   select 'trigger ' || trg_name || ' on ' || tbl_name || ' is present and enabled' as check_name,
@@ -94,6 +98,17 @@ trigger_checks as (
               and t.tgname = trg_name and not t.tgisinternal and t.tgenabled <> 'D'
          ) as ok
   from trg
+),
+privilege_checks as (
+  select 'no request role can add a trigger to, or truncate, ' || t.tbl as check_name,
+         not exists (
+           select 1
+             from (values ('anon'), ('authenticated'), ('service_role')) ro(rolname)
+            cross join (values ('TRIGGER'), ('TRUNCATE')) pr(priv)
+            where has_table_privilege(ro.rolname, 'public.' || t.tbl, pr.priv)
+         ) as ok
+  from (values ('marketplace_products'), ('marketplace_product_media'), ('marketplace_product_variants'),
+               ('marketplace_payout_requests'), ('marketplace_vendors')) t(tbl)
 ),
 data_checks as (
   select 'every listing that is live has a verdict on record' as check_name,
@@ -111,6 +126,8 @@ union all
 select check_name, case when ok then 'PASS' else 'FAIL' end from table_checks
 union all
 select check_name, case when ok then 'PASS' else 'FAIL' end from trigger_checks
+union all
+select check_name, case when ok then 'PASS' else 'FAIL' end from privilege_checks
 union all
 select check_name, case when ok then 'PASS' else 'FAIL' end from data_checks
 order by 2, 1;

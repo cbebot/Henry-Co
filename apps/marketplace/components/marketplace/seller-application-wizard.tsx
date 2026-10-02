@@ -268,8 +268,13 @@ export function SellerApplicationWizard({
       // The server may answer with the gate's own outcome (store opened, or held
       // for a person). When it does, that message is the acknowledgement.
       const answer = (await response.json().catch(() => null)) as {
-        onboarding?: { opened?: boolean; notice?: { title?: string; body?: string } };
+        onboarding?: { opened?: boolean; existing?: boolean; notice?: { title?: string; body?: string } };
       } | null;
+      // The account already has a store: there is nothing to announce, only somewhere to go.
+      if (answer?.onboarding?.existing) {
+        router.push("/vendor");
+        return;
+      }
       if (answer?.onboarding?.notice?.title) {
         const opened = answer.onboarding.opened === true;
         pushToast(answer.onboarding.notice.title, opened ? "success" : "info", answer.onboarding.notice.body, {

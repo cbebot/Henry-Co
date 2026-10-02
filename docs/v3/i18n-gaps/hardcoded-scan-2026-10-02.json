@@ -1,6 +1,6 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-10-02T06:20:16.193Z",
+  "generatedAt": "2026-10-02T19:48:11.599Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
@@ -12,7 +12,7 @@
       "EXEMPT": 131,
       "AMBIGUOUS": 52
     },
-    "durationMs": 4847
+    "durationMs": 8530
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
@@ -6183,7 +6183,7 @@
     ],
     "apps/marketplace/components/marketplace/seller-application-wizard.tsx": [
       {
-        "line": 396,
+        "line": 401,
         "col": 81,
         "kind": "jsx_text",
         "text": "Store name",
@@ -6191,7 +6191,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 404,
+        "line": 409,
         "col": 81,
         "kind": "jsx_text",
         "text": "Store slug",
@@ -6199,7 +6199,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 412,
+        "line": 417,
         "col": 81,
         "kind": "jsx_text",
         "text": "Legal business name",
@@ -6207,7 +6207,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 420,
+        "line": 425,
         "col": 81,
         "kind": "jsx_text",
         "text": "Operating phone",
@@ -6215,7 +6215,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 428,
+        "line": 433,
         "col": 81,
         "kind": "jsx_text",
         "text": "Category focus",
@@ -6223,7 +6223,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 433,
+        "line": 438,
         "col": 19,
         "kind": "attr:placeholder",
         "text": "Premium home, founder office, elevated style...",
@@ -6231,7 +6231,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 448,
+        "line": 453,
         "col": 81,
         "kind": "jsx_text",
         "text": "Store story and trust angle",
@@ -6239,7 +6239,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 454,
+        "line": 459,
         "col": 19,
         "kind": "attr:placeholder",
         "text": "Explain what you sell, why buyers should trust the store, and the service standard you can maintain.",
@@ -6247,7 +6247,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 463,
+        "line": 468,
         "col": 90,
         "kind": "jsx_text",
         "text": "Verification posture",
@@ -6255,7 +6255,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 464,
+        "line": 469,
         "col": 98,
         "kind": "jsx_text",
         "text": "Live trust gating",
@@ -6263,7 +6263,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 473,
+        "line": 478,
         "col": 21,
         "kind": "jsx_text",
         "text": "Founder identity and payout proof are required before we can complete your verification review.",
@@ -6271,7 +6271,7 @@
         "reason": "matches exempt.json strings allow-list"
       },
       {
-        "line": 474,
+        "line": 479,
         "col": 21,
         "kind": "jsx_text",
         "text": "Business registration is recommended for faster approval and fewer clarification requests.",
@@ -6279,7 +6279,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 475,
+        "line": 480,
         "col": 21,
         "kind": "jsx_text",
         "text": "Your uploaded documents are stored securely and used only to verify your store during review.",
@@ -6287,7 +6287,7 @@
         "reason": "matches exempt.json strings allow-list"
       },
       {
-        "line": 544,
+        "line": 549,
         "col": 68,
         "kind": "jsx_text",
         "text": "No file uploaded yet",
@@ -6295,7 +6295,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 560,
+        "line": 565,
         "col": 65,
         "kind": "attr:label",
         "text": "Uploading seller document",

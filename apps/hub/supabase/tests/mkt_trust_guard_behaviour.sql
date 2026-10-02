@@ -19,6 +19,9 @@
 --   M. payout identity                       (self-set status is not identity)
 --   N. instant onboarding                    (actor binding, idempotence, probation row)
 --   O. duplicate images                      (identical bytes / near match, across sellers)
+--   P. re-scan candidates                    (who is offered, origin, limit)
+--   Q. adversarial round 1                   (id change, variants, a later trigger, multi-row cap,
+--                                             document-less stores, a prior human decision, payouts)
 
 -- Run far from UTC ON PURPOSE. Every clock comparison in the guard must hold for
 -- a true instant whatever the session's TimeZone is: the staff branch compares a
@@ -37,8 +40,12 @@ delete from public.marketplace_products where slug like 'mkt-trust-t-%';
 delete from public.marketplace_role_memberships where user_id in (
   'a1000000-0000-4000-8000-000000000001', 'a1000000-0000-4000-8000-000000000002',
   'a1000000-0000-4000-8000-000000000003', 'a1000000-0000-4000-8000-000000000004',
-  'a1000000-0000-4000-8000-000000000005', 'a1000000-0000-4000-8000-000000000006');
+  'a1000000-0000-4000-8000-000000000005', 'a1000000-0000-4000-8000-000000000006',
+  'a1000000-0000-4000-8000-00000000000a', 'a1000000-0000-4000-8000-00000000000b',
+  'a1000000-0000-4000-8000-00000000000c', 'a1000000-0000-4000-8000-00000000000d');
 delete from public.marketplace_role_memberships where normalized_email like '%@mkt-trust.test';
+drop trigger if exists zz_mkt_trust_t_rewrite on public.marketplace_products;
+drop function if exists public.mkt_trust_t_rewrite();
 delete from public.marketplace_vendor_applications where proposed_store_slug like 'mkt-trust-t-%';
 delete from public.marketplace_vendors where slug like 'mkt-trust-t-%';
 delete from public.customer_verification_submissions where user_id in (
@@ -53,7 +60,11 @@ insert into auth.users (id, email) values
   ('a1000000-0000-4000-8000-000000000006', 'instant-two@mkt-trust.test'),
   ('a1000000-0000-4000-8000-000000000007', 'seed-staff@mkt-trust.test'),
   ('a1000000-0000-4000-8000-000000000008', 'seed-unverified@mkt-trust.test'),
-  ('a1000000-0000-4000-8000-000000000009', 'collide@mkt-trust.test')
+  ('a1000000-0000-4000-8000-000000000009', 'collide@mkt-trust.test'),
+  ('a1000000-0000-4000-8000-00000000000a', 'q-instant@mkt-trust.test'),
+  ('a1000000-0000-4000-8000-00000000000b', 'q-nodocs@mkt-trust.test'),
+  ('a1000000-0000-4000-8000-00000000000c', 'q-withdocs@mkt-trust.test'),
+  ('a1000000-0000-4000-8000-00000000000d', 'q-rejected@mkt-trust.test')
   on conflict (id) do nothing;
 -- Whose mailbox is verified: the seeded staff member and the "collider"; not 0008.
 update auth.users set email_confirmed_at = now()
@@ -129,6 +140,13 @@ declare
   seed_unverified constant uuid := 'a1000000-0000-4000-8000-000000000008';
   collider constant uuid := 'a1000000-0000-4000-8000-000000000009';
   v_seed_pid uuid;
+  q_inst    constant uuid := 'a1000000-0000-4000-8000-00000000000a';
+  q_nodocs  constant uuid := 'a1000000-0000-4000-8000-00000000000b';
+  q_docs    constant uuid := 'a1000000-0000-4000-8000-00000000000c';
+  q_reject  constant uuid := 'a1000000-0000-4000-8000-00000000000d';
+  v_q_vendor uuid;
+  v_q_pid uuid;
+  v_hint text;
 begin
   -- ===== A. live write with no verdict ======================================
   begin
@@ -1463,6 +1481,401 @@ begin
   exception when insufficient_privilege then
     reset role;
   end;
+
+
+  -- ===== Q. adversarial round 1 =============================================
+  -- ---- Q1. a listing's id never changes (take-downs and verdicts are keyed on it)
+  set local role service_role;
+  v := public.marketplace_gate_record_listing_verdict(
+    a_user, va, public.mkt_trust_test_listing('mkt-trust-t-q1', 'Q1 clean', 1500),
+    '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+  insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+    values ('mkt-trust-t-q1', va, 'Q1 clean', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-q1', 1500, 'approved')
+    returning id into v_q_pid;
+  reset role;
+  begin
+    set local role service_role;
+    update public.marketplace_products set id = 'c1000000-0000-4000-8000-000000000001' where id = v_q_pid;
+    reset role;
+    raise warning 'VIOLATION Q1: the id of a live listing was changed'; violations := violations + 1;
+  exception when others then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    reset role;
+    if v_hint is distinct from 'listing_id_immutable' then
+      raise warning 'VIOLATION Q1: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+    end if;
+  end;
+  begin
+    set local role service_role;
+    update public.marketplace_products set id = 'c1000000-0000-4000-8000-000000000002'
+     where slug = 'mkt-trust-t-a2';
+    reset role;
+    raise warning 'VIOLATION Q1b: the id of a listing that is not live was changed'; violations := violations + 1;
+  exception when others then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    reset role;
+    if v_hint is distinct from 'listing_id_immutable' then
+      raise warning 'VIOLATION Q1b: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+    end if;
+  end;
+
+  -- ---- Q2. variants: buyer-visible, unscreened -> never the engine's to publish
+  begin
+    set local role service_role;
+    insert into public.marketplace_product_variants (product_id, sku, options, price)
+      values (v_q_pid, 'Q2-V1', '{"call_0803_555_0101":"pay outside"}'::jsonb, 5000000);
+    reset role;
+    raise warning 'VIOLATION Q2a: a variant was added to a live listing'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_variant_guard:%' then
+      raise warning 'VIOLATION Q2a: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+
+  -- a listing that is not live may carry variants ...
+  insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+    values ('mkt-trust-t-q2', va, 'Q2 with variants', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-q2', 1500, 'under_review')
+    returning id into v_pid;
+  -- ... the publish verdict is minted while it has none ...
+  set local role service_role;
+  v := public.marketplace_gate_record_listing_verdict(
+    a_user, va, public.mkt_trust_test_listing('mkt-trust-t-q2', 'Q2 with variants', 1500),
+    '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+  insert into public.marketplace_product_variants (product_id, sku, options, price)
+    values (v_pid, 'Q2-V1', '{"size":"L"}'::jsonb, 1500);
+  reset role;
+  if v ->> 'outcome' <> 'publish' then
+    raise warning 'VIOLATION Q2b: fixture verdict was not publish: %', v; violations := violations + 1;
+  end if;
+  -- ... and the engine verdict can no longer publish it
+  begin
+    set local role service_role;
+    update public.marketplace_products set approval_status = 'approved' where id = v_pid;
+    reset role;
+    raise warning 'VIOLATION Q2c: the engine published a listing that carries variants'; violations := violations + 1;
+  exception when others then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    reset role;
+    if v_hint is distinct from 'variants_need_review' then
+      raise warning 'VIOLATION Q2c: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+    end if;
+  end;
+  -- the RPC says so up front: a person decides
+  set local role service_role;
+  v := public.marketplace_gate_record_listing_verdict(
+    a_user, va, public.mkt_trust_test_listing('mkt-trust-t-q2', 'Q2 with variants', 1500),
+    '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+  reset role;
+  if v ->> 'outcome' <> 'hold' or not (v -> 'reasons' ? 'gate_unavailable') then
+    raise warning 'VIOLATION Q2d: the RPC did not hold a listing with variants: %', v; violations := violations + 1;
+  end if;
+  -- a person can approve it; afterwards its variants are frozen, its stock is not
+  begin
+    set local role service_role;
+    update public.marketplace_products
+       set approval_status = 'approved', reviewed_by = staff, reviewed_at = now()
+     where id = v_pid;
+    reset role;
+  exception when others then
+    reset role;
+    raise warning 'VIOLATION Q2e: staff could not approve a listing with variants: %', sqlerrm; violations := violations + 1;
+  end;
+  select count(*) into v_n from public.marketplace_listing_gate_verdicts
+   where product_id = v_pid and source = 'staff_review' and transition = 'go_live' and actor_user_id = staff;
+  if v_n <> 1 then
+    raise warning 'VIOLATION Q2e2: the approval of a listing with variants is not on record as a staff decision (found %)', v_n;
+    violations := violations + 1;
+  end if;
+  begin
+    set local role service_role;
+    update public.marketplace_product_variants set price = 9, options = '{"size":"call 0803 555 0101"}'::jsonb
+     where product_id = v_pid;
+    reset role;
+    raise warning 'VIOLATION Q2f: a live listing''s variant content was changed'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_variant_guard:%' then
+      raise warning 'VIOLATION Q2f: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+  begin
+    set local role service_role;
+    update public.marketplace_product_variants set stock = 7, status = 'out_of_stock' where product_id = v_pid;
+    reset role;
+  exception when others then
+    reset role;
+    raise warning 'VIOLATION Q2g: a stock-only variant update was refused: %', sqlerrm; violations := violations + 1;
+  end;
+  -- moving a variant onto a live listing is the same as adding one
+  insert into public.marketplace_products (slug, vendor_id, title, sku, base_price, approval_status)
+    values ('mkt-trust-t-q2-donor', va, 'Q2 donor', 'SKU-mkt-trust-t-q2-donor', 1500, 'draft')
+    returning id into v_id;
+  insert into public.marketplace_product_variants (product_id, sku, options, price)
+    values (v_id, 'Q2-DONOR', '{"note":"pay outside"}'::jsonb, 1);
+  begin
+    set local role service_role;
+    update public.marketplace_product_variants set product_id = v_q_pid where sku = 'Q2-DONOR';
+    reset role;
+    raise warning 'VIOLATION Q2h: a variant was moved onto a live listing'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_variant_guard:%' then
+      raise warning 'VIOLATION Q2h: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+
+  -- ---- Q3. a trigger that runs AFTER the guard cannot smuggle content past it
+  begin
+    set local role service_role;
+    execute 'create function pg_temp.mkt_trust_t_evil() returns trigger language plpgsql as $f$ begin return new; end $f$';
+    execute 'create trigger zz_mkt_trust_t_evil before update on public.marketplace_products
+               for each row execute function pg_temp.mkt_trust_t_evil()';
+    reset role;
+    execute 'drop trigger if exists zz_mkt_trust_t_evil on public.marketplace_products';
+    raise warning 'VIOLATION Q3a: service_role created a trigger on the guarded table'; violations := violations + 1;
+  exception when insufficient_privilege then
+    reset role;
+  end;
+  if has_table_privilege('service_role', 'public.marketplace_products', 'TRIGGER')
+     or has_table_privilege('authenticated', 'public.marketplace_products', 'TRIGGER')
+     or has_table_privilege('anon', 'public.marketplace_products', 'TRUNCATE')
+     or has_table_privilege('service_role', 'public.marketplace_product_variants', 'TRIGGER')
+     or has_table_privilege('service_role', 'public.marketplace_product_media', 'TRIGGER')
+     or has_table_privilege('service_role', 'public.marketplace_payout_requests', 'TRIGGER')
+  then
+    raise warning 'VIOLATION Q3b: a request role still holds TRIGGER/TRUNCATE on a guarded table'; violations := violations + 1;
+  end if;
+
+  -- Even a trigger the OWNER adds later (a future migration) cannot do it: it sorts
+  -- after the guard, rewrites the row, and the AFTER trigger refuses the result.
+  create function public.mkt_trust_t_rewrite() returns trigger language plpgsql as $f$
+  begin
+    if new.slug = 'mkt-trust-t-q3' then
+      new.title := 'REWRITTEN AFTER THE GUARD - call 0803 555 0101';
+    end if;
+    return new;
+  end $f$;
+  create trigger zz_mkt_trust_t_rewrite before insert or update on public.marketplace_products
+    for each row execute function public.mkt_trust_t_rewrite();
+  begin
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-q3', 'Q3 clean', 1500),
+      '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-q3', va, 'Q3 clean', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-q3', 1500, 'approved');
+    reset role;
+    raise warning 'VIOLATION Q3c: content rewritten after the guard went live'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_publish_guard:%' then
+      raise warning 'VIOLATION Q3c: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+  -- ... and the same for a live row touched by an innocent stock update
+  drop trigger zz_mkt_trust_t_rewrite on public.marketplace_products;
+  create or replace function public.mkt_trust_t_rewrite() returns trigger language plpgsql as $f$
+  begin
+    if new.slug = 'mkt-trust-t-q1' then
+      new.title := 'REWRITTEN AFTER THE GUARD - call 0803 555 0101';
+    end if;
+    return new;
+  end $f$;
+  create trigger zz_mkt_trust_t_rewrite before insert or update on public.marketplace_products
+    for each row execute function public.mkt_trust_t_rewrite();
+  begin
+    set local role service_role;
+    update public.marketplace_products set total_stock = coalesce(total_stock, 0) + 1 where id = v_q_pid;
+    reset role;
+    raise warning 'VIOLATION Q3d: a stock update carried rewritten content onto a live listing'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_publish_guard:%' then
+      raise warning 'VIOLATION Q3d: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+  drop trigger zz_mkt_trust_t_rewrite on public.marketplace_products;
+  drop function public.mkt_trust_t_rewrite();
+  select title into v_text from public.marketplace_products where id = v_q_pid;
+  if v_text <> 'Q1 clean' then
+    raise warning 'VIOLATION Q3e: the live listing was rewritten: %', v_text; violations := violations + 1;
+  end if;
+
+  -- ---- Q4. one multi-row write cannot walk past the daily cap
+  insert into public.marketplace_vendor_applications
+    (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at)
+  values
+    (q_inst, 'q-instant@mkt-trust.test', 'Q Instant', 'mkt-trust-t-q-instant', 'Q Ltd', 'submitted', now())
+  returning id into v_app;
+  set local role service_role;
+  v := public.marketplace_gate_instant_onboard(q_inst, v_app, '{}'::text[], '{}'::jsonb, 'test');
+  reset role;
+  v_q_vendor := (v ->> 'vendor_id')::uuid;
+  update public.marketplace_vendors set seller_tier = 'partner' where id = v_q_vendor;
+  select count(*) into v_n from public.marketplace_seller_probation
+   where vendor_id = v_q_vendor and source = 'instant_onboarding' and onboarding_verdict_id is not null;
+  if v_n <> 1 then
+    raise warning 'VIOLATION Q4a: the instant store''s probation row is not an instant_onboarding one'; violations := violations + 1;
+  end if;
+  set local role service_role;
+  for i in 1..6 loop
+    v := public.marketplace_gate_record_listing_verdict(
+      q_inst, v_q_vendor, public.mkt_trust_test_listing('mkt-trust-t-q4-' || i, 'Q4 item ' || i, 2000),
+      '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+  end loop;
+  reset role;
+  begin
+    set local role service_role;
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+    select 'mkt-trust-t-q4-' || g, v_q_vendor, 'Q4 item ' || g, 'A clean summary', 'A clean description',
+           'SKU-mkt-trust-t-q4-' || g, 2000, 'approved'
+      from generate_series(1, 6) g;
+    reset role;
+    raise warning 'VIOLATION Q4b: six listings went live in one statement on a five-a-day cap'; violations := violations + 1;
+  exception when others then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    reset role;
+    if v_hint is distinct from 'probation_daily_cap' then
+      raise warning 'VIOLATION Q4b: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+    end if;
+  end;
+  begin
+    set local role service_role;
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+    select 'mkt-trust-t-q4-' || g, v_q_vendor, 'Q4 item ' || g, 'A clean summary', 'A clean description',
+           'SKU-mkt-trust-t-q4-' || g, 2000, 'approved'
+      from generate_series(1, 5) g;
+    reset role;
+  exception when others then
+    reset role;
+    raise warning 'VIOLATION Q4c: five listings in one statement were refused: %', sqlerrm; violations := violations + 1;
+  end;
+
+  -- ---- Q5. a store a person opens WITHOUT documents is on probation, with the payout wall
+  insert into public.marketplace_vendor_applications
+    (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at, documents_json)
+  values
+    (q_nodocs, 'q-nodocs@mkt-trust.test', 'Q No Docs', 'mkt-trust-t-q-nodocs', 'Q Ltd', 'submitted', now(), '{}'::jsonb),
+    (q_docs, 'q-withdocs@mkt-trust.test', 'Q With Docs', 'mkt-trust-t-q-withdocs', 'Q Ltd', 'submitted', now(),
+     '{"founderIdentity":{"fileUrl":"media://private/docs/id.pdf"},"payoutProof":{"fileUrl":"media://private/docs/bank.pdf"}}'::jsonb);
+  -- the legacy human approval: the console writes the store row itself
+  set local role service_role;
+  insert into public.marketplace_vendors (slug, name, owner_user_id, owner_type, status)
+    values ('mkt-trust-t-q-nodocs', 'Q No Docs', q_nodocs, 'vendor', 'approved') returning id into v_id;
+  reset role;
+  select count(*) into v_n from public.marketplace_seller_probation
+   where vendor_id = v_id and source = 'staff_approved_no_documents' and graduated_at is null;
+  if v_n <> 1 then
+    raise warning 'VIOLATION Q5a: a store approved without documents is not on probation'; violations := violations + 1;
+  end if;
+  begin
+    set local role service_role;
+    insert into public.marketplace_payout_requests (reference, vendor_id, amount, status, requested_by)
+      values ('MKT-TRUST-T-Q5', v_id, 1000, 'requested', q_nodocs);
+    reset role;
+    raise warning 'VIOLATION Q5b: a document-less store filed a payout request with no verified identity'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_payout_identity_guard:%' then
+      raise warning 'VIOLATION Q5b: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+  set local role service_role;
+  insert into public.marketplace_vendors (slug, name, owner_user_id, owner_type, status)
+    values ('mkt-trust-t-q-withdocs', 'Q With Docs', q_docs, 'vendor', 'approved') returning id into v_id;
+  reset role;
+  select count(*) into v_n from public.marketplace_seller_probation where vendor_id = v_id;
+  if v_n <> 0 then
+    raise warning 'VIOLATION Q5c: a store whose documents were reviewed was put on probation (flag-off flow changed)'; violations := violations + 1;
+  end if;
+  begin
+    set local role service_role;
+    insert into public.marketplace_payout_requests (reference, vendor_id, amount, status, requested_by)
+      values ('MKT-TRUST-T-Q5C', v_id, 1000, 'requested', q_docs);
+    reset role;
+  exception when others then
+    reset role;
+    raise warning 'VIOLATION Q5d: a human-reviewed store was refused a payout request: %', sqlerrm; violations := violations + 1;
+  end;
+
+  -- one of the two documents is not "the documents"
+  insert into auth.users (id, email) values ('a1000000-0000-4000-8000-00000000000e', 'q-halfdocs@mkt-trust.test')
+    on conflict (id) do nothing;
+  insert into public.marketplace_vendor_applications
+    (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at, documents_json)
+  values
+    ('a1000000-0000-4000-8000-00000000000e', 'q-halfdocs@mkt-trust.test', 'Q Half Docs', 'mkt-trust-t-q-halfdocs', 'Q Ltd',
+     'submitted', now(), '{"founderIdentity":{"fileUrl":"media://private/docs/id.pdf"}}'::jsonb);
+  set local role service_role;
+  insert into public.marketplace_vendors (slug, name, owner_user_id, owner_type, status)
+    values ('mkt-trust-t-q-halfdocs', 'Q Half Docs', 'a1000000-0000-4000-8000-00000000000e', 'vendor', 'approved')
+    returning id into v_id;
+  reset role;
+  select count(*) into v_n from public.marketplace_seller_probation where vendor_id = v_id;
+  if v_n <> 1 then
+    raise warning 'VIOLATION Q5e: a store approved with only one of the two documents is not on probation'; violations := violations + 1;
+  end if;
+
+  -- ---- Q6. a payout request cannot be re-pointed past the wall
+  begin
+    set local role service_role;
+    update public.marketplace_payout_requests set vendor_id = v_q_vendor where reference = 'MKT-TRUST-T-Q5C';
+    reset role;
+    raise warning 'VIOLATION Q6a: an open payout request was re-pointed to an unverified probation store'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_payout_identity_guard:%' then
+      raise warning 'VIOLATION Q6a: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+  begin
+    set local role service_role;
+    update public.marketplace_payout_requests set review_note = 'looked at' where reference = 'MKT-TRUST-T-Q5C';
+    reset role;
+  exception when others then
+    reset role;
+    raise warning 'VIOLATION Q6b: an unrelated update of a payout request was refused: %', sqlerrm; violations := violations + 1;
+  end;
+
+  -- ---- Q7. submitting again does not undo a person's decision
+  insert into public.marketplace_vendor_applications
+    (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at,
+     reviewed_at, reviewed_by, review_note)
+  values
+    (q_reject, 'q-rejected@mkt-trust.test', 'Q Rejected', 'mkt-trust-t-q-rejected', 'Q Ltd', 'submitted', now(),
+     now() - interval '1 day', staff, 'Rejected by a person yesterday')
+  returning id into v_app;
+  begin
+    set local role service_role;
+    perform public.marketplace_gate_instant_onboard(q_reject, v_app, '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    raise warning 'VIOLATION Q7a: an application a person had decided was opened instantly on re-submit'; violations := violations + 1;
+  exception when others then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    reset role;
+    if v_hint is distinct from 'prior_human_decision' then
+      raise warning 'VIOLATION Q7a: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+    end if;
+  end;
+  select count(*) into v_n from public.marketplace_vendors where owner_user_id = q_reject;
+  if v_n <> 0 then
+    raise warning 'VIOLATION Q7b: a store exists for the rejected applicant'; violations := violations + 1;
+  end if;
+
+  -- ---- Q8. an account that already owns a store leaves nothing in the staff queue
+  insert into public.marketplace_vendor_applications
+    (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at)
+  values
+    (q_inst, 'q-instant@mkt-trust.test', 'Q Instant Again', 'mkt-trust-t-q-instant-2', 'Q Ltd', 'submitted', now())
+  returning id into v_app;
+  set local role service_role;
+  v := public.marketplace_gate_instant_onboard(q_inst, v_app, '{}'::text[], '{}'::jsonb, 'test');
+  reset role;
+  select status into v_text from public.marketplace_vendor_applications where id = v_app;
+  if v ->> 'why' <> 'already_seller' or v_text <> 'approved' or v ->> 'vendor_status' is null then
+    raise warning 'VIOLATION Q8: already_seller left the application as "%" in the queue: %', v_text, v; violations := violations + 1;
+  end if;
 
   if violations > 0 then
     raise exception 'V3-MKT-TRUST-01 guard behaviour FAILED: % violation(s)', violations;

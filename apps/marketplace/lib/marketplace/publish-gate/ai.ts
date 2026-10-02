@@ -36,7 +36,11 @@ import { reservePlatformAiSpend } from "@henryco/intelligence";
 import type { AiScanResult, ModerationReason } from "@henryco/moderation";
 import { createAdminSupabase } from "@/lib/supabase";
 import { isInstantPublishAiEnabled } from "./flag";
-import type { ListingAiScan } from "./server";
+import { classifyImage, firstPartyMediaBases } from "./image-refs";
+import { countRecentAiScreens, type ListingAiScan } from "./server";
+
+/** AI screens one store may trigger in 24 hours. The deterministic rules decide every listing regardless. */
+export const LISTING_SCREEN_MAX_PER_STORE_PER_DAY = 12;
 
 const LABEL_TO_REASON: Record<ListingScreenLabel, ModerationReason> = {
   scam: "ai_flagged_scam",
@@ -53,19 +57,13 @@ export function listingScreenEnabled(
 }
 
 /** Only pictures served from this deployment's own storage are sent: the seller cannot make the provider fetch an arbitrary URL. */
-function firstPartyImageUrls(urls: ReadonlyArray<string>, publicBaseUrl: string | null | undefined): string[] {
-  let host: string | null = null;
-  try {
-    host = publicBaseUrl ? new URL(publicBaseUrl).host.toLowerCase() : null;
-  } catch {
-    host = null;
-  }
-  if (!host) return [];
+function firstPartyImageUrls(urls: ReadonlyArray<string>, publicBases: ReadonlyArray<string>): string[] {
   const kept: string[] = [];
   for (const url of urls) {
     try {
       const parsed = new URL(url);
-      if (parsed.protocol === "https:" && parsed.host.toLowerCase() === host) kept.push(parsed.toString());
+      // The same test the gate applies to a posted picture: our own origin, our own bucket path.
+      if (parsed.protocol === "https:" && classifyImage(url, publicBases).ref !== null) kept.push(parsed.toString());
     } catch {
       // not a URL
     }
@@ -91,7 +89,13 @@ export function createListingAiScan(
 
       const text = String(input.text ?? "").trim();
       if (!text) return null;
-      const images = firstPartyImageUrls(input.imageUrls, env.NEXT_PUBLIC_SUPABASE_URL);
+
+      // One store cannot spend the day's budget for everyone: its own screens are
+      // counted on the verdict ledger (durable, not per server instance) BEFORE
+      // anything is reserved. Unknown count -> no screen.
+      const recent = await countRecentAiScreens(createAdminSupabase(), input.vendorId);
+      if (recent === null || recent >= LISTING_SCREEN_MAX_PER_STORE_PER_DAY) return null;
+      const images = firstPartyImageUrls(input.imageUrls, firstPartyMediaBases(env));
 
       const estimateKobo = estimateFreeTurnCostKobo({
         surface: LISTING_SCREEN_SURFACE,

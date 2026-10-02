@@ -24,20 +24,47 @@ export interface ClassifiedImage {
   uploaderId: string | null;
 }
 
-function hostOf(url: string): string | null {
-  try {
-    return new URL(url).host.toLowerCase();
-  } catch {
-    return null;
-  }
+/** One base URL, or several: the storage origin and, when configured, the CDN in front of it. */
+export type PublicMediaBases = string | ReadonlyArray<string | null | undefined> | null | undefined;
+
+/**
+ * The bases a first-party picture can be served from: the storage origin and the
+ * optional delivery base in front of it. The edit form posts the RESOLVED public
+ * URL, so both spellings of the same object must fold to the same ref.
+ */
+export function firstPartyMediaBases(
+  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
+): string[] {
+  return [env.NEXT_PUBLIC_SUPABASE_URL, env.MEDIA_PUBLIC_BASE_URL]
+    .map((value) => String(value ?? "").trim())
+    .filter((value) => value.length > 0);
 }
+
+function originsOf(bases: PublicMediaBases): Array<{ host: string; prefix: string }> {
+  const list = Array.isArray(bases) ? bases : [bases];
+  const origins: Array<{ host: string; prefix: string }> = [];
+  for (const base of list) {
+    const value = String(base ?? "").trim();
+    if (!value) continue;
+    try {
+      const parsed = new URL(value);
+      origins.push({ host: parsed.host.toLowerCase(), prefix: parsed.pathname.replace(/\/+$/, "") });
+    } catch {
+      // not a URL: ignored
+    }
+  }
+  return origins;
+}
+
+/** Either prefix the upload route writes: `product/<uploader>/…` or `store/<uploader>/…`. */
+const OWN_UPLOAD_KEY_RE = /^(?:product|store)\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/[^/]+$/i;
 
 /**
  * Fold one posted image value to a canonical ref.
- * `publicBaseUrl` is this deployment's public media base (the Supabase URL); an
- * absolute URL only counts as first-party when it points at that host.
+ * `publicBaseUrl` is this deployment's public media base (or bases); an absolute
+ * URL only counts as first-party when it points at one of them.
  */
-export function classifyImage(input: string, publicBaseUrl: string | null | undefined): ClassifiedImage {
+export function classifyImage(input: string, publicBaseUrl: PublicMediaBases): ClassifiedImage {
   const value = String(input ?? "").trim();
   const none: ClassifiedImage = { input: value, ref: null, uploaderId: null };
   if (!value) return none;
@@ -53,19 +80,22 @@ export function classifyImage(input: string, publicBaseUrl: string | null | unde
       return none;
     }
   } else if (isAbsoluteUrl(value)) {
-    const base = String(publicBaseUrl ?? "").trim();
-    const baseHost = base ? hostOf(base) : null;
-    const valueHost = hostOf(value);
-    if (!baseHost || !valueHost || baseHost !== valueHost) return none;
-    let pathname: string;
+    let parsed: URL;
     try {
-      pathname = new URL(value).pathname;
+      parsed = new URL(value);
     } catch {
       return none;
     }
-    if (!pathname.startsWith(PUBLIC_OBJECT_PATH)) return none;
+    // https only, no credentials in the URL, and one of our own origins.
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return none;
+    if (parsed.username || parsed.password) return none;
+    const host = parsed.host.toLowerCase();
+    const origin = originsOf(publicBaseUrl).find(
+      (candidate) => candidate.host === host && parsed.pathname.startsWith(`${candidate.prefix}${PUBLIC_OBJECT_PATH}`),
+    );
+    if (!origin) return none;
     try {
-      key = decodeURIComponent(pathname.slice(PUBLIC_OBJECT_PATH.length));
+      key = decodeURIComponent(parsed.pathname.slice(origin.prefix.length + PUBLIC_OBJECT_PATH.length));
     } catch {
       return none;
     }
@@ -101,7 +131,7 @@ export interface ImageSetClassification {
  */
 export function classifyImageSet(input: {
   values: ReadonlyArray<string>;
-  publicBaseUrl: string | null | undefined;
+  publicBaseUrl: PublicMediaBases;
   allowedUploaders: ReadonlyArray<string | null | undefined>;
   grandfathered?: ReadonlyArray<string>;
 }): ImageSetClassification {
@@ -132,6 +162,22 @@ export function classifyImageSet(input: {
   }
 
   return { refs, notFirstParty, foreignRefs };
+}
+
+/**
+ * True when `value` is a first-party object this user uploaded — under either
+ * prefix the upload route writes. For a store's hero picture: any object in the
+ * bucket is not enough, it must be the store's own upload.
+ */
+export function isOwnUpload(value: string, userId: string | null | undefined, publicBaseUrl: PublicMediaBases): boolean {
+  const image = classifyImage(value, publicBaseUrl);
+  if (image.ref === null || !userId) return false;
+  try {
+    const match = OWN_UPLOAD_KEY_RE.exec(parseMediaRef(image.ref).key);
+    return match !== null && match[1].toLowerCase() === userId.toLowerCase();
+  } catch {
+    return false;
+  }
 }
 
 /** The storage key of a canonical ref (for a first-party download). Null for anything else. */

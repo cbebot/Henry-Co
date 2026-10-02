@@ -135,6 +135,7 @@ describe("lockstep with the migration", () => {
       [...emitted.keys()].sort(),
       [
         "enforcement_hold_active",
+        "gate_unavailable",
         "incomplete_listing",
         "listing_conflict",
         "price_invalid",
@@ -160,6 +161,9 @@ describe("lockstep with the migration", () => {
       "store_identity_incomplete",
       "store_handle_taken",
       "identity_unverified",
+      "listing_id_immutable",
+      "variants_need_review",
+      "prior_human_decision",
     ]);
     for (const hint of hints) {
       assert.ok(isGateReasonCode(hint) || guardOnly.has(hint), hint);

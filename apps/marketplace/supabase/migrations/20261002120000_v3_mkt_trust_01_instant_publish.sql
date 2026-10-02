@@ -42,6 +42,10 @@
 --    stock, rating, review_count, featured, review/audit columns, timestamps and
 --    the paid "Henry Onyx Verified" flag (it has its own guarded writer).
 --    A new buyer-visible column MUST be added here.
+--    Variants (marketplace_product_variants) are NOT in the hash and the engine
+--    does not screen them: section 5b keeps them out of the engine's reach — a
+--    listing that carries variant rows can only be published by a person, and a
+--    variant's content cannot change while its listing is live.
 -- ---------------------------------------------------------------------------
 create or replace function public.marketplace_listing_content_hash(p public.marketplace_products)
 returns text
@@ -117,8 +121,13 @@ create index if not exists marketplace_listing_gate_verdicts_recent_idx
 create table if not exists public.marketplace_seller_probation (
   vendor_id uuid primary key references public.marketplace_vendors (id) on delete cascade,
   owner_user_id uuid not null,
+  -- instant_onboarding          : opened by the gate, no human approval
+  -- staff_approved_no_documents : a person approved the application, but it carried
+  --                               no identity + payout documents (they are optional
+  --                               once instant publish is on) — same limits, same
+  --                               identity check at payout
   source text not null default 'instant_onboarding'
-    check (source in ('instant_onboarding')),
+    check (source in ('instant_onboarding', 'staff_approved_no_documents')),
   onboarding_verdict_id uuid,
   started_at timestamptz not null default now(),
   graduated_at timestamptz,
@@ -170,6 +179,10 @@ create table if not exists public.marketplace_image_fingerprints (
   created_at timestamptz not null default clock_timestamp()
 );
 alter table public.marketplace_image_fingerprints add column if not exists phash_aux bigint;
+
+alter table public.marketplace_seller_probation drop constraint if exists marketplace_seller_probation_source_check;
+alter table public.marketplace_seller_probation add constraint marketplace_seller_probation_source_check
+  check (source in ('instant_onboarding', 'staff_approved_no_documents'));
 
 create index if not exists marketplace_image_fingerprints_sha_idx
   on public.marketplace_image_fingerprints (sha256);
@@ -386,7 +399,15 @@ declare
   v_caps jsonb;
   v_count integer;
   v_human_hold boolean := false;
+  v_has_variants boolean := false;
 begin
+  -- 0. A listing's id never changes. Take-downs and standing verdicts are keyed on
+  --    it; a row that could be re-keyed would walk away from both.
+  if tg_op = 'UPDATE' and new.id is distinct from old.id then
+    raise exception 'marketplace_publish_guard: a listing id cannot change'
+      using errcode = 'P0001', hint = 'listing_id_immutable';
+  end if;
+
   -- 1. Not live after this write: unconstrained.
   if new.approval_status is distinct from 'approved' then
     return new;
@@ -435,7 +456,13 @@ begin
     where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
   );
 
-  if v_verdict_id is not null and not v_human_hold then
+  -- Variants are buyer-visible and the engine does not screen them: a listing that
+  -- carries any is a person's decision, never the engine's.
+  v_has_variants := exists (
+    select 1 from public.marketplace_product_variants x where x.product_id = new.id
+  );
+
+  if v_verdict_id is not null and not v_human_hold and not v_has_variants then
     -- Going live: every image already attached must be one the verdict covers.
     if tg_op = 'UPDATE' and not v_was_live and exists (
       select 1 from public.marketplace_product_media m
@@ -466,6 +493,22 @@ begin
            and g.subject_type = 'listing'
            and g.transition = 'go_live'
            and g.consumed_at > now() - interval '24 hours';
+        -- Verdicts are consumed by the AFTER trigger, which runs once the whole
+        -- statement has been checked. Rows this same statement has already let
+        -- through are live but not yet on the ledger: count them too, or one
+        -- multi-row write would walk past the daily cap.
+        v_count := v_count + (
+          select count(*)
+            from public.marketplace_products p
+           where p.vendor_id = new.vendor_id
+             and p.approval_status = 'approved'
+             and p.id <> new.id
+             and not exists (
+               select 1 from public.marketplace_listing_gate_verdicts g
+               where g.product_id = p.id and g.subject_type = 'listing'
+                 and g.outcome = 'publish' and g.consumed_at is not null
+             )
+        );
         if v_count >= (v_caps ->> 'max_new_listings_per_day')::integer then
           raise exception 'marketplace_publish_guard: probation daily cap reached'
             using errcode = 'P0001', hint = 'probation_daily_cap';
@@ -509,6 +552,11 @@ begin
       using errcode = 'P0001', hint = 'enforcement_hold_active';
   end if;
 
+  if v_verdict_id is not null and v_has_variants then
+    raise exception 'marketplace_publish_guard: listing "%" carries variants, which need a person''s review', new.slug
+      using errcode = 'P0001', hint = 'variants_need_review';
+  end if;
+
   raise exception 'marketplace_publish_guard: no recorded gate verdict for listing "%"', new.slug
     using errcode = 'P0001', hint = 'verdict_required';
 end;
@@ -529,6 +577,9 @@ declare
   v_verdict_id uuid;
   v_media text[];
   v_company boolean;
+  v_staff boolean;
+  v_trusted boolean;
+  v_old_hash text;
 begin
   if new.approval_status is distinct from 'approved' then
     -- A staff rejection upholds any open hide.
@@ -549,7 +600,8 @@ begin
   v_hash := public.marketplace_listing_content_hash(new);
   if tg_op = 'UPDATE' then
     v_was_live := (old.approval_status = 'approved');
-    if v_was_live and public.marketplace_listing_content_hash(old) = v_hash then
+    v_old_hash := public.marketplace_listing_content_hash(old);
+    if v_was_live and v_old_hash = v_hash then
       return null;
     end if;
   end if;
@@ -571,10 +623,13 @@ begin
    for update;
 
   -- Mirrors the guard exactly: an engine verdict is not what published this row
-  -- if a staff-only hide was open — the staff branch was.
+  -- if a staff-only hide was open or the listing carries variants — the staff
+  -- branch was.
   if v_verdict_id is not null and not exists (
     select 1 from public.marketplace_listing_enforcement e
     where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
+  ) and not exists (
+    select 1 from public.marketplace_product_variants x where x.product_id = new.id
   ) then
     update public.marketplace_listing_gate_verdicts v
        set consumed_at = clock_timestamp(),
@@ -591,16 +646,35 @@ begin
     return null;
   end if;
 
-  -- The guard let this through as (B) or (C): put it on the record.
+  -- No engine verdict covers the row AS WRITTEN. The guard ran BEFORE the write,
+  -- and a BEFORE trigger that sorts after it could have rewritten the row since:
+  -- so the staff and company conditions are decided again here, on the final
+  -- row, and anything else is refused. This is what makes "validated" and
+  -- "written" the same row.
+  v_trusted := public.marketplace_gate_caller_is_trusted();
+  v_staff := coalesce(tg_op = 'UPDATE'
+    and not v_was_live
+    and v_old_hash = v_hash
+    and v_trusted
+    and new.reviewed_by is not null
+    and new.reviewed_at is not null
+    and new.reviewed_at is distinct from old.reviewed_at
+    and new.reviewed_at > now() - interval '15 minutes'
+    and new.reviewed_at < now() + interval '5 minutes'
+    and public.marketplace_gate_is_staff(new.reviewed_by), false);
+  v_company := not v_staff
+    and v_trusted
+    and new.inventory_owner_type = 'company'
+    and public.marketplace_gate_is_company_vendor(new.vendor_id);
+  if not v_staff and not v_company then
+    raise exception 'marketplace_publish_guard: no recorded gate verdict for listing "%"', new.slug
+      using errcode = 'P0001', hint = 'verdict_required';
+  end if;
+
   select coalesce(array_agg(m.url order by m.sort_order, m.created_at), '{}'::text[])
     into v_media
     from public.marketplace_product_media m
    where m.product_id = new.id;
-
-  v_company := new.inventory_owner_type = 'company'
-    and public.marketplace_gate_is_company_vendor(new.vendor_id)
-    and not (new.reviewed_by is not null and public.marketplace_gate_is_staff(new.reviewed_by)
-             and tg_op = 'UPDATE' and new.reviewed_at is distinct from old.reviewed_at);
 
   insert into public.marketplace_listing_gate_verdicts
     (subject_type, product_id, vendor_id, slug, content_hash, media_refs, outcome, source,
@@ -699,6 +773,68 @@ drop trigger if exists marketplace_product_media_guard on public.marketplace_pro
 create trigger marketplace_product_media_guard
   before insert or update on public.marketplace_product_media
   for each row execute function public.marketplace_product_media_guard();
+
+-- ---------------------------------------------------------------------------
+-- 5b. Variant guard. A variant's options, price and SKU are in front of buyers
+--     on the product page, and no rule screens them. Until the engine does, the
+--     position is default-deny: a variant's content cannot be added or changed
+--     while its listing is live (take the listing out of the catalogue, change
+--     it, and have a person approve it again), and the publish guard above does
+--     not let the engine publish a listing that carries variants at all.
+--     Stock, status, ordering and removal are not content and stay free.
+-- ---------------------------------------------------------------------------
+create or replace function public.marketplace_product_variant_guard()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_product uuid;
+  v_status text;
+  v_owner_type text;
+  v_vendor uuid;
+begin
+  if tg_op = 'UPDATE'
+     and new.product_id = old.product_id
+     and new.sku is not distinct from old.sku
+     and new.options is not distinct from old.options
+     and new.price is not distinct from old.price
+     and new.compare_at_price is not distinct from old.compare_at_price
+     and new.currency is not distinct from old.currency
+     and new.media_id is not distinct from old.media_id
+  then
+    return new; -- stock, status, ordering
+  end if;
+
+  foreach v_product in array
+    case when tg_op = 'UPDATE' and new.product_id <> old.product_id
+         then array[new.product_id, old.product_id]
+         else array[new.product_id] end
+  loop
+    select p.approval_status, p.inventory_owner_type, p.vendor_id
+      into v_status, v_owner_type, v_vendor
+      from public.marketplace_products p
+     where p.id = v_product;
+
+    if found and v_status = 'approved' and not (
+      public.marketplace_gate_caller_is_trusted()
+      and v_owner_type = 'company'
+      and public.marketplace_gate_is_company_vendor(v_vendor)
+    ) then
+      raise exception 'marketplace_variant_guard: the variants of a live listing cannot change'
+        using errcode = 'P0001', hint = 'verdict_required';
+    end if;
+  end loop;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists marketplace_product_variant_guard on public.marketplace_product_variants;
+create trigger marketplace_product_variant_guard
+  before insert or update on public.marketplace_product_variants
+  for each row execute function public.marketplace_product_variant_guard();
 
 -- ---------------------------------------------------------------------------
 -- 6. Seller state — everything the TS gate needs about a store, in one call.
@@ -922,6 +1058,12 @@ begin
     ) then
       v_outcome := 'hold';
       v_reasons := v_reasons || 'enforcement_hold_active'::text;
+    elsif v_existing_id is not null and exists (
+      select 1 from public.marketplace_product_variants x where x.product_id = v_existing_id
+    ) then
+      -- The engine does not screen variants (section 5b): a person decides.
+      v_outcome := 'hold';
+      v_reasons := v_reasons || 'gate_unavailable'::text;
     elsif public.marketplace_gate_probation_active(p_vendor_id) then
       v_caps := public.marketplace_gate_probation_caps();
       if v_row.base_price > (v_caps ->> 'max_price')::integer then
@@ -1295,6 +1437,9 @@ begin
     raise exception 'marketplace_gate_instant_onboard: actor is required' using errcode = 'insufficient_privilege';
   end if;
 
+  -- One onboarding at a time per account.
+  perform pg_advisory_xact_lock(hashtextextended('marketplace_instant_onboard:' || p_actor::text, 0));
+
   select * into v_app
     from public.marketplace_vendor_applications a
    where a.id = p_application_id
@@ -1325,7 +1470,22 @@ begin
    order by v.created_at
    limit 1;
   if v_vendor_id is not null then
-    return jsonb_build_object('onboarded', false, 'why', 'already_seller', 'vendor_id', v_vendor_id);
+    -- The account already owns a store, so this application has nothing to wait
+    -- for: it must not sit in the staff queue as a second, approvable request.
+    update public.marketplace_vendor_applications a
+       set status = 'approved'
+     where a.id = p_application_id and a.status = 'submitted';
+    return jsonb_build_object(
+      'onboarded', false, 'why', 'already_seller', 'vendor_id', v_vendor_id,
+      'vendor_status', (select v.status from public.marketplace_vendors v where v.id = v_vendor_id)
+    );
+  end if;
+
+  -- A person has already decided this application once (rejected it, or asked for
+  -- changes). Submitting it again does not undo that: it goes back to a person.
+  if v_app.reviewed_at is not null or v_app.reviewed_by is not null then
+    raise exception 'marketplace_gate_instant_onboard: this application was decided by a person before'
+      using errcode = 'P0001', hint = 'prior_human_decision';
   end if;
 
   select v.id, v.owner_user_id into v_vendor_id, v_owner
@@ -1382,8 +1542,13 @@ begin
      coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), p_actor, clock_timestamp())
   returning id into v_verdict_id;
 
-  insert into public.marketplace_seller_probation (vendor_id, owner_user_id, onboarding_verdict_id)
-  values (v_vendor_id, p_actor, v_verdict_id);
+  -- The store-insert trigger below may already have enrolled the store (no
+  -- documents on the application); either way it ends as an instant store.
+  insert into public.marketplace_seller_probation (vendor_id, owner_user_id, source, onboarding_verdict_id)
+  values (v_vendor_id, p_actor, 'instant_onboarding', v_verdict_id)
+  on conflict (vendor_id) do update
+    set source = 'instant_onboarding',
+        onboarding_verdict_id = excluded.onboarding_verdict_id;
 
   update public.marketplace_vendor_applications a
      set status = 'approved',
@@ -1402,11 +1567,63 @@ end;
 $$;
 
 -- ---------------------------------------------------------------------------
+-- 10b. A store a PERSON opens without documents is on probation too.
+--      With instant publish on, the identity + payout documents are optional on
+--      every application. One the gate holds goes to the staff queue as it is,
+--      and a routine approval there would open an ordinary store: no documents,
+--      no limits, no identity check at payout. This trigger closes that for every
+--      path that creates a store (the marketplace console, the hub, a future
+--      route): if the owner's application carries no documents, the store starts
+--      on probation, exactly like an instant one.
+--      With the flag off an application cannot be submitted without documents,
+--      so nothing is enrolled and the old flow is unchanged.
+-- ---------------------------------------------------------------------------
+create or replace function public.marketplace_vendors_probation_enroll()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_docs jsonb;
+begin
+  if new.owner_user_id is null or new.owner_type is not distinct from 'company' then
+    return null;
+  end if;
+
+  select a.documents_json into v_docs
+    from public.marketplace_vendor_applications a
+   where a.user_id = new.owner_user_id
+   order by a.created_at desc
+   limit 1;
+  if not found then
+    return null; -- not opened from an application
+  end if;
+
+  if coalesce(v_docs -> 'founderIdentity' ->> 'fileUrl', '') <> ''
+     and coalesce(v_docs -> 'payoutProof' ->> 'fileUrl', '') <> ''
+  then
+    return null; -- the documents were handed over for the human review
+  end if;
+
+  insert into public.marketplace_seller_probation (vendor_id, owner_user_id, source)
+  values (new.id, new.owner_user_id, 'staff_approved_no_documents')
+  on conflict (vendor_id) do nothing;
+  return null;
+end;
+$$;
+
+drop trigger if exists marketplace_vendors_probation_enroll on public.marketplace_vendors;
+create trigger marketplace_vendors_probation_enroll
+  after insert on public.marketplace_vendors
+  for each row execute function public.marketplace_vendors_probation_enroll();
+
+-- ---------------------------------------------------------------------------
 -- 11. Payout identity. Identity no longer stands in front of a listing, so it
 --     must stand in front of the money. payoutEligibility in TS is the first
---     wall; this is the second. It applies to stores opened by instant
---     onboarding — the ones that never passed a human identity review — and it
---     can only REFUSE. No payment object is read or written.
+--     wall; this is the second. It applies to stores on the probation register —
+--     the ones that never handed documents to a human review — and it can only
+--     REFUSE. No payment object is read or written.
 -- ---------------------------------------------------------------------------
 create or replace function public.marketplace_gate_payout_eligibility(p_vendor_id uuid)
 returns jsonb
@@ -1451,11 +1668,16 @@ begin
   if new.vendor_id is null then
     return new;
   end if;
-  if tg_op = 'UPDATE' then
-    if new.status is not distinct from old.status or new.status not in ('approved', 'released') then
-      return new;
-    end if;
-  elsif coalesce(new.status, 'requested') not in ('requested', 'approved', 'released') then
+  -- Only a request that is open or being paid matters; a frozen or rejected one
+  -- moves no money. An update is re-checked when it changes the status OR the
+  -- store the request belongs to (a request cannot be re-pointed past the wall).
+  if coalesce(new.status, 'requested') not in ('requested', 'approved', 'released') then
+    return new;
+  end if;
+  if tg_op = 'UPDATE'
+     and new.status is not distinct from old.status
+     and new.vendor_id is not distinct from old.vendor_id
+  then
     return new;
   end if;
 
@@ -1463,7 +1685,7 @@ begin
     from public.marketplace_seller_probation p
    where p.vendor_id = new.vendor_id;
   if not found then
-    return new; -- a store that passed the human identity review
+    return new; -- a store whose documents went through the human review
   end if;
 
   if not public.marketplace_gate_identity_verified(v_owner) then
@@ -1476,7 +1698,7 @@ $$;
 
 drop trigger if exists marketplace_payout_identity_guard on public.marketplace_payout_requests;
 create trigger marketplace_payout_identity_guard
-  before insert or update of status on public.marketplace_payout_requests
+  before insert or update on public.marketplace_payout_requests
   for each row execute function public.marketplace_payout_identity_guard();
 
 -- ---------------------------------------------------------------------------
@@ -1498,6 +1720,8 @@ revoke all on function public.marketplace_products_publish_guard() from public, 
 revoke all on function public.marketplace_products_publish_record() from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_product_media_guard() from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_payout_identity_guard() from public, anon, authenticated, service_role;
+revoke all on function public.marketplace_product_variant_guard() from public, anon, authenticated, service_role;
+revoke all on function public.marketplace_vendors_probation_enroll() from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_gate_seller_state(uuid, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_listing_verdict(uuid, uuid, jsonb, text[], text, text[], jsonb, text, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_rescan(uuid, text) from public, anon, authenticated;
@@ -1518,6 +1742,15 @@ grant execute on function public.marketplace_gate_register_image(text, text, big
 grant execute on function public.marketplace_gate_image_matches(uuid, text, text[], integer) to service_role;
 grant execute on function public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text) to service_role;
 grant execute on function public.marketplace_gate_payout_eligibility(uuid) to service_role;
+
+-- A trigger added to a guarded table by a request role would run BEFORE or AFTER
+-- the guard and could rewrite what it checked. No request role needs to create
+-- triggers on, or truncate, these tables.
+revoke trigger, truncate on public.marketplace_products         from public, anon, authenticated, service_role;
+revoke trigger, truncate on public.marketplace_product_media    from public, anon, authenticated, service_role;
+revoke trigger, truncate on public.marketplace_product_variants from public, anon, authenticated, service_role;
+revoke trigger, truncate on public.marketplace_payout_requests  from public, anon, authenticated, service_role;
+revoke trigger, truncate on public.marketplace_vendors          from public, anon, authenticated, service_role;
 
 -- ---------------------------------------------------------------------------
 -- 13. Standing verdicts for what is already live. From this point "every live

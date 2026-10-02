@@ -47,7 +47,7 @@ import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
 import { createListingAiScan } from "@/lib/marketplace/publish-gate/ai";
 import { emitGateEvent } from "@/lib/marketplace/publish-gate/events";
 import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
-import { classifyImage } from "@/lib/marketplace/publish-gate/image-refs";
+import { classifyImage, firstPartyMediaBases, isOwnUpload } from "@/lib/marketplace/publish-gate/image-refs";
 import { instantListingUpsert } from "@/lib/marketplace/publish-gate/listing-write";
 import { gateNotice } from "@/lib/marketplace/publish-gate/messages";
 import { evaluateStorePolicy } from "@/lib/marketplace/publish-gate/policy";
@@ -1756,7 +1756,7 @@ export async function POST(request: Request) {
             postedImages: parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url")),
             onHold: text(formData, "on_hold") === "review" ? "review" : "keep",
             locale: gateLocale,
-            publicBaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+            publicBaseUrl: firstPartyMediaBases(),
             extraUploaders: [viewer.user.id],
             // Null unless the optional AI screen is switched on; it can only ADD a hold.
             aiScan: createListingAiScan(),
@@ -1837,7 +1837,7 @@ export async function POST(request: Request) {
               return respondError(
                 json,
                 request,
-                `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent(instant.reasons.join(","))}`,
+                "/vendor/products/new?error=listing-blocked",
                 { message: instant.notice.body, code: instant.keptLive ? "listing-kept-live" : "listing-blocked" },
               );
             }
@@ -1849,7 +1849,9 @@ export async function POST(request: Request) {
                 decision: "submit",
                 productId: instant.productId,
                 outcome: instant.outcome,
-                reasons: instant.reasons,
+                // The seller reads the reasons in `notice`. The raw codes stay on the
+                // server: some of them say more than a seller should be told (a staff
+                // risk hold, what the optional AI screen flagged).
                 notice: instant.notice,
               },
             );
@@ -1860,7 +1862,22 @@ export async function POST(request: Request) {
         const decision = text(formData, "submission_mode") || "draft";
         // Ordered product images (first = cover). New multi-image field posts a JSON array in
         // `image_urls`; the legacy single `image_url` is honoured as a one-element fallback.
-        const imageRefs = parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url"));
+        let imageRefs = parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url"));
+        // V3-MKT-TRUST-01 — with instant publish on, a draft may only carry this
+        // marketplace's own uploads (or pictures the listing already has). Anything
+        // else would sit on the row and ride into the catalogue with a later Publish.
+        if (isInstantPublishEnabled() && imageRefs.length > 0) {
+          const attached = new Set<string>();
+          if (slugOwner?.id) {
+            const { data: current } = await admin
+              .from("marketplace_product_media")
+              .select("url")
+              .eq("product_id", slugOwner.id);
+            for (const row of (current ?? []) as Array<{ url: string | null }>) if (row.url) attached.add(String(row.url));
+          }
+          const bases = firstPartyMediaBases();
+          imageRefs = imageRefs.filter((value) => attached.has(value) || classifyImage(value, bases).ref !== null);
+        }
         const coverImage = imageRefs[0] ?? "";
         const requestFeaturedPlacement = text(formData, "feature_requested") === "on";
         const [{ count: productCount }, { count: openDisputeCount }, { data: duplicateMedia }] = await Promise.all([
@@ -2923,13 +2940,17 @@ export async function POST(request: Request) {
           });
           const postedHero = text(formData, "hero_image_url");
           let heroRefused = false;
-          if (postedHero && classifyImage(postedHero, process.env.NEXT_PUBLIC_SUPABASE_URL).ref === null) {
-            const { data: currentStore } = await admin
-              .from("marketplace_vendors")
-              .select("hero_image_url")
-              .eq("id", vendorId)
-              .maybeSingle();
-            heroRefused = String((currentStore as { hero_image_url?: string | null } | null)?.hero_image_url ?? "") !== postedHero;
+          if (postedHero) {
+            // A first-party upload made by this session's user — not just any object
+            // in the bucket (another store's picture is not this store's hero).
+            if (!isOwnUpload(postedHero, viewer.user?.id, firstPartyMediaBases())) {
+              const { data: currentStore } = await admin
+                .from("marketplace_vendors")
+                .select("hero_image_url")
+                .eq("id", vendorId)
+                .maybeSingle();
+              heroRefused = String((currentStore as { hero_image_url?: string | null } | null)?.hero_image_url ?? "") !== postedHero;
+            }
           }
           if (storeVerdict.outcome !== "publish" || heroRefused) {
             const storeReasons = heroRefused

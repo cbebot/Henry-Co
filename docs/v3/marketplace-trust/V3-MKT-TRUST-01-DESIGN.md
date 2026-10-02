@@ -140,10 +140,32 @@ The verdict RPC re-checks, in SQL: the actor is a member of the vendor (or staff
 another vendor's, the store is active, no staff-only take-down is open, and the probation caps. It
 can tighten a TS verdict; it can never loosen one.
 
+**Decided twice.** The guard validates the row BEFORE the write; the AFTER trigger decides again on
+the row as it was actually written, and refuses anything no engine verdict, staff decision or
+catalogue rule covers. A trigger that sorts after the guard (one a future migration adds) can
+therefore not rewrite a row between "checked" and "stored". Request roles also lose the TRIGGER and
+TRUNCATE privileges on the guarded tables.
+
+**A listing's id never changes.** Take-downs and standing verdicts are keyed on it.
+
+**Variants.** `marketplace_product_variants` is in front of buyers (options, price, SKU) and no rule
+screens it. Until the engine does, the position is default-deny: the engine never publishes a
+listing that carries variant rows (the RPC answers `hold`, the guard refuses the engine verdict —
+a person can still approve it), and a variant's content cannot be added or changed while its
+listing is live. Stock, status and ordering stay free. No seller route writes variants today, so
+this binds direct writes and future routes.
+
 ### 3.4 Probation **(assumption)**
 
-Applies to stores opened by instant onboarding. Ends when identity is verified **and** 3 orders
-are delivered **and** 14 days have passed.
+Applies to stores opened by instant onboarding — and to any store a **person** approves from an
+application that carries no identity + payout documents. With the flag on those documents are
+optional on every application, so one the gate holds reaches the staff queue without them; a
+database trigger on the store row enrols it, whichever path created it. (With the flag off an
+application cannot be submitted without documents, so nothing is enrolled.) Ends when identity is
+verified **and** 3 orders are delivered **and** 14 days have passed.
+
+An application a person has already rejected, or sent back for changes, is never opened by the
+gate: submitting it again returns it to a person.
 
 | Cap | Value |
 |---|---|
@@ -151,7 +173,8 @@ are delivered **and** 14 days have passed.
 | new listings per 24 h | 5 |
 | price per listing | ₦500,000 |
 | high-risk categories | held for review |
-| a picture another store had first | held for review |
+| phones, laptops, consoles and fine jewellery from ₦50,000, whatever category they are filed under | held for review |
+| a picture another store had first, or one that could not be fingerprinted | held for review |
 
 The values live in one SQL function; TS reads them from the state RPC, and the seller's panel
 shows the same numbers the database enforces. The existing plan allowance (G12 — three listings on
@@ -161,11 +184,14 @@ the launch plan) still applies on top; it is commercial, not a trust rule.
 
 `payoutEligibility` and the trigger on `marketplace_payout_requests` enforce the same rule:
 
-- a store **opened by instant onboarding** cannot request, and finance cannot approve or release,
-  a payout until its owner's identity is verified. "Verified" requires a staff-reviewed identity
+- a store **on the probation register** (opened instantly, or approved by a person without
+  documents) cannot request, and finance cannot approve or release, a payout until its owner's
+  identity is verified. "Verified" requires a staff-reviewed identity
   document as well as the profile flag — that flag alone is writable by its own user on production;
-- a store **a person approved** the old way handed its documents over at application time and is
-  not asked again;
+- a store **a person approved** from an application with its documents handed them over at
+  application time and is not asked again;
+- an open request cannot be re-pointed at another store: the database re-checks a request whenever
+  its status or its store changes;
 - a staff-applied V3-40 hold on the owner's account pauses any store's payout (TS wall, flag ON).
 
 The gate only refuses. No money RPC, and nothing in `payments_private`, is read or written.
@@ -178,8 +204,10 @@ deterministic evidence:
 1. **policy** — the content ruleset moved and a listing the *engine* approved now breaks an
    unambiguous rule. A listing a *person* approved is never taken down by the sweep: it is sent
    back to a person (the original approver survives any number of clean re-scans);
-2. **reports** — three independent buyers within 14 days. Other sellers and anonymous reports do
-   not count, so a competitor cannot pull a rival's listing;
+2. **reports** — three independent buyers within 14 days. Other sellers, anonymous reports and
+   accounts less than a week old do not count, so neither a competitor nor a handful of new
+   accounts can pull a listing; if the reporters cannot be checked, nothing is taken down on that
+   pass;
 3. **risk** — a staff-applied V3-40 hold/freeze on the listing (mirrored, never created).
 
 A take-down moves the listing to `under_review`, records why, notifies the seller, and blocks
@@ -191,9 +219,11 @@ Nothing is ever deleted, no seller is suspended and no payout is frozen by the s
 
 Gateway surface `marketplace.listing.screen`: platform-invoked, `billable: false`, run with
 `noBillingPort`. Spend is reserved before the call against the unified internal ledger under the
-key `marketplace_trust`. If that primitive is absent (V3-43 not applied), the budget is spent, the
-provider is not configured or fails, or the reply does not parse, the step is skipped and the
-deterministic verdict stands. Only a closed vocabulary crosses back; no provider or model name
+key `marketplace_trust`. One store can trigger at most 12 screens in 24 hours, counted on the
+verdict ledger before anything is reserved, so no seller can spend the day's budget for everyone.
+If that primitive is absent (V3-43 not applied), the budget is spent, the provider is not
+configured or fails, or the reply does not parse, the step is skipped and the deterministic verdict
+stands. The screen reads every field the deterministic rules read. Only a closed vocabulary crosses back; no provider or model name
 leaves the server. Unlike its three platform-invoked neighbours, this surface has a registered
 prompt builder — without one a surface can never reach the provider.
 
@@ -212,7 +242,29 @@ Tuned for precision, because a match holds an honest seller's listing:
 
 Consequence by store: on probation a match **holds**; an established store gets a signal only
 (usually a shared manufacturer photo). Attaching another store's uploaded object directly — which
-the upload flow cannot produce — holds for everyone.
+the upload flow cannot produce — holds for everyone. A picture that could not be fingerprinted at
+all holds a probation store's listing.
+
+An edit may keep, unchecked, only the pictures the listing's **standing verdict** covers. Anything
+else on the row — for example something a draft save attached while the listing was not live — is
+judged as newly posted; and with the flag on a draft can only carry first-party uploads in the
+first place. The storage origin and the optional delivery base in front of it
+(`MEDIA_PUBLIC_BASE_URL`) both count as first-party.
+
+### 3.9 Content rules — what they catch and what they do not
+
+Contact details and payment steering are refused or held however they are dressed: look-alike
+letters and digits from other scripts, invisible characters, any separator, a number glued to a
+word, number words glued together, a dropped leading zero, a number cut across fields, an account
+number beside a bank or wallet name, links without a scheme, handles named next to an app, a
+mailbox provider with or without its dot. The listing's URL handle is screened like any other text.
+Two corpora hold the rules in place (`publish-gate/__tests__/corpus.ts`): 82 ordinary listings
+that must publish and 79 evasions that must not, in every field.
+
+Known limits, by design of a deterministic floor: a number spelled only in Pidgin, Yoruba, Igbo or
+Hausa words, a number written backwards or with an arithmetic hint, digits separated by filler
+words in plain form, and anything inside a picture. Those are what the optional AI screen and the
+report-based take-down are for.
 
 ## 4. Flag OFF is the current behaviour
 
@@ -223,11 +275,20 @@ behind the flag are deliberate and inert:
 - three legacy handlers now check the result of a write the database may refuse (payout request,
   payout decision, product decision) so a refused write is no longer followed by "approved" side
   effects — a no-op unless the database refuses;
-- the action form shows a server-provided outcome message when one is sent (only the gate sends one).
+- the action form shows a server-provided outcome message when one is sent (only the gate sends one);
+- the seller-application wizard reads the server's answer before showing its usual confirmation
+  (the answer carries nothing new with the flag off);
+- the cart page and the finance page show a notice for an `?error=` code only the gate redirects
+  with; the vendor payouts page has a fallback sentence for the same codes;
+- the hub gains an owner page (Operations → Marketplace trust), its navigation entry and its
+  command-palette entry. The page says the ledger is not available until the migration is applied.
 
 With the migration applied and the flag OFF, the guard is satisfied by today's flows: sellers only
 ever write `draft`/`submitted`/`under_review`, and the human approval paths already stamp
-`reviewed_by`/`reviewed_at`.
+`reviewed_by`/`reviewed_at`. What the database itself now refuses, whichever way the flag points:
+a change to a live listing's content without a decision behind it, a change of a listing's id, a
+change to the variants of a live listing, and a payout for a store on the probation register
+whose owner's identity is not verified.
 
 ## 5. Rollout
 

@@ -259,7 +259,6 @@ export async function POST(request: Request) {
         {
           error: formatMarketplaceTrustTemplate(trustCopy.onboarding.rejectedBody, { reasons: fixes }),
           code: "store-rejected",
-          reasons: storeVerdict.reasons,
         },
         { status: 422 },
       );
@@ -351,7 +350,17 @@ export async function POST(request: Request) {
   // other answer leaves the application in the queue for a person, and the
   // legacy notifications below run unchanged.
   let onboarding: { opened: boolean; notice: { title: string; body: string } } | null = null;
-  if (instantPublish && mode === "submit" && storeVerdict) {
+  // An application a person has already rejected, or sent back for changes, is not
+  // re-decided by the gate: submitting it again returns it to a person. (The
+  // database refuses it too — this only avoids asking.)
+  const decidedByPerson = existingStatus === "rejected" || existingStatus === "changes_requested";
+  if (instantPublish && mode === "submit" && storeVerdict && decidedByPerson) {
+    const trustCopy = getMarketplaceTrustCopy(gateLocale);
+    onboarding = {
+      opened: false,
+      notice: { title: trustCopy.result.heldTitle, body: trustCopy.onboarding.heldBody },
+    };
+  } else if (instantPublish && mode === "submit" && storeVerdict) {
     const trustCopy = getMarketplaceTrustCopy(gateLocale);
     const result = await instantOnboard(admin, {
       actorId: viewer.user.id,
@@ -359,7 +368,19 @@ export async function POST(request: Request) {
       verdict: storeVerdict,
       moderationDetail: storeVerdict.moderationDetail,
     });
-    if (result.kind === "opened" || result.kind === "already_seller") {
+    if (result.kind === "already_seller") {
+      // The account already has a store: nothing was opened and nothing is queued.
+      // The database put the application back to "approved"; answer with that.
+      revalidatePath("/account/seller-application");
+      revalidatePath("/vendor");
+      return NextResponse.json({
+        ok: true,
+        mode,
+        application: { ...application, status: "approved" },
+        onboarding: { opened: result.vendorStatus === "approved", existing: true },
+      });
+    }
+    if (result.kind === "opened") {
       onboarding = {
         opened: true,
         notice: { title: trustCopy.onboarding.openedTitle, body: trustCopy.onboarding.openedBody },

@@ -29,6 +29,8 @@ import type { SellerGateState } from "./seller-state";
 
 export interface ListingGateInput {
   listing: {
+    /** The listing's public URL segment. Seller text like any other, so it is screened. */
+    slug?: string;
     title: string;
     summary: string;
     description: string;
@@ -58,6 +60,8 @@ export interface ListingGateInput {
     /** Perceptual hashes of the images, for the known-bad list. */
     hashes?: ReadonlyArray<string>;
     knownBadHashes?: ReadonlySet<string>;
+    /** First-party pictures that could not be fingerprinted (so could not be compared). */
+    unfingerprinted?: number;
   };
   /** Null when the database could not report the store's state. */
   seller: SellerGateState | null;
@@ -87,6 +91,23 @@ export interface GateVerdict {
 const MIN_TITLE_LENGTH = 4;
 const MIN_BODY_LENGTH = 20;
 const MAX_PRICE = 1_000_000_000;
+
+/**
+ * Goods a new store is held on whatever category it files them under: the
+ * category is the seller's own choice, so a phone listed under "everyday tech"
+ * must meet the same rule as one listed under "phones". Only above a price where
+ * it matters — a phone case is not a phone.
+ */
+const HIGH_RISK_CONTENT_RE =
+  /\b(?:iphone|ipad|macbook|smartphone|android\s+phone|samsung|galaxy|tecno|infinix|itel|redmi|xiaomi|oppo|vivo|huawei|nokia|pixel|laptop|playstation|ps[45]|xbox|airpods|rolex|cartier|(?:18|22|24)\s?k(?:arat)?\s+gold|diamond\s+ring)\b/i;
+export const HIGH_RISK_CONTENT_MIN_PRICE = 50_000;
+
+export function contentIsHighRisk(listing: Pick<ListingGateInput["listing"], "title" | "summary" | "basePrice">): boolean {
+  return (
+    Number(listing.basePrice) >= HIGH_RISK_CONTENT_MIN_PRICE &&
+    HIGH_RISK_CONTENT_RE.test(`${listing.title}\n${listing.summary}`)
+  );
+}
 
 /** Map the moderation ruleset's machine tokens to gate reason codes. */
 export function codesFromModerationDetail(detail: ReadonlyArray<string>): GateReasonCode[] {
@@ -120,6 +141,8 @@ export function listingText(listing: ListingGateInput["listing"]): string {
     listing.leadTime,
     listing.sku,
     ...listing.specificationValues,
+    // Last, and with its hyphens opened up, so "call-0803-…" reads as words and digits.
+    String(listing.slug ?? "").replace(/[-_]+/g, " "),
   ]
     .map((part) => String(part ?? "").trim())
     .filter(Boolean)
@@ -147,9 +170,10 @@ export function evaluateListingPolicy(input: ListingGateInput): GateVerdict {
     !Number.isInteger(price) ||
     price <= 0 ||
     price > MAX_PRICE ||
-    (compareAt !== null && (!Number.isFinite(compareAt) || compareAt <= price))
+    (compareAt !== null && (!Number.isFinite(compareAt) || compareAt <= price || compareAt > MAX_PRICE))
   ) {
-    // A "was" price at or below the selling price is a discount that is not one.
+    // A "was" price at or below the selling price is a discount that is not one;
+    // one beyond the ceiling is not a price at all (ten digits fit a phone number).
     codes.push("price_invalid");
   }
 
@@ -171,7 +195,9 @@ export function evaluateListingPolicy(input: ListingGateInput): GateVerdict {
         if (seller.probation.liveListings >= caps.maxLiveListings) codes.push("probation_listing_cap");
         else if (seller.probation.newListings24h >= caps.maxNewListingsPerDay) codes.push("probation_daily_cap");
       }
-      if (categoryIsHighRisk(listing.categorySlug)) codes.push("high_risk_category_probation");
+      if (categoryIsHighRisk(listing.categorySlug) || contentIsHighRisk(listing)) {
+        codes.push("high_risk_category_probation");
+      }
     }
 
     // A hide that needs a person stays until a person lifts it.
@@ -196,6 +222,12 @@ export function evaluateListingPolicy(input: ListingGateInput): GateVerdict {
   }
   if (images.matches.some((match) => match.relation === "same_seller")) {
     codes.push("duplicate_image_same_seller");
+  }
+  // A picture that could not be fingerprinted could not be compared with anyone
+  // else's. From a store on probation (or one whose standing is unknown) that is
+  // not a publish: a person looks.
+  if ((images.unfingerprinted ?? 0) > 0 && (seller === null || seller.probation.active)) {
+    codes.push("gate_unavailable");
   }
 
   // ---- content --------------------------------------------------------------

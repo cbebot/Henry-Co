@@ -98,6 +98,24 @@ create table if not exists public.marketplace_vendor_applications (
   submitted_at timestamptz,
   reviewed_at timestamptz,
   agreement_accepted_at timestamptz,
+  documents_json jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+-- Buyer-visible options of a listing. The gate keeps the engine away from them.
+create table if not exists public.marketplace_product_variants (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.marketplace_products (id) on delete cascade,
+  sku text not null,
+  options jsonb not null default '{}'::jsonb,
+  price integer not null default 0,
+  compare_at_price integer,
+  stock integer not null default 0,
+  status text not null default 'active',
+  currency text not null default 'NGN',
+  media_id uuid,
+  sort_order integer not null default 0,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
@@ -185,7 +203,14 @@ end $$;
 -- The standing production grants (broad, inert for writes because no write policy
 -- exists). Reproduced so the proofs run under the real condition.
 grant select, insert, update, delete on table
-  public.marketplace_products, public.marketplace_product_media
+  public.marketplace_products, public.marketplace_product_media, public.marketplace_product_variants
+  to anon, authenticated, service_role;
+-- Production also hands the request roles TRIGGER and TRUNCATE on every public
+-- table (Supabase default privileges). Reproduced so the migration's revoke is
+-- what the proofs measure.
+grant trigger, truncate on table
+  public.marketplace_products, public.marketplace_product_media, public.marketplace_product_variants,
+  public.marketplace_payout_requests, public.marketplace_vendors
   to anon, authenticated, service_role;
 grant select, insert, update, delete on table
   public.marketplace_vendors, public.marketplace_vendor_applications, public.marketplace_orders,

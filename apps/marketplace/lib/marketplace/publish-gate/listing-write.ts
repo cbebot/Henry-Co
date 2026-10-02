@@ -26,6 +26,7 @@ import type { AppLocale } from "@henryco/i18n/server";
 import { buildProductMediaRows } from "../product-images";
 import type { MarketplaceVendor } from "../types";
 import { emitGateEvent, outcomeToEvent } from "./events";
+import type { PublicMediaBases } from "./image-refs";
 import { withGateBlock, type ListingDraft } from "./listing-row";
 import { gateNotice, type GateNotice } from "./messages";
 import { unavailableVerdict, type GateVerdict } from "./policy";
@@ -37,7 +38,7 @@ import {
   type GateOutcome,
   type GateReasonCode,
 } from "./reasons";
-import { guardHint, runListingGate, type GateAdmin, type ListingAiScan } from "./server";
+import { guardHint, readStandingMediaRefs, runListingGate, type GateAdmin, type ListingAiScan } from "./server";
 
 type DbError = { code?: string; message?: string; hint?: string; details?: string } | null;
 
@@ -64,7 +65,7 @@ export interface InstantUpsertInput {
    */
   onHold: "keep" | "review";
   locale: AppLocale;
-  publicBaseUrl: string | null | undefined;
+  publicBaseUrl: PublicMediaBases;
   /** Staff acting for a store may attach their own uploads. */
   extraUploaders?: ReadonlyArray<string>;
   aiScan?: ListingAiScan | null;
@@ -204,8 +205,9 @@ export async function instantListingUpsert(input: InstantUpsertInput): Promise<I
     };
   }
 
-  const [gallery, disputes] = await Promise.all([
+  const [gallery, covered, disputes] = await Promise.all([
     existing ? readGallery(admin, existing.id) : Promise.resolve([] as MediaRow[]),
+    existing ? readStandingMediaRefs(admin, existing.id) : Promise.resolve([] as string[]),
     admin
       .from("marketplace_disputes")
       .select("id", { count: "exact", head: true })
@@ -213,6 +215,10 @@ export async function instantListingUpsert(input: InstantUpsertInput): Promise<I
       .in("status", ["open", "investigating"]),
   ]);
   const existingMedia = gallery.map((row) => row.url);
+  // Only pictures the listing's standing verdict covers may be kept unchecked. A
+  // row that was never live has none: whatever a draft save attached to it —
+  // an outside URL, another store's upload — is judged as newly posted.
+  const coveredMedia = existingMedia.filter((url) => covered.includes(url));
 
   const gate = await runListingGate(admin, {
     actorId: input.actorId,
@@ -221,7 +227,7 @@ export async function instantListingUpsert(input: InstantUpsertInput): Promise<I
     draft,
     // An edit that posts no images keeps the gallery it has.
     postedImages: input.postedImages.length > 0 ? input.postedImages : existingMedia,
-    existingMedia,
+    existingMedia: coveredMedia,
     existingCurrency: existing?.currency ?? null,
     openDisputeCount: disputes.count ?? 0,
     locale: input.locale,

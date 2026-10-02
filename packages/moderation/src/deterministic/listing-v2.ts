@@ -25,7 +25,7 @@
 //   signal:urgency · signal:address · image:known_bad
 // ---------------------------------------------------------------------------
 
-import { detectContactDetails } from "@henryco/trust/contact";
+import { detectContactDetails, foldForScreening } from "@henryco/trust/contact";
 import type { DetectorVerdict, ModerationDecision, ModerationInput, ModerationReason, ModerationSeverity } from "../types";
 import { detectProfanity } from "./profanity";
 import { checkImageHashes } from "./image-hash";
@@ -36,6 +36,8 @@ export const LISTING_RULESET_VERSION = "listing_v2.1";
 interface Rule {
   re: RegExp;
   token: string;
+  /** Everyday phrases that contain the banned words and mean something else; removed before the rule is tested. */
+  benign?: RegExp;
 }
 
 // ---- Prohibited: no benign reading ------------------------------------------
@@ -48,6 +50,9 @@ const DRUG_NAMES = "weed|marijuana|cannabis|kush|meth|cocaine|tramadol|codeine";
 const DRUG_SLANG = "loud|igbo|skunk|hash(?:ish)?|ecstasy|molly|lsd";
 const SALE_CONTEXT = String.raw`(?:for\s+sale|delivery|wholesale|dealer|supplier)`;
 const NOT_GARDENING = String.raw`(?!\s*(?:killer|trimmer|eater|barrier|control|whacker|puller|mat|seed\s+oil))`;
+
+const BENIGN_WEAPON =
+  /\bshotgun\s+(?:mic(?:rophone)?s?|mikes?)\b|\b(?:bubble|water|toy|nerf|foam|confetti|massage)\s+machine\s+guns?\b|\bmachine\s+guns?\s+toys?\b/gi;
 
 const PROHIBITED: Rule[] = [
   // Controlled drugs
@@ -65,6 +70,8 @@ const PROHIBITED: Rule[] = [
   {
     re: /\b(?:ak[-\s]?47|ar[-\s]?15|firearms?|handguns?|shotguns?|revolvers?|uzi|machine\s+guns?|live\s+rounds?|ammunition|explosive\s+device|pipe\s+bomb|c4\s+explosive)\b/i,
     token: "banned:weapons",
+    // A shotgun microphone is a microphone; a bubble machine gun is a toy.
+    benign: BENIGN_WEAPON,
   },
   {
     re: /\b(?:brass\s+knuckles|knuckle\s+duster|switchblade|butterfly\s+knife|flick\s+knife|stun\s+gun|taser)\b/i,
@@ -72,16 +79,19 @@ const PROHIBITED: Rule[] = [
   },
   // Wildlife
   {
-    re: /\b(?:elephant\s+tusks?|rhino\s+horn|pangolin\s+scales?|leopard\s+skin|tiger\s+(?:bone|skin)|endangered\s+species)\b/i,
+    // "leopard skin print" is a pattern on cloth, not a skin.
+    re: /\b(?:elephant\s+tusks?|rhino\s+horn|pangolin\s+scales?|(?:leopard|tiger)\s+skin(?!\s+(?:print|pattern|design|fabric|texture|style))|tiger\s+bone|endangered\s+species)\b/i,
     token: "banned:wildlife",
   },
   {
-    re: /\b(?:(?:real|genuine|raw|elephant)\s+ivory|ivory\s+(?:tusks?|carvings?|figurines?|bangles?|jewel\w*|chess))\b/i,
+    // Ivory is also a colour: "ivory bangles" is held for a person (see ambiguousTokens), not refused.
+    re: /\b(?:(?:real|genuine|raw|elephant)\s+ivory|ivory\s+(?:tusks?|carvings?|figurines?|chess))\b/i,
     token: "banned:wildlife",
   },
   // Human body
   {
-    re: /\b(?:human\s+(?:organ|kidney|liver)|kidney\s+for\s+sale|organ\s+(?:donor|trade|for\s+sale)|sell\s+(?:my\s+)?(?:kidney|organ))\b/i,
+    // A church organ for sale is a musical instrument.
+    re: /\b(?:human\s+(?:organ|kidney|liver)|kidney\s+for\s+sale|organ\s+(?:donor|trade)|sell\s+(?:my\s+)?(?:kidney|organ))\b/i,
     token: "banned:human_body",
   },
   // Regulated medicine sold around its controls
@@ -101,13 +111,16 @@ const COUNTERFEIT: Rule[] = [
   {
     re: /\b(?:counterfeit|knock[-\s]?offs?|super\s+fake|aaa\s+replica|1:1\s+(?:copy|replica|quality)|mirror\s+(?:quality|copy)|first\s+copy|high\s+copy|master\s+copy|fake\s+(?:designer|rolex|gucci|louis\s+vuitton|nike|adidas|currency|notes?|money))\b/i,
     token: "counterfeit:explicit",
+    // A counterfeit-note detector finds fakes; "first copy out time" is a printer's speed.
+    benign:
+      /\banti[-\s]?counterfeit\w*\b|\b(?:counterfeit|fake)\s+(?:notes?|money|currency|cash|bills?|banknotes?)\s+(?:detect\w+|check\w+|test\w+|pens?|machines?|markers?)\b|\bfirst\s+copy\s+out\b/gi,
   },
 ];
 
 // ---- Ambiguous: a human decides ---------------------------------------------
 
 const BENIGN_GUN =
-  /\b(?:glue|hot\s+glue|nail|water|spray|heat|staple|grease|caulk(?:ing)?|toy|squirt|paintball|nerf|bb|massage|tattoo|price|label(?:l?ing)?|tagging|soldering|silicone|foam|sealant|air(?:\s+blow)?|blow|piercing|thermometer|temperature|infrared|fogging|sanitizer|sanitiser|gel|bubble|confetti|tape|rivet|riveting|pressure|wash(?:ing)?|paint|cake|icing|fascial?)\s+guns?\b|\bgun[-\s]?metal\b|\btop\s+gun\b/gi;
+  /\b(?:(?:bubble|water|toy|nerf|foam|confetti|massage)\s+machine|glue|hot\s+glue|nail|water|spray|heat|staple|grease|caulk(?:ing)?|toy|squirt|paintball|nerf|bb|massage|tattoo|price|label(?:l?ing)?|tagging|soldering|silicone|foam|sealant|air(?:\s+blow)?|blow|piercing|thermometer|temperature|infrared|fogging|sanitizer|sanitiser|gel|bubble|confetti|tape|rivet|riveting|pressure|wash(?:ing)?|paint|cake|icing|fascial?)\s+guns?\b|\bgun[-\s]?metal\b|\btop\s+gun\b/gi;
 const BENIGN_PISTOL = /\b(?:water|toy|glue)\s+pistols?\b|\bpistol[-\s]grip\b/gi;
 const BENIGN_RIFLE = /\b(?:toy|nerf|water)\s+rifles?\b/gi;
 const BENIGN_SILENCER =
@@ -130,6 +143,7 @@ function ambiguousTokens(text: string): string[] {
   if (mentionsOutside(text, /\bsuppress(?:or|er)s?\b/i, BENIGN_SUPPRESSOR)) tokens.push("ambiguous:suppressor");
   if (/\b(?:ammo|grenades?|dynamite)\b/i.test(text)) tokens.push("ambiguous:munition");
   if (/\breplicas?\b/i.test(text)) tokens.push("ambiguous:replica");
+  if (/\bivory\s+(?:bangles?|jewel\w*|necklaces?|beads?)\b/i.test(text)) tokens.push("ambiguous:ivory");
   if (mentionsOutside(text, /\b(?:marijuana|cannabis)\b/i, BENIGN_CANNABIS)) tokens.push("ambiguous:cannabis");
   if (
     mentionsOutside(text, /\bweed\b/i, BENIGN_WEED) &&
@@ -144,7 +158,7 @@ function ambiguousTokens(text: string): string[] {
 // ---- Hate: slurs (shared lexicon) + group-targeted incitement ----------------
 
 const GROUPS =
-  "jews?|muslims?|christians?|igbos?|yorubas?|hausas?|fulanis?|ijaws?|tivs?|blacks?|whites?|gays?|lesbians?|homosexuals?|women|girls|foreigners|immigrants|refugees|arabs?|indians?|chinese|africans?|nigerians?|ghanaians?|albinos?|disabled|cripples?";
+  "jews?|muslims?|christians?|igbos?|yorubas?|hausas?|fulanis?|ijaws?|tivs?|blacks|whites|(?:black|white)\\s+(?:people|men|women|folks?)|gays?|lesbians?|homosexuals?|women|girls|foreigners|immigrants|refugees|arabs?|indians?|chinese|africans?|nigerians?|ghanaians?|albinos?|disabled|cripples?";
 
 /**
  * Incitement against a named group. A verb plus any noun ("gas cooker", "kill
@@ -164,7 +178,42 @@ export const LISTING_HATE_CONSTRUCTS: RegExp[] = [
 
 // ---- Scam ------------------------------------------------------------------
 
+/** Banks and wallets whose name next to ten digits is an account to pay into. */
+const BANK_NAMES =
+  "gtb|gtbank|gt\\s?bank|guaranty\\s+trust|zenith|uba|first\\s?bank|fcmb|wema|stanbic|ecobank|providus|kuda|opay|o-pay|palmpay|palm\\s?pay|moniepoint|monie\\s?point|[a-z]+\\s+bank";
+const TEN_DIGITS = "(?<!\\d)(?:\\d[\\s.-]?){9}\\d(?!\\d)";
+
 const SCAM: Rule[] = [
+  {
+    // An account number: ten digits beside a bank, a wallet or the word "account".
+    // "power bank 20000mAh" is a battery; a bank has a name in front of it.
+    re: new RegExp(
+      `\\b(?:${BANK_NAMES}|acct|a\\/c|account)\\b(?<!power\\s+bank)[^\\n.]{0,24}?${TEN_DIGITS}|${TEN_DIGITS}[^\\n.]{0,12}?\\b(?:${BANK_NAMES})\\b(?<!power\\s+bank)`,
+      "i",
+    ),
+    token: "scam:payment_diversion",
+  },
+  {
+    // Steering the payment itself off the platform, in the words sellers use.
+    re: /\b(?:pa(?:y|id|yment)|transfer|send|deposit)\w*\b[^.\n]{0,30}\b(?:to|into|in)\s+(?:my|our)\s+(?:[a-z]+\s+){0,2}(?:account|acct|bank|wallet|gtb|opay|palmpay|kuda|uba|zenith)\b|\btransfer\s+direct(?:ly)?\b|\bpay\s+(?:me|us)\s+(?:outside|offline|privately|in\s+person|in\s+cash|cash)\b|\b(?:cheaper|discount\w*|better\s+price|less)\b[^.\n]{0,40}\b(?:off|outside)\s+(?:the|this)\s+(?:app|platform|site|website|marketplace)\b|\bbuy\s+direct(?:ly)?\s+from\s+(?:me|us)\b|\b(?:do\s*n[o'’]?t|don'?t|never)\s+pay\s+(?:here|on\s+(?:the\s+|this\s+)?(?:app|site|platform|website))\b|\bpay\s+(?:me\s+)?when\s+you\s+see\s+me\b|\b(?:dm|inbox|message|chat|call|text|ask)\b[^.\n]{0,20}\bfor\s+(?:my\s+|the\s+|our\s+)?(?:account|acct|bank|payment)\s+(?:details?|number|info)\b/i,
+    token: "scam:payment_diversion",
+  },
+  {
+    re: new RegExp(
+      `\\b(?:send|transfer|pay)\\w*\\s+(?:the\\s+)?(?:money|payment|cash|funds)\\s+to\\s+${TEN_DIGITS}`,
+      "i",
+    ),
+    token: "scam:payment_diversion",
+  },
+  {
+    re: /\bdeal\w*\s+(?:privately|offline|outside|directly)\b|\b(?:deal|transaction|sale)\s+offline\b|\bno\s+need\s+to\s+(?:order|pay|buy|check\s?out)\s+(?:here|on\s+(?:the|this)\s+(?:app|site|platform))\b|\bbuy\s+(?:it\s+)?from\s+(?:me|us)\s+direct(?:ly)?\b|\bno\s+(?:platform|service|app)\s+(?:charges?|fees?|commission)\b|\b(?:account|acct|bank|payment)\s+(?:details?|number|info)\s+(?:(?:is|are)\s+)?(?:on|in)\s+the\s+(?:picture|photo|image|pic|flyer)s?\b|\b(?:bank\s+)?transfer\s+only\b|\bpayment\s+(?:by|via)\s+(?:bank\s+)?transfer\b|\b(?:usdt|btc|bitcoin|crypto)\s+accepted\b/i,
+    token: "scam:payment_diversion",
+  },
+  {
+    // Money asked for before anything is sent.
+    re: /\b(?:deposit|part[-\s]payment|advance\s+payment|upfront)\b[^.\n]{0,40}\bbefore\s+(?:i|we)\s+(?:ship|send|deliver|dispatch)\b/i,
+    token: "scam:advance_fee",
+  },
   {
     re: /\b(?:pay\s+(?:me\s+)?direct(?:ly)?|pay\s+(?:the\s+)?seller\s+direct(?:ly)?|send\s+(?:the\s+)?(?:payment|money)\s+to\s+my|transfer\s+(?:the\s+money\s+)?to\s+(?:my|this)\s+account|pay\s+into\s+my|pay\s+outside|outside\s+(?:the\s+)?(?:platform|app|site|website)|avoid\s+(?:the\s+)?(?:platform\s+)?fees?|skip\s+(?:the\s+)?fees?|off[-\s]?platform|deal\s+outside|bank\s+transfer\s+only|contact\s+(?:the\s+)?seller\s+direct(?:ly)?|western\s+union|moneygram|pay\s+(?:with|in|via|by)\s+(?:crypto|bitcoin|btc|usdt|gift\s?cards?)|(?:crypto|bitcoin|usdt)\s+(?:payments?\s+)?only)\b/i,
     token: "scam:payment_diversion",
@@ -178,7 +227,7 @@ const SCAM: Rule[] = [
     token: "scam:identity_request",
   },
   {
-    re: /\b(?:you(?:'ve)?\s+won|congratulations\s+you|claim\s+your\s+prize|free\s+money|guaranteed\s+(?:income|profit)|guaranteed\s+returns?\s+of\s+\d|double\s+your\s+money)\b/i,
+    re: /\b(?:you(?:'ve)?\s+won(?!['’]t)|congratulations\s+you|claim\s+your\s+prize|free\s+money|guaranteed\s+(?:income|profit)|guaranteed\s+returns?\s+of\s+\d|double\s+your\s+money)\b/i,
     token: "scam:advance_fee",
   },
 ];
@@ -201,7 +250,9 @@ export interface ListingRulesetOptions {
  * `runDeterministic`: an unambiguous reject short-circuits the AI layer.
  */
 export function runListingRulesetV2(input: ModerationInput, opts: ListingRulesetOptions = {}): DetectorVerdict {
-  const text = input.text ?? "";
+  // Screened as a reader sees it: invisible characters removed, look-alike
+  // letters and every digit script folded to ASCII.
+  const text = foldForScreening(input.text ?? "");
   const reasons = new Set<ModerationReason>();
   const detail: string[] = [];
   const state: { decision: ModerationDecision; severity: ModerationSeverity; unambiguous: boolean } = {
@@ -222,7 +273,7 @@ export function runListingRulesetV2(input: ModerationInput, opts: ListingRuleset
 
   // 1. Prohibited goods and explicit counterfeits.
   for (const rule of [...PROHIBITED, ...COUNTERFEIT]) {
-    if (rule.re.test(text)) {
+    if (rule.re.test(rule.benign ? text.replace(rule.benign, " ") : text)) {
       if (!detail.includes(rule.token)) detail.push(rule.token);
       reasons.add("banned_goods");
       raise("reject", "critical");
@@ -237,7 +288,10 @@ export function runListingRulesetV2(input: ModerationInput, opts: ListingRuleset
   }
 
   // 3. Hate (shared slur lexicon; listing-grade constructs) and profanity.
-  const language = detectProfanity(text, input.locale, { hateConstructs: LISTING_HATE_CONSTRUCTS });
+  // "Kike" with a capital is a Yoruba given name (Kikelomo) long before it is anything else here.
+  const language = detectProfanity(text.replace(/\bKike\b/g, "Name"), input.locale, {
+    hateConstructs: LISTING_HATE_CONSTRUCTS,
+  });
   if (language.reasons.includes("hate_speech")) {
     detail.push((language.detail ?? []).includes("hate_construct") ? "hate:construct" : "hate:slur");
     reasons.add("hate_speech");
