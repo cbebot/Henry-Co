@@ -117,6 +117,21 @@ jobs:
       - name: Test (@henryco/dashboard-modules-staff — lens gate + recommendation state)
         run: pnpm --filter @henryco/dashboard-modules-staff run test
 
+      # V3-MKT-TRUST-01 — the instant-publish policy lives in three places, and
+      # none of them was gated before: the contact detector (@henryco/trust), the
+      # content ruleset (@henryco/moderation) and the marketplace gate that
+      # composes them. The marketplace suite proves every gate outcome and reason
+      # code, the probation caps, payout eligibility and that an AI result can
+      # only add; it also brings the app's existing unit tests under CI.
+      - name: Test (@henryco/trust — contact detection, plain and disguised)
+        run: pnpm --filter @henryco/trust run test
+
+      - name: Test (@henryco/moderation — default ruleset pinned + listing ruleset)
+        run: pnpm --filter @henryco/moderation run test
+
+      - name: Test (@henryco/marketplace — publish gate: every outcome and reason code)
+        run: pnpm --filter @henryco/marketplace run test
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
 

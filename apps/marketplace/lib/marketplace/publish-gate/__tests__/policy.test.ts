@@ -1,0 +1,456 @@
+// V3-MKT-TRUST-01 — every gate outcome and every reason code, proven on the pure policy.
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import type { AiScanResult } from "@henryco/moderation";
+
+import {
+  applyAiSignal,
+  codesFromModerationDetail,
+  evaluateListingPolicy,
+  mergeDbVerdict,
+  unavailableVerdict,
+  type GateVerdict,
+  type ListingGateInput,
+} from "../policy";
+import {
+  ALL_GATE_REASONS,
+  HOLD_REASONS,
+  REJECT_REASONS,
+  SIGNAL_REASONS,
+  composeOutcome,
+  reasonClass,
+  type GateOutcome,
+  type GateReasonCode,
+} from "../reasons";
+import type { SellerGateState } from "../seller-state";
+
+const REF = "media://public/marketplace-images/product/11111111-1111-4111-8111-111111111111/abc-kettle.jpg";
+
+function seller(overrides: Partial<SellerGateState> = {}): SellerGateState {
+  return {
+    vendor: { id: "v1", status: "approved", ownerUserId: "u1", ownerType: "vendor", sellerTier: "launch" },
+    identityVerified: false,
+    plan: { listingCap: 3, listingRows: 1 },
+    probation: {
+      tracked: false,
+      active: false,
+      startedAt: null,
+      ageDays: 0,
+      caps: {
+        maxLiveListings: 10,
+        maxNewListingsPerDay: 5,
+        maxPrice: 500_000,
+        graduationMinDeliveredOrders: 3,
+        graduationMinDays: 14,
+      },
+      liveListings: 0,
+      newListings24h: 0,
+      deliveredOrders: 0,
+    },
+    product: null,
+    activeHide: null,
+    ...overrides,
+  };
+}
+
+function onProbation(extra: Partial<SellerGateState["probation"]> = {}): SellerGateState {
+  const base = seller();
+  return { ...base, probation: { ...base.probation, tracked: true, active: true, ...extra } };
+}
+
+function input(overrides: Partial<ListingGateInput> = {}): ListingGateInput {
+  return {
+    listing: {
+      title: "Stainless steel electric kettle",
+      summary: "A two litre kettle with auto shut-off, a concealed element and a one year warranty.",
+      description:
+        "Boils two litres in under four minutes. Brushed stainless body, cool-touch handle, removable limescale filter, " +
+        "360 degree cordless base and boil-dry protection. Comes boxed with a one year replacement warranty.",
+      sku: "KET-2000",
+      categorySlug: "home-kitchen",
+      basePrice: 18500,
+      compareAtPrice: null,
+      deliveryNote: "Dispatched within 24 hours, delivered in 2 to 4 days.",
+      leadTime: "2-4 days",
+      specificationValues: ["Stainless steel", "1 year"],
+    },
+    images: { refs: [REF], notFirstParty: [], foreignRefs: [], matches: [] },
+    seller: seller(),
+    vendor: null,
+    riskGated: false,
+    isLiveEdit: false,
+    isNew: true,
+    locale: "en",
+    ...overrides,
+  };
+}
+
+function withListing(patch: Partial<ListingGateInput["listing"]>, extra: Partial<ListingGateInput> = {}): ListingGateInput {
+  const base = input(extra);
+  return { ...base, listing: { ...base.listing, ...patch } };
+}
+
+function verdictOf(overrides: Partial<ListingGateInput> = {}): GateVerdict {
+  return evaluateListingPolicy(input(overrides));
+}
+
+describe("a clean listing publishes", () => {
+  it("publishes with no blocking reason", () => {
+    const verdict = verdictOf();
+    assert.equal(verdict.outcome, "publish");
+    assert.deepEqual(
+      verdict.reasons.filter((code) => reasonClass(code) !== "signal"),
+      [],
+    );
+  });
+
+  it("publishes for a store that never passed an identity check", () => {
+    // Identity is not a listing gate any more: it is checked at payout.
+    const verdict = verdictOf({ seller: { ...seller(), identityVerified: false } });
+    assert.equal(verdict.outcome, "publish");
+  });
+
+  it("a low quality score is advice, never a queue", () => {
+    const verdict = evaluateListingPolicy(
+      withListing({ sku: "", deliveryNote: "", leadTime: "", summary: "Good kettle for the home." }),
+    );
+    assert.equal(verdict.outcome, "publish");
+    assert.ok(verdict.reasons.includes("thin_listing"));
+  });
+});
+
+// One producer per reason code. The meta-test below fails if a code is added to
+// the vocabulary without a case here.
+const CASES: Record<GateReasonCode, () => GateVerdict> = {
+  // ---- reject -------------------------------------------------------------
+  prohibited_goods: () => evaluateListingPolicy(withListing({ title: "AK-47 rifle, brand new in box" })),
+  counterfeit_claim: () => evaluateListingPolicy(withListing({ title: "Rolex Submariner 1:1 copy, mirror quality" })),
+  hate_speech: () => evaluateListingPolicy(withListing({ description: "Great kettle. All muslims should die. Buy today." })),
+  known_bad_image: () =>
+    verdictOf({
+      images: {
+        refs: [REF],
+        notFirstParty: [],
+        foreignRefs: [],
+        matches: [],
+        hashes: ["abcdef0123456789"],
+        knownBadHashes: new Set(["abcdef0123456789"]),
+      },
+    }),
+  contact_details: () =>
+    evaluateListingPolicy(withListing({ description: "Lovely kettle, boils fast. Call o8o 3123 4567 to order today." })),
+  off_platform_payment: () =>
+    evaluateListingPolicy(withListing({ deliveryNote: "Pay me directly, bank transfer only, and save the fee." })),
+  incomplete_listing: () => verdictOf({ images: { refs: [], notFirstParty: [], foreignRefs: [], matches: [] } }),
+  price_invalid: () => evaluateListingPolicy(withListing({ basePrice: 0 })),
+  image_not_first_party: () =>
+    verdictOf({
+      images: { refs: [REF], notFirstParty: ["https://attacker.example/kettle.jpg"], foreignRefs: [], matches: [] },
+    }),
+  plan_listing_limit: () => verdictOf({ seller: seller({ plan: { listingCap: 3, listingRows: 3 } }) }),
+  probation_listing_cap: () => verdictOf({ seller: onProbation({ liveListings: 10 }) }),
+  probation_daily_cap: () => verdictOf({ seller: onProbation({ liveListings: 4, newListings24h: 5 }) }),
+  probation_price_cap: () => evaluateListingPolicy(withListing({ basePrice: 500_001 }, { seller: onProbation() })),
+  seller_not_active: () =>
+    verdictOf({ seller: seller({ vendor: { ...seller().vendor, status: "suspended" } }) }),
+  listing_conflict: () => mergeDbVerdict(verdictOf(), { outcome: "reject", reasons: ["listing_conflict"] }),
+  // ---- hold ---------------------------------------------------------------
+  restricted_item_review: () => evaluateListingPolicy(withListing({ title: "Arsenal replica jersey, home kit" })),
+  profanity: () => evaluateListingPolicy(withListing({ summary: "This shit is the best kettle you will find anywhere in Lagos." })),
+  contact_suspected: () =>
+    evaluateListingPolicy(withListing({ description: "Lovely kettle, boils fast, see more at https://my-own-shop.example/kettle" })),
+  scam_language: () =>
+    evaluateListingPolicy(withListing({ description: "Lovely kettle. Verify your account first to unlock the discount price." })),
+  duplicate_image_other_seller: () =>
+    verdictOf({ images: { refs: [REF], notFirstParty: [], foreignRefs: [], matches: [{ ref: REF, relation: "other_seller" }] } }),
+  high_risk_category_probation: () =>
+    evaluateListingPolicy(withListing({ categorySlug: "phones-electronics" }, { seller: onProbation() })),
+  risk_hold_active: () => verdictOf({ riskGated: true }),
+  enforcement_hold_active: () =>
+    verdictOf({ seller: seller({ activeHide: { id: "h1", kind: "reports", reasons: ["reports_threshold"] } }) }),
+  ai_flagged_scam: () =>
+    applyAiSignal(verdictOf(), { recommendation: "hold", reasons: ["ai_flagged_scam"], confidence: 0.9 }),
+  ai_flagged_nsfw: () =>
+    applyAiSignal(verdictOf(), { recommendation: "hold", reasons: ["ai_flagged_nsfw"], confidence: 0.9 }),
+  ai_flagged_abuse: () =>
+    applyAiSignal(verdictOf(), { recommendation: "hold", reasons: ["ai_flagged_abuse"], confidence: 0.9 }),
+  ai_flagged_other: () => applyAiSignal(verdictOf(), { recommendation: "hold", reasons: [], confidence: 0.4 }),
+  gate_unavailable: () => verdictOf({ seller: null }),
+  // ---- signal -------------------------------------------------------------
+  duplicate_image_same_seller: () =>
+    verdictOf({ images: { refs: [REF], notFirstParty: [], foreignRefs: [], matches: [{ ref: REF, relation: "same_seller" }] } }),
+  urgency_language: () => evaluateListingPolicy(withListing({ title: "Urgent sale: stainless steel kettle" })),
+  pickup_address: () =>
+    evaluateListingPolicy(withListing({ deliveryNote: "Pickup available at 12 Allen Avenue, Ikeja, weekdays only." })),
+  thin_listing: () => evaluateListingPolicy(withListing({ sku: "", deliveryNote: "", leadTime: "" })),
+};
+
+describe("every reason code has a producer, and lands in the right outcome", () => {
+  it("the case table covers the whole vocabulary", () => {
+    assert.deepEqual(Object.keys(CASES).sort(), [...ALL_GATE_REASONS].sort());
+  });
+
+  for (const code of REJECT_REASONS) {
+    it(`reject — ${code}`, () => {
+      const verdict = CASES[code]();
+      assert.ok(verdict.reasons.includes(code), JSON.stringify(verdict));
+      assert.equal(verdict.outcome, "reject");
+    });
+  }
+  for (const code of HOLD_REASONS) {
+    it(`hold — ${code}`, () => {
+      const verdict = CASES[code]();
+      assert.ok(verdict.reasons.includes(code), JSON.stringify(verdict));
+      assert.equal(verdict.outcome, "hold");
+    });
+  }
+  for (const code of SIGNAL_REASONS) {
+    it(`signal only — ${code}`, () => {
+      const verdict = CASES[code]();
+      assert.ok(verdict.reasons.includes(code), JSON.stringify(verdict));
+      assert.equal(verdict.outcome, "publish");
+    });
+  }
+});
+
+describe("probation caps", () => {
+  it("apply only while probation is active", () => {
+    const tracked = seller();
+    const graduated: SellerGateState = {
+      ...tracked,
+      probation: { ...tracked.probation, tracked: true, active: false, liveListings: 40, newListings24h: 12 },
+    };
+    const verdict = evaluateListingPolicy(withListing({ basePrice: 900_000, categorySlug: "phones-electronics" }, { seller: graduated }));
+    assert.equal(verdict.outcome, "publish");
+  });
+
+  it("the price ceiling is inclusive", () => {
+    const at = evaluateListingPolicy(withListing({ basePrice: 500_000 }, { seller: onProbation() }));
+    const over = evaluateListingPolicy(withListing({ basePrice: 500_001 }, { seller: onProbation() }));
+    assert.equal(at.outcome, "publish");
+    assert.ok(over.reasons.includes("probation_price_cap"));
+  });
+
+  it("the live-listing cap refuses the listing that would exceed it, not the one that reaches it", () => {
+    assert.equal(verdictOf({ seller: onProbation({ liveListings: 9 }) }).outcome, "publish");
+    assert.ok(verdictOf({ seller: onProbation({ liveListings: 10 }) }).reasons.includes("probation_listing_cap"));
+  });
+
+  it("the daily cap refuses the listing after the fifth in 24 hours", () => {
+    assert.equal(verdictOf({ seller: onProbation({ newListings24h: 4 }) }).outcome, "publish");
+    assert.ok(verdictOf({ seller: onProbation({ newListings24h: 5 }) }).reasons.includes("probation_daily_cap"));
+  });
+
+  it("editing a live listing is not counted as a new one", () => {
+    const full = onProbation({ liveListings: 10, newListings24h: 5 });
+    const verdict = verdictOf({ seller: full, isLiveEdit: true, isNew: false });
+    assert.equal(verdict.outcome, "publish");
+  });
+
+  it("the price ceiling still binds an edit of a live listing", () => {
+    const verdict = evaluateListingPolicy(
+      withListing({ basePrice: 750_000 }, { seller: onProbation(), isLiveEdit: true, isNew: false }),
+    );
+    assert.ok(verdict.reasons.includes("probation_price_cap"));
+  });
+
+  it("the caps come from the store state, not from a constant in the policy", () => {
+    const tight = onProbation({ liveListings: 2 });
+    tight.probation.caps = { ...tight.probation.caps, maxLiveListings: 2, maxPrice: 1000 };
+    const verdict = verdictOf({ seller: tight });
+    assert.ok(verdict.reasons.includes("probation_listing_cap"));
+    assert.ok(verdict.reasons.includes("probation_price_cap"));
+  });
+});
+
+describe("holds and hides", () => {
+  it("a policy hide does not hold the seller's fix: the clean rewrite publishes", () => {
+    const verdict = verdictOf({
+      seller: seller({ activeHide: { id: "h1", kind: "policy", reasons: ["contact_details"] } }),
+      isNew: false,
+    });
+    assert.equal(verdict.outcome, "publish");
+  });
+
+  it("a reports or risk hide always needs a person", () => {
+    for (const kind of ["reports", "risk"] as const) {
+      const verdict = verdictOf({ seller: seller({ activeHide: { id: "h1", kind, reasons: [] } }), isNew: false });
+      assert.equal(verdict.outcome, "hold", kind);
+    }
+  });
+
+  it("a foreign upload is held as another seller's image", () => {
+    const verdict = verdictOf({ images: { refs: [REF], notFirstParty: [], foreignRefs: [REF], matches: [] } });
+    assert.ok(verdict.reasons.includes("duplicate_image_other_seller"));
+    assert.equal(verdict.outcome, "hold");
+  });
+});
+
+describe("price sanity", () => {
+  it("refuses a 'was' price that is not above the selling price", () => {
+    assert.ok(evaluateListingPolicy(withListing({ basePrice: 5000, compareAtPrice: 5000 })).reasons.includes("price_invalid"));
+    assert.ok(evaluateListingPolicy(withListing({ basePrice: 5000, compareAtPrice: 4000 })).reasons.includes("price_invalid"));
+    assert.equal(evaluateListingPolicy(withListing({ basePrice: 5000, compareAtPrice: 6000 })).outcome, "publish");
+  });
+  it("refuses non-integer, negative and absurd prices", () => {
+    for (const basePrice of [-1, 0, 12.5, Number.NaN, Number.POSITIVE_INFINITY, 2_000_000_000]) {
+      assert.ok(evaluateListingPolicy(withListing({ basePrice })).reasons.includes("price_invalid"), String(basePrice));
+    }
+  });
+});
+
+describe("the content ruleset reads every buyer-visible field", () => {
+  const fields: Array<[string, Partial<ListingGateInput["listing"]>]> = [
+    ["title", { title: "Kettle, call 08031234567 now" }],
+    ["summary", { summary: "A kettle. Call 08031234567 to order today, it boils two litres fast." }],
+    ["description", { description: "A solid kettle for the home. Call 08031234567 to order it today." }],
+    ["delivery note", { deliveryNote: "Call 08031234567 to arrange delivery" }],
+    ["lead time", { leadTime: "call 08031234567" }],
+    ["sku", { sku: "call-08031234567" }],
+    ["specification", { specificationValues: ["Steel", "WhatsApp: 08031234567"] }],
+  ];
+  for (const [name, patch] of fields) {
+    it(`a phone number in the ${name} is caught`, () => {
+      const verdict = evaluateListingPolicy(withListing(patch));
+      assert.ok(verdict.reasons.includes("contact_details"), JSON.stringify(verdict));
+      assert.equal(verdict.outcome, "reject");
+    });
+  }
+});
+
+describe("the AI can only add", () => {
+  const ai = (recommendation: AiScanResult["recommendation"], reasons: AiScanResult["reasons"] = []): AiScanResult => ({
+    recommendation,
+    reasons,
+    confidence: 0.99,
+  });
+
+  it("an AI approve leaves a publish as a publish", () => {
+    const merged = applyAiSignal(verdictOf(), ai("approve"));
+    assert.equal(merged.outcome, "publish");
+    assert.equal(merged.signals.aiConsulted, true);
+  });
+
+  it("an AI hold (or reject) turns a publish into a hold — never into a reject", () => {
+    for (const recommendation of ["hold", "reject"] as const) {
+      const merged = applyAiSignal(verdictOf(), ai(recommendation, ["ai_flagged_nsfw"]));
+      assert.equal(merged.outcome, "hold", recommendation);
+      assert.ok(merged.reasons.includes("ai_flagged_nsfw"));
+    }
+  });
+
+  it("no AI output can turn a deterministic reject into anything else", () => {
+    const rejected = CASES.contact_details();
+    for (const recommendation of ["approve", "hold", "reject"] as const) {
+      const merged = applyAiSignal(rejected, ai(recommendation, ["ai_flagged_scam"]));
+      assert.deepEqual(merged, rejected, recommendation);
+    }
+  });
+
+  it("no AI output can turn a deterministic hold into a publish", () => {
+    const held = CASES.restricted_item_review();
+    for (const recommendation of ["approve", "hold", "reject"] as const) {
+      const merged = applyAiSignal(held, ai(recommendation));
+      assert.deepEqual(merged, held, recommendation);
+    }
+  });
+
+  it("an unavailable AI (null) changes nothing", () => {
+    const base = verdictOf();
+    assert.deepEqual(applyAiSignal(base, null), base);
+  });
+
+  it("only codes from the closed vocabulary are ever added", () => {
+    const merged = applyAiSignal(verdictOf(), {
+      recommendation: "hold",
+      // A jailbroken reply trying to smuggle text into the stored reasons.
+      reasons: ["claude-fable; DROP TABLE" as never, "approve" as never, "ai_flagged_scam"],
+      confidence: 1,
+    });
+    assert.deepEqual(
+      merged.reasons.filter((code) => reasonClass(code) === "hold"),
+      ["ai_flagged_scam"],
+    );
+  });
+
+  it("exhaustively: applyAiSignal never loosens any producer's outcome", () => {
+    const rank: Record<GateOutcome, number> = { publish: 0, hold: 1, reject: 2 };
+    for (const code of ALL_GATE_REASONS) {
+      const base = CASES[code]();
+      for (const recommendation of ["approve", "hold", "reject"] as const) {
+        const merged = applyAiSignal(base, ai(recommendation, ["ai_flagged_other"]));
+        assert.ok(rank[merged.outcome] >= rank[base.outcome], `${code}/${recommendation}`);
+      }
+    }
+  });
+});
+
+describe("merging the database's verdict can only tighten", () => {
+  const outcomes: GateOutcome[] = ["publish", "hold", "reject"];
+  const rank: Record<GateOutcome, number> = { publish: 0, hold: 1, reject: 2 };
+  const bases: Record<GateOutcome, GateVerdict> = {
+    publish: verdictOf(),
+    hold: CASES.restricted_item_review(),
+    reject: CASES.price_invalid(),
+  };
+
+  for (const ts of outcomes) {
+    for (const db of outcomes) {
+      it(`TS ${ts} + DB ${db}`, () => {
+        const dbReasons = db === "reject" ? ["probation_price_cap"] : db === "hold" ? ["enforcement_hold_active"] : [];
+        const merged = mergeDbVerdict(bases[ts], { outcome: db, reasons: dbReasons });
+        assert.ok(rank[merged.outcome] >= Math.max(rank[ts], rank[db]), JSON.stringify(merged));
+        assert.equal(merged.outcome, composeOutcome(merged.reasons));
+      });
+    }
+  }
+
+  it("a DB outcome stricter than its codes explain is a hold, never a publish", () => {
+    const merged = mergeDbVerdict(verdictOf(), { outcome: "reject", reasons: [] });
+    assert.notEqual(merged.outcome, "publish");
+    assert.ok(merged.reasons.includes("gate_unavailable"));
+  });
+
+  it("an unknown reason code or a malformed payload is a hold, never a publish", () => {
+    for (const db of [
+      { outcome: "publish", reasons: ["some_new_code"] },
+      { outcome: "publish", reasons: "not-an-array" },
+      { outcome: "approved", reasons: [] },
+      { outcome: undefined, reasons: undefined },
+    ]) {
+      const merged = mergeDbVerdict(verdictOf(), db);
+      assert.equal(merged.outcome, "hold", JSON.stringify(db));
+    }
+  });
+
+  it("a clean DB publish leaves a clean TS publish alone", () => {
+    assert.equal(mergeDbVerdict(verdictOf(), { outcome: "publish", reasons: [] }).outcome, "publish");
+  });
+});
+
+describe("degraded gate", () => {
+  it("an unavailable gate is a hold on any base verdict that would have published", () => {
+    assert.equal(unavailableVerdict().outcome, "hold");
+    assert.equal(unavailableVerdict(verdictOf()).outcome, "hold");
+    assert.equal(unavailableVerdict(CASES.price_invalid()).outcome, "reject");
+  });
+});
+
+describe("moderation token mapping", () => {
+  it("maps each token family", () => {
+    assert.deepEqual(codesFromModerationDetail(["banned:drugs"]), ["prohibited_goods"]);
+    assert.deepEqual(codesFromModerationDetail(["counterfeit:explicit"]), ["counterfeit_claim"]);
+    assert.deepEqual(codesFromModerationDetail(["ambiguous:replica"]), ["restricted_item_review"]);
+    assert.deepEqual(codesFromModerationDetail(["hate:slur"]), ["hate_speech"]);
+    assert.deepEqual(codesFromModerationDetail(["contact:phone:high"]), ["contact_details"]);
+    assert.deepEqual(codesFromModerationDetail(["contact:link:medium"]), ["contact_suspected"]);
+    assert.deepEqual(codesFromModerationDetail(["contact:messaging_app:low"]), []);
+    assert.deepEqual(codesFromModerationDetail(["scam:payment_diversion"]), ["off_platform_payment"]);
+    assert.deepEqual(codesFromModerationDetail(["scam:phishing"]), ["scam_language"]);
+    assert.deepEqual(codesFromModerationDetail(["image:known_bad"]), ["known_bad_image"]);
+    assert.deepEqual(codesFromModerationDetail(["signal:urgency", "signal:address"]), ["urgency_language", "pickup_address"]);
+  });
+  it("an unknown token adds nothing (it can never add a publish)", () => {
+    assert.deepEqual(codesFromModerationDetail(["something:new"]), []);
+  });
+});
