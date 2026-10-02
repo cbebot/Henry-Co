@@ -107,7 +107,11 @@ function matchTerms(normalized: string, locale: string, terms: string[]): string
  * Detect hate speech (reject) and profanity (hold) in `text` for `locale`.
  * Pure: no I/O, deterministic. Returns reason codes + category labels only.
  */
-export function detectProfanity(text: string, locale = "en"): DetectorVerdict {
+export function detectProfanity(
+  text: string,
+  locale = "en",
+  opts: { hateConstructs?: ReadonlyArray<RegExp> } = {},
+): DetectorVerdict {
   const lang = (locale || "en").slice(0, 2).toLowerCase();
   const normalized = normalizeForLexicon(text || "");
   const reasons: ModerationReason[] = [];
@@ -119,7 +123,8 @@ export function detectProfanity(text: string, locale = "en"): DetectorVerdict {
   const holdTerms = [...UNIVERSAL.hold, ...(localeLex?.hold ?? [])];
 
   const hateHits = matchTerms(normalized, lang, rejectTerms);
-  const constructHit = HATE_CONSTRUCTS.some((re) => re.test(text || ""));
+  // The default constructs are unchanged; a ruleset may supply narrower ones.
+  const constructHit = (opts.hateConstructs ?? HATE_CONSTRUCTS).some((re) => re.test(text || ""));
 
   if (hateHits.length > 0 || constructHit) {
     reasons.push("hate_speech");

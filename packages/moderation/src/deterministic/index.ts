@@ -18,11 +18,13 @@ import { detectBannedGoods } from "./banned-goods";
 import { detectProfanity } from "./profanity";
 import { detectPiiLeak } from "./pii-leak";
 import { checkImageHashes } from "./image-hash";
+import { runListingRulesetV2 } from "./listing-v2";
 
 export { detectBannedGoods } from "./banned-goods";
 export { detectProfanity, normalizeForLexicon } from "./profanity";
 export { detectPiiLeak } from "./pii-leak";
 export { checkImageHashes, hammingDistanceHex } from "./image-hash";
+export { runListingRulesetV2, LISTING_RULESET_VERSION, LISTING_HATE_CONSTRUCTS } from "./listing-v2";
 
 const SEVERITY_RANK: Record<ModerationSeverity, number> = {
   low: 0,
@@ -56,6 +58,12 @@ export interface DeterministicOptions {
   knownBadImageHashes?: ReadonlySet<string>;
   /** Hamming tolerance for perceptual near-duplicates (0 = exact). */
   imageHashTolerance?: number;
+  /**
+   * Which rules decide. Omitted / "default" is the original ruleset, unchanged.
+   * "listing_v2" is the precision-tuned ruleset for content that publishes
+   * without a human reading it first (see ./listing-v2.ts).
+   */
+  ruleset?: "default" | "listing_v2";
 }
 
 /**
@@ -67,6 +75,10 @@ export function runDeterministic(
   input: ModerationInput,
   opts: DeterministicOptions = {},
 ): DetectorVerdict {
+  if (opts.ruleset === "listing_v2") {
+    return runListingRulesetV2(input, opts);
+  }
+
   const text = input.text ?? "";
   const verdicts: DetectorVerdict[] = [
     detectBannedGoods(text, input.locale),

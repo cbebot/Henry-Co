@@ -6,6 +6,14 @@ export {
 } from "./detect";
 
 export {
+  detectContactDetails,
+  type ContactConfidence,
+  type ContactDetailsResult,
+  type ContactHit,
+  type ContactKind,
+} from "./contact";
+
+export {
   applyVerificationTrustControls,
   clampSharedTrustTier,
   getVerificationGateCopy,
