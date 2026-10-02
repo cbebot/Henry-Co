@@ -69,6 +69,8 @@ export interface InstantUpsertInput {
   extraUploaders?: ReadonlyArray<string>;
   aiScan?: ListingAiScan | null;
   resolveImageUrl?: (ref: string) => string | null;
+  /** "backfill" when the held backfill script re-runs a pending listing; recorded on the verdict. */
+  source?: "policy_engine" | "backfill";
 }
 
 export type InstantUpsertResult =
@@ -227,6 +229,7 @@ export async function instantListingUpsert(input: InstantUpsertInput): Promise<I
     extraUploaders: input.extraUploaders,
     aiScan: input.aiScan,
     resolveImageUrl: input.resolveImageUrl,
+    source: input.source,
   });
 
   if (!gate.available) {

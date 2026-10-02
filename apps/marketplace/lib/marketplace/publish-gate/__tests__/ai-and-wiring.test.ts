@@ -210,7 +210,7 @@ describe("AI can only add: it never turns a deterministic refusal into a publish
 
   it("the gate only calls the screen when the deterministic verdict is publish", () => {
     const server = codeOnly(read("lib/marketplace/publish-gate/server.ts"));
-    assert.ok(server.includes('if (verdict.outcome === "publish" && request.aiScan) {'));
+    assert.ok(server.includes('if (verdict.outcome === "publish" && request.aiScan && !request.dryRun) {'));
   });
 });
 

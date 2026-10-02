@@ -189,7 +189,7 @@ function hashKeys(sha256: string, pos: string | null, neg: string | null): strin
 
 async function registerFingerprint(
   admin: GateAdmin,
-  input: { ref: string; fingerprint: ImageFingerprint; uploaderId: string; vendorId: string | null },
+  input: { ref: string; fingerprint: ImageFingerprint; uploaderId: string | null; vendorId: string | null },
 ): Promise<boolean> {
   try {
     const { error } = await admin.rpc("marketplace_gate_register_image", {
@@ -319,7 +319,7 @@ export async function ensureImageFingerprints(
 /** Register one freshly uploaded image. Best-effort: a failure here is retried at publish time. */
 export async function registerUploadedImage(
   admin: GateAdmin,
-  input: { ref: string; bytes: Uint8Array; uploaderId: string; vendorId: string | null },
+  input: { ref: string; bytes: Uint8Array; uploaderId: string | null; vendorId: string | null },
 ): Promise<boolean> {
   const fingerprint = await fingerprintImageBytes(input.bytes);
   if (!fingerprint) return false;
@@ -477,6 +477,12 @@ export interface ListingGateRequest {
   aiScan?: ListingAiScan | null;
   /** Public URLs for the AI step, resolved by the caller (the gate never builds a URL itself). */
   resolveImageUrl?: (ref: string) => string | null;
+  /**
+   * Evaluate only: register no fingerprint, call no AI, record no verdict. The
+   * result says what the gate WOULD decide and can authorise nothing (it carries
+   * no verdict id). For the backfill's dry run.
+   */
+  dryRun?: boolean;
 }
 
 export interface ListingGateResult {
@@ -553,7 +559,9 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
   }
 
   const [fingerprints, riskGated] = await Promise.all([
-    ensureImageFingerprints(admin, { refs: images.refs, vendorId: request.vendorId, allowedUploaders }),
+    request.dryRun
+      ? Promise.resolve<FingerprintOutcome>({ hashes: [], missing: 0 })
+      : ensureImageFingerprints(admin, { refs: images.refs, vendorId: request.vendorId, allowedUploaders }),
     readStaffRiskHold(admin, {
       accountId: seller?.vendor.ownerUserId ?? null,
       listingId: seller?.product?.id ?? null,
@@ -593,7 +601,7 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
   let verdict = evaluateListingPolicy(policyInput);
 
   // The AI step is consulted only on a deterministic "publish", and only to add.
-  if (verdict.outcome === "publish" && request.aiScan) {
+  if (verdict.outcome === "publish" && request.aiScan && !request.dryRun) {
     let ai: AiScanResult | null = null;
     try {
       ai = await request.aiScan({
@@ -628,6 +636,18 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
     });
 
   let row = rowFor(verdict);
+  if (request.dryRun) {
+    return {
+      available: true,
+      unauthorized: false,
+      verdict,
+      verdictId: null,
+      seller,
+      row,
+      refs: images.refs,
+      fingerprintsMissing: 0,
+    };
+  }
   const recorded = await recordListingVerdict(admin, {
     actorId: request.actorId,
     vendorId: request.vendorId,
