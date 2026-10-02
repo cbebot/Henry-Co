@@ -77,7 +77,7 @@ export async function applyProductReview(input: {
   note: string;
   actorId: string;
   actorRole: string;
-}): Promise<{ ok: true; executionRef: string } | { ok: false; error: string }> {
+}): Promise<{ ok: true; executionRef: string } | { ok: false; error: string; code?: "not_marketplace_staff" }> {
   if (!DECISIONS.includes(input.decision)) {
     return { ok: false, error: "That decision isn't recognised." };
   }
@@ -122,6 +122,19 @@ export async function applyProductReview(input: {
     } as never)
     .eq("id", current.productId);
   if (writeError) {
+    // V3-MKT-TRUST-01 — the marketplace publish guard lets a listing go live on a
+    // person's word only when that person is marketplace staff (an active platform
+    // membership). It refuses with one of these hints; say so instead of failing
+    // without a reason.
+    const hint = String((writeError as { hint?: string | null }).hint ?? "");
+    if (input.decision === "approved" && (hint === "verdict_required" || hint === "enforcement_hold_active")) {
+      return {
+        ok: false,
+        code: "not_marketplace_staff",
+        error:
+          "The marketplace would not accept this approval: your account is not on the marketplace staff list. Add the marketplace owner role to your account, then try again.",
+      };
+    }
     return { ok: false, error: "The verdict could not be saved." };
   }
 

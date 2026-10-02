@@ -157,8 +157,6 @@ export type MarketplaceTrustCopy = {
     kicker: string;
     title: string;
     body: string;
-    flagOn: string;
-    flagOff: string;
     decisionsTitle: string;
     decisionsEmpty: string;
     hidesTitle: string;
@@ -183,6 +181,10 @@ export type MarketplaceTrustCopy = {
     upheld: string;
     actionFailed: string;
     unavailable: string;
+    /** A decision about a store opening rather than a listing. */
+    subjectStore: string;
+    /** The database refused a restore because the acting account is not marketplace staff. */
+    staffRoleRequired: string;
   };
 };
 
@@ -406,8 +408,6 @@ const EN: MarketplaceTrustCopy = {
     kicker: "Marketplace trust",
     title: "Publish gate",
     body: "Every decision the gate made, and every listing it took down. Restoring a listing puts it back live; upholding keeps it down.",
-    flagOn: "Instant publish is ON",
-    flagOff: "Instant publish is OFF — listings wait for approval",
     decisionsTitle: "Recent decisions",
     decisionsEmpty: "No decisions recorded yet.",
     hidesTitle: "Taken down for review",
@@ -432,6 +432,8 @@ const EN: MarketplaceTrustCopy = {
     upheld: "Listing kept down.",
     actionFailed: "That did not go through. Nothing was changed.",
     unavailable: "The gate ledger is not available on this database yet.",
+    subjectStore: "Store opening",
+    staffRoleRequired: "The database refused this: your account is not on the marketplace staff list. Add the marketplace owner role to your account, then try again.",
   },
 };
 
@@ -549,8 +551,6 @@ const FR: DeepPartial<MarketplaceTrustCopy> = {
     kicker: "Confiance Marketplace",
     title: "Contrôle de publication",
     body: "Chaque décision du contrôle et chaque annonce retirée. Restaurer remet l'annonce en ligne ; maintenir la laisse retirée.",
-    flagOn: "La publication instantanée est ACTIVE",
-    flagOff: "La publication instantanée est INACTIVE — les annonces attendent une approbation",
     decisionsTitle: "Décisions récentes",
     decisionsEmpty: "Aucune décision enregistrée.",
     hidesTitle: "Retirées pour vérification",
@@ -575,6 +575,8 @@ const FR: DeepPartial<MarketplaceTrustCopy> = {
     upheld: "Annonce maintenue retirée.",
     actionFailed: "L'action n'a pas abouti. Rien n'a été modifié.",
     unavailable: "Le registre du contrôle n'est pas encore disponible sur cette base.",
+    subjectStore: "Ouverture de boutique",
+    staffRoleRequired: "La base de données a refusé : votre compte ne figure pas dans l'équipe Marketplace. Ajoutez le rôle de propriétaire Marketplace à votre compte, puis réessayez.",
   },
 };
 
@@ -692,8 +694,6 @@ const ES: DeepPartial<MarketplaceTrustCopy> = {
     kicker: "Confianza de Marketplace",
     title: "Control de publicación",
     body: "Cada decisión del control y cada anuncio retirado. Restaurar lo vuelve a publicar; mantener lo deja retirado.",
-    flagOn: "La publicación instantánea está ACTIVA",
-    flagOff: "La publicación instantánea está INACTIVA: los anuncios esperan aprobación",
     decisionsTitle: "Decisiones recientes",
     decisionsEmpty: "Aún no hay decisiones registradas.",
     hidesTitle: "Retirados para revisión",
@@ -718,6 +718,8 @@ const ES: DeepPartial<MarketplaceTrustCopy> = {
     upheld: "Anuncio mantenido retirado.",
     actionFailed: "No se completó. No se cambió nada.",
     unavailable: "El registro del control aún no está disponible en esta base de datos.",
+    subjectStore: "Apertura de tienda",
+    staffRoleRequired: "La base de datos lo rechazó: tu cuenta no está en el equipo de Marketplace. Añade el rol de propietario de Marketplace a tu cuenta y vuelve a intentarlo.",
   },
 };
 
@@ -835,8 +837,6 @@ const PT: DeepPartial<MarketplaceTrustCopy> = {
     kicker: "Confiança do Marketplace",
     title: "Controlo de publicação",
     body: "Todas as decisões do controlo e todos os anúncios retirados. Restaurar volta a pô-lo no ar; manter deixa-o retirado.",
-    flagOn: "A publicação instantânea está ATIVA",
-    flagOff: "A publicação instantânea está INATIVA — os anúncios aguardam aprovação",
     decisionsTitle: "Decisões recentes",
     decisionsEmpty: "Ainda não há decisões registadas.",
     hidesTitle: "Retirados para análise",
@@ -861,6 +861,8 @@ const PT: DeepPartial<MarketplaceTrustCopy> = {
     upheld: "Anúncio mantido retirado.",
     actionFailed: "Não foi concluído. Nada foi alterado.",
     unavailable: "O registo do controlo ainda não está disponível nesta base de dados.",
+    subjectStore: "Abertura de loja",
+    staffRoleRequired: "A base de dados recusou: a sua conta não está na equipa do Marketplace. Adicione a função de proprietário do Marketplace à sua conta e tente de novo.",
   },
 };
 
@@ -978,8 +980,6 @@ const DE: DeepPartial<MarketplaceTrustCopy> = {
     kicker: "Marketplace-Vertrauen",
     title: "Veröffentlichungskontrolle",
     body: "Jede Entscheidung der Kontrolle und jedes offline genommene Angebot. Wiederherstellen stellt es online; Bestätigen belässt es offline.",
-    flagOn: "Sofortveröffentlichung ist AN",
-    flagOff: "Sofortveröffentlichung ist AUS – Angebote warten auf Freigabe",
     decisionsTitle: "Letzte Entscheidungen",
     decisionsEmpty: "Noch keine Entscheidungen erfasst.",
     hidesTitle: "Zur Prüfung offline",
@@ -1004,6 +1004,8 @@ const DE: DeepPartial<MarketplaceTrustCopy> = {
     upheld: "Angebot bleibt offline.",
     actionFailed: "Das hat nicht geklappt. Es wurde nichts geändert.",
     unavailable: "Das Kontrollregister ist in dieser Datenbank noch nicht verfügbar.",
+    subjectStore: "Shop-Eröffnung",
+    staffRoleRequired: "Die Datenbank hat das abgelehnt: Ihr Konto steht nicht auf der Marketplace-Teamliste. Fügen Sie Ihrem Konto die Rolle Marketplace-Inhaber hinzu und versuchen Sie es erneut.",
   },
 };
 
@@ -1121,8 +1123,6 @@ const IT: DeepPartial<MarketplaceTrustCopy> = {
     kicker: "Fiducia Marketplace",
     title: "Controllo di pubblicazione",
     body: "Ogni decisione del controllo e ogni annuncio rimosso. Ripristina lo rimette online; mantieni lo lascia rimosso.",
-    flagOn: "La pubblicazione istantanea è ATTIVA",
-    flagOff: "La pubblicazione istantanea è DISATTIVA: gli annunci attendono l'approvazione",
     decisionsTitle: "Decisioni recenti",
     decisionsEmpty: "Nessuna decisione registrata.",
     hidesTitle: "Rimossi per verifica",
@@ -1147,6 +1147,8 @@ const IT: DeepPartial<MarketplaceTrustCopy> = {
     upheld: "Annuncio mantenuto rimosso.",
     actionFailed: "Operazione non riuscita. Nulla è stato modificato.",
     unavailable: "Il registro del controllo non è ancora disponibile su questo database.",
+    subjectStore: "Apertura negozio",
+    staffRoleRequired: "Il database ha rifiutato: il tuo account non è nel team Marketplace. Aggiungi il ruolo di proprietario Marketplace al tuo account e riprova.",
   },
 };
 
@@ -1265,8 +1267,6 @@ const AR: DeepPartial<MarketplaceTrustCopy> = {
     kicker: "ثقة السوق",
     title: "بوابة النشر",
     body: "كل قرار اتخذته البوابة وكل إعلان أزالته. الاستعادة تعيده منشورًا؛ الإبقاء يتركه مُزالًا.",
-    flagOn: "النشر الفوري مُفعَّل",
-    flagOff: "النشر الفوري مُعطَّل — الإعلانات تنتظر الموافقة",
     decisionsTitle: "أحدث القرارات",
     decisionsEmpty: "لا قرارات مسجلة بعد.",
     hidesTitle: "أُزيلت للمراجعة",
@@ -1291,6 +1291,8 @@ const AR: DeepPartial<MarketplaceTrustCopy> = {
     upheld: "بقي الإعلان مُزالًا.",
     actionFailed: "لم تتم العملية. لم يتغير شيء.",
     unavailable: "سجل البوابة غير متاح على قاعدة البيانات هذه بعد.",
+    subjectStore: "فتح متجر",
+    staffRoleRequired: "رفضت قاعدة البيانات العملية: حسابك ليس ضمن فريق السوق. أضف دور مالك السوق إلى حسابك ثم حاول من جديد.",
   },
 };
 
@@ -1409,8 +1411,6 @@ const ZH: DeepPartial<MarketplaceTrustCopy> = {
     kicker: "市场信任",
     title: "发布关卡",
     body: "关卡做出的每一个决定，以及它下架的每一个商品。恢复即重新上架；维持则保持下架。",
-    flagOn: "即时发布已开启",
-    flagOff: "即时发布已关闭——商品等待审批",
     decisionsTitle: "最近的决定",
     decisionsEmpty: "尚无记录。",
     hidesTitle: "已下架待审核",
@@ -1435,6 +1435,8 @@ const ZH: DeepPartial<MarketplaceTrustCopy> = {
     upheld: "商品保持下架。",
     actionFailed: "操作未成功。未做任何更改。",
     unavailable: "此数据库上尚无关卡记录。",
+    subjectStore: "店铺开通",
+    staffRoleRequired: "数据库拒绝了此操作：您的账户不在市场团队名单中。请为账户添加市场所有者角色后重试。",
   },
 };
 

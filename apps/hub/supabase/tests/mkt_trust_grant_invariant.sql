@@ -67,6 +67,7 @@ begin
   for f in select unnest(array[
     'public.marketplace_listing_content_hash(public.marketplace_products)',
     'public.marketplace_gate_probation_caps()',
+    'public.marketplace_gate_granted_memberships(uuid)',
     'public.marketplace_gate_is_staff(uuid)',
     'public.marketplace_gate_actor_may_act_for(uuid,uuid)',
     'public.marketplace_gate_identity_verified(uuid)',
@@ -119,6 +120,7 @@ begin
 
   -- 5. SECURITY DEFINER + pinned search_path where gate tables are touched
   for f in select unnest(array[
+    'public.marketplace_gate_granted_memberships(uuid)',
     'public.marketplace_gate_is_staff(uuid)',
     'public.marketplace_gate_actor_may_act_for(uuid,uuid)',
     'public.marketplace_gate_identity_verified(uuid)',

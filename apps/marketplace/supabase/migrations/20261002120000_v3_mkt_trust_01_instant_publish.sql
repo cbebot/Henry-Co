@@ -216,6 +216,44 @@ $$;
 -- a SELECT-only policy and no write grant to request roles, so it cannot be
 -- self-granted. profiles.role and owner_profiles are deliberately NOT consulted —
 -- both are self-writable on production today.
+-- WHICH MEMBERSHIPS A USER ACTUALLY HOLDS — the same rule the app applies
+-- (packages/config/membership-grant.ts), in SQL, so the database and the app
+-- cannot disagree about who is staff or who belongs to a store:
+--   * an inactive row never grants;
+--   * a row BOUND to a user (user_id set) grants only to that exact user — it is
+--     never matched by email;
+--   * an UNCLAIMED row (user_id null) grants only to a user whose email is
+--     VERIFIED and equals the row's normalized_email.
+-- Staff rows are commonly unclaimed seeds. If the guard only recognised bound
+-- rows, a staff member the app treats as staff would be refused here and the
+-- existing human approval path would stop working the day this is applied.
+create or replace function public.marketplace_gate_granted_memberships(p_user uuid)
+returns setof public.marketplace_role_memberships
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select m.*
+    from public.marketplace_role_memberships m
+   where p_user is not null
+     and m.is_active = true
+     and (
+       m.user_id = p_user
+       or (
+         m.user_id is null
+         and nullif(btrim(m.normalized_email), '') is not null
+         and exists (
+           select 1
+             from auth.users u
+            where u.id = p_user
+              and u.email_confirmed_at is not null
+              and lower(btrim(u.email)) = m.normalized_email
+         )
+       )
+     );
+$$;
+
 create or replace function public.marketplace_gate_is_staff(p_user uuid)
 returns boolean
 language sql
@@ -223,12 +261,10 @@ stable
 security definer
 set search_path = public, pg_temp
 as $$
-  select p_user is not null and exists (
+  select exists (
     select 1
-    from public.marketplace_role_memberships m
-    where m.user_id = p_user
-      and m.is_active = true
-      and m.scope_type = 'platform'
+    from public.marketplace_gate_granted_memberships(p_user) m
+    where m.scope_type = 'platform'
       and m.role in ('marketplace_owner', 'marketplace_admin', 'moderation')
   );
 $$;
@@ -242,15 +278,11 @@ stable
 security definer
 set search_path = public, pg_temp
 as $$
-  select p_actor is not null and p_vendor_id is not null and exists (
+  select p_vendor_id is not null and exists (
     select 1
-    from public.marketplace_role_memberships m
-    where m.user_id = p_actor
-      and m.is_active = true
-      and (
-        (m.scope_type = 'vendor' and m.scope_id = p_vendor_id and m.role = 'vendor')
-        or (m.scope_type = 'platform' and m.role in ('marketplace_owner', 'marketplace_admin'))
-      )
+    from public.marketplace_gate_granted_memberships(p_actor) m
+    where (m.scope_type = 'vendor' and m.scope_id = p_vendor_id and m.role = 'vendor')
+       or (m.scope_type = 'platform' and m.role in ('marketplace_owner', 'marketplace_admin'))
   );
 $$;
 
@@ -1455,6 +1487,7 @@ create trigger marketplace_payout_identity_guard
 -- ---------------------------------------------------------------------------
 revoke all on function public.marketplace_listing_content_hash(public.marketplace_products) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_probation_caps() from public, anon, authenticated;
+revoke all on function public.marketplace_gate_granted_memberships(uuid) from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_gate_is_staff(uuid) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_actor_may_act_for(uuid, uuid) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_identity_verified(uuid) from public, anon, authenticated;

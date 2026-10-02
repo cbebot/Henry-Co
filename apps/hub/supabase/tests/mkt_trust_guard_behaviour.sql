@@ -38,6 +38,7 @@ delete from public.marketplace_role_memberships where user_id in (
   'a1000000-0000-4000-8000-000000000001', 'a1000000-0000-4000-8000-000000000002',
   'a1000000-0000-4000-8000-000000000003', 'a1000000-0000-4000-8000-000000000004',
   'a1000000-0000-4000-8000-000000000005', 'a1000000-0000-4000-8000-000000000006');
+delete from public.marketplace_role_memberships where normalized_email like '%@mkt-trust.test';
 delete from public.marketplace_vendor_applications where proposed_store_slug like 'mkt-trust-t-%';
 delete from public.marketplace_vendors where slug like 'mkt-trust-t-%';
 delete from public.customer_verification_submissions where user_id in (
@@ -49,8 +50,15 @@ insert into auth.users (id, email) values
   ('a1000000-0000-4000-8000-000000000003', 'staff@mkt-trust.test'),
   ('a1000000-0000-4000-8000-000000000004', 'outsider@mkt-trust.test'),
   ('a1000000-0000-4000-8000-000000000005', 'instant@mkt-trust.test'),
-  ('a1000000-0000-4000-8000-000000000006', 'instant-two@mkt-trust.test')
+  ('a1000000-0000-4000-8000-000000000006', 'instant-two@mkt-trust.test'),
+  ('a1000000-0000-4000-8000-000000000007', 'seed-staff@mkt-trust.test'),
+  ('a1000000-0000-4000-8000-000000000008', 'seed-unverified@mkt-trust.test'),
+  ('a1000000-0000-4000-8000-000000000009', 'collide@mkt-trust.test')
   on conflict (id) do nothing;
+-- Whose mailbox is verified: the seeded staff member and the "collider"; not 0008.
+update auth.users set email_confirmed_at = now()
+ where id in ('a1000000-0000-4000-8000-000000000007', 'a1000000-0000-4000-8000-000000000009');
+update auth.users set email_confirmed_at = null where id = 'a1000000-0000-4000-8000-000000000008';
 
 insert into public.customer_profiles (id, email) values
   ('a1000000-0000-4000-8000-000000000001', 'seller-a@mkt-trust.test'),
@@ -72,6 +80,13 @@ insert into public.marketplace_role_memberships (user_id, normalized_email, scop
   ('a1000000-0000-4000-8000-000000000001', 'seller-a@mkt-trust.test', 'vendor', 'b1000000-0000-4000-8000-00000000000a', 'vendor', true),
   ('a1000000-0000-4000-8000-000000000002', 'seller-b@mkt-trust.test', 'vendor', 'b1000000-0000-4000-8000-00000000000b', 'vendor', true),
   ('a1000000-0000-4000-8000-000000000003', 'staff@mkt-trust.test', 'platform', null, 'moderation', true);
+-- Unclaimed staff SEEDS (user_id null): how staff rows commonly exist. One for a
+-- verified mailbox, one for an unverified one.
+insert into public.marketplace_role_memberships (user_id, normalized_email, scope_type, scope_id, role, is_active) values
+  (null, 'seed-staff@mkt-trust.test', 'platform', null, 'marketplace_admin', true),
+  (null, 'seed-unverified@mkt-trust.test', 'platform', null, 'moderation', true),
+  -- BOUND to the staff member, but carrying the collider's email: must never grant to the collider.
+  ('a1000000-0000-4000-8000-000000000003', 'collide@mkt-trust.test', 'platform', null, 'marketplace_admin', true);
 
 -- Opened ON PURPOSE: a future migration that adds a seller write policy must not be
 -- enough to publish. Dropped at the end of the file.
@@ -110,6 +125,10 @@ declare
   v_n int;
   v_text text;
   i int;
+  seed_staff constant uuid := 'a1000000-0000-4000-8000-000000000007';
+  seed_unverified constant uuid := 'a1000000-0000-4000-8000-000000000008';
+  collider constant uuid := 'a1000000-0000-4000-8000-000000000009';
+  v_seed_pid uuid;
 begin
   -- ===== A. live write with no verdict ======================================
   begin
@@ -244,6 +263,78 @@ begin
    where product_id = v_pid and source = 'staff_review' and actor_user_id = staff and consumed_at is not null;
   if v_n <> 1 then
     raise warning 'VIOLATION C5: staff approval not recorded exactly once (found %)', v_n; violations := violations + 1;
+  end if;
+
+  -- ----- who counts as staff: the app's grant rule, mirrored ----------------
+  insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+    values ('mkt-trust-t-c6', va, 'Seed staff kettle', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-c6', 1000, 'under_review')
+    returning id into v_seed_pid;
+
+  -- an UNCLAIMED seed row, but the mailbox is NOT verified: no grant
+  begin
+    set local role service_role;
+    update public.marketplace_products
+       set approval_status = 'approved', reviewed_by = seed_unverified, reviewed_at = now()
+     where id = v_seed_pid;
+    reset role;
+    raise warning 'VIOLATION C6: an unverified mailbox claimed a staff seed and published'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_publish_guard:%' then
+      raise warning 'VIOLATION C6: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+
+  -- a row BOUND to someone else is never matched by email
+  begin
+    set local role service_role;
+    update public.marketplace_products
+       set approval_status = 'approved', reviewed_by = collider, reviewed_at = now()
+     where id = v_seed_pid;
+    reset role;
+    raise warning 'VIOLATION C7: an email collision with a bound staff row published a listing'; violations := violations + 1;
+  exception when others then
+    reset role;
+    if sqlerrm not like 'marketplace_publish_guard:%' then
+      raise warning 'VIOLATION C7: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+  if public.marketplace_gate_is_staff(collider) or public.marketplace_gate_actor_may_act_for(collider, va) then
+    raise warning 'VIOLATION C7: the collider is treated as staff'; violations := violations + 1;
+  end if;
+  if not public.marketplace_gate_actor_may_act_for(staff, va) then
+    raise warning 'VIOLATION C7: the row''s real owner lost the role'; violations := violations + 1;
+  end if;
+  if public.marketplace_gate_is_staff(outsider) or public.marketplace_gate_actor_may_act_for(outsider, va) then
+    raise warning 'VIOLATION C7: a user with no membership is treated as staff'; violations := violations + 1;
+  end if;
+
+  -- the real thing: a staff member whose role is an unclaimed seed, verified mailbox
+  begin
+    set local role service_role;
+    update public.marketplace_products
+       set approval_status = 'approved', reviewed_by = seed_staff, reviewed_at = now()
+     where id = v_seed_pid;
+    reset role;
+  exception when others then
+    reset role;
+    raise warning 'VIOLATION C8: a staff member granted by a verified seed was refused: %', sqlerrm; violations := violations + 1;
+  end;
+  if not public.marketplace_gate_actor_may_act_for(seed_staff, va) then
+    raise warning 'VIOLATION C8: seeded staff cannot act for a store'; violations := violations + 1;
+  end if;
+  if public.marketplace_gate_actor_may_act_for(seed_unverified, va) then
+    raise warning 'VIOLATION C8: an unverified seed may act for a store'; violations := violations + 1;
+  end if;
+
+  -- an inactive row never grants
+  update public.marketplace_role_memberships set is_active = false where normalized_email = 'seed-staff@mkt-trust.test' and user_id is null;
+  if public.marketplace_gate_is_staff(seed_staff) then
+    raise warning 'VIOLATION C9: an inactive seed still grants'; violations := violations + 1;
+  end if;
+  update public.marketplace_role_memberships set is_active = true where normalized_email = 'seed-staff@mkt-trust.test' and user_id is null;
+  if public.marketplace_gate_is_staff(null) then
+    raise warning 'VIOLATION C9: a null user is staff'; violations := violations + 1;
   end if;
 
   -- ===== D. forging the ledger =============================================

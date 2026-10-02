@@ -194,3 +194,7 @@ grant select, insert, update, delete on table
   to service_role;
 
 select 'v3-mkt-trust-01 seed ready' as status;
+
+-- V3-MKT-TRUST-01: auth.users.email_confirmed_at — present on Supabase; the gate reads it to
+-- decide whether an unclaimed membership seed grants its role (verified mailbox only).
+alter table auth.users add column if not exists email_confirmed_at timestamptz;

@@ -2178,7 +2178,7 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (!product) return redirectTo(request, "/moderation?error=missing-product");
 
-        await admin
+        const { error: productDecisionError } = await admin
           .from("marketplace_products")
           .update({
             approval_status: decision,
@@ -2187,6 +2187,17 @@ export async function POST(request: Request) {
             reviewed_by: viewer.user?.id ?? null,
           } as never)
           .eq("id", productId);
+        // V3-MKT-TRUST-01 — the database guard can refuse a listing going live (it
+        // requires the reviewer to be marketplace staff). When it does, the seller
+        // must not be told the listing was approved. Inert unless the write fails.
+        if (productDecisionError) {
+          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=decision-failed`);
+        }
+        // A staff decision changes what buyers can see; with instant publish on, the
+        // cached catalogue is refreshed at once instead of on its timer.
+        if (isInstantPublishEnabled()) {
+          revalidateTag("marketplace-home", { expire: 0 });
+        }
 
         const vendor = snapshot.vendors.find((item) => item.id === String(product.vendor_id));
         await sendMarketplaceEvent({
