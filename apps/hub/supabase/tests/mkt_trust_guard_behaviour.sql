@@ -1404,6 +1404,21 @@ begin
     raise warning 'VIOLATION P3: a listing that is not live was offered for re-scan'; violations := violations + 1;
   end if;
 
+  -- ...including one that WAS live and has since been taken down: it has a
+  -- consumed verdict on record, but it is not in front of buyers any more.
+  set local role service_role;
+  v := public.marketplace_gate_record_listing_verdict(
+    a_user, va, public.mkt_trust_test_listing('mkt-trust-t-p3', 'Rescan lamp', 7100),
+    '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+  insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+    values ('mkt-trust-t-p3', va, 'Rescan lamp', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-p3', 7100, 'approved');
+  update public.marketplace_products set approval_status = 'under_review' where slug = 'mkt-trust-t-p3';
+  select count(*) into v_n from public.marketplace_gate_rescan_candidates('test-2', 500) c where c.slug = 'mkt-trust-t-p3';
+  reset role;
+  if v_n <> 0 then
+    raise warning 'VIOLATION P3b: a listing that is no longer live was offered for re-scan'; violations := violations + 1;
+  end if;
+
   -- A clean re-scan refreshes the standing verdict: it is not offered again.
   set local role service_role;
   perform public.marketplace_gate_record_rescan(v_pid, 'test-2');
