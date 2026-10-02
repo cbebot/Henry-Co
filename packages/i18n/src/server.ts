@@ -59,6 +59,12 @@ export {
   type RecoveryTaskTypeCopy,
 } from "./recovery-copy";
 export { getMarketplaceCopy, type MarketplaceCopy } from "./marketplace-copy";
+export {
+  getMarketplaceTrustCopy,
+  formatMarketplaceTrustTemplate,
+  type MarketplaceTrustCopy,
+  type MarketplaceTrustReasonKey,
+} from "./marketplace-trust-copy";
 export { getJobsCopy, type JobsCopy } from "./jobs-copy";
 export { getCareCopy, type CareCopy } from "./care-copy";
 export { getCarePricingCopy, type CarePricingCopy } from "./care-pricing-copy";

@@ -162,7 +162,10 @@ const CASES: Record<GateReasonCode, () => GateVerdict> = {
   scam_language: () =>
     evaluateListingPolicy(withListing({ description: "Lovely kettle. Verify your account first to unlock the discount price." })),
   duplicate_image_other_seller: () =>
-    verdictOf({ images: { refs: [REF], notFirstParty: [], foreignRefs: [], matches: [{ ref: REF, relation: "other_seller" }] } }),
+    verdictOf({
+      seller: onProbation(),
+      images: { refs: [REF], notFirstParty: [], foreignRefs: [], matches: [{ ref: REF, relation: "other_seller" }] },
+    }),
   high_risk_category_probation: () =>
     evaluateListingPolicy(withListing({ categorySlug: "phones-electronics" }, { seller: onProbation() })),
   risk_hold_active: () => verdictOf({ riskGated: true }),
@@ -177,6 +180,8 @@ const CASES: Record<GateReasonCode, () => GateVerdict> = {
   ai_flagged_other: () => applyAiSignal(verdictOf(), { recommendation: "hold", reasons: [], confidence: 0.4 }),
   gate_unavailable: () => verdictOf({ seller: null }),
   // ---- signal -------------------------------------------------------------
+  shared_image: () =>
+    verdictOf({ images: { refs: [REF], notFirstParty: [], foreignRefs: [], matches: [{ ref: REF, relation: "other_seller" }] } }),
   duplicate_image_same_seller: () =>
     verdictOf({ images: { refs: [REF], notFirstParty: [], foreignRefs: [], matches: [{ ref: REF, relation: "same_seller" }] } }),
   urgency_language: () => evaluateListingPolicy(withListing({ title: "Urgent sale: stainless steel kettle" })),
@@ -283,6 +288,52 @@ describe("holds and hides", () => {
     const verdict = verdictOf({ images: { refs: [REF], notFirstParty: [], foreignRefs: [REF], matches: [] } });
     assert.ok(verdict.reasons.includes("duplicate_image_other_seller"));
     assert.equal(verdict.outcome, "hold");
+  });
+});
+
+describe("a picture another store had first", () => {
+  const matched = (relation: "foreign_ref" | "other_seller" | "same_seller") => ({
+    refs: [REF],
+    notFirstParty: [],
+    foreignRefs: [],
+    matches: [{ ref: REF, relation }],
+  });
+
+  it("holds a store on probation — the copied-listing pattern", () => {
+    const verdict = verdictOf({ seller: onProbation(), images: matched("other_seller") });
+    assert.equal(verdict.outcome, "hold");
+    assert.ok(verdict.reasons.includes("duplicate_image_other_seller"));
+    assert.ok(!verdict.reasons.includes("shared_image"));
+  });
+
+  it("is only a signal for an established store — a shared manufacturer photo", () => {
+    const verdict = verdictOf({ images: matched("other_seller") });
+    assert.equal(verdict.outcome, "publish");
+    assert.ok(verdict.reasons.includes("shared_image"));
+    assert.ok(!verdict.reasons.includes("duplicate_image_other_seller"));
+  });
+
+  it("a copied REFERENCE holds every store, established or not", () => {
+    for (const store of [seller(), onProbation()]) {
+      const fromDb = verdictOf({ seller: store, images: matched("foreign_ref") });
+      assert.equal(fromDb.outcome, "hold");
+      assert.ok(fromDb.reasons.includes("duplicate_image_other_seller"));
+      const fromKey = verdictOf({ seller: store, images: { refs: [REF], notFirstParty: [], foreignRefs: [REF], matches: [] } });
+      assert.equal(fromKey.outcome, "hold");
+    }
+  });
+
+  it("reuse across the store's own listings never blocks, and is noted alongside the rest", () => {
+    const verdict = verdictOf({
+      seller: onProbation(),
+      images: { refs: [REF], notFirstParty: [], foreignRefs: [], matches: [
+        { ref: REF, relation: "other_seller" },
+        { ref: REF, relation: "same_seller" },
+      ] },
+    });
+    assert.ok(verdict.reasons.includes("duplicate_image_other_seller"));
+    assert.ok(verdict.reasons.includes("duplicate_image_same_seller"));
+    assert.equal(verdictOf({ seller: onProbation(), images: matched("same_seller") }).outcome, "publish");
   });
 });
 

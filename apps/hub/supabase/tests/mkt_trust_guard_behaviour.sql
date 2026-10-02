@@ -20,6 +20,13 @@
 --   N. instant onboarding                    (actor binding, idempotence, probation row)
 --   O. duplicate images                      (identical bytes / near match, across sellers)
 
+-- Run far from UTC ON PURPOSE. Every clock comparison in the guard must hold for
+-- a true instant whatever the session's TimeZone is: the staff branch compares a
+-- caller-supplied `reviewed_at` (an ISO instant from the app) with the database
+-- clock. A comparison written against a UTC wall-clock value passes in UTC and
+-- silently fails everywhere else — this setting is what catches that.
+set timezone to 'Pacific/Kiritimati';
+
 -- Fixtures are removed first so the file can be re-run.
 delete from public.marketplace_listing_enforcement where vendor_id in (
   select id from public.marketplace_vendors where slug like 'mkt-trust-t-%');
@@ -162,7 +169,7 @@ begin
   begin
     set local role authenticated;
     update public.marketplace_products
-       set approval_status = 'approved', reviewed_by = staff, reviewed_at = timezone('utc', now())
+       set approval_status = 'approved', reviewed_by = staff, reviewed_at = now()
      where id = v_pid;
     reset role;
     raise warning 'VIOLATION B2: authenticated published by naming a staff reviewer'; violations := violations + 1;
@@ -177,7 +184,7 @@ begin
   begin
     set local role service_role;
     update public.marketplace_products
-       set approval_status = 'approved', reviewed_by = a_user, reviewed_at = timezone('utc', now())
+       set approval_status = 'approved', reviewed_by = a_user, reviewed_at = now()
      where id = v_pid;
     reset role;
     raise warning 'VIOLATION C1: a non-staff reviewer id published a listing'; violations := violations + 1;
@@ -192,7 +199,7 @@ begin
   begin
     set local role service_role;
     update public.marketplace_products
-       set approval_status = 'approved', reviewed_by = staff, reviewed_at = timezone('utc', now()),
+       set approval_status = 'approved', reviewed_by = staff, reviewed_at = now(),
            title = 'Swapped during approval'
      where id = v_pid;
     reset role;
@@ -207,7 +214,7 @@ begin
   -- a rejection stamps reviewed_* ; that stale stamp must not authorise a later publish
   set local role service_role;
   update public.marketplace_products
-     set approval_status = 'rejected', reviewed_by = staff, reviewed_at = timezone('utc', now()) - interval '1 minute'
+     set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now() - interval '1 minute'
    where id = v_pid;
   reset role;
   begin
@@ -226,7 +233,7 @@ begin
   begin
     set local role service_role;
     update public.marketplace_products
-       set approval_status = 'approved', reviewed_by = staff, reviewed_at = timezone('utc', now())
+       set approval_status = 'approved', reviewed_by = staff, reviewed_at = now()
      where id = v_pid;
     reset role;
   exception when others then
@@ -243,7 +250,7 @@ begin
   begin
     set local role service_role;
     insert into public.marketplace_listing_gate_verdicts (slug, content_hash, outcome, source, expires_at)
-      values ('mkt-trust-t-forged', 'x', 'publish', 'policy_engine', timezone('utc', now()) + interval '1 hour');
+      values ('mkt-trust-t-forged', 'x', 'publish', 'policy_engine', now() + interval '1 hour');
     reset role;
     raise warning 'VIOLATION D1: service_role wrote the ledger directly'; violations := violations + 1;
   exception when insufficient_privilege then
@@ -427,7 +434,7 @@ begin
     array['media://public/marketplace-images/mkt-trust-t/f1-cover.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
   reset role;
   update public.marketplace_listing_gate_verdicts
-     set expires_at = timezone('utc', now()) - interval '1 second'
+     set expires_at = now() - interval '1 second'
    where id = (v ->> 'verdict_id')::uuid;
   begin
     set local role service_role;
@@ -508,7 +515,7 @@ begin
   begin
     set local role service_role;
     update public.marketplace_products
-       set title = 'Edited under a reviewer name', reviewed_by = staff, reviewed_at = timezone('utc', now())
+       set title = 'Edited under a reviewer name', reviewed_by = staff, reviewed_at = now()
      where id = v_pid;
     reset role;
     raise warning 'VIOLATION G4: a live edit rode the staff branch'; violations := violations + 1;
@@ -645,7 +652,7 @@ begin
   insert into public.marketplace_vendor_applications
     (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at, story)
   values
-    (inst, 'instant@mkt-trust.test', 'Instant Store', 'mkt-trust-t-instant', 'Instant Ltd', 'submitted', timezone('utc', now()), 'We sell kettles.')
+    (inst, 'instant@mkt-trust.test', 'Instant Store', 'mkt-trust-t-instant', 'Instant Ltd', 'submitted', now(), 'We sell kettles.')
   returning id into v_app;
 
   begin
@@ -692,7 +699,7 @@ begin
   insert into public.marketplace_vendor_applications
     (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at)
   values
-    (inst, 'instant@mkt-trust.test', 'Instant Store Two', 'mkt-trust-t-instant-2', 'Instant Ltd', 'submitted', timezone('utc', now()))
+    (inst, 'instant@mkt-trust.test', 'Instant Store Two', 'mkt-trust-t-instant-2', 'Instant Ltd', 'submitted', now())
   returning id into v_app;
   set local role service_role;
   v := public.marketplace_gate_instant_onboard(inst, v_app, '{}'::text[], '{}'::jsonb, 'test');
@@ -705,7 +712,7 @@ begin
   insert into public.marketplace_vendor_applications
     (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at)
   values
-    (inst2, 'instant-two@mkt-trust.test', 'Copycat', 'mkt-trust-t-store-a', 'Copy Ltd', 'submitted', timezone('utc', now()))
+    (inst2, 'instant-two@mkt-trust.test', 'Copycat', 'mkt-trust-t-store-a', 'Copy Ltd', 'submitted', now())
   returning id into v_app;
   begin
     set local role service_role;
@@ -864,7 +871,7 @@ begin
           public.marketplace_listing_content_hash(jsonb_populate_record(null::public.marketplace_products,
             public.mkt_trust_test_listing('mkt-trust-t-j-dear', 'Dear item', 600000)
             || jsonb_build_object('vendor_id', v_inst_vendor))),
-          'publish', 'policy_engine', 'test', inst, timezone('utc', now()) + interval '10 minutes');
+          'publish', 'policy_engine', 'test', inst, now() + interval '10 minutes');
   begin
     set local role service_role;
     insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
@@ -1048,7 +1055,7 @@ begin
   begin
     set local role service_role;
     update public.marketplace_products
-       set approval_status = 'approved', reviewed_by = staff, reviewed_at = timezone('utc', now())
+       set approval_status = 'approved', reviewed_by = staff, reviewed_at = now()
      where id = v_pid;
     reset role;
   exception when others then
@@ -1089,7 +1096,7 @@ begin
   set local role service_role;
   v := public.marketplace_gate_hide_listing(v_pid, 'reports', array['reports_threshold'], '{}'::jsonb, 'test');
   update public.marketplace_products
-     set approval_status = 'rejected', reviewed_by = staff, reviewed_at = timezone('utc', now())
+     set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now()
    where id = v_pid;
   reset role;
   select count(*) into v_n from public.marketplace_listing_enforcement
@@ -1153,21 +1160,32 @@ begin
   end if;
 
   -- ===== O. duplicate images ===============================================
+  -- A perceptual hash is two masks (brighter-left, brighter-right); the distance
+  -- is the number of mask bits that differ.
   set local role service_role;
   perform public.marketplace_gate_register_image(
-    'media://public/marketplace-images/mkt-trust-t/f1-cover.jpg', repeat('a', 64), 1234567890123456789, 1000, a_user, va);
+    'media://public/marketplace-images/mkt-trust-t/f1-cover.jpg', repeat('a', 64), 1234567890123456789, 1000, a_user, va,
+    81985529216486895);
   -- B re-uploads the identical bytes
   perform public.marketplace_gate_register_image(
-    'media://public/marketplace-images/mkt-trust-t/b-copy.jpg', repeat('a', 64), 1234567890123456789, 1000, b_user, vb);
+    'media://public/marketplace-images/mkt-trust-t/b-copy.jpg', repeat('a', 64), 1234567890123456789, 1000, b_user, vb,
+    81985529216486895);
   -- B uploads a re-encoded copy: different bytes, perceptual hash 2 bits away
   perform public.marketplace_gate_register_image(
-    'media://public/marketplace-images/mkt-trust-t/b-reencoded.jpg', repeat('b', 64), 1234567890123456789 # 3, 1100, b_user, vb);
+    'media://public/marketplace-images/mkt-trust-t/b-reencoded.jpg', repeat('b', 64), 1234567890123456789 # 3, 1100, b_user, vb,
+    81985529216486895);
+  -- B uploads a merely SIMILAR picture: 5 bits away, one past the threshold
+  perform public.marketplace_gate_register_image(
+    'media://public/marketplace-images/mkt-trust-t/b-similar.jpg', repeat('f', 64), 1234567890123456789 # 7, 1100, b_user, vb,
+    81985529216486895 # 3);
   -- B uploads an unrelated picture
   perform public.marketplace_gate_register_image(
-    'media://public/marketplace-images/mkt-trust-t/b-own.jpg', repeat('c', 64), -1234567890123456789, 900, b_user, vb);
+    'media://public/marketplace-images/mkt-trust-t/b-own.jpg', repeat('c', 64), -1234567890123456789, 900, b_user, vb,
+    1311768467463790320);
   v := public.marketplace_gate_image_matches(vb, 'mkt-trust-t-b-new', array[
     'media://public/marketplace-images/mkt-trust-t/b-copy.jpg',
     'media://public/marketplace-images/mkt-trust-t/b-reencoded.jpg',
+    'media://public/marketplace-images/mkt-trust-t/b-similar.jpg',
     'media://public/marketplace-images/mkt-trust-t/b-own.jpg']);
   reset role;
   if not exists (select 1 from jsonb_array_elements(v) e
@@ -1177,6 +1195,9 @@ begin
   if not exists (select 1 from jsonb_array_elements(v) e
                  where e ->> 'ref' like '%b-reencoded.jpg' and e ->> 'relation' = 'other_seller') then
     raise warning 'VIOLATION O2: a re-encoded copy from another seller not detected: %', v; violations := violations + 1;
+  end if;
+  if exists (select 1 from jsonb_array_elements(v) e where e ->> 'ref' like '%b-similar.jpg') then
+    raise warning 'VIOLATION O2b: a merely similar picture (past the threshold) was flagged: %', v; violations := violations + 1;
   end if;
   if exists (select 1 from jsonb_array_elements(v) e where e ->> 'ref' like '%b-own.jpg') then
     raise warning 'VIOLATION O3: an unrelated picture was flagged: %', v; violations := violations + 1;
@@ -1204,7 +1225,7 @@ begin
   v := public.marketplace_gate_image_matches(va, 'mkt-trust-t-a-other',
     array['media://public/marketplace-images/mkt-trust-t/f1-cover.jpg']);
   reset role;
-  if exists (select 1 from jsonb_array_elements(v) e where e ->> 'relation' = 'other_seller')
+  if exists (select 1 from jsonb_array_elements(v) e where e ->> 'relation' in ('other_seller', 'foreign_ref'))
      or not exists (select 1 from jsonb_array_elements(v) e where e ->> 'relation' = 'same_seller') then
     raise warning 'VIOLATION O3c: the original owner was flagged for a copier''s upload: %', v; violations := violations + 1;
   end if;
@@ -1215,8 +1236,34 @@ begin
     array['media://public/marketplace-images/mkt-trust-t/f1-cover.jpg']);
   reset role;
   if not exists (select 1 from jsonb_array_elements(v) e
-                 where e ->> 'ref' like '%f1-cover.jpg' and e ->> 'relation' = 'other_seller') then
+                 where e ->> 'ref' like '%f1-cover.jpg' and e ->> 'relation' = 'foreign_ref') then
     raise warning 'VIOLATION O3d: a copied image reference was not detected: %', v; violations := violations + 1;
+  end if;
+
+  -- PRECISION: two near-blank pictures (three structured cells each) have nothing
+  -- to tell them apart, so their hashes are never treated as a match — a plain
+  -- white-background shot must not be "the same picture" as every other one.
+  set local role service_role;
+  perform public.marketplace_gate_register_image(
+    'media://public/marketplace-images/mkt-trust-t/a-blank.jpg', repeat('1', 64), 5, 400, a_user, va, 2);
+  perform public.marketplace_gate_register_image(
+    'media://public/marketplace-images/mkt-trust-t/b-blank.jpg', repeat('2', 64), 5, 410, b_user, vb, 2);
+  -- half a hash is stored as no hash
+  perform public.marketplace_gate_register_image(
+    'media://public/marketplace-images/mkt-trust-t/b-half.jpg', repeat('3', 64), 1234567890123456789, 420, b_user, vb, null);
+  v := public.marketplace_gate_image_matches(vb, 'mkt-trust-t-b-new', array[
+    'media://public/marketplace-images/mkt-trust-t/b-blank.jpg',
+    'media://public/marketplace-images/mkt-trust-t/b-half.jpg']);
+  reset role;
+  if exists (select 1 from jsonb_array_elements(v) e where e ->> 'ref' like '%b-blank.jpg') then
+    raise warning 'VIOLATION O3e: two low-structure pictures were treated as the same picture: %', v; violations := violations + 1;
+  end if;
+  if exists (select 1 from jsonb_array_elements(v) e where e ->> 'ref' like '%b-half.jpg') then
+    raise warning 'VIOLATION O3f: a half perceptual hash was used for matching: %', v; violations := violations + 1;
+  end if;
+  if exists (select 1 from public.marketplace_image_fingerprints f
+             where f.ref like '%b-half.jpg' and (f.phash is not null or f.phash_aux is not null)) then
+    raise warning 'VIOLATION O3f: a half perceptual hash was stored'; violations := violations + 1;
   end if;
 
   -- request roles cannot read or register fingerprints

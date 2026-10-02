@@ -46,8 +46,13 @@ export interface ListingGateInput {
     notFirstParty: ReadonlyArray<string>;
     /** First-party objects uploaded by someone outside this store. */
     foreignRefs: ReadonlyArray<string>;
-    /** Fingerprint matches reported by the database. */
-    matches: ReadonlyArray<{ ref: string; relation: "other_seller" | "same_seller" }>;
+    /**
+     * Fingerprint matches reported by the database:
+     *   foreign_ref  — the object was uploaded by another store (a copied reference);
+     *   other_seller — another store registered the same picture first;
+     *   same_seller  — already on another listing of this store.
+     */
+    matches: ReadonlyArray<{ ref: string; relation: "foreign_ref" | "other_seller" | "same_seller" }>;
     /** Perceptual hashes of the images, for the known-bad list. */
     hashes?: ReadonlyArray<string>;
     knownBadHashes?: ReadonlySet<string>;
@@ -175,9 +180,19 @@ export function evaluateListingPolicy(input: ListingGateInput): GateVerdict {
 
   // ---- images ---------------------------------------------------------------
   if (images.notFirstParty.length > 0) codes.push("image_not_first_party");
-  if (images.foreignRefs.length > 0 || images.matches.some((match) => match.relation === "other_seller")) {
+  const copiedReference =
+    images.foreignRefs.length > 0 || images.matches.some((match) => match.relation === "foreign_ref");
+  const seenElsewhere = images.matches.some((match) => match.relation === "other_seller");
+  if (copiedReference) {
+    // The upload flow cannot produce this: someone attached another store's object.
     codes.push("duplicate_image_other_seller");
-  } else if (images.matches.some((match) => match.relation === "same_seller")) {
+  } else if (seenElsewhere) {
+    // The same picture, uploaded first by another store. From a store on probation
+    // that is the copied-listing pattern, and a person looks. From an established
+    // store it is usually a shared manufacturer photo: recorded, not queued.
+    codes.push(seller !== null && !seller.probation.active ? "shared_image" : "duplicate_image_other_seller");
+  }
+  if (images.matches.some((match) => match.relation === "same_seller")) {
     codes.push("duplicate_image_same_seller");
   }
 

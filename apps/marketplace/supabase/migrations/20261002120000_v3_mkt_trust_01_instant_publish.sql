@@ -96,7 +96,7 @@ create table if not exists public.marketplace_listing_gate_verdicts (
   actor_user_id uuid,
   -- 'go_live' | 'live_edit', stamped when a publish verdict is consumed.
   transition text check (transition is null or transition in ('go_live', 'live_edit')),
-  created_at timestamptz not null default timezone('utc', now()),
+  created_at timestamptz not null default now(),
   expires_at timestamptz,
   consumed_at timestamptz
 );
@@ -118,7 +118,7 @@ create table if not exists public.marketplace_seller_probation (
   source text not null default 'instant_onboarding'
     check (source in ('instant_onboarding')),
   onboarding_verdict_id uuid,
-  started_at timestamptz not null default timezone('utc', now()),
+  started_at timestamptz not null default now(),
   graduated_at timestamptz,
   graduated_reason text
 );
@@ -136,7 +136,7 @@ create table if not exists public.marketplace_listing_enforcement (
   evidence jsonb not null default '{}'::jsonb,
   prior_status text not null default 'approved',
   engine_version text not null default 'unknown',
-  created_at timestamptz not null default timezone('utc', now()),
+  created_at timestamptz not null default now(),
   resolved_at timestamptz,
   resolved_by uuid,
   resolution text
@@ -154,8 +154,12 @@ create table if not exists public.marketplace_image_fingerprints (
   -- Canonical first-party media reference (media://public/marketplace-images/...).
   ref text primary key,
   sha256 text not null,
-  -- 64-bit difference hash; null when the bytes could not be decoded.
+  -- Perceptual hash: two 64-bit masks over a 9x8 greyscale grid — `phash` marks the
+  -- cells that are brighter on the left, `phash_aux` the cells brighter on the
+  -- right; a cell in neither is flat. Both null when the picture could not be
+  -- decoded or has too little structure to compare (the TS side decides).
   phash bigint,
+  phash_aux bigint,
   bytes bigint,
   uploader_user_id uuid,
   vendor_id uuid,
@@ -163,6 +167,7 @@ create table if not exists public.marketplace_image_fingerprints (
   -- this column, so two registrations in one transaction must still order.
   created_at timestamptz not null default clock_timestamp()
 );
+alter table public.marketplace_image_fingerprints add column if not exists phash_aux bigint;
 
 create index if not exists marketplace_image_fingerprints_sha_idx
   on public.marketplace_image_fingerprints (sha256);
@@ -384,7 +389,7 @@ begin
      and v.content_hash = v_hash
      and v.consumed_at is null
      and v.expires_at is not null
-     and v.expires_at > timezone('utc', now())
+     and v.expires_at > now()
    order by v.created_at desc
    limit 1
    for update;
@@ -426,7 +431,7 @@ begin
          where g.vendor_id = new.vendor_id
            and g.subject_type = 'listing'
            and g.transition = 'go_live'
-           and g.consumed_at > timezone('utc', now()) - interval '24 hours';
+           and g.consumed_at > now() - interval '24 hours';
         if v_count >= (v_caps ->> 'max_new_listings_per_day')::integer then
           raise exception 'marketplace_publish_guard: probation daily cap reached'
             using errcode = 'P0001', hint = 'probation_daily_cap';
@@ -448,8 +453,8 @@ begin
      and new.reviewed_by is not null
      and new.reviewed_at is not null
      and new.reviewed_at is distinct from old.reviewed_at
-     and new.reviewed_at > timezone('utc', now()) - interval '15 minutes'
-     and new.reviewed_at < timezone('utc', now()) + interval '5 minutes'
+     and new.reviewed_at > now() - interval '15 minutes'
+     and new.reviewed_at < now() + interval '5 minutes'
      and public.marketplace_gate_is_staff(new.reviewed_by)
   then
     return new;
@@ -499,7 +504,7 @@ begin
     then
       update public.marketplace_listing_enforcement e
          set status = 'upheld',
-             resolved_at = timezone('utc', now()),
+             resolved_at = now(),
              resolved_by = new.reviewed_by,
              resolution = 'upheld_by_staff'
        where e.product_id = new.id and e.status = 'active';
@@ -526,7 +531,7 @@ begin
      and v.content_hash = v_hash
      and v.consumed_at is null
      and v.expires_at is not null
-     and v.expires_at > timezone('utc', now())
+     and v.expires_at > now()
    order by v.created_at desc
    limit 1
    for update;
@@ -538,7 +543,7 @@ begin
     where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
   ) then
     update public.marketplace_listing_gate_verdicts v
-       set consumed_at = timezone('utc', now()),
+       set consumed_at = now(),
            product_id = new.id,
            transition = case when v_was_live then 'live_edit' else 'go_live' end
      where v.id = v_verdict_id;
@@ -546,7 +551,7 @@ begin
     -- A clean engine verdict lifts a policy hide; nothing else.
     update public.marketplace_listing_enforcement e
        set status = 'lifted',
-           resolved_at = timezone('utc', now()),
+           resolved_at = now(),
            resolution = 'cleared_by_gate'
      where e.product_id = new.id and e.status = 'active' and e.kind = 'policy';
     return null;
@@ -572,12 +577,12 @@ begin
      '{}'::text[], 'db_guard',
      case when v_company then null else new.reviewed_by end,
      case when v_was_live then 'live_edit' else 'go_live' end,
-     timezone('utc', now()));
+     now());
 
   if not v_company then
     update public.marketplace_listing_enforcement e
        set status = 'lifted',
-           resolved_at = timezone('utc', now()),
+           resolved_at = now(),
            resolved_by = new.reviewed_by,
            resolution = 'restored_by_staff'
      where e.product_id = new.id and e.status = 'active';
@@ -704,7 +709,7 @@ begin
   select count(*) into v_new_24h
     from public.marketplace_listing_gate_verdicts g
    where g.vendor_id = p_vendor_id and g.subject_type = 'listing' and g.transition = 'go_live'
-     and g.consumed_at > timezone('utc', now()) - interval '24 hours';
+     and g.consumed_at > now() - interval '24 hours';
   select count(*) into v_delivered
     from public.marketplace_order_groups og
    where og.vendor_id = p_vendor_id and og.fulfillment_status = 'delivered';
@@ -713,16 +718,16 @@ begin
   if found then
     v_tracked := true;
     v_started := v_prob.started_at;
-    v_age_days := floor(extract(epoch from (timezone('utc', now()) - v_prob.started_at)) / 86400)::integer;
+    v_age_days := floor(extract(epoch from (now() - v_prob.started_at)) / 86400)::integer;
     if v_prob.graduated_at is null
        and v_identity
        and v_delivered >= (v_caps ->> 'graduation_min_delivered_orders')::integer
        and v_age_days >= (v_caps ->> 'graduation_min_days')::integer
     then
       update public.marketplace_seller_probation sp
-         set graduated_at = timezone('utc', now()), graduated_reason = 'criteria_met'
+         set graduated_at = now(), graduated_reason = 'criteria_met'
        where sp.vendor_id = p_vendor_id and sp.graduated_at is null;
-      v_prob.graduated_at := timezone('utc', now());
+      v_prob.graduated_at := now();
     end if;
     v_active := v_prob.graduated_at is null;
   end if;
@@ -900,7 +905,7 @@ begin
           select count(*) into v_count
             from public.marketplace_listing_gate_verdicts g
            where g.vendor_id = p_vendor_id and g.subject_type = 'listing' and g.transition = 'go_live'
-             and g.consumed_at > timezone('utc', now()) - interval '24 hours';
+             and g.consumed_at > now() - interval '24 hours';
           if v_count >= (v_caps ->> 'max_new_listings_per_day')::integer then
             v_outcome := 'reject';
             v_reasons := v_reasons || 'probation_daily_cap'::text;
@@ -912,7 +917,7 @@ begin
 
   v_hash := public.marketplace_listing_content_hash(v_row);
   if v_outcome = 'publish' then
-    v_expires := timezone('utc', now()) + interval '15 minutes';
+    v_expires := now() + interval '15 minutes';
   end if;
 
   insert into public.marketplace_listing_gate_verdicts
@@ -962,7 +967,7 @@ begin
   values
     ('listing', v_row.id, v_row.vendor_id, v_row.slug, public.marketplace_listing_content_hash(v_row),
      v_media, 'publish', 'rescan', '{}'::text[],
-     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), timezone('utc', now()))
+     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), now())
   returning id into v_id;
 
   return jsonb_build_object('recorded', true, 'verdict_id', v_id);
@@ -1043,18 +1048,24 @@ $$;
 -- ---------------------------------------------------------------------------
 -- 9. Image fingerprints.
 -- ---------------------------------------------------------------------------
+drop function if exists public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid);
 create or replace function public.marketplace_gate_register_image(
   p_ref text,
   p_sha256 text,
   p_phash bigint,
   p_bytes bigint,
   p_uploader uuid,
-  p_vendor_id uuid
+  p_vendor_id uuid,
+  p_phash_aux bigint default null
 ) returns jsonb
 language plpgsql
 security definer
 set search_path = public, pg_temp
 as $$
+declare
+  -- Half a perceptual hash is no hash: both masks or neither.
+  v_phash bigint := case when p_phash is null or p_phash_aux is null then null else p_phash end;
+  v_phash_aux bigint := case when p_phash is null or p_phash_aux is null then null else p_phash_aux end;
 begin
   if p_ref is null or length(btrim(p_ref)) = 0 or length(p_ref) > 600 then
     raise exception 'marketplace_gate_register_image: invalid ref' using errcode = 'check_violation';
@@ -1063,8 +1074,8 @@ begin
     raise exception 'marketplace_gate_register_image: invalid sha256' using errcode = 'check_violation';
   end if;
 
-  insert into public.marketplace_image_fingerprints (ref, sha256, phash, bytes, uploader_user_id, vendor_id)
-  values (p_ref, p_sha256, p_phash, p_bytes, p_uploader, p_vendor_id)
+  insert into public.marketplace_image_fingerprints (ref, sha256, phash, phash_aux, bytes, uploader_user_id, vendor_id)
+  values (p_ref, p_sha256, v_phash, v_phash_aux, p_bytes, p_uploader, p_vendor_id)
   on conflict (ref) do update
     set vendor_id = coalesce(public.marketplace_image_fingerprints.vendor_id, excluded.vendor_id),
         uploader_user_id = coalesce(public.marketplace_image_fingerprints.uploader_user_id, excluded.uploader_user_id);
@@ -1076,19 +1087,26 @@ $$;
 -- For each of the given refs: does this picture belong to someone else, or is it
 -- already on another of this seller's listings?
 --
---   other_seller — (a) the object itself was uploaded by another store (a copied
---                  reference), or (b) another store registered the same picture
---                  (identical bytes, or a perceptual near-match) FIRST.
+--   foreign_ref  — the object itself was uploaded by another store: a copied
+--                  reference. The upload flow can never produce this.
+--   other_seller — another store registered the same picture FIRST: identical
+--                  bytes, or a perceptual near-match.
 --   same_seller  — the picture is already attached to a different listing of this
 --                  store.
 --
 -- "First" matters: when a copier re-uploads a seller's photo, the ORIGINAL owner
 -- must not be the one who gets flagged. Order is the fingerprint's created_at.
+--
+-- The perceptual match is tuned for PRECISION — a match holds an honest seller's
+-- listing for a person. Both pictures must have real structure (at least 16
+-- non-flat cells) and differ in at most p_max_distance of the 128 mask bits
+-- (default 4, never more than 16).
+drop function if exists public.marketplace_gate_image_matches(uuid, text, text[], integer);
 create or replace function public.marketplace_gate_image_matches(
   p_vendor_id uuid,
   p_slug text,
   p_refs text[],
-  p_max_distance integer default 6
+  p_max_distance integer default 4
 ) returns jsonb
 language sql
 stable
@@ -1096,12 +1114,12 @@ security definer
 set search_path = public, pg_temp
 as $$
   with mine as (
-    select f.ref, f.sha256, f.phash, f.vendor_id, f.created_at
+    select f.ref, f.sha256, f.phash, f.phash_aux, f.vendor_id, f.created_at
     from public.marketplace_image_fingerprints f
     where f.ref = any (coalesce(p_refs, '{}'::text[]))
   ),
   foreign_ref as (
-    select m.ref, 'other_seller'::text as relation, 0 as distance
+    select m.ref, 'foreign_ref'::text as relation, 0 as distance
     from mine m
     where m.vendor_id is not null and m.vendor_id is distinct from p_vendor_id
   ),
@@ -1113,15 +1131,20 @@ as $$
       o.created_at as twin_created,
       m.created_at as my_created,
       case when o.sha256 = m.sha256 then 0
-           else bit_count((o.phash # m.phash)::bit(64))::integer end as distance
+           else bit_count((o.phash # m.phash)::bit(64))::integer
+              + bit_count((o.phash_aux # m.phash_aux)::bit(64))::integer end as distance
     from mine m
     join public.marketplace_image_fingerprints o
       on o.ref <> m.ref
      and (
        o.sha256 = m.sha256
        or (
-         o.phash is not null and m.phash is not null
-         and bit_count((o.phash # m.phash)::bit(64)) <= greatest(0, least(coalesce(p_max_distance, 6), 16))
+         o.phash is not null and o.phash_aux is not null
+         and m.phash is not null and m.phash_aux is not null
+         and bit_count((o.phash | o.phash_aux)::bit(64)) >= 16
+         and bit_count((m.phash | m.phash_aux)::bit(64)) >= 16
+         and bit_count((o.phash # m.phash)::bit(64)) + bit_count((o.phash_aux # m.phash_aux)::bit(64))
+             <= greatest(0, least(coalesce(p_max_distance, 4), 16))
        )
      )
   ),
@@ -1275,7 +1298,7 @@ begin
     ('seller', v_vendor_id, v_slug,
      encode(sha256(convert_to(v_slug || '|' || btrim(v_app.store_name) || '|' || coalesce(v_app.story, ''), 'UTF8')), 'hex'),
      'publish', 'policy_engine', coalesce(p_reasons, '{}'::text[]), coalesce(p_signals, '{}'::jsonb),
-     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), p_actor, timezone('utc', now()))
+     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), p_actor, now())
   returning id into v_verdict_id;
 
   insert into public.marketplace_seller_probation (vendor_id, owner_user_id, onboarding_verdict_id)
@@ -1283,7 +1306,7 @@ begin
 
   update public.marketplace_vendor_applications a
      set status = 'approved',
-         reviewed_at = timezone('utc', now()),
+         reviewed_at = now(),
          review_note = 'Opened by the instant-publish gate. Identity is checked at the first payout.'
    where a.id = p_application_id;
 
@@ -1397,7 +1420,7 @@ revoke all on function public.marketplace_gate_seller_state(uuid, text) from pub
 revoke all on function public.marketplace_gate_record_listing_verdict(uuid, uuid, jsonb, text[], text, text[], jsonb, text, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_rescan(uuid, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_hide_listing(uuid, text, text[], jsonb, text) from public, anon, authenticated;
-revoke all on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid) from public, anon, authenticated;
+revoke all on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid, bigint) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_image_matches(uuid, text, text[], integer) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_payout_eligibility(uuid) from public, anon, authenticated;
@@ -1407,7 +1430,7 @@ grant execute on function public.marketplace_gate_seller_state(uuid, text) to se
 grant execute on function public.marketplace_gate_record_listing_verdict(uuid, uuid, jsonb, text[], text, text[], jsonb, text, text) to service_role;
 grant execute on function public.marketplace_gate_record_rescan(uuid, text) to service_role;
 grant execute on function public.marketplace_gate_hide_listing(uuid, text, text[], jsonb, text) to service_role;
-grant execute on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid) to service_role;
+grant execute on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid, bigint) to service_role;
 grant execute on function public.marketplace_gate_image_matches(uuid, text, text[], integer) to service_role;
 grant execute on function public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text) to service_role;
 grant execute on function public.marketplace_gate_payout_eligibility(uuid) to service_role;
@@ -1427,7 +1450,7 @@ select
     from public.marketplace_product_media m
     where m.product_id = p.id
   ), '{}'::text[]),
-  'publish', 'pre_guard_backfill', '{}'::text[], 'pre_guard', 'go_live', timezone('utc', now())
+  'publish', 'pre_guard_backfill', '{}'::text[], 'pre_guard', 'go_live', now()
 from public.marketplace_products p
 where p.approval_status = 'approved'
   and not exists (

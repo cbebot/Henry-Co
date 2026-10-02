@@ -28,6 +28,7 @@ export * from "./recovery-copy";
 export * from "./state-copy";
 export * from "./error-fallback-copy";
 export * from "./marketplace-copy";
+export * from "./marketplace-trust-copy";
 export * from "./jobs-copy";
 export * from "./care-copy";
 export * from "./care-pricing-copy";

@@ -76,6 +76,12 @@ export const HenryEventNames = {
   MARKETPLACE_REVIEW_FLAGGED: "henry.marketplace.review.flagged",
   MARKETPLACE_REVIEW_BLOCKED: "henry.marketplace.review.blocked",
   MARKETPLACE_DISPUTE_TRUST_IMPACT: "henry.marketplace.dispute.trust_impact",
+  // V3-MKT-TRUST-01 publish gate (codes and ids only in the payload).
+  MARKETPLACE_LISTING_GATE_DECIDED: "henry.marketplace.listing_gate.decided",
+  MARKETPLACE_LISTING_GATE_HIDDEN: "henry.marketplace.listing_gate.hidden",
+  MARKETPLACE_LISTING_GATE_SWEPT: "henry.marketplace.listing_gate.swept",
+  MARKETPLACE_SELLER_GATE_DECIDED: "henry.marketplace.seller_gate.decided",
+  MARKETPLACE_PAYOUT_GATE_DECIDED: "henry.marketplace.payout_gate.decided",
   // Lifecycle / CRM events
   LIFECYCLE_STAGE_CHANGED: "henry.lifecycle.stage.changed",
   LIFECYCLE_RECOMMENDATION_CLICKED: "henry.lifecycle.recommendation.clicked",

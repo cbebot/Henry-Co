@@ -81,7 +81,7 @@ begin
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
     'public.marketplace_gate_hide_listing(uuid,text,text[],jsonb,text)',
-    'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid)',
+    'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid,bigint)',
     'public.marketplace_gate_image_matches(uuid,text,text[],integer)',
     'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text)',
     'public.marketplace_gate_payout_eligibility(uuid)'
@@ -105,7 +105,7 @@ begin
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
     'public.marketplace_gate_hide_listing(uuid,text,text[],jsonb,text)',
-    'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid)',
+    'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid,bigint)',
     'public.marketplace_gate_image_matches(uuid,text,text[],integer)',
     'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text)',
     'public.marketplace_gate_payout_eligibility(uuid)'
@@ -130,7 +130,7 @@ begin
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
     'public.marketplace_gate_hide_listing(uuid,text,text[],jsonb,text)',
-    'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid)',
+    'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid,bigint)',
     'public.marketplace_gate_image_matches(uuid,text,text[],integer)',
     'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text)',
     'public.marketplace_gate_payout_eligibility(uuid)'

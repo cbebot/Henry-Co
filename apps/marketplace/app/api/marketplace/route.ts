@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getDivisionConfig, normalizeStateInput } from "@henryco/config";
@@ -42,6 +42,12 @@ import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 import { sendMessage as sendOnyxMessage } from "@henryco/messaging/server";
 import { clipBody, screenMessageBody } from "@/lib/messaging/screen-message";
 import { createMarketplaceMessagingAdapter } from "@/lib/messaging/adapter";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
+import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
+import { instantListingUpsert } from "@/lib/marketplace/publish-gate/listing-write";
+import { gateNotice } from "@/lib/marketplace/publish-gate/messages";
+import { isPolicyViolation } from "@/lib/marketplace/publish-gate/reasons";
 import {
   bumpConversation,
   findOrCreateConversation,
@@ -1692,6 +1698,143 @@ export async function POST(request: Request) {
               code: upsertDecision.code,
             },
           );
+        }
+
+        // V3-MKT-TRUST-01 — instant publish. Entered only when the flag is on AND the
+        // seller pressed Publish. With the flag off this block is skipped and everything
+        // below is the unchanged legacy path; a draft save always takes the legacy path
+        // (a draft is not live, so there is nothing to gate). If the gate is not
+        // installed on this database the handler answers "legacy" and we fall through
+        // to the human review queue.
+        if (isInstantPublishEnabled() && text(formData, "submission_mode") === "submit" && vendorScopeId) {
+          const gateLocale = await getMarketplacePublicLocale();
+          // The category the listing will actually sit in — not the posted text.
+          const resolvedCategorySlug =
+            snapshot.categories.find((item) => item.id === categoryId)?.slug ?? text(formData, "category_slug");
+          const instant = await instantListingUpsert({
+            admin,
+            actorId: viewer.user.id,
+            vendorId: vendorScopeId,
+            vendor: vendorRecord,
+            draft: {
+              slug,
+              categoryId,
+              categorySlug: resolvedCategorySlug,
+              brandId,
+              title: text(formData, "title"),
+              summary: text(formData, "summary"),
+              description: text(formData, "description"),
+              basePrice: numberValue(formData, "base_price"),
+              compareAtPrice: numberValue(formData, "compare_at_price", 0) || null,
+              sku: text(formData, "sku"),
+              deliveryNote: text(formData, "delivery_note"),
+              leadTime: text(formData, "lead_time"),
+              codEligible: text(formData, "cod_eligible") === "on",
+              material: text(formData, "material"),
+              warranty: text(formData, "warranty"),
+              requestFeaturedPlacement: text(formData, "feature_requested") === "on",
+            },
+            stock: numberValue(formData, "stock", 0),
+            postedImages: parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url")),
+            onHold: text(formData, "on_hold") === "review" ? "review" : "keep",
+            locale: gateLocale,
+            publicBaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+            extraUploaders: [viewer.user.id],
+            resolveImageUrl: resolveMarketplaceImageUrl,
+          });
+
+          if (instant.kind === "forbidden") {
+            const refusal = gateNotice({
+              locale: gateLocale,
+              outcome: "reject",
+              reasons: ["seller_not_active"],
+              liveEdit: false,
+              caps: null,
+            });
+            return respondError(json, request, "/vendor/products/new?error=missing-vendor-scope", {
+              message: refusal.body,
+              code: "missing-vendor-scope",
+              status: 403,
+            });
+          }
+
+          if (instant.kind === "done") {
+            const subjectId = instant.productId ?? slug;
+            if (instant.outcome === "hold" && instant.written) {
+              // The exception queue: only what the gate could not decide reaches a person.
+              await createModerationCase(admin, {
+                subjectType: "product",
+                subjectId,
+                queue: "product_risk_review",
+                note: `gate hold: ${instant.reasons.join(", ")}`,
+              });
+              await sendMarketplaceEvent({
+                event: "owner_alert",
+                recipientEmail: process.env.RESEND_SUPPORT_INBOX || marketplace.supportEmail,
+                actorUserId: viewer.user.id,
+                actorEmail: viewer.user.email,
+                entityType: "product",
+                entityId: instant.productId,
+                payload: {
+                  note: `Listing ${slug} is held for review by the publish gate: ${instant.reasons.join(", ")}.`,
+                },
+              });
+            } else if (instant.outcome === "reject" && instant.reasons.some(isPolicyViolation)) {
+              await createModerationCase(admin, {
+                subjectType: "product_submission",
+                subjectId: slug,
+                queue: "listing_blocked",
+                note: `gate reject: ${instant.reasons.join(", ")}`,
+              });
+            }
+
+            await writeMarketplaceEvent(admin, {
+              eventType: "vendor_product_gate_decided",
+              userId: viewer.user.id,
+              normalizedEmail: viewer.user.email,
+              actorUserId: viewer.user.id,
+              actorEmail: viewer.user.email,
+              entityType: "product",
+              entityId: instant.productId,
+              payload: {
+                slug,
+                outcome: instant.outcome,
+                reasons: instant.reasons,
+                wasLive: instant.wasLive,
+                keptLive: instant.keptLive,
+              },
+            });
+
+            if (instant.written) {
+              // The catalogue snapshot is cached; a publish or an unpublish must show now.
+              revalidateTag("marketplace-home", { expire: 0 });
+              revalidatePath("/vendor/products");
+              revalidatePath("/search");
+            }
+
+            const applied = instant.outcome === "publish" || (instant.outcome === "hold" && instant.written);
+            if (!applied) {
+              return respondError(
+                json,
+                request,
+                `/vendor/products/new?error=listing-blocked&reason=${encodeURIComponent(instant.reasons.join(","))}`,
+                { message: instant.notice.body, code: instant.keptLive ? "listing-kept-live" : "listing-blocked" },
+              );
+            }
+            return respondSuccess(
+              json,
+              request,
+              `/vendor/products?${instant.outcome === "publish" ? "published=1" : "held=1"}`,
+              {
+                decision: "submit",
+                productId: instant.productId,
+                outcome: instant.outcome,
+                reasons: instant.reasons,
+                notice: instant.notice,
+              },
+            );
+          }
+          // instant.kind === "legacy" — continue into the review-queue path below.
         }
 
         const decision = text(formData, "submission_mode") || "draft";

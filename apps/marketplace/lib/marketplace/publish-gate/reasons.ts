@@ -47,6 +47,7 @@ export const HOLD_REASONS = [
 
 /** Recorded with the verdict; never blocks. */
 export const SIGNAL_REASONS = [
+  "shared_image",
   "duplicate_image_same_seller",
   "urgency_language",
   "pickup_address",
@@ -100,6 +101,23 @@ export function normalizeReasons(codes: ReadonlyArray<GateReasonCode>): GateReas
 /** The codes that explain the outcome to a seller (signals are not shown as problems). */
 export function blockingReasons(codes: ReadonlyArray<GateReasonCode>): GateReasonCode[] {
   return normalizeReasons(codes).filter((code) => CLASS_OF[code] !== "signal");
+}
+
+/**
+ * Refusals that mean "this content breaks policy", as opposed to "this form is
+ * incomplete" or "a limit was reached". Only these are worth a person's eyes.
+ */
+const POLICY_VIOLATIONS: ReadonlySet<GateReasonCode> = new Set<GateReasonCode>([
+  "prohibited_goods",
+  "counterfeit_claim",
+  "hate_speech",
+  "known_bad_image",
+  "contact_details",
+  "off_platform_payment",
+]);
+
+export function isPolicyViolation(code: GateReasonCode): boolean {
+  return POLICY_VIOLATIONS.has(code);
 }
 
 /**
