@@ -1366,8 +1366,11 @@ begin
   return jsonb_build_object(
     'vendor', jsonb_build_object(
       'id', v_vendor.id,
-      -- A store whose owner's approval a person revoked reads as not active.
-      'status', case when public.marketplace_gate_owner_revoked(v_vendor.owner_user_id) then 'revoked' else v_vendor.status end,
+      -- An active store whose owner's approval a person revoked reads "revoked" (its listings go
+      -- to a person); a store that is not active keeps its own status (it cannot publish at all),
+      -- the same order the verdict RPC decides in.
+      'status', case when v_vendor.status = 'approved' and public.marketplace_gate_owner_revoked(v_vendor.owner_user_id)
+                     then 'revoked' else v_vendor.status end,
       'owner_user_id', v_vendor.owner_user_id,
       'owner_type', v_vendor.owner_type,
       'seller_tier', v_vendor.seller_tier

@@ -3154,6 +3154,17 @@ begin
     if v ->> 'outcome' <> 'reject' or not (v -> 'reasons' ? 'seller_not_active') then
       raise warning 'VIOLATION S17: an inactive store was not refused: %', v; violations := violations + 1;
     end if;
+    -- with its owner's approval revoked too, the state still says what the store is (the TS gate
+    -- refuses on it, as the RPC does) — "revoked" is for an active store only
+    insert into public.marketplace_seller_revocations (owner_user_id, revoked_by) values (a_user, staff);
+    set local role service_role;
+    v := public.marketplace_gate_seller_state(v17, null);
+    reset role;
+    if v -> 'vendor' ->> 'status' <> 'suspended' then
+      raise warning 'VIOLATION S17b: an inactive store read as % instead of its own status', v -> 'vendor' ->> 'status';
+      violations := violations + 1;
+    end if;
+    delete from public.marketplace_seller_revocations where owner_user_id = a_user and lifted_at is null;
   end;
 
   -- ---- S18–S22 (round 5): what a person's approval covers, and what it does not
