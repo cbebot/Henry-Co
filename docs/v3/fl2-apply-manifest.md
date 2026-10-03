@@ -236,15 +236,17 @@ drift-triage (PASS-REGISTER tickets).
 
 ### rooms (interview/live rooms) (7 files)
 
+> **RETIRED — DO NOT APPLY (V3-ACTIVATION-RUNBOOK-FIX-01, 2026-09-24).** The family is cyclic as authored and `@henryco/rooms` has no consumers on `main`. The files moved to `apps/hub/supabase/migrations-retired/` behind a fail-loud guard; see `docs/v3/ACTIVATION-RUNBOOK-2026-09-24.md` §4.
+
 *Live readers today:* packages/rooms/src/server/actions.ts reads all six rooms_* tables; 2 baseline drift entries (rooms_sessions.kind/.status)
 
-- `apps/hub/supabase/migrations/20260515100000_rooms_sessions.sql`
-- `apps/hub/supabase/migrations/20260515100100_rooms_participants.sql`
-- `apps/hub/supabase/migrations/20260515100200_rooms_recordings_consent.sql`
-- `apps/hub/supabase/migrations/20260515100300_rooms_recordings.sql`
-- `apps/hub/supabase/migrations/20260515100400_rooms_scorecards.sql`
-- `apps/hub/supabase/migrations/20260515100500_rooms_messages.sql`
-- `apps/hub/supabase/migrations/20260515100600_rooms_realtime_publication.sql`
+- `apps/hub/supabase/migrations-retired/20260515100000_rooms_sessions.sql` (RETIRED)
+- `apps/hub/supabase/migrations-retired/20260515100100_rooms_participants.sql` (RETIRED)
+- `apps/hub/supabase/migrations-retired/20260515100200_rooms_recordings_consent.sql` (RETIRED)
+- `apps/hub/supabase/migrations-retired/20260515100300_rooms_recordings.sql` (RETIRED)
+- `apps/hub/supabase/migrations-retired/20260515100400_rooms_scorecards.sql` (RETIRED)
+- `apps/hub/supabase/migrations-retired/20260515100500_rooms_messages.sql` (RETIRED)
+- `apps/hub/supabase/migrations-retired/20260515100600_rooms_realtime_publication.sql` (RETIRED)
 
 ### jobs feature wave (2026-05-15) (7 files)
 

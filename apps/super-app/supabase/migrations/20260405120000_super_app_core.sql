@@ -1,7 +1,31 @@
 -- HenryCo Super App — core public schema (staging-first)
--- Apply with Supabase CLI: `supabase db push` against a staging project only.
-
-create extension if not exists "pgcrypto";
+-- Apply one file at a time (MCP apply_migration / SQL editor); never `supabase db push`
+-- (docs/v3/ACTIVATION-RUNBOOK-2026-09-24.md §2).
+--
+-- V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24) — repaired against prod-actual:
+--   * REMOVED the public.profiles table/policies, handle_new_user() and the
+--     on_auth_user_created trigger. Those are PLATFORM-owned and already live on
+--     prod (supabase/prod-actual/schema.sql: profiles + its RLS policies,
+--     handle_new_user() inserting id/role='customer'/full_name/phone/is_active,
+--     trigger on auth.users). The old two-column body here would have REPLACED
+--     the live signup function, and because profiles.role is NOT NULL with no
+--     default, every signup would have failed (shadow-proven:
+--     `null value in column "role" of relation "profiles"`). The super-app
+--     client never reads profiles through this file (it uses divisions +
+--     contact_submissions only), so nothing is lost.
+--   * REMOVED `create extension pgcrypto`: gen_random_uuid() is core since PG13,
+--     and on Supabase the extension lives in the `extensions` schema.
+--   * Policies are drop-if-exists + create, so the file is re-runnable.
+--   * contact_submissions is bounded rather than `with check (true)`: raw
+--     char_length caps + not-only-ASCII-whitespace content, enforced both as
+--     table CHECKs (service-role writes too; retrofitted NOT VALID onto an
+--     older table) and in the insert policy.
+--   * Grants are explicit: anon/authenticated get divisions SELECT and a
+--     COLUMN-level contact_submissions INSERT (name, email, topic, message,
+--     division_slug) — clients cannot choose id or backdate created_at.
+--   * The division seed is insert-if-missing (`on conflict do nothing`), so a
+--     re-apply never overwrites operator edits to existing divisions (it does
+--     re-insert a seeded slug that was deleted or renamed — pause, don't delete).
 
 create table if not exists public.divisions (
   id uuid primary key default gen_random_uuid(),
@@ -16,65 +40,85 @@ create table if not exists public.divisions (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.profiles (
-  id uuid primary key references auth.users (id) on delete cascade,
-  full_name text,
-  phone text,
-  country text,
-  preferred_contact text,
-  updated_at timestamptz not null default now()
-);
-
 create table if not exists public.contact_submissions (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  name text not null,
-  email text not null,
-  topic text not null,
-  message text not null,
+  name text not null
+    constraint contact_submissions_name_bounded
+    check (char_length(name) between 1 and 200 and btrim(name, E' \t\r\n') <> ''),
+  email text not null
+    constraint contact_submissions_email_shape
+    check (char_length(email) between 3 and 320 and position('@' in email) > 1),
+  topic text not null
+    constraint contact_submissions_topic_bounded
+    check (char_length(topic) between 1 and 200 and btrim(topic, E' \t\r\n') <> ''),
+  message text not null
+    constraint contact_submissions_message_bounded
+    check (char_length(message) between 1 and 5000 and btrim(message, E' \t\r\n') <> ''),
   division_slug text
+    constraint contact_submissions_division_slug_bounded
+    check (division_slug is null or char_length(division_slug) <= 64)
 );
 
+-- If contact_submissions pre-dates this version (e.g. a staging DB that took the
+-- original file), `create table if not exists` skipped the CHECKs above. Add any
+-- missing one NOT VALID: existing rows are kept, every new/updated row (service
+-- role included) is bounded. No-op on a table this file just created.
+do $checks$
+declare
+  c record;
+begin
+  for c in
+    select * from (values
+      ('contact_submissions_name_bounded',
+       $x$check (char_length(name) between 1 and 200 and btrim(name, E' \t\r\n') <> '')$x$),
+      ('contact_submissions_email_shape',
+       $x$check (char_length(email) between 3 and 320 and position('@' in email) > 1)$x$),
+      ('contact_submissions_topic_bounded',
+       $x$check (char_length(topic) between 1 and 200 and btrim(topic, E' \t\r\n') <> '')$x$),
+      ('contact_submissions_message_bounded',
+       $x$check (char_length(message) between 1 and 5000 and btrim(message, E' \t\r\n') <> '')$x$),
+      ('contact_submissions_division_slug_bounded',
+       $x$check (division_slug is null or char_length(division_slug) <= 64)$x$)
+    ) as t(conname, def)
+  loop
+    if not exists (
+      select 1 from pg_constraint
+      where conrelid = 'public.contact_submissions'::regclass and conname = c.conname
+    ) then
+      execute format('alter table public.contact_submissions add constraint %I %s not valid',
+                     c.conname, c.def);
+    end if;
+  end loop;
+end
+$checks$;
+
 alter table public.divisions enable row level security;
-alter table public.profiles enable row level security;
 alter table public.contact_submissions enable row level security;
 
+revoke all on table public.divisions from anon, authenticated;
+revoke all on table public.contact_submissions from anon, authenticated;
+grant select on table public.divisions to anon, authenticated;
+grant insert (name, email, topic, message, division_slug)
+  on table public.contact_submissions to anon, authenticated;
+
+drop policy if exists "divisions_select_public" on public.divisions;
 create policy "divisions_select_public" on public.divisions
-  for select using (true);
+  for select to anon, authenticated
+  using (true);
 
-create policy "profiles_select_self" on public.profiles
-  for select using (auth.uid() = id);
-
-create policy "profiles_update_self" on public.profiles
-  for update using (auth.uid() = id);
-
-create policy "profiles_insert_self" on public.profiles
-  for insert with check (auth.uid() = id);
-
+drop policy if exists "contact_insert_clients" on public.contact_submissions;
 create policy "contact_insert_clients" on public.contact_submissions
   for insert to anon, authenticated
-  with check (true);
+  with check (
+    char_length(name) between 1 and 200 and btrim(name, E' \t\r\n') <> ''
+    and char_length(email) between 3 and 320 and position('@' in email) > 1
+    and char_length(topic) between 1 and 200 and btrim(topic, E' \t\r\n') <> ''
+    and char_length(message) between 1 and 5000 and btrim(message, E' \t\r\n') <> ''
+    and (division_slug is null or char_length(division_slug) <= 64)
+  );
 
 -- Service role bypasses RLS for operational tooling.
-
-create or replace function public.handle_new_user()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  insert into public.profiles (id, full_name)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', new.email))
-  on conflict (id) do nothing;
-  return new;
-end;
-$$;
-
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
 
 insert into public.divisions (slug, name, status, featured, summary, accent_hex, destination_url, sectors)
 values
@@ -105,12 +149,4 @@ values
    'Building materials, interior finishes, procurement, and engineering support — launching soon.',
    '#4F46E5', 'https://building.henryonyx.com',
    array['building_materials','interior_finishes','construction_supply']::text[])
-on conflict (slug) do update set
-  name = excluded.name,
-  status = excluded.status,
-  featured = excluded.featured,
-  summary = excluded.summary,
-  accent_hex = excluded.accent_hex,
-  destination_url = excluded.destination_url,
-  sectors = excluded.sectors,
-  updated_at = now();
+on conflict (slug) do nothing;

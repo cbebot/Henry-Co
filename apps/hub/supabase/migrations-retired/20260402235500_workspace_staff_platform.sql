@@ -1,3 +1,31 @@
+-- ============================================================================
+-- RETIRED — DO NOT APPLY  (V3-ACTIVATION-RUNBOOK-FIX-01, 2026-09-24)
+-- ----------------------------------------------------------------------------
+-- Superseded early staff-workspace model. RECONCILE-01 (docs/v3/RECONCILE-01-
+-- 2026-06-21.md row 10): "never adopted — superseded by the staff_* /
+-- *_role_memberships model"; 20260502120000_staff_notifications_audience.sql
+-- calls its tables "dead schema". None of its 10 workspace_* tables exist on
+-- prod (supabase/prod-actual/schema.sql).
+-- Known latent references, unchanged by retiring this file (status quo on
+-- prod): apps/hub/app/lib/internal-comms-access.ts + api/owner/internal-comms/*
+-- read workspace_staff_memberships / workspace_division_memberships (the reads
+-- error and fail closed), and prod's hq_ic_can_read_thread() references them
+-- on its non-owner 'all_owners' branch. Re-point those at *_role_memberships in
+-- a code pass; do NOT apply this file to "satisfy" them.
+-- Moved out of supabase/migrations/ so no CLI path picks it up. The guard
+-- below (psql meta-command + DO-block raise) aborts before any DDL runs via
+-- psql -f (with or without ON_ERROR_STOP), the SQL editor or apply_migration.
+-- ============================================================================
+\set ON_ERROR_STOP on
+do $retired$
+begin
+  raise exception 'RETIRED MIGRATION — DO NOT APPLY: %  (docs/v3/ACTIVATION-RUNBOOK-2026-09-24.md §4)', '20260402235500_workspace_staff_platform.sql';
+end
+$retired$;
+
+/* ===== RETIRED BODY — inert, kept for history only. Do not uncomment to apply;
+   re-author instead (see header). ================================================
+
 create extension if not exists pgcrypto;
 
 create or replace function public.workspace_set_updated_at()
@@ -271,3 +299,5 @@ drop trigger if exists workspace_helper_signals_updated_at on public.workspace_h
 create trigger workspace_helper_signals_updated_at
 before update on public.workspace_helper_signals
 for each row execute function public.workspace_set_updated_at();
+
+===== end RETIRED BODY ===== */

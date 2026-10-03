@@ -62,7 +62,7 @@ See **[HENRYCO_ROLE_WORKFLOW_MATRIX.md](./HENRYCO_ROLE_WORKFLOW_MATRIX.md)** for
 
 ## 4. Database / workflow map
 
-**Authoritative DDL sample inspected:** `apps/hub/supabase/migrations/20260402235500_workspace_staff_platform.sql`.
+**Authoritative DDL sample inspected:** `apps/hub/supabase/migrations-retired/20260402235500_workspace_staff_platform.sql` (RETIRED — superseded, never applied; V3-ACTIVATION-RUNBOOK-FIX-01).
 
 | Entity group | Tables (repo-confirmed) | Drives |
 |--------------|-------------------------|--------|
@@ -276,7 +276,7 @@ Recommend **`@henryco/staff-shell`** (new package) or extend **`@henryco/ui`** w
 - `apps/hub/lib/owner-navigation.ts` — owner nav tree  
 - `apps/hub/app/lib/workspace/types.ts` — divisions, roles, permissions, task types  
 - `apps/hub/app/lib/workspace/roles.ts` — `PERMISSIONS_BY_FAMILY`, profile → family, defaults  
-- `apps/hub/supabase/migrations/20260402235500_workspace_staff_platform.sql` — workspace tables  
+- `apps/hub/supabase/migrations-retired/20260402235500_workspace_staff_platform.sql` (RETIRED — superseded, never applied; V3-ACTIVATION-RUNBOOK-FIX-01) — workspace tables  
 - `apps/care/app/admin/page.tsx` — missing auth on admin shell  
 - `apps/care/lib/auth/roles.ts` — `homeForRole`  
 - `apps/jobs/app/admin/page.tsx` — recruiter re-export  
