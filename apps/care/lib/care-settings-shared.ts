@@ -71,7 +71,7 @@ export function normalizeCareSettings(input?: SettingsSource): CareSettingsRecor
         : asNullableText(source.hero_badge_i18n),
     hero_title: asText(
       source.hero_title,
-      "Quiet service logistics for wardrobes, homes, and workplaces."
+      "Garment care and cleaning for homes and offices."
     ),
     hero_title_i18n:
       source.hero_title_i18n && typeof source.hero_title_i18n === "object"
@@ -79,7 +79,7 @@ export function normalizeCareSettings(input?: SettingsSource): CareSettingsRecor
         : asNullableText(source.hero_title_i18n),
     hero_subtitle: asText(
       source.hero_subtitle,
-      "Book pickup, cleaning, and recurring upkeep through one polished system with clearer status, calmer support, and better follow-through."
+      "Book pickup, cleaning, and recurring upkeep in one place."
     ),
     hero_subtitle_i18n:
       source.hero_subtitle_i18n && typeof source.hero_subtitle_i18n === "object"
@@ -92,7 +92,7 @@ export function normalizeCareSettings(input?: SettingsSource): CareSettingsRecor
         : asNullableText(source.about_title_i18n),
     about_body: asText(
       source.about_body,
-      "Henry Onyx Care is structured to keep booking, dispatch, execution, and support readable from the first request to the final handoff."
+      "One team for garment care, home cleaning, and office cleaning."
     ),
     about_body_i18n:
       source.about_body_i18n && typeof source.about_body_i18n === "object"

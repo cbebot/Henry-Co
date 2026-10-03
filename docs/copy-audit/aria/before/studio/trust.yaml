@@ -1,0 +1,161 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Ftrust
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Trust & transparency
+  - heading "Confidence at every stage. In writing, in the workspace, in the bank." [level=1]
+  - paragraph: Scope clarity, milestone visibility, secure file handling, payment checkpoints, and accountable communication — structured so you always know what is happening and what comes next.
+  - paragraph: Four operating principles
+  - list:
+    - listitem:
+      - heading "Protected controls" [level=2]
+      - paragraph: Sensitive actions stay behind secure access controls.
+    - listitem:
+      - heading "Milestone visibility" [level=2]
+      - paragraph: Payments and delivery checkpoints stay visible to the client.
+    - listitem:
+      - heading "Structured proposals" [level=2]
+      - paragraph: Every enquiry becomes a formal proposal with clear scope, pricing, and timelines.
+    - listitem:
+      - heading "Premium quality" [level=2]
+      - paragraph: Every surface is designed to feel considered, modern, and worthy of your investment.
+  - paragraph: Trust signals
+  - heading "What stays visible from brief to bank." [level=2]
+  - list:
+    - listitem: Real project requests are captured with structured business and scope detail, not a shallow lead form.
+    - listitem: Proposals show investment, milestones, delivery logic, and deposit structure in one clear view.
+    - listitem: Files, revisions, messages, and approvals can live inside the same delivery surface instead of being scattered.
+    - listitem: Access to proposals, files, approvals, and payment steps is protected through secure links and account-aware checks.
+    - listitem: Henry Onyx account history is designed to keep proposals, projects, payments, documents, and support context in one place.
+  - paragraph: Client confidence
+  - heading "What clients actually say." [level=2]
+  - list:
+    - listitem:
+      - paragraph: “Studio made us look like the level of company we were already trying to become. The difference in trust and sales confidence was immediate.”
+      - paragraph: Managing Director, Professional Services Firm
+    - listitem:
+      - paragraph: “The operations platform work mattered just as much as the front-end polish. We finally had one place to track what was happening across the business.”
+      - paragraph: Operations Lead, Multi-Service Business
+    - listitem:
+      - paragraph: “The storefront felt more deliberate, more expensive, and much easier for customers to buy from. That changed how the business was perceived.”
+      - paragraph: Founder, Premium Commerce Brand
+  - paragraph: Why clients choose Henry Onyx
+  - list:
+    - listitem:
+      - heading "Typical agency flow" [level=3]
+      - list:
+        - listitem: A vague inquiry form with almost no commercial context.
+        - listitem: Pricing hidden inside a private conversation after too much back-and-forth.
+        - listitem: Project status scattered across WhatsApp, email, and disconnected files.
+    - listitem:
+      - heading "Henry Onyx Studio flow" [level=3]
+      - list:
+        - listitem: A structured buying path for both packages and serious custom work.
+        - listitem: Proposal, milestones, updates, and payment checkpoints visible in one connected workspace.
+        - listitem: A cleaner delivery model for clients, sales, PM, finance, support, and delivery teams.
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

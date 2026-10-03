@@ -1,0 +1,171 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Logistics":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Logistics
+  - navigation:
+    - link "Services":
+      - /url: /services
+    - link "Pricing":
+      - /url: /pricing
+    - link "Coverage":
+      - /url: /coverage
+    - link "Business":
+      - /url: /business
+    - link "Track":
+      - /url: /track
+    - link "Support":
+      - /url: /support
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Flogistics.henryonyx.com%2Fbusiness
+  - link "Book a pickup":
+    - /url: /book
+- main:
+  - main:
+    - paragraph: For operators
+    - heading "Built for operators." [level=1]
+    - paragraph: The same pickup, tracking, and proof discipline runs across every shipment we move. Business shippers get predictable pricing, milestone visibility, proof-of-delivery discipline, and the shared Henry Onyx account for receipts, notifications, and support history.
+    - link "Quote a real lane":
+      - /url: /quote
+    - link "Open logistics in account":
+      - /url: https://account.henryonyx.com/logistics
+    - link "Compare service tiers":
+      - /url: /services
+    - list:
+      - listitem: Pricing Governed, traceable per lane
+      - listitem: Visibility Milestones + POD per shipment
+      - listitem: Continuity Saved lanes, contacts, profiles
+    - paragraph: Three operating standards
+    - list:
+      - listitem:
+        - heading "Repeat lanes without rebuilding paperwork" [level=2]
+        - paragraph: Saved pickup and delivery pairs, common contacts, and parcel profiles carry forward — drivers see the same instructions across every booking.
+      - listitem:
+        - heading "Escalations with audit-friendly history" [level=2]
+        - paragraph: "Issues become structured records: who reported, what changed, when dispatch acted. Finance and operations read from the same trail."
+      - listitem:
+        - heading "Quality that holds under operational stress" [level=2]
+        - paragraph: Difficult lanes, partial deliveries, and rerouting still surface clean milestones to the recipient — quality holds even when routing gets noisy.
+    - paragraph: How it scales after the first lane
+    - list:
+      - listitem:
+        - text: Step 01
+        - heading "Quote a representative lane" [level=3]
+        - paragraph: Use the public quote to get a real number for your most common origin–destination pair, then we calibrate from there.
+      - listitem:
+        - text: Step 02
+        - heading "Open the account hub" [level=3]
+        - paragraph: Inside your Henry Onyx account, the logistics workspace keeps your receipts, milestone history, and delivery notifications in one place.
+      - listitem:
+        - text: Step 03
+        - heading "Run the volume" [level=3]
+        - paragraph: Repeat bookings reuse saved profiles. Tracking codes are issued on booking; proof-of-delivery records attach to the right invoice.
+      - listitem:
+        - text: Step 04
+        - heading "Reconcile cleanly" [level=3]
+        - paragraph: Each shipment carries to one statement with the lane, service tier, and any handling line items — no “misc” surprises.
+    - paragraph: Best for
+    - list:
+      - listitem: Retail and DTC brands replenishing stock or fulfilling repeat orders across the same metro lanes.
+      - listitem: Professional services moving documents, samples, or kit on a predictable rhythm.
+      - listitem: Henry Onyx divisions and partners coordinating internal handoffs without ad-hoc paperwork.
+    - paragraph: Not a fit yet
+    - list:
+      - listitem: Cold-chain or temperature-controlled freight requiring specialised containers — let us know in advance and we’ll route accordingly.
+      - listitem: International cross-border movements — domestic lanes are the published service surface today.
+      - listitem: Hazardous-materials shipments — not available through online booking. Contact the business desk to discuss options.
+    - paragraph: Ready to talk volume?
+    - heading "Send a representative quote — we’ll respond with a realistic operating picture." [level=2]
+    - paragraph: Quote → confirm the lanes → open the account hub. No sales theatre, no paperwork wall.
+    - link "Quote a lane":
+      - /url: /quote
+    - link "Talk to dispatch":
+      - /url: /support
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Reliable pickup, delivery, and fulfilment — clear quotes, live tracking, and proof of delivery from request to doorstep.
+  - link "logistics@henryonyx.com":
+    - /url: mailto:logistics@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Move":
+    - paragraph: Move
+    - list:
+      - listitem:
+        - link "Book a pickup":
+          - /url: /book
+      - listitem:
+        - link "Get a quote":
+          - /url: /quote
+      - listitem:
+        - link "Track a shipment":
+          - /url: /track
+      - listitem:
+        - link "Coverage":
+          - /url: /coverage
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Pricing":
+          - /url: /pricing
+      - listitem:
+        - link "For business":
+          - /url: /business
+      - listitem:
+        - link "Support":
+          - /url: /support
+  - navigation "Henry Onyx":
+    - paragraph: Henry Onyx
+    - list:
+      - listitem:
+        - link "Group hub":
+          - /url: https://henryonyx.com/
+      - listitem:
+        - link "Preferences":
+          - /url: https://henryonyx.com/preferences
+      - listitem:
+        - link "Privacy":
+          - /url: https://henryonyx.com/privacy
+      - listitem:
+        - link "Terms":
+          - /url: https://henryonyx.com/terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Logistics.
+- button "How can we help? — Need help?": Help
+- alert

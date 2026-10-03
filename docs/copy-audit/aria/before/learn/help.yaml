@@ -1,0 +1,131 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Learn":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Learn
+  - navigation:
+    - link "Courses":
+      - /url: /courses
+    - link "Paths":
+      - /url: /paths
+    - link "Academy":
+      - /url: /academy
+    - link "Certificates":
+      - /url: /certifications
+    - link "Teach":
+      - /url: /teach
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Flearn.henryonyx.com%2Fhelp
+  - link "Explore courses":
+    - /url: /courses
+- main:
+  - paragraph: Help
+  - heading "Stuck? We unblock fast." [level=1]
+  - paragraph: Send a note about certificates, enrollment, assignments, or billing. Include your course name and account email so we can help without back-and-forth.
+  - paragraph: Send a message
+  - text: Subject
+  - textbox "e.g. Certificate not showing, can’t open lesson…"
+  - text: Message
+  - textbox "What were you trying to do, what happened instead, and any error text you saw?"
+  - button "Send message"
+  - paragraph: Quick answers
+  - list:
+    - listitem:
+      - heading "How do I continue a course?" [level=3]
+      - paragraph:
+        - text: Open
+        - link "Learn → Active":
+          - /url: https://account.henryonyx.com/learn?panel=active
+        - text: in your Henry Onyx account, or go back to the course page and open your learning room.
+    - listitem:
+      - heading "When do I get a certificate?" [level=3]
+      - paragraph:
+        - text: Only some courses award one. Finish every required lesson and meet any quiz rules; your learning room shows a checklist. Then download from the room or view under
+        - link "Certificates":
+          - /url: https://account.henryonyx.com/learn?panel=certificates
+        - text: in your account.
+    - listitem:
+      - heading "Can my manager assign training?" [level=3]
+      - paragraph: Yes. Assigned programs appear in your account under Learn → Assignments while you complete them in the usual learning room.
+  - link "Open Learn in account":
+    - /url: https://account.henryonyx.com/learn
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Practical courses, clear progress, and verified certificates — learn on your schedule and resume anytime from your Henry Onyx account.
+  - link "learn@henryonyx.com":
+    - /url: mailto:learn@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Explore":
+    - paragraph: Explore
+    - list:
+      - listitem:
+        - link "Courses":
+          - /url: /courses
+      - listitem:
+        - link "Paths":
+          - /url: /paths
+      - listitem:
+        - link "How it works":
+          - /url: /academy
+      - listitem:
+        - link "Certificates":
+          - /url: /certifications
+  - navigation "Engage":
+    - paragraph: Engage
+    - list:
+      - listitem:
+        - link "Teach with Henry Onyx":
+          - /url: /teach
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/learn
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

@@ -1,0 +1,130 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Learn":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Learn
+  - navigation:
+    - link "Courses":
+      - /url: /courses
+    - link "Paths":
+      - /url: /paths
+    - link "Academy":
+      - /url: /academy
+    - link "Certificates":
+      - /url: /certifications
+    - link "Teach":
+      - /url: /teach
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Flearn.henryonyx.com%2Facademy%2Fseller
+  - link "Explore courses":
+    - /url: /courses
+- main:
+  - paragraph: Seller Academy
+  - heading "Become the kind of seller buyers trust" [level=2]
+  - paragraph: A focused track for marketplace sellers. Finish verified courses, sell well, and earn a tier that shows on your profile and listings — every tier is derived from real completions and real performance, never self-assigned.
+  - text: Seller tier Bronze seller Silver seller Gold seller
+  - link "Enrol":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Flearn.henryonyx.com%2Facademy%2Fseller
+  - link "View course":
+    - /url: /courses
+  - paragraph: How it works
+  - list:
+    - listitem:
+      - text: "01"
+      - heading "Learn the craft" [level=3]
+      - paragraph: Three verified courses take you from storefront setup to premium operations. Completion is recorded against your enrolment — there is no self-marking.
+    - listitem:
+      - text: "02"
+      - heading "Sell with quality" [level=3]
+      - paragraph: Your delivered orders and customer ratings feed your tier alongside your course progress. Consistency is what moves you up.
+    - listitem:
+      - text: "03"
+      - heading "Earn your tier" [level=3]
+      - paragraph: Bronze, Silver, and Gold appear on your business profile and your listings, signalling trust to buyers at a glance.
+  - paragraph: The Seller Academy track
+  - heading "The Seller Academy track" [level=2]
+  - paragraph: Complete the track in order — each level builds on the one before.
+  - heading "Seller Academy courses are being prepared. Check back shortly." [level=3]
+  - paragraph: A focused track for marketplace sellers. Finish verified courses, sell well, and earn a tier that shows on your profile and listings — every tier is derived from real completions and real performance, never self-assigned.
+  - link "View course":
+    - /url: /courses
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Practical courses, clear progress, and verified certificates — learn on your schedule and resume anytime from your Henry Onyx account.
+  - link "learn@henryonyx.com":
+    - /url: mailto:learn@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Explore":
+    - paragraph: Explore
+    - list:
+      - listitem:
+        - link "Courses":
+          - /url: /courses
+      - listitem:
+        - link "Paths":
+          - /url: /paths
+      - listitem:
+        - link "How it works":
+          - /url: /academy
+      - listitem:
+        - link "Certificates":
+          - /url: /certifications
+  - navigation "Engage":
+    - paragraph: Engage
+    - list:
+      - listitem:
+        - link "Teach with Henry Onyx":
+          - /url: /teach
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/learn
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

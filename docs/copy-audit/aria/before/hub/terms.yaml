@@ -1,0 +1,421 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx
+  - navigation:
+    - link "Directory":
+      - /url: /#directory
+    - link "About":
+      - /url: /about
+    - link "Contact":
+      - /url: /contact
+  - link "Search Henry Onyx":
+    - /url: /search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fterms
+  - link "Explore divisions":
+    - /url: /#divisions
+- main:
+  - paragraph: Federal Republic of Nigeria · v1.0
+  - heading "Terms and Conditions" [level=1]
+  - paragraph: These terms govern access to and use of every Henry Onyx surface and service. They are written under the laws of the Federal Republic of Nigeria, with arbitration seated in Lagos, Nigeria under the Arbitration and Mediation Act 2023. Statute citations are explicit; reject-list phrasing like "in accordance with applicable law" is avoided.
+  - link "Privacy Policy":
+    - /url: /privacy
+  - link "Contact the company":
+    - /url: /contact
+  - term: Updated
+  - definition: Recently updated
+  - term: Section
+  - definition: "Governing law: Federal Republic of Nigeria · Effective 2026-05-14 · v1.0"
+  - term: Standard
+  - definition: Corporate-grade
+  - term: Effective
+  - definition: 2026-05-14
+  - term: Version
+  - definition: v1.0
+  - term: Governing law
+  - definition: Federal Republic of Nigeria
+  - paragraph: Some content may still be refreshing.
+  - paragraph: 1. Acceptance and capacity
+  - heading "Acceptance and legal capacity" [level=2]
+  - paragraph: Use of any Henry Onyx surface constitutes acceptance of these terms. The user must be at least 18 years old and have the legal capacity to enter a binding contract under Nigerian law. Where the user acts on behalf of an entity, the user warrants authority to bind that entity.
+  - paragraph: "— In plain English: By using the platform you agree to these terms. You must be 18+, and if you sign up for a company you must have permission to sign for that company."
+  - heading "Minimum age" [level=3]
+  - paragraph: 18 years
+  - heading "Capacity" [level=3]
+  - paragraph: Legal capacity under Nigerian law
+  - heading "Acting for an entity" [level=3]
+  - paragraph: User warrants authority to bind
+  - paragraph: 2. The platform
+  - heading "What the divisions provide" [level=2]
+  - paragraph: Henry Onyx operates seven divisions on one platform. Each division has a defined market and a defined contract. Use of a division is bound by both these group-level terms and any division-specific service contract presented at checkout or onboarding.
+  - paragraph: "— In plain English: Henry Onyx is a group with seven divisions. These terms cover the group; each division can add its own service terms on top."
+  - heading "Henry Onyx Logistics" [level=3]
+  - paragraph: Henry Onyx Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.
+  - heading "Henry Onyx Fabric Care" [level=3]
+  - paragraph: Premium garment care, home cleaning, office cleaning, and pickup delivery with clear booking, dependable timing, and polished follow-through.
+  - heading "Henry Onyx Property" [level=3]
+  - paragraph: Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations into one editorial, high-conviction platform.
+  - heading "Henry Onyx Marketplace" [level=3]
+  - paragraph: Premium multi-vendor commerce with cleaner discovery, stronger trust signals, vendor accountability, and operational clarity across buyers, sellers, and Henry Onyx teams.
+  - heading "Henry Onyx Jobs" [level=3]
+  - paragraph: Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one premium operating system.
+  - heading "Henry Onyx Learn" [level=3]
+  - paragraph: Browse structured programs, learn at your own pace, pass short assessments where required, and earn Henry Onyx certificates with a public verification code. Your enrollments and progress also appear in your Henry Onyx account dashboard.
+  - heading "Henry Onyx Studio" [level=3]
+  - paragraph: Henry Onyx Studio designs and delivers websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software with premium process, milestone visibility, and operational clarity.
+  - paragraph: 3. Accounts
+  - heading "Account responsibility" [level=2]
+  - paragraph: One account per natural person or entity, used across every division. The user is responsible for keeping credentials confidential and for activity under the account. Suspicious activity should be reported promptly to the security inbox so the trust-flag system can act.
+  - paragraph: "— In plain English: One account covers all divisions. Keep your password private, and tell us fast if something looks wrong."
+  - heading "Account model" [level=3]
+  - paragraph: One account per person or entity, all divisions
+  - heading "Credentials" [level=3]
+  - paragraph: User responsibility
+  - heading "Report incidents" [level=3]
+  - paragraph: security@henryonyx.com
+  - paragraph: 4. Payment, fees, refunds
+  - heading "Payment and refunds per division" [level=2]
+  - paragraph: Each division has a specific payment, fee, and refund position. Refund rights under the Federal Competition and Consumer Protection Act 2018 are non-derogable for consumer transactions; division-specific terms add the operational detail.
+  - paragraph: "— In plain English: Each division has its own refund rule. The Federal Competition and Consumer Protection Act 2018 sets the consumer floor we cannot lower."
+  - heading "Marketplace" [level=3]
+  - paragraph: Refunds under FCCPA 2018 §122 and §123 (defective or non-conforming goods). Returns within the window posted on the listing.
+  - heading "Logistics" [level=3]
+  - paragraph: Failed-delivery refund per service contract; proof-of-delivery and claim window posted at checkout.
+  - heading "Fabric Care" [level=3]
+  - paragraph: Service-incident refund per service contract; damage claim window posted at booking.
+  - heading "Studio" [level=3]
+  - paragraph: Milestone-based release. Refund only on undelivered milestones; delivered work is non-refundable subject to revisions allowance in the proposal.
+  - heading "Property" [level=3]
+  - paragraph: Agent-only fees are paid on tenancy formation or transaction close. Managed-property terms (where engaged) are signed separately.
+  - heading "Jobs" [level=3]
+  - paragraph: Employer pays. Candidates pay nothing for listings or applications. Premium candidate services are optional and priced before purchase.
+  - heading "Learn" [level=3]
+  - paragraph: "Course refund window: 7 days from enrolment, unused content only. Completion certificates are non-refundable."
+  - paragraph: 5. Vendor and operator KYC
+  - heading "KYC required before payout" [level=2]
+  - paragraph: Vendors and operators (logistics riders, care providers, marketplace sellers, property landlords, learn instructors, studio creatives, jobs employers) complete identity verification (NIN and BVN where applicable), bank-account verification, and any role-specific licensing before payout. KYC documents are retained for 5 years after account closure under the CBN AML/CFT Regulations 2022 and the Money Laundering (Prevention and Prohibition) Act 2022.
+  - paragraph: "— In plain English: Anyone earning money on the platform must verify identity and bank details before they can be paid."
+  - heading "Identity" [level=3]
+  - paragraph: NIN and BVN where applicable
+  - heading "Bank" [level=3]
+  - paragraph: Bank-account verification before payout
+  - heading "Driver" [level=3]
+  - paragraph: CBN AML/CFT Regulations 2022 + MLPPA 2022
+  - heading "Retention" [level=3]
+  - paragraph: 5 years after account closure
+  - paragraph: 6. Intellectual property
+  - heading "Ownership of content and brand" [level=2]
+  - paragraph: Users retain ownership of content they upload (listings, briefs, photos, messages). By uploading, the user grants Henry Onyx a limited, worldwide, royalty-free, non-exclusive licence to host, transmit, display, and operate the content for service delivery. The licence ends when the content is deleted, subject to legal-hold exceptions in the Privacy Policy. Henry Onyx retains all rights in its trade marks, logos, code, and product designs.
+  - paragraph: "Takedown requests: under the Copyright Act 2022 (Nigeria) §43 (notice-and-takedown), copyright holders may serve a notice on legal@henryonyx.com. The notice must identify the work, the infringing material, and contact details, and include a good-faith statement of belief. Counter-notices follow the same route."
+  - paragraph: "— In plain English: You keep your stuff; we get permission to show it while you use the platform. Henry Onyx owns the brand. Copyright takedowns go to legal@henryonyx.com."
+  - heading "User content" [level=3]
+  - paragraph: User retains ownership; Henry Onyx licence for service delivery
+  - heading "Brand IP" [level=3]
+  - paragraph: Retained by Henry Onyx
+  - heading "Takedown route" [level=3]
+  - paragraph: legal@henryonyx.com
+  - heading "Statute" [level=3]
+  - paragraph: Copyright Act 2022 (Nigeria) §43
+  - paragraph: 7. Prohibited use
+  - heading "Conduct that is not allowed" [level=2]
+  - paragraph: Prohibited conduct includes unauthorised access, intercepting traffic, reverse-engineering, scraping at volume, distributing malware, fraud, and harassment. Conduct of this kind is also a criminal offence under the Cybercrimes (Prohibition, Prevention, etc.) Act 2015 §6 (unauthorised access), §13 (interception), §14 (fraud), §22 (identity theft), among others. The platform cooperates with the Nigeria Computer Emergency Response Team (ngCERT) and the NPF Cybercrime Unit where required.
+  - paragraph: "— In plain English: Do not hack, scrape, defraud, or harass. These are crimes under the Cybercrimes Act, not just a terms violation."
+  - heading "Unauthorised access" [level=3]
+  - paragraph: Cybercrimes Act 2015 §6.
+  - heading "Interception" [level=3]
+  - paragraph: Cybercrimes Act 2015 §13.
+  - heading "Computer-related fraud" [level=3]
+  - paragraph: Cybercrimes Act 2015 §14.
+  - heading "Identity theft" [level=3]
+  - paragraph: Cybercrimes Act 2015 §22.
+  - heading "Scraping at volume" [level=3]
+  - paragraph: Automated retrieval beyond reasonable use; rate-limiting and trust-flag suspension apply.
+  - heading "Malware distribution" [level=3]
+  - paragraph: Strictly prohibited; reported to ngCERT.
+  - paragraph: 8. Trust signals
+  - heading "What trust badges mean and do not mean" [level=2]
+  - paragraph: Trust badges (Verified, KYC complete, Active in good standing) are operational signals based on verifiable inputs (identity verification, transaction history, dispute outcome). They reduce risk; they are not a financial guarantee, an insurance product, or a warranty by Henry Onyx of any specific outcome.
+  - paragraph: "— In plain English: Verified means we checked something specific. It is a useful signal, not a money-back promise."
+  - heading "What badges signal" [level=3]
+  - paragraph: Verifiable inputs (KYC, history, dispute record)
+  - heading "What badges do not signal" [level=3]
+  - paragraph: Insurance, guarantee, or warranty of outcomes
+  - paragraph: 9. Communications and consent
+  - heading "WhatsApp, email, push, SMS" [level=2]
+  - paragraph: Transactional notifications (order updates, payout receipts, security alerts) are sent by email, WhatsApp, push, or SMS where the user has provided the channel. Marketing communication is sent only with consent under NDPA §25(1)(a). Opt-out controls in account settings and in every marketing message are visually equivalent to opt-in controls; no dark patterns. Opt-out is honoured within 7 days, with a 90-day suppression window before deletion per the Privacy Policy retention table.
+  - paragraph: "— In plain English: We send order updates on the channels you give us. Marketing only with your yes, and you can say no the same easy way you said yes."
+  - heading "Transactional" [level=3]
+  - paragraph: "Contract basis; channels: email, WhatsApp, push, SMS"
+  - heading "Marketing" [level=3]
+  - paragraph: Consent basis under NDPA §25(1)(a)
+  - heading "Opt-out honoured within" [level=3]
+  - paragraph: 7 days
+  - paragraph: 10. Limitation of liability
+  - heading "What the platform is liable for" [level=2]
+  - paragraph: Consumer rights under the Federal Competition and Consumer Protection Act 2018 §128 are non-derogable and apply in full; nothing in this clause limits a right that cannot be limited under Nigerian law. Outside that non-derogable floor, total aggregate liability under or in connection with these terms is limited to the fees the customer paid to the relevant Henry Onyx division in the 12 months preceding the event giving rise to the claim. Indirect, consequential, and punitive damages are excluded.
+  - paragraph: "— In plain English: Your consumer rights under Nigerian law cannot be reduced. Beyond that, our maximum liability is what you paid us in the last 12 months."
+  - heading "Non-derogable floor" [level=3]
+  - paragraph: FCCPA 2018 §128 consumer rights
+  - heading "Liability cap (above floor)" [level=3]
+  - paragraph: 12 months of fees paid to the relevant division
+  - heading "Excluded damages" [level=3]
+  - paragraph: Indirect, consequential, punitive
+  - paragraph: 11. Indemnity
+  - heading "User indemnity" [level=2]
+  - paragraph: The user indemnifies Henry Onyx against third-party claims arising from the user's breach of these terms, infringement of a third-party right, or unlawful use of the platform. The indemnity does not extend to claims caused by the platform's own breach of law or contract.
+  - paragraph: "— In plain English: If your misuse causes someone else to sue us, you cover that cost. If we are the ones at fault, you do not."
+  - heading "Indemnity scope" [level=3]
+  - paragraph: Third-party claims from user breach or unlawful use
+  - heading "Carve-out" [level=3]
+  - paragraph: Platform's own breach of law or contract
+  - paragraph: 12. Termination
+  - heading "Account closure and suspension" [level=2]
+  - paragraph: Either party may terminate by notice. Henry Onyx may suspend or terminate immediately for material breach, fraud, sanctions hit, or court order. On termination, balances are settled according to division payout schedules; KYC and transaction records are retained per the Privacy Policy retention table.
+  - paragraph: "— In plain English: You can close your account; we can close it for serious problems. Money owed is paid out per the division rules. Required records are kept for the legal retention period."
+  - heading "By either party" [level=3]
+  - paragraph: On notice
+  - heading "Immediate termination grounds" [level=3]
+  - paragraph: Material breach, fraud, sanctions, court order
+  - heading "Balances on termination" [level=3]
+  - paragraph: Settled per division payout schedule
+  - paragraph: 13. Changes to terms
+  - heading "How changes are made" [level=2]
+  - paragraph: Material changes to these terms are emailed to account holders 14 days before they take effect and the version number is bumped. Continued use after the effective date is acceptance. Minor edits (typos, citation corrections) are made without notice.
+  - paragraph: "— In plain English: Important changes get 14 days notice by email, and the version goes up. Tiny fixes are silent."
+  - heading "Material-change notice" [level=3]
+  - paragraph: 14 days by email
+  - heading "Version bump" [level=3]
+  - paragraph: Required for material change
+  - paragraph: 14. International users
+  - heading "Use from outside Nigeria" [level=2]
+  - paragraph: These terms apply to every user regardless of location, subject to mandatory rights under the user's home jurisdiction (named in Privacy Policy section 8). Users access the platform on their own initiative; local laws on import, currency, tax, and content remain the user's responsibility.
+  - paragraph: "— In plain English: These terms apply everywhere we operate, but your country's mandatory consumer protections still cover you."
+  - heading "Application" [level=3]
+  - paragraph: Globally, subject to mandatory local rights
+  - heading "User responsibility" [level=3]
+  - paragraph: Local import, currency, tax, content rules
+  - paragraph: 15. Cross-border commerce
+  - heading "Goods and services across borders" [level=2]
+  - paragraph: Cross-border orders and services may attract customs duties, import VAT, and conversion fees that are the user's responsibility. The platform displays prices in the user's locale currency at a snapshot FX rate; settlement is recorded in Nigerian Naira under the multi-currency foundation, with the displayed currency archived for reference.
+  - paragraph: "— In plain English: If you buy across a border, you may owe duty and tax in your country. We show prices in your currency; the books are kept in Naira."
+  - heading "Customs and import VAT" [level=3]
+  - paragraph: User responsibility
+  - heading "Price display" [level=3]
+  - paragraph: Locale currency at snapshot FX
+  - heading "Settlement" [level=3]
+  - paragraph: Nigerian Naira (NGN) with displayed currency archived
+  - paragraph: 16. Currency and pricing
+  - heading "Currency, pricing, and FX" [level=2]
+  - paragraph: Prices may be quoted in Nigerian Naira (NGN), United States Dollar (USD), Great British Pound (GBP), Euro (EUR), or another supported currency at the user's locale. FX snapshots are recorded at checkout; subsequent FX movement does not change the recorded price. Taxes and division-specific fees are disclosed before payment.
+  - paragraph: "— In plain English: We show prices in your currency. The rate is locked when you check out. All taxes and fees appear before you confirm."
+  - heading "Supported currencies" [level=3]
+  - paragraph: NGN, USD, GBP, EUR, plus locale-supported others
+  - heading "FX behaviour" [level=3]
+  - paragraph: Snapshot at checkout, archived
+  - heading "Tax and fee disclosure" [level=3]
+  - paragraph: Before payment confirmation
+  - paragraph: 17. Sanctions and prohibited jurisdictions
+  - heading "Where the platform does not operate" [level=2]
+  - paragraph: "Henry Onyx does not service comprehensively sanctioned jurisdictions: Cuba; Iran; North Korea (DPRK); Syria; Non-government-controlled areas of Ukraine (Crimea, Donetsk, Luhansk, Kherson, Zaporizhzhia). Users on a sanctions list (OFAC, EU consolidated, UN, HMT) may not use the platform. Trust-flag screening enforces this in addition to bank-level sanctions screening."
+  - paragraph: "— In plain English: We do not work with people or places under comprehensive international sanctions."
+  - heading "Prohibited jurisdiction" [level=3]
+  - paragraph: Cuba
+  - heading "Prohibited jurisdiction" [level=3]
+  - paragraph: Iran
+  - heading "Prohibited jurisdiction" [level=3]
+  - paragraph: North Korea (DPRK)
+  - heading "Prohibited jurisdiction" [level=3]
+  - paragraph: Syria
+  - heading "Prohibited jurisdiction" [level=3]
+  - paragraph: Non-government-controlled areas of Ukraine (Crimea, Donetsk, Luhansk, Kherson, Zaporizhzhia)
+  - paragraph: 18. Tax
+  - heading "Tax handling" [level=2]
+  - paragraph: VAT applies under the Value Added Tax Act on taxable supplies in Nigeria at the prevailing rate. State consumption taxes (where applicable) are added at checkout. Vendors are responsible for their own income-tax obligations on payouts received; the platform issues payout statements suitable for vendor tax filings. International users are responsible for tax obligations in their home jurisdiction.
+  - paragraph: "— In plain English: We charge Nigerian VAT where the law says we must. Vendors handle their own income tax. International users handle their own home-country tax."
+  - heading "Nigerian VAT" [level=3]
+  - paragraph: Charged on taxable supplies under the VAT Act
+  - heading "State consumption tax" [level=3]
+  - paragraph: Added at checkout where applicable
+  - heading "Vendor income tax" [level=3]
+  - paragraph: Vendor responsibility; payout statements available
+  - heading "International tax" [level=3]
+  - paragraph: User responsibility in home jurisdiction
+  - paragraph: 19. Governing law and arbitration
+  - heading "Disputes are resolved in Lagos" [level=2]
+  - paragraph: "These terms are governed by the laws of the Federal Republic of Nigeria. Disputes are referred to arbitration seated in Lagos, Nigeria under the Arbitration and Mediation Act 2023, administered by the Lagos Court of Arbitration (LCA) or Lagos Multi-Door Courthouse. One (single arbitrator). Language: English. Either party retains the right to seek interim or injunctive relief from the Courts of Lagos State and the Federal High Court of Nigeria."
+  - paragraph: "— In plain English: Nigerian law applies. Disputes go to a single arbitrator in Lagos under the 2023 arbitration law. Either side can still go to court for urgent injunctions."
+  - heading "Governing law" [level=3]
+  - paragraph: Federal Republic of Nigeria
+  - heading "Seat of arbitration" [level=3]
+  - paragraph: Lagos, Nigeria
+  - heading "Administrator" [level=3]
+  - paragraph: Lagos Court of Arbitration (LCA) or Lagos Multi-Door Courthouse
+  - heading "Language" [level=3]
+  - paragraph: English
+  - heading "Arbitrators" [level=3]
+  - paragraph: One (single arbitrator)
+  - heading "Injunctive courts" [level=3]
+  - paragraph: Courts of Lagos State and the Federal High Court of Nigeria
+  - paragraph: 20. International dispute resolution
+  - heading "Mandatory local rights preserved" [level=2]
+  - paragraph: Where mandatory law in the user's home jurisdiction confers a non-derogable right to bring proceedings in a local court or before a local regulator, this clause does not limit that right. International users may also use their home data-protection regulator (named in Privacy Policy section 8) for privacy-specific complaints.
+  - paragraph: "— In plain English: If your country gives you a right to sue locally that cannot be signed away, that right still applies."
+  - heading "Mandatory rights" [level=3]
+  - paragraph: Preserved where local law makes them non-derogable
+  - heading "Privacy complaints" [level=3]
+  - paragraph: Home regulator per Privacy Policy section 8
+  - paragraph: 21. International notice
+  - heading "Service of process across borders" [level=2]
+  - paragraph: Notices to Henry Onyx are served by email to legal@henryonyx.com and (for formal service of process) by registered courier to the registered office. Notices to a user are served to the email and phone number on the account. International service of process is supplemented by the Hague Service Convention where applicable.
+  - paragraph: "— In plain English: Send formal notices to legal@henryonyx.com and the registered office. We send formal notices to your account contact details."
+  - heading "Notice to Henry Onyx (email)" [level=3]
+  - paragraph: legal@henryonyx.com
+  - heading "Notice to Henry Onyx (courier)" [level=3]
+  - paragraph: Emene, Enugu State (registered office)
+  - heading "Notice to user" [level=3]
+  - paragraph: Account email and phone
+  - heading "Cross-border supplement" [level=3]
+  - paragraph: Hague Service Convention where applicable
+  - paragraph: 22. Miscellaneous
+  - heading "Severability, entire agreement, assignment, force majeure" [level=2]
+  - paragraph: "If a clause is held unenforceable, the rest of these terms continues in force. These terms (with the Privacy Policy, division-specific terms, and any signed addendum) are the entire agreement between the parties on this subject. The user may not assign without consent; Henry Onyx may assign to a successor in a merger or acquisition. Performance is excused for events beyond reasonable control (force majeure: natural disaster, war, civil unrest, lawful government action, ISP outage, sustained DDoS)."
+  - paragraph: "— In plain English: One bad clause does not kill the rest. These pages are the full agreement. You cannot transfer your account without our okay; we can transfer if the company is sold. Acts of God do not break the contract."
+  - heading "Severability" [level=3]
+  - paragraph: Unenforceable clause excised; rest continues
+  - heading "Entire agreement" [level=3]
+  - paragraph: These terms + Privacy + division terms + signed addenda
+  - heading "Assignment" [level=3]
+  - paragraph: "User: with consent; Henry Onyx: to successor on merger or acquisition"
+  - heading "Force majeure" [level=3]
+  - paragraph: Performance excused for events beyond reasonable control
+  - paragraph: 23. Notices
+  - heading "Routine notices and announcements" [level=2]
+  - paragraph: Routine product notices (release notes, scheduled maintenance, status incidents) are posted on the platform and emailed where material. Status incidents are also posted to status.henryonyx.com where the user can subscribe to email or RSS updates.
+  - paragraph: "— In plain English: Day-to-day announcements appear in-product and by email; status pages give live updates you can subscribe to."
+  - heading "Product notices" [level=3]
+  - paragraph: In-product banner + email
+  - heading "Status incidents" [level=3]
+  - paragraph: Status page + email or RSS subscription
+  - paragraph: 24. Contact
+  - heading "How to reach the company" [level=2]
+  - paragraph: For terms-related correspondence, use the legal inbox. For privacy questions, use the privacy inbox. For general support, use the division support inbox (faster), or the group hello inbox.
+  - paragraph: "— In plain English: Legal questions to legal@henryonyx.com. Privacy questions to privacy@henryonyx.com. Service questions to your division."
+  - heading "Legal" [level=3]
+  - paragraph: legal@henryonyx.com
+  - heading "Privacy" [level=3]
+  - paragraph: privacy@henryonyx.com
+  - heading "General" [level=3]
+  - paragraph: hello@henryonyx.com
+  - paragraph: 25. Effective date and version
+  - heading "Version and material change" [level=2]
+  - paragraph: Effective 2026-05-14 · version v1.0. Material changes are emailed to account holders 14 days before they take effect and the version is bumped. Continued use after the effective date is acceptance.
+  - paragraph: "— In plain English: We tell you 14 days before anything important changes, and the version number always goes up."
+  - heading "Effective" [level=3]
+  - paragraph: 2026-05-14
+  - heading "Version" [level=3]
+  - paragraph: v1.0
+  - heading "Material-change notice" [level=3]
+  - paragraph: 14 days, by email to account holders
+  - separator
+  - paragraph: Henry Onyx
+  - heading "The same operating standard our customers, partners, and teams trust." [level=2]
+  - paragraph: Every Henry Onyx company surface — about, contact, governance, policy — ships under one editorial standard so what you read in public matches what we hold ourselves to in private.
+  - term: Use case
+  - definition: Customers · Partners · Media
+  - term: Standard
+  - definition: Structured · Verified
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Henry Onyx provides a clear way to understand the company and reach the right business with confidence.
+  - link "hello@henryonyx.com":
+    - /url: mailto:hello@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "Divisions directory":
+    - paragraph: Divisions directory
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+      - listitem:
+        - link "Search":
+          - /url: /search
+      - listitem:
+        - link "The ecosystem":
+          - /url: /v3
+      - listitem:
+        - link "The earning map":
+          - /url: /v3/how-we-earn
+      - listitem:
+        - link "Press":
+          - /url: /press/v3
+  - navigation "Legal":
+    - paragraph: Legal
+    - list:
+      - listitem:
+        - link "Privacy":
+          - /url: /privacy
+      - listitem:
+        - link "Terms":
+          - /url: /terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- text: Experience preferences Choose how Henry Onyx stores settings on this device. Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled. Language
+- combobox:
+  - option "English (English)" [selected]
+  - option "Français (French)"
+  - option "Igbo (Igbo)"
+  - option "Yorùbá (Yoruba)"
+  - option "Hausa (Hausa)"
+  - option "العربية (Arabic)"
+  - option "Español (Spanish)"
+  - option "Português (Portuguese)"
+  - option "Deutsch (German)"
+  - option "Italiano (Italian)"
+  - option "中文 (Chinese)"
+  - option "हिन्दी (Hindi)"
+- paragraph: Applies across Henry Onyx sites that support your selection.
+- button "Essential only"
+- button "Customize"
+- button "Accept all"
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /preferences
+  - button "Continue"
+- alert

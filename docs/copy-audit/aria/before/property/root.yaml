@@ -1,0 +1,203 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Property":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Property
+  - navigation:
+    - link "Search":
+      - /url: /search
+    - link "Managed":
+      - /url: /managed
+    - link "Trust":
+      - /url: /trust
+    - link "Submit":
+      - /url: /submit
+    - link "FAQ":
+      - /url: /faq
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2F&division=property
+  - link "Browse listings":
+    - /url: /search
+- main:
+  - text: Vetted listings · Verified owners Inventory under review Henry Onyx Property · Inventory 2026
+  - heading "A property platform that respects your time, the listing, and the work that comes after move-in." [level=1]
+  - paragraph: Curated rentals, sale inventory, commercial spaces, and managed homes — every listing carries trust notes, a verified owner path, and a structured viewing flow. Intent first, paperwork when you need it.
+  - list:
+    - listitem:
+      - link "01 · Live in it Browse vetted homes for rent or sale Filter by area, price, managed status. Save listings, request viewings, message owners — all from your Henry Onyx account.":
+        - /url: /search
+    - listitem:
+      - 'link "02 · Own it without operating it Managed-property browse Henry Onyx continues to operate selected portfolios after move-in: viewings, screening, maintenance, and owner reporting on one ledger."':
+        - /url: /search?managed=1
+    - listitem:
+      - link "03 · List or steward it Submit a property for review Built for owners and agents. Inquiries land in your Henry Onyx inbox; managed support is available if you want Henry Onyx to handle the operating side.":
+        - /url: /submit
+  - text: Returning?
+  - link "Open your property activity":
+    - /url: https://account.henryonyx.com/property
+  - link "Track a viewing":
+    - /url: https://account.henryonyx.com/property?panel=viewings
+  - complementary:
+    - paragraph: Inventory snapshot
+    - term: Live listings
+    - definition: "0"
+    - term: Areas covered
+    - paragraph: Areas open as inventory clears review
+    - definition: "0"
+    - term: Managed portfolio
+    - definition: "0"
+    - term: Pending review
+    - paragraph: Listings clearing moderation before they go public
+    - definition: "0"
+    - paragraph: Refine the search
+    - text: Search
+    - textbox "Search":
+      - /placeholder: Ikoyi penthouse, serviced residence, office suite...
+    - text: Category
+    - combobox "Category":
+      - option "All categories" [selected]
+      - option "Residential rent"
+      - option "Residential sale"
+      - option "Commercial"
+      - option "Managed"
+      - option "Short-let"
+    - text: Area
+    - combobox "Area":
+      - option "All areas" [selected]
+    - button "Start a calm search"
+    - button "Reset filters" [disabled]
+    - checkbox "Managed only"
+    - text: Managed only
+    - checkbox "Furnished"
+    - text: Furnished
+    - paragraph: Filters stay in the URL so you can share the exact search or come back to it later.
+  - paragraph: Featured listings
+  - heading "Premium homes and workspaces with stronger context before the first viewing." [level=2]
+  - paragraph: The featured surface prioritizes better photography, clearer positioning, tighter moderation, and listings with higher-conviction next steps.
+  - link "View all listings":
+    - /url: /search
+  - paragraph: Featured surface · clearing review
+  - paragraph: The featured rail is empty by design while inventory clears moderation. New listings are reviewed for quality, owner verification, and trust posture before they’re elevated here.
+  - link "Browse all listings":
+    - /url: /search
+  - link "Submit a property":
+    - /url: /submit
+  - paragraph: Areas
+  - heading "Location pages that explain the market, not just the stock." [level=2]
+  - paragraph: Each area surface gives serious renters and buyers the market context, hotspots, and trust rails behind the shortlist.
+  - paragraph: Areas opening soon
+  - paragraph: Area ledger entries appear once at least one approved listing lands in moderation. Submit a listing to help the area become visible.
+  - paragraph: Differentiators
+  - heading "Designed to be calmer, tighter, and more operationally serious than a classified board." [level=2]
+  - paragraph: These are the product and operations choices that turn the platform into a trust surface, not just a listing dump.
+  - list:
+    - listitem:
+      - text: "01"
+      - paragraph: Trust passports on listings
+      - paragraph: Each premium listing carries verification, service, and readiness notes that reduce low-information browsing.
+    - listitem:
+      - text: "02"
+      - paragraph: Viewing confidence rails
+      - paragraph: The platform treats viewings like staged operations with backup slots, reminders, and agent accountability.
+    - listitem:
+      - text: "03"
+      - paragraph: Managed-property layer
+      - paragraph: Listings can move naturally into ongoing trust operations instead of ending at lead capture.
+    - listitem:
+      - text: "04"
+      - paragraph: Editorial listing moderation
+      - paragraph: Weak copy and weak media do not go live untouched; Henry Onyx improves the listing surface before release.
+  - paragraph: Managed-property services
+  - heading "A property platform that continues after marketing, inquiries, and move-in." [level=2]
+  - paragraph: Henry Onyx Property is designed to market, qualify, coordinate, and then keep operating selected properties through owner reporting, inspections, maintenance coordination, and ongoing trust services.
+  - list:
+    - listitem:
+      - text: "01"
+      - paragraph: Managed Property Trust Services
+      - paragraph: Henry Onyx can operate the property after it is listed, occupied, and handed over.
+      - list:
+        - listitem: Owner reporting
+        - listitem: Maintenance coordination
+        - listitem: Rent follow-up
+        - listitem: Viewing and inspection standards
+    - listitem:
+      - text: "02"
+      - paragraph: Listing Marketing and Positioning
+      - paragraph: Sharper presentation, stronger photography direction, and better inquiry conversion.
+      - list:
+        - listitem: Editorial listing copy
+        - listitem: Premium media sequencing
+        - listitem: Featured campaign placement
+        - listitem: Viewing-prep workflows
+    - listitem:
+      - text: "03"
+      - paragraph: Inquiry and Viewing Operations
+      - paragraph: Henry Onyx can handle response sequencing, screening, and viewing scheduling with calmer rigor.
+      - list:
+        - listitem: Lead triage
+        - listitem: Scheduling coordination
+        - listitem: Reminder automation
+        - listitem: No-show reduction
+  - complementary:
+    - paragraph: Managed-property ledger
+    - term: Active engagements
+    - definition: "0"
+    - term: In pipeline
+    - definition: "0"
+    - term: Combined value
+    - paragraph: Combined portfolio under Henry Onyx trust operations
+    - definition: —
+    - paragraph: Owner reporting, inspections, and maintenance coordination run on the same ledger as the marketing surface. One audit trail.
+  - paragraph: Relationship managers
+  - heading "People behind the listings, viewings, and managed-property follow-through." [level=2]
+  - paragraph: The operator layer is visible because premium real estate decisions need stronger coordination than anonymous form handoffs.
+  - paragraph: Operator layer publishing soon
+  - paragraph: Relationship managers appear here once their profiles are verified. Until then, owner inquiries route directly to the property desk and a manager is assigned during review.
+  - paragraph: Continue
+  - heading "Search the inventory or submit a property — the rest of the flow is on a single ledger." [level=2]
+  - paragraph: Saved listings, viewing requests, owner replies, and the eventual managed handoff stay in one Henry Onyx account. No portal hopping.
+  - link "Browse all listings":
+    - /url: /search
+  - link "Submit a property":
+    - /url: /submit
+- contentinfo:
+  - text: Henry Onyx Property
+  - paragraph: Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators.
+  - paragraph: property@henryonyx.com
+  - paragraph:
+    - link "WhatsApp":
+      - /url: https://wa.me/2349133957084
+  - text: Discover
+  - link "Search listings":
+    - /url: /search
+  - link "Managed properties":
+    - /url: /managed
+  - link "Trust standards":
+    - /url: /trust
+  - link "FAQ":
+    - /url: /faq
+  - text: Owners and agents
+  - link "Submit a listing":
+    - /url: /submit
+  - link "Agent surface":
+    - /url: /agent
+  - link "Viewings and inquiries":
+    - /url: https://account.henryonyx.com/property?panel=viewings
+  - link "Listing activity":
+    - /url: https://account.henryonyx.com/property?panel=listings
+  - text: Account
+  - link "Property activity":
+    - /url: https://account.henryonyx.com/property
+  - link "Henry Onyx account sign-in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2F&division=property
+  - text: © 2026 Henry Onyx Property. All rights reserved.
+  - link "Trust":
+    - /url: /trust
+  - text: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- alert

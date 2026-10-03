@@ -1,0 +1,97 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Property":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Property
+  - navigation:
+    - link "Search":
+      - /url: /search
+    - link "Managed":
+      - /url: /managed
+    - link "Trust":
+      - /url: /trust
+    - link "Submit":
+      - /url: /submit
+    - link "FAQ":
+      - /url: /faq
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2Fsubmit&division=property
+  - link "Browse listings":
+    - /url: /search
+- main:
+  - paragraph: Submit
+  - heading "Submit through the right trust path." [level=1]
+  - paragraph: Each submission is routed by service type, authority reality, inspection sensitivity, and account trust. The form adapts to the path; documents upload directly; the listing stays private until governance clears it.
+  - paragraph: Submission standards
+  - list:
+    - listitem:
+      - heading "Service-aware routing" [level=3]
+      - paragraph: Residential, commercial, managed, agent-assisted, and inspection-led submissions do not all face the same evidence or review path.
+    - listitem:
+      - heading "Direct trust uploads" [level=3]
+      - paragraph: Authority proof, ownership evidence, management instructions, and supporting files upload directly into the review record.
+    - listitem:
+      - heading "Managed vs non-managed clarity" [level=3]
+      - paragraph: Managed submissions imply Henry Onyx operational involvement after acceptance. Non-managed listings can still be reviewed without pretending Henry Onyx is running them.
+  - paragraph: Account context
+  - paragraph: Henry Onyx account required
+  - heading "Sign in to submit a listing" [level=3]
+  - paragraph: Listing submissions require a Henry Onyx account so verification documents, moderation, and owner communications stay auditable and secure.
+  - link "Sign in to continue":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2Fsubmit&division=property
+  - link "Create account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fproperty.henryonyx.com%2Fsubmit&division=property
+  - paragraph: You’ll return to this page after signing in. Henry Onyx uses one account across divisions so inquiries and listings stay traceable and secure.
+  - paragraph: What happens next
+  - list:
+    - listitem: 1. Submission saved privately and routed to the right trust path.
+    - listitem: 2. Documents read; eligibility and authority assessed.
+    - listitem: 3. Inspection scheduled if the path requires it.
+    - listitem: 4. Editorial review, approval, then publication if quality holds.
+  - paragraph: Listing form
+  - paragraph:
+    - text: The listing form unlocks after you sign in. Use the panel on the left, or
+    - link "sign in here":
+      - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2Fsubmit&division=property
+    - text: .
+- contentinfo:
+  - text: Henry Onyx Property
+  - paragraph: Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators.
+  - paragraph: property@henryonyx.com
+  - paragraph:
+    - link "WhatsApp":
+      - /url: https://wa.me/2349133957084
+  - text: Discover
+  - link "Search listings":
+    - /url: /search
+  - link "Managed properties":
+    - /url: /managed
+  - link "Trust standards":
+    - /url: /trust
+  - link "FAQ":
+    - /url: /faq
+  - text: Owners and agents
+  - link "Submit a listing":
+    - /url: /submit
+  - link "Agent surface":
+    - /url: /agent
+  - link "Viewings and inquiries":
+    - /url: https://account.henryonyx.com/property?panel=viewings
+  - link "Listing activity":
+    - /url: https://account.henryonyx.com/property?panel=listings
+  - text: Account
+  - link "Property activity":
+    - /url: https://account.henryonyx.com/property
+  - link "Henry Onyx account sign-in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2F&division=property
+  - text: © 2026 Henry Onyx Property. All rights reserved.
+  - link "Trust":
+    - /url: /trust
+  - text: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- alert

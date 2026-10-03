@@ -1,0 +1,165 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Jobs":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Jobs
+  - navigation:
+    - link "Find jobs":
+      - /url: /jobs
+    - link "Talent":
+      - /url: /talent
+    - link "Hire":
+      - /url: /hire
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fjobs.henryonyx.com%2Fhelp
+  - link "Browse jobs":
+    - /url: /jobs
+- main:
+  - paragraph: Help
+  - heading "Straight answers about Jobs." [level=1]
+  - paragraph:
+    - text: Candidates and employers use the same platform with different workspaces. If something here does not match what you see on screen, contact
+    - link "jobs@henryonyx.com":
+      - /url: mailto:jobs@henryonyx.com
+    - text: .
+  - navigation "Topics":
+    - link "How does applying work":
+      - /url: "#apply"
+    - link "What does “saved” or shortlist mean":
+      - /url: "#shortlist"
+    - link "What do the application stages mean":
+      - /url: "#stages"
+    - link "What does employer verification mean":
+      - /url: "#verification"
+    - link "Why was my post or employer profile held for review":
+      - /url: "#review"
+    - link "Where do my jobs show up in Henry Onyx":
+      - /url: "#sync"
+    - link "Why might WhatsApp updates not arrive":
+      - /url: "#whatsapp"
+  - paragraph: Topics
+  - list:
+    - listitem:
+      - text: "01"
+      - heading "How does applying work?" [level=2]
+      - paragraph: Open any role, read the full description, then sign in with your Henry Onyx account when you are ready. You will send one application from your candidate profile—cover note, availability, and pay expectations if you choose. After you submit, the role moves into your Applications list with a visible stage (reviewing, shortlisted, interview, and so on). You can always see whether you already applied.
+    - listitem:
+      - text: "02"
+      - heading "What does “saved” or shortlist mean?" [level=2]
+      - paragraph: Saving a job is a private bookmark. It does not tell the employer you are interested yet. It keeps the role in your Saved jobs list so you can compare options and come back when you have time to write a strong application.
+    - listitem:
+      - text: "03"
+      - heading "What do the application stages mean?" [level=2]
+      - paragraph: Stages are the hiring team’s way of showing progress. “Reviewing” means your application is in the queue. “Shortlisted” usually means you passed an early fit check and they want a closer look or conversation. “Interview” is active conversations. “Offer” and “hired” are self-explanatory; “rejected” closes the lane for that role—we still encourage you to refine your profile and try other fits.
+    - listitem:
+      - text: "04"
+      - heading "What does employer verification mean?" [level=2]
+      - paragraph: Verified employers have passed a review of identity and intent—not just a paid badge. If someone is still “pending,” they may be new or mid-review. We still moderate individual posts so a verified label is not a free pass to post anything.
+    - listitem:
+      - text: "05"
+      - heading "Why was my post or employer profile held for review?" [level=2]
+      - paragraph: "Usually for quality or safety: unclear job details, mismatch with the company, or patterns that look like spam. Employers get a reason when we need a fix. Candidates see fewer broken or misleading roles as a result."
+    - listitem:
+      - text: "06"
+      - heading "Where do my jobs show up in Henry Onyx?" [level=2]
+      - paragraph: Applications, saved roles, and updates all appear in your Henry Onyx account. Jobs is the best place to track your hiring activity, and the account dashboard shows your activity across all Henry Onyx services.
+    - listitem:
+      - text: "07"
+      - heading "Why might WhatsApp updates not arrive?" [level=2]
+      - paragraph: Messaging apps sometimes hold or delay messages outside an active conversation window. Email and in-app notifications are always on — contact support if WhatsApp updates are missing.
+  - paragraph: Henry Onyx account
+  - heading "Jobs activity lives alongside the rest of your account." [level=2]
+  - paragraph: Wallet, documents, and other services may live under the same Henry Onyx account. The hub gives you the full picture without bouncing between sites.
+  - link "Open account hub":
+    - /url: https://account.henryonyx.com/jobs
+  - link "Back to jobs":
+    - /url: /jobs
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record.
+  - link "jobs@henryonyx.com":
+    - /url: mailto:jobs@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Discover":
+    - paragraph: Discover
+    - list:
+      - listitem:
+        - link "Jobs":
+          - /url: /jobs
+      - listitem:
+        - link "Talent":
+          - /url: /talent
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "For teams":
+    - paragraph: For teams
+    - list:
+      - listitem:
+        - link "Candidate home":
+          - /url: /candidate
+      - listitem:
+        - link "Hire with Henry Onyx":
+          - /url: /hire
+      - listitem:
+        - link "Employer workspace":
+          - /url: /employer
+      - listitem:
+        - link "Recruiters":
+          - /url: /recruiter
+  - navigation "Henry Onyx":
+    - paragraph: Henry Onyx
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/jobs
+      - listitem:
+        - link "Careers":
+          - /url: /careers
+      - listitem:
+        - link "Group Hub":
+          - /url: https://henryonyx.com/
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Jobs.
+- button "How can we help? — Need help?": Help
+- alert

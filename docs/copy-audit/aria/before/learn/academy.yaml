@@ -1,0 +1,144 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Learn":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Learn
+  - navigation:
+    - link "Courses":
+      - /url: /courses
+    - link "Paths":
+      - /url: /paths
+    - link "Academy":
+      - /url: /academy
+    - link "Certificates":
+      - /url: /certifications
+    - link "Teach":
+      - /url: /teach
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Flearn.henryonyx.com%2Facademy
+  - link "Explore courses":
+    - /url: /courses
+- main:
+  - paragraph: How Henry Onyx Learn works
+  - heading "From interested to finished, in plain steps." [level=1]
+  - paragraph: Choose a program, sign in, learn in order, and (where the course includes it) pass a short assessment to unlock your certificate. Assigned training from managers appears in the same place.
+  - link "Create account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Flearn.henryonyx.com%2Fcourses
+  - link "Browse courses":
+    - /url: /courses
+  - link "Explore paths":
+    - /url: /paths
+  - term: Categories
+  - definition: "0"
+  - term: Courses
+  - definition: "0"
+  - term: Paths
+  - definition: "0"
+  - term: Instructors
+  - definition: "0"
+  - paragraph: Three steps
+  - list:
+    - listitem:
+      - text: "01"
+      - heading "Discover" [level=3]
+      - paragraph: Browse the catalog or a learning path. Each course page lists duration, difficulty, whether there’s a final quiz, and the score you need to pass.
+    - listitem:
+      - text: "02"
+      - heading "Enroll & learn" [level=3]
+      - paragraph: Free courses open immediately; paid ones follow our checkout flow. Lessons unlock in sequence so you always know what comes next.
+    - listitem:
+      - text: "03"
+      - heading "Prove & keep" [level=3]
+      - paragraph: Finish lessons and any required quiz to earn a certificate where offered. Download a copy anytime; share your verification code so others can confirm it’s real.
+  - paragraph: Your dashboard
+  - heading "Keep learning and admin in the right place." [level=2]
+  - paragraph: The course room on Henry Onyx Learn is where you read lessons, submit quizzes, and download certificates. Your Henry Onyx account shows the big picture — active courses, saved picks, assignments, billing, and teaching status — in one calm overview.
+  - link "Open Learn in account":
+    - /url: https://account.henryonyx.com/learn
+  - paragraph: Want to teach?
+  - heading "We take instructor applications seriously." [level=2]
+  - paragraph: Share your background and a concrete course proposal. Our team reviews every submission; we may request changes or decline politely. Commercial terms, including any revenue share, are discussed only after approval.
+  - link "Apply to teach":
+    - /url: /teach
+  - link "Certificate programs":
+    - /url: /certifications
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Practical courses, clear progress, and verified certificates — learn on your schedule and resume anytime from your Henry Onyx account.
+  - link "learn@henryonyx.com":
+    - /url: mailto:learn@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Explore":
+    - paragraph: Explore
+    - list:
+      - listitem:
+        - link "Courses":
+          - /url: /courses
+      - listitem:
+        - link "Paths":
+          - /url: /paths
+      - listitem:
+        - link "How it works":
+          - /url: /academy
+      - listitem:
+        - link "Certificates":
+          - /url: /certifications
+  - navigation "Engage":
+    - paragraph: Engage
+    - list:
+      - listitem:
+        - link "Teach with Henry Onyx":
+          - /url: /teach
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/learn
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

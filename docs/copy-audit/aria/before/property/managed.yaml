@@ -1,0 +1,106 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Property":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Property
+  - navigation:
+    - link "Search":
+      - /url: /search
+    - link "Managed":
+      - /url: /managed
+    - link "Trust":
+      - /url: /trust
+    - link "Submit":
+      - /url: /submit
+    - link "FAQ":
+      - /url: /faq
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2Fmanaged&division=property
+  - link "Browse listings":
+    - /url: /search
+- main:
+  - paragraph: Managed property
+  - heading "Operations-grade management after the listing goes live." [level=1]
+  - paragraph: Tenant communication, inspections, reporting, maintenance coordination, short-let operations, and owner trust workflows — held on one operating rail rather than scattered across apps and chat threads.
+  - link "Submit a managed property":
+    - /url: /submit
+  - list:
+    - listitem:
+      - paragraph: Managed stock
+      - paragraph: "0"
+      - paragraph: Listings currently running through Henry Onyx managed-property rails.
+    - listitem:
+      - paragraph: Featured surfaces
+      - paragraph: "0"
+      - paragraph: Listings currently elevated across editorial and campaign surfaces.
+    - listitem:
+      - paragraph: Managed value
+      - paragraph: "0"
+      - paragraph: Combined managed-property portfolio value under Henry Onyx trust operations.
+  - paragraph: Service lines
+  - heading "What Henry Onyx handles after acceptance." [level=2]
+  - list:
+    - listitem:
+      - heading "Managed Property Trust Services" [level=3]
+      - paragraph: Henry Onyx can operate the property after it is listed, occupied, and handed over.
+      - text: Owner reporting Maintenance coordination Rent follow-up Viewing and inspection standards
+    - listitem:
+      - heading "Listing Marketing and Positioning" [level=3]
+      - paragraph: Sharper presentation, stronger photography direction, and better inquiry conversion.
+      - text: Editorial listing copy Premium media sequencing Featured campaign placement Viewing-prep workflows
+    - listitem:
+      - heading "Inquiry and Viewing Operations" [level=3]
+      - paragraph: Henry Onyx can handle response sequencing, screening, and viewing scheduling with calmer rigor.
+      - text: Lead triage Scheduling coordination Reminder automation No-show reduction
+  - paragraph: Recent managed records
+  - paragraph: Managed listings
+  - heading "Homes and stays already on managed rails." [level=1]
+  - paragraph: Stronger readiness, reporting, and coordination than passive pass-through inventory.
+  - paragraph: Move forward
+  - heading "Submit your property — we’ll review the operating fit, not just the badge." [level=2]
+  - paragraph: Managed acceptance implies Henry Onyx operational involvement. Non-managed listings can still publish, but the owner remains responsible for day-to-day reality.
+  - link "Submit a property":
+    - /url: /submit
+  - link "How Henry Onyx governs listings":
+    - /url: /trust
+- contentinfo:
+  - text: Henry Onyx Property
+  - paragraph: Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators.
+  - paragraph: property@henryonyx.com
+  - paragraph:
+    - link "WhatsApp":
+      - /url: https://wa.me/2349133957084
+  - text: Discover
+  - link "Search listings":
+    - /url: /search
+  - link "Managed properties":
+    - /url: /managed
+  - link "Trust standards":
+    - /url: /trust
+  - link "FAQ":
+    - /url: /faq
+  - text: Owners and agents
+  - link "Submit a listing":
+    - /url: /submit
+  - link "Agent surface":
+    - /url: /agent
+  - link "Viewings and inquiries":
+    - /url: https://account.henryonyx.com/property?panel=viewings
+  - link "Listing activity":
+    - /url: https://account.henryonyx.com/property?panel=listings
+  - text: Account
+  - link "Property activity":
+    - /url: https://account.henryonyx.com/property
+  - link "Henry Onyx account sign-in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2F&division=property
+  - text: © 2026 Henry Onyx Property. All rights reserved.
+  - link "Trust":
+    - /url: /trust
+  - text: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- alert

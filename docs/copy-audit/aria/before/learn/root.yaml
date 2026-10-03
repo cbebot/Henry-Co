@@ -1,0 +1,152 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Learn":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Learn
+  - navigation:
+    - link "Courses":
+      - /url: /courses
+    - link "Paths":
+      - /url: /paths
+    - link "Academy":
+      - /url: /academy
+    - link "Certificates":
+      - /url: /certifications
+    - link "Teach":
+      - /url: /teach
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Faccount.henryonyx.com%2Flearn
+  - link "Explore courses":
+    - /url: /courses
+- main:
+  - paragraph: Henry Onyx Learn
+  - heading "Skills that stick. Proof that travels." [level=1]
+  - paragraph: Pick a course, move through lessons in order, track progress in your Henry Onyx account, and earn a certificate others can verify online. Built for busy adults who want clarity, not jargon.
+  - link "Browse courses":
+    - /url: /courses
+  - link "Create free account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Flearn.henryonyx.com%2Fcourses
+  - link "How it works":
+    - /url: /academy
+  - paragraph: Start here
+  - heading "Featured programs our team highlights right now." [level=2]
+  - paragraph: "Each card opens the full course page: what you’ll learn, how long it takes, whether there’s an assessment, and how to enroll."
+  - link "See all courses":
+    - /url: /courses
+  - link "Continue in my account":
+    - /url: https://account.henryonyx.com/learn?panel=active
+  - paragraph: How learning runs here
+  - heading "Structured lessons, fair assessments, real verification." [level=2]
+  - paragraph: Sign in once. Enrollments, progress, certificates, billing, and teaching applications all live on the same Henry Onyx profile — no duplicate logins, no parallel inboxes.
+  - list:
+    - listitem:
+      - paragraph: Teams & assignments
+      - paragraph: Some courses are assigned inside Henry Onyx. Team programs appear in your account alongside anything you chose yourself.
+    - listitem:
+      - paragraph: What “done” means
+      - paragraph: Completion follows each course’s rules — usually all lessons, then a passing quiz where applicable. Status shows plainly in the learning room.
+    - listitem:
+      - paragraph: Verification anyone can check
+      - paragraph: Eligible courses issue a certificate with a code anyone can verify online — useful for employers, partners, or your own records.
+  - paragraph: Learning paths
+  - heading "Follow a sequence when one course isn’t enough." [level=2]
+  - paragraph: Paths group related courses so you build a capability step by step—ideal when you’re onboarding to a role or deepening a specialty.
+  - link "Explore every path":
+    - /url: /paths
+  - paragraph: Teach with Henry Onyx
+  - heading "Apply if you can teach with depth and structure." [level=2]
+  - paragraph: We review every application by hand. Approval is not automatic. Strong candidates move through identity checks, quality expectations, and onboarding—not a self-serve creator rush.
+  - link "Start application":
+    - /url: /teach
+  - link "Standards & trust":
+    - /url: /trust
+  - list:
+    - listitem:
+      - text: Quality bar
+      - paragraph: We look for real subject expertise, respectful delivery, and outlines learners can actually finish — not hype or recycled slides.
+    - listitem:
+      - text: Aligned with Henry Onyx
+      - paragraph: Topics that fit our ecosystem — operations, customer experience, digital skills, partner enablement — get the closest match with our learners' needs.
+    - listitem:
+      - text: Why Henry Onyx Learn exists
+      - paragraph: We invest in education so customers, partners, and staff share the same standards — and so capable people can prove what they know.
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Practical courses, clear progress, and verified certificates — learn on your schedule and resume anytime from your Henry Onyx account.
+  - link "learn@henryonyx.com":
+    - /url: mailto:learn@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Explore":
+    - paragraph: Explore
+    - list:
+      - listitem:
+        - link "Courses":
+          - /url: /courses
+      - listitem:
+        - link "Paths":
+          - /url: /paths
+      - listitem:
+        - link "How it works":
+          - /url: /academy
+      - listitem:
+        - link "Certificates":
+          - /url: /certifications
+  - navigation "Engage":
+    - paragraph: Engage
+    - list:
+      - listitem:
+        - link "Teach with Henry Onyx":
+          - /url: /teach
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/learn
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

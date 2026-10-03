@@ -1,0 +1,202 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2F
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Henry Onyx Studio
+  - heading "The studio that builds Henry Onyx" [level=1]
+  - paragraph: Websites, apps, and platforms — shipped in-house for every Henry Onyx business. Now building yours.
+  - link "Start a brief":
+    - /url: /request
+  - link "See our work":
+    - /url: /work
+  - paragraph: At a glance
+  - term: Services
+  - definition: "7"
+  - term: Packages
+  - definition: "8"
+  - term: Specialist teams
+  - definition: "4"
+  - term: Case studies
+  - definition: "3"
+  - paragraph: Where to start
+  - heading "Two ways in." [level=2]
+  - paragraph: Pick a ready scope, or shape a custom build. Both land in one brief with honest pricing.
+  - list:
+    - listitem:
+      - link "01 Package path Premium websites, commerce, and dashboards — repeatable scopes with clear price bands.":
+        - /url: /pricing
+        - text: 01 Package path
+        - paragraph: Premium websites, commerce, and dashboards — repeatable scopes with clear price bands.
+    - listitem:
+      - link "02 Custom project path Bespoke software, portals, and multi-role products with specific feature architecture.":
+        - /url: /request
+        - text: 02 Custom project path
+        - paragraph: Bespoke software, portals, and multi-role products with specific feature architecture.
+  - paragraph: Why Studio
+  - heading "One record, from brief to launch." [level=2]
+  - paragraph: Scope, pricing, milestones, payments, and reviews live on one project record in your Henry Onyx account — nothing about your build in a back-channel.
+  - list:
+    - listitem:
+      - text: 01 Typical agency flow
+      - paragraph: A vague inquiry form with almost no commercial context.
+    - listitem:
+      - text: 02 Henry Onyx Studio flow
+      - paragraph: A structured buying path for both packages and serious custom work.
+  - paragraph: Selected work
+  - heading "Proof, before the conversation." [level=2]
+  - paragraph: Every case study states the challenge, the build, and the measurable result.
+  - term: Case studies
+  - definition: "3"
+  - term: Specialist teams
+  - definition: "4"
+  - term: Capabilities
+  - definition: "7"
+  - list:
+    - listitem:
+      - link "01 Service Command Center Internal Operations Platform A multi-service operator was running leads, project states, approvals, and finance checkpoints across spreadsheets, chat, and manual reminders. Studio replaced the operational sprawl with one command surface that leadership and delivery teams could actually trust.":
+        - /url: /work#case-command-center
+        - text: 01 Service Command Center Internal Operations Platform
+        - paragraph: A multi-service operator was running leads, project states, approvals, and finance checkpoints across spreadsheets, chat, and manual reminders.
+        - text: Studio replaced the operational sprawl with one command surface that leadership and delivery teams could actually trust.
+    - listitem:
+      - link "02 Premium Reposition Launch Executive Website The company had strong delivery quality, but the public website looked too generic to support bigger contracts and higher confidence inbound sales. Studio reframed the company as a premium operator with clearer offers, a more deliberate narrative, and a sharper inquiry path.":
+        - /url: /work#case-premium-launch
+        - text: 02 Premium Reposition Launch Executive Website
+        - paragraph: The company had strong delivery quality, but the public website looked too generic to support bigger contracts and higher confidence inbound sales.
+        - text: Studio reframed the company as a premium operator with clearer offers, a more deliberate narrative, and a sharper inquiry path.
+    - listitem:
+      - link "03 Client Portal Rollout Custom Software A service business needed clients to stop relying on email threads for updates, approvals, files, and payment checkpoints. Studio introduced a client portal model that made delivery status, assets, and next actions visibly structured.":
+        - /url: /work#case-client-portal
+        - text: 03 Client Portal Rollout Custom Software
+        - paragraph: A service business needed clients to stop relying on email threads for updates, approvals, files, and payment checkpoints.
+        - text: Studio introduced a client portal model that made delivery status, assets, and next actions visibly structured.
+  - figure "Managing Director, Professional Services Firm":
+    - blockquote: “Studio made us look like the level of company we were already trying to become. The difference in trust and sales confidence was immediate.”
+    - text: Managing Director, Professional Services Firm
+  - link "See all work":
+    - /url: /work
+  - paragraph: How an engagement runs
+  - heading "From first call to launch." [level=2]
+  - list:
+    - listitem:
+      - text: "01"
+      - paragraph: Define whether the request is package-fit or custom from the start.
+    - listitem:
+      - text: "02"
+      - paragraph: Capture commercial goals, delivery constraints, features, references, and buyer context.
+    - listitem:
+      - text: "03"
+      - paragraph: Route the project to the best-fit Henry Onyx team or team mix.
+    - listitem:
+      - text: "04"
+      - paragraph: Send a proposal with scope logic, milestone pricing, and next-step clarity.
+  - heading "Ready to scope a project?" [level=2]
+  - paragraph: A brief takes about 8 minutes — and you see honest pricing before you submit.
+  - link "Start a brief":
+    - /url: /request
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

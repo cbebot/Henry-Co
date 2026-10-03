@@ -1,0 +1,129 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Ffaq
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: FAQ
+  - heading "Before you reach out." [level=1]
+  - paragraph: The essentials clients usually check before starting a project with Studio.
+  - list:
+    - listitem:
+      - group:
+        - heading "Do I have to choose one of the listed packages?" [level=2]
+    - listitem:
+      - group:
+        - heading "Can you handle both design and software delivery?" [level=2]
+    - listitem:
+      - group:
+        - heading "How are projects priced?" [level=2]
+    - listitem:
+      - group:
+        - heading "How will I receive updates?" [level=2]
+    - listitem:
+      - group:
+        - heading "Will this later connect to the Henry Onyx account dashboard?" [level=2]
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

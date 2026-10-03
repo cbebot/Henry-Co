@@ -1,0 +1,121 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Learn":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Learn
+  - navigation:
+    - link "Courses":
+      - /url: /courses
+    - link "Paths":
+      - /url: /paths
+    - link "Academy":
+      - /url: /academy
+    - link "Certificates":
+      - /url: /certifications
+    - link "Teach":
+      - /url: /teach
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Flearn.henryonyx.com%2Fcourses
+  - link "Explore courses":
+    - /url: /courses
+- main:
+  - paragraph: Course catalog
+  - heading "A program for your next step." [level=2]
+  - paragraph: Filter by topic or level, open any course for full details, then sign in to enroll. Your progress syncs automatically in your Henry Onyx account.
+  - paragraph: New here?
+  - paragraph: Create a free Henry Onyx account first—it takes a minute. Then return to any course and tap Start this course (or complete checkout if the program is paid).
+  - link "Create account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Flearn.henryonyx.com%2Fcourses
+  - textbox "Search by title, skill, or tag"
+  - combobox:
+    - option "All categories" [selected]
+  - combobox:
+    - option "All levels" [selected]
+    - option "Beginner"
+    - option "Intermediate"
+    - option "Advanced"
+  - button "Search"
+  - heading "No courses match those filters" [level=3]
+  - paragraph: Try a different keyword, category, or difficulty—or clear filters to see everything we publish right now.
+  - link "Reset catalog":
+    - /url: /courses
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Practical courses, clear progress, and verified certificates — learn on your schedule and resume anytime from your Henry Onyx account.
+  - link "learn@henryonyx.com":
+    - /url: mailto:learn@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Explore":
+    - paragraph: Explore
+    - list:
+      - listitem:
+        - link "Courses":
+          - /url: /courses
+      - listitem:
+        - link "Paths":
+          - /url: /paths
+      - listitem:
+        - link "How it works":
+          - /url: /academy
+      - listitem:
+        - link "Certificates":
+          - /url: /certifications
+  - navigation "Engage":
+    - paragraph: Engage
+    - list:
+      - listitem:
+        - link "Teach with Henry Onyx":
+          - /url: /teach
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/learn
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

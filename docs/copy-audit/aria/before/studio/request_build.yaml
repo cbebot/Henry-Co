@@ -1,0 +1,174 @@
+- banner:
+  - link "Henry Onyx Studio home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - img "Henry Onyx"
+  - link "Back to Studio":
+    - /url: /
+- main:
+  - paragraph: Project brief
+  - heading "Your brief, ready to review." [level=2]
+  - paragraph: Most of it is already drafted. Open a card to adjust a detail, or describe the change and preview it before it lands. Pricing updates as you go.
+  - text: Describe a change Describe a change
+  - textbox "Describe a change":
+    - /placeholder: e.g. Make it 3 pages and add booking
+  - button "Preview the change" [disabled]
+  - paragraph: Nothing changes until you apply the preview. You can also adjust any card directly below.
+  - text: "01"
+  - heading "Project" [level=3]
+  - button "Adjust"
+  - paragraph: Custom build·Executive company website·Best-fit recommendation·Quiet luxury and high-trust·English
+  - text: "02"
+  - heading "Scope" [level=3]
+  - text: Needs detail
+  - button "Done" [expanded]
+  - text: Pages 0/7 selected None selected yet
+  - list:
+    - listitem:
+      - checkbox "Homepage and offer pages +₦240,000 Core landing architecture, offer framing, and conversion-first lead surfaces."
+      - text: Homepage and offer pages +₦240,000 Core landing architecture, offer framing, and conversion-first lead surfaces.
+    - listitem:
+      - checkbox "Services or solution pages +₦180,000 Service detail, solution architecture, or product marketing pages."
+      - text: Services or solution pages +₦180,000 Service detail, solution architecture, or product marketing pages.
+    - listitem:
+      - checkbox "About, team, and trust pages +₦160,000 Reassurance surfaces for credibility, company profile, and team positioning."
+      - text: About, team, and trust pages +₦160,000 Reassurance surfaces for credibility, company profile, and team positioning.
+    - listitem:
+      - checkbox "Case studies or proof pages +₦220,000 Proof-led pages for results, delivery stories, and trust assets."
+      - text: Case studies or proof pages +₦220,000 Proof-led pages for results, delivery stories, and trust assets.
+    - listitem:
+      - checkbox "Pricing, proposal, or quote surfaces +₦180,000 Commercial clarity pages for quotes, packages, or scoped decision flows."
+      - text: Pricing, proposal, or quote surfaces +₦180,000 Commercial clarity pages for quotes, packages, or scoped decision flows.
+    - listitem:
+      - checkbox "Blog, newsroom, or content hub +₦320,000 Editorial publishing surface with categories, search, and structured authoring."
+      - text: Blog, newsroom, or content hub +₦320,000 Editorial publishing surface with categories, search, and structured authoring.
+    - listitem:
+      - checkbox "Checkout, payment, or invoice views +₦280,000 Transaction surfaces — checkout, invoice, payment confirmation."
+      - text: Checkout, payment, or invoice views +₦280,000 Transaction surfaces — checkout, invoice, payment confirmation.
+  - text: Features 0/1 selected None selected yet
+  - list:
+    - listitem:
+      - checkbox "CMS or structured content management +₦320,000 Publishing flows and controlled content administration."
+      - text: CMS or structured content management +₦320,000 Publishing flows and controlled content administration.
+  - text: Add-ons 0/8 selected Optional supporting work None selected yet
+  - list:
+    - listitem:
+      - checkbox "Brand identity +₦650,000 Naming support, identity direction, visual language, and core brand assets."
+      - text: Brand identity +₦650,000 Naming support, identity direction, visual language, and core brand assets.
+    - listitem:
+      - checkbox "Copywriting and messaging +₦380,000 Offer framing, conversion copy, and clearer brand language."
+      - text: Copywriting and messaging +₦380,000 Offer framing, conversion copy, and clearer brand language.
+    - listitem:
+      - checkbox "SEO foundation +₦320,000 Search structure, metadata, and technical launch fundamentals."
+      - text: SEO foundation +₦320,000 Search structure, metadata, and technical launch fundamentals.
+    - listitem:
+      - checkbox "Launch campaign or sales pages +₦540,000 Launch-specific landing experiences, campaign structure, and selling surfaces."
+      - text: Launch campaign or sales pages +₦540,000 Launch-specific landing experiences, campaign structure, and selling surfaces.
+    - listitem:
+      - checkbox "Email lifecycle automation +₦450,000 Automated email journeys for onboarding, nurture, or operational updates."
+      - text: Email lifecycle automation +₦450,000 Automated email journeys for onboarding, nurture, or operational updates.
+    - listitem:
+      - checkbox "WhatsApp customer journey +₦420,000 Operational or customer messaging flows over WhatsApp where appropriate."
+      - text: WhatsApp customer journey +₦420,000 Operational or customer messaging flows over WhatsApp where appropriate.
+    - listitem:
+      - checkbox "Maintenance or retained support +₦600,000 Ongoing technical care, iteration, and operator support after launch."
+      - text: Maintenance or retained support +₦600,000 Ongoing technical care, iteration, and operator support after launch.
+    - listitem:
+      - checkbox "Launch support and training +₦300,000 Operator enablement, walkthroughs, and team transition support."
+      - text: Launch support and training +₦300,000 Operator enablement, walkthroughs, and team transition support.
+  - text: "03"
+  - heading "Stack" [level=3]
+  - button "Adjust"
+  - paragraph: Henry Onyx's recommendation·Henry Onyx's framework recommendation·Henry Onyx recommends the backend·Henry Onyx recommends the host
+  - text: "04"
+  - heading "Business & timeline" [level=3]
+  - text: Needs detail
+  - button "Done" [expanded]
+  - paragraph: Tell us the budget and the timing. We come back inside one business day with a fixed scope, a fixed delivery window, and a senior lead assigned by name — no junior hand-offs, no scope drift.
+  - text: Business type
+  - button "Business type": Select business type
+  - text: Project budget · NGN
+  - textbox "Project budget · NGN":
+    - /placeholder: ₦1,500,000
+  - text: Fixed price. Locked at proposal acceptance — no surprise overages. Urgency
+  - button "Urgency": Standard delivery lane
+  - text: Timeline expectation
+  - button "Timeline expectation": 4-7 days · +22%
+  - text: "05"
+  - heading "Domain" [level=3]
+  - text: Needs detail
+  - button "Done" [expanded]
+  - text: Launch & web address
+  - heading "Your domain is the address people type to find you" [level=3]
+  - paragraph: It is not the same as hosting or email setup—we handle those steps with you. You can bring a name you already pay for, or we help you pick and register a strong one before go-live.
+  - button "I want a new web address (domain) Tell us the name you have in mind and a backup. We confirm availability and register it with you before go-live.":
+    - text: I want a new web address (domain)
+    - paragraph: Tell us the name you have in mind and a backup. We confirm availability and register it with you before go-live.
+  - button "I already own a domain Keep using it—we connect it when the site is ready. No need to buy another name unless you want one.":
+    - text: I already own a domain
+    - paragraph: Keep using it—we connect it when the site is ready. No need to buy another name unless you want one.
+  - button "I’m not ready to decide Totally fine. Henry Onyx will help you choose before launch. You can still describe your dream name in the notes.":
+    - text: I’m not ready to decide
+    - paragraph: Totally fine. Henry Onyx will help you choose before launch. You can still describe your dream name in the notes.
+  - button "Help me choose a domain"
+  - text: Preferred name or domain
+  - textbox "Preferred name or domain":
+    - /placeholder: e.g. riveroak or riveroak.com
+  - paragraph: Share the name you want—Henry Onyx confirms availability with you before anything is purchased.
+  - text: Backup name (optional)
+  - textbox "Backup name (optional)":
+    - /placeholder: e.g. riveroakstudio.com
+  - paragraph: If your first choice is taken, we already know a strong second option—no need to restart the brief.
+  - text: "06"
+  - heading "Goals & notes" [level=3]
+  - text: Needs detail
+  - button "Done" [expanded]
+  - text: What should this achieve?
+  - textbox "What should this achieve?":
+    - /placeholder: e.g. More qualified leads, calmer operations, clearer client onboarding…
+  - text: What needs to exist when we are done?
+  - textbox "What needs to exist when we are done?":
+    - /placeholder: Pages, features, integrations, languages, admin tools—bullet points are fine.
+  - text: Anything else we should study?
+  - textbox "Anything else we should study?":
+    - /placeholder: Tone, audience, things to avoid, brand words you love, or “make it feel like X but more premium.”
+  - paragraph: Add reference links and files in the submit panel, just before you send the brief.
+  - complementary:
+    - text: Brief readiness 80/100 · Commercially strong Custom
+    - term: Total
+    - definition: ₦2,196,000
+    - term: Deposit · 35%
+    - definition: ₦768,600
+    - group: 2 line items
+    - paragraph: Preview reflects scope, platform, and timing. Deposit unlocks delivery — not a black box.
+    - text: Team fit
+    - paragraph: Pick a team, or let Henry Onyx match the strongest fit to your scope, urgency, and industry.
+    - text: Preferred team
+    - button "Preferred team": Let Henry Onyx recommend the best-fit team
+    - text: References & inspiration
+    - paragraph: Optional, but it sharpens the proposal. Links and files attach to your Studio record.
+    - text: Inspiration links (optional)
+    - paragraph: Paste sites you admire, competitors to surpass, or internal PDFs that show tone. Rough links are fine—we care more about direction than perfection.
+    - textbox "https://a-site-whose-pace-you-like.com"
+    - textbox "Another reference (optional)"
+    - textbox "Third link (optional)"
+    - text: Moodboards, notes, or exports
+    - paragraph: Screenshots, short PDFs, or a messy deck—upload what you have. We only use this to understand you.
+    - button "Moodboards, notes, or exports"
+    - button "Tap to add files Drag and drop here if your browser supports it—multiple files allowed."
+    - paragraph: No file selected yet.
+    - paragraph: Files stay inside your Studio brief and project record; they are never published to the web.
+    - text: Your details
+    - textbox "Full name"
+    - textbox "Company, school, or brand (optional)"
+    - textbox "Best email for updates"
+    - textbox "WhatsApp or phone (optional)"
+    - checkbox "I am ready to secure a deposit-backed lane as soon as Henry Onyx confirms scope and pricing with me."
+    - text: I am ready to secure a deposit-backed lane as soon as Henry Onyx confirms scope and pricing with me.
+    - button "Submit Studio brief"
+    - paragraph: Nothing goes live until you approve scope and payment. You can still adjust references or details with your lead before the deposit lands.
+    - text: What happens after you submit A senior lead is assigned by name and confirms scope with you inside one business day. You receive a proposal link, workspace, and payment reference — never a silent inbox. Deposit secures the lane; we explain domain, hosting, and go-live before anything ships.
+  - text: Total · Deposit 35% ₦2,196,000·₦768,600
+  - button "Review & submit"
+- button "How can we help? — Need help?": Help
+- alert

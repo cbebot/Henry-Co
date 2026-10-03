@@ -1,0 +1,94 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Property":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Property
+  - navigation:
+    - link "Search":
+      - /url: /search
+    - link "Managed":
+      - /url: /managed
+    - link "Trust":
+      - /url: /trust
+    - link "Submit":
+      - /url: /submit
+    - link "FAQ":
+      - /url: /faq
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2Fsearch&division=property
+  - link "Browse listings":
+    - /url: /search
+- main:
+  - paragraph: Search
+  - heading "Find the right place. Keep your filters." [level=1]
+  - paragraph: Filter state stays shareable in the URL, results update without a blunt refresh, and every listing carries trust context before you invest time in it.
+  - text: Search
+  - textbox "Search":
+    - /placeholder: Ikoyi penthouse, serviced residence, office suite...
+  - text: Category
+  - combobox "Category":
+    - option "All categories" [selected]
+    - option "Residential rent"
+    - option "Residential sale"
+    - option "Commercial"
+    - option "Managed"
+    - option "Short-let"
+  - text: Area
+  - combobox "Area":
+    - option "All areas" [selected]
+  - button "Search properties"
+  - button "Reset filters" [disabled]
+  - checkbox "Managed only"
+  - text: Managed only
+  - checkbox "Furnished"
+  - text: Furnished
+  - paragraph: Filters stay in the URL so you can share the exact search or come back to it later.
+  - status: 0 live listings found
+  - tablist "View mode":
+    - tab "List" [selected]
+    - tab "Map"
+  - heading "No listings match this combination yet." [level=3]
+  - paragraph: Try broadening the area, removing one filter at a time, or switching from a precise phrase to the property type you want Henry Onyx to surface.
+  - link "Reset search":
+    - /url: /search
+- contentinfo:
+  - text: Henry Onyx Property
+  - paragraph: Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators.
+  - paragraph: property@henryonyx.com
+  - paragraph:
+    - link "WhatsApp":
+      - /url: https://wa.me/2349133957084
+  - text: Discover
+  - link "Search listings":
+    - /url: /search
+  - link "Managed properties":
+    - /url: /managed
+  - link "Trust standards":
+    - /url: /trust
+  - link "FAQ":
+    - /url: /faq
+  - text: Owners and agents
+  - link "Submit a listing":
+    - /url: /submit
+  - link "Agent surface":
+    - /url: /agent
+  - link "Viewings and inquiries":
+    - /url: https://account.henryonyx.com/property?panel=viewings
+  - link "Listing activity":
+    - /url: https://account.henryonyx.com/property?panel=listings
+  - text: Account
+  - link "Property activity":
+    - /url: https://account.henryonyx.com/property
+  - link "Henry Onyx account sign-in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2F&division=property
+  - text: © 2026 Henry Onyx Property. All rights reserved.
+  - link "Trust":
+    - /url: /trust
+  - text: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- alert

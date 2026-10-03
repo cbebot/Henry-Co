@@ -1,0 +1,166 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fservices
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Services
+  - heading "Specialised capability, priced against outcomes." [level=1]
+  - paragraph: Websites, internal systems, commerce, product UX, and custom software — each with a defined scope, a starting price, and a delivery window stated up front.
+  - term: Capabilities
+  - definition: "7"
+  - term: Packages
+  - definition: "8"
+  - term: Specialist teams
+  - definition: "4"
+  - list:
+    - listitem:
+      - link "01 Executive Websites Web experiences designed to make the company look more capable, more credible, and easier to buy from. from ₦1,800,000 3 to 6 weeks":
+        - /url: /services/website
+        - text: 01 Executive Websites
+        - paragraph: Web experiences designed to make the company look more capable, more credible, and easier to buy from.
+        - text: from ₦1,800,000 3 to 6 weeks
+    - listitem:
+      - link "02 Mobile Products Mobile products for customer experience, team operations, and high-frequency business touchpoints. from ₦4,200,000 7 to 14 weeks":
+        - /url: /services/mobile-app
+        - text: 02 Mobile Products
+        - paragraph: Mobile products for customer experience, team operations, and high-frequency business touchpoints.
+        - text: from ₦4,200,000 7 to 14 weeks
+    - listitem:
+      - link "03 Product UX Systems Product flow architecture, interface systems, and design direction for serious digital products. from ₦1,200,000 2 to 5 weeks":
+        - /url: /services/ui-ux
+        - text: 03 Product UX Systems
+        - paragraph: Product flow architecture, interface systems, and design direction for serious digital products.
+        - text: from ₦1,200,000 2 to 5 weeks
+    - listitem:
+      - link "04 Brand Systems Identity systems for businesses that need to feel premium before the first call is booked. from ₦950,000 2 to 4 weeks":
+        - /url: /services/branding
+        - text: 04 Brand Systems
+        - paragraph: Identity systems for businesses that need to feel premium before the first call is booked.
+        - text: from ₦950,000 2 to 4 weeks
+    - listitem:
+      - link "05 Commerce Systems Storefronts and campaign systems built to sell better and operate more cleanly. from ₦2,600,000 5 to 9 weeks":
+        - /url: /services/ecommerce
+        - text: 05 Commerce Systems
+        - paragraph: Storefronts and campaign systems built to sell better and operate more cleanly.
+        - text: from ₦2,600,000 5 to 9 weeks
+    - listitem:
+      - link "06 Internal Operations Platforms Dashboards, automations, and team interfaces that replace spreadsheet chaos. from ₦3,200,000 5 to 10 weeks":
+        - /url: /services/internal-system
+        - text: 06 Internal Operations Platforms
+        - paragraph: Dashboards, automations, and team interfaces that replace spreadsheet chaos.
+        - text: from ₦3,200,000 5 to 10 weeks
+    - listitem:
+      - link "07 Custom Software Bespoke software platforms for companies with unique operations, business models, or scale goals. from ₦5,200,000 8 to 18 weeks":
+        - /url: /services/custom-software
+        - text: 07 Custom Software
+        - paragraph: Bespoke software platforms for companies with unique operations, business models, or scale goals.
+        - text: from ₦5,200,000 8 to 18 weeks
+  - heading "Not sure which fits?" [level=2]
+  - paragraph: Start a brief and we'll scope the right capability with honest pricing — in about 8 minutes.
+  - link "Start a brief":
+    - /url: /request
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

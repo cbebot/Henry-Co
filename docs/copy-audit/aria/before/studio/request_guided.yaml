@@ -1,0 +1,36 @@
+- banner:
+  - link "Henry Onyx Studio home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - img "Henry Onyx"
+  - link "Back to Studio":
+    - /url: /
+- main:
+  - paragraph: Answer a few questions
+  - heading "A few quick questions" [level=1]
+  - text: 1 / 7
+  - heading "What are we building?" [level=2]
+  - paragraph: Pick the closest fit. You can refine every detail in the builder.
+  - list:
+    - listitem:
+      - button "A website Executive site, services, and lead capture built for credibility."
+    - listitem:
+      - button "An online store Sell products with catalogue, checkout, and order operations."
+    - listitem:
+      - button "A mobile app iOS and Android product, or a companion to your platform."
+    - listitem:
+      - button "Custom software A bespoke platform built around how you actually operate."
+    - listitem:
+      - button "An internal system A dashboard or tool that replaces spreadsheet chaos."
+    - listitem:
+      - button "Product UX and UI Flow architecture, interface systems, and design direction."
+    - listitem:
+      - button "A brand identity Naming, visual language, and premium launch assets."
+  - button "Back" [disabled]
+  - button "Next" [disabled]
+  - paragraph:
+    - text: Prefer full control?
+    - link "Build it yourself →":
+      - /url: /request/build
+- button "How can we help? — Need help?": Help
+- alert

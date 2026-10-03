@@ -1,0 +1,36 @@
+- banner:
+  - link "Henry Onyx Studio home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - img "Henry Onyx"
+  - link "Back to Studio":
+    - /url: /
+- main:
+  - paragraph: Start a brief
+  - heading "Tell us what you need." [level=1]
+  - paragraph: Three ways in — every one ends in the same brief, with honest pricing before you commit.
+  - list:
+    - listitem:
+      - link "Most natural Talk it through Describe it in your words. We ask, you answer, a brief takes shape.":
+        - /url: /request/copilot
+        - paragraph: Most natural
+        - heading "Talk it through" [level=2]
+        - paragraph: Describe it in your words. We ask, you answer, a brief takes shape.
+    - listitem:
+      - link "Fastest Answer a few questions Tap through quick choices. No blank page.":
+        - /url: /request/guided
+        - paragraph: Fastest
+        - heading "Answer a few questions" [level=2]
+        - paragraph: Tap through quick choices. No blank page.
+    - listitem:
+      - link "Most detailed Build it yourself Drive every field. Most control.":
+        - /url: /request/build
+        - paragraph: Most detailed
+        - heading "Build it yourself" [level=2]
+        - paragraph: Drive every field. Most control.
+  - paragraph:
+    - text: Know exactly what you want?
+    - link "Browse ready-made templates →":
+      - /url: /pick
+- button "How can we help? — Need help?": Help
+- alert

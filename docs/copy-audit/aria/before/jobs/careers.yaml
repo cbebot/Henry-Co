@@ -1,0 +1,125 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Jobs":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Jobs
+  - navigation:
+    - link "Find jobs":
+      - /url: /jobs
+    - link "Talent":
+      - /url: /talent
+    - link "Hire":
+      - /url: /hire
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fjobs.henryonyx.com%2Fcareers
+  - link "Open Henry Onyx Roles":
+    - /url: /careers
+- main:
+  - paragraph: Careers at Henry Onyx
+  - heading "Join the team building Henry Onyx." [level=1]
+  - paragraph: Internal openings go through the same clear, structured hiring process as every role on the platform. Apply with your Henry Onyx account and track progress in your candidate hub.
+  - text: 0 open ·
+  - link "How Henry Onyx hires":
+    - /url: /trust
+  - text: ·
+  - link "Application FAQ":
+    - /url: /help
+  - list:
+    - listitem: Process Same stages as external roles
+    - listitem: Communication Visible stages, no silent dropoffs
+    - listitem: Account One Henry Onyx profile across services
+  - paragraph: Open roles
+  - paragraph: No openings right now
+  - heading "We don't have any internal roles open at the moment" [level=3]
+  - paragraph: Check back soon or browse external roles from verified employers on the main board.
+  - link "Browse all roles":
+    - /url: /jobs
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record.
+  - link "jobs@henryonyx.com":
+    - /url: mailto:jobs@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Discover":
+    - paragraph: Discover
+    - list:
+      - listitem:
+        - link "Jobs":
+          - /url: /jobs
+      - listitem:
+        - link "Talent":
+          - /url: /talent
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "For teams":
+    - paragraph: For teams
+    - list:
+      - listitem:
+        - link "Candidate home":
+          - /url: /candidate
+      - listitem:
+        - link "Hire with Henry Onyx":
+          - /url: /hire
+      - listitem:
+        - link "Employer workspace":
+          - /url: /employer
+      - listitem:
+        - link "Recruiters":
+          - /url: /recruiter
+  - navigation "Henry Onyx":
+    - paragraph: Henry Onyx
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/jobs
+      - listitem:
+        - link "Careers":
+          - /url: /careers
+      - listitem:
+        - link "Group Hub":
+          - /url: https://henryonyx.com/
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Jobs.
+- button "How can we help? — Need help?": Help
+- alert

@@ -1,0 +1,146 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx
+  - navigation:
+    - link "Directory":
+      - /url: /#directory
+    - link "About":
+      - /url: /about
+    - link "Contact":
+      - /url: /contact
+  - link "Search Henry Onyx":
+    - /url: /search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fnewsletter
+  - link "Explore divisions":
+    - /url: /#divisions
+- main:
+  - main:
+    - paragraph: Editorial
+    - heading "Newsletters, chosen carefully" [level=1]
+    - paragraph: We send less, so it matters. Choose your topics — change or unsubscribe any time.
+    - text: Email address
+    - textbox "Email address":
+      - /placeholder: you@example.com
+    - text: Country (2-letter, optional)
+    - textbox "Country (2-letter, optional)":
+      - /placeholder: NG
+    - paragraph: Pick what you want to hear about
+    - paragraph: You can change or remove any of these later.
+    - heading "Henry Onyx" [level=3]
+    - checkbox "Henry Onyx Digest Flagship monthly update from Henry Onyx — new capabilities, trust updates, and selected cross-division highlights." [checked]
+    - text: Henry Onyx Digest Flagship monthly update from Henry Onyx — new capabilities, trust updates, and selected cross-division highlights.
+    - checkbox "Announcements Major launches, region expansions, platform-wide milestones, and compliance-relevant updates."
+    - text: Announcements Major launches, region expansions, platform-wide milestones, and compliance-relevant updates.
+    - heading "Marketplace" [level=3]
+    - checkbox "Marketplace Weekly Curated sellers, featured categories, trust improvements, and selected deal highlights — no spam, no fake urgency."
+    - text: Marketplace Weekly Curated sellers, featured categories, trust improvements, and selected deal highlights — no spam, no fake urgency.
+    - 'checkbox "Seller Insights Operational guidance for sellers: policy updates, payout truth, trust signals, and listing quality guidance."'
+    - text: "Seller Insights Operational guidance for sellers: policy updates, payout truth, trust signals, and listing quality guidance."
+    - heading "Jobs" [level=3]
+    - checkbox "Jobs Digest New roles that match your profile, employer trust signals, and hiring opportunities across divisions."
+    - text: Jobs Digest New roles that match your profile, employer trust signals, and hiring opportunities across divisions.
+    - 'checkbox "Employer Updates For hiring teams: candidate pipeline guidance, trust flags, and compliance reminders."'
+    - text: "Employer Updates For hiring teams: candidate pipeline guidance, trust flags, and compliance reminders."
+    - heading "Property" [level=3]
+    - checkbox "Property Spotlights Selected verified property listings and neighborhood updates. Not a blast list — selection matters."
+    - text: Property Spotlights Selected verified property listings and neighborhood updates. Not a blast list — selection matters.
+    - heading "Care" [level=3]
+    - checkbox "Care Updates Service availability, seasonal guidance, pickup schedule changes, and useful care advisories."
+    - text: Care Updates Service availability, seasonal guidance, pickup schedule changes, and useful care advisories.
+    - heading "Learn" [level=3]
+    - checkbox "Learn Programs New courses, instructor stories, and certificate opportunities — useful over promotional."
+    - text: Learn Programs New courses, instructor stories, and certificate opportunities — useful over promotional.
+    - heading "Logistics" [level=3]
+    - checkbox "Logistics Updates Coverage expansions, routing improvements, and dispatch notices for frequent senders."
+    - text: Logistics Updates Coverage expansions, routing improvements, and dispatch notices for frequent senders.
+    - heading "Studio" [level=3]
+    - checkbox "Studio Insights Design studio capabilities, case studies of completed briefs, and creative services availability."
+    - text: Studio Insights Design studio capabilities, case studies of completed briefs, and creative services availability.
+    - checkbox "I agree to receive these newsletters from Henry Onyx I can unsubscribe any time, and sends are paused during active support or billing issues."
+    - text: I agree to receive these newsletters from Henry Onyx I can unsubscribe any time, and sends are paused during active support or billing issues.
+    - button "Subscribe" [disabled]
+    - heading "What we promise" [level=2]
+    - list:
+      - listitem: Only topics you opted into.
+      - listitem: We pause sends during active support or billing issues.
+      - listitem: No invented stats, testimonials, or urgency.
+      - listitem: A working unsubscribe link in every email.
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Henry Onyx provides a clear way to understand the company and reach the right business with confidence.
+  - link "hello@henryonyx.com":
+    - /url: mailto:hello@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "Divisions directory":
+    - paragraph: Divisions directory
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+      - listitem:
+        - link "Search":
+          - /url: /search
+      - listitem:
+        - link "The ecosystem":
+          - /url: /v3
+      - listitem:
+        - link "The earning map":
+          - /url: /v3/how-we-earn
+      - listitem:
+        - link "Press":
+          - /url: /press/v3
+  - navigation "Legal":
+    - paragraph: Legal
+    - list:
+      - listitem:
+        - link "Privacy":
+          - /url: /privacy
+      - listitem:
+        - link "Terms":
+          - /url: /terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /preferences
+  - button "Continue"
+- alert

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowRight, Camera, ShieldCheck, Star } from "lucide-react";
+import { ArrowRight, Camera, Star } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { useHenryCoLocale } from "@henryco/i18n/react";
 import ImageFileField from "@/components/forms/ImageFileField";
@@ -74,13 +74,9 @@ export default function ReviewForm({
 
   return (
     <div className="care-card rounded-[32px] p-6 sm:p-8">
-      <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent)]/18 bg-[color:var(--accent)]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] care-accent-text">
-        <ShieldCheck className="h-4 w-4" />
-        {t("Verified client review")}
-      </div>
-      <h2 className="mt-4 text-3xl font-bold">{t("Leave a verified service review.")}</h2>
+      <h2 className="text-3xl font-bold">{t("Leave a verified service review.")}</h2>
       <p className="care-muted mt-3 text-sm leading-7">
-        {t("Reviews are matched to completed bookings before they appear publicly. Share your tracking code, the phone number used for the booking, and your experience. You can also attach an optional photo of the finished result.")}
+        {t("Use the tracking code and phone number from a completed booking.")}
       </p>
 
       <form
@@ -133,7 +129,7 @@ export default function ReviewForm({
 
         <textarea
           name="review_text"
-          placeholder={t("Describe the finish, punctuality, communication, and how the service felt overall.")}
+          placeholder={t("How was the service?")}
           className="care-input care-ring min-h-[160px] rounded-2xl px-4 py-3 text-base md:text-sm"
           required
         />
@@ -143,9 +139,6 @@ export default function ReviewForm({
             <Camera className="h-4 w-4 text-[color:var(--accent)]" />
             {t("Optional service photo")}
           </div>
-          <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-white/65">
-            {t("Add a garment finish photo, room result, or site photo if you want the approved review to feel more vivid.")}
-          </p>
           <div className="mt-4">
             <ImageFileField
               key={resetKey}
@@ -178,7 +171,7 @@ export default function ReviewForm({
 
       {done ? (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-50">
-          {t("Review submitted successfully. Once it has been checked, it may appear on Henry Onyx Care public pages.")}
+          {t("Review submitted. Once checked, it may appear on Henry Onyx Fabric Care pages.")}
         </div>
       ) : null}
     </div>

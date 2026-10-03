@@ -1,0 +1,406 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fpick
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Ready-made by Henry Onyx Studio
+  - heading "Pick a site. We launch a customised version in days." [level=1]
+  - paragraph: Every template is a real, production-ready Henry Onyx Studio site. Real prices. Real timelines. Real scope. We tailor it to your brand and content, then ship.
+  - link "Need something custom? Open a free-form brief":
+    - /url: /request
+  - link "Compare package bands":
+    - /url: /pricing
+  - term: Templates
+  - definition: "14"
+  - term: Starts from
+  - definition: ₦1,450,000
+  - term: Fastest launch
+  - definition: 12 days
+  - term: Categories
+  - definition: "6"
+  - paragraph: Business
+  - heading "Company sites, executive positioning, and lead-generation funnels." [level=2]
+  - paragraph: 2 templates
+  - list:
+    - listitem:
+      - link "Meridian — Executive Company Website A premium six-page site that makes the company feel as serious as it is. Price ₦1,950,000 Ready in 14 days Often for Founder-led firms, consultancies, and professional service businesses Home Services overview Service detail (3 pre-styled) About and team + 2 more View template 4 wk launch":
+        - /url: /pick/meridian-executive
+        - heading "Meridian — Executive Company Website" [level=3]
+        - paragraph: A premium six-page site that makes the company feel as serious as it is.
+        - term: Price
+        - definition: ₦1,950,000
+        - term: Ready in
+        - definition: 14 days
+        - paragraph: Often for
+        - paragraph: Founder-led firms, consultancies, and professional service businesses
+        - list:
+          - listitem: Home
+          - listitem: Services overview
+          - listitem: Service detail (3 pre-styled)
+          - listitem: About and team
+          - listitem: + 2 more
+        - text: View template 4 wk launch
+    - listitem:
+      - link "Helix — Offer & Revenue Funnel Long-form offer page, trust layers, and a measurable conversion stack. Price ₦2,450,000 Ready in 18 days Often for Coaches, agencies, and teams selling premium offers, programs, and cohorts Long-form offer page Order or apply page Thank-you page with onboarding Light home (positioning page) + 1 more View template 5 wk launch":
+        - /url: /pick/helix-funnel
+        - heading "Helix — Offer & Revenue Funnel" [level=3]
+        - paragraph: Long-form offer page, trust layers, and a measurable conversion stack.
+        - term: Price
+        - definition: ₦2,450,000
+        - term: Ready in
+        - definition: 18 days
+        - paragraph: Often for
+        - paragraph: Coaches, agencies, and teams selling premium offers, programs, and cohorts
+        - list:
+          - listitem: Long-form offer page
+          - listitem: Order or apply page
+          - listitem: Thank-you page with onboarding
+          - listitem: Light home (positioning page)
+          - listitem: + 1 more
+        - text: View template 5 wk launch
+  - paragraph: Commerce
+  - heading "Storefronts, multi-seller marketplaces, and premium catalog sites." [level=2]
+  - paragraph: 2 templates
+  - list:
+    - listitem:
+      - link "Atelier — Premium Commerce Storefront A commerce site that feels considered — not a templated checkout in a cheap suit. Price ₦3,250,000 Ready in 28 days Often for Beauty, fashion, lifestyle, and design brands ready for a premium catalog Home Collection / category Product detail Cart and checkout + 3 more View template 6 wk launch":
+        - /url: /pick/atelier-commerce
+        - heading "Atelier — Premium Commerce Storefront" [level=3]
+        - paragraph: A commerce site that feels considered — not a templated checkout in a cheap suit.
+        - term: Price
+        - definition: ₦3,250,000
+        - term: Ready in
+        - definition: 28 days
+        - paragraph: Often for
+        - paragraph: Beauty, fashion, lifestyle, and design brands ready for a premium catalog
+        - list:
+          - listitem: Home
+          - listitem: Collection / category
+          - listitem: Product detail
+          - listitem: Cart and checkout
+          - listitem: + 3 more
+        - text: View template 6 wk launch
+    - listitem:
+      - link "Foundry — Multi-Seller Marketplace Sellers, listings, payouts, and trust signals — engineered to scale. Price ₦5,650,000 Ready in 45 days Often for Operators launching curated multi-seller marketplaces or vertical commerce Buyer storefront Listing search and filters Seller onboarding flow Seller dashboard + 2 more View template 10 wk launch":
+        - /url: /pick/foundry-marketplace
+        - heading "Foundry — Multi-Seller Marketplace" [level=3]
+        - paragraph: Sellers, listings, payouts, and trust signals — engineered to scale.
+        - term: Price
+        - definition: ₦5,650,000
+        - term: Ready in
+        - definition: 45 days
+        - paragraph: Often for
+        - paragraph: Operators launching curated multi-seller marketplaces or vertical commerce
+        - list:
+          - listitem: Buyer storefront
+          - listitem: Listing search and filters
+          - listitem: Seller onboarding flow
+          - listitem: Seller dashboard
+          - listitem: + 2 more
+        - text: View template 10 wk launch
+  - paragraph: Service
+  - heading "Bookings, property listings, schools, and ministry sites." [level=2]
+  - paragraph: 4 templates
+  - list:
+    - listitem:
+      - link "Cadence — Bookings & Appointments Take the schedule off your hands and put it on a confident booking page. Price ₦2,150,000 Ready in 21 days Often for Clinics, salons, tutors, trades, and consultants Service overview Booking flow (multi-step) Confirmation + reminders Customer account (history) + 2 more View template 5 wk launch":
+        - /url: /pick/cadence-bookings
+        - heading "Cadence — Bookings & Appointments" [level=3]
+        - paragraph: Take the schedule off your hands and put it on a confident booking page.
+        - term: Price
+        - definition: ₦2,150,000
+        - term: Ready in
+        - definition: 21 days
+        - paragraph: Often for
+        - paragraph: Clinics, salons, tutors, trades, and consultants
+        - list:
+          - listitem: Service overview
+          - listitem: Booking flow (multi-step)
+          - listitem: Confirmation + reminders
+          - listitem: Customer account (history)
+          - listitem: + 2 more
+        - text: View template 5 wk launch
+    - listitem:
+      - link "Prospect — Property & Listings Show real listings, capture serious buyers, and keep weak leads out of the inbox. Price ₦2,750,000 Ready in 24 days Often for Agents, developers, and property managers Listings index (with filters) Listing detail Map view Agent profile + 2 more View template 6 wk launch":
+        - /url: /pick/prospect-realestate
+        - heading "Prospect — Property & Listings" [level=3]
+        - paragraph: Show real listings, capture serious buyers, and keep weak leads out of the inbox.
+        - term: Price
+        - definition: ₦2,750,000
+        - term: Ready in
+        - definition: 24 days
+        - paragraph: Often for
+        - paragraph: Agents, developers, and property managers
+        - list:
+          - listitem: Listings index (with filters)
+          - listitem: Listing detail
+          - listitem: Map view
+          - listitem: Agent profile
+          - listitem: + 2 more
+        - text: View template 6 wk launch
+    - listitem:
+      - link "Academy — School & Education Portal Parents and students find what they need without hunting through PDFs. Price ₦2,950,000 Ready in 28 days Often for Schools, academies, and training centres Home with calendar strip Admissions Programs / curriculum News and announcements + 2 more View template 7 wk launch":
+        - /url: /pick/academy-school
+        - heading "Academy — School & Education Portal" [level=3]
+        - paragraph: Parents and students find what they need without hunting through PDFs.
+        - term: Price
+        - definition: ₦2,950,000
+        - term: Ready in
+        - definition: 28 days
+        - paragraph: Often for
+        - paragraph: Schools, academies, and training centres
+        - list:
+          - listitem: Home with calendar strip
+          - listitem: Admissions
+          - listitem: Programs / curriculum
+          - listitem: News and announcements
+          - listitem: + 2 more
+        - text: View template 7 wk launch
+    - listitem:
+      - link "Sanctuary — Church & Ministry Events, giving, and stories that read beautifully on phones and large screens. Price ₦1,650,000 Ready in 16 days Often for Congregations, charities, and faith-based organisations Home with service times About / leadership Sermons / media Events calendar + 2 more View template 4 wk launch":
+        - /url: /pick/sanctuary-church
+        - heading "Sanctuary — Church & Ministry" [level=3]
+        - paragraph: Events, giving, and stories that read beautifully on phones and large screens.
+        - term: Price
+        - definition: ₦1,650,000
+        - term: Ready in
+        - definition: 16 days
+        - paragraph: Often for
+        - paragraph: Congregations, charities, and faith-based organisations
+        - list:
+          - listitem: Home with service times
+          - listitem: About / leadership
+          - listitem: Sermons / media
+          - listitem: Events calendar
+          - listitem: + 2 more
+        - text: View template 4 wk launch
+  - paragraph: Creative
+  - heading "Portfolios, course platforms, and agency websites." [level=2]
+  - paragraph: 3 templates
+  - list:
+    - listitem:
+      - link "Orbit — Portfolio & Personal Brand Quiet confidence — your work, your story, and a clear way to hire you. Price ₦1,450,000 Ready in 12 days Often for Creatives, experts, and public-facing professionals Home (curated reel) Selected work Case study (3 pre-styled) About and bio + 2 more View template 3 wk launch":
+        - /url: /pick/orbit-portfolio
+        - heading "Orbit — Portfolio & Personal Brand" [level=3]
+        - paragraph: Quiet confidence — your work, your story, and a clear way to hire you.
+        - term: Price
+        - definition: ₦1,450,000
+        - term: Ready in
+        - definition: 12 days
+        - paragraph: Often for
+        - paragraph: Creatives, experts, and public-facing professionals
+        - list:
+          - listitem: Home (curated reel)
+          - listitem: Selected work
+          - listitem: Case study (3 pre-styled)
+          - listitem: About and bio
+          - listitem: + 2 more
+        - text: View template 3 wk launch
+    - listitem:
+      - link "Cohort — Courses & Online Learning Lessons, member sign-in, progress, and a payment path that doesn't break. Price ₦3,450,000 Ready in 32 days Often for Coaches, schools, and course creators ready to monetise teaching Course catalog Course detail / curriculum Lesson player Member dashboard + 2 more View template 8 wk launch":
+        - /url: /pick/cohort-learning
+        - heading "Cohort — Courses & Online Learning" [level=3]
+        - paragraph: Lessons, member sign-in, progress, and a payment path that doesn't break.
+        - term: Price
+        - definition: ₦3,450,000
+        - term: Ready in
+        - definition: 32 days
+        - paragraph: Often for
+        - paragraph: Coaches, schools, and course creators ready to monetise teaching
+        - list:
+          - listitem: Course catalog
+          - listitem: Course detail / curriculum
+          - listitem: Lesson player
+          - listitem: Member dashboard
+          - listitem: + 2 more
+        - text: View template 8 wk launch
+    - listitem:
+      - link "Canvas — Agency / Studio Website Lead with proof — case stories, services, and a confident first impression. Price ₦1,850,000 Ready in 16 days Often for Creative, marketing, and consulting teams selling case-led work Home (case-led reel) Selected work Case study (4 pre-styled) Services + 2 more View template 4 wk launch":
+        - /url: /pick/canvas-agency
+        - heading "Canvas — Agency / Studio Website" [level=3]
+        - paragraph: Lead with proof — case stories, services, and a confident first impression.
+        - term: Price
+        - definition: ₦1,850,000
+        - term: Ready in
+        - definition: 16 days
+        - paragraph: Often for
+        - paragraph: Creative, marketing, and consulting teams selling case-led work
+        - list:
+          - listitem: Home (case-led reel)
+          - listitem: Selected work
+          - listitem: Case study (4 pre-styled)
+          - listitem: Services
+          - listitem: + 2 more
+        - text: View template 4 wk launch
+  - paragraph: Internal
+  - heading "Operations control rooms and client portals for serious teams." [level=2]
+  - paragraph: 2 templates
+  - list:
+    - listitem:
+      - link "Strata — Operations Control Room Replace the spreadsheet sprawl with one disciplined operations surface. Price ₦3,900,000 Ready in 36 days Often for Service businesses, dispatch teams, and multi-role operations leads Role-based dashboards Lead pipeline Project stages with approvals Reporting view + 2 more View template 8 wk launch":
+        - /url: /pick/strata-operations
+        - heading "Strata — Operations Control Room" [level=3]
+        - paragraph: Replace the spreadsheet sprawl with one disciplined operations surface.
+        - term: Price
+        - definition: ₦3,900,000
+        - term: Ready in
+        - definition: 36 days
+        - paragraph: Often for
+        - paragraph: Service businesses, dispatch teams, and multi-role operations leads
+        - list:
+          - listitem: Role-based dashboards
+          - listitem: Lead pipeline
+          - listitem: Project stages with approvals
+          - listitem: Reporting view
+          - listitem: + 2 more
+        - text: View template 8 wk launch
+    - listitem:
+      - link "Relay — Client Portal Accelerator Onboarding, updates, files, approvals, and payment checkpoints in one room. Price ₦4,650,000 Ready in 40 days Often for Service businesses replacing endless email threads with a real workspace Client onboarding Project workspace File vault Approvals queue + 2 more View template 9 wk launch":
+        - /url: /pick/relay-portal
+        - heading "Relay — Client Portal Accelerator" [level=3]
+        - paragraph: Onboarding, updates, files, approvals, and payment checkpoints in one room.
+        - term: Price
+        - definition: ₦4,650,000
+        - term: Ready in
+        - definition: 40 days
+        - paragraph: Often for
+        - paragraph: Service businesses replacing endless email threads with a real workspace
+        - list:
+          - listitem: Client onboarding
+          - listitem: Project workspace
+          - listitem: File vault
+          - listitem: Approvals queue
+          - listitem: + 2 more
+        - text: View template 9 wk launch
+  - paragraph: Mobile
+  - heading "Cross-platform apps planned, built, and released with discipline." [level=2]
+  - paragraph: 1 template
+  - list:
+    - listitem:
+      - link "Vector — Mobile Customer App A real installable app — planned, built, and released the way it should be. Price ₦4,850,000 Ready in 49 days Often for Brands and operators with a customer base on phones Onboarding (3 screens) Account / profile Core feature flow Notifications inbox + 2 more View template 11 wk launch":
+        - /url: /pick/vector-mobile
+        - heading "Vector — Mobile Customer App" [level=3]
+        - paragraph: A real installable app — planned, built, and released the way it should be.
+        - term: Price
+        - definition: ₦4,850,000
+        - term: Ready in
+        - definition: 49 days
+        - paragraph: Often for
+        - paragraph: Brands and operators with a customer base on phones
+        - list:
+          - listitem: Onboarding (3 screens)
+          - listitem: Account / profile
+          - listitem: Core feature flow
+          - listitem: Notifications inbox
+          - listitem: + 2 more
+        - text: View template 11 wk launch
+  - paragraph: None of these fit? Describe what you actually need.
+  - heading "Custom builds use the same milestone discipline — and skip the template entirely." [level=2]
+  - paragraph: "Multi-role portals, bespoke software, deep integrations: we scope against your requirements, not a template you have to fit into. Brief takes about eight minutes and returns indicative pricing."
+  - link "Describe a fully custom build":
+    - /url: /request?path=custom
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

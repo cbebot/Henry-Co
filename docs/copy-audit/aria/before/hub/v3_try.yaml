@@ -1,0 +1,137 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx
+  - navigation:
+    - link "Directory":
+      - /url: /#directory
+    - link "About":
+      - /url: /about
+    - link "Contact":
+      - /url: /contact
+  - link "Search Henry Onyx":
+    - /url: /search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fv3%2Ftry
+  - link "Explore divisions":
+    - /url: /#divisions
+- main:
+  - paragraph: Try it
+  - heading "Walk the ecosystem in five minutes" [level=1]
+  - paragraph: This is not a demo environment. Every step below opens the live product, in your language, with prices in your currency. Start with nothing — no account, no email.
+  - paragraph: No account needed to start. You'll only be asked to identify yourself when you do something that needs identity — that's the rule everywhere on Henry Onyx.
+  - list:
+    - listitem:
+      - link "01 Browse without signing in Open Fabric Care and browse verified providers. Everything is readable as a stranger — value before identification. Open Fabric Care":
+        - /url: https://care.henryonyx.com
+        - text: 01 Browse without signing in
+        - paragraph: Open Fabric Care and browse verified providers. Everything is readable as a stranger — value before identification.
+        - text: Open Fabric Care
+    - listitem:
+      - link "02 See a real price Open any service. The price is shown before you commit, in your currency, with any platform fee itemized and named. Browse services":
+        - /url: https://care.henryonyx.com
+        - text: 02 See a real price
+        - paragraph: Open any service. The price is shown before you commit, in your currency, with any platform fee itemized and named.
+        - text: Browse services
+    - listitem:
+      - 'link "03 Cross a division Same account, same wallet, different economy: shop verified sellers on the marketplace. Open the marketplace"':
+        - /url: https://marketplace.henryonyx.com
+        - text: 03 Cross a division
+        - paragraph: "Same account, same wallet, different economy: shop verified sellers on the marketplace."
+        - text: Open the marketplace
+    - listitem:
+      - link "04 Check the jobs board Browse live roles. When you apply, the conversation with the employer is real and stays visible. Browse jobs":
+        - /url: https://jobs.henryonyx.com
+        - text: 04 Check the jobs board
+        - paragraph: Browse live roles. When you apply, the conversation with the employer is real and stays visible.
+        - text: Browse jobs
+    - listitem:
+      - link "05 Preview a course free Open a course on Learn. The preview is free — you pay only when you choose to enroll. Open Learn":
+        - /url: https://learn.henryonyx.com
+        - text: 05 Preview a course free
+        - paragraph: Open a course on Learn. The preview is free — you pay only when you choose to enroll.
+        - text: Open Learn
+    - listitem:
+      - link "06 Create your one account When you're ready, one sign-up works everywhere — your saved items, messages, and wallet follow you across every division. Create your account":
+        - /url: https://account.henryonyx.com/signup
+        - text: 06 Create your one account
+        - paragraph: When you're ready, one sign-up works everywhere — your saved items, messages, and wallet follow you across every division.
+        - text: Create your account
+  - paragraph: That's the ecosystem. If any step felt slower, less honest, or less finished than this page promised, tell us — the page and the product are supposed to be the same thing.
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Henry Onyx provides a clear way to understand the company and reach the right business with confidence.
+  - link "hello@henryonyx.com":
+    - /url: mailto:hello@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "Divisions directory":
+    - paragraph: Divisions directory
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+      - listitem:
+        - link "Search":
+          - /url: /search
+      - listitem:
+        - link "The ecosystem":
+          - /url: /v3
+      - listitem:
+        - link "The earning map":
+          - /url: /v3/how-we-earn
+      - listitem:
+        - link "Press":
+          - /url: /press/v3
+  - navigation "Legal":
+    - paragraph: Legal
+    - list:
+      - listitem:
+        - link "Privacy":
+          - /url: /privacy
+      - listitem:
+        - link "Terms":
+          - /url: /terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /preferences
+  - button "Continue"
+- alert

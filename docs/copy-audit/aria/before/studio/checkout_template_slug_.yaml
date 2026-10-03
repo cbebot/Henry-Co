@@ -1,0 +1,100 @@
+- main:
+  - link "Back to template":
+    - /url: /pick/meridian-executive
+  - paragraph: Instant reserve
+  - heading "Reserve Meridian — Executive Company Website — pay the deposit, we start in 14 days." [level=1]
+  - paragraph: No long brief. No back-and-forth. The template is fully scoped, the price is fixed, and the milestone plan is in writing. Confirm five details below, pay your deposit, and the team starts the moment finance verifies the transfer.
+  - group "About you":
+    - text: About you Full name*
+    - textbox "Full name*":
+      - /placeholder: Adaeze Okafor
+    - text: Email*
+    - textbox "Email*":
+      - /placeholder: you@company.com
+    - text: Business name
+    - textbox "Business name Optional, but it helps us personalise the build.":
+      - /placeholder: Acme Capital
+    - text: Optional, but it helps us personalise the build. Phone or WhatsApp
+    - textbox "Phone or WhatsApp Optional — but useful if we need a fast clarification.":
+      - /placeholder: +234 …
+    - text: Optional — but useful if we need a fast clarification.
+  - group "Brand direction":
+    - text: Brand direction
+    - paragraph: Pick the visual feel closest to where you want to land. We will explore around it during customisation, never against it.
+    - radio "Quiet luxury Soft type, generous whitespace, deep contrast." [checked]
+    - text: Quiet luxury Soft type, generous whitespace, deep contrast.
+    - radio "Bold editorial Confident typography, strong imagery, clear hierarchy."
+    - text: Bold editorial Confident typography, strong imagery, clear hierarchy.
+    - radio "Warm and human Friendly tone, organic shapes, approachable colour."
+    - text: Warm and human Friendly tone, organic shapes, approachable colour.
+    - radio "Confident corporate Sharp grid, restrained palette, executive feel."
+    - text: Confident corporate Sharp grid, restrained palette, executive feel.
+    - radio "Modern minimal Light, fast, with a single accent doing the work."
+    - text: Modern minimal Light, fast, with a single accent doing the work.
+  - group "Domain":
+    - text: Domain
+    - radio "I already own a domain We connect it cleanly at launch with the right DNS records."
+    - text: I already own a domain We connect it cleanly at launch with the right DNS records.
+    - radio "I want Henry Onyx to source one We check availability and register on your behalf at cost."
+    - text: I want Henry Onyx to source one We check availability and register on your behalf at cost.
+    - radio "Decide before launch Skip this for now — we lock the domain plan at the launch milestone." [checked]
+    - text: Decide before launch Skip this for now — we lock the domain plan at the launch milestone. Preferred or existing domain (optional)
+    - textbox "Preferred or existing domain (optional)":
+      - /placeholder: acmecapital.ng
+  - group "Anything else":
+    - text: Anything else Notes for the team (optional)
+    - textbox "Notes for the team (optional) A sentence or two on what success looks like, or anything we should know.":
+      - /placeholder: We need this live before the launch event on the 24th.
+    - text: A sentence or two on what success looks like, or anything we should know.
+  - checkbox "I have read and agree to the Henry Onyx Studio Terms of Engagement, Privacy Policy, and Refund & Cancellation Policy. I understand the deposit reserves my build slot and is non-refundable once kickoff begins, per the refund schedule."
+  - text: I have read and agree to the
+  - link "Henry Onyx Studio Terms of Engagement":
+    - /url: /policies/terms
+  - text: ","
+  - link "Privacy Policy":
+    - /url: /policies/privacy
+  - text: ", and"
+  - link "Refund & Cancellation Policy":
+    - /url: /policies/refunds
+  - text: . I understand the deposit reserves my build slot and is non-refundable once kickoff begins, per the refund schedule.
+  - paragraph:
+    - text: "Next: pay the deposit of"
+    - strong: ₦877,500
+    - text: by bank transfer.
+  - button "Reserve and continue to payment"
+  - complementary:
+    - paragraph: Executive company website
+    - heading "Meridian — Executive Company Website" [level=2]
+    - paragraph: A premium six-page site that makes the company feel as serious as it is.
+    - term: Total
+    - definition:
+      - strong: ₦1,950,000
+    - term: Deposit (now)
+    - definition:
+      - strong: ₦877,500
+    - term: Balance (at launch)
+    - definition: ₦1,072,500
+    - term: Ready in
+    - definition: 14 days
+    - paragraph: Pay to
+    - paragraph: Bank details on next page
+    - paragraph: Verified company account
+    - list:
+      - listitem: Deposit secured by milestone discipline; refundable on the published schedule.
+      - listitem: Encrypted in transit; private data covered by our NDPA-aligned privacy policy.
+      - listitem: IP transfers to you on full payment, in writing.
+    - paragraph: Included with this template
+    - list:
+      - listitem: Editable CMS-driven content
+      - listitem: Lead-capture form routed to inbox + WhatsApp
+      - listitem: On-page SEO and Open Graph cards
+      - listitem: Analytics + conversion event wiring
+      - listitem: Mobile-first layout with safe-area polish
+      - listitem: WCAG 2.1 AA contrast and focus pass
+    - paragraph:
+      - text: Need scope refinement instead?
+      - link "Open the full brief":
+        - /url: /request?template=meridian-executive
+      - text: .
+- button "How can we help? — Need help?": Help
+- alert

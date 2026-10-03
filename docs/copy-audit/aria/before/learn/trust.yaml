@@ -1,0 +1,130 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Learn":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Learn
+  - navigation:
+    - link "Courses":
+      - /url: /courses
+    - link "Paths":
+      - /url: /paths
+    - link "Academy":
+      - /url: /academy
+    - link "Certificates":
+      - /url: /certifications
+    - link "Teach":
+      - /url: /teach
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Flearn.henryonyx.com%2Ftrust
+  - link "Explore courses":
+    - /url: /courses
+- main:
+  - paragraph: Trust & safety
+  - heading "Learning records you can rely on." [level=1]
+  - paragraph: Enrollments, progress, quizzes, and certificates are recorded and enforced by Henry Onyx — not something a browser can fake. Internal courses stay restricted to the right people; certificates carry a verification code anyone can check.
+  - link "Browse the catalog":
+    - /url: /courses
+  - link "Verify a certificate":
+    - /url: /certifications/verify
+  - list:
+    - listitem: Records Authoritative and tamper-resistant
+    - listitem: Access control Scoped to who a course is for
+    - listitem: Credentials Downloadable + publicly verifiable
+  - paragraph: Three operating standards
+  - list:
+    - listitem:
+      - heading "Enrollment & access" [level=2]
+      - paragraph: Starting a course, paying where required, and unlocking lessons happen through secure workflows, and completion is verified against your actual progress — not self-declared.
+    - listitem:
+      - heading "Internal & assigned training" [level=2]
+      - paragraph: Some programs are visible only to invited staff or partners. Those restrictions are enforced the same way as the rest of the academy, every time access is checked.
+    - listitem:
+      - heading "Certificates & verification" [level=2]
+      - paragraph: When you earn a credential, we issue a record you can download and a code third parties can check. That’s the difference between decoration and proof.
+  - paragraph: Where to next
+  - heading "Verify a credential, or start a program built to be checkable." [level=2]
+  - paragraph: Anyone can verify a Henry Onyx certificate from its code — no account required. Learners get the same standard of proof whether the program is public, assigned, or partner-only.
+  - link "Verify a certificate":
+    - /url: /certifications/verify
+  - link "Certificate programs":
+    - /url: /certifications
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Practical courses, clear progress, and verified certificates — learn on your schedule and resume anytime from your Henry Onyx account.
+  - link "learn@henryonyx.com":
+    - /url: mailto:learn@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Explore":
+    - paragraph: Explore
+    - list:
+      - listitem:
+        - link "Courses":
+          - /url: /courses
+      - listitem:
+        - link "Paths":
+          - /url: /paths
+      - listitem:
+        - link "How it works":
+          - /url: /academy
+      - listitem:
+        - link "Certificates":
+          - /url: /certifications
+  - navigation "Engage":
+    - paragraph: Engage
+    - list:
+      - listitem:
+        - link "Teach with Henry Onyx":
+          - /url: /teach
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/learn
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

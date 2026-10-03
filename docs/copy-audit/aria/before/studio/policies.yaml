@@ -1,0 +1,176 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fpolicies
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Governance
+  - heading "Real agreements. In writing. Before any money moves." [level=1]
+  - paragraph: These are the agreements every Henry Onyx Studio engagement runs against. They are not stock templates. They are written against how the platform actually operates — bank transfer in naira, milestone discipline in the portal, NDPA-aligned data handling, and IP transfer on verified final payment. Read them once and they will hold up across every project.
+  - text: Last reviewed 2026-05-03 · Governed by Nigerian law
+  - list:
+    - listitem:
+      - link "Terms Terms of Engagement The agreement that governs every Studio project — scope, payments, ownership, change control, and termination. Read in full":
+        - /url: /policies/terms
+        - text: Terms
+        - heading "Terms of Engagement" [level=2]
+        - paragraph: The agreement that governs every Studio project — scope, payments, ownership, change control, and termination.
+        - text: Read in full
+    - listitem:
+      - link "Privacy Privacy Policy How Henry Onyx Studio collects, uses, stores, and shares personal data — written against the Nigeria Data Protection Act (NDPA) 2023. Read in full":
+        - /url: /policies/privacy
+        - text: Privacy
+        - heading "Privacy Policy" [level=2]
+        - paragraph: How Henry Onyx Studio collects, uses, stores, and shares personal data — written against the Nigeria Data Protection Act (NDPA) 2023.
+        - text: Read in full
+    - listitem:
+      - link "Refunds Refund and Cancellation Policy Cancellation windows, refund percentages, and how the milestone-based pipeline determines what is refundable. Read in full":
+        - /url: /policies/refunds
+        - text: Refunds
+        - heading "Refund and Cancellation Policy" [level=2]
+        - paragraph: Cancellation windows, refund percentages, and how the milestone-based pipeline determines what is refundable.
+        - text: Read in full
+    - listitem:
+      - link "IP Intellectual Property and Ownership Who owns what across the engagement lifecycle, and how IP transfers on final payment. Read in full":
+        - /url: /policies/intellectual-property
+        - text: IP
+        - heading "Intellectual Property and Ownership" [level=2]
+        - paragraph: Who owns what across the engagement lifecycle, and how IP transfers on final payment.
+        - text: Read in full
+    - listitem:
+      - link "Security Security and Data Protection How Henry Onyx Studio protects data — at rest, in transit, and across the team. Read in full":
+        - /url: /policies/security
+        - text: Security
+        - heading "Security and Data Protection" [level=2]
+        - paragraph: How Henry Onyx Studio protects data — at rest, in transit, and across the team.
+        - text: Read in full
+    - listitem:
+      - link "Delivery SLA Delivery SLA What we commit to on delivery timing, communication response, and post-launch support. Read in full":
+        - /url: /policies/sla
+        - text: Delivery SLA
+        - heading "Delivery SLA" [level=2]
+        - paragraph: What we commit to on delivery timing, communication response, and post-launch support.
+        - text: Read in full
+    - listitem:
+      - link "Acceptable use Acceptable Use Policy What Henry Onyx Studio will and will not build, and what conduct we expect inside the platform. Read in full":
+        - /url: /policies/acceptable-use
+        - text: Acceptable use
+        - heading "Acceptable Use Policy" [level=2]
+        - paragraph: What Henry Onyx Studio will and will not build, and what conduct we expect inside the platform.
+        - text: Read in full
+  - paragraph: Engagement
+  - heading "Terms run from the moment you reserve." [level=3]
+  - paragraph: Reserving a template, accepting a proposal, or paying a deposit is acceptance of the current Terms. The version you accepted is logged in your Client portal.
+  - paragraph: Privacy
+  - heading "Built to NDPA — minimum data, controlled access." [level=3]
+  - paragraph: We collect what we need to deliver the engagement, store it under row-level security, and respect every NDPA right — access, correction, erasure, portability.
+  - paragraph: Money
+  - heading "Bank transfer to the verified company account." [level=3]
+  - paragraph:
+    - text: Always to
+    - strong: Henry Onyx Limited
+    - text: If anyone, internal or external, asks you to pay anywhere else, treat it as fraud and contact finance.
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

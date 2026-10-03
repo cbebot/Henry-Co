@@ -1,0 +1,4944 @@
+{
+ "domain": "property",
+ "base": "http://localhost:4104",
+ "sha": "b1efffe3",
+ "measuredAt": "2026-10-03T10:05:49.866Z",
+ "budgets": {
+  "page": {
+   "home": 250,
+   "landing": 250,
+   "info": 280,
+   "pricing": 300,
+   "index": 180,
+   "detail": 220,
+   "help": 250,
+   "transactional": 150,
+   "auth": 80,
+   "utility": 100,
+   "legal": null
+  },
+  "aboveFold": 60,
+  "h1MaxWords": 12,
+  "metaDescriptionMaxChars": 160,
+  "metaDescriptionMinChars": 50,
+  "chrome": 160
+ },
+ "routes": [
+  {
+   "path": "/",
+   "type": "home",
+   "budget": 250,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 711,
+     "main": 711,
+     "outside": 0,
+     "chrome": 84,
+     "overlay": 1,
+     "pageAboveFold": 219
+    },
+    "h1s": [
+     {
+      "text": "A property platform that respects your time, the listing, and the work that comes after move-in.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Property",
+    "metaDescription": "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations...",
+    "metaDescriptionChars": 158,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Premium homes and workspaces with stronger context before the first viewing."
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Location pages that explain the market, not just the stock."
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Designed to be calmer, tighter, and more operationally serious than a classified board."
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "A property platform that continues after marketing, inquiries, and move-in."
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "People behind the listings, viewings, and managed-property follow-through."
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Search the inventory or submit a property — the rest of the flow is on a single ledger."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 36,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Managed"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Submit"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse listings"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main#henryco-main > section.relative.mx-auto > div.flex.flex-wrap > span.inline-flex.items-center",
+      "top": 144,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Vetted listings · Verified owners"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main#henryco-main > section.relative.mx-auto > div.flex.flex-wrap > span.inline-flex.items-center",
+      "top": 144,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Inventory under review"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main#henryco-main > section.relative.mx-auto > div.flex.flex-wrap > span",
+      "top": 144,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Henry Onyx Property · Inventory 2026"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "main#henryco-main > section.relative.mx-auto > div.mt-7.grid > div > h1.property-display.max-w-3xl",
+      "top": 180,
+      "aboveFold": true,
+      "words": 16,
+      "text": "A property platform that respects your time, the listing, and the work that comes after move-in."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.relative.mx-auto > div.mt-7.grid > div > p.mt-5.max-w-xl",
+      "top": 430,
+      "aboveFold": true,
+      "words": 30,
+      "text": "Curated rentals, sale inventory, commercial spaces, and managed homes — every listing carries trust notes, a verified owner path, and a structured viewing flow. Intent first, paperwork when you need it."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.flex.items-center",
+      "top": 584,
+      "aboveFold": true,
+      "words": 4,
+      "text": "01 · Live in it"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.block > span.block.font-semibold",
+      "top": 579,
+      "aboveFold": true,
+      "words": 7,
+      "text": "Browse vetted homes for rent or sale"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.block > span.mt-1.5.block",
+      "top": 613,
+      "aboveFold": true,
+      "words": 18,
+      "text": "Filter by area, price, managed status. Save listings, request viewings, message owners — all from your Henry Onyx account."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.flex.items-center",
+      "top": 699,
+      "aboveFold": true,
+      "words": 6,
+      "text": "02 · Own it without operating it"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.block > span.block.font-semibold",
+      "top": 710,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Managed-property browse"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.block > span.mt-1.5.block",
+      "top": 745,
+      "aboveFold": true,
+      "words": 18,
+      "text": "Henry Onyx continues to operate selected portfolios after move-in: viewings, screening, maintenance, and owner reporting on one ledger."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.flex.items-center",
+      "top": 831,
+      "aboveFold": true,
+      "words": 5,
+      "text": "03 · List or steward it"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.block > span.block.font-semibold",
+      "top": 833,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Submit a property for review"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.mt-9.divide-y > li.group/row > a.flex.flex-col > span.block > span.mt-1.5.block",
+      "top": 868,
+      "aboveFold": true,
+      "words": 26,
+      "text": "Built for owners and agents. Inquiries land in your Henry Onyx inbox; managed support is available if you want Henry Onyx to handle the operating side."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section.relative.mx-auto > div.mt-7.grid > div > div.mt-7.flex > span",
+      "top": 962,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Returning?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section.relative.mx-auto > div.mt-7.grid > div > div.mt-7.flex > a.font-semibold.underline-offset-4",
+      "top": 962,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Open your property activity"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section.relative.mx-auto > div.mt-7.grid > div > div.mt-7.flex > a.font-semibold.transition",
+      "top": 962,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Track a viewing"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.relative.mx-auto > div.mt-7.grid > aside > div.border.p-6 > p.font-semibold.uppercase",
+      "top": 405,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Inventory snapshot"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > dt.font-semibold.uppercase",
+      "top": 461,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Live listings"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "aside > div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > dd.shrink-0.text-right",
+      "top": 449,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > dt.font-semibold.uppercase",
+      "top": 510,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Areas covered"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > p.mt-1.leading-5",
+      "top": 531,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Areas open as inventory clears review"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "aside > div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > dd.shrink-0.text-right",
+      "top": 498,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > dt.font-semibold.uppercase",
+      "top": 582,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Managed portfolio"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "aside > div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > dd.shrink-0.text-right",
+      "top": 570,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > dt.font-semibold.uppercase",
+      "top": 631,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Pending review"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > p.mt-1.leading-5",
+      "top": 652,
+      "aboveFold": true,
+      "words": 7,
+      "text": "Listings clearing moderation before they go public"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "aside > div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > dd.shrink-0.text-right",
+      "top": 619,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mt-7.grid > aside > div.border.p-6 > div.mt-6 > p.font-semibold.uppercase",
+      "top": 708,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Refine the search"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.border.p-6 > div.mt-6 > div.mt-3 > form.property-paper.grid > label.block",
+      "top": 762,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.border.p-6 > div.mt-6 > div.mt-3 > form.property-paper.grid > label.block",
+      "top": 762,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Category"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.border.p-6 > div.mt-6 > div.mt-3 > form.property-paper.grid > label.block",
+      "top": 762,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Area"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "div.mt-6 > div.mt-3 > form.property-paper.grid > div.flex.flex-col > button.property-button-primary.inline-flex",
+      "top": 770,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Start a calm search"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "div.mt-6 > div.mt-3 > form.property-paper.grid > div.flex.flex-col > button.inline-flex.items-center",
+      "top": 827,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Reset filters"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.mt-3 > form.property-paper.grid > div.flex.flex-col > div.flex.flex-wrap > label.inline-flex.items-center",
+      "top": 870,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Managed only"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.mt-3 > form.property-paper.grid > div.flex.flex-col > div.flex.flex-wrap > label.inline-flex.items-center",
+      "top": 870,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Furnished"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mt-6 > div.mt-3 > form.property-paper.grid > div.flex.flex-col > p.text-xs",
+      "top": 898,
+      "aboveFold": true,
+      "words": 18,
+      "text": "Filters stay in the URL so you can share the exact search or come back to it later."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.flex.flex-col > div > p.property-kicker",
+      "top": 1078,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Featured listings"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.flex.flex-col > div > h2.mt-3.text-balance",
+      "top": 1101,
+      "aboveFold": false,
+      "words": 11,
+      "text": "Premium homes and workspaces with stronger context before the first viewing."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.flex.flex-col > div > p.mt-3.max-w-2xl",
+      "top": 1159,
+      "aboveFold": false,
+      "words": 16,
+      "text": "The featured surface prioritizes better photography, clearer positioning, tighter moderation, and listings with higher-conviction next steps."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.flex.flex-col > a.inline-flex.items-center",
+      "top": 1077,
+      "aboveFold": false,
+      "words": 3,
+      "text": "View all listings"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.mt-10.border > p.font-semibold.uppercase",
+      "top": 1308,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Featured surface · clearing review"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.mt-10.border > p.mt-4.max-w-xl",
+      "top": 1342,
+      "aboveFold": false,
+      "words": 26,
+      "text": "The featured rail is empty by design while inventory clears moderation. New listings are reviewed for quality, owner verification, and trust posture before they’re elevated here."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.mt-10.border > div.mt-5.flex > a.inline-flex.items-center",
+      "top": 1452,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Browse all listings"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.mt-10.border > div.mt-5.flex > a.inline-flex.items-center",
+      "top": 1452,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a property"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.grid.gap-10 > div > p.property-kicker",
+      "top": 1635,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Areas"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.grid.gap-10 > div > h2.mt-3.text-balance",
+      "top": 1658,
+      "aboveFold": false,
+      "words": 10,
+      "text": "Location pages that explain the market, not just the stock."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.grid.gap-10 > div > p.mt-3.max-w-md",
+      "top": 1752,
+      "aboveFold": false,
+      "words": 18,
+      "text": "Each area surface gives serious renters and buyers the market context, hotspots, and trust rails behind the shortlist."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.grid.gap-10 > div.border.p-8 > p.font-semibold.uppercase",
+      "top": 1687,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Areas opening soon"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-20 > div.grid.gap-10 > div.border.p-8 > p.mt-3.leading-7",
+      "top": 1719,
+      "aboveFold": false,
+      "words": 22,
+      "text": "Area ledger entries appear once at least one approved listing lands in moderation. Submit a listing to help the area become visible."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.grid.gap-10 > div > p.property-kicker",
+      "top": 1901,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Differentiators"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.grid.gap-10 > div > h2.mt-3.text-balance",
+      "top": 1924,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Designed to be calmer, tighter, and more operationally serious than a classified board."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.grid.gap-10 > div > p.mt-4.max-w-md",
+      "top": 2053,
+      "aboveFold": false,
+      "words": 20,
+      "text": "These are the product and operations choices that turn the platform into a trust surface, not just a listing dump."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.grid.gap-10 > ol.divide-y.border-y > li.py-6 > div.flex.flex-col > span.font-semibold.uppercase",
+      "top": 1929,
+      "aboveFold": false,
+      "words": 1,
+      "text": "01"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ol.divide-y.border-y > li.py-6 > div.flex.flex-col > div > p.font-semibold",
+      "top": 1928,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Trust passports on listings"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ol.divide-y.border-y > li.py-6 > div.flex.flex-col > div > p.mt-2.max-w-2xl",
+      "top": 1965,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Each premium listing carries verification, service, and readiness notes that reduce low-information browsing."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.grid.gap-10 > ol.divide-y.border-y > li.py-6 > div.flex.flex-col > span.font-semibold.uppercase",
+      "top": 2074,
+      "aboveFold": false,
+      "words": 1,
+      "text": "02"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ol.divide-y.border-y > li.py-6 > div.flex.flex-col > div > p.font-semibold",
+      "top": 2073,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Viewing confidence rails"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ol.divide-y.border-y > li.py-6 > div.flex.flex-col > div > p.mt-2.max-w-2xl",
+      "top": 2110,
+      "aboveFold": false,
+      "words": 14,
+      "text": "The platform treats viewings like staged operations with backup slots, reminders, and agent accountability."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.grid.gap-10 > ol.divide-y.border-y > li.py-6 > div.flex.flex-col > span.font-semibold.uppercase",
+      "top": 2219,
+      "aboveFold": false,
+      "words": 1,
+      "text": "03"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ol.divide-y.border-y > li.py-6 > div.flex.flex-col > div > p.font-semibold",
+      "top": 2218,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed-property layer"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ol.divide-y.border-y > li.py-6 > div.flex.flex-col > div > p.mt-2.max-w-2xl",
+      "top": 2255,
+      "aboveFold": false,
+      "words": 14,
+      "text": "Listings can move naturally into ongoing trust operations instead of ending at lead capture."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.grid.gap-10 > ol.divide-y.border-y > li.py-6 > div.flex.flex-col > span.font-semibold.uppercase",
+      "top": 2336,
+      "aboveFold": false,
+      "words": 1,
+      "text": "04"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ol.divide-y.border-y > li.py-6 > div.flex.flex-col > div > p.font-semibold",
+      "top": 2335,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Editorial listing moderation"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ol.divide-y.border-y > li.py-6 > div.flex.flex-col > div > p.mt-2.max-w-2xl",
+      "top": 2372,
+      "aboveFold": false,
+      "words": 18,
+      "text": "Weak copy and weak media do not go live untouched; Henry Onyx improves the listing surface before release."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.grid.gap-12 > div > p.property-kicker",
+      "top": 2550,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed-property services"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.grid.gap-12 > div > h2.mt-3.text-balance",
+      "top": 2572,
+      "aboveFold": false,
+      "words": 10,
+      "text": "A property platform that continues after marketing, inquiries, and move-in."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.grid.gap-12 > div > p.mt-5.max-w-xl",
+      "top": 2674,
+      "aboveFold": false,
+      "words": 25,
+      "text": "Henry Onyx Property is designed to market, qualify, coordinate, and then keep operating selected properties through owner reporting, inspections, maintenance coordination, and ongoing trust services."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > span.font-semibold.uppercase",
+      "top": 2822,
+      "aboveFold": false,
+      "words": 1,
+      "text": "01"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > div > p.font-semibold",
+      "top": 2822,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Managed Property Trust Services"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > div > p.mt-1.max-w-xl",
+      "top": 2855,
+      "aboveFold": false,
+      "words": 14,
+      "text": "Henry Onyx can operate the property after it is listed, occupied, and handed over."
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 2895,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Owner reporting"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 2895,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Maintenance coordination"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 2895,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Rent follow-up"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 2895,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Viewing and inspection standards"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > span.font-semibold.uppercase",
+      "top": 2965,
+      "aboveFold": false,
+      "words": 1,
+      "text": "02"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > div > p.font-semibold",
+      "top": 2965,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Listing Marketing and Positioning"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > div > p.mt-1.max-w-xl",
+      "top": 2997,
+      "aboveFold": false,
+      "words": 9,
+      "text": "Sharper presentation, stronger photography direction, and better inquiry conversion."
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 3037,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Editorial listing copy"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 3037,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Premium media sequencing"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 3037,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Featured campaign placement"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 3037,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Viewing-prep workflows"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > span.font-semibold.uppercase",
+      "top": 3108,
+      "aboveFold": false,
+      "words": 1,
+      "text": "03"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > div > p.font-semibold",
+      "top": 3108,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Inquiry and Viewing Operations"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "ul.mt-8.divide-y > li.py-5 > div.flex.flex-col > div > p.mt-1.max-w-xl",
+      "top": 3140,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Henry Onyx can handle response sequencing, screening, and viewing scheduling with calmer rigor."
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 3208,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Lead triage"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 3208,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Scheduling coordination"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 3208,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Reminder automation"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "li.py-5 > div.flex.flex-col > div > ul.mt-3.flex > li.rounded-full.border",
+      "top": 3208,
+      "aboveFold": false,
+      "words": 2,
+      "text": "No-show reduction"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.mt-24 > div.grid.gap-12 > aside > div.border.p-6 > p.font-semibold.uppercase",
+      "top": 2658,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed-property ledger"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > dt.font-semibold.uppercase",
+      "top": 2714,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Active engagements"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "aside > div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > dd.shrink-0.text-right",
+      "top": 2702,
+      "aboveFold": false,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > dt.font-semibold.uppercase",
+      "top": 2762,
+      "aboveFold": false,
+      "words": 2,
+      "text": "In pipeline"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "aside > div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > dd.shrink-0.text-right",
+      "top": 2750,
+      "aboveFold": false,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > dt.font-semibold.uppercase",
+      "top": 2811,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Combined value"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.border.p-6 > dl.mt-5.divide-y > div.flex.items-baseline > div > p.mt-1.leading-5",
+      "top": 2832,
+      "aboveFold": false,
+      "words": 7,
+      "text": "Combined portfolio under Henry Onyx trust operations"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.mt-24 > div.grid.gap-12 > aside > div.border.p-6 > p.mt-5.leading-6",
+      "top": 2887,
+      "aboveFold": false,
+      "words": 18,
+      "text": "Owner reporting, inspections, and maintenance coordination run on the same ledger as the marketing surface. One audit trail."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.flex.flex-col > div > p.property-kicker",
+      "top": 3352,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Relationship managers"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.flex.flex-col > div > h2.mt-3.text-balance",
+      "top": 3375,
+      "aboveFold": false,
+      "words": 8,
+      "text": "People behind the listings, viewings, and managed-property follow-through."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.flex.flex-col > div > p.mt-3.max-w-2xl",
+      "top": 3428,
+      "aboveFold": false,
+      "words": 17,
+      "text": "The operator layer is visible because premium real estate decisions need stronger coordination than anonymous form handoffs."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.mt-10.border > p.font-semibold.uppercase",
+      "top": 3553,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Operator layer publishing soon"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.mt-24 > div.mt-10.border > p.mt-3.max-w-xl",
+      "top": 3584,
+      "aboveFold": false,
+      "words": 26,
+      "text": "Relationship managers appear here once their profiles are verified. Until then, owner inquiries route directly to the property desk and a manager is assigned during review."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.mt-24 > div.border.bg-gradient-to-br > div.grid.gap-6 > div > p.property-kicker",
+      "top": 3807,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "section.mx-auto.mt-24 > div.border.bg-gradient-to-br > div.grid.gap-6 > div > h2.mt-3.text-balance",
+      "top": 3831,
+      "aboveFold": false,
+      "words": 17,
+      "text": "Search the inventory or submit a property — the rest of the flow is on a single ledger."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.mt-24 > div.border.bg-gradient-to-br > div.grid.gap-6 > div > p.mt-3.max-w-xl",
+      "top": 3918,
+      "aboveFold": false,
+      "words": 20,
+      "text": "Saved listings, viewing requests, owner replies, and the eventual managed handoff stay in one Henry Onyx account. No portal hopping."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section.mx-auto.mt-24 > div.border.bg-gradient-to-br > div.grid.gap-6 > div.flex.flex-col > a.property-button-primary.inline-flex",
+      "top": 3849,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Browse all listings"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section.mx-auto.mt-24 > div.border.bg-gradient-to-br > div.grid.gap-6 > div.flex.flex-col > a.inline-flex.items-center",
+      "top": 3907,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a property"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.property-kicker",
+      "top": 4237,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > p.max-w-md.text-sm",
+      "top": 4277,
+      "aboveFold": false,
+      "words": 17,
+      "text": "Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p.font-medium",
+      "top": 4377,
+      "aboveFold": false,
+      "words": 1,
+      "text": "property@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p > a.transition-colors",
+      "top": 4403,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 4236,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4268,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Search listings"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4300,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed properties"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4332,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Trust standards"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4364,
+      "aboveFold": false,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 4236,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Owners and agents"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4268,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a listing"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4300,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Agent surface"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4332,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Viewings and inquiries"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4364,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Listing activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 4236,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4268,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Property activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 4300,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx account sign-in"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > span",
+      "top": 4483,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Property All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > a.transition",
+      "top": 4483,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.property-page.property-shell > footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > span.inline-flex.items-center",
+      "top": 4484,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem"
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 855,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "div.mt-6 > div.mt-3 > form.property-paper.grid > label.block > input.property-input.mt-2",
+      "top": 789,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Ikoyi penthouse, serviced residence, office suite..."
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "div.mt-6 > div.mt-3 > form.property-paper.grid > label.block > select.property-select.mt-2",
+      "top": 789,
+      "aboveFold": true,
+      "words": 2,
+      "text": "All categories"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "div.mt-6 > div.mt-3 > form.property-paper.grid > label.block > select.property-select.mt-2",
+      "top": 789,
+      "aboveFold": true,
+      "words": 2,
+      "text": "All areas"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 711,
+     "main": 711,
+     "outside": 0,
+     "chrome": 75,
+     "overlay": 0,
+     "pageAboveFold": 113
+    },
+    "h1s": [
+     {
+      "text": "A property platform that respects your time, the listing, and the work that comes after move-in.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Property",
+    "metaDescription": "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations...",
+    "metaDescriptionChars": 158,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 133
+   },
+   "pageWords": 711,
+   "aboveFold": 219,
+   "chromeWords": 84,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/search",
+   "type": "index",
+   "budget": 180,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 111,
+     "main": 111,
+     "outside": 0,
+     "chrome": 84,
+     "overlay": 1,
+     "pageAboveFold": 111
+    },
+    "h1s": [
+     {
+      "text": "Find the right place. Keep your filters.",
+      "visible": true
+     }
+    ],
+    "title": "Search property listings | Henry Onyx Property",
+    "metaDescription": "Search Henry Onyx Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
+    "metaDescriptionChars": 111,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "No listings match this combination yet."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 36,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Managed"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Submit"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse listings"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.property-kicker",
+      "top": 105,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > h1.property-heading.mt-4",
+      "top": 121,
+      "aboveFold": true,
+      "words": 7,
+      "text": "Find the right place. Keep your filters."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.hc-font-reading.mt-4",
+      "top": 280,
+      "aboveFold": true,
+      "words": 25,
+      "text": "Filter state stays shareable in the URL, results update without a blunt refresh, and every listing carries trust context before you invest time in it."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > label.block",
+      "top": 396,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > label.block",
+      "top": 396,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Category"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > label.block",
+      "top": 396,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Area"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > div.flex.flex-col > button.property-button-primary.inline-flex",
+      "top": 404,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Search properties"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > div.flex.flex-col > button.inline-flex.items-center",
+      "top": 461,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Reset filters"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.mt-8 > form.property-paper.grid > div.flex.flex-col > div.flex.flex-wrap > label.inline-flex.items-center",
+      "top": 504,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Managed only"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.mt-8 > form.property-paper.grid > div.flex.flex-col > div.flex.flex-wrap > label.inline-flex.items-center",
+      "top": 504,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Furnished"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > div.flex.flex-col > p.text-xs",
+      "top": 532,
+      "aboveFold": true,
+      "words": 18,
+      "text": "Filters stay in the URL so you can share the exact search or come back to it later."
+     },
+     {
+      "region": "main",
+      "tag": "div",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > div.mt-8.flex > div.text-sm",
+      "top": 609,
+      "aboveFold": true,
+      "words": 4,
+      "text": "0 live listings found"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main.mx-auto.px-5 > div.mt-8.flex > div.flex.flex-wrap > div.inline-flex.rounded-full > a.rounded-full.px-3",
+      "top": 610,
+      "aboveFold": true,
+      "words": 1,
+      "text": "List"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main.mx-auto.px-5 > div.mt-8.flex > div.flex.flex-wrap > div.inline-flex.rounded-full > a.rounded-full.px-3",
+      "top": 610,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Map"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > div.mt-8 > section.border-l-2.px-5 > h3.font-semibold.leading-tight",
+      "top": 682,
+      "aboveFold": true,
+      "words": 6,
+      "text": "No listings match this combination yet."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > div.mt-8 > section.border-l-2.px-5 > p.mt-3.max-w-2xl",
+      "top": 730,
+      "aboveFold": true,
+      "words": 26,
+      "text": "Try broadening the area, removing one filter at a time, or switching from a precise phrase to the property type you want Henry Onyx to surface."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main.mx-auto.px-5 > div.mt-8 > section.border-l-2.px-5 > div.mt-5.flex > a.property-button-primary.inline-flex",
+      "top": 806,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Reset search"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.property-kicker",
+      "top": 1025,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > p.max-w-md.text-sm",
+      "top": 1066,
+      "aboveFold": false,
+      "words": 17,
+      "text": "Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p.font-medium",
+      "top": 1166,
+      "aboveFold": false,
+      "words": 1,
+      "text": "property@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p > a.transition-colors",
+      "top": 1192,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1024,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1057,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Search listings"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1089,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed properties"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1121,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Trust standards"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1153,
+      "aboveFold": false,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1024,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Owners and agents"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1057,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a listing"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1089,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Agent surface"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1121,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Viewings and inquiries"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1153,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Listing activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1024,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1057,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Property activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1089,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx account sign-in"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > span",
+      "top": 1272,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Property All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > a.transition",
+      "top": 1272,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.property-page.property-shell > footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > span.inline-flex.items-center",
+      "top": 1272,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem"
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 855,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > label.block > input.property-input.mt-2",
+      "top": 423,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Ikoyi penthouse, serviced residence, office suite..."
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > label.block > select.property-select.mt-2",
+      "top": 423,
+      "aboveFold": true,
+      "words": 2,
+      "text": "All categories"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "main.mx-auto.px-5 > div.mt-8 > form.property-paper.grid > label.block > select.property-select.mt-2",
+      "top": 423,
+      "aboveFold": true,
+      "words": 2,
+      "text": "All areas"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 111,
+     "main": 111,
+     "outside": 0,
+     "chrome": 75,
+     "overlay": 0,
+     "pageAboveFold": 71
+    },
+    "h1s": [
+     {
+      "text": "Find the right place. Keep your filters.",
+      "visible": true
+     }
+    ],
+    "title": "Search property listings | Henry Onyx Property",
+    "metaDescription": "Search Henry Onyx Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
+    "metaDescriptionChars": 111,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 43
+   },
+   "pageWords": 111,
+   "aboveFold": 111,
+   "chromeWords": 84,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/area/[slug]",
+   "type": "index",
+   "budget": 180,
+   "status": "no-sample",
+   "data": true
+  },
+  {
+   "path": "/property/[slug]",
+   "type": "detail",
+   "budget": 220,
+   "status": "no-sample",
+   "data": true
+  },
+  {
+   "path": "/managed",
+   "type": "landing",
+   "budget": 250,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 220,
+     "main": 220,
+     "outside": 0,
+     "chrome": 84,
+     "overlay": 1,
+     "pageAboveFold": 111
+    },
+    "h1s": [
+     {
+      "text": "Operations-grade management after the listing goes live.",
+      "visible": true
+     },
+     {
+      "text": "Homes and stays already on managed rails.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Property",
+    "metaDescription": "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations...",
+    "metaDescriptionChars": 158,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "What Henry Onyx handles after acceptance."
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Managed Property Trust Services"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Listing Marketing and Positioning"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Inquiry and Viewing Operations"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Submit your property — we’ll review the operating fit, not just the badge."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 36,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Managed"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Submit"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse listings"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.property-kicker",
+      "top": 105,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Managed property"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > h1.property-heading.mt-4",
+      "top": 121,
+      "aboveFold": true,
+      "words": 7,
+      "text": "Operations-grade management after the listing goes live."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.hc-font-reading.mt-4",
+      "top": 341,
+      "aboveFold": true,
+      "words": 25,
+      "text": "Tenant communication, inspections, reporting, maintenance coordination, short-let operations, and owner trust workflows — held on one operating rail rather than scattered across apps and chat threads."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.flex.flex-wrap > a.property-button-primary.inline-flex",
+      "top": 398,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Submit a managed property"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.property-kicker",
+      "top": 471,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Managed stock"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.mt-3.font-semibold",
+      "top": 497,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.mt-2.max-w-xs",
+      "top": 557,
+      "aboveFold": true,
+      "words": 8,
+      "text": "Listings currently running through Henry Onyx managed-property rails."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.property-kicker",
+      "top": 471,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Featured surfaces"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.mt-3.font-semibold",
+      "top": 497,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.mt-2.max-w-xs",
+      "top": 557,
+      "aboveFold": true,
+      "words": 8,
+      "text": "Listings currently elevated across editorial and campaign surfaces."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.property-kicker",
+      "top": 471,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Managed value"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.mt-3.font-semibold",
+      "top": 497,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > ol.grid.gap-8 > li > p.mt-2.max-w-xs",
+      "top": 557,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Combined managed-property portfolio value under Henry Onyx trust operations."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-14.grid > div > p.property-kicker.uppercase",
+      "top": 658,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Service lines"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-14.grid > div > h2.mt-3.text-balance",
+      "top": 682,
+      "aboveFold": true,
+      "words": 6,
+      "text": "What Henry Onyx handles after acceptance."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > h3.text-base.font-semibold",
+      "top": 766,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Managed Property Trust Services"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > p.mt-2.max-w-2xl",
+      "top": 801,
+      "aboveFold": true,
+      "words": 14,
+      "text": "Henry Onyx can operate the property after it is listed, occupied, and handed over."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 842,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Owner reporting"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 842,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Maintenance coordination"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 842,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Rent follow-up"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 877,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Viewing and inspection standards"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > h3.text-base.font-semibold",
+      "top": 940,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Listing Marketing and Positioning"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > p.mt-2.max-w-2xl",
+      "top": 975,
+      "aboveFold": false,
+      "words": 9,
+      "text": "Sharper presentation, stronger photography direction, and better inquiry conversion."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 1016,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Editorial listing copy"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 1016,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Premium media sequencing"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 1051,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Featured campaign placement"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 1051,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Viewing-prep workflows"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > h3.text-base.font-semibold",
+      "top": 1114,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Inquiry and Viewing Operations"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > p.mt-2.max-w-2xl",
+      "top": 1149,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Henry Onyx can handle response sequencing, screening, and viewing scheduling with calmer rigor."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 1218,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Lead triage"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 1218,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Scheduling coordination"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 1218,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Reminder automation"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div > ul.mt-6.divide-y > li.py-5 > div.mt-3.flex > span.rounded-full.border",
+      "top": 1253,
+      "aboveFold": false,
+      "words": 2,
+      "text": "No-show reduction"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-14.grid > div > p.property-kicker.uppercase",
+      "top": 658,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Recent managed records"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14 > section > div.flex.flex-col > div.max-w-3xl > p.property-kicker",
+      "top": 1352,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed listings"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "section.mt-14 > section > div.flex.flex-col > div.max-w-3xl > h1.property-heading.mt-4",
+      "top": 1369,
+      "aboveFold": false,
+      "words": 7,
+      "text": "Homes and stays already on managed rails."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14 > section > div.flex.flex-col > div.max-w-3xl > p.hc-font-reading.mt-4",
+      "top": 1527,
+      "aboveFold": false,
+      "words": 9,
+      "text": "Stronger readiness, reporting, and coordination than passive pass-through inventory."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div > p.property-kicker.uppercase",
+      "top": 1715,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Move forward"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div > h2.mt-3.text-balance",
+      "top": 1740,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Submit your property — we’ll review the operating fit, not just the badge."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div > p.mt-3.max-w-xl",
+      "top": 1828,
+      "aboveFold": false,
+      "words": 20,
+      "text": "Managed acceptance implies Henry Onyx operational involvement. Non-managed listings can still publish, but the owner remains responsible for day-to-day reality."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div.flex.flex-wrap > a.property-button-primary.inline-flex",
+      "top": 1847,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a property"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div.flex.flex-wrap > a.inline-flex.items-center",
+      "top": 1847,
+      "aboveFold": false,
+      "words": 5,
+      "text": "How Henry Onyx governs listings"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.property-kicker",
+      "top": 2051,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > p.max-w-md.text-sm",
+      "top": 2091,
+      "aboveFold": false,
+      "words": 17,
+      "text": "Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p.font-medium",
+      "top": 2191,
+      "aboveFold": false,
+      "words": 1,
+      "text": "property@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p > a.transition-colors",
+      "top": 2217,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 2050,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2082,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Search listings"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2114,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed properties"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2146,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Trust standards"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2178,
+      "aboveFold": false,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 2050,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Owners and agents"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2082,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a listing"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2114,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Agent surface"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2146,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Viewings and inquiries"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2178,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Listing activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 2050,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2082,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Property activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2114,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx account sign-in"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > span",
+      "top": 2297,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Property All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > a.transition",
+      "top": 2297,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.property-page.property-shell > footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > span.inline-flex.items-center",
+      "top": 2298,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem"
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 855,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 220,
+     "main": 220,
+     "outside": 0,
+     "chrome": 75,
+     "overlay": 0,
+     "pageAboveFold": 63
+    },
+    "h1s": [
+     {
+      "text": "Operations-grade management after the listing goes live.",
+      "visible": true
+     },
+     {
+      "text": "Homes and stays already on managed rails.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Property",
+    "metaDescription": "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations...",
+    "metaDescriptionChars": 158,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 65
+   },
+   "pageWords": 220,
+   "aboveFold": 111,
+   "chromeWords": 84,
+   "overlayWords": 1,
+   "visibleH1": 2
+  },
+  {
+   "path": "/submit",
+   "type": "transactional",
+   "budget": 150,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 220,
+     "main": 220,
+     "outside": 0,
+     "chrome": 84,
+     "overlay": 1,
+     "pageAboveFold": 159
+    },
+    "h1s": [
+     {
+      "text": "Submit through the right trust path.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Property",
+    "metaDescription": "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations...",
+    "metaDescriptionChars": 158,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Service-aware routing"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Direct trust uploads"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Managed vs non-managed clarity"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Sign in to submit a listing"
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 36,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Managed"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Submit"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse listings"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.property-kicker",
+      "top": 105,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Submit"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > h1.property-heading.mt-4",
+      "top": 121,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Submit through the right trust path."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.hc-font-reading.mt-4",
+      "top": 280,
+      "aboveFold": true,
+      "words": 31,
+      "text": "Each submission is routed by service type, authority reality, inspection sensitivity, and account trust. The form adapts to the path; documents upload directly; the listing stays private until governance clears it."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-12 > p.property-kicker.uppercase",
+      "top": 417,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Submission standards"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main.mx-auto.px-5 > section.mt-12 > ul.mt-6.grid > li > h3.mt-4.text-base",
+      "top": 495,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Service-aware routing"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-12 > ul.mt-6.grid > li > p.mt-2.text-sm",
+      "top": 530,
+      "aboveFold": true,
+      "words": 17,
+      "text": "Residential, commercial, managed, agent-assisted, and inspection-led submissions do not all face the same evidence or review path."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main.mx-auto.px-5 > section.mt-12 > ul.mt-6.grid > li > h3.mt-4.text-base",
+      "top": 495,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Direct trust uploads"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-12 > ul.mt-6.grid > li > p.mt-2.text-sm",
+      "top": 530,
+      "aboveFold": true,
+      "words": 15,
+      "text": "Authority proof, ownership evidence, management instructions, and supporting files upload directly into the review record."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main.mx-auto.px-5 > section.mt-12 > ul.mt-6.grid > li > h3.mt-4.text-base",
+      "top": 495,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Managed vs non-managed clarity"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-12 > ul.mt-6.grid > li > p.mt-2.text-sm",
+      "top": 530,
+      "aboveFold": true,
+      "words": 22,
+      "text": "Managed submissions imply Henry Onyx operational involvement after acceptance. Non-managed listings can still be reviewed without pretending Henry Onyx is running them."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section#submission > div > p.property-kicker.uppercase",
+      "top": 695,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Account context"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div > div.mt-6 > div.border-l-2.pl-5 > div.flex.items-center > p.font-semibold.uppercase",
+      "top": 735,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Henry Onyx account required"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section#submission > div > div.mt-6 > div.border-l-2.pl-5 > h3.mt-3.max-w-md",
+      "top": 762,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Sign in to submit a listing"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section#submission > div > div.mt-6 > div.border-l-2.pl-5 > p.mt-3.max-w-2xl",
+      "top": 807,
+      "aboveFold": true,
+      "words": 18,
+      "text": "Listing submissions require a Henry Onyx account so verification documents, moderation, and owner communications stay auditable and secure."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div > div.mt-6 > div.border-l-2.pl-5 > div.mt-5.flex > a.property-button-primary.inline-flex",
+      "top": 882,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Sign in to continue"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div > div.mt-6 > div.border-l-2.pl-5 > div.mt-5.flex > a.inline-flex.items-center",
+      "top": 882,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section#submission > div > div.mt-6 > div.border-l-2.pl-5 > p.mt-4.text-xs",
+      "top": 930,
+      "aboveFold": false,
+      "words": 23,
+      "text": "You’ll return to this page after signing in. Henry Onyx uses one account across divisions so inquiries and listings stay traceable and secure."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section#submission > div > div.mt-8.border-l-2 > p.font-semibold.uppercase",
+      "top": 1000,
+      "aboveFold": false,
+      "words": 3,
+      "text": "What happens next"
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "section#submission > div > div.mt-8.border-l-2 > ol.mt-3.space-y-2 > li",
+      "top": 1032,
+      "aboveFold": false,
+      "words": 11,
+      "text": "1. Submission saved privately and routed to the right trust path."
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "section#submission > div > div.mt-8.border-l-2 > ol.mt-3.space-y-2 > li",
+      "top": 1068,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2. Documents read; eligibility and authority assessed."
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "section#submission > div > div.mt-8.border-l-2 > ol.mt-3.space-y-2 > li",
+      "top": 1104,
+      "aboveFold": false,
+      "words": 8,
+      "text": "3. Inspection scheduled if the path requires it."
+     },
+     {
+      "region": "main",
+      "tag": "li",
+      "path": "section#submission > div > div.mt-8.border-l-2 > ol.mt-3.space-y-2 > li",
+      "top": 1140,
+      "aboveFold": false,
+      "words": 9,
+      "text": "4. Editorial review, approval, then publication if quality holds."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section#submission > div > p.property-kicker.uppercase",
+      "top": 695,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Listing form"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section#submission > div > p.mt-6.border-l-2",
+      "top": 739,
+      "aboveFold": true,
+      "words": 15,
+      "text": "The listing form unlocks after you sign in. Use the panel on the left, or"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section#submission > div > p.mt-6.border-l-2 > a.font-semibold.underline-offset-4",
+      "top": 739,
+      "aboveFold": true,
+      "words": 3,
+      "text": "sign in here"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.property-kicker",
+      "top": 1335,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > p.max-w-md.text-sm",
+      "top": 1375,
+      "aboveFold": false,
+      "words": 17,
+      "text": "Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p.font-medium",
+      "top": 1475,
+      "aboveFold": false,
+      "words": 1,
+      "text": "property@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p > a.transition-colors",
+      "top": 1501,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1334,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1366,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Search listings"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1398,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed properties"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1430,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Trust standards"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1462,
+      "aboveFold": false,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1334,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Owners and agents"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1366,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a listing"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1398,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Agent surface"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1430,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Viewings and inquiries"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1462,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Listing activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1334,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1366,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Property activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1398,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx account sign-in"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > span",
+      "top": 1581,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Property All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > a.transition",
+      "top": 1581,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.property-page.property-shell > footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > span.inline-flex.items-center",
+      "top": 1582,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem"
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 855,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 220,
+     "main": 220,
+     "outside": 0,
+     "chrome": 75,
+     "overlay": 0,
+     "pageAboveFold": 77
+    },
+    "h1s": [
+     {
+      "text": "Submit through the right trust path.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Property",
+    "metaDescription": "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations...",
+    "metaDescriptionChars": 158,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 48
+   },
+   "pageWords": 220,
+   "aboveFold": 159,
+   "chromeWords": 84,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/pay/[paymentId]",
+   "type": "transactional",
+   "budget": 150,
+   "status": "no-sample",
+   "data": true
+  },
+  {
+   "path": "/trust",
+   "type": "info",
+   "budget": 280,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 595,
+     "main": 595,
+     "outside": 0,
+     "chrome": 84,
+     "overlay": 1,
+     "pageAboveFold": 142
+    },
+    "h1s": [
+     {
+      "text": "Governed before it is public.",
+      "visible": true
+     }
+    ],
+    "title": "Trust standards | Henry Onyx Property",
+    "metaDescription": "How Henry Onyx Property governs listing submissions, documents, inspections, managed operations, and publication safety.",
+    "metaDescriptionChars": 120,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "The public site is not an open dump"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Documents depend on the listing path"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Inspection is operational, not decorative"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Awaiting documents"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Awaiting eligibility"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Inspection requested or scheduled"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Under review, approved, or published"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "What Henry Onyx checks"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "What owners and agents should expect"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Managed vs non-managed"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Duplicate-contact resistance"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Inspection and viewing continuity"
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 36,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Managed"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Submit"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse listings"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.property-kicker",
+      "top": 105,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > h1.property-heading.mt-4",
+      "top": 121,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Governed before it is public."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.hc-font-reading.mt-4",
+      "top": 280,
+      "aboveFold": true,
+      "words": 19,
+      "text": "Documents are path-specific, inspections are real workflows, and managed vs non-managed publication is not blurred together. Calm, but serious."
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > dt.font-semibold.uppercase",
+      "top": 423,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Live listings"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > dd.font-semibold.leading-tight",
+      "top": 442,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > p.max-w-sm.leading-relaxed",
+      "top": 491,
+      "aboveFold": true,
+      "words": 8,
+      "text": "Public inventory currently available on Henry Onyx Property."
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > dt.font-semibold.uppercase",
+      "top": 403,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Managed portfolio"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > dd.font-semibold.leading-tight",
+      "top": 422,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > p.max-w-sm.leading-relaxed",
+      "top": 471,
+      "aboveFold": true,
+      "words": 8,
+      "text": "Active managed-property records tracked in Henry Onyx operations."
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > dt.font-semibold.uppercase",
+      "top": 423,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Viewing pipeline"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > dd.font-semibold.leading-tight",
+      "top": 442,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > div.mt-10 > dl.grid.grid-cols-2 > div.flex.flex-col > p.max-w-sm.leading-relaxed",
+      "top": 491,
+      "aboveFold": true,
+      "words": 8,
+      "text": "Open viewing requests currently being scheduled or confirmed."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-14 > p.property-kicker.uppercase",
+      "top": 592,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Core trust rails"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14 > ul.mt-6.divide-y > li.grid.gap-3 > div > h3.text-base.font-semibold",
+      "top": 659,
+      "aboveFold": true,
+      "words": 8,
+      "text": "The public site is not an open dump"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14 > ul.mt-6.divide-y > li.grid.gap-3 > div > p.mt-2.max-w-3xl",
+      "top": 694,
+      "aboveFold": true,
+      "words": 35,
+      "text": "A listing does not go live just because somebody filled a form. Henry Onyx holds every submission privately first, then decides whether the documents, authority, identity, and property reality are strong enough for public release."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14 > ul.mt-6.divide-y > li.grid.gap-3 > div > h3.text-base.font-semibold",
+      "top": 796,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Documents depend on the listing path"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14 > ul.mt-6.divide-y > li.grid.gap-3 > div > p.mt-2.max-w-3xl",
+      "top": 831,
+      "aboveFold": true,
+      "words": 32,
+      "text": "Owner-listed, agent-led, managed, commercial, land, and inspection-sensitive submissions do not carry the same evidence burden. Henry Onyx asks for the documents that actually explain the path instead of hiding requirements until later."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14 > ul.mt-6.divide-y > li.grid.gap-3 > div > h3.text-base.font-semibold",
+      "top": 961,
+      "aboveFold": false,
+      "words": 5,
+      "text": "Inspection is operational, not decorative"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14 > ul.mt-6.divide-y > li.grid.gap-3 > div > p.mt-2.max-w-3xl",
+      "top": 996,
+      "aboveFold": false,
+      "words": 34,
+      "text": "If a listing needs an inspection, that becomes a tracked workflow. It can be requested, scheduled, completed, waived, failed, or cancelled, and publication should not pretend the check is done when it is not."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-14.grid > div > p.property-kicker.uppercase",
+      "top": 1130,
+      "aboveFold": false,
+      "words": 5,
+      "text": "What the listing states mean"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > h3.text-base.font-semibold",
+      "top": 1192,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Awaiting documents"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > p.mt-2.text-sm",
+      "top": 1227,
+      "aboveFold": false,
+      "words": 19,
+      "text": "Henry Onyx still needs stronger authority, ownership, management, or supporting evidence before the listing can move deeper into review."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > h3.text-base.font-semibold",
+      "top": 1321,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Awaiting eligibility"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > p.mt-2.text-sm",
+      "top": 1356,
+      "aboveFold": false,
+      "words": 19,
+      "text": "Identity, duplicate-contact review, or another trust prerequisite is still unresolved. The listing is held privately until that is cleared."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > h3.text-base.font-semibold",
+      "top": 1450,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Inspection requested or scheduled"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > p.mt-2.text-sm",
+      "top": 1485,
+      "aboveFold": false,
+      "words": 28,
+      "text": "Henry Onyx has decided that a site check matters for this listing path. The listing is not treated as fully trusted until that inspection rail is closed properly."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > h3.text-base.font-semibold",
+      "top": 1579,
+      "aboveFold": false,
+      "words": 5,
+      "text": "Under review, approved, or published"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-14.grid > div > ul.mt-6.divide-y > li.py-5 > p.mt-2.text-sm",
+      "top": 1614,
+      "aboveFold": false,
+      "words": 24,
+      "text": "Once the trust gates are satisfied, the listing can move into editorial review, approval, and then public visibility if the remaining quality checks pass."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-14.grid > div > p.property-kicker.uppercase",
+      "top": 1130,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Two-sided expectations"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > div.mt-6.grid > div > h3.text-sm.font-semibold",
+      "top": 1170,
+      "aboveFold": false,
+      "words": 4,
+      "text": "What Henry Onyx checks"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mt-6.grid > div > ul.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 1210,
+      "aboveFold": false,
+      "words": 14,
+      "text": "Whether the submitter appears authorised to market, manage, or request inspection for the property."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mt-6.grid > div > ul.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 1306,
+      "aboveFold": false,
+      "words": 16,
+      "text": "Whether the media, pricing, occupancy reality, and location context are serious enough for a premium platform."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mt-6.grid > div > ul.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 1430,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Whether the account trust posture is strong enough for higher-risk listing paths."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mt-6.grid > div > ul.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 1526,
+      "aboveFold": false,
+      "words": 15,
+      "text": "Whether a managed listing is truly asking for Henry Onyx operations, not just a badge."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mt-14.grid > div > div.mt-6.grid > div > h3.text-sm.font-semibold",
+      "top": 1170,
+      "aboveFold": false,
+      "words": 6,
+      "text": "What owners and agents should expect"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mt-6.grid > div > ul.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 1230,
+      "aboveFold": false,
+      "words": 15,
+      "text": "Direct uploads are better than pasted document links because staff need a reviewable file trail."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mt-6.grid > div > ul.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 1326,
+      "aboveFold": false,
+      "words": 20,
+      "text": "If a listing is weak, Henry Onyx may request better proof, stronger copy, or clearer readiness details before it moves."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mt-6.grid > div > ul.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 1450,
+      "aboveFold": false,
+      "words": 16,
+      "text": "Managed and non-managed listings are different paths; approval for one should not silently imply the other."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mt-6.grid > div > ul.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 1574,
+      "aboveFold": false,
+      "words": 16,
+      "text": "If a listing gets held or escalated, the goal is cleaner publication truth, not bureaucratic noise."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-14 > p.property-kicker.uppercase",
+      "top": 1744,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Policy clarifications"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main.mx-auto.px-5 > section.mt-14 > ul.mt-8.grid > li > h3.mt-4.text-base",
+      "top": 1829,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Managed vs non-managed"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-14 > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1864,
+      "aboveFold": false,
+      "words": 31,
+      "text": "Managed listings imply Henry Onyx operational involvement after acceptance. Non-managed listings can still be reviewed and published, but the owner or agent remains responsible for the operating reality after first contact."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main.mx-auto.px-5 > section.mt-14 > ul.mt-8.grid > li > h3.mt-4.text-base",
+      "top": 1829,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Duplicate-contact resistance"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-14 > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1864,
+      "aboveFold": false,
+      "words": 27,
+      "text": "If the same email or phone appears across multiple Henry Onyx accounts or submissions, the listing may stay in manual review until the ownership picture is clearer."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main.mx-auto.px-5 > section.mt-14 > ul.mt-8.grid > li > h3.mt-4.text-base",
+      "top": 1829,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Inspection and viewing continuity"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-14 > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1864,
+      "aboveFold": false,
+      "words": 28,
+      "text": "Henry Onyx treats inspections and viewings as tracked workflows. Requests, schedules, and follow-up should remain visible to staff and to the account history instead of vanishing into chat."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.property-page.property-shell > main.mx-auto.px-5 > section.mt-14.border-l-2 > p.property-kicker.uppercase",
+      "top": 2029,
+      "aboveFold": false,
+      "words": 5,
+      "text": "What happens next after submission"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-l-2 > ol.mt-4.space-y-3 > li.flex.gap-3 > span.font-semibold.uppercase",
+      "top": 2069,
+      "aboveFold": false,
+      "words": 1,
+      "text": "01"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-l-2 > ol.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 2066,
+      "aboveFold": false,
+      "words": 10,
+      "text": "Submitters see a private listing record first, not instant publication."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-l-2 > ol.mt-4.space-y-3 > li.flex.gap-3 > span.font-semibold.uppercase",
+      "top": 2109,
+      "aboveFold": false,
+      "words": 1,
+      "text": "02"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-l-2 > ol.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 2106,
+      "aboveFold": false,
+      "words": 20,
+      "text": "Henry Onyx reviews the evidence, the trust posture, and whether the listing belongs on a managed, non-managed, or inspection-sensitive rail."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-l-2 > ol.mt-4.space-y-3 > li.flex.gap-3 > span.font-semibold.uppercase",
+      "top": 2149,
+      "aboveFold": false,
+      "words": 1,
+      "text": "03"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-l-2 > ol.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 2146,
+      "aboveFold": false,
+      "words": 19,
+      "text": "If more information is needed, the listing can move into corrections, document hold, eligibility hold, or escalation before publication."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-l-2 > ol.mt-4.space-y-3 > li.flex.gap-3 > span.font-semibold.uppercase",
+      "top": 2189,
+      "aboveFold": false,
+      "words": 1,
+      "text": "04"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-l-2 > ol.mt-4.space-y-3 > li.flex.gap-3 > span",
+      "top": 2186,
+      "aboveFold": false,
+      "words": 15,
+      "text": "Only after those checks are coherent should the listing move toward approval and public release."
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.property-kicker",
+      "top": 2381,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > p.max-w-md.text-sm",
+      "top": 2421,
+      "aboveFold": false,
+      "words": 17,
+      "text": "Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p.font-medium",
+      "top": 2521,
+      "aboveFold": false,
+      "words": 1,
+      "text": "property@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p > a.transition-colors",
+      "top": 2547,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 2380,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2412,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Search listings"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2444,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed properties"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2476,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Trust standards"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2508,
+      "aboveFold": false,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 2380,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Owners and agents"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2412,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a listing"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2444,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Agent surface"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2476,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Viewings and inquiries"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2508,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Listing activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 2380,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2412,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Property activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 2444,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx account sign-in"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > span",
+      "top": 2627,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Property All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > a.transition",
+      "top": 2627,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.property-page.property-shell > footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > span.inline-flex.items-center",
+      "top": 2627,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem"
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 855,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 595,
+     "main": 595,
+     "outside": 0,
+     "chrome": 75,
+     "overlay": 0,
+     "pageAboveFold": 69
+    },
+    "h1s": [
+     {
+      "text": "Governed before it is public.",
+      "visible": true
+     }
+    ],
+    "title": "Trust standards | Henry Onyx Property",
+    "metaDescription": "How Henry Onyx Property governs listing submissions, documents, inspections, managed operations, and publication safety.",
+    "metaDescriptionChars": 120,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 78
+   },
+   "pageWords": 595,
+   "aboveFold": 142,
+   "chromeWords": 84,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/faq",
+   "type": "help",
+   "budget": 250,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 196,
+     "main": 196,
+     "outside": 0,
+     "chrome": 84,
+     "overlay": 1,
+     "pageAboveFold": 196
+    },
+    "h1s": [
+     {
+      "text": "Before you reach out.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Property",
+    "metaDescription": "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations...",
+    "metaDescriptionChars": 158,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Reach out — we'll route it to the right desk."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 36,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Managed"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Submit"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse listings"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.property-kicker",
+      "top": 105,
+      "aboveFold": true,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > h1.property-heading.mt-4",
+      "top": 121,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Before you reach out."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section > div.flex.flex-col > div.max-w-3xl > p.hc-font-reading.mt-4",
+      "top": 218,
+      "aboveFold": true,
+      "words": 15,
+      "text": "The essentials renters, buyers, owners, and managed-property clients usually check before a viewing or submission."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span",
+      "top": 338,
+      "aboveFold": true,
+      "words": 7,
+      "text": "What makes a Henry Onyx-managed property different?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span.font-semibold.uppercase",
+      "top": 344,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Open"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-10 > ul.divide-y.border-y > li > details.group.py-5 > p.hc-font-reading.text-pretty",
+      "top": 381,
+      "aboveFold": true,
+      "words": 17,
+      "text": "Managed properties carry stronger readiness checks, operator follow-through, viewing coordination, and owner reporting than standard pass-through listings."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span",
+      "top": 403,
+      "aboveFold": true,
+      "words": 10,
+      "text": "Can I submit a property before my media is perfect?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span.font-semibold.uppercase",
+      "top": 409,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Open"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-10 > ul.divide-y.border-y > li > details.group.py-5 > p.hc-font-reading.text-pretty",
+      "top": 446,
+      "aboveFold": true,
+      "words": 25,
+      "text": "Yes. Henry Onyx can accept a submission with baseline media, then request improved assets before public approval if the listing needs a stronger premium presentation."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span",
+      "top": 468,
+      "aboveFold": true,
+      "words": 5,
+      "text": "How are viewing requests confirmed?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span.font-semibold.uppercase",
+      "top": 474,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Open"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-10 > ul.divide-y.border-y > li > details.group.py-5 > p.hc-font-reading.text-pretty",
+      "top": 511,
+      "aboveFold": true,
+      "words": 21,
+      "text": "Viewing requests are logged, assigned, and moved through confirmation and reminder steps server-side, with email and WhatsApp follow-up where configuration allows."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span",
+      "top": 533,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Do you support commercial properties?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span.font-semibold.uppercase",
+      "top": 539,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Open"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-10 > ul.divide-y.border-y > li > details.group.py-5 > p.hc-font-reading.text-pretty",
+      "top": 576,
+      "aboveFold": true,
+      "words": 18,
+      "text": "Yes. Commercial listings get fit-out context, screening notes, and more disciplined inquiry handling so teams avoid low-information tours."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span",
+      "top": 598,
+      "aboveFold": true,
+      "words": 8,
+      "text": "Can Henry Onyx manage a property after occupancy?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "ul.divide-y.border-y > li > details.group.py-5 > summary.flex.cursor-pointer > span.font-semibold.uppercase",
+      "top": 604,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Open"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mt-10 > ul.divide-y.border-y > li > details.group.py-5 > p.hc-font-reading.text-pretty",
+      "top": 641,
+      "aboveFold": true,
+      "words": 16,
+      "text": "Yes. Managed-property services can include owner reporting, maintenance vendor coordination, rent follow-up, inspections, and occupancy support."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div > p.property-kicker.uppercase",
+      "top": 740,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Still have a question?"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div > h2.mt-3.text-balance",
+      "top": 764,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Reach out — we'll route it to the right desk."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div > p.hc-font-reading.text-pretty",
+      "top": 818,
+      "aboveFold": true,
+      "words": 21,
+      "text": "Listing submissions, viewings, managed property requests, and inspection follow-up each have their own thread so the right person sees it first."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div.flex.flex-wrap > a.property-button-primary.inline-flex",
+      "top": 837,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Submit a listing"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main.mx-auto.px-5 > section.mt-14.border-t > div.grid.gap-6 > div.flex.flex-wrap > a.inline-flex.items-center",
+      "top": 837,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Trust standards"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.property-kicker",
+      "top": 1041,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > p.max-w-md.text-sm",
+      "top": 1082,
+      "aboveFold": false,
+      "words": 17,
+      "text": "Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p.font-medium",
+      "top": 1182,
+      "aboveFold": false,
+      "words": 1,
+      "text": "property@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.grid.gap-10 > div.space-y-5 > div.space-y-1.5.text-sm > p > a.transition-colors",
+      "top": 1208,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1040,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1073,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Search listings"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1105,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Managed properties"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1137,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Trust standards"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1169,
+      "aboveFold": false,
+      "words": 1,
+      "text": "FAQ"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1040,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Owners and agents"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1073,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Submit a listing"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1105,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Agent surface"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1137,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Viewings and inquiries"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1169,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Listing activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "div",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.grid.gap-10 > div > div.font-semibold.uppercase",
+      "top": 1040,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1073,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Property activity"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.mx-auto.px-5 > div.grid.gap-10 > div > div.mt-4.flex > a.text-sm.transition",
+      "top": 1105,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx account sign-in"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > span",
+      "top": 1288,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Property All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > div.flex.flex-wrap > a.transition",
+      "top": 1288,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.property-page.property-shell > footer.mt-20.border-t > div.mx-auto.px-5 > div.mt-10.flex > span.inline-flex.items-center",
+      "top": 1288,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem"
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 855,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 196,
+     "main": 196,
+     "outside": 0,
+     "chrome": 75,
+     "overlay": 0,
+     "pageAboveFold": 170
+    },
+    "h1s": [
+     {
+      "text": "Before you reach out.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Property",
+    "metaDescription": "Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations...",
+    "metaDescriptionChars": 158,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 46
+   },
+   "pageWords": 196,
+   "aboveFold": 196,
+   "chromeWords": 84,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/login",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "redirectedTo": "https://account.henryonyx.com/login?next=http%3A%2F%2Flocalhost%3A4104%2F&division=property",
+   "desktop": {
+    "counts": {
+     "page": 50,
+     "main": 31,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 50
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 240,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 281,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > span.font-medium",
+      "top": 232,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Language"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 284,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Welcome back"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 334,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Sign in to continue with your Henry Onyx account."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 386,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 478,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Password"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > a.auth-field-link",
+      "top": 479,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Forgot password?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 594,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 659,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Don't have an account yet?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 659,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 805,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 830,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 830,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 413,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 507,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Your password"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > select.bg-transparent.outline-none",
+      "top": 232,
+      "aboveFold": true,
+      "words": 2,
+      "text": "English (English)"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 34,
+     "main": 31,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 34
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 18
+   },
+   "pageWords": 50,
+   "aboveFold": 50,
+   "chromeWords": 0,
+   "overlayWords": 31,
+   "visibleH1": 1
+  }
+ ]
+}

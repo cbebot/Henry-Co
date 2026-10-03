@@ -1,0 +1,45 @@
+- complementary:
+  - link "Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - img "Henry Onyx"
+  - paragraph: One account, every service
+  - paragraph: One sign-in for care, commerce, studio, learning — and everything we build next.
+- main:
+  - text: Language
+  - combobox "Language":
+    - option "English (English)" [selected]
+    - option "Français (French)"
+    - option "Igbo (Igbo)"
+    - option "Yorùbá (Yoruba)"
+    - option "Hausa (Hausa)"
+    - option "العربية (Arabic)"
+    - option "Español (Spanish)"
+    - option "Português (Portuguese)"
+    - option "Deutsch (German)"
+    - option "Italiano (Italian)"
+    - option "中文 (Chinese)"
+    - option "हिन्दी (Hindi)"
+  - heading "Welcome back" [level=1]
+  - paragraph: Sign in to continue with your Henry Onyx account.
+  - text: Email address
+  - textbox "Email address":
+    - /placeholder: you@example.com
+  - text: Password
+  - link "Forgot password?":
+    - /url: /forgot-password
+  - textbox "Password":
+    - /placeholder: Your password
+  - button "Show password"
+  - button "Sign in"
+  - paragraph:
+    - text: Don't have an account yet?
+    - link "Create account":
+      - /url: /signup?next=https%3A%2F%2Flogistics.henryonyx.com%2Ftrack
+- button "Open Henry Onyx Intelligence"
+- alert
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /settings#privacy-controls
+  - button "Continue"

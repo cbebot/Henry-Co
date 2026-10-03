@@ -1,0 +1,161 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fteams%2Forbit
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Positioning and Revenue Web Team
+  - heading "Orbit Executive Web" [level=1]
+  - text: open
+  - paragraph: Focused on premium websites, offer architecture, landing systems, and sales surfaces that need to make the business feel more credible immediately.
+  - link "Select this team":
+    - /url: /request?team=team-orbit
+  - link "Ask for a recommendation":
+    - /url: /request
+  - list:
+    - listitem:
+      - paragraph: Specialties
+      - list:
+        - listitem: Executive websites
+        - listitem: Sales funnels
+        - listitem: Premium storytelling
+        - listitem: Lead systems
+    - listitem:
+      - paragraph: Industries
+      - list:
+        - listitem: Professional services
+        - listitem: Hospitality
+        - listitem: Real estate
+        - listitem: Healthcare and wellness
+    - listitem:
+      - paragraph: Technology
+      - list:
+        - listitem: Next.js
+        - listitem: CMS
+        - listitem: Analytics
+        - listitem: Campaign pages
+  - paragraph: Strengths
+  - heading "What this team does best." [level=2]
+  - list:
+    - listitem: Sharp positioning work
+    - listitem: High-trust information architecture
+    - listitem: Premium conversion polish
+  - paragraph: Representative work
+  - heading "Recent case studies in this lane." [level=2]
+  - list:
+    - listitem:
+      - heading "Service Command Center" [level=3]
+      - paragraph: A multi-service operator was running leads, project states, approvals, and finance checkpoints across spreadsheets, chat, and manual reminders.
+      - paragraph: Studio replaced the operational sprawl with one command surface that leadership and delivery teams could actually trust.
+    - listitem:
+      - heading "Premium Reposition Launch" [level=3]
+      - paragraph: The company had strong delivery quality, but the public website looked too generic to support bigger contracts and higher confidence inbound sales.
+      - paragraph: Studio reframed the company as a premium operator with clearer offers, a more deliberate narrative, and a sharper inquiry path.
+    - listitem:
+      - heading "Client Portal Rollout" [level=3]
+      - paragraph: A service business needed clients to stop relying on email threads for updates, approvals, files, and payment checkpoints.
+      - paragraph: Studio introduced a client portal model that made delivery status, assets, and next actions visibly structured.
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

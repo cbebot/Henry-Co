@@ -1,0 +1,26 @@
+- banner:
+  - link "Henry Onyx Studio home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - img "Henry Onyx"
+  - link "Back to Studio":
+    - /url: /
+- main:
+  - button "Back"
+  - heading "Describe it in your words" [level=1]
+  - paragraph: Talk it through
+  - button "Your briefs"
+  - button "New brief"
+  - log "Describe it in your words":
+    - list:
+      - listitem: Tell me what you're hoping to build — in your own words. I'll ask a few questions and shape it into a clear brief; you'll see honest pricing when you review it.
+  - button "A logo and brand kit for my café"
+  - button "A simple website for my consulting business"
+  - button "Product photos for my online store"
+  - group "Message composer":
+    - textbox "Message body":
+      - /placeholder: Type your reply…
+    - text: Draft saved Enter to send
+    - button "Send" [disabled]
+  - text: "System: Tell me what you're hoping to build — in your own words. I'll ask a few questions and shape it into a clear brief; you'll see honest pricing…"
+- alert

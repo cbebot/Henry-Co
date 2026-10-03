@@ -3,15 +3,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { getDivisionConfig } from "@henryco/config";
 import { getServicesCopy, resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
-import {
-  ArrowRight,
-  CalendarCheck2,
-  CheckCircle2,
-  ClipboardList,
-  Search,
-  ShieldCheck,
-  Wallet,
-} from "lucide-react";
+import { ArrowRight, CalendarCheck2, CheckCircle2, Search, Wallet } from "lucide-react";
 
 import BookingSuccessNotice from "@/components/care/BookingSuccessNotice";
 import BookPickupForm from "@/components/care/BookPickupForm";
@@ -36,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `${t("Book Service")} | ${care.name}`,
     description: t(
-      `Book garment care, home cleaning, or office cleaning with ${care.name}. Clear estimates, premium support, and straightforward tracking from the first request.`
+      `Book garment care, home cleaning, or office cleaning with ${care.name}. See the estimate before you send.`
     ),
     alternates: { canonical: "/book" },
     robots: { index: true, follow: true },
@@ -126,45 +118,6 @@ export default async function BookPage({
       })
     : null;
 
-  const captureItems = [
-    {
-      icon: ClipboardList,
-      title: t("Clear request detail"),
-      body: t(
-        "Service type, address notes, timing, and delivery-vs-on-site context are readable before you submit."
-      ),
-    },
-    {
-      icon: Wallet,
-      title: t("Estimate before submit"),
-      body: t("Review the current estimate and payment guidance before the request is sent."),
-    },
-  ] as const;
-
-  const flowSteps = [
-    {
-      step: "01",
-      title: t("Choose your service type"),
-      body: t(
-        "Start with garment pickup, home cleaning, or office cleaning, then choose the service options that match the request."
-      ),
-    },
-    {
-      step: "02",
-      title: t("Add the important details"),
-      body: t(
-        "Add contact details, schedule windows, access notes, and anything that affects delivery or on-site completion."
-      ),
-    },
-    {
-      step: "03",
-      title: t("Receive one tracking code"),
-      body: t(
-        "You get one tracking code, then follow the correct timeline for return delivery or on-site completion."
-      ),
-    },
-  ] as const;
-
   return (
     <main
       id="henryco-main"
@@ -187,104 +140,6 @@ export default async function BookPage({
             <h1 className="mt-5 max-w-3xl text-balance care-display text-[color:var(--home-ink)]">
               {t("Book a service. One calm form.")}
             </h1>
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[color:var(--home-ink-70)] sm:text-lg">
-              {t(
-                "Garments move into tracked return delivery. Home and office requests end in on-site completion and sign-off. The form makes the difference clear up front."
-              )}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
-              {t("What the request captures")}
-            </p>
-            <ul className="mt-5 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
-              {captureItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <li key={item.title} className="flex gap-4 py-4">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[color:var(--home-line)] bg-[color:var(--home-surface-04)] text-[color:var(--home-accent-text)]">
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <h2 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
-                        {item.title}
-                      </h2>
-                      <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-70)]">
-                        {item.body}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
-              {t("How a request flows")}
-            </p>
-            <ol className="mt-5 divide-y divide-[color:var(--home-line)] border-y border-[color:var(--home-line)]">
-              {flowSteps.map((item) => (
-                <li
-                  key={item.step}
-                  className="grid gap-3 py-4 sm:grid-cols-[auto_1fr] sm:gap-6"
-                >
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
-                    {t("Step")} {item.step}
-                  </span>
-                  <div>
-                    <h3 className="text-sm font-semibold tracking-tight text-[color:var(--home-ink)]">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1 text-sm leading-relaxed text-[color:var(--home-ink-70)]">
-                      {item.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          <div className="grid gap-10 md:grid-cols-2 md:divide-x md:divide-[color:var(--home-line)]">
-            <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
-                {t("Wardrobe service")}
-              </p>
-              <h3 className="mt-3 text-lg font-semibold tracking-tight text-[color:var(--home-ink)]">
-                {t("Garments end in return delivery.")}
-              </h3>
-              <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">
-                {t(
-                  "Pickup, treatment, finishing, packing, and return delivery remain visible in their own tracking timeline."
-                )}
-              </p>
-            </div>
-            <div className="md:pl-10">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
-                {t("On-site service")}
-              </p>
-              <h3 className="mt-3 text-lg font-semibold tracking-tight text-[color:var(--home-ink)]">
-                {t("Homes and offices end in completed work.")}
-              </h3>
-              <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">
-                {t(
-                  "Home and office services focus on scheduling, arrival, service completion, and final sign-off rather than delivery movement."
-                )}
-              </p>
-            </div>
-          </div>
-
-          <div className="border-l-2 border-[color:var(--accent)]/55 pl-5">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[color:var(--home-accent-text)]">
-              <ShieldCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
-              {t("Booking truth")}
-            </p>
-            <p className="mt-2 text-sm leading-7 text-[color:var(--home-ink-70)]">
-              {t(
-                "One garment order or one cleaning request stays under one readable tracking code, with payment guidance and follow-up attached to the same record."
-              )}
-            </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -309,17 +164,9 @@ export default async function BookPage({
 
         <section className="order-1 2xl:order-1">
           <div className="rounded-[1.6rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] p-5 shadow-[0_18px_60px_rgba(16,19,31,0.06)] backdrop-blur-xl sm:rounded-[2.4rem] sm:p-8">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
-              {t("Booking form")}
-            </p>
-            <h2 className="mt-3 text-balance text-[1.65rem] font-semibold leading-[1.15] tracking-[-0.02em] text-[color:var(--home-ink)] sm:text-[1.95rem]">
+            <h2 className="text-balance text-[1.65rem] font-semibold leading-[1.15] tracking-[-0.02em] text-[color:var(--home-ink)] sm:text-[1.95rem]">
               {t("Tell us what the job needs.")}
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
-              {t(
-                "Choose the service, add the right details, review the current estimate, and send one clear request."
-              )}
-            </p>
 
             {handoffServiceName ? (
               <div className="mt-5 rounded-2xl border border-[color:var(--accent)]/30 bg-[color:var(--home-surface-04)] px-4 py-3">

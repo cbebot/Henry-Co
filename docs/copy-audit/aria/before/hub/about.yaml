@@ -1,0 +1,219 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx
+  - navigation:
+    - link "Directory":
+      - /url: /#directory
+    - link "About":
+      - /url: /about
+    - link "Contact":
+      - /url: /contact
+  - link "Search Henry Onyx":
+    - /url: /search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fabout
+  - link "Explore divisions":
+    - /url: /#divisions
+- main:
+  - paragraph: Company overview · v1.0
+  - heading "About Henry Onyx" [level=1]
+  - paragraph: "Henry Onyx is a multi-division operating group founded by Henry Chukwuemeka. Each division — Logistics, Fabric Care, Property, Marketplace, Studio, Jobs, and Learn — runs an independent market under one shared operating standard for KYC, payments, support response, and audit logging. We build the same way across every surface: a single account, one trust signal taxonomy, one settlement currency at checkout, one audit trail per action."
+  - link "Contact the company":
+    - /url: /contact
+  - link "Browse divisions":
+    - /url: /#divisions
+  - term: Updated
+  - definition: Recently updated
+  - term: Section
+  - definition: Who we are, what we run, and how we operate
+  - term: Standard
+  - definition: Corporate-grade
+  - term: Divisions live
+  - definition: "7"
+  - term: Accounts
+  - definition: One per customer, all divisions
+  - term: Founder
+  - definition: Henry Chukwuemeka
+  - paragraph: Some content may still be refreshing.
+  - paragraph: Identity
+  - heading "Henry Onyx is a Nigerian operating group" [level=2]
+  - paragraph: Registered in Nigeria as Henry Onyx Limited (RC 9594234). Headquartered in Emene, Enugu State. Founded in 2026 by Henry Chukwuemeka. We operate seven divisions on one platform, one auth surface, one audit log, one settlement currency at checkout — Nigeria first, with cross-border commerce supported through multi-currency display and trusted, region-appropriate payment infrastructure.
+  - heading "Trading name" [level=3]
+  - paragraph: Henry Onyx
+  - heading "Registered name" [level=3]
+  - paragraph: Henry Onyx Limited
+  - heading "CAC RC number" [level=3]
+  - paragraph: "9594234"
+  - heading "Registered office" [level=3]
+  - paragraph: Emene, Enugu State, Nigeria
+  - heading "Year founded" [level=3]
+  - paragraph: "2026"
+  - paragraph: What the divisions do
+  - heading "Seven divisions, one operating standard" [level=2]
+  - paragraph: Each division has a defined market and a defined contract — not a bundle. The list here mirrors the divisions we actually operate, so it stays accurate.
+  - heading "Henry Onyx Logistics" [level=3]
+  - paragraph: Henry Onyx Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.
+  - link:
+    - /url: /#divisions
+  - heading "Henry Onyx Fabric Care" [level=3]
+  - paragraph: Premium garment care, home cleaning, office cleaning, and pickup delivery with clear booking, dependable timing, and polished follow-through.
+  - link:
+    - /url: /#divisions
+  - heading "Henry Onyx Property" [level=3]
+  - paragraph: Henry Onyx Property brings premium rentals, property listings, viewing coordination, owner submissions, managed-property services, and trust-led operations into one editorial, high-conviction platform.
+  - link:
+    - /url: /#divisions
+  - heading "Henry Onyx Marketplace" [level=3]
+  - paragraph: Premium multi-vendor commerce with cleaner discovery, stronger trust signals, vendor accountability, and operational clarity across buyers, sellers, and Henry Onyx teams.
+  - link:
+    - /url: /#divisions
+  - heading "Henry Onyx Jobs" [level=3]
+  - paragraph: Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one premium operating system.
+  - link:
+    - /url: /#divisions
+  - heading "Henry Onyx Learn" [level=3]
+  - paragraph: Browse structured programs, learn at your own pace, pass short assessments where required, and earn Henry Onyx certificates with a public verification code. Your enrollments and progress also appear in your Henry Onyx account dashboard.
+  - link:
+    - /url: /#divisions
+  - heading "Henry Onyx Studio" [level=3]
+  - paragraph: Henry Onyx Studio designs and delivers websites, mobile apps, UI systems, branding, e-commerce, internal tools, and custom software with premium process, milestone visibility, and operational clarity.
+  - link:
+    - /url: /#divisions
+  - paragraph: The operating standard
+  - heading "Measurable, not adjectival" [level=2]
+  - paragraph: We avoid words like “premium”, “respected”, or “disciplined” without a measurable referent. Here is what the standard means in practice across every division.
+  - heading "KYC verified before payout" [level=3]
+  - paragraph: Vendors and operators complete NIN + BVN verification (where applicable) and bank-account verification before any payout is released. KYC documents are retained for 5 years under CBN AML/CFT Regulations 2022.
+  - heading "Every mutation written to the audit trail" [level=3]
+  - paragraph: Owner, staff, and operator actions across the platform write to a structured, tamper-evident audit trail retained for 7 years, so every action can be traced after the fact.
+  - 'heading "Support response target: 24h" [level=3]'
+  - paragraph: First-response target for non-emergency support is 24 hours during operating days. Time-critical disputes (delivery failure, refund window) route through a dedicated support desk with explicit priority queues.
+  - heading "Settlement currency at checkout" [level=3]
+  - paragraph: Prices display in the customer's locale currency via FX snapshot at checkout; settlement is recorded in NGN with the displayed currency archived alongside per the multi-currency foundation.
+  - heading "Device-risk signals for fraud" [level=3]
+  - paragraph: Device-risk signals combine with platform trust flags to suppress abusive sign-ups and flag suspicious order patterns. Trust signals reduce but do not eliminate risk.
+  - heading "11 supported locales" [level=3]
+  - paragraph: Customer-facing surfaces are available in 11 locales. English is the canonical version in case of conflict.
+  - paragraph: Who it serves
+  - heading "Three customer types we are built for" [level=2]
+  - paragraph: We do not target everyone. The platform is shaped around three groups whose problems the operating standard is designed to solve.
+  - heading "End customers" [level=3]
+  - paragraph: Buyers, tenants, learners, and service requesters who want one account, predictable response times, and verified vendors.
+  - heading "Vendors and operators" [level=3]
+  - paragraph: Sellers, landlords, instructors, employers, riders, and care providers who want a clean payout path, verified KYC, and dispute support that resolves rather than stalls.
+  - heading "Business and institutional buyers" [level=3]
+  - paragraph: Companies that need recurring logistics, employee learning, office care, or studio engagements with documented SLAs and signed contracts.
+  - paragraph: Scope honesty
+  - heading "What we do not promise" [level=2]
+  - paragraph: Honest about scope so the operating standard stays credible. The premium-bar rubric calls for this — silence is not a substitute for clarity.
+  - heading "We are not a bank" [level=3]
+  - paragraph: We process payments through a PCI-compliant payment processor and route payouts to verified bank accounts. We do not hold deposits, issue credit, or run regulated financial products.
+  - 'heading "Property: agent, not party to tenancy" [level=3]'
+  - paragraph: Henry Onyx Property coordinates discovery, viewings, and (where engaged) managed-property operations. The tenancy contract is between landlord and tenant unless explicitly signed by Henry Onyx Property in a managed-property capacity.
+  - 'heading "Jobs: platform, not employer" [level=3]'
+  - paragraph: Henry Onyx Jobs hosts listings and verifies candidate profiles. The employment contract is between employer and candidate; Henry Onyx is not party to the employment relationship.
+  - heading "Service availability is operating-hours bound" [level=3]
+  - paragraph: Logistics same-day windows and care booking windows depend on operating-hours and rider coverage in the customer's city. Coverage is named, not implied.
+  - paragraph: How to reach the company
+  - heading "Group-level contact" [level=2]
+  - paragraph: For division-specific issues, the division support inbox is faster. Group enquiries (partnership, media, investor) come here.
+  - heading "General" [level=3]
+  - paragraph: hello@henryonyx.com
+  - heading "Legal correspondence" [level=3]
+  - paragraph: legal@henryonyx.com
+  - heading "Privacy and data-subject rights" [level=3]
+  - paragraph: privacy@henryonyx.com
+  - heading "Data Protection Officer" [level=3]
+  - paragraph: dpo@henryonyx.com
+  - paragraph: About this company
+  - heading "One company, several focused businesses, one operating standard." [level=2]
+  - paragraph: Henry Onyx is a multi-division operating group. Each division runs its own market — Care, Marketplace, Property, Logistics, Studio, Jobs, Learn — on the same standard of presentation, booking, pricing, and follow-through. The hub exists so customers, partners, and stakeholders can see the whole company in one place and reach the right business in one step. We grow by adding divisions inside this framework, not by stretching one brand thin.
+  - complementary:
+    - paragraph: Founder note
+    - paragraph: A note from the founder
+    - paragraph: A short, signed note from the founder will appear here.
+    - list:
+      - listitem:
+        - link "Reach the company":
+          - /url: /contact
+      - listitem:
+        - link "Browse divisions":
+          - /url: /#divisions
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Henry Onyx provides a clear way to understand the company and reach the right business with confidence.
+  - link "hello@henryonyx.com":
+    - /url: mailto:hello@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "Divisions directory":
+    - paragraph: Divisions directory
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+      - listitem:
+        - link "Search":
+          - /url: /search
+      - listitem:
+        - link "The ecosystem":
+          - /url: /v3
+      - listitem:
+        - link "The earning map":
+          - /url: /v3/how-we-earn
+      - listitem:
+        - link "Press":
+          - /url: /press/v3
+  - navigation "Legal":
+    - paragraph: Legal
+    - list:
+      - listitem:
+        - link "Privacy":
+          - /url: /privacy
+      - listitem:
+        - link "Terms":
+          - /url: /terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /preferences
+  - button "Continue"
+- alert

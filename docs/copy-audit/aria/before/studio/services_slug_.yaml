@@ -1,0 +1,164 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fservices%2Fwebsite
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Executive Websites
+  - heading "Web experiences designed to make the company look more capable, more credible, and easier to buy from." [level=1]
+  - paragraph: High-trust corporate websites, founder-led positioning platforms, campaign experiences, and premium service funnels built for sharper perception and cleaner conversion.
+  - link "Start a executive websites brief":
+    - /url: /request
+  - link "Choose a team":
+    - /url: /teams
+  - paragraph: What you get
+  - heading "Outcomes built into every engagement." [level=2]
+  - list:
+    - listitem: Stronger buyer trust
+    - listitem: Cleaner premium positioning
+    - listitem: Higher inquiry quality
+  - term: Starting from
+  - definition: ₦1,800,000
+  - term: Delivery window
+  - definition: 3 to 6 weeks
+  - paragraph: Packages
+  - heading "Pre-scoped lanes you can pick from." [level=2]
+  - list:
+    - listitem:
+      - heading "Executive Presence" [level=3]
+      - paragraph: A premium company website built to elevate trust, sharpen positioning, and convert serious inquiries.
+      - paragraph: ₦1,950,000
+      - paragraph: 4 weeks typical timeline
+      - list:
+        - listitem: Messaging direction
+        - listitem: 5 to 8 premium pages
+        - listitem: Lead routing
+        - listitem: Analytics and conversion setup
+    - listitem:
+      - heading "Revenue Funnel System" [level=3]
+      - paragraph: A sharper offer architecture for brands that need landing pages, trust layers, and measurable conversion performance.
+      - paragraph: ₦2,450,000
+      - paragraph: 5 weeks typical timeline
+      - list:
+        - listitem: Offer-page system
+        - listitem: Conversion-focused page stack
+        - listitem: Lead and CRM wiring
+        - listitem: Campaign-ready analytics
+  - paragraph: Why choose Henry Onyx
+  - list:
+    - listitem:
+      - heading "Typical agency flow" [level=3]
+      - list:
+        - listitem: A vague inquiry form with almost no commercial context.
+        - listitem: Pricing hidden inside a private conversation after too much back-and-forth.
+        - listitem: Project status scattered across WhatsApp, email, and disconnected files.
+    - listitem:
+      - heading "Henry Onyx Studio flow" [level=3]
+      - list:
+        - listitem: A structured buying path for both packages and serious custom work.
+        - listitem: Proposal, milestones, updates, and payment checkpoints visible in one connected workspace.
+        - listitem: A cleaner delivery model for clients, sales, PM, finance, support, and delivery teams.
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

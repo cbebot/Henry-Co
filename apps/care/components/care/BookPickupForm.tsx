@@ -593,9 +593,7 @@ export default function BookPickupForm({
             {t("Wardrobe care and return delivery")}
           </div>
           <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-            {t(
-              "Dry cleaning, laundry, pressing, stain treatment, and mixed garment intake under one cleaner customer record that ends in return delivery.",
-            )}
+            {t("Dry cleaning, laundry, pressing, and stain treatment.")}
           </p>
         </button>
 
@@ -622,25 +620,12 @@ export default function BookPickupForm({
             ) : null}
           </div>
           <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
-            {t("Residential or workplace execution")}
+            {t("Home or office cleaning")}
           </div>
           <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-            {t(
-              "One-time or recurring cleaning, site notes, workplace upkeep, and a cleaner quoting flow that ends in completed work, not delivery movement.",
-            )}
+            {t("One-time or recurring cleaning.")}
           </p>
         </button>
-      </div>
-
-      <div className="care-sheen rounded-[28px] border border-black/10 bg-white/72 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
-        <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-          {t("Service path")}
-        </div>
-        <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-white/66">
-          {t(
-            "Wardrobe requests are built around pickup, treatment, and return delivery. Home and office requests are built around team arrival, execution, inspection, and confirmed completion.",
-          )}
-        </p>
       </div>
 
       <section className="rounded-[30px] border border-black/10 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
@@ -715,9 +700,6 @@ export default function BookPickupForm({
               }}
               required
             />
-            <p className="text-xs text-zinc-500 dark:text-white/50">
-              {t("Pickup is where our team arrives first.")}
-            </p>
           </div>
           {mode === "garment" ? (
             <div className="md:col-span-2 grid gap-3">
@@ -771,9 +753,6 @@ export default function BookPickupForm({
                 readOnly={returnSameAsPickup}
                 aria-disabled={returnSameAsPickup}
               />
-              <p className="text-xs text-zinc-500 dark:text-white/50">
-                {t("Return address is where completed items are delivered after treatment.")}
-              </p>
             </div>
           ) : null}
           <input
@@ -826,13 +805,8 @@ export default function BookPickupForm({
                   {t("Current garment pricing")}
                 </div>
                 <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
-                  {t("Compose the garment manifest")}
+                  {t("Add your garments")}
                 </div>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-                  {t(
-                    "Add each garment line cleanly. Quantity, urgency, and treatment stay attached to the same tracking record all the way to return delivery.",
-                  )}
-                </p>
               </div>
 
               <input
@@ -1735,12 +1709,10 @@ export default function BookPickupForm({
             <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
               {mode === "garment"
                 ? t("Send the garment request and receive one tracking code.")
-                : t("Send the service request with the current quote context attached.")}
+                : t("Send the service request with the current quote.")}
             </div>
             <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-white/65">
-              {t(
-                "The team reviews the request after submission. The amount shown here reflects the current estimate based on the details you selected above.",
-              )}
+              {t("The amount shown is the current estimate. The team reviews the request after you submit.")}
             </p>
           </div>
 
@@ -1771,11 +1743,6 @@ export default function BookPickupForm({
               <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
                 {t("Send the request now and complete payment after the team confirms the next step.")}
               </div>
-              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-                {t(
-                  "Best when you want the team to review the request first. The booking and tracking flow still opens immediately, and payment instructions remain available afterward.",
-                )}
-              </p>
             </button>
 
             <button
@@ -1804,11 +1771,6 @@ export default function BookPickupForm({
               <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
                 {t("Submit the booking and receive payment details right away.")}
               </div>
-              <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-                {t(
-                  "Best when you already know you want the slot confirmed and payment guidance sent by email, with support visibility from the start.",
-                )}
-              </p>
             </button>
           </div>
 
@@ -1874,11 +1836,6 @@ export default function BookPickupForm({
 
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-              <div>
-                {paymentPlan === "pay_now"
-                  ? t("The request, tracking code, and payment guidance will move together as one faster handoff.")
-                  : t("The booking request goes first, and the payment path stays available without adding friction to submission.")}
-              </div>
               <div className="flex items-start gap-2 text-[12px] leading-6 text-zinc-500 dark:text-white/55">
                 <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--accent)]" />
                 <span>

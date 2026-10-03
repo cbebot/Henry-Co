@@ -1,0 +1,6405 @@
+{
+ "domain": "jobs",
+ "base": "http://localhost:4107",
+ "sha": "b1efffe3",
+ "measuredAt": "2026-10-03T10:14:08.775Z",
+ "budgets": {
+  "page": {
+   "home": 250,
+   "landing": 250,
+   "info": 280,
+   "pricing": 300,
+   "index": 180,
+   "detail": 220,
+   "help": 250,
+   "transactional": 150,
+   "auth": 80,
+   "utility": 100,
+   "legal": null
+  },
+  "aboveFold": 60,
+  "h1MaxWords": 12,
+  "metaDescriptionMaxChars": 160,
+  "metaDescriptionMinChars": 50,
+  "chrome": 160
+ },
+ "routes": [
+  {
+   "path": "/",
+   "type": "home",
+   "budget": 250,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 390,
+     "main": 390,
+     "outside": 0,
+     "chrome": 96,
+     "overlay": 1,
+     "pageAboveFold": 57
+    },
+    "h1s": [
+     {
+      "text": "Verified hiring. No noise.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Browse jobs"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Safety & trust"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "I'm hiring"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Pick the one that fits today."
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Look around"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Sign in when you apply"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Follow what happens next"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Roles we are highlighting right now"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Ready?"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Verified Talent Layer"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Employer Trust Badges"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Candidate Readiness Score"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Recruiter Confidence Surface"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Internal and External Dual Mode"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Application Quality Guidance"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Browse for free. Sign in when you want to save or apply."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 37,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Find jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Hire"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse jobs"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > p.jobs-reveal.jobs-kicker",
+      "top": 177,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Henry Onyx Jobs"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > h1.jobs-reveal.mt-5",
+      "top": 209,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Verified hiring. No noise."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > p.jobs-reveal.mx-auto",
+      "top": 293,
+      "aboveFold": true,
+      "words": 22,
+      "text": "Plain language, clear next steps, and employers checked where it matters — so fewer fake listings for candidates, fewer dead-end applications for teams."
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > form.jobs-reveal.mx-auto > button.shrink-0.px-6",
+      "top": 410,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Search jobs"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > div.jobs-reveal.mt-6 > span",
+      "top": 485,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Try:"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > div.jobs-reveal.mt-6 > a.rounded-full.border",
+      "top": 485,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Remote"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > div.jobs-reveal.mt-6 > a.rounded-full.border",
+      "top": 485,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Verified only"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > div.jobs-reveal.mt-6 > a.rounded-full.border",
+      "top": 485,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Full-time"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > div.jobs-reveal.mt-6 > a.rounded-full.border",
+      "top": 485,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Lagos"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > div.jobs-reveal.mt-9 > a.rounded-full.px-5",
+      "top": 560,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse jobs"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.relative.overflow-hidden > div.relative.mx-auto > div.jobs-reveal.mt-9 > a.rounded-full.px-5",
+      "top": 561,
+      "aboveFold": true,
+      "words": 5,
+      "text": "I'm hiring - how it works"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "section.relative.overflow-hidden > div.relative.mx-auto > dl.jobs-reveal.mx-auto > div.px-3.py-5 > dd.jobs-display.text-3xl",
+      "top": 675,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "section.relative.overflow-hidden > div.relative.mx-auto > dl.jobs-reveal.mx-auto > div.px-3.py-5 > dt.mt-2.font-semibold",
+      "top": 743,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Open roles"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "section.relative.overflow-hidden > div.relative.mx-auto > dl.jobs-reveal.mx-auto > div.px-3.py-5 > dd.jobs-display.text-3xl",
+      "top": 675,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "section.relative.overflow-hidden > div.relative.mx-auto > dl.jobs-reveal.mx-auto > div.px-3.py-5 > dt.mt-2.font-semibold",
+      "top": 743,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Verified employers"
+     },
+     {
+      "region": "main",
+      "tag": "dd",
+      "path": "section.relative.overflow-hidden > div.relative.mx-auto > dl.jobs-reveal.mx-auto > div.px-3.py-5 > dd.jobs-display.text-3xl",
+      "top": 675,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "dt",
+      "path": "section.relative.overflow-hidden > div.relative.mx-auto > dl.jobs-reveal.mx-auto > div.px-3.py-5 > dt.mt-2.font-semibold",
+      "top": 743,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Internal tracks"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.flex.items-baseline > p.jobs-kicker",
+      "top": 966,
+      "aboveFold": false,
+      "words": 2,
+      "text": "For teams"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ul.mt-6.grid > li > h3.mt-4.text-base",
+      "top": 1043,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Browse jobs"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ul.mt-6.grid > li > p.mt-2.text-sm",
+      "top": 1078,
+      "aboveFold": false,
+      "words": 19,
+      "text": "Search and save roles with no pressure. Apply when it feels right — we show what you have already sent."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ul.mt-6.grid > li > h3.mt-4.text-base",
+      "top": 1043,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Safety & trust"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ul.mt-6.grid > li > p.mt-2.text-sm",
+      "top": 1078,
+      "aboveFold": false,
+      "words": 14,
+      "text": "Employer verification and post review cut down scam listings before they waste anyone's week."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ul.mt-6.grid > li > h3.mt-4.text-base",
+      "top": 1043,
+      "aboveFold": false,
+      "words": 2,
+      "text": "I'm hiring"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ul.mt-6.grid > li > p.mt-2.text-sm",
+      "top": 1078,
+      "aboveFold": false,
+      "words": 18,
+      "text": "Post with context, pass review, and run shortlist + interviews in one workspace tied to your Henry Onyx account."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.mb-9.flex > div > p.jobs-kicker",
+      "top": 1279,
+      "aboveFold": false,
+      "words": 5,
+      "text": "I'm hiring - how it works"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.mb-9.flex > div > h2.mt-3.jobs-heading",
+      "top": 1302,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Pick the one that fits today."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.mb-9.flex > a.text-sm.font-semibold",
+      "top": 1330,
+      "aboveFold": false,
+      "words": 3,
+      "text": "How hiring works"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > div.flex.items-center > span.font-mono.font-semibold",
+      "top": 1412,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Step 01"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > h3.mt-3.text-lg",
+      "top": 1441,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Look around"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > p.mt-2.text-sm",
+      "top": 1479,
+      "aboveFold": false,
+      "words": 18,
+      "text": "Search by title, category, place, and how you want to work. Save anything interesting — there is no clock."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > div.flex.items-center > span.font-mono.font-semibold",
+      "top": 1387,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Step 02"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > h3.mt-3.text-lg",
+      "top": 1416,
+      "aboveFold": false,
+      "words": 5,
+      "text": "Sign in when you apply"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > p.mt-2.text-sm",
+      "top": 1454,
+      "aboveFold": false,
+      "words": 21,
+      "text": "We ask for your Henry Onyx account so applications and saves stay private and tied to you — not a throwaway email."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > div.flex.items-center > span.font-mono.font-semibold",
+      "top": 1387,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Step 03"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > h3.mt-3.text-lg",
+      "top": 1416,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Follow what happens next"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > ol.grid.gap-8 > li.border-t.border-black/10 > p.mt-2.text-sm",
+      "top": 1454,
+      "aboveFold": false,
+      "words": 17,
+      "text": "Shortlisted, interview, offer — stages show up in your candidate area with guidance on what to do next."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.mb-8.flex > div > p.jobs-kicker",
+      "top": 1639,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Featured roles"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.mb-8.flex > div > h2.mt-3.jobs-heading",
+      "top": 1661,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Roles we are highlighting right now"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.mb-8.flex > a.text-sm.font-semibold",
+      "top": 1731,
+      "aboveFold": false,
+      "words": 2,
+      "text": "See everything"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.grid.gap-10 > div > p.jobs-kicker",
+      "top": 1888,
+      "aboveFold": false,
+      "words": 5,
+      "text": "What makes this board different"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.grid.gap-10 > div > h2.mt-3.jobs-heading",
+      "top": 1910,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Ready?"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > section.mx-auto.max-w-7xl > div.grid.gap-10 > div > p.mt-4.max-w-md",
+      "top": 1978,
+      "aboveFold": false,
+      "words": 13,
+      "text": "No throwaway emails, no hidden fees, no black-hole applications — the differences add up."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > h3.text-base.font-semibold",
+      "top": 1909,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Verified Talent Layer"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > p.mt-1.5.max-w-2xl",
+      "top": 1942,
+      "aboveFold": false,
+      "words": 16,
+      "text": "Candidate profiles gain visible trust signals only after readiness, identity, and work proof checks line up."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > h3.text-base.font-semibold",
+      "top": 2008,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Employer Trust Badges"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > p.mt-1.5.max-w-2xl",
+      "top": 2041,
+      "aboveFold": false,
+      "words": 15,
+      "text": "Company pages show verification maturity, response discipline, and posting quality instead of generic logos alone."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > h3.text-base.font-semibold",
+      "top": 2135,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Candidate Readiness Score"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > p.mt-1.5.max-w-2xl",
+      "top": 2168,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Profiles translate messy completeness into a recruiter-readable readiness score with actionable gaps."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > h3.text-base.font-semibold",
+      "top": 2234,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Recruiter Confidence Surface"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > p.mt-1.5.max-w-2xl",
+      "top": 2267,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Application cards surface confidence, verification, and moderation context in one calm triage layer."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > h3.text-base.font-semibold",
+      "top": 2333,
+      "aboveFold": false,
+      "words": 5,
+      "text": "Internal and External Dual Mode"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > p.mt-1.5.max-w-2xl",
+      "top": 2366,
+      "aboveFold": false,
+      "words": 16,
+      "text": "Henry Onyx internal hiring and external employer hiring coexist without forcing one compromise model onto both."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > h3.text-base.font-semibold",
+      "top": 2460,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Application Quality Guidance"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.max-w-7xl > div.grid.gap-10 > ul.divide-y.divide-black/10 > li.py-5 > p.mt-1.5.max-w-2xl",
+      "top": 2493,
+      "aboveFold": false,
+      "words": 18,
+      "text": "The apply flow points out missing proof, weak summaries, and profile gaps before a candidate wastes a submission."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.max-w-7xl > section.relative.overflow-hidden > div.grid.gap-10 > div.space-y-5 > p.font-semibold.uppercase",
+      "top": 2671,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Ready?"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "section.mx-auto.max-w-7xl > section.relative.overflow-hidden > div.grid.gap-10 > div.space-y-5 > h2.text-balance.font-semibold",
+      "top": 2701,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Browse for free. Sign in when you want to save or apply."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section.mx-auto.max-w-7xl > section.relative.overflow-hidden > div.grid.gap-10 > div.space-y-5 > p.max-w-2xl.text-pretty",
+      "top": 2771,
+      "aboveFold": false,
+      "words": 21,
+      "text": "Employers start with a short walkthrough so expectations stay clear. Candidates keep saves, applications, and stages in one Henry Onyx profile."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.space-y-4 > ul.space-y-3 > li > a.group.flex > span.flex-1",
+      "top": 2864,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Browse jobs"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.space-y-4 > ul.space-y-3 > li > a.group.flex > span.flex-1",
+      "top": 2909,
+      "aboveFold": false,
+      "words": 4,
+      "text": "My Henry Onyx account"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.space-y-4 > ul.space-y-3 > li > a.group.flex > span.flex-1",
+      "top": 2954,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Candidate hub"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.space-y-4 > ul.space-y-3 > li > a.group.flex > span.flex-1",
+      "top": 2999,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Hire with Henry Onyx"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.space-y-4 > ul.space-y-3 > li > a.group.flex > span.flex-1",
+      "top": 3044,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Safety & trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > span.home-display",
+      "top": 3332,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-lede.max-w-xl",
+      "top": 3422,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 3505,
+      "aboveFold": false,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 3505,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > nav.border-t.py-12 > p.home-eyebrow",
+      "top": 3638,
+      "aboveFold": false,
+      "words": 4,
+      "text": "The Henry Onyx group"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 3690,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Marketplace"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 3690,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Studio"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 3690,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 3741,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Logistics"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 3741,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 3741,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Learn"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 3793,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx Fabric Care"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 3793,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Live"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 3925,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 3955,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 3989,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 4023,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 4057,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 3925,
+      "aboveFold": false,
+      "words": 2,
+      "text": "For teams"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 3955,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Candidate home"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 3989,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Hire with Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 4023,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Employer workspace"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 4057,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Recruiters"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 3925,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 3955,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 3989,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Careers"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 4023,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Group Hub"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.text-sm",
+      "top": 4159,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Limited All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-eyebrow.inline-flex",
+      "top": 4162,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Built in-house by Henry Onyx Jobs."
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 854,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#home-q",
+      "top": 397,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Role, skill, or company"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 390,
+     "main": 390,
+     "outside": 0,
+     "chrome": 86,
+     "overlay": 0,
+     "pageAboveFold": 57
+    },
+    "h1s": [
+     {
+      "text": "Verified hiring. No noise.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 95
+   },
+   "pageWords": 390,
+   "aboveFold": 57,
+   "chromeWords": 96,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/jobs",
+   "type": "index",
+   "budget": 180,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 240,
+     "main": 240,
+     "outside": 0,
+     "chrome": 98,
+     "overlay": 1,
+     "pageAboveFold": 185
+    },
+    "h1s": [
+     {
+      "text": "A calmer place to discover work that respects your time.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Nothing matched yet"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "We couldn’t find roles with that exact mix."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 37,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Find jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Hire"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Join free to apply"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.jobs-kicker",
+      "top": 113,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Find your next role"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > h1.mt-4.jobs-display",
+      "top": 141,
+      "aboveFold": true,
+      "words": 10,
+      "text": "A calmer place to discover work that respects your time."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.mt-5.max-w-2xl",
+      "top": 336,
+      "aboveFold": true,
+      "words": 40,
+      "text": "Search by what you actually care about — where you work, how you work, and whether the employer has earned a little trust on the platform. Save roles while you think; apply when you are ready with one Henry Onyx profile."
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "div.mt-8 > div.space-y-6 > form.space-y-5 > div.flex.flex-col > button.jobs-button-primary.shrink-0",
+      "top": 476,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Search"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div > div.mt-8 > div.space-y-6 > form.space-y-5 > p.text-xs.font-medium",
+      "top": 534,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Popular starting points"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mt-8 > div.space-y-6 > form.space-y-5 > div.flex.flex-wrap > a.rounded-full.border",
+      "top": 577,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Remote"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mt-8 > div.space-y-6 > form.space-y-5 > div.flex.flex-wrap > a.rounded-full.border",
+      "top": 577,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Hybrid"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mt-8 > div.space-y-6 > form.space-y-5 > div.flex.flex-wrap > a.rounded-full.border",
+      "top": 577,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Verified only"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mt-8 > div.space-y-6 > form.space-y-5 > div.flex.flex-wrap > a.rounded-full.border",
+      "top": 577,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Full-time"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mt-8 > div.space-y-6 > form.space-y-5 > div.flex.flex-wrap > a.rounded-full.border",
+      "top": 577,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Lagos"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mt-8 > div.space-y-6 > form.space-y-5 > div.flex.flex-wrap > a.rounded-full.border",
+      "top": 577,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Internal Henry Onyx"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.space-y-6 > form.space-y-5 > div.hidden.space-y-4 > div.grid.gap-3 > label.block.text-xs",
+      "top": 620,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Category"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.space-y-6 > form.space-y-5 > div.hidden.space-y-4 > div.grid.gap-3 > label.block.text-xs",
+      "top": 620,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Location"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.space-y-6 > form.space-y-5 > div.hidden.space-y-4 > div.grid.gap-3 > label.block.text-xs",
+      "top": 620,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Work mode"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.space-y-6 > form.space-y-5 > div.hidden.space-y-4 > div.grid.gap-3 > label.block.text-xs",
+      "top": 620,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Role type"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.space-y-6 > form.space-y-5 > div.hidden.space-y-4 > div.flex.flex-col > label.jobs-soft-panel.inline-flex",
+      "top": 724,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Verified employers only"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.space-y-6 > form.space-y-5 > div.hidden.space-y-4 > div.flex.flex-col > label.jobs-soft-panel.inline-flex",
+      "top": 724,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Internal Henry Onyx roles only"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.mt-6.max-w-2xl",
+      "top": 785,
+      "aboveFold": true,
+      "words": 31,
+      "text": "Browsing is always free. We only ask you to sign in when you save a role or apply, so your shortlist and applications stay private and attached to the right person."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > div > p.font-semibold.uppercase",
+      "top": 472,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Verified roles · 0 live now"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > div > p.mt-1.text-xs",
+      "top": 494,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Each role passes employer review before it goes live."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > span.text-xl.font-semibold",
+      "top": 457,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > div > p.font-semibold.uppercase",
+      "top": 574,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Verified employers"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > div > p.mt-1.text-xs",
+      "top": 596,
+      "aboveFold": true,
+      "words": 7,
+      "text": "Teams that have passed our employer review."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > span.text-xl.font-semibold",
+      "top": 559,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > div > p.font-semibold.uppercase",
+      "top": 676,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Internal Henry Onyx"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > div > p.mt-1.text-xs",
+      "top": 698,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Openings inside Henry Onyx, same process as external roles."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > span.text-xl.font-semibold",
+      "top": 661,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > div > p.font-semibold.uppercase",
+      "top": 778,
+      "aboveFold": true,
+      "words": 3,
+      "text": "With response time"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > div > p.mt-1.text-xs",
+      "top": 800,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Posts where the employer shared an expected reply window."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.grid.gap-2 > span.text-xl.font-semibold",
+      "top": 763,
+      "aboveFold": true,
+      "words": 1,
+      "text": "0"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > div.grid.gap-10 > aside.space-y-12 > div > p.jobs-kicker.uppercase",
+      "top": 886,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Browse by category"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-7xl > div.grid.gap-10 > aside.space-y-12 > div > a.mt-3.inline-flex",
+      "top": 932,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Clear filters · all jobs"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > div.grid.gap-10 > aside.space-y-12 > div > p.jobs-kicker.uppercase",
+      "top": 999,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Hiring now"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.grid.gap-10 > section.space-y-6 > div.flex.flex-col > div > p.jobs-kicker.uppercase",
+      "top": 886,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Results"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.grid.gap-10 > section.space-y-6 > div.flex.flex-col > div > h2.mt-2.text-xl",
+      "top": 909,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Nothing matched yet"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section.space-y-6 > div.flex.flex-col > div > p.mt-1.flex > span",
+      "top": 946,
+      "aboveFold": false,
+      "words": 2,
+      "text": "All employers"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section.space-y-6 > div.flex.flex-col > div > p.mt-1.flex > span",
+      "top": 946,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Internal and external"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > div.grid.gap-10 > section.space-y-6 > div.border.border-dashed > p.jobs-kicker",
+      "top": 1045,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Try a small change"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "div.mx-auto.max-w-7xl > div.grid.gap-10 > section.space-y-6 > div.border.border-dashed > h3.mt-4.text-xl",
+      "top": 1077,
+      "aboveFold": false,
+      "words": 8,
+      "text": "We couldn’t find roles with that exact mix."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > div.grid.gap-10 > section.space-y-6 > div.border.border-dashed > p.mx-auto.mt-3",
+      "top": 1121,
+      "aboveFold": false,
+      "words": 25,
+      "text": "Widen your search, remove one filter, or try a category from the left. Verified-only and internal-only toggles are the most common reason lists go quiet."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.grid.gap-10 > section.space-y-6 > div.border.border-dashed > div.mt-5.flex > a.jobs-button-primary.inline-flex",
+      "top": 1205,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Show all open roles"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > span.home-display",
+      "top": 1444,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-lede.max-w-xl",
+      "top": 1534,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 1618,
+      "aboveFold": false,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 1618,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > nav.border-t.py-12 > p.home-eyebrow",
+      "top": 1751,
+      "aboveFold": false,
+      "words": 4,
+      "text": "The Henry Onyx group"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1802,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Marketplace"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1802,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Studio"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1802,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1854,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Logistics"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1854,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1854,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Learn"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1905,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx Fabric Care"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1905,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Live"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2038,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2068,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2102,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2136,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2170,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2038,
+      "aboveFold": false,
+      "words": 2,
+      "text": "For teams"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2068,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Candidate home"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2102,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Hire with Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2136,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Employer workspace"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2170,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Recruiters"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2038,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2068,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2102,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Careers"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2136,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Group Hub"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.text-sm",
+      "top": 2272,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Limited All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-eyebrow.inline-flex",
+      "top": 2274,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Built in-house by Henry Onyx Jobs."
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 854,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#jobs-q",
+      "top": 459,
+      "aboveFold": true,
+      "words": 8,
+      "text": "Try a role, skill, team, or company name"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "form.space-y-5 > div.hidden.space-y-4 > div.grid.gap-3 > label.block.text-xs > input.jobs-input.mt-2",
+      "top": 645,
+      "aboveFold": true,
+      "words": 4,
+      "text": "City, region, or “Remote”"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "form.space-y-5 > div.hidden.space-y-4 > div.grid.gap-3 > label.block.text-xs > select.jobs-select.mt-2",
+      "top": 645,
+      "aboveFold": true,
+      "words": 2,
+      "text": "All categories"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "form.space-y-5 > div.hidden.space-y-4 > div.grid.gap-3 > label.block.text-xs > select.jobs-select.mt-2",
+      "top": 645,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Any mode"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "form.space-y-5 > div.hidden.space-y-4 > div.grid.gap-3 > label.block.text-xs > select.jobs-select.mt-2",
+      "top": 645,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Any type"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 244,
+     "main": 244,
+     "outside": 0,
+     "chrome": 86,
+     "overlay": 0,
+     "pageAboveFold": 113
+    },
+    "h1s": [
+     {
+      "text": "A calmer place to discover work that respects your time.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 80
+   },
+   "pageWords": 244,
+   "aboveFold": 185,
+   "chromeWords": 98,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/jobs/[slug]",
+   "type": "detail",
+   "budget": 220,
+   "status": "no-sample",
+   "data": true
+  },
+  {
+   "path": "/categories/[slug]",
+   "type": "index",
+   "budget": 180,
+   "status": "no-sample",
+   "data": true
+  },
+  {
+   "path": "/employers/[slug]",
+   "type": "detail",
+   "budget": 220,
+   "status": "no-sample",
+   "data": true
+  },
+  {
+   "path": "/hire",
+   "type": "landing",
+   "budget": 250,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 374,
+     "main": 374,
+     "outside": 0,
+     "chrome": 97,
+     "overlay": 1,
+     "pageAboveFold": 181
+    },
+    "h1s": [
+     {
+      "text": "Hire with clarity, not chaos.",
+      "visible": true
+     }
+    ],
+    "title": "Hire with clarity — Henry Onyx Jobs",
+    "metaDescription": "Post real roles, read applications in one place, and move candidates through visible stages. Employers and posts are reviewed to protect quality.",
+    "metaDescriptionChars": 145,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Tell us who you are"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Submit your role for review"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Run the pipeline in the open"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Real brands. Reviewed posts. No badges for sale."
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Moderation explains itself, then gets out of the way."
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "We protect the board so serious employers stand out."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 37,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Find jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Hire"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Create employer account"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.jobs-kicker",
+      "top": 113,
+      "aboveFold": true,
+      "words": 2,
+      "text": "For employers"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > h1.mt-4.jobs-display",
+      "top": 141,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Hire with clarity, not chaos."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.mt-5.max-w-2xl",
+      "top": 225,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Post real roles, read applications in one place, move people through shortlist and interviews on visible stages. Employers and posts are reviewed to protect quality on both sides."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > div > p.mt-4.inline-flex > span",
+      "top": 318,
+      "aboveFold": true,
+      "words": 24,
+      "text": "Posting live roles requires an active employer subscription. Candidates always browse for free; the subscription pays for moderation, anti-scam review, and candidate trust signals."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-8.flex > a.jobs-button-primary.inline-flex",
+      "top": 427,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Start hiring — sign up free"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-8.flex > a.jobs-button-secondary.inline-flex",
+      "top": 427,
+      "aboveFold": true,
+      "words": 7,
+      "text": "I already have a Henry Onyx account"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 318,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Verification"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 314,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Manual review — no pay-to-play"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 375,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Post review"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 371,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Clarity, fairness, fraud checks"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 432,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Pipeline"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 428,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Visible stages for every applicant"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section > p.jobs-kicker",
+      "top": 525,
+      "aboveFold": true,
+      "words": 6,
+      "text": "From first post to first hire"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mx-auto.max-w-7xl > section > ol.mt-6.divide-y > li.grid.gap-3 > span.font-semibold.uppercase",
+      "top": 591,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Step 01"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ol.mt-6.divide-y > li.grid.gap-3 > div > h3.text-base.font-semibold",
+      "top": 592,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Tell us who you are"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section > ol.mt-6.divide-y > li.grid.gap-3 > div > p.mt-2.max-w-2xl",
+      "top": 627,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Create your company profile with honest basics—what you do, where you hire, and how candidates should expect to hear from you. We use this for verification, not vanity."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mx-auto.max-w-7xl > section > ol.mt-6.divide-y > li.grid.gap-3 > span.font-semibold.uppercase",
+      "top": 728,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Step 02"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ol.mt-6.divide-y > li.grid.gap-3 > div > h3.text-base.font-semibold",
+      "top": 729,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Submit your role for review"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section > ol.mt-6.divide-y > li.grid.gap-3 > div > p.mt-2.max-w-2xl",
+      "top": 764,
+      "aboveFold": true,
+      "words": 37,
+      "text": "Write the job like you mean it: outcomes, requirements, pay band if you can share it, and how you work (remote, hybrid, on-site). New posts may sit in review briefly while we check for scams and quality."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.mx-auto.max-w-7xl > section > ol.mt-6.divide-y > li.grid.gap-3 > span.font-semibold.uppercase",
+      "top": 865,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Step 03"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ol.mt-6.divide-y > li.grid.gap-3 > div > h3.text-base.font-semibold",
+      "top": 866,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Run the pipeline in the open"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "section > ol.mt-6.divide-y > li.grid.gap-3 > div > p.mt-2.max-w-2xl",
+      "top": 901,
+      "aboveFold": false,
+      "words": 23,
+      "text": "Applications land in your employer workspace. Shortlist, interview, and decide with stages candidates can see in their own hub—fewer ghosted threads, more trust."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section.grid.gap-12 > div > p.jobs-kicker",
+      "top": 1043,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Why verification exists"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section.grid.gap-12 > div > h2.mt-3.jobs-heading",
+      "top": 1065,
+      "aboveFold": false,
+      "words": 8,
+      "text": "Real brands. Reviewed posts. No badges for sale."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section.grid.gap-12 > div > p.mt-4.max-w-xl",
+      "top": 1175,
+      "aboveFold": false,
+      "words": 46,
+      "text": "Candidates deserve to know they are not replying to a fake brand. Verification means a human review of employer intent and profile quality — not a pay-to-play badge. While you are pending, you can still prepare your company record; some posting options unlock once you are verified."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section.grid.gap-12 > div > p.jobs-kicker",
+      "top": 1043,
+      "aboveFold": false,
+      "words": 5,
+      "text": "After you submit a post"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section.grid.gap-12 > div > h2.mt-3.jobs-heading",
+      "top": 1065,
+      "aboveFold": false,
+      "words": 9,
+      "text": "Moderation explains itself, then gets out of the way."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section.grid.gap-12 > div > p.mt-4.max-w-xl",
+      "top": 1175,
+      "aboveFold": false,
+      "words": 44,
+      "text": "Moderation checks for clarity, fairness, and fraud patterns. If something needs a fix, we will tell you why. When the role is live, candidates apply with one Henry Onyx profile; you review them in your applicant list and move stages when you are ready."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-8 > div > p.jobs-kicker",
+      "top": 1389,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Quality over volume"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-8 > div > h2.mt-3.jobs-heading",
+      "top": 1411,
+      "aboveFold": false,
+      "words": 9,
+      "text": "We protect the board so serious employers stand out."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-8 > div > p.mt-4.max-w-2xl",
+      "top": 1521,
+      "aboveFold": false,
+      "words": 33,
+      "text": "Shared sign-in, saved roles, and application history mean candidates can hold you accountable to the process you publish. That is good for hiring: fewer wasted interviews, more people who actually want the job."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-8 > div.flex.flex-wrap > a.jobs-button-primary.inline-flex",
+      "top": 1568,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Get started"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-8 > div.flex.flex-wrap > a.inline-flex.items-center",
+      "top": 1568,
+      "aboveFold": false,
+      "words": 4,
+      "text": "How we protect people"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-8 > div.flex.flex-wrap > a.inline-flex.items-center",
+      "top": 1568,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Employer FAQ"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section.border-t.border-black/10 > p.mt-8.text-sm",
+      "top": 1633,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Questions?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section.border-t.border-black/10 > p.mt-8.text-sm > a.font-semibold.underline-offset-4",
+      "top": 1633,
+      "aboveFold": false,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > span.home-display",
+      "top": 1827,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-lede.max-w-xl",
+      "top": 1917,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 2000,
+      "aboveFold": false,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 2000,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > nav.border-t.py-12 > p.home-eyebrow",
+      "top": 2133,
+      "aboveFold": false,
+      "words": 4,
+      "text": "The Henry Onyx group"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2185,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Marketplace"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2185,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Studio"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2185,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2236,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Logistics"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2236,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2236,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Learn"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2288,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx Fabric Care"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2288,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Live"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2420,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2450,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2484,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2518,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2552,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2420,
+      "aboveFold": false,
+      "words": 2,
+      "text": "For teams"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2450,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Candidate home"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2484,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Hire with Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2518,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Employer workspace"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2552,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Recruiters"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2420,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2450,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2484,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Careers"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2518,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Group Hub"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.text-sm",
+      "top": 2654,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Limited All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-eyebrow.inline-flex",
+      "top": 2657,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Built in-house by Henry Onyx Jobs."
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 854,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 374,
+     "main": 374,
+     "outside": 0,
+     "chrome": 86,
+     "overlay": 0,
+     "pageAboveFold": 82
+    },
+    "h1s": [
+     {
+      "text": "Hire with clarity, not chaos.",
+      "visible": true
+     }
+    ],
+    "title": "Hire with clarity — Henry Onyx Jobs",
+    "metaDescription": "Post real roles, read applications in one place, and move candidates through visible stages. Employers and posts are reviewed to protect quality.",
+    "metaDescriptionChars": 145,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 68
+   },
+   "pageWords": 374,
+   "aboveFold": 181,
+   "chromeWords": 97,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/talent",
+   "type": "landing",
+   "budget": 250,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 194,
+     "main": 194,
+     "outside": 0,
+     "chrome": 97,
+     "overlay": 1,
+     "pageAboveFold": 141
+    },
+    "h1s": [
+     {
+      "text": "Build a profile that employers actually trust.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Verified Talent Layer"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Employer Trust Badges"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Candidate Readiness Score"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Recruiter Confidence Surface"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Internal and External Dual Mode"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Start your profile, then apply when you’re ready."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 37,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Find jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Hire"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Build candidate profile"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.jobs-kicker",
+      "top": 113,
+      "aboveFold": true,
+      "words": 2,
+      "text": "For candidates"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > h1.mt-4.jobs-display",
+      "top": 141,
+      "aboveFold": true,
+      "words": 7,
+      "text": "Build a profile that employers actually trust."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.mt-5.max-w-2xl",
+      "top": 281,
+      "aboveFold": true,
+      "words": 29,
+      "text": "Henry Onyx Jobs uses your profile completeness, uploaded documents, verified skills, and work history to help employers see the real you — not just a name and a CV attachment."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-8.flex > a.jobs-button-primary.inline-flex",
+      "top": 385,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Start your profile"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-8.flex > a.inline-flex.items-center",
+      "top": 385,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Browse open roles"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-8.flex > a.inline-flex.items-center",
+      "top": 385,
+      "aboveFold": true,
+      "words": 4,
+      "text": "How we protect candidates"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 276,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Profile"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 272,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Documents, skills, history"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 333,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Verification"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 329,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Identity, references, certifications"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 390,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Privacy"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 386,
+      "aboveFold": true,
+      "words": 6,
+      "text": "You choose what each application sends"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section > div.flex.items-baseline > p.jobs-kicker",
+      "top": 483,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Why candidates trust the board"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > h2.mt-3.text-lg",
+      "top": 561,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Verified Talent Layer"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > p.mt-2.text-sm",
+      "top": 599,
+      "aboveFold": true,
+      "words": 16,
+      "text": "Candidate profiles gain visible trust signals only after readiness, identity, and work proof checks line up."
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > h2.mt-3.text-lg",
+      "top": 561,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Employer Trust Badges"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > p.mt-2.text-sm",
+      "top": 599,
+      "aboveFold": true,
+      "words": 15,
+      "text": "Company pages show verification maturity, response discipline, and posting quality instead of generic logos alone."
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > h2.mt-3.text-lg",
+      "top": 721,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Candidate Readiness Score"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > p.mt-2.text-sm",
+      "top": 759,
+      "aboveFold": true,
+      "words": 12,
+      "text": "Profiles translate messy completeness into a recruiter-readable readiness score with actionable gaps."
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > h2.mt-3.text-lg",
+      "top": 721,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Recruiter Confidence Surface"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > p.mt-2.text-sm",
+      "top": 759,
+      "aboveFold": true,
+      "words": 13,
+      "text": "Application cards surface confidence, verification, and moderation context in one calm triage layer."
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > h2.mt-3.text-lg",
+      "top": 881,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Internal and External Dual Mode"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li.relative > p.mt-2.text-sm",
+      "top": 919,
+      "aboveFold": false,
+      "words": 16,
+      "text": "Henry Onyx internal hiring and external employer hiring coexist without forcing one compromise model onto both."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div > p.jobs-kicker",
+      "top": 1077,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Move forward"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div > h2.mt-3.jobs-heading",
+      "top": 1099,
+      "aboveFold": false,
+      "words": 8,
+      "text": "Start your profile, then apply when you’re ready."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div > p.mt-4.max-w-2xl",
+      "top": 1209,
+      "aboveFold": false,
+      "words": 22,
+      "text": "Browsing is free. Saving and applying require one Henry Onyx account so your shortlist and applications stay attached to the right person."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div.flex.flex-wrap > a.jobs-button-primary.inline-flex",
+      "top": 1228,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Create candidate profile"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div.flex.flex-wrap > a.inline-flex.items-center",
+      "top": 1228,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Browse jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > span.home-display",
+      "top": 1435,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-lede.max-w-xl",
+      "top": 1525,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 1608,
+      "aboveFold": false,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 1608,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > nav.border-t.py-12 > p.home-eyebrow",
+      "top": 1741,
+      "aboveFold": false,
+      "words": 4,
+      "text": "The Henry Onyx group"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1793,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Marketplace"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1793,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Studio"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1793,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1844,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Logistics"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1844,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1844,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Learn"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1896,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx Fabric Care"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1896,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Live"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2028,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2059,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2093,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2127,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2161,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2028,
+      "aboveFold": false,
+      "words": 2,
+      "text": "For teams"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2059,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Candidate home"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2093,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Hire with Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2127,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Employer workspace"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2161,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Recruiters"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2028,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2059,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2093,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Careers"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2127,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Group Hub"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.text-sm",
+      "top": 2263,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Limited All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-eyebrow.inline-flex",
+      "top": 2265,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Built in-house by Henry Onyx Jobs."
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 854,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 194,
+     "main": 194,
+     "outside": 0,
+     "chrome": 86,
+     "overlay": 0,
+     "pageAboveFold": 63
+    },
+    "h1s": [
+     {
+      "text": "Build a profile that employers actually trust.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 60
+   },
+   "pageWords": 194,
+   "aboveFold": 141,
+   "chromeWords": 97,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/careers",
+   "type": "landing",
+   "budget": 250,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 99,
+     "main": 99,
+     "outside": 0,
+     "chrome": 98,
+     "overlay": 1,
+     "pageAboveFold": 99
+    },
+    "h1s": [
+     {
+      "text": "Join the team building Henry Onyx.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "We don't have any internal roles open at the moment"
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 37,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Find jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Hire"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Open Henry Onyx Roles"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.jobs-kicker",
+      "top": 113,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Careers at Henry Onyx"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > h1.mt-4.jobs-display",
+      "top": 141,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Join the team building Henry Onyx."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.hc-font-reading.mt-5",
+      "top": 282,
+      "aboveFold": true,
+      "words": 29,
+      "text": "Internal openings go through the same clear, structured hiring process as every role on the platform. Apply with your Henry Onyx account and track progress in your candidate hub."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > div > div.mt-7.flex > span.font-semibold.uppercase",
+      "top": 402,
+      "aboveFold": true,
+      "words": 2,
+      "text": "0 open"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-7.flex > a.font-semibold.underline-offset-4",
+      "top": 400,
+      "aboveFold": true,
+      "words": 4,
+      "text": "How Henry Onyx hires"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-7.flex > a.font-semibold.underline-offset-4",
+      "top": 400,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Application FAQ"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 278,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Process"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 274,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Same stages as external roles"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 335,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Communication"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 331,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Visible stages, no silent dropoffs"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 392,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Account"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 388,
+      "aboveFold": true,
+      "words": 6,
+      "text": "One Henry Onyx profile across services"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section > div.flex.items-baseline > p.jobs-kicker",
+      "top": 469,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Open roles"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.mt-8 > div.border.border-dashed > p.jobs-kicker",
+      "top": 551,
+      "aboveFold": true,
+      "words": 4,
+      "text": "No openings right now"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "div.mx-auto.max-w-7xl > section > div.mt-8 > div.border.border-dashed > h3.mt-4.text-xl",
+      "top": 583,
+      "aboveFold": true,
+      "words": 10,
+      "text": "We don't have any internal roles open at the moment"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.mt-8 > div.border.border-dashed > p.mx-auto.mt-3",
+      "top": 627,
+      "aboveFold": true,
+      "words": 14,
+      "text": "Check back soon or browse external roles from verified employers on the main board."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.mt-8 > div.border.border-dashed > div.mt-5.flex > a.jobs-button-primary.inline-flex",
+      "top": 683,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Browse all roles"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > span.home-display",
+      "top": 922,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-lede.max-w-xl",
+      "top": 1012,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 1096,
+      "aboveFold": false,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 1096,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > nav.border-t.py-12 > p.home-eyebrow",
+      "top": 1229,
+      "aboveFold": false,
+      "words": 4,
+      "text": "The Henry Onyx group"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1280,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Marketplace"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1280,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Studio"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1280,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1332,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Logistics"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1332,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1332,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Learn"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1383,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx Fabric Care"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 1383,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Live"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 1516,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1546,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1580,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1614,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1648,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 1516,
+      "aboveFold": false,
+      "words": 2,
+      "text": "For teams"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1546,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Candidate home"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1580,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Hire with Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1614,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Employer workspace"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1648,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Recruiters"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 1516,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1546,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1580,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Careers"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 1614,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Group Hub"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.text-sm",
+      "top": 1750,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Limited All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-eyebrow.inline-flex",
+      "top": 1752,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Built in-house by Henry Onyx Jobs."
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 854,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 99,
+     "main": 99,
+     "outside": 0,
+     "chrome": 86,
+     "overlay": 0,
+     "pageAboveFold": 72
+    },
+    "h1s": [
+     {
+      "text": "Join the team building Henry Onyx.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 49
+   },
+   "pageWords": 99,
+   "aboveFold": 99,
+   "chromeWords": 98,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/trust",
+   "type": "info",
+   "budget": 280,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 428,
+     "main": 428,
+     "outside": 0,
+     "chrome": 97,
+     "overlay": 1,
+     "pageAboveFold": 189
+    },
+    "h1s": [
+     {
+      "text": "Slow the bad listings. Let the good ones shine.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Employer verification"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Post review"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Your account & data"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Verified Talent Layer"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Employer Trust Badges"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Candidate Readiness Score"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Recruiter Confidence Surface"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Internal and External Dual Mode"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Application Quality Guidance"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Curated Talent Spotlights"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Anti-Noise Moderation Intelligence"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Premium Employer Showcases"
+     },
+     {
+      "tag": "h3",
+      "region": "main",
+      "text": "Message and Audit Spine"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Browse with the verified filter, or read the FAQ first."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 37,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Find jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Hire"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Browse verified employers"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.jobs-kicker",
+      "top": 113,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Trust & safety"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > h1.mt-4.jobs-display",
+      "top": 141,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Slow the bad listings. Let the good ones shine."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > div.grid.gap-10 > div > p.hc-font-reading.mt-5",
+      "top": 282,
+      "aboveFold": true,
+      "words": 25,
+      "text": "Real companies, real candidates, and a hiring process you can follow. Verification, moderation, and visible stages keep this from turning into an anonymous job dump."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-8.flex > a.jobs-button-primary.inline-flex",
+      "top": 385,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Browse all jobs"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "section > div.grid.gap-10 > div > div.mt-8.flex > a.inline-flex.items-center",
+      "top": 385,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Read the FAQ"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 276,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Reviews handled"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 272,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Every new employer + every new post"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 333,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Verification"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 329,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Manual, not pay-to-play"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.font-semibold.uppercase",
+      "top": 390,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Account control"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > div.grid.gap-10 > ul.grid.gap-3 > li.flex.items-baseline > span.ml-auto.text-right",
+      "top": 386,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Your data, your application history"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section > p.jobs-kicker",
+      "top": 483,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Three pillars"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > h2.mt-4.text-lg",
+      "top": 569,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Employer verification"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 607,
+      "aboveFold": true,
+      "words": 39,
+      "text": "Before we call an employer verified, we look at who they are, how they show up publicly, and whether their story matches the roles they post. Pending does not always mean “bad” — it can simply mean “still in review.”"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > h2.mt-4.text-lg",
+      "top": 569,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Post review"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 607,
+      "aboveFold": true,
+      "words": 36,
+      "text": "New and edited job posts can be checked for scams, unclear pay, or misleading titles. If we need changes, we explain why. The goal is fewer wasted applications for candidates and fewer unserious posts for employers."
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > h2.mt-4.text-lg",
+      "top": 569,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Your account & data"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 607,
+      "aboveFold": true,
+      "words": 32,
+      "text": "Saving and applying require a Henry Onyx account so your shortlist and applications are not floating in a cookie somewhere. You control your profile, documents, and what you send with each application."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-7xl > section > div.flex.items-baseline > p.jobs-kicker",
+      "top": 808,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Platform strengths"
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 886,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Verified Talent Layer"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 894,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 924,
+      "aboveFold": false,
+      "words": 16,
+      "text": "Candidate profiles gain visible trust signals only after readiness, identity, and work proof checks line up."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 886,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Employer Trust Badges"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 894,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 924,
+      "aboveFold": false,
+      "words": 15,
+      "text": "Company pages show verification maturity, response discipline, and posting quality instead of generic logos alone."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 1046,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Candidate Readiness Score"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 1054,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1084,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Profiles translate messy completeness into a recruiter-readable readiness score with actionable gaps."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 1046,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Recruiter Confidence Surface"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 1054,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1084,
+      "aboveFold": false,
+      "words": 13,
+      "text": "Application cards surface confidence, verification, and moderation context in one calm triage layer."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 1206,
+      "aboveFold": false,
+      "words": 5,
+      "text": "Internal and External Dual Mode"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 1214,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1244,
+      "aboveFold": false,
+      "words": 16,
+      "text": "Henry Onyx internal hiring and external employer hiring coexist without forcing one compromise model onto both."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 1206,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Application Quality Guidance"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 1214,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1244,
+      "aboveFold": false,
+      "words": 18,
+      "text": "The apply flow points out missing proof, weak summaries, and profile gaps before a candidate wastes a submission."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 1366,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Curated Talent Spotlights"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 1374,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1404,
+      "aboveFold": false,
+      "words": 15,
+      "text": "High-readiness candidates can appear in curated discovery rails rather than being buried in search alone."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 1366,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Anti-Noise Moderation Intelligence"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 1374,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1404,
+      "aboveFold": false,
+      "words": 16,
+      "text": "Post quality flags, trust events, and moderation history are visible to ops before low-signal listings spread."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 1526,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Premium Employer Showcases"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 1534,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1564,
+      "aboveFold": false,
+      "words": 14,
+      "text": "Employer pages sell culture, discipline, verification, and hiring intent instead of generic corporate filler."
+     },
+     {
+      "region": "main",
+      "tag": "h3",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > h3.text-lg.font-semibold",
+      "top": 1526,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Message and Audit Spine"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "section > ul.mt-8.grid > li > div.mt-3.flex > span.font-semibold.uppercase",
+      "top": 1534,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Platform feature"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section > ul.mt-8.grid > li > p.mt-2.text-sm",
+      "top": 1564,
+      "aboveFold": false,
+      "words": 15,
+      "text": "Applications, notifications, recruiter notes, trust events, and support context stay reconstructable for future account integration."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div > p.jobs-kicker",
+      "top": 1722,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Where to from here"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div > h2.mt-3.jobs-heading",
+      "top": 1744,
+      "aboveFold": false,
+      "words": 10,
+      "text": "Browse with the verified filter, or read the FAQ first."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div > p.hc-font-reading.text-pretty",
+      "top": 1855,
+      "aboveFold": false,
+      "words": 28,
+      "text": "The verified filter on the jobs board narrows to employers who have cleared review. If something looks off, the help page tells you exactly how to flag it."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div.flex.flex-wrap > a.jobs-button-primary.inline-flex",
+      "top": 1873,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Verified employers"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-7xl > section.border-t.border-black/10 > div.grid.gap-6 > div.flex.flex-wrap > a.inline-flex.items-center",
+      "top": 1873,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Help center"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > span.home-display",
+      "top": 2080,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-lede.max-w-xl",
+      "top": 2170,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 2254,
+      "aboveFold": false,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 2254,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > nav.border-t.py-12 > p.home-eyebrow",
+      "top": 2387,
+      "aboveFold": false,
+      "words": 4,
+      "text": "The Henry Onyx group"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2438,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Marketplace"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2438,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Studio"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2438,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2490,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Logistics"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2490,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2490,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Learn"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2541,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx Fabric Care"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2541,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Live"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2674,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2704,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2738,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2772,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2806,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2674,
+      "aboveFold": false,
+      "words": 2,
+      "text": "For teams"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2704,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Candidate home"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2738,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Hire with Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2772,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Employer workspace"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2806,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Recruiters"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2674,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2704,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2738,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Careers"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2772,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Group Hub"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.text-sm",
+      "top": 2908,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Limited All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-eyebrow.inline-flex",
+      "top": 2910,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Built in-house by Henry Onyx Jobs."
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 854,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 428,
+     "main": 428,
+     "outside": 0,
+     "chrome": 86,
+     "overlay": 0,
+     "pageAboveFold": 63
+    },
+    "h1s": [
+     {
+      "text": "Slow the bad listings. Let the good ones shine.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 86
+   },
+   "pageWords": 428,
+   "aboveFold": 189,
+   "chromeWords": 97,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/help",
+   "type": "help",
+   "budget": 250,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 477,
+     "main": 477,
+     "outside": 0,
+     "chrome": 96,
+     "overlay": 1,
+     "pageAboveFold": 201
+    },
+    "h1s": [
+     {
+      "text": "Straight answers about Jobs.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "How does applying work?"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "What does “saved” or shortlist mean?"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "What do the application stages mean?"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "What does employer verification mean?"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Why was my post or employer profile held for review?"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Where do my jobs show up in Henry Onyx?"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Why might WhatsApp updates not arrive?"
+     },
+     {
+      "tag": "h2",
+      "region": "main",
+      "text": "Jobs activity lives alongside the rest of your account."
+     }
+    ],
+    "images": [],
+    "blocks": [
+     {
+      "region": "chrome",
+      "tag": "text",
+      "path": "a.group/brand.flex > span.grid.shrink-0 > svg.inline-block.align-middle > g > text",
+      "top": 37,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 13,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.relative.mx-auto > div.flex.items-center > a.group/brand.flex > span.min-w-0 > span.block.truncate",
+      "top": 35,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Find jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Hire"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.relative.mx-auto > div.flex.items-center > div.flex.items-center > nav.hidden.min-w-0 > a.relative.rounded-full",
+      "top": 21,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.items-center",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "header.sticky.top-0 > div.relative.mx-auto > div.flex.items-center > div.hidden.items-center > a.inline-flex.shrink-0",
+      "top": 21,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Browse jobs"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > p.jobs-kicker",
+      "top": 113,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > h1.mt-4.jobs-display",
+      "top": 141,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Straight answers about Jobs."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > p.hc-font-reading.mt-5",
+      "top": 226,
+      "aboveFold": true,
+      "words": 22,
+      "text": "Candidates and employers use the same platform with different workspaces. If something here does not match what you see on screen, contact"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > p.hc-font-reading.mt-5 > a.font-semibold.underline-offset-4",
+      "top": 258,
+      "aboveFold": true,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > nav.mt-7.flex > a.rounded-full.border",
+      "top": 319,
+      "aboveFold": true,
+      "words": 4,
+      "text": "How does applying work"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > nav.mt-7.flex > a.rounded-full.border",
+      "top": 319,
+      "aboveFold": true,
+      "words": 6,
+      "text": "What does “saved” or shortlist mean"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > nav.mt-7.flex > a.rounded-full.border",
+      "top": 319,
+      "aboveFold": true,
+      "words": 6,
+      "text": "What do the application stages mean"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > nav.mt-7.flex > a.rounded-full.border",
+      "top": 358,
+      "aboveFold": true,
+      "words": 5,
+      "text": "What does employer verification mean"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > nav.mt-7.flex > a.rounded-full.border",
+      "top": 358,
+      "aboveFold": true,
+      "words": 10,
+      "text": "Why was my post or employer profile held for review"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > nav.mt-7.flex > a.rounded-full.border",
+      "top": 396,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Where do my jobs show up in Henry Onyx"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > nav.mt-7.flex > a.rounded-full.border",
+      "top": 396,
+      "aboveFold": true,
+      "words": 6,
+      "text": "Why might WhatsApp updates not arrive"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main#henryco-main > div.mx-auto.max-w-5xl > section > p.jobs-kicker",
+      "top": 477,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Topics"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "li#apply > span.font-semibold.uppercase",
+      "top": 542,
+      "aboveFold": true,
+      "words": 1,
+      "text": "01"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "li#apply > div > h2.text-base.font-semibold",
+      "top": 543,
+      "aboveFold": true,
+      "words": 4,
+      "text": "How does applying work?"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "li#apply > div > p.hc-font-reading.text-pretty",
+      "top": 579,
+      "aboveFold": true,
+      "words": 64,
+      "text": "Open any role, read the full description, then sign in with your Henry Onyx account when you are ready. You will send one application from your candidate profile—cover note, availability, and pay expectations if you choose. After you submit, the role moves into your Applications list with a visible stage (reviewing, shortlisted, interview, and so on). You can always see whether you already applied."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "li#shortlist > span.font-semibold.uppercase",
+      "top": 735,
+      "aboveFold": true,
+      "words": 1,
+      "text": "02"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "li#shortlist > div > h2.text-base.font-semibold",
+      "top": 736,
+      "aboveFold": true,
+      "words": 6,
+      "text": "What does “saved” or shortlist mean?"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "li#shortlist > div > p.hc-font-reading.text-pretty",
+      "top": 772,
+      "aboveFold": true,
+      "words": 43,
+      "text": "Saving a job is a private bookmark. It does not tell the employer you are interested yet. It keeps the role in your Saved jobs list so you can compare options and come back when you have time to write a strong application."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "li#stages > span.font-semibold.uppercase",
+      "top": 872,
+      "aboveFold": true,
+      "words": 1,
+      "text": "03"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "li#stages > div > h2.text-base.font-semibold",
+      "top": 873,
+      "aboveFold": true,
+      "words": 6,
+      "text": "What do the application stages mean?"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "li#stages > div > p.hc-font-reading.text-pretty",
+      "top": 909,
+      "aboveFold": false,
+      "words": 61,
+      "text": "Stages are the hiring team’s way of showing progress. “Reviewing” means your application is in the queue. “Shortlisted” usually means you passed an early fit check and they want a closer look or conversation. “Interview” is active conversations. “Offer” and “hired” are self-explanatory; “rejected” closes the lane for that role—we still encourage you to refine your profile and try other fits."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "li#verification > span.font-semibold.uppercase",
+      "top": 1065,
+      "aboveFold": false,
+      "words": 1,
+      "text": "04"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "li#verification > div > h2.text-base.font-semibold",
+      "top": 1066,
+      "aboveFold": false,
+      "words": 5,
+      "text": "What does employer verification mean?"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "li#verification > div > p.hc-font-reading.text-pretty",
+      "top": 1102,
+      "aboveFold": false,
+      "words": 42,
+      "text": "Verified employers have passed a review of identity and intent—not just a paid badge. If someone is still “pending,” they may be new or mid-review. We still moderate individual posts so a verified label is not a free pass to post anything."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "li#review > span.font-semibold.uppercase",
+      "top": 1230,
+      "aboveFold": false,
+      "words": 1,
+      "text": "05"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "li#review > div > h2.text-base.font-semibold",
+      "top": 1231,
+      "aboveFold": false,
+      "words": 10,
+      "text": "Why was my post or employer profile held for review?"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "li#review > div > p.hc-font-reading.text-pretty",
+      "top": 1267,
+      "aboveFold": false,
+      "words": 37,
+      "text": "Usually for quality or safety: unclear job details, mismatch with the company, or patterns that look like spam. Employers get a reason when we need a fix. Candidates see fewer broken or misleading roles as a result."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "li#sync > span.font-semibold.uppercase",
+      "top": 1367,
+      "aboveFold": false,
+      "words": 1,
+      "text": "06"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "li#sync > div > h2.text-base.font-semibold",
+      "top": 1368,
+      "aboveFold": false,
+      "words": 9,
+      "text": "Where do my jobs show up in Henry Onyx?"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "li#sync > div > p.hc-font-reading.text-pretty",
+      "top": 1404,
+      "aboveFold": false,
+      "words": 34,
+      "text": "Applications, saved roles, and updates all appear in your Henry Onyx account. Jobs is the best place to track your hiring activity, and the account dashboard shows your activity across all Henry Onyx services."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "li#whatsapp > span.font-semibold.uppercase",
+      "top": 1504,
+      "aboveFold": false,
+      "words": 1,
+      "text": "07"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "li#whatsapp > div > h2.text-base.font-semibold",
+      "top": 1505,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Why might WhatsApp updates not arrive?"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "li#whatsapp > div > p.hc-font-reading.text-pretty",
+      "top": 1541,
+      "aboveFold": false,
+      "words": 26,
+      "text": "Messaging apps sometimes hold or delay messages outside an active conversation window. Email and in-app notifications are always on — contact support if WhatsApp updates are missing."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-5xl > section.border-t.pt-10 > div.grid.gap-6 > div > p.jobs-kicker",
+      "top": 1715,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx account"
+     },
+     {
+      "region": "main",
+      "tag": "h2",
+      "path": "div.mx-auto.max-w-5xl > section.border-t.pt-10 > div.grid.gap-6 > div > h2.mt-3.jobs-heading",
+      "top": 1737,
+      "aboveFold": false,
+      "words": 9,
+      "text": "Jobs activity lives alongside the rest of your account."
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.mx-auto.max-w-5xl > section.border-t.pt-10 > div.grid.gap-6 > div > p.hc-font-reading.text-pretty",
+      "top": 1886,
+      "aboveFold": false,
+      "words": 24,
+      "text": "Wallet, documents, and other services may live under the same Henry Onyx account. The hub gives you the full picture without bouncing between sites."
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-5xl > section.border-t.pt-10 > div.grid.gap-6 > div.flex.flex-wrap > a.jobs-button-primary.inline-flex",
+      "top": 1932,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Open account hub"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.mx-auto.max-w-5xl > section.border-t.pt-10 > div.grid.gap-6 > div.flex.flex-wrap > a.inline-flex.items-center",
+      "top": 1932,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Back to jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > span.home-display",
+      "top": 2139,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-lede.max-w-xl",
+      "top": 2229,
+      "aboveFold": false,
+      "words": 12,
+      "text": "Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record."
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 2312,
+      "aboveFold": false,
+      "words": 1,
+      "text": "jobs@henryonyx.com"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > div.mt-1.flex > a.inline-flex.items-center",
+      "top": 2312,
+      "aboveFold": false,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > nav.border-t.py-12 > p.home-eyebrow",
+      "top": 2445,
+      "aboveFold": false,
+      "words": 4,
+      "text": "The Henry Onyx group"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2497,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Marketplace"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2497,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Studio"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2497,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Property"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2548,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Logistics"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2548,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2548,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Learn"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2600,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Henry Onyx Fabric Care"
+     },
+     {
+      "region": "chrome",
+      "tag": "span",
+      "path": "nav.border-t.py-12 > ul.mt-5.grid > li > a.home-lift.group > span.shrink-0.font-medium",
+      "top": 2600,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx Live"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2732,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Discover"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2763,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Jobs"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2797,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Talent"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2831,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Trust"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2865,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2732,
+      "aboveFold": false,
+      "words": 2,
+      "text": "For teams"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2763,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Candidate home"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2797,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Hire with Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2831,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Employer workspace"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2865,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Recruiters"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "footer.relative.border-t > div.home-shell > div.flex.flex-col > nav.flex.flex-col > p.home-eyebrow",
+      "top": 2732,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Henry Onyx"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2763,
+      "aboveFold": false,
+      "words": 3,
+      "text": "Henry Onyx account"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2797,
+      "aboveFold": false,
+      "words": 1,
+      "text": "Careers"
+     },
+     {
+      "region": "chrome",
+      "tag": "a",
+      "path": "div.flex.flex-col > nav.flex.flex-col > ul.flex.flex-col > li > a.text-sm.transition-colors",
+      "top": 2831,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Group Hub"
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.text-sm",
+      "top": 2967,
+      "aboveFold": false,
+      "words": 7,
+      "text": "2026 Henry Onyx Limited All rights reserved."
+     },
+     {
+      "region": "chrome",
+      "tag": "p",
+      "path": "div.jobs-shell.home-accent-scope > footer.relative.border-t > div.home-shell > div.flex.flex-col > p.home-eyebrow.inline-flex",
+      "top": 2969,
+      "aboveFold": false,
+      "words": 6,
+      "text": "Built in-house by Henry Onyx Jobs."
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 854,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 477,
+     "main": 477,
+     "outside": 0,
+     "chrome": 86,
+     "overlay": 0,
+     "pageAboveFold": 75
+    },
+    "h1s": [
+     {
+      "text": "Straight answers about Jobs.",
+      "visible": true
+     }
+    ],
+    "title": "Henry Onyx Jobs",
+    "metaDescription": "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one...",
+    "metaDescriptionChars": 159,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 70
+   },
+   "pageWords": 477,
+   "aboveFold": 201,
+   "chromeWords": 96,
+   "overlayWords": 1,
+   "visibleH1": 1
+  },
+  {
+   "path": "/pay/[paymentId]",
+   "type": "transactional",
+   "budget": 150,
+   "status": "no-sample",
+   "data": true
+  },
+  {
+   "path": "/login",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "redirectedTo": "https://account.henryonyx.com/login",
+   "desktop": {
+    "counts": {
+     "page": 50,
+     "main": 31,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 50
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 240,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 281,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > span.font-medium",
+      "top": 232,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Language"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 284,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Welcome back"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 334,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Sign in to continue with your Henry Onyx account."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 386,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 478,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Password"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > a.auth-field-link",
+      "top": 479,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Forgot password?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 594,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 659,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Don't have an account yet?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 659,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 805,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 830,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 830,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 413,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 507,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Your password"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > select.bg-transparent.outline-none",
+      "top": 232,
+      "aboveFold": true,
+      "words": 2,
+      "text": "English (English)"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 34,
+     "main": 31,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 34
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 18
+   },
+   "pageWords": 50,
+   "aboveFold": 50,
+   "chromeWords": 0,
+   "overlayWords": 31,
+   "visibleH1": 1
+  },
+  {
+   "path": "/signup",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "redirectedTo": "https://account.henryonyx.com/signup",
+   "desktop": {
+    "counts": {
+     "page": 91,
+     "main": 72,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 85
+    },
+    "h1s": [
+     {
+      "text": "Create your account",
+      "visible": true
+     }
+    ],
+    "title": "Create account — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 294,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 334,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 53,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Create your account"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 104,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Set up one account for all Henry Onyx divisions."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 155,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Full name"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 247,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 339,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Password"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 431,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Confirm password"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.auth-fieldset > div.grid > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 523,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Country"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.auth-fieldset > div.grid > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 523,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Phone number"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.auth-fieldset > div.grid > div.auth-field > div.flex > span.inline-flex.items-center",
+      "top": 565,
+      "aboveFold": true,
+      "words": 1,
+      "text": "+234"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "main.auth-form-panel > div.auth-form-inner > form.auth-stagger > div.auth-fieldset > p.border.px-4",
+      "top": 629,
+      "aboveFold": true,
+      "words": 8,
+      "text": "Your regional defaults will follow this country selection."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > span.auth-label",
+      "top": 678,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Preferred contact method"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.grid.grid-cols-2 > button.border.px-3",
+      "top": 716,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Email"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.grid.grid-cols-2 > button.border.px-3",
+      "top": 716,
+      "aboveFold": true,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.grid.grid-cols-2 > button.border.px-3",
+      "top": 766,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Phone call"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.grid.grid-cols-2 > button.border.px-3",
+      "top": 766,
+      "aboveFold": true,
+      "words": 2,
+      "text": "In-app only"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.auth-form-inner > form.auth-stagger > div.auth-fieldset > label.flex.cursor-pointer > span.text-xs.leading-relaxed",
+      "top": 815,
+      "aboveFold": true,
+      "words": 7,
+      "text": "I agree to the Henry Onyx and"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > label.flex.cursor-pointer > span.text-xs.leading-relaxed > a.auth-field-link",
+      "top": 815,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Terms of Service"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > label.flex.cursor-pointer > span.text-xs.leading-relaxed > a.auth-field-link",
+      "top": 815,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Privacy Policy"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 873,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 938,
+      "aboveFold": false,
+      "words": 4,
+      "text": "Already have an account?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 938,
+      "aboveFold": false,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 805,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 830,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 830,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#fullName",
+      "top": 183,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Your full name"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 275,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 367,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Min. 8 characters"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#confirmPassword",
+      "top": 459,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Re-enter your password"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#phone",
+      "top": 551,
+      "aboveFold": true,
+      "words": 1,
+      "text": "8012345678"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "select#country",
+      "top": 551,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Nigeria"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 75,
+     "main": 72,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 51
+    },
+    "h1s": [
+     {
+      "text": "Create your account",
+      "visible": true
+     }
+    ],
+    "title": "Create account — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 33
+   },
+   "pageWords": 91,
+   "aboveFold": 85,
+   "chromeWords": 0,
+   "overlayWords": 31,
+   "visibleH1": 1
+  }
+ ]
+}

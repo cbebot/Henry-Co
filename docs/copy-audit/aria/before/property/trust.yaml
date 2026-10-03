@@ -1,0 +1,129 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Property":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Property
+  - navigation:
+    - link "Search":
+      - /url: /search
+    - link "Managed":
+      - /url: /managed
+    - link "Trust":
+      - /url: /trust
+    - link "Submit":
+      - /url: /submit
+    - link "FAQ":
+      - /url: /faq
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2Ftrust&division=property
+  - link "Browse listings":
+    - /url: /search
+- main:
+  - paragraph: Trust
+  - heading "Governed before it is public." [level=1]
+  - paragraph: Documents are path-specific, inspections are real workflows, and managed vs non-managed publication is not blurred together. Calm, but serious.
+  - term: Live listings
+  - definition: "0"
+  - paragraph: Public inventory currently available on Henry Onyx Property.
+  - term: Managed portfolio
+  - definition: "0"
+  - paragraph: Active managed-property records tracked in Henry Onyx operations.
+  - term: Viewing pipeline
+  - definition: "0"
+  - paragraph: Open viewing requests currently being scheduled or confirmed.
+  - paragraph: Core trust rails
+  - list:
+    - listitem:
+      - heading "The public site is not an open dump" [level=3]
+      - paragraph: A listing does not go live just because somebody filled a form. Henry Onyx holds every submission privately first, then decides whether the documents, authority, identity, and property reality are strong enough for public release.
+    - listitem:
+      - heading "Documents depend on the listing path" [level=3]
+      - paragraph: Owner-listed, agent-led, managed, commercial, land, and inspection-sensitive submissions do not carry the same evidence burden. Henry Onyx asks for the documents that actually explain the path instead of hiding requirements until later.
+    - listitem:
+      - heading "Inspection is operational, not decorative" [level=3]
+      - paragraph: If a listing needs an inspection, that becomes a tracked workflow. It can be requested, scheduled, completed, waived, failed, or cancelled, and publication should not pretend the check is done when it is not.
+  - paragraph: What the listing states mean
+  - list:
+    - listitem:
+      - heading "Awaiting documents" [level=3]
+      - paragraph: Henry Onyx still needs stronger authority, ownership, management, or supporting evidence before the listing can move deeper into review.
+    - listitem:
+      - heading "Awaiting eligibility" [level=3]
+      - paragraph: Identity, duplicate-contact review, or another trust prerequisite is still unresolved. The listing is held privately until that is cleared.
+    - listitem:
+      - heading "Inspection requested or scheduled" [level=3]
+      - paragraph: Henry Onyx has decided that a site check matters for this listing path. The listing is not treated as fully trusted until that inspection rail is closed properly.
+    - listitem:
+      - heading "Under review, approved, or published" [level=3]
+      - paragraph: Once the trust gates are satisfied, the listing can move into editorial review, approval, and then public visibility if the remaining quality checks pass.
+  - paragraph: Two-sided expectations
+  - heading "What Henry Onyx checks" [level=3]
+  - list:
+    - listitem: Whether the submitter appears authorised to market, manage, or request inspection for the property.
+    - listitem: Whether the media, pricing, occupancy reality, and location context are serious enough for a premium platform.
+    - listitem: Whether the account trust posture is strong enough for higher-risk listing paths.
+    - listitem: Whether a managed listing is truly asking for Henry Onyx operations, not just a badge.
+  - heading "What owners and agents should expect" [level=3]
+  - list:
+    - listitem: Direct uploads are better than pasted document links because staff need a reviewable file trail.
+    - listitem: If a listing is weak, Henry Onyx may request better proof, stronger copy, or clearer readiness details before it moves.
+    - listitem: Managed and non-managed listings are different paths; approval for one should not silently imply the other.
+    - listitem: If a listing gets held or escalated, the goal is cleaner publication truth, not bureaucratic noise.
+  - paragraph: Policy clarifications
+  - list:
+    - listitem:
+      - heading "Managed vs non-managed" [level=3]
+      - paragraph: Managed listings imply Henry Onyx operational involvement after acceptance. Non-managed listings can still be reviewed and published, but the owner or agent remains responsible for the operating reality after first contact.
+    - listitem:
+      - heading "Duplicate-contact resistance" [level=3]
+      - paragraph: If the same email or phone appears across multiple Henry Onyx accounts or submissions, the listing may stay in manual review until the ownership picture is clearer.
+    - listitem:
+      - heading "Inspection and viewing continuity" [level=3]
+      - paragraph: Henry Onyx treats inspections and viewings as tracked workflows. Requests, schedules, and follow-up should remain visible to staff and to the account history instead of vanishing into chat.
+  - paragraph: What happens next after submission
+  - list:
+    - listitem: 01 Submitters see a private listing record first, not instant publication.
+    - listitem: 02 Henry Onyx reviews the evidence, the trust posture, and whether the listing belongs on a managed, non-managed, or inspection-sensitive rail.
+    - listitem: 03 If more information is needed, the listing can move into corrections, document hold, eligibility hold, or escalation before publication.
+    - listitem: 04 Only after those checks are coherent should the listing move toward approval and public release.
+- contentinfo:
+  - text: Henry Onyx Property
+  - paragraph: Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators.
+  - paragraph: property@henryonyx.com
+  - paragraph:
+    - link "WhatsApp":
+      - /url: https://wa.me/2349133957084
+  - text: Discover
+  - link "Search listings":
+    - /url: /search
+  - link "Managed properties":
+    - /url: /managed
+  - link "Trust standards":
+    - /url: /trust
+  - link "FAQ":
+    - /url: /faq
+  - text: Owners and agents
+  - link "Submit a listing":
+    - /url: /submit
+  - link "Agent surface":
+    - /url: /agent
+  - link "Viewings and inquiries":
+    - /url: https://account.henryonyx.com/property?panel=viewings
+  - link "Listing activity":
+    - /url: https://account.henryonyx.com/property?panel=listings
+  - text: Account
+  - link "Property activity":
+    - /url: https://account.henryonyx.com/property
+  - link "Henry Onyx account sign-in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2F&division=property
+  - text: © 2026 Henry Onyx Property. All rights reserved.
+  - link "Trust":
+    - /url: /trust
+  - text: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- alert

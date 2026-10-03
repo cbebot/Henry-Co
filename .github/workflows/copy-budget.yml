@@ -1,0 +1,75 @@
+# COPY-RESET — public copy budget gate.
+#
+# Builds each public domain with the same placeholder env as the main CI job,
+# serves it, measures the visible words a visitor sees on every public route
+# (Playwright, desktop + mobile), and fails when a route breaks its copy budget,
+# loses its single h1, or ships a missing/over-long meta description.
+# Budgets live in scripts/copy-audit/config.mjs (the single source).
+name: copy-budget
+
+on:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "apps/**"
+      - "packages/i18n/**"
+      - "packages/ui/**"
+      - "packages/config/**"
+      - "packages/brand/**"
+      - "scripts/copy-audit/**"
+      - ".github/workflows/copy-budget.yml"
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: copy-budget-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  NEXT_TELEMETRY_DISABLED: 1
+  NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.ci-placeholder-signature
+  SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.ci-placeholder-signature
+  NEXT_PUBLIC_BASE_DOMAIN: henryonyx.com
+
+jobs:
+  measure:
+    name: Copy budget (${{ matrix.domain }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        domain: [hub, account, care, marketplace, property, logistics, studio, jobs, learn]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build, serve and measure ${{ matrix.domain }}
+        run: node scripts/copy-audit/serve-measure.mjs --stage ci --domains ${{ matrix.domain }} --build
+
+      - name: Copy budget gate (${{ matrix.domain }})
+        run: node scripts/copy-audit/gate.mjs --stage ci --domains ${{ matrix.domain }}
+
+      - name: Upload measurement
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: copy-budget-${{ matrix.domain }}
+          path: docs/copy-audit/ci/${{ matrix.domain }}.json
+          if-no-files-found: ignore

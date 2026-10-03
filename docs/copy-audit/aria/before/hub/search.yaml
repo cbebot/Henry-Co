@@ -1,0 +1,262 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx
+  - navigation:
+    - link "Directory":
+      - /url: /#directory
+    - link "About":
+      - /url: /about
+    - link "Contact":
+      - /url: /contact
+  - link "Search Henry Onyx":
+    - /url: /search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fsearch
+  - link "Explore divisions":
+    - /url: /#divisions
+- main:
+  - paragraph: Henry Onyx · Universal search
+  - heading "Search everything Henry Onyx operates." [level=1]
+  - paragraph: One entry point across marketplace, property, jobs, learning, care, logistics, and studio — plus your account workflows and help routes. Live, ranked, and one keystroke from the exact destination.
+  - search:
+    - text: Search Henry Onyx
+    - combobox "Search Henry Onyx" [expanded]
+    - text: / Top routes across 8 divisions open · arrows to move
+  - tablist "Filter results by division":
+    - tab "All" [selected]
+    - tab "Hub 2"
+    - tab "Marketplace 3"
+    - tab "Property 3"
+    - tab "Jobs 3"
+    - tab "Learn 3"
+    - tab "Fabric Care 3"
+    - tab "Logistics 3"
+    - tab "Studio 3"
+  - button "relevance" [pressed]
+  - button "recent"
+  - button "urgency"
+  - status
+  - listbox "Search results":
+    - heading "Hub" [level=2]
+    - text: 2 routes
+    - group "Hub":
+      - option "Hub Global Search Henry Onyx Find divisions, workflows, help routes, and major destinations across Henry Onyx. henryonyx.com/search":
+        - text: Hub Global
+        - heading "Search Henry Onyx" [level=3]
+        - paragraph: Find divisions, workflows, help routes, and major destinations across Henry Onyx.
+        - paragraph: henryonyx.com/search
+      - option "Hub Hub Henry Onyx divisions directory Browse every live Henry Onyx division from the central hub. henryonyx.com/#divisions":
+        - text: Hub Hub
+        - heading "Henry Onyx divisions directory" [level=3]
+        - paragraph: Browse every live Henry Onyx division from the central hub.
+        - paragraph: henryonyx.com/#divisions
+    - heading "Marketplace" [level=2]
+    - text: 3 routes
+    - group "Marketplace":
+      - option "Marketplace Search Search marketplace products Search live marketplace products, categories, brands, and stores. marketplace.henryonyx.com/search":
+        - text: Marketplace Search
+        - heading "Search marketplace products" [level=3]
+        - paragraph: Search live marketplace products, categories, brands, and stores.
+        - paragraph: marketplace.henryonyx.com/search
+      - option "Marketplace Track Track marketplace order Track a marketplace order using its reference code. marketplace.henryonyx.com/track":
+        - text: Marketplace Track
+        - heading "Track marketplace order" [level=3]
+        - paragraph: Track a marketplace order using its reference code.
+        - paragraph: marketplace.henryonyx.com/track
+      - option "Marketplace Help Marketplace help Get help with shopping, orders, trust, or seller questions. marketplace.henryonyx.com/help":
+        - text: Marketplace Help
+        - heading "Marketplace help" [level=3]
+        - paragraph: Get help with shopping, orders, trust, or seller questions.
+        - paragraph: marketplace.henryonyx.com/help
+    - heading "Property" [level=2]
+    - text: 3 routes
+    - group "Property":
+      - option "Property Search Search property listings Search live property listings, areas, and listing details. property.henryonyx.com/search":
+        - text: Property Search
+        - heading "Search property listings" [level=3]
+        - paragraph: Search live property listings, areas, and listing details.
+        - paragraph: property.henryonyx.com/search
+      - option "Property Help Property FAQ and help Get help with listings, viewings, and property questions. property.henryonyx.com/faq":
+        - text: Property Help
+        - heading "Property FAQ and help" [level=3]
+        - paragraph: Get help with listings, viewings, and property questions.
+        - paragraph: property.henryonyx.com/faq
+      - option "Property Division Henry Onyx Property Premium rentals, listings, viewings, and managed-property operations. property.henryonyx.com":
+        - text: Property Division
+        - heading "Henry Onyx Property" [level=3]
+        - paragraph: Premium rentals, listings, viewings, and managed-property operations.
+        - paragraph: property.henryonyx.com
+    - heading "Jobs" [level=2]
+    - text: 3 routes
+    - group "Jobs":
+      - option "Jobs Jobs Browse jobs Search live roles, categories, and employer listings. jobs.henryonyx.com/jobs":
+        - text: Jobs Jobs
+        - heading "Browse jobs" [level=3]
+        - paragraph: Search live roles, categories, and employer listings.
+        - paragraph: jobs.henryonyx.com/jobs
+      - option "Jobs Help Jobs help Get help with applications, hiring, and platform support. jobs.henryonyx.com/help":
+        - text: Jobs Help
+        - heading "Jobs help" [level=3]
+        - paragraph: Get help with applications, hiring, and platform support.
+        - paragraph: jobs.henryonyx.com/help
+      - option "Jobs Talent Verified talent directory Browse Henry Onyx Jobs verified-talent directory by skill, location, and availability. jobs.henryonyx.com/talent":
+        - text: Jobs Talent
+        - heading "Verified talent directory" [level=3]
+        - paragraph: Browse Henry Onyx Jobs verified-talent directory by skill, location, and availability.
+        - paragraph: jobs.henryonyx.com/talent
+    - heading "Learn" [level=2]
+    - text: 3 routes
+    - group "Learn":
+      - option "Learn Courses Browse Learn courses Search the course catalog, categories, and learning paths. learn.henryonyx.com/courses":
+        - text: Learn Courses
+        - heading "Browse Learn courses" [level=3]
+        - paragraph: Search the course catalog, categories, and learning paths.
+        - paragraph: learn.henryonyx.com/courses
+      - option "Learn Teach Teach with Henry Onyx Apply to teach on Henry Onyx Learn — propose courses, share credentials, and earn from enrolments. learn.henryonyx.com/teach":
+        - text: Learn Teach
+        - heading "Teach with Henry Onyx" [level=3]
+        - paragraph: Apply to teach on Henry Onyx Learn — propose courses, share credentials, and earn from enrolments.
+        - paragraph: learn.henryonyx.com/teach
+      - option "Learn Paths Learn paths Browse multi-course learning paths grouped by skill outcome. learn.henryonyx.com/paths":
+        - text: Learn Paths
+        - heading "Learn paths" [level=3]
+        - paragraph: Browse multi-course learning paths grouped by skill outcome.
+        - paragraph: learn.henryonyx.com/paths
+    - heading "Fabric Care" [level=2]
+    - text: 3 routes
+    - group "Fabric Care":
+      - option "Fabric Care Book Book Care pickup or cleaning Start a new booking for care, cleaning, or pickup delivery. care.henryonyx.com/book":
+        - text: Fabric Care Book
+        - heading "Book Care pickup or cleaning" [level=3]
+        - paragraph: Start a new booking for care, cleaning, or pickup delivery.
+        - paragraph: care.henryonyx.com/book
+      - option "Fabric Care Track Track Care order Track a care booking or order status. care.henryonyx.com/track":
+        - text: Fabric Care Track
+        - heading "Track Care order" [level=3]
+        - paragraph: Track a care booking or order status.
+        - paragraph: care.henryonyx.com/track
+      - option "Fabric Care Help Care contact and help Reach Henry Onyx Care for booking or service support. care.henryonyx.com/contact":
+        - text: Fabric Care Help
+        - heading "Care contact and help" [level=3]
+        - paragraph: Reach Henry Onyx Care for booking or service support.
+        - paragraph: care.henryonyx.com/contact
+    - heading "Logistics" [level=2]
+    - text: 3 routes
+    - group "Logistics":
+      - option "Logistics Track Track shipment Track a shipment, run, or dispatch status. logistics.henryonyx.com/track":
+        - text: Logistics Track
+        - heading "Track shipment" [level=3]
+        - paragraph: Track a shipment, run, or dispatch status.
+        - paragraph: logistics.henryonyx.com/track
+      - option "Logistics Book Book logistics delivery Book a dispatch or delivery with Henry Onyx Logistics. logistics.henryonyx.com/book":
+        - text: Logistics Book
+        - heading "Book logistics delivery" [level=3]
+        - paragraph: Book a dispatch or delivery with Henry Onyx Logistics.
+        - paragraph: logistics.henryonyx.com/book
+      - option "Logistics Help Logistics support Get help with shipment issues, delivery support, and service questions. logistics.henryonyx.com/support":
+        - text: Logistics Help
+        - heading "Logistics support" [level=3]
+        - paragraph: Get help with shipment issues, delivery support, and service questions.
+        - paragraph: logistics.henryonyx.com/support
+    - heading "Studio" [level=2]
+    - text: 3 routes
+    - group "Studio":
+      - option "Studio Request Request a Studio project Start the project request flow for Henry Onyx Studio. studio.henryonyx.com/request":
+        - text: Studio Request
+        - heading "Request a Studio project" [level=3]
+        - paragraph: Start the project request flow for Henry Onyx Studio.
+        - paragraph: studio.henryonyx.com/request
+      - option "Studio Help Studio contact and support Reach Henry Onyx Studio for sales, project, and support questions. studio.henryonyx.com/contact":
+        - text: Studio Help
+        - heading "Studio contact and support" [level=3]
+        - paragraph: Reach Henry Onyx Studio for sales, project, and support questions.
+        - paragraph: studio.henryonyx.com/contact
+      - option "Studio Packages Studio packages and pricing Compare Studio packages, scope tiers, and milestone pricing. studio.henryonyx.com/pricing":
+        - text: Studio Packages
+        - heading "Studio packages and pricing" [level=3]
+        - paragraph: Compare Studio packages, scope tiers, and milestone pricing.
+        - paragraph: studio.henryonyx.com/pricing
+  - complementary:
+    - paragraph: More routes open after sign in
+    - paragraph: Orders, wallet, invoices, applications, viewings and support live behind your account. Sign in to search them and land on the exact destination.
+    - text: Account overview Notifications Support inbox Create support request Wallet
+    - link "Sign in and continue search":
+      - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fsearch
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Henry Onyx provides a clear way to understand the company and reach the right business with confidence.
+  - link "hello@henryonyx.com":
+    - /url: mailto:hello@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "Divisions directory":
+    - paragraph: Divisions directory
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+      - listitem:
+        - link "Search":
+          - /url: /search
+      - listitem:
+        - link "The ecosystem":
+          - /url: /v3
+      - listitem:
+        - link "The earning map":
+          - /url: /v3/how-we-earn
+      - listitem:
+        - link "Press":
+          - /url: /press/v3
+  - navigation "Legal":
+    - paragraph: Legal
+    - list:
+      - listitem:
+        - link "Privacy":
+          - /url: /privacy
+      - listitem:
+        - link "Terms":
+          - /url: /terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /preferences
+  - button "Continue"
+- alert

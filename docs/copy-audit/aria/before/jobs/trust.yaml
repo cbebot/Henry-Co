@@ -1,0 +1,177 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Jobs":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Jobs
+  - navigation:
+    - link "Find jobs":
+      - /url: /jobs
+    - link "Talent":
+      - /url: /talent
+    - link "Hire":
+      - /url: /hire
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fjobs.henryonyx.com%2Ftrust
+  - link "Browse verified employers":
+    - /url: /jobs?verified=1
+- main:
+  - paragraph: Trust & safety
+  - heading "Slow the bad listings. Let the good ones shine." [level=1]
+  - paragraph: Real companies, real candidates, and a hiring process you can follow. Verification, moderation, and visible stages keep this from turning into an anonymous job dump.
+  - link "Browse all jobs":
+    - /url: /jobs
+  - link "Read the FAQ":
+    - /url: /help
+  - list:
+    - listitem: Reviews handled Every new employer + every new post
+    - listitem: Verification Manual, not pay-to-play
+    - listitem: Account control Your data, your application history
+  - paragraph: Three pillars
+  - list:
+    - listitem:
+      - heading "Employer verification" [level=2]
+      - paragraph: Before we call an employer verified, we look at who they are, how they show up publicly, and whether their story matches the roles they post. Pending does not always mean “bad” — it can simply mean “still in review.”
+    - listitem:
+      - heading "Post review" [level=2]
+      - paragraph: New and edited job posts can be checked for scams, unclear pay, or misleading titles. If we need changes, we explain why. The goal is fewer wasted applications for candidates and fewer unserious posts for employers.
+    - listitem:
+      - heading "Your account & data" [level=2]
+      - paragraph: Saving and applying require a Henry Onyx account so your shortlist and applications are not floating in a cookie somewhere. You control your profile, documents, and what you send with each application.
+  - paragraph: Platform strengths
+  - list:
+    - listitem:
+      - heading "Verified Talent Layer" [level=3]
+      - text: Platform feature
+      - paragraph: Candidate profiles gain visible trust signals only after readiness, identity, and work proof checks line up.
+    - listitem:
+      - heading "Employer Trust Badges" [level=3]
+      - text: Platform feature
+      - paragraph: Company pages show verification maturity, response discipline, and posting quality instead of generic logos alone.
+    - listitem:
+      - heading "Candidate Readiness Score" [level=3]
+      - text: Platform feature
+      - paragraph: Profiles translate messy completeness into a recruiter-readable readiness score with actionable gaps.
+    - listitem:
+      - heading "Recruiter Confidence Surface" [level=3]
+      - text: Platform feature
+      - paragraph: Application cards surface confidence, verification, and moderation context in one calm triage layer.
+    - listitem:
+      - heading "Internal and External Dual Mode" [level=3]
+      - text: Platform feature
+      - paragraph: Henry Onyx internal hiring and external employer hiring coexist without forcing one compromise model onto both.
+    - listitem:
+      - heading "Application Quality Guidance" [level=3]
+      - text: Platform feature
+      - paragraph: The apply flow points out missing proof, weak summaries, and profile gaps before a candidate wastes a submission.
+    - listitem:
+      - heading "Curated Talent Spotlights" [level=3]
+      - text: Platform feature
+      - paragraph: High-readiness candidates can appear in curated discovery rails rather than being buried in search alone.
+    - listitem:
+      - heading "Anti-Noise Moderation Intelligence" [level=3]
+      - text: Platform feature
+      - paragraph: Post quality flags, trust events, and moderation history are visible to ops before low-signal listings spread.
+    - listitem:
+      - heading "Premium Employer Showcases" [level=3]
+      - text: Platform feature
+      - paragraph: Employer pages sell culture, discipline, verification, and hiring intent instead of generic corporate filler.
+    - listitem:
+      - heading "Message and Audit Spine" [level=3]
+      - text: Platform feature
+      - paragraph: Applications, notifications, recruiter notes, trust events, and support context stay reconstructable for future account integration.
+  - paragraph: Where to from here
+  - heading "Browse with the verified filter, or read the FAQ first." [level=2]
+  - paragraph: The verified filter on the jobs board narrows to employers who have cleared review. If something looks off, the help page tells you exactly how to flag it.
+  - link "Verified employers":
+    - /url: /jobs?verified=1
+  - link "Help center":
+    - /url: /help
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record.
+  - link "jobs@henryonyx.com":
+    - /url: mailto:jobs@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Discover":
+    - paragraph: Discover
+    - list:
+      - listitem:
+        - link "Jobs":
+          - /url: /jobs
+      - listitem:
+        - link "Talent":
+          - /url: /talent
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "For teams":
+    - paragraph: For teams
+    - list:
+      - listitem:
+        - link "Candidate home":
+          - /url: /candidate
+      - listitem:
+        - link "Hire with Henry Onyx":
+          - /url: /hire
+      - listitem:
+        - link "Employer workspace":
+          - /url: /employer
+      - listitem:
+        - link "Recruiters":
+          - /url: /recruiter
+  - navigation "Henry Onyx":
+    - paragraph: Henry Onyx
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/jobs
+      - listitem:
+        - link "Careers":
+          - /url: /careers
+      - listitem:
+        - link "Group Hub":
+          - /url: https://henryonyx.com/
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Jobs.
+- button "How can we help? — Need help?": Help
+- alert

@@ -1,0 +1,77 @@
+- complementary:
+  - link "Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - img "Henry Onyx"
+  - paragraph: One account, every service
+  - paragraph: One sign-in for care, commerce, studio, learning — and everything we build next.
+- main:
+  - heading "Create your account" [level=1]
+  - paragraph: Set up one account for all Henry Onyx divisions.
+  - text: Full name
+  - textbox "Full name":
+    - /placeholder: Your full name
+  - text: Email address
+  - textbox "Email address":
+    - /placeholder: you@example.com
+  - text: Password
+  - textbox "Password":
+    - /placeholder: Min. 8 characters
+  - button "Show password"
+  - text: Confirm password
+  - textbox "Confirm password":
+    - /placeholder: Re-enter your password
+  - button "Show password"
+  - text: Country
+  - combobox "Country":
+    - option "Nigeria" [selected]
+    - option "Benin Republic"
+    - option "Ghana"
+    - option "Togo"
+    - option "Côte d’Ivoire"
+    - option "Senegal"
+    - option "Kenya"
+    - option "South Africa"
+    - option "United Kingdom"
+    - option "United States"
+    - option "Canada"
+    - option "France"
+    - option "Germany"
+    - option "Italy"
+    - option "Spain"
+    - option "Portugal"
+    - option "Morocco"
+    - option "Egypt"
+    - option "United Arab Emirates"
+    - option "Saudi Arabia"
+    - option "India"
+    - option "China"
+  - text: Phone number +234
+  - textbox "Phone number":
+    - /placeholder: "8012345678"
+  - paragraph: Your regional defaults will follow this country selection.
+  - text: Preferred contact method
+  - group "Preferred contact method":
+    - button "Email" [pressed]
+    - button "WhatsApp"
+    - button "Phone call"
+    - button "In-app only"
+  - checkbox "I agree to the Henry Onyx Terms of Service and Privacy Policy"
+  - text: I agree to the Henry Onyx
+  - link "Terms of Service":
+    - /url: https://henryonyx.com/terms
+  - text: and
+  - link "Privacy Policy":
+    - /url: https://henryonyx.com/privacy
+  - button "Create account"
+  - paragraph:
+    - text: Already have an account?
+    - link "Sign in":
+      - /url: /login?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Faccount
+- button "Open Henry Onyx Intelligence"
+- alert
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /settings#privacy-controls
+  - button "Continue"

@@ -1,0 +1,180 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fpick%2Fmeridian-executive
+  - link "Start a project":
+    - /url: /request
+- main:
+  - link "All templates":
+    - /url: /pick
+  - paragraph: Business
+  - heading "Meridian — Executive Company Website" [level=1]
+  - paragraph: A premium six-page site that makes the company feel as serious as it is.
+  - paragraph: A calm, high-trust company website with a confident hero, plain-language services, and a contact path that captures qualified leads instead of generic enquiries.
+  - link "Pay 45% deposit & start":
+    - /url: /checkout/template/meridian-executive
+  - link "Customise the brief first":
+    - /url: /request?template=meridian-executive
+  - term: Price
+  - definition: ₦1,950,000
+  - term: Ready in
+  - definition: 14 days
+  - term: Build window
+  - definition: 4 wks
+  - term: Deposit
+  - definition: 45%
+  - paragraph: "Often for: Founder-led firms, consultancies, and professional service businesses"
+  - complementary:
+    - paragraph: Payment plan
+    - term: Deposit on accept
+    - definition: ₦877,500
+    - term: Balance at launch
+    - definition: ₦1,072,500
+    - term: Total
+    - definition: ₦1,950,000
+    - paragraph: Bank transfer or card. A branded receipt is issued the moment your payment is confirmed.
+  - paragraph: Pages included
+  - list:
+    - listitem: Home
+    - listitem: Services overview
+    - listitem: Service detail (3 pre-styled)
+    - listitem: About and team
+    - listitem: Insights or case studies
+    - listitem: Contact
+  - paragraph: Features built in
+  - list:
+    - listitem: Editable CMS-driven content
+    - listitem: Lead-capture form routed to inbox + WhatsApp
+    - listitem: On-page SEO and Open Graph cards
+    - listitem: Analytics + conversion event wiring
+    - listitem: Mobile-first layout with safe-area polish
+    - listitem: WCAG 2.1 AA contrast and focus pass
+  - paragraph: Outcomes you can expect
+  - list:
+    - listitem: Stronger first-impression credibility
+    - listitem: Higher-quality inbound leads
+    - listitem: A site you can extend without rebuilding
+  - paragraph: Tech stack
+  - text: Next.js Headless CMS Tailwind tokens Enterprise-grade hosting
+  - paragraph: You can pin a different stack on the brief — Henry Onyx will quote the delta if it changes the build effort, or honour your choice at no cost when it doesn’t.
+  - paragraph: Move forward
+  - heading "Customise this template and launch in 14 days." [level=2]
+  - paragraph: The brief takes about eight minutes. We confirm scope, send a milestone-priced proposal, and start work the moment your deposit clears.
+  - link "Pay deposit & start":
+    - /url: /checkout/template/meridian-executive
+  - link "Customise the brief first":
+    - /url: /request?template=meridian-executive
+  - link "Talk to a Studio lead":
+    - /url: /contact
+  - paragraph: Other business templates
+  - heading "Compare nearby ready-made paths." [level=2]
+  - list:
+    - listitem:
+      - link "Helix — Offer & Revenue Funnel Long-form offer page, trust layers, and a measurable conversion stack. ₦2,450,000 18 days":
+        - /url: /pick/helix-funnel
+        - heading "Helix — Offer & Revenue Funnel" [level=3]
+        - paragraph: Long-form offer page, trust layers, and a measurable conversion stack.
+        - text: ₦2,450,000 18 days
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

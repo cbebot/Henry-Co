@@ -1,0 +1,151 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Jobs":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Jobs
+  - navigation:
+    - link "Find jobs":
+      - /url: /jobs
+    - link "Talent":
+      - /url: /talent
+    - link "Hire":
+      - /url: /hire
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fjobs.henryonyx.com%2Fhire
+  - link "Create employer account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fjobs.henryonyx.com%2Femployer%2Fcompany
+- main:
+  - paragraph: For employers
+  - heading "Hire with clarity, not chaos." [level=1]
+  - paragraph: Post real roles, read applications in one place, move people through shortlist and interviews on visible stages. Employers and posts are reviewed to protect quality on both sides.
+  - paragraph: Posting live roles requires an active employer subscription. Candidates always browse for free; the subscription pays for moderation, anti-scam review, and candidate trust signals.
+  - link "Start hiring — sign up free":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fjobs.henryonyx.com%2Femployer%2Fcompany
+  - link "I already have a Henry Onyx account":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fjobs.henryonyx.com%2Femployer%2Fcompany
+  - list:
+    - listitem: Verification Manual review — no pay-to-play
+    - listitem: Post review Clarity, fairness, fraud checks
+    - listitem: Pipeline Visible stages for every applicant
+  - paragraph: From first post to first hire
+  - list:
+    - listitem:
+      - text: Step 01
+      - heading "Tell us who you are" [level=3]
+      - paragraph: Create your company profile with honest basics—what you do, where you hire, and how candidates should expect to hear from you. We use this for verification, not vanity.
+    - listitem:
+      - text: Step 02
+      - heading "Submit your role for review" [level=3]
+      - paragraph: "Write the job like you mean it: outcomes, requirements, pay band if you can share it, and how you work (remote, hybrid, on-site). New posts may sit in review briefly while we check for scams and quality."
+    - listitem:
+      - text: Step 03
+      - heading "Run the pipeline in the open" [level=3]
+      - paragraph: Applications land in your employer workspace. Shortlist, interview, and decide with stages candidates can see in their own hub—fewer ghosted threads, more trust.
+  - paragraph: Why verification exists
+  - heading "Real brands. Reviewed posts. No badges for sale." [level=2]
+  - paragraph: Candidates deserve to know they are not replying to a fake brand. Verification means a human review of employer intent and profile quality — not a pay-to-play badge. While you are pending, you can still prepare your company record; some posting options unlock once you are verified.
+  - paragraph: After you submit a post
+  - heading "Moderation explains itself, then gets out of the way." [level=2]
+  - paragraph: Moderation checks for clarity, fairness, and fraud patterns. If something needs a fix, we will tell you why. When the role is live, candidates apply with one Henry Onyx profile; you review them in your applicant list and move stages when you are ready.
+  - paragraph: Quality over volume
+  - heading "We protect the board so serious employers stand out." [level=2]
+  - paragraph: "Shared sign-in, saved roles, and application history mean candidates can hold you accountable to the process you publish. That is good for hiring: fewer wasted interviews, more people who actually want the job."
+  - link "Get started":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fjobs.henryonyx.com%2Femployer%2Fcompany
+  - link "How we protect people":
+    - /url: /trust
+  - link "Employer FAQ":
+    - /url: /help
+  - paragraph:
+    - text: Questions?
+    - link "jobs@henryonyx.com":
+      - /url: mailto:jobs@henryonyx.com
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record.
+  - link "jobs@henryonyx.com":
+    - /url: mailto:jobs@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Discover":
+    - paragraph: Discover
+    - list:
+      - listitem:
+        - link "Jobs":
+          - /url: /jobs
+      - listitem:
+        - link "Talent":
+          - /url: /talent
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "For teams":
+    - paragraph: For teams
+    - list:
+      - listitem:
+        - link "Candidate home":
+          - /url: /candidate
+      - listitem:
+        - link "Hire with Henry Onyx":
+          - /url: /hire
+      - listitem:
+        - link "Employer workspace":
+          - /url: /employer
+      - listitem:
+        - link "Recruiters":
+          - /url: /recruiter
+  - navigation "Henry Onyx":
+    - paragraph: Henry Onyx
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/jobs
+      - listitem:
+        - link "Careers":
+          - /url: /careers
+      - listitem:
+        - link "Group Hub":
+          - /url: https://henryonyx.com/
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Jobs.
+- button "How can we help? — Need help?": Help
+- alert

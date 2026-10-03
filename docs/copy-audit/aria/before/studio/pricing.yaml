@@ -1,0 +1,286 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fpricing
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Packages and pricing
+  - heading "Clear packages for common projects. Custom scoping for everything else." [level=1]
+  - paragraph: Transparent bands when the scope is repeatable, a milestone-priced brief when it isn’t. You see the number before the first conversation.
+  - term: Available packages
+  - definition: "8"
+  - term: Service areas
+  - definition: "7"
+  - paragraph: Packages
+  - list:
+    - article:
+      - paragraph: Executive Websites
+      - text: 4 weeks
+      - paragraph: ₦1,950,000
+      - heading "Executive Presence" [level=3]
+      - paragraph: A premium company website built to elevate trust, sharpen positioning, and convert serious inquiries.
+      - term: Deposit
+      - definition: 45%
+      - term: Best for
+      - definition: Professional service firms, founders, and premium operators replacing an average-looking online presence.
+      - list:
+        - listitem: Messaging direction
+        - listitem: 5 to 8 premium pages
+        - listitem: Lead routing
+        - listitem: Analytics and conversion setup
+      - link "Start with this package":
+        - /url: /request?package=pkg-executive-presence
+    - article:
+      - paragraph: Executive Websites
+      - text: 5 weeks
+      - paragraph: ₦2,450,000
+      - heading "Revenue Funnel System" [level=3]
+      - paragraph: A sharper offer architecture for brands that need landing pages, trust layers, and measurable conversion performance.
+      - term: Deposit
+      - definition: 40%
+      - term: Best for
+      - definition: Teams selling premium services, offers, launches, or cohort-based programs.
+      - list:
+        - listitem: Offer-page system
+        - listitem: Conversion-focused page stack
+        - listitem: Lead and CRM wiring
+        - listitem: Campaign-ready analytics
+      - link "Start with this package":
+        - /url: /request?package=pkg-revenue-funnel
+    - article:
+      - paragraph: Commerce Systems
+      - text: 6 weeks
+      - paragraph: ₦3,250,000
+      - heading "Commerce Growth Platform" [level=3]
+      - paragraph: Storefront plus campaign and operations rails for brands that want cleaner conversion and stronger merchandising.
+      - term: Deposit
+      - definition: 40%
+      - term: Best for
+      - definition: Retail and catalog brands with enough demand to justify a serious premium storefront.
+      - list:
+        - listitem: Storefront UX
+        - listitem: Checkout and payment rails
+        - listitem: Catalog architecture
+        - listitem: Ops dashboard surfaces
+      - link "Start with this package":
+        - /url: /request?package=pkg-commerce-growth
+    - article:
+      - paragraph: Internal Operations Platforms
+      - text: 8 weeks
+      - paragraph: ₦3,900,000
+      - heading "Operations Control Room" [level=3]
+      - paragraph: A multi-role operations platform for leads, projects, stages, approvals, and management reporting.
+      - term: Deposit
+      - definition: 40%
+      - term: Best for
+      - definition: Service businesses and operational teams replacing fragmented internal tooling.
+      - list:
+        - listitem: Role-based dashboards
+        - listitem: Project stages
+        - listitem: Reporting view
+        - listitem: Automation handoffs
+      - link "Start with this package":
+        - /url: /request?package=pkg-control-room
+    - article:
+      - paragraph: Custom Software
+      - text: 9 weeks
+      - paragraph: ₦4,650,000
+      - heading "Client Portal Accelerator" [level=3]
+      - paragraph: A secure client-facing portal with onboarding, updates, files, approvals, and payment-aware delivery steps.
+      - term: Deposit
+      - definition: 40%
+      - term: Best for
+      - definition: Businesses that need a stronger digital client experience than email threads and manual follow-up.
+      - list:
+        - listitem: Secure portal surface
+        - listitem: Client activity flows
+        - listitem: Files and approvals
+        - listitem: Payment checkpoint logic
+      - link "Start with this package":
+        - /url: /request?package=pkg-client-portal
+    - article:
+      - paragraph: Brand Systems
+      - text: 4 weeks
+      - paragraph: ₦1,450,000
+      - heading "Brand and Interface System" [level=3]
+      - paragraph: Identity direction plus interface language for businesses that need premium brand consistency across web and product surfaces.
+      - term: Deposit
+      - definition: 50%
+      - term: Best for
+      - definition: Companies repositioning into a more premium category before a launch or growth phase.
+      - list:
+        - listitem: Brand system
+        - listitem: Typography and color system
+        - listitem: UI style direction
+        - listitem: Guideline deck
+      - link "Start with this package":
+        - /url: /request?package=pkg-brand-interface
+    - article:
+      - paragraph: Product UX Systems
+      - text: 3 weeks
+      - paragraph: ₦1,350,000
+      - heading "Product UX Sprint" [level=3]
+      - paragraph: A focused sprint that turns a fuzzy product into clear flows, architecture, and a production-ready design system before engineering scales.
+      - term: Deposit
+      - definition: 50%
+      - term: Best for
+      - definition: Software teams that need product clarity and a real design system before or during a build.
+      - list:
+        - listitem: UX audit and review
+        - listitem: Information architecture
+        - listitem: Core flow and screen design
+        - listitem: Production-ready design system
+      - link "Start with this package":
+        - /url: /request?package=pkg-ux-sprint
+    - article:
+      - paragraph: Mobile Products
+      - text: 10 weeks
+      - paragraph: ₦4,500,000
+      - heading "Mobile Product MVP" [level=3]
+      - paragraph: A polished first version of a customer, field, or operations app — shipped to both stores with a managed backend and analytics from day one.
+      - term: Deposit
+      - definition: 40%
+      - term: Best for
+      - definition: Businesses launching a first serious mobile product without over-building before validation.
+      - list:
+        - listitem: Core app flows
+        - listitem: iOS and Android build
+        - listitem: Managed backend and APIs
+        - listitem: Push notifications and analytics
+      - link "Start with this package":
+        - /url: /request?package=pkg-mobile-mvp
+  - paragraph: Choose custom instead when
+  - heading "Larger or deeper builds skip the package and go straight to the brief." [level=2]
+  - list:
+    - listitem: You need a multi-role portal, client workspace, dashboard, or workflow-specific software system.
+    - listitem: The project combines web, admin, payments, operations, and automation into one platform.
+    - listitem: The product needs mobile, integrations, or a more deliberate architecture path than a package allows.
+    - listitem: You want Henry Onyx to scope the exact experience rather than retrofit your needs into a predefined template.
+  - paragraph: Move forward
+  - heading "Pick a package that fits, or send us the exact brief." [level=2]
+  - list:
+    - listitem:
+      - heading "Typical agency flow" [level=3]
+      - list:
+        - listitem: A vague inquiry form with almost no commercial context.
+        - listitem: Pricing hidden inside a private conversation after too much back-and-forth.
+        - listitem: Project status scattered across WhatsApp, email, and disconnected files.
+    - listitem:
+      - heading "Henry Onyx Studio flow" [level=3]
+      - list:
+        - listitem: A structured buying path for both packages and serious custom work.
+        - listitem: Proposal, milestones, updates, and payment checkpoints visible in one connected workspace.
+        - listitem: A cleaner delivery model for clients, sales, PM, finance, support, and delivery teams.
+  - link "Open the brief builder":
+    - /url: /request
+  - link "View all services":
+    - /url: /services
+  - paragraph: Enterprise or non-standard scope
+  - heading "Larger, more sensitive, or deeply integrated builds are scoped as a custom program." [level=2]
+  - paragraph: Enterprise platforms, large rebuilds, and complex integrations are priced and scoped against the exact requirements — not a template.
+  - link "Start a custom project":
+    - /url: /request
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

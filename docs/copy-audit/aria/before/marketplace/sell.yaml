@@ -1,0 +1,193 @@
+- banner:
+  - link "Henry Onyx Marketplace home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Marketplace
+  - navigation "Marketplace":
+    - link "Search":
+      - /url: /search
+    - link "Deals":
+      - /url: /deals
+    - link "Track":
+      - /url: /track
+    - link "Sell":
+      - /url: /sell
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - textbox "Search lighting, office, decor, verified stores, founder-ready edits..."
+  - button "Search"
+  - button "Cart"
+  - link "Create a Henry Onyx account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Fsell
+    - text: Get started
+  - link "Sign in to your Henry Onyx account":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Fsell
+    - text: Sign in
+- main:
+  - paragraph: Sell on Henry Onyx
+  - heading "Selective by design. Built for sellers who lead on trust." [level=1]
+  - paragraph: Henry Onyx Marketplace favours sellers who care about presentation, reliable fulfillment, and honest buyer protection. The bar is explicit on this page; the seller application continues inside your Henry Onyx account.
+  - link "Open seller application":
+    - /url: /account/seller-application
+  - link "See seller pricing":
+    - /url: /sell/pricing
+  - link "Sign in with Henry Onyx account":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Faccount%2Fseller-application
+  - paragraph: The bar
+  - term: Plan tiers
+  - definition: "4"
+  - term: Trust tiers
+  - definition: "5"
+  - term: Selection
+  - definition: Reviewed
+  - heading "Why stronger sellers win here" [level=2]
+  - list:
+    - listitem:
+      - text: 01 Trust-led positioning
+      - paragraph: Your store gets a visible trust passport instead of being buried in low-quality marketplace clutter.
+    - listitem:
+      - text: 02 Better storefront quality
+      - paragraph: Editorial rails, calmer search, and cleaner product cards help quality stores convert faster.
+    - listitem:
+      - text: 03 Sharper operations
+      - paragraph: Payouts, orders, support, moderation, and stock alerts stay visible in one cleaner workspace.
+  - paragraph: How onboarding works
+  - heading "One record, from application to publishing." [level=2]
+  - paragraph: Seller registration stays inside your account so business details, review status, and approval updates remain private and easy to follow.
+  - list:
+    - listitem:
+      - text: "01"
+      - paragraph: Start the seller application
+      - paragraph: Open the application from inside your Henry Onyx account — drafts save automatically while you assemble details.
+    - listitem:
+      - text: "02"
+      - paragraph: Add business details
+      - paragraph: Business name, store profile, product focus, and any verification documents that explain how you fulfil orders.
+    - listitem:
+      - text: "03"
+      - paragraph: Application review
+      - paragraph: The Henry Onyx team reviews documents, trust signals, and store readiness — not just a paid badge.
+    - listitem:
+      - text: "04"
+      - paragraph: Vendor onboarding
+      - paragraph: Approved sellers continue into vendor onboarding where pricing, posting fees, payout windows, and policy rules stay visible before publishing opens.
+  - paragraph: Trust tiers change privileges
+  - heading "Earn faster payouts, larger storefronts, and policy advantages." [level=2]
+  - list:
+    - listitem:
+      - text: 01 Unverified
+      - paragraph: Up to 8 active listings, strict moderation, no premium high-risk category access, longest payout reserve.
+      - text: 10-day payout reserve, 5-day auto-release after verified delivery.
+    - listitem:
+      - text: 02 Basic verified
+      - paragraph: Up to 30 active listings, standard moderation, growth plan economics, featured placement only after clean history.
+      - text: 7-day payout reserve, 4-day auto-release after verified delivery.
+    - listitem:
+      - text: 03 Trusted seller
+      - paragraph: Up to 90 active listings, high-risk category access, featured placement eligibility, lighter moderation unless risk spikes.
+      - text: 4-day payout reserve, 3-day auto-release after verified delivery.
+    - listitem:
+      - text: 04 Premium verified business
+      - paragraph: Up to 250 active listings, stronger merchandising access, faster payout posture, stronger trust badge treatment.
+      - text: 2-day payout reserve, 2-day auto-release after verified delivery.
+    - listitem:
+      - text: 05 Henry Onyx verified partner
+      - paragraph: Partner inventory terms, direct placement controls, lowest payout friction, top trust passport treatment.
+      - text: 1-day payout reserve, 1-day auto-release after verified delivery.
+  - link "See plan economics":
+    - /url: /sell/pricing
+  - heading "Apply, then watch the application status from your account." [level=2]
+  - paragraph: Approval unlocks vendor onboarding. Pricing, posting fees, and payout windows are visible before you publish — no contract surprises later.
+  - link "Start application":
+    - /url: /account/seller-application
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.
+  - link "marketplace@henryonyx.com":
+    - /url: mailto:marketplace@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Shop":
+    - paragraph: Shop
+    - list:
+      - listitem:
+        - link "Search the marketplace":
+          - /url: /search
+      - listitem:
+        - link "Deals and timed edits":
+          - /url: /deals
+      - listitem:
+        - link "Trust passport":
+          - /url: /trust
+      - listitem:
+        - link "Buyer protection policy":
+          - /url: /policies/buyer-protection
+      - listitem:
+        - link "Support and resolution":
+          - /url: /help
+  - navigation "Sell":
+    - paragraph: Sell
+    - list:
+      - listitem:
+        - link "Why sell on Henry Onyx":
+          - /url: /sell
+      - listitem:
+        - link "Seller pricing and fees":
+          - /url: /sell/pricing
+      - listitem:
+        - link "Seller policy":
+          - /url: /policies/seller-policy
+      - listitem:
+        - link "Seller application":
+          - /url: /account/seller-application
+      - listitem:
+        - link "Vendor workspace":
+          - /url: /vendor
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/marketplace
+  - navigation "Support":
+    - paragraph: Support
+    - list:
+      - listitem:
+        - link "Help and support":
+          - /url: /help
+      - listitem:
+        - link "Contact":
+          - /url: https://henryonyx.com/contact
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

@@ -1,0 +1,200 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fpolicies%2Fterms
+  - link "Start a project":
+    - /url: /request
+- main:
+  - link "All policies":
+    - /url: /policies
+  - article:
+    - paragraph: Terms
+    - heading "Terms of Engagement" [level=1]
+    - paragraph: These terms describe how Henry Onyx Studio engages with a client across a project lifecycle. They apply to every reservation, proposal, milestone, deliverable, and final handover unless the parties sign a separate written agreement that supersedes them.
+    - term: Effective from
+    - definition: 2026-05-03
+    - term: Last reviewed
+    - definition: 2026-05-03
+    - term: Governing law
+    - definition: Federal Republic of Nigeria
+    - list:
+      - listitem:
+        - heading "1. Parties and scope" [level=2]
+        - paragraph: These Terms of Engagement (the "Terms") form a binding agreement between you, the client (the "Client"), and Henry Onyx Studio, a division of Henry Onyx Limited ("Henry Onyx Studio", "we", "us", "our"). The Terms apply to every Studio engagement initiated through studio.henryonyx.com — whether that engagement begins as a template reservation, an accepted proposal, or a custom brief.
+        - paragraph: By reserving a template, accepting a proposal, paying a deposit, uploading proof of payment, or otherwise instructing us to begin work, the Client confirms they have authority to enter this agreement on behalf of the named business and accepts these Terms in full.
+      - listitem:
+        - heading "2. Project lifecycle" [level=2]
+        - paragraph: "Every Studio engagement runs through a defined sequence: brief or template selection, proposal acceptance, deposit, kickoff, milestone delivery, milestone approval, balance payment, and handover. Each stage is recorded in the Client's portal at studio.henryonyx.com/client and is the canonical record of what was agreed and what has happened."
+      - listitem:
+        - heading "3. Pricing and currency" [level=2]
+        - paragraph: Pricing is quoted and charged in Nigerian naira (NGN). Where a quote includes a foreign-currency reference, the naira figure is the authoritative price. We do not pass along bank or transfer charges — what you see on the invoice is what you pay.
+        - list:
+          - listitem: Template reservations are fixed-price; the deposit and balance figures shown on the template page are final.
+          - listitem: Custom proposals are itemised and milestone-priced; the proposal sets the price in writing.
+          - listitem: Out-of-scope work is quoted as a written change order before any additional charge.
+      - listitem:
+        - heading "4. Deposits, balances, and milestone gating" [level=2]
+        - paragraph: "A deposit confirms the engagement and reserves the build slot. Work begins after the deposit is verified. Balance payments are tied to milestones: each milestone is delivered, the Client has the review window described in clause 6 to approve or request revisions, and the milestone payment is due before the next milestone begins."
+        - paragraph: Final handover — including transfer of intellectual property under clause 8 — happens only after the final balance payment is verified.
+      - listitem:
+        - heading "5. Payment methods" [level=2]
+        - paragraph: Bank transfer to the verified Henry Onyx Limited corporate account is the active payment method. Card and online-gateway payments may be added in the future and will be announced in writing. Payment proof — bank receipt, debit alert, or statement — must be uploaded inside the Client portal so finance can verify against the invoice reference.
+        - paragraph: We do not accept cash, cheque, gift card, or cryptocurrency. We do not accept payment via personal accounts or alternative aliases of Henry Onyx staff. If anyone, internal or external, asks you to pay outside the verified company account, treat it as fraud and contact finance immediately.
+      - listitem:
+        - heading "6. Review and approval window" [level=2]
+        - paragraph: When a milestone is shared as ready for review, the Client has five (5) working days to approve, reject, or request specific revisions through the portal. If no response is received within the window, the milestone is treated as approved by silence and the engagement advances. Active feedback resets the window for the affected scope only — it does not pause unrelated work.
+      - listitem:
+        - heading "7. Change requests and revisions" [level=2]
+        - paragraph: Each milestone includes a fixed number of revision rounds defined in the proposal. Revisions inside that quota happen at no additional cost. Revisions beyond the quota, or requests that change scope, are handled as change orders — quoted in writing, approved before execution, and billed as a new milestone.
+      - listitem:
+        - heading "8. Intellectual property and licences" [level=2]
+        - paragraph: Until the final balance is verified, all working files, designs, code, and intermediate deliverables remain the property of Henry Onyx Studio under a licence to the Client to review and approve them within this engagement.
+        - paragraph: On verified final payment, all custom work product (visual designs, copy, code we wrote, deliverable files) transfers to the Client. Pre-existing tools, libraries, frameworks, and any Henry Onyx internal components remain ours but are licensed to the Client perpetually for use within the delivered project.
+        - paragraph: Third-party assets — fonts, stock imagery, plugins, hosted services — remain governed by their original licences and are listed in the handover document.
+      - listitem:
+        - heading "9. Confidentiality" [level=2]
+        - paragraph: We treat Client materials, internal documents, customer data, and unannounced product information as confidential. Studio staff are bound by internal confidentiality clauses, and we will sign a Client-issued NDA on request before commercially sensitive scope is shared.
+        - paragraph: Confidentiality survives termination of this agreement.
+      - listitem:
+        - heading "10. Termination" [level=2]
+        - paragraph: Either party may terminate by written notice through the portal or by email. Termination by the Client follows the refund schedule in the Refund and Cancellation Policy. Termination by Henry Onyx Studio for cause (non-payment, abusive conduct, illegality) is immediate and without refund of unused deposit.
+        - paragraph: On termination, all paid work is delivered; unpaid work is retained.
+      - listitem:
+        - heading "11. Limitation of liability" [level=2]
+        - paragraph: Our aggregate liability for any claim arising out of an engagement is capped at the total amount the Client has paid to us under that engagement in the twelve (12) months preceding the claim. We are not liable for indirect, consequential, or speculative losses including lost profits, lost data not under our care, or business interruption.
+        - paragraph: Nothing in these Terms limits liability for fraud, wilful misconduct, or anything that cannot be limited by Nigerian law.
+      - listitem:
+        - heading "12. Governing law and disputes" [level=2]
+        - paragraph: These Terms are governed by the laws of the Federal Republic of Nigeria. Disputes are first raised through the Client portal or to studio@henryonyx.com. If unresolved within thirty (30) days, the parties submit to mediation in Lagos. Failing mediation, disputes are referred to the courts of Lagos State.
+      - listitem:
+        - heading "13. Updates to these Terms" [level=2]
+        - paragraph: We may amend these Terms by posting an updated version on this page and updating the lastUpdated and effectiveFrom dates. Changes do not retroactively affect engagements already underway — those continue under the version of the Terms accepted at engagement start, which is logged in the Client portal.
+      - listitem:
+        - heading "14. Contact" [level=2]
+        - paragraph: "Engagement questions: studio@henryonyx.com"
+        - paragraph: "Billing and finance: finance@henryonyx.com"
+        - paragraph: "Privacy and data subject requests: privacy@henryonyx.com"
+  - paragraph: Continue reading
+  - heading "The other agreements that govern Henry Onyx Studio engagements." [level=2]
+  - list:
+    - listitem:
+      - link "Privacy Privacy Policy":
+        - /url: /policies/privacy
+    - listitem:
+      - link "Refunds Refund and Cancellation Policy":
+        - /url: /policies/refunds
+    - listitem:
+      - link "IP Intellectual Property and Ownership":
+        - /url: /policies/intellectual-property
+    - listitem:
+      - link "Security Security and Data Protection":
+        - /url: /policies/security
+    - listitem:
+      - link "Delivery SLA Delivery SLA":
+        - /url: /policies/sla
+    - listitem:
+      - link "Acceptable use Acceptable Use Policy":
+        - /url: /policies/acceptable-use
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

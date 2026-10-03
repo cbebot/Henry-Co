@@ -1,0 +1,247 @@
+- banner:
+  - link "Henry Onyx Marketplace home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Marketplace
+  - navigation "Marketplace":
+    - link "Search":
+      - /url: /search
+    - link "Deals":
+      - /url: /deals
+    - link "Track":
+      - /url: /track
+    - link "Sell":
+      - /url: /sell
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - textbox "Search lighting, office, decor, verified stores, founder-ready edits..."
+  - button "Search"
+  - button "Cart"
+  - link "Create a Henry Onyx account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Ftrust
+    - text: Get started
+  - link "Sign in to your Henry Onyx account":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Ftrust
+    - text: Sign in
+- main:
+  - main:
+    - paragraph: Trust & safety
+    - heading "Visible before checkout. Enforced after it." [level=1]
+    - paragraph: Trust governs what a seller can do, how money moves, and how moderation responds. Seller tiers, buyer risk, listing scoring, escrow holds, disputes, and payout release all leave a server-side paper trail.
+    - list:
+      - listitem: Money movement Escrowed, released after checks
+      - listitem: Reviews Server-logged, dispute-traceable
+      - listitem: Tiers Earned, revocable
+    - paragraph: Four guardrails
+    - list:
+      - listitem:
+        - heading "Trust passports" [level=2]
+        - paragraph: Every store and product surfaces verification level, SLA, dispute rate, payout readiness, and fulfillment posture.
+      - listitem:
+        - heading "Escrow control" [level=2]
+        - paragraph: Buyer funds are held by Henry Onyx first, then move into releasable payout only after delivery and trust checks clear.
+      - listitem:
+        - heading "Anti-fraud review" [level=2]
+        - paragraph: Off-platform payment steering, duplicate media, listing velocity spikes, and risky payout patterns route into queue visibility.
+      - listitem:
+        - heading "Audit trails" [level=2]
+        - paragraph: Approvals, rejections, payout actions, dispute decisions, and automation sweeps are logged server-side.
+    - paragraph: Seller trust ladder
+    - heading "Tiers earned through behaviour, not paid for." [level=2]
+    - list:
+      - listitem:
+        - heading "Unverified" [level=3]
+        - paragraph: Up to 8 active listings, strict moderation, no premium high-risk category access, longest payout reserve.
+        - text: 10-day payout reserve, 5-day auto-release after verified delivery.
+      - listitem:
+        - heading "Basic verified" [level=3]
+        - paragraph: Up to 30 active listings, standard moderation, growth plan economics, featured placement only after clean history.
+        - text: 7-day payout reserve, 4-day auto-release after verified delivery.
+      - listitem:
+        - heading "Trusted seller" [level=3]
+        - paragraph: Up to 90 active listings, high-risk category access, featured placement eligibility, lighter moderation unless risk spikes.
+        - text: 4-day payout reserve, 3-day auto-release after verified delivery.
+      - listitem:
+        - heading "Premium verified business" [level=3]
+        - paragraph: Up to 250 active listings, stronger merchandising access, faster payout posture, stronger trust badge treatment.
+        - text: 2-day payout reserve, 2-day auto-release after verified delivery.
+      - listitem:
+        - heading "Henry Onyx verified partner" [level=3]
+        - paragraph: Partner inventory terms, direct placement controls, lowest payout friction, top trust passport treatment.
+        - text: 1-day payout reserve, 1-day auto-release after verified delivery.
+    - paragraph: Policy surfaces
+    - heading "The standards we hold ourselves to." [level=2]
+    - list:
+      - listitem:
+        - link "Buyer Protection Policy Henry Onyx receives your payment first, holds it through fulfillment, and can hold the seller's payout when delivery proof is missing or a dispute is open.":
+          - /url: /policies/buyer-protection
+          - heading "Buyer Protection Policy" [level=3]
+          - paragraph: Henry Onyx receives your payment first, holds it through fulfillment, and can hold the seller's payout when delivery proof is missing or a dispute is open.
+      - listitem:
+        - link "Seller Policy Seller trust tier, listing quality, dispute history, and payout hygiene directly affect posting rights, category access, featured placement, and payout speed.":
+          - /url: /policies/seller-policy
+          - heading "Seller Policy" [level=3]
+          - paragraph: Seller trust tier, listing quality, dispute history, and payout hygiene directly affect posting rights, category access, featured placement, and payout speed.
+      - listitem:
+        - link "Listing Standards Marketplace listings are scored for quality and risk before they move into approval queues.":
+          - /url: /policies/listing-standards
+          - heading "Listing Standards" [level=3]
+          - paragraph: Marketplace listings are scored for quality and risk before they move into approval queues.
+      - listitem:
+        - link "Prohibited Goods & Services Counterfeit goods, unsafe products, deceptive services, and content designed to route payments off-platform are not allowed.":
+          - /url: /policies/prohibited-goods-services
+          - heading "Prohibited Goods & Services" [level=3]
+          - paragraph: Counterfeit goods, unsafe products, deceptive services, and content designed to route payments off-platform are not allowed.
+      - listitem:
+        - link "Return & Refund Policy Refund and return outcomes must align with order evidence, payout state, and dispute review.":
+          - /url: /policies/returns-refunds
+          - heading "Return & Refund Policy" [level=3]
+          - paragraph: Refund and return outcomes must align with order evidence, payout state, and dispute review.
+      - listitem:
+        - link "Dispute Resolution Policy Disputes open a formal case, pause the affected payout, and are reviewed by our team.":
+          - /url: /policies/dispute-resolution
+          - heading "Dispute Resolution Policy" [level=3]
+          - paragraph: Disputes open a formal case, pause the affected payout, and are reviewed by our team.
+      - listitem:
+        - link "Payout Policy Seller funds are held until orders clear, then become available to withdraw. Every payout is reviewed and tracked so balances stay accurate.":
+          - /url: /policies/payout-policy
+          - heading "Payout Policy" [level=3]
+          - paragraph: Seller funds are held until orders clear, then become available to withdraw. Every payout is reviewed and tracked so balances stay accurate.
+      - listitem:
+        - link "Seller Verification Policy Seller verification combines account identity, delivery reliability, dispute history, and staff review into real privilege changes.":
+          - /url: /policies/seller-verification
+          - heading "Seller Verification Policy" [level=3]
+          - paragraph: Seller verification combines account identity, delivery reliability, dispute history, and staff review into real privilege changes.
+      - listitem:
+        - link "Trust & Safety Rules Marketplace trust combines risk scoring, moderation queues, watchlist behaviors, delivery verification, and communication review.":
+          - /url: /policies/trust-safety
+          - heading "Trust & Safety Rules" [level=3]
+          - paragraph: Marketplace trust combines risk scoring, moderation queues, watchlist behaviors, delivery verification, and communication review.
+      - listitem:
+        - link "Referral & Reward Policy Referral and reward programs must remain abuse-resistant and consistent with trust posture.":
+          - /url: /policies/referral-reward
+          - heading "Referral & Reward Policy" [level=3]
+          - paragraph: Referral and reward programs must remain abuse-resistant and consistent with trust posture.
+      - listitem:
+        - link "Featured Listing Policy Featured placement is a paid privilege gated by seller trust, listing quality, and operator approval.":
+          - /url: /policies/featured-listings
+          - heading "Featured Listing Policy" [level=3]
+          - paragraph: Featured placement is a paid privilege gated by seller trust, listing quality, and operator approval.
+    - paragraph: Ecosystem trust reinforcement
+    - list:
+      - listitem:
+        - link "Studio launch services Sellers can buy Henry Onyx Studio help for storefront setup, product photography, creative assets, conversion copy, and merchandising refreshes.":
+          - /url: https://studio.henryonyx.com/services
+          - heading "Studio launch services" [level=3]
+          - paragraph: Sellers can buy Henry Onyx Studio help for storefront setup, product photography, creative assets, conversion copy, and merchandising refreshes.
+      - listitem:
+        - link "Learn seller academy Seller coaching routes into Learn so onboarding, moderation hygiene, and trust readiness can materially improve seller performance.":
+          - /url: https://learn.henryonyx.com/courses/marketplace-seller-academy
+          - heading "Learn seller academy" [level=3]
+          - paragraph: Seller coaching routes into Learn so onboarding, moderation hygiene, and trust readiness can materially improve seller performance.
+      - listitem:
+        - link "Logistics verification Delivery proof, tracking confidence, and payout-release evidence can route through Henry Onyx Logistics where supported.":
+          - /url: https://logistics.henryonyx.com/track
+          - heading "Logistics verification" [level=3]
+          - paragraph: Delivery proof, tracking confidence, and payout-release evidence can route through Henry Onyx Logistics where supported.
+      - listitem:
+        - link "HQ operator controls Moderation, finance, payout review, and trust operations can escalate into Henry Onyx HQ and Workspace operating surfaces.":
+          - /url: https://hq.henryonyx.com/
+          - heading "HQ operator controls" [level=3]
+          - paragraph: Moderation, finance, payout review, and trust operations can escalate into Henry Onyx HQ and Workspace operating surfaces.
+      - listitem:
+        - link "Shared account continuity Orders, disputes, seller application state, and marketplace notifications follow the shared Henry Onyx account instead of a competing auth silo.":
+          - /url: https://account.henryonyx.com/marketplace
+          - heading "Shared account continuity" [level=3]
+          - paragraph: Orders, disputes, seller application state, and marketplace notifications follow the shared Henry Onyx account instead of a competing auth silo.
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.
+  - link "marketplace@henryonyx.com":
+    - /url: mailto:marketplace@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Shop":
+    - paragraph: Shop
+    - list:
+      - listitem:
+        - link "Search the marketplace":
+          - /url: /search
+      - listitem:
+        - link "Deals and timed edits":
+          - /url: /deals
+      - listitem:
+        - link "Trust passport":
+          - /url: /trust
+      - listitem:
+        - link "Buyer protection policy":
+          - /url: /policies/buyer-protection
+      - listitem:
+        - link "Support and resolution":
+          - /url: /help
+  - navigation "Sell":
+    - paragraph: Sell
+    - list:
+      - listitem:
+        - link "Why sell on Henry Onyx":
+          - /url: /sell
+      - listitem:
+        - link "Seller pricing and fees":
+          - /url: /sell/pricing
+      - listitem:
+        - link "Seller policy":
+          - /url: /policies/seller-policy
+      - listitem:
+        - link "Seller application":
+          - /url: /account/seller-application
+      - listitem:
+        - link "Vendor workspace":
+          - /url: /vendor
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/marketplace
+  - navigation "Support":
+    - paragraph: Support
+    - list:
+      - listitem:
+        - link "Help and support":
+          - /url: /help
+      - listitem:
+        - link "Contact":
+          - /url: https://henryonyx.com/contact
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

@@ -1,0 +1,181 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Jobs":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Jobs
+  - navigation:
+    - link "Find jobs":
+      - /url: /jobs
+    - link "Talent":
+      - /url: /talent
+    - link "Hire":
+      - /url: /hire
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fjobs.henryonyx.com%2Fjobs
+  - link "Join free to apply":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fjobs.henryonyx.com%2Fcandidate%2Fprofile
+- main:
+  - paragraph: Find your next role
+  - heading "A calmer place to discover work that respects your time." [level=1]
+  - paragraph: Search by what you actually care about — where you work, how you work, and whether the employer has earned a little trust on the platform. Save roles while you think; apply when you are ready with one Henry Onyx profile.
+  - text: Search jobs
+  - textbox "Search jobs":
+    - /placeholder: Try a role, skill, team, or company name
+  - button "Search"
+  - paragraph: Popular starting points
+  - link "Remote":
+    - /url: /jobs?mode=remote
+  - link "Hybrid":
+    - /url: /jobs?mode=hybrid
+  - link "Verified only":
+    - /url: /jobs?verified=1
+  - link "Full-time":
+    - /url: /jobs?type=full-time
+  - link "Lagos":
+    - /url: /jobs?loc=Lagos
+  - link "Internal Henry Onyx":
+    - /url: /jobs?internal=1
+  - text: Category
+  - combobox "Category":
+    - option "All categories" [selected]
+  - text: Location
+  - textbox "Location":
+    - /placeholder: City, region, or “Remote”
+  - text: Work mode
+  - combobox "Work mode":
+    - option "Any mode" [selected]
+    - option "Remote"
+    - option "Hybrid"
+    - option "On-site"
+  - text: Role type
+  - combobox "Role type":
+    - option "Any type" [selected]
+    - option "Full-time"
+    - option "Contract"
+    - option "Part-time"
+  - checkbox "Verified employers only"
+  - text: Verified employers only
+  - checkbox "Internal Henry Onyx roles only"
+  - text: Internal Henry Onyx roles only
+  - paragraph: Browsing is always free. We only ask you to sign in when you save a role or apply, so your shortlist and applications stay private and attached to the right person.
+  - list:
+    - listitem:
+      - paragraph: Verified roles · 0 live now
+      - paragraph: Each role passes employer review before it goes live.
+      - text: "0"
+    - listitem:
+      - paragraph: Verified employers
+      - paragraph: Teams that have passed our employer review.
+      - text: "0"
+    - listitem:
+      - paragraph: Internal Henry Onyx
+      - paragraph: Openings inside Henry Onyx, same process as external roles.
+      - text: "0"
+    - listitem:
+      - paragraph: With response time
+      - paragraph: Posts where the employer shared an expected reply window.
+      - text: "0"
+  - complementary:
+    - paragraph: Browse by category
+    - list
+    - link "Clear filters · all jobs":
+      - /url: /jobs
+    - paragraph: Hiring now
+    - list
+  - paragraph: Results
+  - heading "Nothing matched yet" [level=2]
+  - paragraph: All employers · Internal and external
+  - paragraph: Try a small change
+  - heading "We couldn’t find roles with that exact mix." [level=3]
+  - paragraph: Widen your search, remove one filter, or try a category from the left. Verified-only and internal-only toggles are the most common reason lists go quiet.
+  - link "Show all open roles":
+    - /url: /jobs
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Premium hiring — verified talent, trusted employers, and cleaner recruitment on one record.
+  - link "jobs@henryonyx.com":
+    - /url: mailto:jobs@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Discover":
+    - paragraph: Discover
+    - list:
+      - listitem:
+        - link "Jobs":
+          - /url: /jobs
+      - listitem:
+        - link "Talent":
+          - /url: /talent
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+      - listitem:
+        - link "Help":
+          - /url: /help
+  - navigation "For teams":
+    - paragraph: For teams
+    - list:
+      - listitem:
+        - link "Candidate home":
+          - /url: /candidate
+      - listitem:
+        - link "Hire with Henry Onyx":
+          - /url: /hire
+      - listitem:
+        - link "Employer workspace":
+          - /url: /employer
+      - listitem:
+        - link "Recruiters":
+          - /url: /recruiter
+  - navigation "Henry Onyx":
+    - paragraph: Henry Onyx
+    - list:
+      - listitem:
+        - link "Henry Onyx account":
+          - /url: https://account.henryonyx.com/jobs
+      - listitem:
+        - link "Careers":
+          - /url: /careers
+      - listitem:
+        - link "Group Hub":
+          - /url: https://henryonyx.com/
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Jobs.
+- button "How can we help? — Need help?": Help
+- alert

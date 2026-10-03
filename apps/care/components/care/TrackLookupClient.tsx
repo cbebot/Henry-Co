@@ -358,14 +358,8 @@ export default function TrackLookupClient({
           </form>
 
           <div className="mt-5 text-xs font-medium uppercase tracking-[0.125em] text-zinc-500 dark:text-white/55">
-            {t("Use your real booking code, for example: TRK-N0RFUKI5")}
+            {t("Your tracking code is in your booking email.")}
           </div>
-
-          <p className="mt-6 max-w-2xl border-t border-black/10 pt-5 text-sm leading-relaxed text-zinc-600 dark:border-white/10 dark:text-white/68">
-            {t(
-              "Wardrobe care follows movement and delivery. Home and office cleaning follow on-site execution and completion quality. The timeline shown here matches the type of service you booked.",
-            )}
-          </p>
         </div>
       </section>
 
@@ -377,11 +371,6 @@ export default function TrackLookupClient({
             </div>
             <p className="mt-8 text-2xl font-semibold text-zinc-950 dark:text-white">
               {t("Your service details are one code away")}
-            </p>
-            <p className="mt-4 text-lg text-zinc-600 dark:text-white/65">
-              {t(
-                "Enter the tracking code above to see the current stage, the right timeline for the service, and the next step you should expect.",
-              )}
             </p>
           </div>
         ) : loading ? (

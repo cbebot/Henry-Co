@@ -1,0 +1,231 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Studio":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Studio
+  - navigation:
+    - link "Project types":
+      - /url: /pick
+    - link "Services":
+      - /url: /services
+    - link "Packages":
+      - /url: /pricing
+    - link "Case studies":
+      - /url: /work
+    - link "Process":
+      - /url: /process
+    - link "Trust":
+      - /url: /trust
+    - link "Teams":
+      - /url: /teams
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fstudio.henryonyx.com%2Fteams
+  - link "Start a project":
+    - /url: /request
+- main:
+  - paragraph: Teams
+  - heading "The people accountable for your build." [level=1]
+  - paragraph: Henry Onyx Studio runs four delivery pods — each tuned to a kind of work — backed by a named leadership group that owns scope, quality, and the launch date.
+  - paragraph: Studio leadership
+  - paragraph: Every project has a named lead from this group. You’ll know who signs off on scope, who answers when something slips, and who is on the hook for launch.
+  - list:
+    - listitem:
+      - article:
+        - heading "Henry Chukwuemeka" [level=3]
+        - paragraph: Founder & Studio Lead
+        - paragraph: Founder of Henry Onyx Sets the studio's standard for clarity, calm delivery, and the discipline behind every milestone.
+        - list:
+          - listitem: Studio direction
+          - listitem: Senior strategy
+          - listitem: Final scope sign-off
+    - listitem:
+      - article:
+        - heading "Design & UX Direction" [level=3]
+        - paragraph: Lead, Design Pod
+        - paragraph: Owns the visual standard across executive websites, commerce, and product UX. Keeps interface language consistent from brief to launch.
+        - list:
+          - listitem: Brand systems
+          - listitem: Interface language
+          - listitem: Design QA
+    - listitem:
+      - article:
+        - heading "Engineering Direction" [level=3]
+        - paragraph: Lead, Engineering Pod
+        - paragraph: Owns architecture, performance, and security across studio builds — from a six-page company site to a multi-role operations platform.
+        - list:
+          - listitem: Architecture
+          - listitem: Performance
+          - listitem: Security review
+    - listitem:
+      - article:
+        - heading "Delivery & Client Success" [level=3]
+        - paragraph: Lead, Project Delivery
+        - paragraph: Owns the milestone calendar, weekly client updates, scope discipline, and the part where launches actually happen on time.
+        - list:
+          - listitem: Milestone delivery
+          - listitem: Client updates
+          - listitem: Scope governance
+  - paragraph: Delivery pods
+  - paragraph: Pick the pod that fits your project, or send the brief and let Studio route you to the right match.
+  - list:
+    - listitem:
+      - article:
+        - paragraph: Positioning and Revenue Web Team
+        - heading "Orbit Executive Web" [level=2]
+        - text: open
+        - paragraph: Focused on premium websites, offer architecture, landing systems, and sales surfaces that need to make the business feel more credible immediately.
+        - list:
+          - listitem: Executive websites
+          - listitem: Sales funnels
+          - listitem: Premium storytelling
+          - listitem: Lead systems
+        - list:
+          - listitem: Sharp positioning work
+          - listitem: High-trust information architecture
+          - listitem: Premium conversion polish
+        - link "Select this team":
+          - /url: /request?team=team-orbit
+        - link "Team detail":
+          - /url: /teams/orbit
+    - listitem:
+      - article:
+        - paragraph: Software and Operations Team
+        - heading "Axis Product Systems" [level=2]
+        - text: open
+        - paragraph: Best suited to operations platforms, portals, multi-role products, and delivery-heavy software that needs architecture discipline as much as interface quality.
+        - list:
+          - listitem: Operations platforms
+          - listitem: Client portals
+          - listitem: Custom software
+          - listitem: Business operations
+        - list:
+          - listitem: Serious architecture
+          - listitem: Role-aware platform design
+          - listitem: Clean operational reporting
+        - link "Select this team":
+          - /url: /request?team=team-axis
+        - link "Team detail":
+          - /url: /teams/axis
+    - listitem:
+      - article:
+        - paragraph: Commerce and Retention Team
+        - heading "Nova Commerce" [level=2]
+        - text: limited
+        - paragraph: Specializes in storefront UX, merchandising systems, campaign landing surfaces, and the operational structure around premium e-commerce.
+        - list:
+          - listitem: Storefronts
+          - listitem: Checkout systems
+          - listitem: Campaign commerce
+          - listitem: Catalog experiences
+        - list:
+          - listitem: Trust-led commerce design
+          - listitem: Conversion architecture
+          - listitem: Cleaner purchasing flow
+        - link "Select this team":
+          - /url: /request?team=team-nova
+        - link "Team detail":
+          - /url: /teams/nova
+    - listitem:
+      - article:
+        - paragraph: Mobile Product Team
+        - heading "Vector Mobile" [level=2]
+        - text: open
+        - paragraph: Handles customer apps, field operations, service apps, and cross-platform mobile experiences where polish and clarity matter.
+        - list:
+          - listitem: Mobile apps
+          - listitem: Operational apps
+          - listitem: Customer apps
+          - listitem: Retention flows
+        - list:
+          - listitem: Fast mobile delivery
+          - listitem: Role-aware UX
+          - listitem: Reliable cross-platform execution
+        - link "Select this team":
+          - /url: /request?team=team-vector
+        - link "Team detail":
+          - /url: /teams/vector
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Serious software, delivered with sharper process — every brief to launch on one record.
+  - link "studio@henryonyx.com":
+    - /url: mailto:studio@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Studio":
+    - paragraph: Studio
+    - list:
+      - listitem:
+        - link "Services":
+          - /url: /services
+      - listitem:
+        - link "Packages":
+          - /url: /pricing
+      - listitem:
+        - link "Case studies":
+          - /url: /work
+      - listitem:
+        - link "Teams":
+          - /url: /teams
+  - navigation "Start":
+    - paragraph: Start
+    - list:
+      - listitem:
+        - link "Start a project":
+          - /url: /request
+      - listitem:
+        - link "Project types":
+          - /url: /pick
+      - listitem:
+        - link "Process":
+          - /url: /process
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - navigation "Account":
+    - paragraph: Account
+    - list:
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/studio
+      - listitem:
+        - link "FAQ":
+          - /url: /faq
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert
