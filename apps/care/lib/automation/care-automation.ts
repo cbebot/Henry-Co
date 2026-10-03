@@ -22,6 +22,7 @@ import {
 } from "@/lib/support/whatsapp";
 import { getOperationsIntelligenceSnapshot } from "@/lib/operations-intelligence";
 import {
+  isRecurringAutoBookEnabled,
   runRecurringAutoBookSweep,
   type RecurringAutoBookSummary,
 } from "@/lib/automation/recurring-auto-book";
@@ -70,6 +71,8 @@ type AutomationRunSummary = {
   reengagementSent: number;
   whatsappSent: number;
   skipped: number;
+  /** False while CARE_RECURRING_AUTOBOOK is off: the recurring sweep did nothing. */
+  recurringEnabled: boolean;
   recurringRunsConsidered: number;
   recurringBookingsCreated: number;
   recurringSkippedDuplicates: number;
@@ -902,8 +905,10 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
       sendPaymentReminders(now, settings, dataset),
       sendMarketingNurture(now, dataset),
       // V3 PASS 21 — recurring auto-book sweep (books each run the day before).
+      // A no-op unless CARE_RECURRING_AUTOBOOK=1.
       runRecurringAutoBookSweep(now).catch(
         (): RecurringAutoBookSummary => ({
+          enabled: isRecurringAutoBookEnabled(),
           scheduledRunsConsidered: 0,
           bookingsCreated: 0,
           skippedDuplicates: 0,
@@ -924,6 +929,7 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
       reengagementSent: nurture.reengagementSent,
       whatsappSent: nurture.whatsappSent,
       skipped: nurture.skipped,
+      recurringEnabled: recurring.enabled,
       recurringRunsConsidered: recurring.scheduledRunsConsidered,
       recurringBookingsCreated: recurring.bookingsCreated,
       recurringSkippedDuplicates: recurring.skippedDuplicates,

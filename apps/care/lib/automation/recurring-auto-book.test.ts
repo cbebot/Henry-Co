@@ -18,7 +18,8 @@ import {
 // V3-CARE-JOBS-PREAPPLY-FIX-01. The recurring sweep's pure helpers: the run key
 // that keeps a run from being booked twice, the cadence step (fed by text the
 // schedule owner can write), the due time of a schedule with no stored run, the
-// due window, and the per-sweep / per-customer booking bounds.
+// due window, and the per-sweep / per-customer booking bounds. The default-off
+// CARE_RECURRING_AUTOBOOK gate is covered in recurring-auto-book.gate.test.ts.
 
 const DAY = 24 * 60 * 60 * 1000;
 const SCHEDULE = "abcdef01-2345-4678-89ab-cdef01234567";

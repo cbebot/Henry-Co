@@ -8,6 +8,8 @@ import { createSupabaseServer } from "@/lib/supabase/server";
  * /api/cron/care-automation sweep reads `care_recurring_schedules`
  * rows whose `next_run_at` is dated tomorrow or earlier (UTC) and creates
  * a booking row from the stored `service_payload`, the day before pickup.
+ * The sweep books only with CARE_RECURRING_AUTOBOOK=1 (off by default);
+ * schedules saved here while it is off create no bookings.
  *
  * Endpoints:
  *   GET    — list caller's own schedules.

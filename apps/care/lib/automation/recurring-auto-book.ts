@@ -7,6 +7,14 @@ import { createAdminSupabase } from "@/lib/supabase";
 /**
  * V3 PASS 21 — recurring auto-book sweep.
  *
+ * FLAG-DARK: the sweep runs only when CARE_RECURRING_AUTOBOOK=1. With the
+ * flag off (the default) it reads and writes nothing and returns a no-op
+ * summary (`enabled: false`); the rest of the care automation cron runs as
+ * before. The flag stays off until the recurring launch prerequisites are in
+ * place (a per-user cap on active schedules in the database, partial saves in
+ * /api/care/recurring that keep the stored address and phone, and a scheduler
+ * that collects an address). Turning it on takes a care redeploy.
+ *
  * Called daily from /api/cron/care-automation. Reads
  * `care_recurring_schedules` rows where:
  *   - status = 'active'
@@ -129,6 +137,8 @@ type OwnerProfile = {
 };
 
 export type RecurringAutoBookSummary = {
+  /** False when CARE_RECURRING_AUTOBOOK is off: the sweep read and wrote nothing. */
+  enabled: boolean;
   scheduledRunsConsidered: number;
   bookingsCreated: number;
   skippedDuplicates: number;
@@ -162,6 +172,11 @@ type BookingInputs = {
   /** The run to book: the stored next_run_at, or the due time of a schedule without one. */
   run: Date;
 };
+
+/** The sweep books only with CARE_RECURRING_AUTOBOOK=1; see the FLAG-DARK note above. */
+export function isRecurringAutoBookEnabled(): boolean {
+  return process.env.CARE_RECURRING_AUTOBOOK === "1";
+}
 
 /**
  * The tracking code of one run: `RECUR-` and 32 hex characters of SHA-256
@@ -569,6 +584,7 @@ export async function runRecurringAutoBookSweep(
   options: RecurringAutoBookOptions = {},
 ): Promise<RecurringAutoBookSummary> {
   const summary: RecurringAutoBookSummary = {
+    enabled: isRecurringAutoBookEnabled(),
     scheduledRunsConsidered: 0,
     bookingsCreated: 0,
     skippedDuplicates: 0,
@@ -576,6 +592,8 @@ export async function runRecurringAutoBookSweep(
     skippedDeferred: 0,
     scanStoppedBy: null,
   };
+  // Flag off: a no-op summary, before any client is created.
+  if (!summary.enabled) return summary;
 
   const admin = createAdminSupabase();
   const horizon = bookingHorizon(now);
