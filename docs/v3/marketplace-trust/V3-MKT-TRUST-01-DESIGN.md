@@ -153,13 +153,17 @@ TRUNCATE privileges on the guarded tables.
 and a person's own rejection or request for changes all stand against the listing until a person
 approves it. They are matched on the listing id and on store + handle, so deleting the row and
 creating it again under the same handle does not shed them; a listing under such a hold keeps its
-handle while it stands. A person approving a listing lifts that listing's own holds; a DELETED
-listing's hold that was bound to the same handle is released from the handle but kept, so approving
-a harmless listing under that handle does not clear the evidence. Listing the same item again under
+handle while it stands. A person approving a listing lifts that listing's own holds and clears what
+the approval covered — the pictures the listing shows at that moment; a picture it had stopped
+showing stays counted, so swapping a rejected picture out (or re-using a deleted listing's id) and
+having the rest approved does not clear it. A DELETED listing's hold that was bound to the same handle
+is released from the handle but kept, so approving a harmless listing under that handle does not
+clear the evidence either. Listing the same item again under
 any handle is held too: the pictures a held listing showed — when the hold was placed, at every
 later decision by a person, and every picture deleted, moved or replaced on it since — are kept with
-the hold (bytes and perceptual hash), so removing them, deleting the listing or re-saving the picture
-does not shed it. A picture the listing was itself approved with, or one that is also on another
+the hold (bytes and perceptual hash, recorded once each) — media of any kind, and a picture turned
+into another kind first — so removing them, deleting the listing or re-saving the picture does not
+shed it. A picture the listing was itself approved with, or one that is also on another
 live listing of the store (a size chart, a logo), is not counted. The matches are found first and
 only they are looked for in the live catalogue (a store with 3,000 live listings and 400 held ones:
 under 200 ms). Only a genuine staff decision counts as a decision — a bare status write records
@@ -187,7 +191,8 @@ in any letter case — and grant no seller role unless the store write landed. A
 already owns a store keeps that one store: the approval re-opens it as it is (its ratings, counters,
 description and badges stay) and never opens a second one. With instant publish on, the handle a
 seller types is normalised before it is screened, saved and opened. A listing never moves to another
-store, and a seller's listing is never taken into the company's store. The company's exemptions
+store, and a seller's listing is never taken into the company's store — nor turned into company
+inventory, which the company exemptions read. The company's exemptions
 (catalogue publishing, probation, payout identity) need a company store with **no** owner; a store
 of company type that names an owner is that owner's store, and keeps its owner (deleting that
 account is refused rather than turning it into the company's store). An applicant who already owns

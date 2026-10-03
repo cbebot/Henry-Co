@@ -572,11 +572,13 @@ security definer
 set search_path = public, pg_temp
 as $$
   update public.marketplace_listing_enforcement e
-     set media_snapshot = e.media_snapshot || (
-           select jsonb_build_array(jsonb_build_object(
-                    'ref', p_ref, 'sha256', f.sha256, 'phash', f.phash, 'phash_aux', f.phash_aux))
-             from (select 1) one
-             left join public.marketplace_image_fingerprints f on f.ref = p_ref)
+     set media_snapshot = (
+           select coalesce(jsonb_agg(distinct x), '[]'::jsonb)
+             from jsonb_array_elements(e.media_snapshot || (
+                    select jsonb_build_array(jsonb_build_object(
+                             'ref', p_ref, 'sha256', f.sha256, 'phash', f.phash, 'phash_aux', f.phash_aux))
+                      from (select 1) one
+                      left join public.marketplace_image_fingerprints f on f.ref = p_ref)) x)
    where p_ref is not null
      and e.product_id = p_product_id
      and e.kind <> 'policy'
@@ -665,6 +667,15 @@ begin
     raise exception 'marketplace_publish_guard: a listing id cannot change'
       using errcode = 'P0001', hint = 'listing_id_immutable';
   end if;
+  -- A listing of a seller's store never becomes company inventory (or stops being the
+  -- seller's): the company exemptions read that column.
+  if tg_op = 'UPDATE' and new.inventory_owner_type is distinct from old.inventory_owner_type
+     and old.vendor_id is not null
+     and not public.marketplace_gate_is_company_vendor(old.vendor_id)
+  then
+    raise exception 'marketplace_publish_guard: a seller''s listing stays the seller''s'
+      using errcode = 'P0001', hint = 'listing_store_immutable';
+  end if;
   -- Nor does the store it belongs to: a listing (and the reviews on it) is never
   -- adopted by another store. The store's own deletion empties the column — refused
   -- further down while the listing is live. Company catalogue (already company
@@ -672,6 +683,7 @@ begin
   if tg_op = 'UPDATE' and new.vendor_id is distinct from old.vendor_id and new.vendor_id is not null
      and not (old.inventory_owner_type = 'company'
               and new.inventory_owner_type = 'company'
+              and (old.vendor_id is null or public.marketplace_gate_is_company_vendor(old.vendor_id))
               and public.marketplace_gate_caller_is_trusted()
               and public.marketplace_gate_is_company_vendor(new.vendor_id))
   then
@@ -895,7 +907,9 @@ begin
       -- What the person saw is kept with every hold of the listing — a second or later
       -- decision included.
       update public.marketplace_listing_enforcement e
-         set media_snapshot = e.media_snapshot || public.marketplace_gate_listing_pictures(new.id)
+         set media_snapshot = (
+               select coalesce(jsonb_agg(distinct x), '[]'::jsonb)
+                 from jsonb_array_elements(e.media_snapshot || public.marketplace_gate_listing_pictures(new.id)) x)
        where e.product_id = new.id and e.status in ('active', 'upheld');
       update public.marketplace_listing_enforcement e
          set status = 'upheld',
@@ -1010,12 +1024,22 @@ begin
      clock_timestamp());
 
   if not v_company then
-    -- A person's approval settles everything that stood against the listing.
+    -- A person's approval settles what stood against the listing — and clears what it
+    -- approved: the pictures the listing shows now. A picture the listing no longer shows
+    -- stays counted by the "same item listed again" check: removing a picture and having
+    -- the rest approved does not clear it.
     update public.marketplace_listing_enforcement e
        set status = 'lifted',
            resolved_at = now(),
            resolved_by = new.reviewed_by,
-           resolution = 'restored_by_staff'
+           resolution = 'restored_by_staff',
+           media_snapshot = coalesce((
+             select jsonb_agg(distinct x)
+               from jsonb_array_elements(e.media_snapshot) x
+              where not exists (
+                select 1 from public.marketplace_product_media m
+                 where m.product_id = new.id and m.url = x ->> 'ref')
+           ), '[]'::jsonb)
      where e.status in ('active', 'upheld')
        and e.product_id = new.id;
     -- A deleted listing's hold that was bound to this handle no longer binds the handle
@@ -1064,12 +1088,13 @@ begin
   if tg_op = 'UPDATE'
      and new.url = old.url
      and new.product_id = old.product_id
+     and new.kind is not distinct from old.kind
   then
     return new; -- reorder / cover change
   end if;
 
-  -- The picture leaves the listing it was on (moved or replaced): if a person has to
-  -- decide that listing, the picture stays with its hold.
+  -- The picture leaves the listing it was on (moved, replaced, or turned into another
+  -- kind of media): if a person has to decide that listing, the picture stays with its hold.
   if tg_op = 'UPDATE' then
     perform public.marketplace_gate_keep_held_picture(old.product_id, old.url);
   end if;
@@ -1145,11 +1170,12 @@ declare
   v_owner_type text;
   v_vendor uuid;
 begin
+  -- Media deleted from a listing that a person has to decide stays with its hold,
+  -- whatever its kind says now.
+  perform public.marketplace_gate_keep_held_picture(old.product_id, old.url);
   if old.kind is distinct from 'image' then
     return old;
   end if;
-  -- A picture deleted from a listing that a person has to decide stays with its hold.
-  perform public.marketplace_gate_keep_held_picture(old.product_id, old.url);
   select p.approval_status, p.inventory_owner_type, p.vendor_id
     into v_status, v_owner_type, v_vendor
     from public.marketplace_products p
@@ -1514,11 +1540,13 @@ begin
       -- decided — its last approved pictures included — and every picture that left it
       -- since; what is attached now is read alongside.)
       holds as (
-        select e.product_id, e.media_snapshot
+        select e.product_id, e.media_snapshot, e.status in ('active', 'upheld') as standing
           from public.marketplace_listing_enforcement e
          where e.vendor_id = p_vendor_id
            and e.kind <> 'policy'
-           and e.status in ('active', 'upheld')
+           and (e.status in ('active', 'upheld')
+                -- what a person's approval did not cover (pictures the listing had stopped showing)
+                or (e.status = 'lifted' and e.resolution = 'restored_by_staff' and e.media_snapshot <> '[]'::jsonb))
       ),
       held as (
         select h.pic
@@ -1529,6 +1557,7 @@ begin
           from holds e
           join public.marketplace_product_media m on m.product_id = e.product_id
           left join public.marketplace_image_fingerprints f on f.ref = m.url
+         where e.standing
       ),
       matched as materialized (
         select distinct p.ref, p.sha256, p.phash, p.phash_aux

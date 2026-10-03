@@ -2988,6 +2988,11 @@ begin
     if v ->> 'outcome' <> 'hold' then
       raise warning 'VIOLATION S11d: a picture replaced on a held listing published under a new handle: %', v; violations := violations + 1;
     end if;
+    select count(*) into v_n from public.marketplace_listing_enforcement e, jsonb_array_elements(e.media_snapshot) x
+     where e.product_id = v_r and x ->> 'ref' = s_ref || 's11-p2.jpg';
+    if v_n <> 1 then
+      raise warning 'VIOLATION S11e: a kept picture was recorded % times (no duplicates expected)', v_n; violations := violations + 1;
+    end if;
 
     -- ---- S12. a decoy approved under a deleted held listing's handle does not clear its pictures
     insert into public.marketplace_image_fingerprints (ref, sha256, vendor_id) values
@@ -3148,6 +3153,151 @@ begin
     reset role;
     if v ->> 'outcome' <> 'reject' or not (v -> 'reasons' ? 'seller_not_active') then
       raise warning 'VIOLATION S17: an inactive store was not refused: %', v; violations := violations + 1;
+    end if;
+  end;
+
+  -- ---- S18–S22 (round 5): what a person's approval covers, and what it does not
+  declare
+    s_ref constant text := 'media://public/marketplace-images/mkt-trust-t/';
+    v_l uuid;
+  begin
+    insert into public.marketplace_image_fingerprints (ref, sha256, vendor_id) values
+      (s_ref || 's18-p.jpg', repeat('9a', 32), va), (s_ref || 's18-q.jpg', repeat('9b', 32), va),
+      (s_ref || 's18-n.jpg', repeat('9a', 32), va),
+      (s_ref || 's19-p.jpg', repeat('9c', 32), va), (s_ref || 's19-mug.jpg', repeat('9d', 32), va),
+      (s_ref || 's19-n.jpg', repeat('9c', 32), va),
+      (s_ref || 's21-r.jpg', repeat('ae', 32), va), (s_ref || 's21-n.jpg', repeat('ae', 32), va),
+      (s_ref || 's21-v.jpg', repeat('af', 32), va), (s_ref || 's21-vn.jpg', repeat('af', 32), va),
+      (s_ref || 's22-p.jpg', repeat('b1', 32), va), (s_ref || 's22-q.jpg', repeat('b2', 32), va),
+      (s_ref || 's22-n.jpg', repeat('b1', 32), va);
+
+    -- S18. a person approving a listing after the seller swapped its rejected picture out
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-s18', va, 'S18 handbag', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s18', 1500, 'submitted')
+      returning id into v_l;
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_l, s_ref || 's18-p.jpg', 'image', true, 0);
+    update public.marketplace_products set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now() where id = v_l;
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_l, s_ref || 's18-q.jpg', 'image', false, 1);
+    delete from public.marketplace_product_media where product_id = v_l and url = s_ref || 's18-p.jpg';
+    update public.marketplace_products set approval_status = 'submitted' where id = v_l;
+    update public.marketplace_products
+       set approval_status = 'approved', reviewed_by = staff, reviewed_at = now() + interval '1 second'
+     where id = v_l;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s18-n', 'S18 again', 1500),
+      array[s_ref || 's18-n.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S18: approving what a listing shows now cleared the picture a person rejected: %', v;
+      violations := violations + 1;
+    end if;
+
+    -- S19. a deleted rejected listing's id re-used by a harmless row that a person approves
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-s19', va, 'S19 handbag', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s19', 1500, 'submitted')
+      returning id into v_l;
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_l, s_ref || 's19-p.jpg', 'image', true, 0);
+    update public.marketplace_products set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now() where id = v_l;
+    delete from public.marketplace_products where id = v_l;
+    insert into public.marketplace_products (id, slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values (v_l, 'mkt-trust-t-s19-mug', va, 'S19 mug', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s19-mug', 1500, 'submitted');
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_l, s_ref || 's19-mug.jpg', 'image', true, 0);
+    update public.marketplace_products set approval_status = 'approved', reviewed_by = staff, reviewed_at = now() where id = v_l;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s19-n', 'S19 again', 1500),
+      array[s_ref || 's19-n.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S19: re-using a rejected listing''s id cleared its picture: %', v; violations := violations + 1;
+    end if;
+
+    -- S20. a seller's listing never becomes company inventory, and company inventory is not
+    --      re-homed out of a seller's store
+    insert into public.marketplace_products (slug, vendor_id, title, sku, base_price, approval_status)
+      values ('mkt-trust-t-s20', va, 'S20 draft', 'SKU-mkt-trust-t-s20', 1500, 'draft')
+      returning id into v_l;
+    begin
+      update public.marketplace_products set inventory_owner_type = 'company' where id = v_l;
+      raise warning 'VIOLATION S20: a seller''s listing became company inventory'; violations := violations + 1;
+    exception when others then
+      get stacked diagnostics v_hint = pg_exception_hint;
+      if v_hint is distinct from 'listing_store_immutable' then
+        raise warning 'VIOLATION S20: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+      end if;
+    end;
+    insert into public.marketplace_products (slug, vendor_id, title, sku, base_price, approval_status, inventory_owner_type)
+      values ('mkt-trust-t-s20b', vb, 'S20b draft', 'SKU-mkt-trust-t-s20b', 1500, 'draft', 'company')
+      returning id into v_l;
+    begin
+      update public.marketplace_products set vendor_id = vc where id = v_l;
+      raise warning 'VIOLATION S20b: a listing in a seller''s store was re-homed into the company store'; violations := violations + 1;
+    exception when others then
+      get stacked diagnostics v_hint = pg_exception_hint;
+      if v_hint is distinct from 'listing_store_immutable' then
+        raise warning 'VIOLATION S20b: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+      end if;
+    end;
+
+    -- S21. media of any kind leaving a held listing is kept
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-s21', va, 'S21 handbag', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s21', 1500, 'submitted')
+      returning id into v_l;
+    update public.marketplace_products set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now() where id = v_l;
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_l, s_ref || 's21-r.jpg', 'image', true, 0);
+    update public.marketplace_product_media set kind = 'video' where product_id = v_l and url = s_ref || 's21-r.jpg';
+    delete from public.marketplace_product_media where product_id = v_l and url = s_ref || 's21-r.jpg';
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_l, s_ref || 's21-v.jpg', 'video', false, 1);
+    delete from public.marketplace_product_media where product_id = v_l and url = s_ref || 's21-v.jpg';
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s21-n', 'S21 again', 1500),
+      array[s_ref || 's21-n.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S21: a picture turned into another kind and deleted shed its hold: %', v; violations := violations + 1;
+    end if;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s21-vn', 'S21 again', 1500),
+      array[s_ref || 's21-vn.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S21b: media of another kind deleted from a held listing shed its hold: %', v; violations := violations + 1;
+    end if;
+
+    -- S22. what a person approved is cleared: a restored listing's picture, later dropped by
+    --      the seller, is not evidence against another listing
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s22', 'S22 clean', 1500),
+      array[s_ref || 's22-p.jpg', s_ref || 's22-q.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-s22', va, 'S22 clean', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s22', 1500, 'approved')
+      returning id into v_l;
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order) values
+      (v_l, s_ref || 's22-p.jpg', 'image', true, 0), (v_l, s_ref || 's22-q.jpg', 'image', false, 1);
+    v := public.marketplace_gate_hide_listing(v_l, 'reports', array['reports_threshold'], '{}'::jsonb, 'test');
+    reset role;
+    update public.marketplace_products
+       set approval_status = 'approved', reviewed_by = staff, reviewed_at = now()
+     where id = v_l;
+    set local role service_role;
+    delete from public.marketplace_product_media where product_id = v_l and url = s_ref || 's22-p.jpg';
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s22-n', 'S22 another', 1500),
+      array[s_ref || 's22-n.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'publish' then
+      raise warning 'VIOLATION S22: a picture a person approved stayed evidence after the listing was restored: %', v;
+      violations := violations + 1;
     end if;
   end;
 
