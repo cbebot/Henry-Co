@@ -1,10 +1,10 @@
 {
   "schema": "v1",
-  "generatedAt": "2026-10-03T04:05:35.776Z",
+  "generatedAt": "2026-10-03T05:25:59.072Z",
   "generator": "scripts/v3/hardcoded-text-scan.mjs",
   "notes": "V3-07(S3) hardcoded-text scan. packages/search-ui/ is OWNER-RESERVED and excluded entirely (memory: feedback_dashboard_search_engine_no_touch.md). See exempt.json for repo-wide allow-list.",
   "totals": {
-    "scannedFiles": 1594,
+    "scannedFiles": 1595,
     "entries": 1236,
     "counts": {
       "OK": 3,
@@ -12,7 +12,7 @@
       "EXEMPT": 131,
       "AMBIGUOUS": 52
     },
-    "durationMs": 6360
+    "durationMs": 5712
   },
   "entriesByFile": {
     "apps/account/app/(account)/play/_components/OnyxLinesBoard.tsx": [
@@ -5711,7 +5711,7 @@
     ],
     "apps/marketplace/app/admin/page.tsx": [
       {
-        "line": 33,
+        "line": 27,
         "col": 7,
         "kind": "attr:title",
         "text": "Vendor Applications",
@@ -6305,7 +6305,7 @@
     ],
     "apps/marketplace/components/marketplace/staff-resource-page.tsx": [
       {
-        "line": 71,
+        "line": 75,
         "col": 23,
         "kind": "attr:title",
         "text": "Seller applications",
@@ -6313,7 +6313,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 103,
+        "line": 108,
         "col": 107,
         "kind": "attr:placeholder",
         "text": "Moderation note",
@@ -6321,7 +6321,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 111,
+        "line": 116,
         "col": 25,
         "kind": "attr:title",
         "text": "No products are waiting.",
@@ -6329,7 +6329,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 224,
+        "line": 229,
         "col": 25,
         "kind": "attr:title",
         "text": "No notification records yet.",
@@ -6337,7 +6337,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 238,
+        "line": 243,
         "col": 23,
         "kind": "attr:title",
         "text": "Email logs",
@@ -6345,7 +6345,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 258,
+        "line": 263,
         "col": 25,
         "kind": "attr:title",
         "text": "No email records yet.",
@@ -6353,7 +6353,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 272,
+        "line": 277,
         "col": 23,
         "kind": "attr:title",
         "text": "WhatsApp logs",
@@ -6361,7 +6361,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 292,
+        "line": 297,
         "col": 25,
         "kind": "attr:title",
         "text": "No WhatsApp records yet.",
@@ -6369,7 +6369,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 362,
+        "line": 367,
         "col": 109,
         "kind": "attr:placeholder",
         "text": "Verification note",
@@ -6377,7 +6377,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 363,
+        "line": 368,
         "col": 107,
         "kind": "jsx_text",
         "text": "Verify payment",
@@ -6385,7 +6385,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 369,
+        "line": 374,
         "col": 25,
         "kind": "attr:title",
         "text": "No finance items are waiting.",
@@ -6393,7 +6393,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 388,
+        "line": 393,
         "col": 98,
         "kind": "attr:placeholder",
         "text": "Finance note",
@@ -6401,7 +6401,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 413,
+        "line": 418,
         "col": 98,
         "kind": "attr:placeholder",
         "text": "Support note",
@@ -6409,7 +6409,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 415,
+        "line": 420,
         "col": 48,
         "kind": "jsx_text",
         "text": "Manual review",
@@ -6417,7 +6417,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 416,
+        "line": 421,
         "col": 50,
         "kind": "jsx_text",
         "text": "Refund buyer",
@@ -6425,7 +6425,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 417,
+        "line": 422,
         "col": 52,
         "kind": "jsx_text",
         "text": "Release seller payout",
@@ -6433,7 +6433,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 419,
+        "line": 424,
         "col": 121,
         "kind": "attr:placeholder",
         "text": "Refund amount",
@@ -6441,7 +6441,7 @@
         "reason": "hardcoded user-visible attribute (attr:placeholder)"
       },
       {
-        "line": 441,
+        "line": 446,
         "col": 23,
         "kind": "attr:title",
         "text": "Risk signals",
@@ -6449,7 +6449,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 470,
+        "line": 475,
         "col": 25,
         "kind": "attr:title",
         "text": "No immediate moderation risks.",
@@ -6457,7 +6457,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 490,
+        "line": 495,
         "col": 25,
         "kind": "attr:title",
         "text": "No review records yet.",
@@ -6465,7 +6465,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 511,
+        "line": 516,
         "col": 25,
         "kind": "attr:title",
         "text": "No returns are open.",
@@ -6473,7 +6473,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 520,
+        "line": 525,
         "col": 23,
         "kind": "attr:title",
         "text": "Support threads",
@@ -6481,7 +6481,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 531,
+        "line": 536,
         "col": 25,
         "kind": "attr:title",
         "text": "No support threads are open.",
@@ -6489,7 +6489,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 564,
+        "line": 569,
         "col": 77,
         "kind": "jsx_text",
         "text": "Number(product.total_stock || 0)",
@@ -6497,7 +6497,7 @@
         "reason": "hardcoded JSX text content"
       },
       {
-        "line": 567,
+        "line": 572,
         "col": 23,
         "kind": "attr:title",
         "text": "Low stock",
@@ -6505,7 +6505,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 578,
+        "line": 583,
         "col": 25,
         "kind": "attr:title",
         "text": "No low-stock pressure.",
@@ -6513,7 +6513,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 592,
+        "line": 597,
         "col": 23,
         "kind": "attr:label",
         "text": "Failed notifications",
@@ -6521,7 +6521,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 593,
+        "line": 598,
         "col": 23,
         "kind": "attr:label",
         "text": "Queued notifications",
@@ -6529,7 +6529,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 594,
+        "line": 599,
         "col": 23,
         "kind": "attr:label",
         "text": "Stalled orders",
@@ -6537,7 +6537,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 609,
+        "line": 614,
         "col": 23,
         "kind": "attr:label",
         "text": "Audit entries",
@@ -6545,7 +6545,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 642,
+        "line": 647,
         "col": 25,
         "kind": "attr:title",
         "text": "Audit trail is still empty.",
@@ -6553,7 +6553,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 651,
+        "line": 656,
         "col": 23,
         "kind": "attr:title",
         "text": "Owner settings",
@@ -6561,7 +6561,7 @@
         "reason": "hardcoded user-visible attribute (attr:title)"
       },
       {
-        "line": 653,
+        "line": 658,
         "col": 23,
         "kind": "attr:label",
         "text": "Pending applications",
@@ -6569,7 +6569,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 654,
+        "line": 659,
         "col": 23,
         "kind": "attr:label",
         "text": "Open disputes",
@@ -6577,7 +6577,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 655,
+        "line": 660,
         "col": 23,
         "kind": "attr:label",
         "text": "Pending payouts",
@@ -6585,7 +6585,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 673,
+        "line": 678,
         "col": 23,
         "kind": "attr:label",
         "text": "Open disputes",
@@ -6593,7 +6593,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 674,
+        "line": 679,
         "col": 23,
         "kind": "attr:label",
         "text": "Pending payouts",
@@ -6601,7 +6601,7 @@
         "reason": "hardcoded user-visible attribute (attr:label)"
       },
       {
-        "line": 675,
+        "line": 680,
         "col": 23,
         "kind": "attr:label",
         "text": "Stalled orders",
