@@ -29,6 +29,14 @@ describe("round 4 — a person's 'no' stands, whenever it was said", () => {
     assert.ok(MIGRATION.includes("if to_regclass('public.marketplace_seller_revocations') is null then"));
   });
 
+  it("no person's decision lands between the seed and the recording trigger (round 6)", () => {
+    // The trigger exists before the seed, and the seed locks the applications first.
+    const trigger = MIGRATION.indexOf("create trigger marketplace_vendor_applications_revocation");
+    const lock = MIGRATION.indexOf("lock table public.marketplace_vendor_applications in share row exclusive mode;");
+    const seed = MIGRATION.indexOf("perform public.marketplace_gate_seed_revocations();");
+    assert.ok(trigger > 0 && lock > trigger && seed > lock);
+  });
+
   it("any person's rejection or request for changes is recorded, not only one after an approval", () => {
     assert.ok(MIGRATION.includes("  if new.status in ('rejected', 'changes_requested') and old.status is distinct from new.status then"));
   });

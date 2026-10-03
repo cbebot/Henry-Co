@@ -462,10 +462,62 @@ begin
 end;
 $$;
 
+-- AFTER UPDATE on marketplace_vendor_applications: a PERSON's new decision (a staff
+-- reviewer, a fresh review stamp, a trusted writer) that rejects an application of the
+-- account, or sends it back, is recorded — whatever the application said before (a
+-- seller's re-submission rewrites an approved row to "submitted"); one that approves
+-- lifts what stood.
+create or replace function public.marketplace_vendor_applications_revocation()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  -- (Created before the ledger table on a first apply: until it exists there is nothing
+  -- to write, and the seed that follows reads every decision committed before it.)
+  if to_regclass('public.marketplace_seller_revocations') is null then
+    return null;
+  end if;
+  if new.user_id is null
+     or new.reviewed_by is null
+     or new.reviewed_at is null
+     or new.reviewed_at is not distinct from old.reviewed_at
+     or not public.marketplace_gate_caller_is_trusted()
+     or not public.marketplace_gate_is_staff(new.reviewed_by)
+  then
+    return null; -- not a person's new decision
+  end if;
+  if new.status in ('rejected', 'changes_requested') and old.status is distinct from new.status then
+    if not exists (
+      select 1 from public.marketplace_seller_revocations r
+       where r.owner_user_id = new.user_id and r.lifted_at is null
+    ) then
+      insert into public.marketplace_seller_revocations (owner_user_id, application_id, revoked_by)
+      values (new.user_id, new.id, new.reviewed_by);
+    end if;
+  elsif new.status = 'approved' and old.status is distinct from 'approved' then
+    update public.marketplace_seller_revocations r
+       set lifted_at = now(),
+           lifted_by = new.reviewed_by
+     where r.owner_user_id = new.user_id and r.lifted_at is null;
+  end if;
+  return null;
+end;
+$$;
+
+drop trigger if exists marketplace_vendor_applications_revocation on public.marketplace_vendor_applications;
+create trigger marketplace_vendor_applications_revocation
+  after update on public.marketplace_vendor_applications
+  for each row execute function public.marketplace_vendor_applications_revocation();
+
 do $$
 begin
-  -- Created and filled ONCE. A second apply finds the table and leaves it alone.
+  -- Created and filled ONCE. A second apply finds the table and leaves it alone. The
+  -- recording trigger above already exists, and the lock keeps a person's decision from
+  -- landing between the seed's read and the end of this apply: none is missed by both.
   if to_regclass('public.marketplace_seller_revocations') is null then
+    lock table public.marketplace_vendor_applications in share row exclusive mode;
     create table public.marketplace_seller_revocations (
       id uuid primary key default gen_random_uuid(),
       owner_user_id uuid not null,
@@ -499,49 +551,6 @@ as $$
   );
 $$;
 
--- AFTER UPDATE on marketplace_vendor_applications: a PERSON's new decision (a staff
--- reviewer, a fresh review stamp, a trusted writer) that rejects an application of the
--- account, or sends it back, is recorded — whatever the application said before (a
--- seller's re-submission rewrites an approved row to "submitted"); one that approves
--- lifts what stood.
-create or replace function public.marketplace_vendor_applications_revocation()
-returns trigger
-language plpgsql
-security definer
-set search_path = public, pg_temp
-as $$
-begin
-  if new.user_id is null
-     or new.reviewed_by is null
-     or new.reviewed_at is null
-     or new.reviewed_at is not distinct from old.reviewed_at
-     or not public.marketplace_gate_caller_is_trusted()
-     or not public.marketplace_gate_is_staff(new.reviewed_by)
-  then
-    return null; -- not a person's new decision
-  end if;
-  if new.status in ('rejected', 'changes_requested') and old.status is distinct from new.status then
-    if not exists (
-      select 1 from public.marketplace_seller_revocations r
-       where r.owner_user_id = new.user_id and r.lifted_at is null
-    ) then
-      insert into public.marketplace_seller_revocations (owner_user_id, application_id, revoked_by)
-      values (new.user_id, new.id, new.reviewed_by);
-    end if;
-  elsif new.status = 'approved' and old.status is distinct from 'approved' then
-    update public.marketplace_seller_revocations r
-       set lifted_at = now(),
-           lifted_by = new.reviewed_by
-     where r.owner_user_id = new.user_id and r.lifted_at is null;
-  end if;
-  return null;
-end;
-$$;
-
-drop trigger if exists marketplace_vendor_applications_revocation on public.marketplace_vendor_applications;
-create trigger marketplace_vendor_applications_revocation
-  after update on public.marketplace_vendor_applications
-  for each row execute function public.marketplace_vendor_applications_revocation();
 
 -- Two pictures are the same picture: identical bytes, or a perceptual near-match
 -- under the precision rules of marketplace_gate_image_matches (both with real
@@ -667,10 +676,10 @@ begin
     raise exception 'marketplace_publish_guard: a listing id cannot change'
       using errcode = 'P0001', hint = 'listing_id_immutable';
   end if;
-  -- A listing of a seller's store never becomes company inventory (or stops being the
-  -- seller's): the company exemptions read that column.
+  -- A listing's inventory owner changes only inside a company store: a seller's listing
+  -- never becomes company inventory (the company exemptions read that column) — not even
+  -- after its store is gone and the column reads NULL.
   if tg_op = 'UPDATE' and new.inventory_owner_type is distinct from old.inventory_owner_type
-     and old.vendor_id is not null
      and not public.marketplace_gate_is_company_vendor(old.vendor_id)
   then
     raise exception 'marketplace_publish_guard: a seller''s listing stays the seller''s'

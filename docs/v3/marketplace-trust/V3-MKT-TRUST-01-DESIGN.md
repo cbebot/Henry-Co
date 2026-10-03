@@ -173,7 +173,9 @@ nothing.
 application of the account — "Revoke approval" included, and whatever the application said before —
 is recorded in its own table by a trigger on the decision itself: the seller's re-submission
 rewrites the application row and must not undo it. Decisions made before the gate existed are
-recorded once, when the table is first created, failing closed: every account whose latest decided
+recorded once, when the table is first created (the recording trigger is in place first and the
+seed locks the applications while it reads, so no decision made during the apply is missed), failing
+closed: every account whose latest decided
 application is not approved now — a rejection, a request for changes, or one the seller has since
 re-submitted (a row alone cannot tell that from a re-submission after an approval). While it stands,
 the account's listings go to a person (`risk_hold_active`) — a publish verdict minted before it is
@@ -192,7 +194,8 @@ already owns a store keeps that one store: the approval re-opens it as it is (it
 description and badges stay) and never opens a second one. With instant publish on, the handle a
 seller types is normalised before it is screened, saved and opened. A listing never moves to another
 store, and a seller's listing is never taken into the company's store — nor turned into company
-inventory, which the company exemptions read. The company's exemptions
+inventory, which the company exemptions read (a listing's inventory owner changes only inside a
+company store, so not after its store is gone either). The company's exemptions
 (catalogue publishing, probation, payout identity) need a company store with **no** owner; a store
 of company type that names an owner is that owner's store, and keeps its owner (deleting that
 account is refused rather than turning it into the company's store). An applicant who already owns

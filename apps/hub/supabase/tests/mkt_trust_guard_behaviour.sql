@@ -2810,7 +2810,10 @@ begin
         raise warning 'VIOLATION S5b: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
       end if;
     end;
-    update public.marketplace_products set inventory_owner_type = 'company' where id = v_pid;
+    -- (company inventory from the start: a seller's orphaned listing never becomes company inventory — S20c)
+    insert into public.marketplace_products (slug, vendor_id, title, sku, base_price, approval_status, inventory_owner_type)
+      values ('mkt-trust-t-s5-co-orphan', null, 'S5 company item', 'SKU-mkt-trust-t-s5-co-orphan', 1500, 'draft', 'company')
+      returning id into v_pid;
     begin
       update public.marketplace_products set vendor_id = vc where id = v_pid;
     exception when others then
@@ -3245,6 +3248,20 @@ begin
     insert into public.marketplace_products (slug, vendor_id, title, sku, base_price, approval_status, inventory_owner_type)
       values ('mkt-trust-t-s20b', vb, 'S20b draft', 'SKU-mkt-trust-t-s20b', 1500, 'draft', 'company')
       returning id into v_l;
+    -- S20c. a seller's listing whose store reference is emptied still never becomes company inventory
+    insert into public.marketplace_products (slug, vendor_id, title, sku, base_price, approval_status)
+      values ('mkt-trust-t-s20c', va, 'S20c draft', 'SKU-mkt-trust-t-s20c', 1500, 'draft')
+      returning id into v_pid;
+    update public.marketplace_products set vendor_id = null where id = v_pid;
+    begin
+      update public.marketplace_products set inventory_owner_type = 'company' where id = v_pid;
+      raise warning 'VIOLATION S20c: a store-less seller listing became company inventory'; violations := violations + 1;
+    exception when others then
+      get stacked diagnostics v_hint = pg_exception_hint;
+      if v_hint is distinct from 'listing_store_immutable' then
+        raise warning 'VIOLATION S20c: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+      end if;
+    end;
     begin
       update public.marketplace_products set vendor_id = vc where id = v_l;
       raise warning 'VIOLATION S20b: a listing in a seller''s store was re-homed into the company store'; violations := violations + 1;
