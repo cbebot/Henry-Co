@@ -2402,6 +2402,17 @@ begin
     raise warning 'VIOLATION R10d2: a revoked seller''s re-application was approved by the gate: % (approved %)', v, v_n;
     violations := violations + 1;
   end if;
+  -- a status write that is not a person's new decision (the stamp unchanged) lifts nothing
+  update public.marketplace_vendor_applications set status = 'approved' where id = v_app;
+  set local role service_role;
+  v := public.marketplace_gate_record_listing_verdict(
+    a_user, va, public.mkt_trust_test_listing('mkt-trust-t-r10', 'R10 clean', 1500),
+    '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+  reset role;
+  if v ->> 'outcome' = 'publish' then
+    raise warning 'VIOLATION R10d3: a bare status write lifted a person''s revocation'; violations := violations + 1;
+  end if;
+  update public.marketplace_vendor_applications set status = 'submitted' where id = v_app;
   -- a person approving again lifts it
   update public.marketplace_vendor_applications
      set status = 'approved', reviewed_by = staff, reviewed_at = now()
@@ -2695,6 +2706,17 @@ begin
     insert into public.marketplace_listing_enforcement (product_id, vendor_id, slug, kind, reasons)
       values (v_l, va, 'mkt-trust-t-s2-y', 'reports', array['reports_threshold'])
       returning id into v_id;
+    -- a live listing a person has to decide is no "store-wide" evidence
+    insert into public.marketplace_image_fingerprints (ref, sha256, phash, phash_aux, vendor_id)
+      values (s_ref || 's2-chart.jpg', sh_c, ph_far, 0, va);
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s2-chart', 'S2 coat', 1500),
+      array[s_ref || 's2-chart.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S2c: a held live listing was taken as store-wide evidence: %', v; violations := violations + 1;
+    end if;
     insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
       values ('mkt-trust-t-s2-y', va, 'S2 Y', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s2-y', 1500, 'submitted')
       returning id into v_pid;
@@ -2845,6 +2867,20 @@ begin
     reset role;
     if sqlerrm not like 'marketplace_payout_identity_guard:%' then
       raise warning 'VIOLATION S7b: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+
+  -- ---- S8. a store's owner is never emptied while the account exists
+  begin
+    set local role service_role;
+    update public.marketplace_vendors set owner_user_id = null where id = vb;
+    reset role;
+    raise warning 'VIOLATION S8: a store was emptied of an owner whose account exists'; violations := violations + 1;
+  exception when others then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    reset role;
+    if v_hint is distinct from 'store_owner_immutable' then
+      raise warning 'VIOLATION S8: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
     end if;
   end;
 

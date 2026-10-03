@@ -106,6 +106,7 @@ and writes happen only inside `SECURITY DEFINER` functions executable by `servic
 - `marketplace_seller_probation` — one row per instantly-onboarded store.
 - `marketplace_listing_enforcement` — reversible take-downs (`active` → `lifted` | `upheld`).
 - `marketplace_image_fingerprints` — SHA-256 + a perceptual hash per first-party image.
+- `marketplace_seller_revocations` — a person's withdrawal of a seller's approval, and its lifting.
 
 Guard on `marketplace_products` (BEFORE INSERT OR UPDATE, every role):
 
@@ -151,18 +152,47 @@ TRUNCATE privileges on the guarded tables.
 **A person's decision binds the engine.** An open reports or risk take-down, one a person upheld,
 and a person's own rejection or request for changes all stand against the listing until a person
 approves it. They are matched on the listing id and on store + handle, so deleting the row and
-creating it again under the same handle does not shed them, and listing the same item again under a
-new handle with the same picture is held too. Only a genuine staff decision counts as one — a bare
-status write records nothing.
+creating it again under the same handle does not shed them; a listing under such a hold keeps its
+handle while it stands, and an approval lifts handle-bound holds only of listings that no longer
+exist. Listing the same item again under any handle is held too: the held listing's pictures are
+kept with the hold (bytes and perceptual hash), so removing them from the held listing, deleting it,
+or re-saving the picture does not shed it. A picture the listing was itself approved with, or one
+that is also on another live listing of the store (a size chart, a logo), is not counted. Only a
+genuine staff decision counts as a decision — a bare status write records nothing.
+
+**A person's revocation binds the engine too.** "Revoke approval" — a person rejecting, or sending
+back, an application that was approved — is recorded in its own table by a trigger on the decision
+itself: the seller's re-submission rewrites the application row and must not undo it. While it
+stands, the engine publishes nothing for the account's stores and opens no store for it; a person's
+approval of an application of the same account lifts it. Listings already live stay live, as they
+always did: a person decides about them.
 
 **Stores.** A store's owner never changes and its type never changes by UPDATE: the legacy approval
 writes the store with an upsert on its handle, and an application naming another store's handle
-would otherwise hand that store — its catalogue and its balance — to the applicant. Both approval
-paths also refuse such a handle up front, and grant no seller role unless the store write landed.
+would otherwise hand that store — its catalogue and its balance — to the applicant. An owner is set
+only when a store is created; the one change allowed is the owner's account being deleted, which
+leaves the store with no owner (and no payouts). Both approval paths refuse such a handle up front —
+in any letter case — and grant no seller role unless the store write landed. An applicant who
+already owns a store keeps that one store: the approval re-opens it as it is (its ratings, counters,
+description and badges stay) and never opens a second one. With instant publish on, the handle a
+seller types is normalised before it is screened, saved and opened. A listing never moves to another
+store. The company's exemptions (catalogue publishing, probation, payout identity) need a company
+store with **no** owner; a store of company type that names an owner is that owner's store.
 
 **Pictures.** The media and variant guards lock the listing row while they read it, so a picture or
 a variant cannot slip onto a listing whose publish is still in flight in another transaction. A
-picture is never moved off a live listing, and a live listing is never left without a picture.
+picture is never moved off a live listing, and a live listing is never left without a picture (the
+last-picture check takes the row FOR UPDATE, so two deletes of the last two pictures queue instead
+of passing each other).
+
+**References.** Deleting a category, brand or store that a live listing uses would clear the
+reference on the listing — a content change with no decision behind it. It is refused, and the
+refusal names the cause (`live_listing_reference`): take the listing out of the catalogue or move it
+first.
+
+**The screened store profile.** Instant onboarding opens the store from the application row only if
+the row still hashes to what was screened. Each field (handle, name, story) is digested on its own,
+so text cannot slide from one field into the next without changing the hash.
 
 **Variants.** `marketplace_product_variants` is in front of buyers (options, price, SKU) and no rule
 screens it. Until the engine does, the position is default-deny: the engine never publishes a
@@ -176,12 +206,13 @@ this binds direct writes and future routes.
 Applies to every store opened after the gate is installed — by the gate or by a person. Adversarial
 round 2 showed why "a person approved it" cannot exempt a store: the review queue never showed the
 identity documents, and any string passed as one. A database trigger on the store row enrols it,
-whichever path created it (and again if an ownerless store is later given an owner). Stores that
-existed before the gate are untouched. Ends when identity is verified **and** 3 orders are
+whichever path created it. Stores that existed before the gate are untouched. Ends when identity is verified **and** 3 orders are
 delivered **and** 14 days have passed.
 
 An application a person has already rejected, or sent back for changes, is never opened by the
-gate: submitting it again returns it to a person.
+gate: submitting it again returns it to a person. The same holds for an account whose approval a
+person withdrew. An account that already owns a store is answered as such first: its new application
+is closed as approved only when that store is open and its approval stands.
 
 | Cap | Value |
 |---|---|
@@ -203,9 +234,10 @@ the launch plan) still applies on top; it is commercial, not a trust rule.
 
 - "Verified" requires a staff-reviewed identity document as well as the profile flag — that flag
   alone is writable by its own user on production;
-- the exceptions are the company's own store, and a store that existed **before** the gate was
-  installed: the migration records each of those once, as a waiver bound to the owner it had then.
-  The waiver stops applying if the store's owner is not that account, and nothing can add one;
+- the exceptions are the company's own store (company type, no owner), and a store that existed
+  **before** the gate was installed: the migration records each of those once, as a waiver bound to
+  the owner it had then. The waiver stops applying if the store's owner is not that account, and
+  nothing can add one. A store whose owner's account was deleted has no owner, so it has no payouts;
 - an open request cannot be re-pointed at another store, and a status is read as a person reads it
   ("Requested", " requested" and "requested" are the same request; only plainly closed statuses —
   rejected, frozen, cancelled and the like — are not checked);
@@ -222,9 +254,10 @@ deterministic evidence:
    unambiguous rule. A listing a *person* approved is never taken down by the sweep: it is sent
    back to a person (the original approver survives any number of clean re-scans);
 2. **reports** — three independent buyers within 14 days. Other sellers, anonymous reports and
-   accounts less than a week old do not count, so neither a competitor nor a handful of new
-   accounts can pull a listing. The age is the account's own (auth), not a profile date its owner
-   can edit; if the reporters cannot be checked, nothing is taken down on that pass;
+   accounts that were less than a week old when they reported do not count, so neither a
+   competitor nor a handful of new accounts can pull a listing — not even by waiting a week. The age
+   is the account's own (auth), not a profile date its owner can edit; if the reporters cannot be
+   checked, nothing is taken down on that pass;
 3. **risk** — a staff-applied V3-40 hold/freeze on the listing (mirrored, never created).
 
 A take-down moves the listing to `under_review`, records why, notifies the seller, and blocks
@@ -306,15 +339,20 @@ behind the flag are deliberate and inert:
 - the cart page and the finance page show a notice for an `?error=` code only the gate redirects
   with; the vendor payouts page has a fallback sentence for the same codes;
 - the hub gains an owner page (Operations → Marketplace trust), its navigation entry and its
-  command-palette entry. The page says the ledger is not available until the migration is applied.
+  command-palette entry. The page says the ledger is not available until the migration is applied;
+- both seller-approval paths (marketplace console and hub): an applicant who already owns a store
+  has that store re-opened as it is — the legacy upsert reset its ratings and counters, and could
+  open a second store — and a handle that matches another store in any letter case is refused with
+  a notice, which now also shows on the console's seller-application pages.
 
 With the migration applied and the flag OFF, the guard is satisfied by today's flows: sellers only
 ever write `draft`/`submitted`/`under_review`, and the human approval paths already stamp
 `reviewed_by`/`reviewed_at`. What the database itself now refuses, whichever way the flag points:
-a change to a live listing's content without a decision behind it, a change of a listing's id, a
-change to the variants of a live listing, removing the last picture of a live listing, a change of a
-store's owner or type, and a payout for any store opened after the gate whose owner's identity is
-not verified. That last one is deliberate and applies with the flag off too: no path that opens a
+a change to a live listing's content without a decision behind it, a change of a listing's id or
+store, the rename of a listing a person has to decide, a change to the variants of a live listing,
+removing the last picture of a live listing, deleting a category, brand or store a live listing uses,
+a change of a store's owner or type (other than the owner's account being deleted), and a payout for
+any store opened after the gate whose owner's identity is not verified. That last one is deliberate and applies with the flag off too: no path that opens a
 store ever reviewed identity documents, so the payout is where identity is checked. Stores that
 existed before the gate keep the payout path they had.
 

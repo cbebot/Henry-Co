@@ -114,7 +114,10 @@ already_applied(item, ok, why) as (
   values
     ('state: gate ledger already exists',
      to_regclass('public.marketplace_listing_gate_verdicts') is not null,
-     'true -> the migration was applied before (it is idempotent; re-applying is safe)')
+     'true -> the migration was applied before (it is idempotent; re-applying is safe)'),
+    ('state: no store of company type names an owner',
+     not exists (select 1 from public.marketplace_vendors v where v.owner_type = 'company' and v.owner_user_id is not null),
+     'no -> those stores count as their owner''s stores (probation, identity at payout); tell the engineer which')
 )
 select item, verdict, why
 from (

@@ -124,9 +124,10 @@ of the catalogue, change, approve). Stock and status of a variant can be changed
 
 **Deleting a category, a brand or a store that a live listing points at.** Those deletes clear the
 reference on the listing, which is a content change with no decision behind it, so the database
-refuses the delete. Take the listings out of the catalogue first (or move them), then delete.
+refuses the delete, and its message says so (`live_listing_reference`). Take the listings out of
+the catalogue first (or move them), then delete.
 
-**A listing's id cannot be changed.**
+**A listing's id and store cannot be changed.**
 
 **Every store opened from now on needs a verified identity before its first payout** — whether the
 gate opened it or a person approved it, and with the flag off too. Nobody reviews identity
@@ -135,12 +136,27 @@ is checked. Stores that already exist when you apply the migration keep the payo
 the migration records each of them once, against its current owner. The seller verifies identity
 from their account (Verification); staff review it as they do today.
 
-**A store's owner and type are fixed.** An application that names the handle of another store is
-refused when you approve it, with a notice saying so. The company's own store is never handed to an
-account.
+**A store's owner and type are fixed.** An owner is set only when a store is created. Deleting the
+owner's account leaves the store with no owner — and then no payouts. An application that names the
+handle of another store, in any letter case, is refused when you approve it, with a notice saying
+so. The company's own store (company type, no owner) is never handed to an account; a store of
+company type that names an owner is treated as that owner's store (probation, identity at payout).
+
+**Approving an application from an account that already has a store** re-opens that store as it is:
+its ratings, counters, description and badges stay, and no second store is opened. (Before the
+migration's code, the approval rewrote the store and reset those numbers.) This applies with the
+flag off too.
+
+**"Revoke approval" is recorded.** Rejecting, or sending back, an application you had approved is
+recorded by the database. With the flag on, the gate then publishes nothing for that account's
+stores and opens no store for it until you approve an application of that account again. Listings
+already live stay live — take them out of the catalogue if you need to.
 
 **A listing a person rejected stays a person's decision.** With the flag on, a seller pressing
 Publish again on a listing you rejected (or sent back for changes) is held for you, not published.
+The same goes for a listing taken down on buyer reports: its pictures are kept with the hold, so the
+same item listed again — under another handle, with the same picture or a re-saved copy of it — is
+held for you too. Such a listing keeps its handle until you decide.
 
 **The dev demo seed** (`apps/marketplace/scripts/seed-marketplace.mjs`) inserts demo vendor
 listings as already approved; against a database with this migration those rows are refused. The
