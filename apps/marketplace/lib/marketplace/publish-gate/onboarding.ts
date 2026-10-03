@@ -21,11 +21,11 @@ import { createHash } from "node:crypto";
 import { emitGateEvent, outcomeToEvent } from "./events";
 import type { GateVerdict } from "./policy";
 import { GATE_ENGINE_VERSION, composeOutcome, normalizeReasons, type GateReasonCode } from "./reasons";
-import { guardHint, isMissingRpc, readStaffRiskHold, type GateAdmin } from "./server";
+import { guardHint, isMissingRpc, readSellerGateState, readStaffRiskHold, type GateAdmin } from "./server";
 
 export type InstantOnboardResult =
   | { kind: "opened"; vendorId: string; slug: string; identityVerified: boolean }
-  | { kind: "already_seller"; vendorId: string | null; vendorStatus: string | null }
+  | { kind: "already_seller"; vendorId: string | null; vendorStatus: string | null; applicationApproved: boolean }
   | {
       kind: "review";
       why: "held" | "handle_taken" | "prior_decision" | "profile_changed" | "gate_not_installed" | "error";
@@ -36,14 +36,17 @@ export type InstantOnboardResult =
  * The fingerprint of a store profile AS SCREENED: handle, name and story. The
  * database opens the store from the application row, and refuses unless the row
  * still hashes to this — so a save that lands between the screen and the opening
- * cannot put unscreened text on a live store. Must match the SQL exactly:
- * sha256(lower(handle) || '|' || name || '|' || story), UTF-8, hex.
+ * cannot put unscreened text on a live store. Each field is digested on its own, so
+ * text cannot slide from one field into the next without changing the hash. Must
+ * match the SQL exactly: sha256(hex sha256(lower(handle)) || hex sha256(name) ||
+ * hex sha256(story)), UTF-8, hex.
  */
 export function screenedProfileHash(profile: { slug: string; name: string; story: string | null }): string {
+  const digest = (value: string) => createHash("sha256").update(value, "utf8").digest("hex");
   const slug = String(profile.slug ?? "").trim().toLowerCase();
   const name = String(profile.name ?? "").trim();
   const story = String(profile.story ?? "");
-  return createHash("sha256").update(`${slug}|${name}|${story}`, "utf8").digest("hex");
+  return digest(`${digest(slug)}${digest(name)}${digest(story)}`);
 }
 
 const TRUST_FLAG_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
@@ -95,6 +98,11 @@ export async function instantOnboard(
     moderationDetail: ReadonlyArray<string>;
     /** screenedProfileHash() of the handle, name and story that verdict was given for. */
     profileHash: string;
+    /**
+     * A person already rejected this account's application, or sent it back for
+     * changes. The gate does not decide it again: it goes back to a person.
+     */
+    priorDecision?: boolean;
   },
 ): Promise<InstantOnboardResult> {
   const codes: GateReasonCode[] = [...input.verdict.reasons];
@@ -105,17 +113,40 @@ export async function instantOnboard(
   // re-approve — a store with no gate in front of it).
   const owned = await readOwnedStore(admin, input.actorId);
   if (owned) {
-    try {
-      await admin
-        .from("marketplace_vendor_applications")
-        .update({ status: "approved" } as never)
-        .eq("id", input.applicationId)
-        .eq("user_id", input.actorId) // only the actor's own application, whatever id was passed
-        .eq("status", "submitted");
-    } catch {
-      // the answer below does not depend on it
+    // The application is closed as "approved" only when that store is open and no
+    // person has withdrawn the owner's approval (the seller state reads "revoked"
+    // then, and the database answers the same way); otherwise it stays with a person.
+    const standing = await readSellerGateState(admin, owned.id, null);
+    const vendorStatus = standing.state?.vendor.status ?? null;
+    let applicationApproved = false;
+    if (vendorStatus === "approved") {
+      try {
+        const { data } = await admin
+          .from("marketplace_vendor_applications")
+          .update({ status: "approved" } as never)
+          .eq("id", input.applicationId)
+          .eq("user_id", input.actorId) // only the actor's own application, whatever id was passed
+          .eq("status", "submitted")
+          .select("id");
+        applicationApproved = Array.isArray(data) && data.length > 0;
+      } catch {
+        // the answer below does not depend on it
+      }
     }
-    return { kind: "already_seller", vendorId: owned.id, vendorStatus: owned.status };
+    return { kind: "already_seller", vendorId: owned.id, vendorStatus: vendorStatus ?? owned.status, applicationApproved };
+  }
+
+  // A person already decided this account's application: it goes back to a person.
+  if (input.priorDecision) {
+    const reasons = normalizeReasons(codes);
+    await emitGateEvent({
+      admin,
+      name: "henry.marketplace.seller_gate.decided",
+      outcome: outcomeToEvent("hold"),
+      actorId: input.actorId,
+      payload: { applicationId: input.applicationId, why: "prior_decision", path: "legacy_review" },
+    });
+    return { kind: "review", why: "prior_decision", reasons };
   }
 
   // A staff-applied V3-40 hold/freeze, or open trust flags, send the application
@@ -200,10 +231,13 @@ export async function instantOnboard(
   }
 
   if (payload.why === "already_seller") {
+    // (A store appeared between the read above and this call.) The database marked
+    // the application only if that store is open and its approval stands.
     return {
       kind: "already_seller",
       vendorId: typeof payload.vendor_id === "string" ? payload.vendor_id : null,
       vendorStatus: typeof payload.vendor_status === "string" ? payload.vendor_status : null,
+      applicationApproved: false,
     };
   }
 

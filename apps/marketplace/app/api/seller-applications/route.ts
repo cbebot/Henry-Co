@@ -21,6 +21,7 @@ import { emitGateEvent } from "@/lib/marketplace/publish-gate/events";
 import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
 import { describeReasons } from "@/lib/marketplace/publish-gate/messages";
 import { instantOnboard, screenedProfileHash } from "@/lib/marketplace/publish-gate/onboarding";
+import { storeHandle } from "@/lib/marketplace/publish-gate/store-handle";
 import { evaluateStorePolicy, type StoreProfileVerdict } from "@/lib/marketplace/publish-gate/policy";
 import { syncVendorTrustScore } from "@/lib/marketplace/trust";
 
@@ -144,8 +145,16 @@ export async function POST(request: Request) {
 
   const payload = (await request.json().catch(() => ({}))) as SellerApplicationPayload;
   const mode = payload.mode === "submit" ? "submit" : "draft";
+  // V3-MKT-TRUST-01 — with instant publish on, identity documents are not a gate to
+  // SELLING any more: identity is checked at the first payout instead. With the
+  // flag off this is false and every check below runs exactly as before.
+  const instantPublish = isInstantPublishEnabled();
   const storeName = String(payload.storeName || "").trim();
-  const storeSlug = String(payload.storeSlug || (storeName ? slugify(storeName) : "")).trim();
+  const typedSlug = String(payload.storeSlug || (storeName ? slugify(storeName) : "")).trim();
+  // With instant publish on, the handle is the one the store will carry (lower case,
+  // letters, digits and single hyphens, 2 to 63 long): what is screened, saved and
+  // opened is one handle, and a look-alike of another store's handle is that handle.
+  const storeSlug = instantPublish ? storeHandle(typedSlug, storeName) : typedSlug;
   const legalName = String(payload.legalName || "").trim();
   const phone = String(payload.phone || "").trim();
   const categoryFocus = String(payload.categoryFocus || "").trim();
@@ -158,10 +167,6 @@ export async function POST(request: Request) {
       ? payload.plan
       : null;
   const missingCriticalDocuments = ["founderIdentity", "payoutProof"].filter((key) => !documents[key]?.fileUrl);
-  // V3-MKT-TRUST-01 — with instant publish on, identity documents are not a gate to
-  // SELLING any more: identity is checked at the first payout instead. With the
-  // flag off this is false and every check below runs exactly as before.
-  const instantPublish = isInstantPublishEnabled();
 
   if (mode === "submit" && (!storeName || !storeSlug || !legalName)) {
     return NextResponse.json({ error: "Store identity is incomplete." }, { status: 400 });
@@ -351,16 +356,10 @@ export async function POST(request: Request) {
   // legacy notifications below run unchanged.
   let onboarding: { opened: boolean; notice: { title: string; body: string } } | null = null;
   // An application a person has already rejected, or sent back for changes, is not
-  // re-decided by the gate: submitting it again returns it to a person. (The
-  // database refuses it too — this only avoids asking.)
+  // re-decided by the gate: submitting it again returns it to a person (the database
+  // refuses it too). An account that already owns a store is answered as such first.
   const decidedByPerson = existingStatus === "rejected" || existingStatus === "changes_requested";
-  if (instantPublish && mode === "submit" && storeVerdict && decidedByPerson) {
-    const trustCopy = getMarketplaceTrustCopy(gateLocale);
-    onboarding = {
-      opened: false,
-      notice: { title: trustCopy.result.heldTitle, body: trustCopy.onboarding.heldBody },
-    };
-  } else if (instantPublish && mode === "submit" && storeVerdict) {
+  if (instantPublish && mode === "submit" && storeVerdict) {
     const trustCopy = getMarketplaceTrustCopy(gateLocale);
     const result = await instantOnboard(admin, {
       actorId: viewer.user.id,
@@ -369,16 +368,18 @@ export async function POST(request: Request) {
       moderationDetail: storeVerdict.moderationDetail,
       // What was screened above — the store is opened from the saved row only if it still says this.
       profileHash: screenedProfileHash({ slug: storeSlug, name: storeName, story: story || null }),
+      priorDecision: decidedByPerson,
     });
     if (result.kind === "already_seller") {
-      // The account already has a store: nothing was opened and nothing is queued.
-      // The database put the application back to "approved"; answer with that.
+      // The account already has a store: nothing was opened. The application is closed
+      // as "approved" only when that store is open and its approval stands; otherwise
+      // it stays with a person.
       revalidatePath("/account/seller-application");
       revalidatePath("/vendor");
       return NextResponse.json({
         ok: true,
         mode,
-        application: { ...application, status: "approved" },
+        application: { ...application, status: result.applicationApproved ? "approved" : application.status },
         onboarding: { opened: result.vendorStatus === "approved", existing: true },
       });
     }

@@ -165,6 +165,10 @@ create index if not exists marketplace_listing_enforcement_vendor_idx
   on public.marketplace_listing_enforcement (vendor_id, created_at desc);
 
 alter table public.marketplace_listing_enforcement add column if not exists slug text;
+-- The held listing's pictures as they were when the hold was placed (ref, sha256 and
+-- the perceptual masks). The "same item listed again" check reads them from here, so
+-- removing the pictures from the held listing — or deleting it — does not shed the hold.
+alter table public.marketplace_listing_enforcement add column if not exists media_snapshot jsonb not null default '[]'::jsonb;
 alter table public.marketplace_listing_enforcement drop constraint if exists marketplace_listing_enforcement_kind_check;
 alter table public.marketplace_listing_enforcement add constraint marketplace_listing_enforcement_kind_check
   check (kind in ('policy', 'reports', 'risk', 'staff_decision'));
@@ -370,7 +374,7 @@ set search_path = public, pg_temp
 as $$
   select p_vendor_id is not null and exists (
     select 1 from public.marketplace_vendors v
-    where v.id = p_vendor_id and v.owner_type = 'company'
+    where v.id = p_vendor_id and v.owner_type = 'company' and v.owner_user_id is null
   );
 $$;
 
@@ -411,6 +415,133 @@ as $$
   );
 $$;
 
+-- A person withdrew a seller's approval ("Revoke approval": an application that was
+-- approved, rejected or sent back by marketplace staff). Recorded here, not read off
+-- the application row: the seller's own re-submission rewrites that row's status,
+-- and must not undo what a person decided. While it stands, the engine publishes
+-- nothing for the account's stores — a person decides. A person's approval of an
+-- application of the same account lifts it.
+create table if not exists public.marketplace_seller_revocations (
+  id uuid primary key default gen_random_uuid(),
+  owner_user_id uuid not null,
+  application_id uuid,
+  revoked_by uuid,
+  revoked_at timestamptz not null default now(),
+  lifted_by uuid,
+  lifted_at timestamptz
+);
+create index if not exists marketplace_seller_revocations_open_idx
+  on public.marketplace_seller_revocations (owner_user_id)
+  where lifted_at is null;
+alter table public.marketplace_seller_revocations enable row level security;
+revoke all on public.marketplace_seller_revocations from public, anon, authenticated, service_role;
+grant select on public.marketplace_seller_revocations to service_role;
+
+create or replace function public.marketplace_gate_owner_revoked(p_owner uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select p_owner is not null and exists (
+    select 1
+      from public.marketplace_seller_revocations r
+     where r.owner_user_id = p_owner and r.lifted_at is null
+  );
+$$;
+
+-- AFTER UPDATE on marketplace_vendor_applications: a PERSON's new decision (a staff
+-- reviewer, a fresh review stamp, a trusted writer) that takes an approval back is
+-- recorded; one that approves lifts what stood.
+create or replace function public.marketplace_vendor_applications_revocation()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  if new.user_id is null
+     or new.reviewed_by is null
+     or new.reviewed_at is null
+     or new.reviewed_at is not distinct from old.reviewed_at
+     or not public.marketplace_gate_caller_is_trusted()
+     or not public.marketplace_gate_is_staff(new.reviewed_by)
+  then
+    return null; -- not a person's new decision
+  end if;
+  if old.status = 'approved' and new.status in ('rejected', 'changes_requested') then
+    insert into public.marketplace_seller_revocations (owner_user_id, application_id, revoked_by)
+    values (new.user_id, new.id, new.reviewed_by);
+  elsif new.status = 'approved' and old.status is distinct from 'approved' then
+    update public.marketplace_seller_revocations r
+       set lifted_at = now(),
+           lifted_by = new.reviewed_by
+     where r.owner_user_id = new.user_id and r.lifted_at is null;
+  end if;
+  return null;
+end;
+$$;
+
+drop trigger if exists marketplace_vendor_applications_revocation on public.marketplace_vendor_applications;
+create trigger marketplace_vendor_applications_revocation
+  after update on public.marketplace_vendor_applications
+  for each row execute function public.marketplace_vendor_applications_revocation();
+
+-- Two pictures are the same picture: identical bytes, or a perceptual near-match
+-- under the precision rules of marketplace_gate_image_matches (both with real
+-- structure, at most 4 of the 128 mask bits apart).
+create or replace function public.marketplace_gate_pictures_alike(
+  a_sha256 text, a_phash bigint, a_aux bigint,
+  b_sha256 text, b_phash bigint, b_aux bigint
+) returns boolean
+language sql
+immutable
+set search_path = public, pg_temp
+as $$
+  select coalesce(
+    (a_sha256 is not null and a_sha256 = b_sha256)
+    or (
+      a_phash is not null and a_aux is not null and b_phash is not null and b_aux is not null
+      and bit_count((a_phash | a_aux)::bit(64)) >= 16
+      and bit_count((b_phash | b_aux)::bit(64)) >= 16
+      and bit_count((a_phash # b_phash)::bit(64)) + bit_count((a_aux # b_aux)::bit(64)) <= 4
+    ), false);
+$$;
+
+-- A listing's pictures with their fingerprints: what is attached now, and what its
+-- last approval (engine or staff) covered.
+create or replace function public.marketplace_gate_listing_pictures(p_product_id uuid)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  with refs as (
+    select m.url as ref
+      from public.marketplace_product_media m
+     where m.product_id = p_product_id
+    union
+    select unnest(s.media_refs)
+      from (
+        select g.media_refs
+          from public.marketplace_listing_gate_verdicts g
+         where g.product_id = p_product_id
+           and g.subject_type = 'listing'
+           and g.outcome = 'publish'
+           and g.consumed_at is not null
+         order by g.consumed_at desc, g.created_at desc
+         limit 1
+      ) s
+  )
+  select coalesce(jsonb_agg(jsonb_build_object(
+           'ref', r.ref, 'sha256', f.sha256, 'phash', f.phash, 'phash_aux', f.phash_aux)), '[]'::jsonb)
+    from refs r
+    left join public.marketplace_image_fingerprints f on f.ref = r.ref
+   where r.ref is not null;
+$$;
+
 -- ---------------------------------------------------------------------------
 -- 4. THE GUARD — BEFORE INSERT OR UPDATE on marketplace_products.
 --    Validates only. Consumption / recording happens in the AFTER trigger,
@@ -441,6 +572,27 @@ begin
   if tg_op = 'UPDATE' and new.id is distinct from old.id then
     raise exception 'marketplace_publish_guard: a listing id cannot change'
       using errcode = 'P0001', hint = 'listing_id_immutable';
+  end if;
+  -- Nor does the store it belongs to: a listing (and the reviews on it) is never
+  -- adopted by another store. The store's own deletion empties the column — refused
+  -- further down while the listing is live. Company catalogue may be re-homed to a
+  -- company store by a trusted writer.
+  if tg_op = 'UPDATE' and new.vendor_id is distinct from old.vendor_id and new.vendor_id is not null
+     and not (new.inventory_owner_type = 'company'
+              and public.marketplace_gate_caller_is_trusted()
+              and public.marketplace_gate_is_company_vendor(new.vendor_id))
+  then
+    raise exception 'marketplace_publish_guard: a listing cannot move to another store'
+      using errcode = 'P0001', hint = 'listing_store_immutable';
+  end if;
+  -- A listing a person has to decide keeps its handle while that stands: the hold is
+  -- bound to the handle too, and a handle freed by a rename could be taken by another
+  -- listing.
+  if tg_op = 'UPDATE' and new.slug is distinct from old.slug
+     and public.marketplace_gate_human_hold(old.id, old.vendor_id, old.slug)
+  then
+    raise exception 'marketplace_publish_guard: a listing under review by a person keeps its handle'
+      using errcode = 'P0001', hint = 'listing_handle_held';
   end if;
 
   -- 1. Not live after this write: unconstrained.
@@ -580,6 +732,19 @@ begin
     return new;
   end if;
 
+  -- A foreign key emptying a reference of a live listing (its store, category or brand
+  -- is being deleted) changes what buyers see with no decision behind it. Refused like
+  -- any such change — with the cause named.
+  if tg_op = 'UPDATE' and v_was_live and (
+       (old.vendor_id is not null and new.vendor_id is null)
+       or (old.category_id is not null and new.category_id is null)
+       or (old.brand_id is not null and new.brand_id is null)
+     )
+  then
+    raise exception 'marketplace_publish_guard: listing "%" is live and uses the store, category or brand being removed; take it out of the catalogue or move it first', new.slug
+      using errcode = 'P0001', hint = 'live_listing_reference';
+  end if;
+
   if v_human_hold then
     raise exception 'marketplace_publish_guard: listing "%" has an open enforcement hold', new.slug
       using errcode = 'P0001', hint = 'enforcement_hold_active';
@@ -631,16 +796,21 @@ begin
          set status = 'upheld',
              resolved_at = now(),
              resolved_by = new.reviewed_by,
-             resolution = 'upheld_by_staff'
+             resolution = 'upheld_by_staff',
+             media_snapshot = e.media_snapshot || public.marketplace_gate_listing_pictures(new.id)
        where e.product_id = new.id and e.status = 'active';
-      if not public.marketplace_gate_human_hold(new.id, new.vendor_id, new.slug) then
+      -- Every listing a person turned down has its own row, with its pictures.
+      if not exists (
+        select 1 from public.marketplace_listing_enforcement e
+         where e.product_id = new.id and e.kind <> 'policy' and e.status in ('active', 'upheld')
+      ) then
         insert into public.marketplace_listing_enforcement
           (product_id, vendor_id, slug, kind, status, reasons, evidence, prior_status, engine_version,
-           resolved_at, resolved_by, resolution)
+           resolved_at, resolved_by, resolution, media_snapshot)
         values
           (new.id, new.vendor_id, new.slug, 'staff_decision', 'upheld', '{}'::text[],
            jsonb_build_object('decision', new.approval_status), coalesce(old.approval_status, 'draft'), 'db_guard',
-           now(), new.reviewed_by, 'upheld_by_staff');
+           now(), new.reviewed_by, 'upheld_by_staff', public.marketplace_gate_listing_pictures(new.id));
       end if;
     end if;
     return null;
@@ -742,7 +912,9 @@ begin
            resolved_by = new.reviewed_by,
            resolution = 'restored_by_staff'
      where e.status in ('active', 'upheld')
-       and (e.product_id = new.id or (e.vendor_id = new.vendor_id and e.slug = new.slug));
+       and (e.product_id = new.id
+            or (e.vendor_id = new.vendor_id and e.slug = new.slug
+                and not exists (select 1 from public.marketplace_products p where p.id = e.product_id)));
   end if;
 
   return null;
@@ -861,7 +1033,7 @@ begin
     into v_status, v_owner_type, v_vendor
     from public.marketplace_products p
    where p.id = old.product_id
-     for share;
+     for update; -- not FOR SHARE: two deletes of the last two pictures must queue, not pass each other
   if not found or v_status is distinct from 'approved' then
     return old; -- not live, or the listing itself is being deleted
   end if;
@@ -1047,7 +1219,8 @@ begin
   return jsonb_build_object(
     'vendor', jsonb_build_object(
       'id', v_vendor.id,
-      'status', v_vendor.status,
+      -- A store whose owner's approval a person revoked reads as not active.
+      'status', case when public.marketplace_gate_owner_revoked(v_vendor.owner_user_id) then 'revoked' else v_vendor.status end,
       'owner_user_id', v_vendor.owner_user_id,
       'owner_type', v_vendor.owner_type,
       'seller_tier', v_vendor.seller_tier
@@ -1115,6 +1288,7 @@ declare
   v_id uuid;
   v_expires timestamptz := null;
   v_media text[] := coalesce(p_media_refs, '{}'::text[]);
+  v_standing_refs text[];
 begin
   if p_outcome is null or p_outcome not in ('publish', 'hold', 'reject') then
     raise exception 'marketplace_gate_record_listing_verdict: invalid outcome' using errcode = 'check_violation';
@@ -1164,12 +1338,28 @@ begin
     from public.marketplace_products p
    where p.slug = v_row.slug;
 
+  -- The pictures this listing carried when it was last approved.
+  if v_existing_id is not null then
+    select g.media_refs
+      into v_standing_refs
+      from public.marketplace_listing_gate_verdicts g
+     where g.product_id = v_existing_id
+       and g.subject_type = 'listing'
+       and g.outcome = 'publish'
+       and g.consumed_at is not null
+     order by g.consumed_at desc, g.created_at desc
+     limit 1;
+  end if;
+  v_standing_refs := coalesce(v_standing_refs, '{}'::text[]);
+
   -- ---- DB floor: can only tighten -------------------------------------------
   if v_existing_id is not null and v_existing_vendor is distinct from p_vendor_id then
     v_outcome := 'reject';
     v_reasons := array['listing_conflict'];
   elsif v_outcome = 'publish' then
-    if v_vendor_status is distinct from 'approved' then
+    if v_vendor_status is distinct from 'approved'
+       or public.marketplace_gate_owner_revoked((select v.owner_user_id from public.marketplace_vendors v where v.id = p_vendor_id))
+    then
       v_outcome := 'reject';
       v_reasons := v_reasons || 'seller_not_active'::text;
     elsif length(btrim(coalesce(v_row.title, ''))) = 0 then
@@ -1183,22 +1373,41 @@ begin
       v_outcome := 'hold';
       v_reasons := v_reasons || 'enforcement_hold_active'::text;
     elsif exists (
-      -- The same item listed again under another handle: one of its pictures is a
-      -- picture of a listing of this store that a person has to decide.
+      -- The same item listed again: a picture that is new to this listing is — byte
+      -- for byte or perceptually — a picture of a listing of this store that a person
+      -- has to decide, as it was when the hold was placed or as it is now. A picture
+      -- this listing already carried when it was last approved, or one that is also
+      -- on another live listing of the store (a size chart, a logo), says nothing
+      -- about which item this is and is not counted.
       select 1
-        from public.marketplace_listing_enforcement e
-        join public.marketplace_product_media m on m.product_id = e.product_id
-       where e.vendor_id = p_vendor_id
+        from (
+          select x.ref, f.sha256, f.phash, f.phash_aux
+            from unnest(v_media) as x(ref)
+            left join public.marketplace_image_fingerprints f on f.ref = x.ref
+           where not (x.ref = any (v_standing_refs))
+        ) posted
+        join public.marketplace_listing_enforcement e
+          on e.vendor_id = p_vendor_id
          and e.kind <> 'policy'
          and e.status in ('active', 'upheld')
-         and (
-           m.url = any (v_media)
-           or exists (
-             select 1
-               from public.marketplace_image_fingerprints held
-               join public.marketplace_image_fingerprints posted on posted.sha256 = held.sha256
-              where held.ref = m.url and posted.ref = any (v_media)
-           )
+        cross join lateral jsonb_array_elements(
+          e.media_snapshot || public.marketplace_gate_listing_pictures(e.product_id)) as h(pic)
+       where (posted.ref = h.pic ->> 'ref'
+              or public.marketplace_gate_pictures_alike(
+                   posted.sha256, posted.phash, posted.phash_aux,
+                   h.pic ->> 'sha256', (h.pic ->> 'phash')::bigint, (h.pic ->> 'phash_aux')::bigint))
+         and not exists (
+           select 1
+             from public.marketplace_products lp
+             join public.marketplace_product_media lm on lm.product_id = lp.id
+             left join public.marketplace_image_fingerprints lf on lf.ref = lm.url
+            where lp.vendor_id = p_vendor_id
+              and lp.approval_status = 'approved'
+              and lp.id is distinct from v_existing_id
+              and not public.marketplace_gate_human_hold(lp.id, lp.vendor_id, lp.slug)
+              and (lm.url = posted.ref
+                   or public.marketplace_gate_pictures_alike(
+                        posted.sha256, posted.phash, posted.phash_aux, lf.sha256, lf.phash, lf.phash_aux))
          )
     ) then
       v_outcome := 'hold';
@@ -1394,10 +1603,10 @@ begin
   end if;
 
   insert into public.marketplace_listing_enforcement
-    (product_id, vendor_id, slug, kind, reasons, evidence, prior_status, engine_version)
+    (product_id, vendor_id, slug, kind, reasons, evidence, prior_status, engine_version, media_snapshot)
   values
     (v_row.id, v_row.vendor_id, v_row.slug, p_kind, v_reasons, coalesce(p_evidence, '{}'::jsonb), v_row.approval_status,
-     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'))
+     coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), public.marketplace_gate_listing_pictures(v_row.id))
   on conflict (product_id) where status = 'active' do nothing
   returning id into v_id;
 
@@ -1563,8 +1772,10 @@ create or replace function public.marketplace_gate_instant_onboard(
   p_reasons text[],
   p_signals jsonb,
   p_engine_version text,
-  -- sha256 of "<handle>|<store name>|<story>" AS SCREENED by the caller. The store
-  -- is built from the application row, so the row must still be what was screened.
+  -- The profile AS SCREENED by the caller: sha256 over the hex sha256 of the handle,
+  -- the store name and the story, each on its own (so text cannot slide from one
+  -- field into the next). The store is built from the application row, so the row
+  -- must still be what was screened.
   p_profile_hash text
 ) returns jsonb
 language plpgsql
@@ -1624,11 +1835,20 @@ begin
     -- for: it must not sit in the staff queue as a second, approvable request.
     update public.marketplace_vendor_applications a
        set status = 'approved'
-     where a.id = p_application_id and a.status = 'submitted';
+     where a.id = p_application_id and a.status = 'submitted'
+       and exists (select 1 from public.marketplace_vendors v where v.id = v_vendor_id and v.status = 'approved')
+       and not public.marketplace_gate_owner_revoked(p_actor);
     return jsonb_build_object(
       'onboarded', false, 'why', 'already_seller', 'vendor_id', v_vendor_id,
       'vendor_status', (select v.status from public.marketplace_vendors v where v.id = v_vendor_id)
     );
+  end if;
+
+  -- A person withdrew this account's approval before: opening a store for it again
+  -- is a person's decision too.
+  if public.marketplace_gate_owner_revoked(p_actor) then
+    raise exception 'marketplace_gate_instant_onboard: a person withdrew this account''s approval'
+      using errcode = 'P0001', hint = 'prior_human_decision';
   end if;
 
   -- A person has already decided this application once (rejected it, or asked for
@@ -1642,7 +1862,9 @@ begin
   -- screened: a draft save that slipped in between the screen and this call
   -- changes the hash, and the store is not opened on text nobody checked.
   v_profile_hash := encode(sha256(convert_to(
-    v_slug || '|' || btrim(v_app.store_name) || '|' || coalesce(v_app.story, ''), 'UTF8')), 'hex');
+    encode(sha256(convert_to(v_slug, 'UTF8')), 'hex')
+    || encode(sha256(convert_to(btrim(v_app.store_name), 'UTF8')), 'hex')
+    || encode(sha256(convert_to(coalesce(v_app.story, ''), 'UTF8')), 'hex'), 'UTF8')), 'hex');
   if p_profile_hash is null or p_profile_hash <> v_profile_hash then
     raise exception 'marketplace_gate_instant_onboard: the application changed after it was screened'
       using errcode = 'P0001', hint = 'profile_changed';
@@ -1750,13 +1972,12 @@ security definer
 set search_path = public, pg_temp
 as $$
 begin
-  if new.owner_user_id is null or new.owner_type is not distinct from 'company' then
+  -- Only a store with an owner has someone to put on probation (the company's own
+  -- store has none; a store of company type that names an owner is that owner's).
+  if new.owner_user_id is null then
     return null;
   end if;
-  if tg_op = 'UPDATE'
-     and new.owner_user_id is not distinct from old.owner_user_id
-     and old.owner_type is distinct from 'company'
-  then
+  if tg_op = 'UPDATE' and new.owner_user_id is not distinct from old.owner_user_id then
     return null; -- nothing about who owns the store changed
   end if;
 
@@ -1796,9 +2017,16 @@ begin
     raise exception 'marketplace_vendor_guard: a store''s type cannot be changed'
       using errcode = 'P0001', hint = 'store_type_immutable';
   end if;
-  if new.owner_user_id is distinct from old.owner_user_id
-     and (old.owner_user_id is not null or old.owner_type is not distinct from 'company')
-  then
+  if new.owner_user_id is distinct from old.owner_user_id then
+    -- The one change allowed: the owner's account was deleted (the foreign key sets
+    -- the owner to NULL). The store is then nobody's, and stays that way — an
+    -- owner is only ever set when a store is created.
+    if new.owner_user_id is null
+       and old.owner_user_id is not null
+       and not exists (select 1 from auth.users u where u.id = old.owner_user_id)
+    then
+      return new;
+    end if;
     raise exception 'marketplace_vendor_guard: a store''s owner cannot be changed'
       using errcode = 'P0001', hint = 'store_owner_immutable';
   end if;
@@ -1836,7 +2064,6 @@ begin
     select v.id, v.owner_user_id, 'pre_gate'
       from public.marketplace_vendors v
      where v.owner_user_id is not null
-       and v.owner_type is distinct from 'company'
        and not exists (select 1 from public.marketplace_seller_probation p where p.vendor_id = v.id);
   end if;
 end $$;
@@ -1878,7 +2105,7 @@ begin
     'owner_user_id', v_owner,
     'identity_verified', v_identity,
     'identity_waived', v_waived,
-    'company_store', v_owner_type is not distinct from 'company',
+    'company_store', v_owner_type is not distinct from 'company' and v_owner is null,
     'instant_onboarded', v_tracked
   );
 end;
@@ -1916,7 +2143,8 @@ begin
   select v.owner_user_id, v.owner_type into v_owner, v_owner_type
     from public.marketplace_vendors v
    where v.id = new.vendor_id;
-  if not found or v_owner_type is not distinct from 'company' then
+  -- The company's own store (company type, no owner) moves no seller's money.
+  if not found or (v_owner_type is not distinct from 'company' and v_owner is null) then
     return new;
   end if;
 
@@ -1940,19 +2168,26 @@ create trigger marketplace_payout_identity_guard
   before insert or update on public.marketplace_payout_requests
   for each row execute function public.marketplace_payout_identity_guard();
 
--- Accounts old enough to count as independent reporters. Read from auth.users —
--- a profile row is the user's own to edit, its dates included.
-create or replace function public.marketplace_gate_established_accounts(p_users uuid[], p_min_age_days integer default 7)
-returns setof uuid
+-- Accounts that were old enough WHEN THEY REPORTED to count as independent
+-- reporters (each reporter is paired with the time of their first report in the
+-- window). Read from auth.users — a profile row is the user's own to edit, its
+-- dates included.
+drop function if exists public.marketplace_gate_established_accounts(uuid[], integer);
+create or replace function public.marketplace_gate_established_accounts(
+  p_users uuid[],
+  p_reported_at timestamptz[],
+  p_min_age_days integer default 7
+) returns setof uuid
 language sql
 stable
 security definer
 set search_path = public, pg_temp
 as $$
   select u.id
-    from auth.users u
-   where u.id = any (coalesce(p_users, '{}'::uuid[]))
-     and u.created_at <= now() - make_interval(days => greatest(coalesce(p_min_age_days, 7), 0));
+    from unnest(coalesce(p_users, '{}'::uuid[]), coalesce(p_reported_at, '{}'::timestamptz[])) as r(user_id, reported_at)
+    join auth.users u on u.id = r.user_id
+   where r.reported_at is not null
+     and u.created_at <= r.reported_at - make_interval(days => greatest(coalesce(p_min_age_days, 7), 0));
 $$;
 
 -- ---------------------------------------------------------------------------
@@ -1979,7 +2214,11 @@ revoke all on function public.marketplace_vendors_probation_enroll() from public
 revoke all on function public.marketplace_vendors_owner_guard() from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_product_media_delete_guard() from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_gate_human_hold(uuid, uuid, text) from public, anon, authenticated;
-revoke all on function public.marketplace_gate_established_accounts(uuid[], integer) from public, anon, authenticated;
+revoke all on function public.marketplace_gate_established_accounts(uuid[], timestamptz[], integer) from public, anon, authenticated;
+revoke all on function public.marketplace_gate_owner_revoked(uuid) from public, anon, authenticated;
+revoke all on function public.marketplace_gate_pictures_alike(text, bigint, bigint, text, bigint, bigint) from public, anon, authenticated;
+revoke all on function public.marketplace_gate_listing_pictures(uuid) from public, anon, authenticated;
+revoke all on function public.marketplace_vendor_applications_revocation() from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_gate_seller_state(uuid, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_listing_verdict(uuid, uuid, jsonb, text[], text, text[], jsonb, text, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_rescan(uuid, text) from public, anon, authenticated;
@@ -1999,7 +2238,7 @@ grant execute on function public.marketplace_gate_hide_listing(uuid, text, text[
 grant execute on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid, bigint) to service_role;
 grant execute on function public.marketplace_gate_image_matches(uuid, text, text[], integer) to service_role;
 grant execute on function public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text, text) to service_role;
-grant execute on function public.marketplace_gate_established_accounts(uuid[], integer) to service_role;
+grant execute on function public.marketplace_gate_established_accounts(uuid[], timestamptz[], integer) to service_role;
 grant execute on function public.marketplace_gate_payout_eligibility(uuid) to service_role;
 
 -- A trigger added to a guarded table by a request role would run BEFORE or AFTER
@@ -2010,6 +2249,7 @@ revoke trigger, truncate on public.marketplace_product_media    from public, ano
 revoke trigger, truncate on public.marketplace_product_variants from public, anon, authenticated, service_role;
 revoke trigger, truncate on public.marketplace_payout_requests  from public, anon, authenticated, service_role;
 revoke trigger, truncate on public.marketplace_vendors          from public, anon, authenticated, service_role;
+revoke trigger, truncate on public.marketplace_vendor_applications  from public, anon, authenticated, service_role;
 
 -- ---------------------------------------------------------------------------
 -- 13. Standing verdicts for what is already live. From this point "every live

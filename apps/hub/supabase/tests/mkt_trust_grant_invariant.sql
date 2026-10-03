@@ -28,7 +28,7 @@ begin
   for t in select unnest(array[
     'marketplace_listing_gate_verdicts', 'marketplace_seller_probation',
     'marketplace_listing_enforcement', 'marketplace_image_fingerprints',
-    'marketplace_seller_identity_waivers'
+    'marketplace_seller_identity_waivers', 'marketplace_seller_revocations'
   ]) loop
     select c.relrowsecurity into v_ok
       from pg_class c join pg_namespace n on n.oid = c.relnamespace
@@ -85,7 +85,11 @@ begin
     'public.marketplace_vendors_owner_guard()',
     'public.marketplace_product_media_delete_guard()',
     'public.marketplace_gate_human_hold(uuid,uuid,text)',
-    'public.marketplace_gate_established_accounts(uuid[],integer)',
+    'public.marketplace_gate_owner_revoked(uuid)',
+    'public.marketplace_gate_listing_pictures(uuid)',
+    'public.marketplace_gate_pictures_alike(text,bigint,bigint,text,bigint,bigint)',
+    'public.marketplace_vendor_applications_revocation()',
+    'public.marketplace_gate_established_accounts(uuid[],timestamptz[],integer)',
     'public.marketplace_gate_seller_state(uuid,text)',
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
@@ -120,7 +124,7 @@ begin
     'public.marketplace_gate_image_matches(uuid,text,text[],integer)',
     'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text,text)',
     'public.marketplace_gate_payout_eligibility(uuid)',
-    'public.marketplace_gate_established_accounts(uuid[],integer)'
+    'public.marketplace_gate_established_accounts(uuid[],timestamptz[],integer)'
   ]) loop
     if to_regprocedure(f) is not null and not has_function_privilege('service_role', f, 'EXECUTE') then
       raise warning 'VIOLATION: service_role cannot execute %', f; violations := violations + 1;
@@ -144,7 +148,10 @@ begin
     'public.marketplace_vendors_owner_guard()',
     'public.marketplace_product_media_delete_guard()',
     'public.marketplace_gate_human_hold(uuid,uuid,text)',
-    'public.marketplace_gate_established_accounts(uuid[],integer)',
+    'public.marketplace_gate_owner_revoked(uuid)',
+    'public.marketplace_gate_listing_pictures(uuid)',
+    'public.marketplace_vendor_applications_revocation()',
+    'public.marketplace_gate_established_accounts(uuid[],timestamptz[],integer)',
     'public.marketplace_gate_seller_state(uuid,text)',
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
@@ -251,15 +258,24 @@ begin
   ) then
     raise warning 'VIOLATION: picture delete guard trigger missing or disabled'; violations := violations + 1;
   end if;
-  -- The two child guards must LOCK the listing row they read (FOR SHARE): without it a
-  -- variant or a picture can slip onto a listing while its publish is still in flight
-  -- in another transaction. Concurrency cannot be exercised from one session, so the
-  -- lock is pinned on the function source.
+  if not exists (
+    select 1 from pg_trigger tg
+    where tg.tgrelid = 'public.marketplace_vendor_applications'::regclass and tg.tgname = 'marketplace_vendor_applications_revocation'
+      and not tg.tgisinternal and tg.tgenabled = 'O'
+      and (tg.tgtype & 2) = 0 and (tg.tgtype & 16) = 16 and (tg.tgtype & 1) = 1
+  ) then
+    raise warning 'VIOLATION: approval revocation trigger missing, disabled or not AFTER UPDATE'; violations := violations + 1;
+  end if;
+  -- The child guards must LOCK the listing row they read: without it a variant or a
+  -- picture can slip onto a listing while its publish is still in flight in another
+  -- transaction. Concurrency cannot be exercised from one session, so the lock is
+  -- pinned on the function source.
   -- (the media guard reads the listing twice — the listing a picture leaves, and the
-  -- one it lands on — and locks both; the delete guard reads it once)
+  -- one it lands on — and locks both FOR SHARE; the delete guard reads it once, FOR
+  -- UPDATE, so two deletes of the last two pictures queue instead of passing)
   if (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_variant_guard()'::regprocedure)), 'for share;', 'g')) < 1
      or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_guard()'::regprocedure)), 'for share;', 'g')) < 2
-     or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_delete_guard()'::regprocedure)), 'for share;', 'g')) < 1
+     or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_delete_guard()'::regprocedure)), 'for update;', 'g')) < 1
   then
     raise warning 'VIOLATION: a child guard reads the listing row without locking it'; violations := violations + 1;
   end if;
@@ -269,7 +285,7 @@ begin
     select t.tbl, ro.rolname, pr.priv
       from (values ('public.marketplace_products'), ('public.marketplace_product_media'),
                    ('public.marketplace_product_variants'), ('public.marketplace_payout_requests'),
-                   ('public.marketplace_vendors')) t(tbl)
+                   ('public.marketplace_vendors'), ('public.marketplace_vendor_applications')) t(tbl)
      cross join (values ('anon'), ('authenticated'), ('service_role')) ro(rolname)
      cross join (values ('TRIGGER'), ('TRUNCATE')) pr(priv)
      where has_table_privilege(ro.rolname, t.tbl, pr.priv)

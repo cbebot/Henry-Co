@@ -364,10 +364,19 @@ async function sweepReports(admin: GateAdmin, summary: TrustSweepSummary, now: D
     for (const row of (data ?? []) as Array<{ user_id: string | null }>) if (row.user_id) sellers.add(String(row.user_id));
 
     // The account's age comes from the account itself (auth), through a gate
-    // function — a profile row is its owner's to edit, dates included.
+    // function — a profile row is its owner's to edit, dates included — and it is
+    // the age the account had WHEN IT REPORTED: its first report in the window.
+    const firstReportAt = new Map<string, string>();
+    for (const row of rows) {
+      if (!row.reporter_id) continue;
+      const id = String(row.reporter_id);
+      const seen = firstReportAt.get(id);
+      if (!seen || new Date(row.created_at).getTime() < new Date(seen).getTime()) firstReportAt.set(id, row.created_at);
+    }
     const established = new Set<string>();
     const { data: accounts, error: ageError } = await admin.rpc("marketplace_gate_established_accounts", {
       p_users: reporterIds,
+      p_reported_at: reporterIds.map((id) => firstReportAt.get(id) ?? null),
       p_min_age_days: REPORTER_MIN_ACCOUNT_AGE_DAYS,
     });
     if (ageError || !Array.isArray(accounts)) return;

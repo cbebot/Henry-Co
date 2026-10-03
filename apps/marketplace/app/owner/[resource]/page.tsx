@@ -5,11 +5,20 @@ export const dynamic = "force-dynamic";
 
 export default async function OwnerResourcePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ resource: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   await requireMarketplaceRoles(["marketplace_owner"], "/owner");
   const { resource } = await params;
+  const query = (await searchParams) ?? {};
 
-  return <StaffResourcePage root="/owner" resource={resource} />;
+  return (
+    <StaffResourcePage
+      root="/owner"
+      resource={resource}
+      error={typeof query.error === "string" ? query.error : undefined}
+    />
+  );
 }

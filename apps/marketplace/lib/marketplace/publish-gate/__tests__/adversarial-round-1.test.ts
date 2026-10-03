@@ -196,9 +196,9 @@ describe("round 1 — what a new store is held on", () => {
 describe("round 1 — onboarding", () => {
   it("an application a person rejected or sent back is never re-decided by the gate", () => {
     assert.ok(SELLER_ROUTE.includes('const decidedByPerson = existingStatus === "rejected" || existingStatus === "changes_requested";'));
-    const branch = SELLER_ROUTE.indexOf('if (instantPublish && mode === "submit" && storeVerdict && decidedByPerson) {');
-    const call = SELLER_ROUTE.indexOf("await instantOnboard(admin, {");
-    assert.ok(branch > 0 && call > branch, "the prior-decision branch must come before the onboarding call");
+    // Round 3: the decision travels into the onboarding, which answers a store owner
+    // first and returns everything else to a person before any opening.
+    assert.ok(SELLER_ROUTE.includes("priorDecision: decidedByPerson,"));
   });
 
   it("an account that already owns a store is answered as such, not as a new opening", () => {
@@ -231,7 +231,7 @@ describe("round 1 — the optional AI screen and the take-down sweep", () => {
 
   it("a take-down is never decided on reporters that could not be checked", () => {
     const start = SWEEP.indexOf("const sellers = new Set<string>();");
-    const block = SWEEP.slice(start, start + 1600);
+    const block = SWEEP.slice(start, start + 2600);
     assert.ok(block.includes("if (error) return;"));
     // Round 2: account age comes from the account (auth), not from a profile row its owner can edit.
     assert.ok(block.includes('admin.rpc("marketplace_gate_established_accounts", {'));

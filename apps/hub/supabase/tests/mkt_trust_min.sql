@@ -19,7 +19,7 @@ create table if not exists public.marketplace_vendors (
   slug text not null unique,
   name text not null,
   description text,
-  owner_user_id uuid,
+  owner_user_id uuid references auth.users (id) on delete set null,
   owner_type text not null default 'vendor',
   status text not null default 'pending',
   verification_level text not null default 'bronze',

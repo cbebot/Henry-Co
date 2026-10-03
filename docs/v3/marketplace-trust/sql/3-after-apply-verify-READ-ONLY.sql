@@ -31,7 +31,11 @@ with fn(sig, rpc) as (
     ('public.marketplace_vendors_owner_guard()', false),
     ('public.marketplace_product_media_delete_guard()', false),
     ('public.marketplace_gate_human_hold(uuid,uuid,text)', false),
-    ('public.marketplace_gate_established_accounts(uuid[],integer)', true),
+    ('public.marketplace_gate_established_accounts(uuid[],timestamptz[],integer)', true),
+    ('public.marketplace_gate_owner_revoked(uuid)', false),
+    ('public.marketplace_gate_listing_pictures(uuid)', false),
+    ('public.marketplace_gate_pictures_alike(text,bigint,bigint,text,bigint,bigint)', false),
+    ('public.marketplace_vendor_applications_revocation()', false),
     ('public.marketplace_gate_seller_state(uuid,text)', true),
     ('public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)', true),
     ('public.marketplace_gate_record_rescan(uuid,text)', true),
@@ -63,7 +67,7 @@ function_checks as (
 tbl(name) as (
   values ('marketplace_listing_gate_verdicts'), ('marketplace_seller_probation'),
          ('marketplace_listing_enforcement'), ('marketplace_image_fingerprints'),
-         ('marketplace_seller_identity_waivers')
+         ('marketplace_seller_identity_waivers'), ('marketplace_seller_revocations')
 ),
 table_checks as (
   select 'table public.' || name || ' has row level security ON' as check_name,
@@ -95,7 +99,8 @@ trg(tbl_name, trg_name) as (
          ('marketplace_product_variants', 'marketplace_product_variant_guard'),
          ('marketplace_vendors', 'marketplace_vendors_probation_enroll'),
          ('marketplace_vendors', 'marketplace_vendors_owner_guard'),
-         ('marketplace_product_media', 'marketplace_product_media_delete_guard')
+         ('marketplace_product_media', 'marketplace_product_media_delete_guard'),
+         ('marketplace_vendor_applications', 'marketplace_vendor_applications_revocation')
 ),
 trigger_checks as (
   select 'trigger ' || trg_name || ' on ' || tbl_name || ' is present and enabled' as check_name,

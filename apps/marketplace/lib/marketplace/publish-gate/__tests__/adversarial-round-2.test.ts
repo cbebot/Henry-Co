@@ -97,7 +97,7 @@ describe("round 2 — store approvals cannot hand a store over", () => {
     const check = ROUTE.indexOf('error=store-handle-taken');
     const update = ROUTE.indexOf('.from("marketplace_vendor_applications")\n          .update({\n            status: decision,');
     assert.ok(check > 0 && update > check, "the handle check must come before the application is updated");
-    assert.ok(ROUTE.includes('owner.owner_type === "company" || String(owner.owner_user_id || "") !== String(application.user_id || "")'));
+    assert.ok(ROUTE.includes('(owner) => owner.owner_type === "company" || String(owner.owner_user_id || "") !== applicant,'));
   });
 
   it("no seller role is granted when the store write did not land", () => {
@@ -107,7 +107,7 @@ describe("round 2 — store approvals cannot hand a store over", () => {
   });
 
   it("the hub's approval does the same", () => {
-    assert.ok(HUB_DECISION.includes('owner.owner_type === "company" || String(owner.owner_user_id || "") !== String(applicantUserId || "")'));
+    assert.ok(HUB_DECISION.includes('(owner) => owner.owner_type === "company" || String(owner.owner_user_id || "") !== applicantUserId,'));
     const guard = HUB_DECISION.indexOf("if (!vendor?.id) {");
     const role = HUB_DECISION.indexOf('await admin.from("marketplace_role_memberships").upsert({');
     assert.ok(guard > 0 && role > guard);
