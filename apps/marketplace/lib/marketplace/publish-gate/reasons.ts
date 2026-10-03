@@ -18,6 +18,7 @@ export const REJECT_REASONS = [
   "contact_details",
   "off_platform_payment",
   "incomplete_listing",
+  "listing_too_long",
   "price_invalid",
   "image_not_first_party",
   "plan_listing_limit",

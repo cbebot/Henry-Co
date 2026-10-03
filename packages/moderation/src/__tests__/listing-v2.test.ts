@@ -150,11 +150,20 @@ describe("listing_v2 — contact details", () => {
       assert.ok(verdict.detail?.includes("contact:phone:high"), text);
     }
   });
-  it("rejects an email and an app steer", () => {
+  it("rejects an email, and an app steer that carries a number or a handle", () => {
     assert.equal(v2("mail ada@example.com").decision, "reject");
-    const steer = v2("message me on WhatsApp for discount");
-    assert.equal(steer.decision, "reject");
-    assert.ok(steer.reasons.includes("off_platform_contact"));
+    for (const text of ["message me on WhatsApp 08031234567 for discount", "IG @adaobi_store", "my snap: adeshop22"]) {
+      const steer = v2(text);
+      assert.equal(steer.decision, "reject", text);
+      assert.ok(steer.reasons.includes("off_platform_contact"), text);
+    }
+  });
+  it("holds an app steer with no number or handle — a phrase is never refused", () => {
+    for (const text of ["message me on WhatsApp for discount", "link in bio", "drop your number make I call you", "IG adeshop"]) {
+      const verdict = v2(text);
+      assert.equal(verdict.decision, "hold", `${text} -> ${JSON.stringify(verdict)}`);
+      assert.equal(verdict.unambiguous, false, text);
+    }
   });
   it("holds what merely looks like contact", () => {
     for (const text of ["call 5550101 after six", "see https://my-own-shop.example/item", "follow @adaobi_store"]) {
@@ -172,17 +181,71 @@ describe("listing_v2 — contact details", () => {
 });
 
 describe("listing_v2 — scam language", () => {
-  it("rejects steering payment off the platform", () => {
+  it("rejects an account number given to pay into, however it is written", () => {
+    for (const text of [
+      "GTB 0123 456 789",
+      "Send money to 0123/456/789",
+      "Account: 0123 - 456 - 789 (Access)",
+      "acct no 0123,456,789 zenith",
+      "Bank: Kuda. Ref: 0123456789.",
+      "Opay. Code 8031234567.",
+      "first 5 digits 01234, last 5 digits 56789, GTB",
+      "GTB: 01234 then 56789",
+      "*737*1*5000*0123 456 789#",
+      "my aza is 0123456789",
+      "wire it to 0123456789",
+    ]) {
+      const verdict = v2(text);
+      assert.equal(verdict.decision, "reject", `${text} -> ${JSON.stringify(verdict)}`);
+      assert.ok(verdict.detail?.includes("scam:payment_diversion"), text);
+    }
+  });
+  it("holds steering with no account number — a phrase is never refused", () => {
     for (const text of [
       "Pay me directly and save",
       "Bank transfer only, no card",
       "Send the money to my account",
       "Pay with crypto for 10% off",
       "Let's deal outside the platform",
+      "Opay/Palmpay accepted",
+      "make we talk the price outside",
+      "drop alert once you pay",
     ]) {
       const verdict = v2(text);
-      assert.equal(verdict.decision, "reject", text);
-      assert.ok(verdict.detail?.includes("scam:payment_diversion"), text);
+      assert.equal(verdict.decision, "hold", `${text} -> ${JSON.stringify(verdict)}`);
+      assert.ok(verdict.detail?.includes("scam:payment_steering"), text);
+      assert.ok(!verdict.detail?.includes("scam:payment_diversion"), text);
+    }
+  });
+  it("ordinary product sentences with payment words pass", () => {
+    for (const text of [
+      "Heat transfer only works on cotton and polyester blends.",
+      "USB cable for data transfer only, it does not fast charge.",
+      "Photos transfer directly to your phone over Wi-Fi.",
+      "Wire it to the switch in five minutes, no electrician needed.",
+      "Pay directly at checkout with any card.",
+      "Control the light outside the app with the wall switch.",
+      "Forget the app, the remote controls everything.",
+      "Skip the fees at the salon and do your nails at home.",
+      "Price includes VAT, no service charge.",
+      "We supply dealers outside Lagos at wholesale prices.",
+      "Best price for outside Lagos buyers is shown at checkout.",
+      "This light na outside light, e no fear rain.",
+      "The soundbox will send payment alert to your phone for every sale.",
+      "Ledger Nano X hardware wallet: send, receive and pay with crypto.",
+      "For custom sizes, contact the seller directly through the chat on this page.",
+      "A/C compressor for Corolla 2009, Denso 447220-8645.",
+      "Zenith Chronomaster Sport, reference 03.3100.3600/69.M3100, full set.",
+      "Moniepoint POS terminal, serial 2201 3345 98, with charger and 5 paper rolls.",
+      "Ceramic piggy bank in sizes 10 12 14 16 18 cm.",
+      "No upfront payment needed before we deliver; pay on delivery is available.",
+      "No deposit required before we ship.",
+      "Smart lock: reset your password with the master code.",
+      "We never ask for your OTP or BVN.",
+      "SIM registration needs your NIN slip at pickup.",
+    ]) {
+      const verdict = v2(text);
+      assert.equal(verdict.decision, "approve", `${text} -> ${JSON.stringify(verdict)}`);
     }
   });
   it("holds phishing, identity requests and advance-fee language", () => {

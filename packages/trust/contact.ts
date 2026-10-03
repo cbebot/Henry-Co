@@ -8,17 +8,28 @@
 //
 //   recall    — numbers written to dodge a filter: "o8o3 l23 4567",
 //               "zero eight zero three…", "0 8 0 3 1 2 3 4 5 6 7", "+234-8O3…",
+//               "0803 na 123 na 4567", "starts 0803, middle 123, ends 4567",
 //               keycap / full-width / Arabic-Indic digits, "name at gmail dot com";
-//   precision — prices, years, sizes, model numbers, barcodes and capacities are
-//               not phone numbers. A hit carries a confidence so the caller can
-//               reject only what is unmistakable and hold what merely looks odd.
+//   precision — prices, years, sizes, opening hours, model, part and serial
+//               numbers, barcodes and capacities are not phone numbers.
+//
+// A hit carries a confidence, and the confidence follows one rule: HIGH (the
+// caller refuses) only when the text holds a concrete datum — a number that
+// reconstructs to a phone number, an email address, a link, or a handle tied to
+// an app. A phrase with no datum ("drop your number", "link in bio", "message me
+// on WhatsApp") is at most MEDIUM: a person looks.
 //
 // Nothing here returns the matched text: a hit is a kind, a confidence and a
 // short evidence tag, so results are safe to log and to store.
 //
-// Known limits (deterministic by design — an optional AI signal sits above this):
-// digits separated by filler words ("0803 then 123 then 4567"), a number written
-// only in words of another language, and numbers inside images.
+// Every quantifier is bounded and every scan is linear: a field of 100,000
+// characters is screened in milliseconds, not seconds.
+//
+// Known limits (deterministic by design — an optional AI signal and buyer
+// reports sit above this): a number written only in words of another language,
+// a number inside an image, a plain word after an app name that is also an
+// ordinary word, and a label put in front of a number with extra digits added
+// to it ("barcode 0 8031 2345 67 0").
 // ---------------------------------------------------------------------------
 
 export type ContactKind = "phone" | "email" | "messaging_app" | "social_handle" | "link";
@@ -84,17 +95,17 @@ const DIGIT_ZEROS = [
 
 /** Han numerals, read as the digits they are. */
 const HAN_DIGITS: Record<string, string> = {
-  "\u3007": "0",
-  "\u96f6": "0",
-  "\u4e00": "1",
-  "\u4e8c": "2",
-  "\u4e09": "3",
-  "\u56db": "4",
-  "\u4e94": "5",
-  "\u516d": "6",
-  "\u4e03": "7",
-  "\u516b": "8",
-  "\u4e5d": "9",
+  "〇": "0",
+  "零": "0",
+  "一": "1",
+  "二": "2",
+  "三": "3",
+  "四": "4",
+  "五": "5",
+  "六": "6",
+  "七": "7",
+  "八": "8",
+  "九": "9",
 };
 
 /**
@@ -106,20 +117,20 @@ const INVISIBLE_RE = new RegExp("[\\p{Cf}\\p{Mn}\\p{Me}\\u115F\\u1160\\u3164\\uF
 
 /** Letters of other scripts that read as a Latin O / I, or as a digit. */
 const CONFUSABLES: Record<string, string> = {
-  "\u041e": "O", // Cyrillic О
-  "\u043e": "o",
-  "\u039f": "O", // Greek Ο
-  "\u03bf": "o",
-  "\u00d8": "O", // Ø
-  "\u00f8": "o",
-  "\u0406": "I", // Cyrillic І
-  "\u04c0": "I", // palochka
-  "\u0399": "I", // Greek Ι
-  "\u0417": "3", // Cyrillic З
-  "\u3002": ".", // ideographic full stop
-  "\uff61": ".", // halfwidth ideographic full stop
-  "\u2024": ".", // one dot leader
-  "\u00b7": ".", // middle dot
+  "О": "O", // Cyrillic О
+  "о": "o",
+  "Ο": "O", // Greek Ο
+  "ο": "o",
+  "Ø": "O", // Ø
+  "ø": "o",
+  "І": "I", // Cyrillic І
+  "Ӏ": "I", // palochka
+  "Ι": "I", // Greek Ι
+  "З": "3", // Cyrillic З
+  "。": ".", // ideographic full stop
+  "｡": ".", // halfwidth ideographic full stop
+  "․": ".", // one dot leader
+  "·": ".", // middle dot
 };
 
 /** Dingbat digit series NFKC leaves alone: [first code point, value of that code point, count]. */
@@ -171,7 +182,7 @@ export function foldForScreening(input: string): string {
   return out;
 }
 
-// ---- Phone detection -------------------------------------------------------
+// ---- Words the phone reader knows ----------------------------------------------
 
 const NUMBER_WORDS: Record<string, string> = {
   zero: "0",
@@ -193,8 +204,8 @@ const MULTIPLIER_WORDS: Record<string, number> = { double: 2, triple: 3, treble:
 
 /**
  * Pidgin spellings of the digits. Every one of them is an ordinary word too
- * ("tree", "for"-like sounds), so they count only INSIDE a number that is already
- * being spelled out in words — never on their own.
+ * ("tree", "for"-like sounds), so they count only inside a number that is already
+ * being read out, or at the head of three number words in a row — never alone.
  */
 const PIDGIN_NUMBER_WORDS: Record<string, string> = {
   wan: "1",
@@ -208,70 +219,69 @@ const PIDGIN_NUMBER_WORDS: Record<string, string> = {
   nain: "9",
 };
 
-/** Words that only join the pieces of a number being read out: "…three THEN one two three THEN…". */
-const FILLER_WORDS = new Set([
-  "then", "and", "plus", "dash", "space", "next", "comma", "den", "hyphen", "x", "by", "to", "dot", "slash", "stroke",
+/** Words that only join the pieces of a number being READ OUT in words: "…three THEN one two three…". */
+const SPELLED_JOINERS = new Set([
+  "then", "and", "plus", "dash", "space", "next", "comma", "den", "hyphen", "dot", "slash", "stroke",
 ]);
 
-/**
- * Words that say "this number is how you reach me". Deliberately verbs and
- * channels only: nouns like "phone", "mobile", "number", "line" and "model" sit
- * next to ordinary numbers in every second listing ("phone 2023 6000 128").
- */
-/** "whatsapp", "watsap", "wassap", "whtsapp", "whatsaap" … one pattern instead of a list that is never complete. */
-const WHATSAPP = String.raw`wh?a?t?s{1,2}\s?a{1,2}p{1,2}`;
+/** "whatsapp", "watsap", "wassap", "whtsapp", "whats-app" … one pattern instead of a list that is never complete. */
+const WHATSAPP = String.raw`wh?a?t?s{1,2}[\s-]?a{1,2}p{1,2}`;
 const WHATSAPP_WORD_RE = /^wh?a?t?s{1,2}a{1,2}p{1,2}$/;
 
+/**
+ * Words that say "this number is how you reach me". Verbs and channels only:
+ * nouns like "phone", "number" and "line" sit next to ordinary numbers in every
+ * second listing ("phone 2023 6000 128"), and "Imo" is a state before it is an app.
+ */
 const CUE_WORDS = new Set([
-  "call",
-  "calls",
-  "dial",
-  "tel",
-  "telephone",
-  "whatsapp",
-  "whatsap",
-  "watsapp",
-  "watsap",
-  "wassap",
-  "whatapp",
-  "wa",
-  "telegram",
-  "viber",
-  "wechat",
-  "imo",
-  "sms",
-  "reach",
-  "dm",
+  "call", "calls", "dial", "tel", "telephone", "whatsapp", "whatsap", "watsapp", "watsap", "wassap", "whatapp",
+  "wa", "telegram", "viber", "wechat", "sms", "dm",
 ]);
 
 /**
  * Nouns that sit next to ordinary numbers in every second listing — too weak to
  * make any number a phone number, but enough to settle a number that already has
- * the Nigerian mobile shape with its leading zero dropped ("my number 8031234567").
+ * the mobile shape with its leading zero dropped ("number 8031234567"). After
+ * "my" or "our" ("my number …") they are as strong as a verb.
  */
 const SOFT_CUE_WORDS = new Set(["number", "phone", "mobile", "contact", "chat", "line", "cell", "digits", "hotline"]);
+const POSSESSIVES = new Set(["my", "our"]);
 
-/** Labels that say the number after them is NOT a phone number. */
+/** Labels that say the number after them is not a phone number. Read BEFORE any cue word. */
 const NOT_A_PHONE_LABELS = new Set([
-  "isbn",
-  "barcode",
-  "upc",
-  "ean",
-  "serial",
-  "imei",
-  "sku",
-  "model",
-  "part",
-  "code",
-  "ref",
-  "reference",
-  "batch",
-  "lot",
-  "tracking",
-  "nafdac",
-  "reg",
-  "registration",
+  "isbn", "barcode", "upc", "ean", "gtin", "serial", "sn", "imei", "imei1", "imei2", "meid", "sku", "model", "part",
+  "pn", "oem", "mpn", "asin", "code", "ref", "reference", "batch", "lot", "tracking", "waybill", "awb", "nafdac",
+  "reg", "registration", "item", "article", "iuc", "smartcard", "meter", "vin", "chassis", "engine", "hs", "rc",
+  "invoice", "receipt", "voucher", "ticket", "mfd", "mfg", "manufactured", "exp", "expiry", "expires", "dated",
 ]);
+/** "Part NUMBER …", "Item NO. …", "Product ID …": the second word of a two-word label. */
+const LABEL_TAILS = new Set(["no", "nr", "num", "number", "id", "code", "ref", "reference"]);
+/** The first word of a two-word label. */
+const LABEL_HEADS = new Set([
+  "product", "item", "article", "engine", "chassis", "frame", "model", "part", "serial", "order", "invoice",
+  "receipt", "tracking", "batch", "lot", "reg", "registration", "iuc", "smartcard", "meter", "catalogue", "catalog",
+  "style", "stock", "unit", "policy", "ticket", "booking", "certificate", "licence", "license", "permit",
+]);
+/** Barcode and IMEI labels: their whole number may hold a mobile-shaped stretch by chance. */
+const BARCODE_LABELS = new Set(["isbn", "barcode", "upc", "ean", "gtin"]);
+const IMEI_LABELS = new Set(["imei", "imei1", "imei2", "meid"]);
+
+/** Units: a number followed by one is a measurement, and a unit never joins two numbers. */
+const UNIT_WORDS = new Set([
+  "mm", "cm", "m", "km", "in", "inch", "inches", "ft", "feet", "foot", "kg", "g", "grams", "lb", "lbs", "l", "ml",
+  "litre", "litres", "liter", "liters", "v", "w", "kw", "kva", "mah", "ah", "hz", "gb", "tb", "mb", "pcs", "pieces",
+  "pc", "units", "cartons", "packs", "sqm", "sqft", "sq", "metres", "meters", "yards", "years", "yrs", "days",
+  "months", "hours", "hrs", "mins", "minutes", "naira", "percent", "degrees", "psi", "rpm",
+]);
+/** "0800 x 1200": a dimension, not a number cut in two. */
+const DIMENSION_WORDS = new Set(["x", "by", "times"]);
+
+/** Words that place a piece of a number: "starts 0803", "0803 the start", "the rest 1234567". */
+const FIRST_WORDS = new Set(["first", "start", "starts", "starting", "begin", "begins", "beginning"]);
+const MIDDLE_WORDS = new Set(["middle", "second", "next", "then", "followed", "centre", "center"]);
+const LAST_WORDS = new Set(["last", "end", "ends", "ending", "final", "finally", "rest", "remaining", "remainder", "third"]);
+/** Words that put one piece straight after another: "01234 then 56789". */
+const SEQUENCE_WORDS = new Set(["then", "next", "followed", "after"]);
 
 /**
  * What may sit between the digit groups of one number: any short run that has no
@@ -284,22 +294,78 @@ function isSeparator(piece: string): boolean {
   return piece.length <= 12 && !HAS_LETTER_OR_DIGIT_RE.test(piece);
 }
 
-interface PhoneRun {
-  /** Digit groups in order, already de-obfuscated. */
-  groups: string[];
-  /** Per group: was it written to evade (letters for digits, a spelled-out digit)? */
-  disguised: boolean[];
-  /** Written to evade: letters for digits, spelled-out digits, or one digit per token. */
-  obfuscated: boolean;
-  /** A leading "+" (or the word "plus"). */
-  plus: boolean;
-  /** A cue word sits right before or right after the run. */
-  cued: boolean;
-  /** A weaker noun ("number", "phone", "contact") sits next to the run. */
-  softCued: boolean;
-  /** The word before the run says it is something else ("ISBN", "model", "serial"). */
-  labelled: boolean;
+// ---- Number shapes -------------------------------------------------------------
+
+/** Nigerian mobile prefixes in use: 070x, 080x (from 0802), 081x, 090x, 091x. 0700/0800/0900 are not mobiles. */
+const NG_PREFIX = String.raw`(?:70[1-9]|80[2-9]|81\d|90[1-9]|91\d)`;
+const NG_LOCAL_RE = new RegExp(String.raw`^0${NG_PREFIX}\d{7}$`);
+const NG_INTL_RE = new RegExp(String.raw`^(?:00)?234${NG_PREFIX}\d{7}$`);
+const NG_NO_TRUNK_RE = new RegExp(String.raw`^${NG_PREFIX}\d{7}$`);
+/** The opening digits of a mobile number: "080", "0803…", "234803…". */
+const NG_HEAD_RE = new RegExp(String.raw`^(?:0[789][01]$|0${NG_PREFIX}|(?:00)?234${NG_PREFIX})`);
+/** A clock time in hours and minutes ("0800", "1730", "2100"): opening hours, not a number. */
+const TIME_LIKE_RE = /^(?:[01]\d|2[0-3])(?:00|15|30|45)$/;
+
+function isNgMobile(digits: string): boolean {
+  return NG_LOCAL_RE.test(digits) || NG_INTL_RE.test(digits);
 }
+
+/** "123456789", "2345678": a count, not a number. */
+function isCountingSequence(digits: string): boolean {
+  if (digits.length < 3) return false;
+  const step = digits.charCodeAt(1) - digits.charCodeAt(0);
+  if (step !== 1 && step !== -1) return false;
+  for (let i = 2; i < digits.length; i += 1) {
+    if (digits.charCodeAt(i) - digits.charCodeAt(i - 1) !== step) return false;
+  }
+  return true;
+}
+
+// ---- Tokens ----------------------------------------------------------------
+
+interface Token {
+  text: string;
+  separator: boolean;
+}
+
+function tokenize(text: string): Token[] {
+  const tokens: Token[] = [];
+  const re = /[A-Za-z0-9|]+|[^A-Za-z0-9|]+/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text)) !== null) {
+    const piece = match[0];
+    tokens.push({ text: piece, separator: !/[A-Za-z0-9|]/.test(piece) });
+  }
+  return tokens;
+}
+
+/** Up to `count` words before `index`, nearest first. Stops at a line or sentence break. */
+function wordsBefore(tokens: Token[], index: number, count: number): string[] {
+  const words: string[] = [];
+  for (let i = index - 1; i >= 0 && words.length < count; i -= 1) {
+    if (tokens[i].separator) {
+      if (/[\n;!?]/.test(tokens[i].text)) break;
+      continue;
+    }
+    words.push(tokens[i].text.toLowerCase());
+  }
+  return words;
+}
+
+/** Up to `count` words from `index` on (inclusive), nearest first. Stops at a line or sentence break. */
+function wordsFrom(tokens: Token[], index: number, count: number): string[] {
+  const words: string[] = [];
+  for (let i = index; i < tokens.length && words.length < count; i += 1) {
+    if (tokens[i].separator) {
+      if (/[\n;!?]/.test(tokens[i].text)) break;
+      continue;
+    }
+    words.push(tokens[i].text.toLowerCase());
+  }
+  return words;
+}
+
+// ---- Look-alike digits -----------------------------------------------------------
 
 /** Letters that pass for a digit only inside a token that is otherwise a number. */
 const WEAK_LOOKALIKES: Record<string, string> = {
@@ -392,64 +458,166 @@ function digitLikeToken(token: string): { digits: string; disguised: boolean } |
   return { digits, disguised };
 }
 
-function tokenize(text: string): Array<{ text: string; separator: boolean }> {
-  const tokens: Array<{ text: string; separator: boolean }> = [];
-  const re = /[A-Za-z0-9|]+|[^A-Za-z0-9|]+/g;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(text)) !== null) {
-    const piece = match[0];
-    tokens.push({ text: piece, separator: !/[A-Za-z0-9|]/.test(piece) });
+/** How many number-ish tokens follow `index` (up to `need`): digits, number words, Pidgin digits, a lone "o". */
+function numberishAhead(tokens: Token[], index: number, need: number): number {
+  let count = 0;
+  for (let i = index + 1; i < tokens.length && count < need; i += 1) {
+    const token = tokens[i];
+    if (token.separator) {
+      if (!isSeparator(token.text)) break;
+      continue;
+    }
+    const lower = token.text.toLowerCase();
+    if (
+      NUMBER_WORDS[lower] !== undefined ||
+      PIDGIN_NUMBER_WORDS[lower] !== undefined ||
+      lower === "o" ||
+      digitLikeToken(token.text) !== null
+    ) {
+      count += 1;
+    } else {
+      break;
+    }
   }
-  return tokens;
+  return count;
 }
 
-function collectPhoneRuns(text: string): PhoneRun[] {
-  const tokens = tokenize(text);
+// ---- Phone runs --------------------------------------------------------------
+
+interface PhoneRun {
+  /** Digit groups in order, already de-obfuscated. */
+  groups: string[];
+  /** Per group: was it written to evade (letters for digits, a spelled-out digit)? */
+  disguised: boolean[];
+  /** Per group: was it a number word? */
+  spelled: boolean[];
+  /** Written to evade: letters for digits, spelled-out digits, or one digit per token. */
+  obfuscated: boolean;
+  /** A leading "+" (or the word "plus"). */
+  plus: boolean;
+  /** A cue word ("call", "WhatsApp", "my number") sits right before or right after the run. */
+  cued: boolean;
+  /** A weaker noun ("number", "phone", "contact") sits next to the run. */
+  softCued: boolean;
+  /** What the word before the run says the number is. */
+  label: "none" | "code" | "barcode" | "imei";
+  /** The run's first token, and the token after its last. */
+  start: number;
+  end: number;
+  /** The token of each group. */
+  positions: number[];
+  /** Its number words count up or down, with commas between them ("one, two, three, four"): a list, not a number. */
+  countedList: boolean;
+}
+
+/** The run without its counted-out number words ("KET-2000 Two, three, four…" is "2000"). */
+function withoutCountedWords(run: PhoneRun): PhoneRun {
+  const keep = run.groups.map((_, index) => !run.spelled[index]);
+  const pick = <T,>(values: T[]) => values.filter((_, index) => keep[index]);
+  const disguised = pick(run.disguised);
+  return {
+    ...run,
+    groups: pick(run.groups),
+    disguised,
+    spelled: pick(run.spelled),
+    positions: pick(run.positions),
+    obfuscated: disguised.some(Boolean),
+    countedList: false,
+  };
+}
+
+function cueAround(tokens: Token[], start: number, end: number): { cued: boolean; soft: boolean } {
+  let cued = false;
+  let soft = false;
+  const before = wordsBefore(tokens, start, 4);
+  for (let k = 0; k < before.length; k += 1) {
+    const word = before[k];
+    if (CUE_WORDS.has(word) || WHATSAPP_WORD_RE.test(word)) cued = true;
+    if (k < 3 && SOFT_CUE_WORDS.has(word)) {
+      soft = true;
+      if (POSSESSIVES.has(before[k + 1] ?? "")) cued = true;
+    }
+  }
+  for (const word of wordsFrom(tokens, end, 2)) {
+    if (CUE_WORDS.has(word) || WHATSAPP_WORD_RE.test(word)) cued = true;
+    if (SOFT_CUE_WORDS.has(word)) soft = true;
+  }
+  return { cued, soft };
+}
+
+function labelBefore(tokens: Token[], start: number): PhoneRun["label"] {
+  const [near, far] = wordsBefore(tokens, start, 2);
+  let label: string | null = null;
+  if (near !== undefined && NOT_A_PHONE_LABELS.has(near)) label = near;
+  else if (near !== undefined && LABEL_TAILS.has(near) && far !== undefined && (NOT_A_PHONE_LABELS.has(far) || LABEL_HEADS.has(far))) {
+    label = far;
+  }
+  if (label === null) return "none";
+  if (BARCODE_LABELS.has(label)) return "barcode";
+  if (IMEI_LABELS.has(label)) return "imei";
+  return "code";
+}
+
+/** Does `next`, appended to the run, END a mobile number? Only windows ending at it are read (linear). */
+function completesMobile(groups: string[], next: string): boolean {
+  let joined = next;
+  if (isNgMobile(joined)) return true;
+  for (let k = groups.length - 1; k >= 0 && joined.length < 15; k -= 1) {
+    joined = groups[k] + joined;
+    if (isNgMobile(joined)) return true;
+  }
+  return false;
+}
+
+function collectPhoneRuns(tokens: Token[]): PhoneRun[] {
   const runs: PhoneRun[] = [];
 
   let groups: string[] = [];
   let disguised: boolean[] = [];
+  let spelled: boolean[] = [];
+  let positions: number[] = [];
   let obfuscated = false;
   let plus = false;
-  let startIndex = -1;
+  let start = -1;
+  let last = -1;
   let pendingMultiplier = 0;
   /** Groups in the current run that were written as words. */
   let wordGroups = 0;
+  let commas = 0;
 
-  const wordNear = (words: ReadonlySet<string>, from: number, step: 1 | -1, reach: number): boolean => {
-    let seen = 0;
-    for (let i = from; i >= 0 && i < tokens.length && seen < reach; i += step) {
-      if (tokens[i].separator) continue;
-      seen += 1;
-      const word = tokens[i].text.toLowerCase();
-      if (words.has(word)) return true;
-      if (words === CUE_WORDS && WHATSAPP_WORD_RE.test(word)) return true;
-    }
-    return false;
-  };
-
-  const flush = (endIndex: number) => {
+  const flush = () => {
     if (groups.length > 0) {
       const singles = groups.filter((group) => group.length === 1).length;
       // One digit per token ("0 8 0 3 1 2 …") is itself an evasion pattern.
       // Ten or more: a row of sizes or fractions ("1/2, 3/4, 1, 1 1/4") is shorter.
       const spelledOut = groups.length >= 10 && singles >= groups.length - 1;
+      const cue = cueAround(tokens, start, last + 1);
+      const words = groups.filter((_, index) => spelled[index]).join("");
       runs.push({
         groups,
         disguised: spelledOut ? groups.map(() => true) : disguised,
+        spelled,
         obfuscated: obfuscated || spelledOut,
         plus,
-        cued: wordNear(CUE_WORDS, startIndex - 1, -1, 4) || wordNear(CUE_WORDS, endIndex, 1, 2),
-        softCued: wordNear(SOFT_CUE_WORDS, startIndex - 1, -1, 3) || wordNear(SOFT_CUE_WORDS, endIndex, 1, 2),
-        labelled: wordNear(NOT_A_PHONE_LABELS, startIndex - 1, -1, 2),
+        cued: cue.cued,
+        softCued: cue.soft,
+        label: labelBefore(tokens, start),
+        start,
+        end: last + 1,
+        positions,
+        countedList: wordGroups >= 3 && commas >= wordGroups - 2 && isCountingSequence(words),
       });
     }
     groups = [];
     disguised = [];
+    spelled = [];
+    positions = [];
     wordGroups = 0;
+    commas = 0;
     obfuscated = false;
     plus = false;
-    startIndex = -1;
+    start = -1;
+    last = -1;
     pendingMultiplier = 0;
   };
 
@@ -462,7 +630,8 @@ function collectPhoneRuns(text: string): PhoneRun[] {
         if (/\+\s*$/.test(token.text)) plus = true;
         continue;
       }
-      if (!isSeparator(token.text)) flush(i);
+      if (!isSeparator(token.text)) flush();
+      else if (token.text.includes(",")) commas += 1;
       continue;
     }
 
@@ -479,69 +648,78 @@ function collectPhoneRuns(text: string): PhoneRun[] {
       continue;
     }
 
-    // A joining word inside a number that is being read out, or that opened with a
-    // mobile prefix ("0803 then 123 then 4567"), does not end the number.
-    if (
-      FILLER_WORDS.has(lower) &&
-      groups.length > 0 &&
-      (wordGroups >= 2 || groups.some((group) => /^(?:0|234)[789][01]/.test(group)))
-    ) {
-      continue;
-    }
+    // A joining word inside a number that is being read out in words.
+    if (SPELLED_JOINERS.has(lower) && wordGroups >= 2) continue;
 
-    const word = NUMBER_WORDS[lower] ?? (wordGroups >= 2 ? PIDGIN_NUMBER_WORDS[lower] : undefined);
+    let word: string | undefined = NUMBER_WORDS[lower];
+    // A Pidgin digit inside a number ("0803 wan tu tree…"), or heading three number words in a row.
+    if (word === undefined && PIDGIN_NUMBER_WORDS[lower] !== undefined && (groups.length > 0 || numberishAhead(tokens, i, 2) >= 2)) {
+      word = PIDGIN_NUMBER_WORDS[lower];
+    }
+    // A lone letter o next to other digits is a zero ("o-eight-o-tree").
+    if (word === undefined && lower === "o" && (groups.length > 0 || numberishAhead(tokens, i, 1) >= 1)) word = "0";
     const like = word === undefined ? digitLikeToken(token.text) : null;
 
     if (word === undefined && like === null) {
       // Number words glued together or onto digits are a number written to evade.
       const glued = gluedNumberDigits(token.text);
       if (glued !== null) {
-        if (startIndex === -1) startIndex = i;
+        if (start === -1) start = i;
+        last = i;
         obfuscated = true;
         groups.push(glued);
         disguised.push(true);
+        spelled.push(false);
+        positions.push(i);
         pendingMultiplier = 0;
         continue;
       }
       // A short group written with a weak look-alike ("S67") counts only when it
       // completes a mobile number with the groups before it.
       const weak = groups.length > 0 ? weakLookalikeDigits(token.text) : null;
-      if (weak !== null && containsNigerianMobile([...groups, weak])) {
+      if (weak !== null && completesMobile(groups, weak)) {
+        last = i;
         obfuscated = true;
         groups.push(weak);
         disguised.push(true);
+        spelled.push(false);
+        positions.push(i);
         continue;
       }
-      flush(i);
+      flush();
       continue;
     }
 
     const numeric = word ?? (like as { digits: string }).digits;
-    if (startIndex === -1) startIndex = i;
+    if (start === -1) start = i;
+    last = i;
     const evasive = word !== undefined || Boolean(like && like.disguised) || pendingMultiplier > 0;
     if (evasive) obfuscated = true;
     groups.push(pendingMultiplier > 0 && numeric.length === 1 ? numeric.repeat(pendingMultiplier) : numeric);
     disguised.push(evasive);
+    spelled.push(word !== undefined);
+    positions.push(i);
     if (word !== undefined) wordGroups += 1;
     pendingMultiplier = 0;
   }
-  flush(tokens.length);
+  flush();
 
   return runs;
 }
 
-/** Nigerian mobile shapes: 0[789][01]xxxxxxxx and the 234 / 00234 country-code forms. */
-const NG_LOCAL_RE = /^0[789][01]\d{8}$/;
-const NG_INTL_RE = /^(?:00)?234[789][01]\d{8}$/;
-const NG_NO_TRUNK_RE = /^[789][01]\d{8}$/;
-
-/** Does any window of consecutive groups spell a Nigerian mobile number? */
+/** Does any window of consecutive groups spell a Nigerian mobile number? Linear: a window stops at 15 digits. */
 function containsNigerianMobile(groups: string[]): boolean {
   for (let start = 0; start < groups.length; start += 1) {
+    // A mobile number opens with 0, 234 or 00234.
+    const head = groups[start].charCodeAt(0);
+    if (head !== 48 && head !== 50) continue;
+    // "0815-1700, 365": two clock times in a row open a range of hours, not a number.
+    if (TIME_LIKE_RE.test(groups[start]) && start + 1 < groups.length && TIME_LIKE_RE.test(groups[start + 1])) continue;
     let joined = "";
     for (let end = start; end < groups.length && joined.length < 15; end += 1) {
       joined += groups[end];
-      if (NG_LOCAL_RE.test(joined) || NG_INTL_RE.test(joined)) return true;
+      const n = joined.length;
+      if ((n === 11 || n === 13 || n === 15) && isNgMobile(joined)) return true;
     }
   }
   return false;
@@ -563,37 +741,10 @@ function hasDisguisedWindow(run: PhoneRun): boolean {
 }
 
 /**
- * A mobile number cut in two and placed in different sentences or fields:
- * "…code 0803. … batch 1234567", or the first half in the URL handle and the rest
- * in the title. Looks at the digit groups of the whole text, whatever stands
- * between them, and accepts only the unmistakable case: a group that opens with a
- * Nigerian mobile prefix, completed to exactly eleven digits by ONE other group.
- * How far away the other piece may sit depends on how unmistakable it is: six or
- * seven missing digits can be anywhere in the text (the URL handle is read last,
- * the title first), five a few numbers away, and a short piece must be the very
- * next or previous number — "open 0700 to 2100" and "0803 mm by 1234 mm" are not
- * phone numbers.
- */
-function hasSplitNigerianMobile(text: string): boolean {
-  const groups = text.match(/\d+/g) ?? [];
-  for (let i = 0; i < groups.length; i += 1) {
-    const first = groups[i];
-    if (first.length < 4 || first.length > 8 || !/^0[789][01]/.test(first)) continue;
-    const missing = 11 - first.length;
-    const reach = missing >= 6 ? groups.length : missing === 5 ? 6 : 1;
-    for (let j = Math.max(0, i - reach); j < groups.length && j <= i + reach; j += 1) {
-      if (j !== i && groups[j].length === missing) return true;
-    }
-  }
-  return false;
-}
-
-/**
  * Does the run hold a Nigerian mobile number with its trunk zero dropped?
  *
  *   "phone"  written the way a mobile number is — one ten-digit block, or
- *            "803 123 4567" — anywhere in the run (a SKU or a delivery window next
- *            to it does not hide it);
+ *            "803 123 4567" — anywhere in the run;
  *   "loose"  the run as a whole has the digits but not the grouping: a part number
  *            ("90915-10003") or a row of sizes;
  *   "none"   neither.
@@ -616,119 +767,446 @@ function noTrunkShape(run: PhoneRun): "phone" | "loose" | "none" {
   return NG_NO_TRUNK_RE.test(run.groups.join("")) ? "loose" : "none";
 }
 
-function classifyPhoneRun(run: PhoneRun): ContactHit | null {
+function phoneHit(confidence: ContactConfidence, evidence: string): ContactHit {
+  return { kind: "phone", confidence, evidence };
+}
+
+function classifyPhoneRun(input: PhoneRun): ContactHit | null {
+  // Number words counted out with commas ("one, two, three, four, five, six, seven")
+  // are a list: only what is left beside them is read — unless a mobile prefix sits
+  // beside them ("0803, one, two, three…").
+  const counted = input.countedList && !input.groups.some((group, index) => !input.spelled[index] && NG_HEAD_RE.test(group));
+  const run = counted ? withoutCountedWords(input) : input;
   const digits = run.groups.join("");
   const n = digits.length;
   if (n < 7) return null;
+  const mobileEvidence = run.obfuscated ? "ng_mobile_obfuscated" : "ng_mobile";
 
-  if (containsNigerianMobile(run.groups)) {
-    return { kind: "phone", confidence: "high", evidence: run.obfuscated ? "ng_mobile_obfuscated" : "ng_mobile" };
+  // A label says what the number is ("IMEI", "part number", "barcode") and is read
+  // BEFORE any cue word: a labelled number is not a phone number unless the whole
+  // of it is one anyway.
+  if (run.label !== "none") {
+    if (isNgMobile(digits)) return phoneHit("high", mobileEvidence);
+    if (run.label === "barcode" && n >= 10 && n <= 13) return null;
+    if (run.label === "imei" && n >= 14 && n <= 17) return null;
+    // A mobile number inside a longer labelled code ("ref 0803 123 4567 9"): a person looks.
+    return containsNigerianMobile(run.groups) ? phoneHit("medium", "ng_mobile_in_code") : null;
   }
+
+  if (containsNigerianMobile(run.groups)) return phoneHit("high", mobileEvidence);
 
   // A number someone took the trouble to disguise is a contact attempt — also when
   // it sits in a longer run of digits (a SKU or a size next to it does not hide it).
-  if (run.obfuscated && hasDisguisedWindow(run)) {
-    return { kind: "phone", confidence: "high", evidence: "obfuscated_digits" };
+  if (run.obfuscated && hasDisguisedWindow(run)) return phoneHit("high", "obfuscated_digits");
+
+  // International dialling written with 00 ("0044 7911 123456"), wherever it starts in the run:
+  // a short "00…" group, or the whole run.
+  for (let index = 0; index < run.groups.length; index += 1) {
+    const group = run.groups[index];
+    if (!/^00[1-9]/.test(group) || (group.length > 6 && run.groups.length > 1)) continue;
+    let joined = "";
+    for (let end = index; end < run.groups.length && joined.length < 15; end += 1) {
+      joined += run.groups[end];
+      if (/^00[1-9]\d{8,12}$/.test(joined)) return phoneHit(run.cued ? "high" : "medium", "international_00");
+    }
   }
   if (n > 16) return null;
 
-  if (run.plus && n >= 10 && n <= 15) {
-    return { kind: "phone", confidence: "high", evidence: "international_plus" };
-  }
+  if (run.plus && n >= 10 && n <= 15) return phoneHit("high", "international_plus");
 
   const noTrunk = noTrunkShape(run);
-  if (noTrunk !== "none") {
+  if (noTrunk === "phone") {
     // Ten digits with the mobile prefix but no trunk zero: a phone when the text
-    // says so. With nothing said it is still the shape of one, so a person looks —
-    // unless it is labelled as something else, or is grouped like a part number.
-    if (run.cued || run.softCued) return { kind: "phone", confidence: "high", evidence: "ng_mobile_no_trunk" };
-    if (run.labelled || noTrunk === "loose") {
-      return { kind: "phone", confidence: "low", evidence: "ng_mobile_no_trunk_uncued" };
-    }
-    return { kind: "phone", confidence: "medium", evidence: "ng_mobile_no_trunk_unlabelled" };
+    // says so. With nothing said it is still the shape of one, so a person looks.
+    return run.cued || run.softCued ? phoneHit("high", "ng_mobile_no_trunk") : phoneHit("medium", "ng_mobile_no_trunk_unlabelled");
+  }
+  if (noTrunk === "loose") {
+    // Grouped like a part number ("90915-10003"): only a call to action makes it a
+    // phone. A noun ("part number") never does.
+    return run.cued ? phoneHit("high", "ng_mobile_no_trunk") : phoneHit("low", "ng_mobile_no_trunk_uncued");
   }
 
-  if (run.cued && n <= 15) {
-    return { kind: "phone", confidence: n >= 10 ? "high" : "medium", evidence: "cued_number" };
-  }
+  if (run.cued && n <= 15) return phoneHit(n >= 10 ? "high" : "medium", "cued_number");
+
+  // A trunk-zero number called a line or a phone ("UK line 07911 123456").
+  if (run.softCued && /^0[1-9]\d{8,11}$/.test(digits)) return phoneHit("medium", "cued_trunk_number");
 
   // Ten digits in one block is the shape of a bank account number (and of a mobile
-  // number without its zero). Unless the text says what it is — an ISBN, a part
-  // number, a barcode — a person looks.
-  if (!run.labelled && run.groups.some((group) => group.length === 10)) {
-    return { kind: "phone", confidence: "medium", evidence: "ten_digit_number" };
-  }
+  // number without its zero). Unless a label says what it is, a person looks.
+  if (run.groups.some((group) => group.length === 10)) return phoneHit("medium", "ten_digit_number");
 
-  if (run.obfuscated) {
-    return { kind: "phone", confidence: "medium", evidence: "obfuscated_short" };
-  }
+  if (run.obfuscated) return phoneHit("medium", "obfuscated_short");
 
   // Plain digit groups with nothing saying "call": sizes, prices, barcodes.
   return null;
 }
 
+// ---- A number in pieces ----------------------------------------------------------
+
+/** The words between two runs, when they are few and short ("na", "abeg", "second part"). Null otherwise. */
+function gapWords(tokens: Token[], from: number, to: number): string[] | null {
+  const words: string[] = [];
+  let chars = 0;
+  for (let i = from; i < to; i += 1) {
+    const token = tokens[i];
+    chars += token.text.length;
+    if (chars > 40) return null;
+    if (token.separator) {
+      if (token.text.includes("\n")) return null;
+      continue;
+    }
+    if (!/^[A-Za-z]{1,8}$/.test(token.text)) return null;
+    const lower = token.text.toLowerCase();
+    if (UNIT_WORDS.has(lower)) return null;
+    words.push(lower);
+    if (words.length > 2) return null;
+  }
+  return words;
+}
+
+/**
+ * A mobile number read out in up to three pieces with any short word between
+ * them, once it opens with a mobile prefix: "0803 na 123 na 4567", "zero eight
+ * zero three, abeg, one two three…", "o8o3 ehn 123 ehn 4567". Opening hours and
+ * dimensions never join ("0800 to 1800", "080 x 1200 x 2100 mm").
+ */
+function joinsAcrossWords(runs: PhoneRun[], tokens: Token[]): boolean {
+  // Extend `joined` with the opening groups of run k (and, when all of run k is
+  // used, with run k + 1). Pieces are taken by digits, not whole runs: the end of
+  // a run may belong to the next field ("…4567\n2-4 days").
+  const extend = (joined: string, headToken: number, k: number, depth: number, dimension: boolean): boolean => {
+    if (k >= runs.length || depth > 2) return false;
+    const run = runs[k];
+    const gap = gapWords(tokens, runs[k - 1].end, run.start);
+    if (gap === null || gap.length === 0 || TIME_LIKE_RE.test(run.groups[0])) return false;
+    const across = dimension || gap.some((word) => DIMENSION_WORDS.has(word));
+    let digits = joined;
+    for (let p = 0; p < run.groups.length; p += 1) {
+      digits += run.groups[p];
+      if (digits.length > 13) return false;
+      if (isNgMobile(digits)) {
+        if (across) {
+          // "080 x 3100 x 2150 mm" is a frame size.
+          const [after] = wordsFrom(tokens, run.positions[p] + 1, 1);
+          const [before] = wordsBefore(tokens, headToken, 1);
+          if ((after !== undefined && (UNIT_WORDS.has(after) || DIMENSION_WORDS.has(after))) || (before !== undefined && DIMENSION_WORDS.has(before))) {
+            return false;
+          }
+        }
+        return true;
+      }
+      if (p === run.groups.length - 1 && extend(digits, headToken, k + 1, depth + 1, across)) return true;
+    }
+    return false;
+  };
+  for (let i = 0; i + 1 < runs.length; i += 1) {
+    const { groups, positions } = runs[i];
+    // The head is the closing groups of the run ("KET-2000 0803 na 123…" opens at 0803).
+    let head = "";
+    for (let s = groups.length - 1; s >= 0; s -= 1) {
+      head = groups[s] + head;
+      if (head.length > 10) break;
+      if (head.length < 3 || !NG_HEAD_RE.test(head)) continue;
+      if (s === groups.length - 1 && TIME_LIKE_RE.test(head)) continue;
+      if (extend(head, positions[s], i + 1, 1, false)) return true;
+    }
+  }
+  return false;
+}
+
+/** 0 = first piece, 1 = middle, 2 = last, -1 = an unplaced piece that opens with a mobile prefix. */
+interface Piece {
+  kind: -1 | 0 | 1 | 2;
+  digits: string;
+  at: number;
+}
+
+interface PlacedPieces {
+  pieces: Piece[];
+  /** "01234 then 56789": two pieces read one after the other. */
+  sequences: Array<[string, string]>;
+}
+
+/**
+ * Pieces of a number placed by words: "starts 0803, middle 123, ends 4567",
+ * "4567 is the end, 0803 the start, 123 the middle", "first 5 digits 01234, last
+ * 5 digits 56789". A placing word belongs to the nearest number of three or more
+ * digits in its own clause (after it first, then before it). Linear.
+ */
+function placePieces(tokens: Token[]): PlacedPieces {
+  const pieces: Piece[] = [];
+  const sequences: Array<[string, string]> = [];
+  let clause: Array<{ at: number; word: string | null; digits: string | null }> = [];
+
+  const close = () => {
+    const placed = new Set<number>();
+    for (let k = 0; k < clause.length; k += 1) {
+      const word = clause[k].word;
+      if (word === null) continue;
+      const kind = FIRST_WORDS.has(word) ? 0 : MIDDLE_WORDS.has(word) ? 1 : LAST_WORDS.has(word) ? 2 : -1;
+      const sequence = SEQUENCE_WORDS.has(word);
+      if (kind === -1 && !sequence) continue;
+      let after = -1;
+      for (let j = k + 1; j < clause.length && j <= k + 3; j += 1) {
+        const digits = clause[j].digits;
+        if (digits !== null && digits.length >= 3) {
+          after = j;
+          break;
+        }
+      }
+      let before = -1;
+      for (let j = k - 1; j >= 0 && j >= k - 2; j -= 1) {
+        const digits = clause[j].digits;
+        if (digits !== null && digits.length >= 3) {
+          before = j;
+          break;
+        }
+      }
+      if (sequence && after !== -1 && before !== -1) {
+        sequences.push([clause[before].digits as string, clause[after].digits as string]);
+      }
+      if (kind === -1) continue;
+      const target = after !== -1 ? after : k >= 1 ? findBack(k) : -1;
+      if (target === -1 || placed.has(target)) continue;
+      placed.add(target);
+      pieces.push({ kind: kind as 0 | 1 | 2, digits: clause[target].digits as string, at: clause[target].at });
+    }
+    for (let j = 0; j < clause.length; j += 1) {
+      const digits = clause[j].digits;
+      if (digits !== null && !placed.has(j) && digits.length >= 4 && digits.length < 11 && NG_HEAD_RE.test(digits)) {
+        pieces.push({ kind: -1, digits, at: clause[j].at });
+      }
+    }
+    clause = [];
+  };
+
+  function findBack(k: number): number {
+    for (let j = k - 1; j >= 0 && j >= k - 3; j -= 1) {
+      const digits = clause[j].digits;
+      if (digits !== null && digits.length >= 3) return j;
+    }
+    return -1;
+  }
+
+  for (let i = 0; i < tokens.length; i += 1) {
+    const token = tokens[i];
+    if (token.separator) {
+      // A comma or full stop followed by a space, or a line break, ends a clause;
+      // the dots and commas inside a number ("0803.123", "0123,456") do not.
+      if (/[\n;!?]|[.,](?:\s|$)/.test(token.text)) close();
+      continue;
+    }
+    const like = digitLikeToken(token.text);
+    clause.push({ at: i, word: like ? null : token.text.toLowerCase(), digits: like ? like.digits : null });
+    if (clause.length >= 64) close();
+  }
+  close();
+  pieces.sort((a, b) => a.at - b.at);
+  return { pieces, sequences };
+}
+
+const PIECE_RANK: Record<Piece["kind"], number> = { [-1]: 0, 0: 0, 1: 1, 2: 2 };
+
+/** Do placed pieces, put in the order their words give, make a number `accept` takes? */
+function piecesMake(pieces: Piece[], accept: (digits: string) => boolean, explicitFirst: boolean): boolean {
+  const ordered = (list: Piece[]) => [...list].sort((a, b) => PIECE_RANK[a.kind] - PIECE_RANK[b.kind]);
+  const valid = (list: Piece[]) => {
+    const ranks = list.map((piece) => PIECE_RANK[piece.kind]);
+    if (new Set(ranks).size !== ranks.length || !ranks.includes(0)) return false;
+    if (!list.some((piece) => piece.kind >= 0)) return false;
+    if (explicitFirst && !list.some((piece) => piece.kind === 0)) return false;
+    return true;
+  };
+  // Only a window that holds a piece placed by a word can make a number.
+  const placed: number[] = [0];
+  for (const piece of pieces) placed.push(placed[placed.length - 1] + (piece.kind >= 0 ? 1 : 0));
+  for (let j = 1; j < pieces.length; j += 1) {
+    if (placed[j + 1] === placed[Math.max(0, j - 5)]) continue;
+    for (let i = Math.max(0, j - 5); i < j; i += 1) {
+      const pair = [pieces[i], pieces[j]];
+      if (valid(pair) && accept(ordered(pair).map((piece) => piece.digits).join(""))) return true;
+      for (let m = i + 1; m < j; m += 1) {
+        const triple = [pieces[i], pieces[m], pieces[j]];
+        if (valid(triple) && accept(ordered(triple).map((piece) => piece.digits).join(""))) return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * A mobile number cut in two and placed in different sentences or fields:
+ * "…code 0803. … batch 1234567", or the first half in the URL handle and the rest
+ * in the title. Looks at the free-standing digit groups of the whole text and
+ * accepts only the unmistakable case: a group that opens with a mobile prefix (not
+ * a clock time), completed to exactly eleven digits by ONE other group. How far
+ * away the other piece may sit depends on how unmistakable it is: six or seven
+ * missing digits can be anywhere (the URL handle is read last, the title first),
+ * five a few numbers away, four or fewer only next to it. Linear.
+ */
+function hasSplitNigerianMobile(text: string): boolean {
+  const groups: string[] = [];
+  const re = /(?<![A-Za-z0-9])\d+(?![A-Za-z0-9])/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text)) !== null) groups.push(match[0]);
+  const positions = new Map<number, number[]>();
+  for (let i = 0; i < groups.length; i += 1) {
+    const list = positions.get(groups[i].length);
+    if (list) list.push(i);
+    else positions.set(groups[i].length, [i]);
+  }
+  for (let i = 0; i < groups.length; i += 1) {
+    const first = groups[i];
+    if (first.length < 4 || first.length > 8 || TIME_LIKE_RE.test(first) || !NG_HEAD_RE.test(first) || first.startsWith("2")) continue;
+    const missing = 11 - first.length;
+    const list = positions.get(missing);
+    if (!list) continue;
+    if (missing >= 6) return true;
+    const reach = missing === 5 ? 6 : missing === 4 ? 3 : 1;
+    // Nearest other group of that length (binary search).
+    let lo = 0;
+    let hi = list.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (list[mid] < i) lo = mid + 1;
+      else hi = mid;
+    }
+    for (const candidate of [list[lo - 1], list[lo], list[lo + 1]]) {
+      if (candidate !== undefined && candidate !== i && Math.abs(candidate - i) <= reach) return true;
+    }
+  }
+  return false;
+}
+
+// ---- Account numbers (read by the listing ruleset) --------------------------------
+
+/**
+ * A run of digit groups written as ONE number: up to four groups with a short
+ * separator between them ("0123/456/789", "0123 - 456 - 789", "(0123) 456789",
+ * "0123_456_789"). A comma or full stop followed by a space ends the number.
+ */
+const DIGIT_RUN_RE = /(?<![A-Za-z0-9])\d+(?:(?:(?![,.;:!?]\s)[^A-Za-z0-9\n]){1,3}\d+)*(?![A-Za-z0-9])/g;
+
+/**
+ * The text with every ten-digit number written as one number collapsed to its
+ * digits ("0123 - 456 - 789" -> "0123456789"), so a bank account number reads
+ * the same however it is separated. Look-alike digits inside a number ("o123")
+ * are read as digits first.
+ */
+export function collapseTenDigitRuns(input: string): string {
+  const text = foldForScreening(String(input ?? "")).replace(/(?<![A-Za-z0-9])[0-9oOlI]{3,}(?![A-Za-z0-9])/g, (token) => {
+    const like = /\d/.test(token) ? digitLikeToken(token) : null;
+    return like && like.disguised ? like.digits : token;
+  });
+  return text.replace(DIGIT_RUN_RE, (run) => {
+    const groups = run.match(/\d+/g) ?? [];
+    if (groups.length > 4) return run;
+    const digits = groups.join("");
+    return digits.length === 10 ? digits : run;
+  });
+}
+
+/**
+ * Ten digits written in placed pieces ("first 5 digits 01234, last 5 digits
+ * 56789", "ends with 56789, starts with 01234") or one after the other ("01234
+ * then 56789"): an account number given in halves.
+ */
+export function hasSplitTenDigitNumber(input: string): boolean {
+  const tokens = tokenize(foldForScreening(String(input ?? "")));
+  const { pieces, sequences } = placePieces(tokens);
+  if (sequences.some(([a, b]) => a.length + b.length === 10)) return true;
+  return piecesMake(pieces, (digits) => digits.length === 10, true);
+}
+
 // ---- Email -----------------------------------------------------------------
 
-// Every quantifier in this file is bounded, and nothing scans "the rest of the
-// text" from each position: a field of 100,000 characters is screened in
-// milliseconds, not seconds. (An address has at most 64 characters before the @.)
+// An address has at most 64 characters before the @.
 const EMAIL_RE = /[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9-]{1,63}){0,4}\.[a-zA-Z]{2,24}/;
 
 const SPELLED_TLDS = "com|net|org|ng|co|io|me|info|biz|africa|xyz";
-const WEBMAIL = "gmail|yahoo|ymail|hotmail|outlook|icloud|protonmail|proton";
-const DOT_SPELLED = String.raw`(?:\(\s*dot\s*\)|\[\s*dot\s*\]|\{\s*dot\s*\}|\s+dot\s+)`;
-const AT_BRACKETED = String.raw`(?:\(\s*at\s*\)|\[\s*at\s*\]|\{\s*at\s*\})`;
+const WEBMAIL = "gmail|g-mail|googlemail|yahoo|ymail|hotmail|outlook|icloud|protonmail|proton|yandex|aol|gmx|zoho";
+const DOT_SPELLED = String.raw`(?:\(\s{0,3}dot\s{0,3}\)|\[\s{0,3}dot\s{0,3}\]|\{\s{0,3}dot\s{0,3}\}|<\s{0,3}dot\s{0,3}>|\s{1,3}dot\s{1,3})`;
+const AT_BRACKETED = String.raw`(?:\(\s{0,3}at\s{0,3}\)|\[\s{0,3}at\s{0,3}\]|\{\s{0,3}at\s{0,3}\}|<\s{0,3}at\s{0,3}>)`;
 const LOCAL_PART = String.raw`[a-z0-9][a-z0-9._%+-]{1,40}`;
 
 /** "name (at) shop.com", "name [at] shop (dot) com" */
 const BRACKET_AT_EMAIL_RE = new RegExp(
-  String.raw`${LOCAL_PART}\s*${AT_BRACKETED}\s*[a-z0-9-]{2,40}\s*(?:\.|${DOT_SPELLED})\s*(?:${SPELLED_TLDS})\b`,
+  String.raw`${LOCAL_PART}\s{0,3}${AT_BRACKETED}\s{0,3}[a-z0-9-]{2,40}\s{0,3}(?:\.|${DOT_SPELLED})\s{0,3}(?:${SPELLED_TLDS})\b`,
   "i",
 );
 /** "name at shop dot com" — the bare word "at" only counts with a spelled-out dot. */
 const WORD_AT_EMAIL_RE = new RegExp(
-  String.raw`${LOCAL_PART}\s+at\s+[a-z0-9-]{2,40}\s*${DOT_SPELLED}\s*(?:${SPELLED_TLDS})\b`,
+  String.raw`${LOCAL_PART}\s{1,3}at\s{1,3}[a-z0-9-]{2,40}\s{0,3}${DOT_SPELLED}\s{0,3}(?:${SPELLED_TLDS})\b`,
   "i",
 );
 /** "name at gmail.com" — the bare word "at" also counts in front of a mailbox provider. */
-const WORD_AT_WEBMAIL_RE = new RegExp(String.raw`${LOCAL_PART}\s+at\s+(?:${WEBMAIL})\s*\.\s*com\b`, "i");
+const WORD_AT_WEBMAIL_RE = new RegExp(String.raw`${LOCAL_PART}\s{1,3}at\s{1,3}(?:${WEBMAIL})\s{0,3}\.\s{0,3}com\b`, "i");
 /** "name@gmail", "name@gmail,com" — a mailbox provider after an @ needs no dot to be an address. */
 const AT_WEBMAIL_RE = new RegExp(String.raw`[a-z0-9._%+-]{2,64}\s?@\s?(?:${WEBMAIL})\b`, "i");
-/** A mailbox provider named at all ("adeshop gmail", "it is a gmail account"). A listing has no reason to. */
-const WEBMAIL_MENTION_RE = /\b(?:gmail|ymail|hotmail|protonmail|yahoo\s?mail)\b/i;
-/** "name at gmail", "gmail: name" — the unmistakable providers only. */
-const WEBMAIL_SURE = "gmail|yahoo|ymail|hotmail|icloud|protonmail";
-const WORD_AT_SURE_WEBMAIL_RE = new RegExp(String.raw`${LOCAL_PART}\s+at\s+(?:${WEBMAIL_SURE})\b`, "i");
-const WEBMAIL_LABEL_RE = new RegExp(String.raw`\b(?:${WEBMAIL_SURE})\s*[:\-–]\s*[a-z0-9][a-z0-9._%+-]{2,40}\b`, "i");
+/** Words that stand before "at" in ordinary sentences ("available at Outlook stores"). */
+const AT_NOT_LOCAL = String.raw`available|sold|bought|found|priced|made|seen|buy|shop|pickup|pick|collect|collection|delivered|located|order|selling|retail|retailing|going|now|only|also|get|it|them|us|me|here|there|today|best|cheapest|cheap|goes|starts|starting|stock|stocked|pay|sync|synced|works|working|login|log|sign|signed`;
+/** "name at gmail", "name at g-mail", "name at outlook" — a mailbox provider after the bare word "at". */
+const WEBMAIL_SURE = String.raw`gmail|g[\s-]?mail|googlemail|yahoo|ymail|hotmail|outlook|icloud|protonmail|yandex|aol|gmx|zoho`;
+const WORD_AT_SURE_WEBMAIL_RE = new RegExp(
+  String.raw`(?<![a-z0-9._%+-])(?!(?:${AT_NOT_LOCAL})\s)${LOCAL_PART}\s{1,3}at\s{1,3}(?:${WEBMAIL_SURE})\b(?![\s-]{1,3}(?:stores?|shops?|malls?|outlets?|branch(?:es)?|express|cent(?:re|er)|village|plaza|offices?|app|calendars?|accounts?))`,
+  "i",
+);
+/** "gmail: name" — a provider used as a label. Not "Gmail: supported". */
+const WEBMAIL_LABEL_RE = new RegExp(
+  String.raw`\b(?:gmail|yahoo|ymail|hotmail|icloud|protonmail)\s{0,3}[:\-–]\s{0,3}(?!(?:supported|compatible|yes|no|ready|sync|synced|app|apps|account|accounts|support|integration|enabled|included|preinstalled|works)\b)[a-z0-9][a-z0-9._%+-]{2,40}\b`,
+  "i",
+);
 /** "name@shop" with no top-level domain: probably an address. Not a price ("3pcs@N5000"). */
 const EMAIL_LIKE_RE = /(?=[a-z0-9._%+-]{0,63}[a-z])[a-z0-9._%+-]{3,64}@(?!(?:ngn|n|₦)?\s?\d)[a-z][a-z0-9-]{2,63}/i;
 /** A mailbox provider named with its dot ("gmail.com", "yahoo dot com"). */
-const WEBMAIL_HINT_RE = new RegExp(String.raw`\b(?:${WEBMAIL})\s*(?:\.|${DOT_SPELLED})\s*(?:com|co\.[a-z]{2})\b`, "i");
+const WEBMAIL_HINT_RE = new RegExp(String.raw`\b(?:${WEBMAIL})\s{0,3}(?:\.|${DOT_SPELLED})\s{0,3}(?:com|co\.[a-z]{2})\b`, "i");
+/**
+ * "my gmail", "(gmail)", "e-mail: adeshopstore", "mail me: adeshop" — an address
+ * half given. A provider named as a feature ("comes with Gmail") is not.
+ */
+const WEBMAIL_POINTER_RE = new RegExp(
+  String.raw`\b(?:my|our)\s+(?:${WEBMAIL})\b|\(\s{0,3}(?:${WEBMAIL})\s{0,3}\)|\be-?mail\s{0,3}(?:me\s{0,3})?[:\-–]\s{0,3}[a-z][a-z0-9._%+-]{2,40}\b|\b(?:e-?)?mail\s{1,3}(?:me|us)\s{0,3}(?:[:\-–]|\bat\b|\bon\b)\s{0,3}[a-z][a-z0-9._%+-]{2,40}\b`,
+  "i",
+);
 
 // ---- Messaging apps, handles, links -----------------------------------------
 
-const APP_NAMES = String.raw`${WHATSAPP}|telegram|viber|wechat|imessage|snapchat|instagram|facebook|messenger|tiktok|botim|truecaller|discord|skype|threads`;
-const APP_SHORT = String.raw`signal|ig|insta|fb|wa|w\/a|snap`;
+const APP_NAMES = String.raw`${WHATSAPP}|telegram|viber|wechat|imessage|snapchat|instagram|facebook|messenger|tiktok|botim|truecaller|discord|skype|twitter|zangi|imo(?!\s+state)`;
+const APP_SHORT = String.raw`signal|ig|insta|fb|wa|w\/a|snap|tg`;
 const CONTACT_VERBS = "add|chat|message|msg|contact|reach|text|ping|hit|find|follow|dm|call|order|buy|pay|send|buzz|holla|hmu";
 
-/** "message me on WhatsApp", "add us on Telegram", "DM me via IG". */
+/**
+ * A word that can only be a handle: it starts with a letter and has an "_", an
+ * inner "." or a digit after three letters ("adeshop_ng", "ade.shop", "adeshop22").
+ * "1080p", "2.1m" and "Reels." are not.
+ */
+const HANDLE_SHAPED = String.raw`(?=[a-z])(?=[a-z0-9_.]{0,30}(?:_|\.[a-z0-9]|[a-z]{3}[a-z0-9]{0,20}\d))[a-z][a-z0-9_.]{2,29}[a-z0-9]`;
+
+/** "message me on WhatsApp", "add us on Telegram", "DM me via IG", "find us on X". */
 const APP_STEER_PRONOUN_RE = new RegExp(
-  String.raw`\b(?:${CONTACT_VERBS})\s+(?:with\s+)?(?:me|us)\s+(?:up\s+)?(?:on|via|through|thru|at|by)\s+(?:my\s+|our\s+)?(?:${APP_NAMES}|${APP_SHORT})\b`,
+  String.raw`\b(?:${CONTACT_VERBS})\s{1,3}(?:with\s{1,3})?(?:me|us)\s{1,3}(?:up\s{1,3})?(?:on|via|through|thru|at|by)\s{1,3}(?:my\s{1,3}|our\s{1,3})?(?:${APP_NAMES}|${APP_SHORT}|threads|x)\b`,
   "i",
 );
-/** "my WhatsApp number", "our Telegram channel". */
+/** "WhatsApp me", "Whats-App us": the app used as a verb. */
+const APP_AS_VERB_RE = new RegExp(String.raw`\b(?:${WHATSAPP}|telegram|viber|imo|wechat|botim)\s{1,3}(?:me|us)\b`, "i");
+/** "my WhatsApp number", "our Telegram channel", "our YouTube channel". */
 const APP_POSSESSIVE_RE = new RegExp(
-  String.raw`\b(?:my|our)\s+(?:${APP_NAMES}|ig|insta|fb)\s+(?:number|no|line|handle|id|page|account|group|channel)\b`,
+  String.raw`\b(?:my|our)\s{1,3}(?:${APP_NAMES}|ig|insta|fb|tg|youtube)\s{1,3}(?:number|no|line|handle|id|page|account|group|channel)\b`,
   "i",
 );
 /** "orders via WhatsApp", "payment on Telegram only". */
 const APP_CHANNEL_RE = new RegExp(
-  String.raw`\b(?:orders?|buy|pay|payments?|contact|enquir(?:y|ies)|inquir(?:y|ies)|chat|message|delivery|negotiat\w+)\s+(?:is\s+|are\s+)?(?:only\s+|strictly\s+)?(?:on|via|through|thru)\s+(?:${APP_NAMES}|signal)\b`,
+  String.raw`\b(?:orders?|buy|pay|payments?|contact|enquir(?:y|ies)|inquir(?:y|ies)|chat|message|delivery|negotiat\w{0,6})\s{1,3}(?:is\s{1,3}|are\s{1,3})?(?:only\s{1,3}|strictly\s{1,3})?(?:on|via|through|thru)\s{1,3}(?:${APP_NAMES}|signal)\b`,
   "i",
 );
-/** "WhatsApp: 080…", "IG @shop", "Telegram - @name". A hyphen only counts before a number or handle. */
-const APP_LABEL_RE = new RegExp(
-  String.raw`\b(?:${APP_NAMES}|ig|insta|fb|snap)\s*(?:me|us|number|no\.?|line|handle|id|page)?\s*(?::|@|[-–—]\s*(?=[\d@+]))`,
+/**
+ * An app used as the label of a handle: "IG @shop", "Telegram - @name",
+ * "Snap: adeshop22". "WhatsApp: supported", "TikTok - 60fps" and "Instagram -
+ * 2.1m tall" are not — the label needs a handle after it. (An app next to a NUMBER
+ * is lifted by the phone reader below: "WhatsApp: 0803…".)
+ */
+const APP_LABEL_DATUM_RE = new RegExp(
+  String.raw`\b(?:${APP_NAMES}|ig|insta|fb|snap|tg)\s{0,3}(?:(?:me|us|number|no\.?|line|handle|id|page|username|user)\s{0,3})?(?:[:=]|[-–—]|\bis\b)\s{0,3}(?:@[a-z0-9_.]{3,30}|${HANDLE_SHAPED}\b)|\b(?:${APP_NAMES}|ig|insta|fb|snap|tg)\s{0,3}@[a-z0-9_.]{3,30}`,
   "i",
 );
 /**
@@ -739,25 +1217,26 @@ const APP_LABEL_RE = new RegExp(
  * there (orders, enquiries).
  */
 const APP_DESTINATION_RE = new RegExp(
-  String.raw`\b(?:available|reachable|active|online)\s+on\s+(?:${APP_NAMES})\b(?=[^.\n]{0,30}\b(?:for|to)\s+(?:orders?|enquir\w+|inquir\w+|more|details|chat|contact|buy|purchase)\b)|\b(?:find|search|follow|check|add|like|visit)\s+(?:our|my)\s+[a-z]+\s+on\s+(?:${APP_NAMES}|ig|insta|fb)\b`,
+  String.raw`\b(?:available|reachable|active|online)\s{1,3}on\s{1,3}(?:${APP_NAMES})\b(?=[^.\n]{0,30}\b(?:for|to)\s{1,3}(?:orders?|enquir\w{0,6}|inquir\w{0,6}|more|details|chat|contact|buy|purchase)\b)|\b(?:find|search|follow|check|add|like|visit)\s{1,3}(?:our|my)\s{1,3}[a-z]{1,20}\s{1,3}on\s{1,3}(?:${APP_NAMES}|ig|insta|fb)\b|\b(?:i\s{1,3}am|i'?m|we\s{1,3}are|we'?re)\s{1,3}(?:also\s{1,3})?(?:on|active\s{1,3}on|available\s{1,3}on)\s{1,3}(?:${APP_NAMES})\b`,
   "i",
 );
 /** "find Ade Shop NG on Facebook" — a NAME to look up on an app. Checked for the capital in code. */
 const FIND_NAME_ON_APP_RE = new RegExp(
-  String.raw`\b(?:find|search(?:\s+for)?|look\s+for|check)\s+([A-Za-z][\w&'-]*(?:\s+[A-Za-z][\w&'-]*){0,3})\s+on\s+(?:${APP_NAMES}|ig|insta|fb)\b`,
+  String.raw`\b(?:find|search(?:\s{1,3}for)?|look\s{1,3}for|check)\s{1,3}([A-Za-z][\w&'-]{0,30}(?:\s{1,3}[A-Za-z][\w&'-]{0,30}){0,3})\s{1,3}on\s{1,3}(?:${APP_NAMES}|ig|insta|fb)\b`,
   "i",
 );
 const APP_MENTION_RE = new RegExp(String.raw`\b(?:${APP_NAMES})\b`, "i");
 /** "hmu on ig", "we dey for tiktok", "price na for WhatsApp", "message my personal line". */
 const APP_SLANG_RE = new RegExp(
-  String.raw`\b(?:hmu|holla|buzz|ping)\b[^.\n]{0,20}\b(?:on|via|at)\s+(?:${APP_NAMES}|${APP_SHORT})\b|\b(?:we|i)\s+dey\s+(?:for|on)\s+(?:${APP_NAMES}|${APP_SHORT})\b|\b(?:price|prices|order|orders|payment)\s+(?:na|is|dey)\s+(?:for|on)\s+(?:${APP_NAMES}|${APP_SHORT})\b|\b(?:message|text|call|reach|contact|dm|msg)\s+(?:me\s+on\s+)?my\s+(?:personal\s+|private\s+|direct\s+)?(?:line|number|phone)\b|\b(?:dm|message|text|msg|send)\b[^.\n]{0,30}\bto\s+my\s+(?:personal\s+|private\s+)?(?:line|number|phone)\b|\b(?:holla|hmu|buzz|ping)\s+(?:at\s+)?@?(?=[a-z0-9_.]{0,30}(?:_|\.[a-z0-9]|[a-z]{3}[a-z0-9]{0,20}\d))[a-z0-9][a-z0-9_.]{2,29}\b`,
+  String.raw`\b(?:hmu|holla|buzz|ping)\b[^.\n]{0,20}\b(?:on|via|at)\s{1,3}(?:${APP_NAMES}|${APP_SHORT})\b|\b(?:we|i)\s{1,3}dey\s{1,3}(?:for|on)\s{1,3}(?:${APP_NAMES}|${APP_SHORT})\b|\b(?:price|prices|order|orders|payment)\s{1,3}(?:na|is|dey)\s{1,3}(?:for|on)\s{1,3}(?:${APP_NAMES}|ig|insta|fb|w\/a)\b|\b(?:message|text|call|reach|contact|dm|msg)\s{1,3}(?:me\s{1,3}on\s{1,3})?my\s{1,3}(?:personal\s{1,3}|private\s{1,3}|direct\s{1,3})?(?:line|number|phone)\b|\b(?:dm|message|text|msg|send)\b[^.\n]{0,30}\bto\s{1,3}my\s{1,3}(?:personal\s{1,3}|private\s{1,3})?(?:line|number|phone)\b`,
   "i",
 );
+/** "holla at adeshop_ng", "hmu adeshop22": slang in front of a handle. */
+const SLANG_HANDLE_RE = new RegExp(String.raw`\b(?:holla|hmu|buzz|ping)\s{1,3}(?:at\s{1,3})?@?${HANDLE_SHAPED}\b`, "i");
+/** "discord, user adeshop#1234": a username with its tag. Only next to an app or a "user" label. */
+const TAGGED_HANDLE_RE = /\b(?:discord|user(?:name)?|tag)\b[^.\n]{0,20}?\b[a-z][a-z0-9_.]{2,31}#\d{4}\b/i;
 const DM_RE =
-  /\b(?:dm\s+(?:me|us)|inbox\s+(?:me|us)|slide\s+into|(?:dm|inbox|pm)\s+for\s+(?:price|prices|details|info|more|orders?|enquir\w+)|send\s+(?:me\s+|us\s+)?a\s+dm|all\s+(?:our\s+|my\s+)?socials?|(?:our|my)\s+socials?|social\s+media\s+(?:handle|page)s?)\b/i;
-/** "check my store name for my number" — the contact was moved somewhere the rules do not read together. */
-const CONTACT_ELSEWHERE_RE =
-  /\b(?:check|see|look\s+at|view)\s+(?:my|our|the)\s+(?:store|shop|profile|bio|page)(?:\s+name)?\s+for\s+(?:my|our|the)\s+(?:number|contact|phone|whatsapp|digits|details)\b/i;
+  /\b(?:dm\s{1,3}(?:me|us)|inbox\s{1,3}(?:me|us)|slide\s{1,3}into|(?:dm|inbox|pm)\s{1,3}for\s{1,3}(?:price|prices|details|info|more|orders?|enquir\w{0,6})|send\s{1,3}(?:me\s{1,3}|us\s{1,3})?a\s{1,3}dm|all\s{1,3}(?:our\s{1,3}|my\s{1,3})?socials?|(?:our|my)\s{1,3}socials|(?:my|our)\s{1,3}social\s{1,3}media\s{1,3}(?:handles?|pages?|accounts?)|social\s{1,3}media\s{1,3}handles?)\b/i;
 
 /** Hosts whose links are a phone number, a handle or an outside checkout by another name. */
 const CONTACT_LINK_HOSTS = [
@@ -774,6 +1253,7 @@ const CONTACT_LINK_HOSTS = [
   "twitter\\.com",
   "x\\.com",
   "snapchat\\.com",
+  "threads\\.net",
   "bit\\.ly",
   "tinyurl\\.com",
   "cutt\\.ly",
@@ -796,6 +1276,8 @@ const CONTACT_LINK_HOSTS = [
   "bumpa\\.shop",
 ].join("|");
 const CONTACT_LINK_RE = new RegExp(String.raw`\b(?:${CONTACT_LINK_HOSTS})\/[^\s)]+`, "i");
+/** "telegram dot me slash adeshop", "wa dot me slash 234…": a contact link spelled out. */
+const SPELLED_CONTACT_LINK_RE = /\b(?:t|wa|m|fb|telegram)\s{0,3}(?:\.|dot)\s{0,3}me\s{0,3}(?:\/|slash)\s{0,3}[a-z0-9_]{3,32}\b/i;
 const URL_RE = /\bhttps?:\/\/[^\s)]+/i;
 /** "anything.tld/path" — a link written without its scheme. */
 const PATH_LINK_RE = /(?<![@\w.-])(?:[a-z0-9][a-z0-9-]{0,40}\.){1,4}[a-z]{2,10}\/[^\s)]{2,}/i;
@@ -814,52 +1296,148 @@ const WORD_DOMAIN_CAPS_RE =
   /(?<![@\w.-])[A-Z0-9][A-Z0-9-]{3,40}\.(?:STORE|SHOP|ONLINE|SITE|APP|LINK|NET|CO|ME|LIVE)(?![\w.-])/;
 /** A dot dressed up or moved: "adeshop[.]com", "adeshop,com", "adeshop•com", "adeshop. com". Lower case only. */
 const DISGUISED_DOT_DOMAIN_RE =
-  /\b[a-z0-9][a-z0-9-]{2,40}(?:\s?(?:\[\.\]|\(\.\)|,|•|·)\s?|\.\s+)(?:com\.ng|com|org)\b/;
+  /\b[a-z0-9][a-z0-9-]{2,40}(?:\s?(?:\[\.\]|\(\.\)|,|•|·)\s?|\.\s{1,3})(?:com\.ng|com|org)\b/;
 /** "adeshop dot com", "adeshop .com". Only top-level domains that are not words ("polka dot net fabric"). */
 const SPELLED_DOMAIN_RE =
-  /\b[a-z0-9][a-z0-9-]{2,40}(?:\s+\.\s*|\s+dot\s+|\s*\(\s*dot\s*\)\s*|\s*\[\s*dot\s*\]\s*)(?:com\.ng|com|ng|org|io|africa)\b|\b[a-z0-9][a-z0-9-]{2,40}\s*(?:\(\s*dot\s*\)|\[\s*dot\s*\])\s*(?:store|shop|online|site|app|link|net|co|me|live)\b|\b(?!polka\b)[a-z0-9][a-z0-9-]{3,40}\s+dot\s+(?:store|shop|online|site)\b/i;
+  /\b[a-z0-9][a-z0-9-]{2,40}(?:\s{1,3}\.\s{0,3}|\s{1,3}dot\s{1,3}|\s{0,3}\(\s{0,3}dot\s{0,3}\)\s{0,3}|\s{0,3}\[\s{0,3}dot\s{0,3}\]\s{0,3})(?:com\.ng|com|ng|org|io|africa)\b|\b[a-z0-9][a-z0-9-]{2,40}\s{0,3}(?:\(\s{0,3}dot\s{0,3}\)|\[\s{0,3}dot\s{0,3}\])\s{0,3}(?:store|shop|online|site|app|link|net|co|me|live)\b|\b(?!polka\b)[a-z0-9][a-z0-9-]{3,40}\s{1,3}dot\s{1,3}(?:store|shop|online|site)\b/i;
 
-/** "@shopname" — needs a letter, and is not a price ("@5000", "@N5000"). */
-const HANDLE_RE = /(?:^|[\s(,;])@(?!(?:ngn|n|₦)?\s?\d)(?=[a-zA-Z0-9_.]{0,29}[a-zA-Z])[a-zA-Z0-9_.]{3,30}\b/i;
+/**
+ * The link is somewhere else: "link in bio", "my site is in my bio", "bio link",
+ * "check bio", "link dey my bio", "tap the link on my profile", "l1nk in bio",
+ * "my linktree". A phrase, not an address — held for a person. "Available in our
+ * bio range" names a product line, not a profile.
+ */
+const LINK_ELSEWHERE_RE = new RegExp(
+  String.raw`\b(?:l[i1!|]nks?|url|website|web\s?site|site|number|contact|whatsapp|handle|catalogu?e|price\s?list)\b[^.\n]{0,12}?\b(?:in|on|for|inside|dey)\s{1,3}(?:my\s{1,3}|our\s{1,3}|the\s{1,3})?(?:bio|profile|description)\b|\bbio[\s-]{0,2}l[i1]nk\b|\bcheck\s{1,3}(?:my\s{1,3}|our\s{1,3}|the\s{1,3})?(?:bio|profile)\b(?=[ \t]{0,3}(?:$|[\n.,;:!?)]|for\b|to\b))|\blink\s?tree\b|\blinktr\.?ee\b`,
+  "i",
+);
+/**
+ * A QR code or barcode sent as the way to order or chat: "scan the QR code to
+ * order", "QR code on the last picture, scan to order", "use the barcode in the
+ * picture to pay". Not "scan the QR code to pay at the counter" (a QR stand) or
+ * "scan the QR code on the box to verify it".
+ */
+const QR_STEER_RE =
+  /\b(?:scan|use)\b[^.\n]{0,40}?\b(?:qr|bar\s?code)\b[^.\n]{0,40}?\bto\s{1,3}(?:order|buy|chat|contact|message|dm|reach\s{1,3}(?:me|us)|pay\s{1,3}(?:me|us))\b|\b(?:qr|bar\s?code|code)\b[^.\n]{0,30}?\b(?:in|on)\s{1,3}the\s{1,3}(?:[a-z]{1,10}\s{1,3})?(?:picture|photo|image|pic|flyer|banner)s?\b[^.\n]{0,30}?\bto\s{1,3}(?:order|buy|chat|contact|message|dm|pay|reach)\b|\b(?:qr|bar\s?code)\b[^.\n]{0,40}?\bscan\s{1,3}(?:it\s{1,3})?to\s{1,3}(?:order|buy|chat|pay|contact)\b/i;
 
-const HANDLE_APPS = "ig|insta|instagram|tiktok|snapchat|snap|facebook|fb|twitter|telegram|threads";
+/** "search adeshop on Instagram", "we are adeshop_ng on tiktok". */
+const HANDLE_APPS = "ig|insta|instagram|tiktok|snapchat|facebook|fb|twitter|telegram|tg";
 /**
  * "IG adeshop_ng", "our tiktok is adeshop.ng", "snapchat adeshop22" — an app
- * followed by a handle-shaped word: letters with a "_", a "." or a digit in it.
+ * followed by a handle-shaped word.
  */
 const APP_THEN_HANDLE_RE = new RegExp(
   // The app name is a whole word and something separates it from the handle
-  // ("Snapchat." is not "snap" + "chat."). Handle-shaped means: an underscore, a
-  // dot INSIDE the word, or letters followed by a digit — "1080p" and "Reels." are not.
-  String.raw`\b(?:${HANDLE_APPS})\b(?:\s{1,3}(?:(?:is|handle|page|name|username|id|at)\s{1,3})?|\s{0,3}[:@–-]\s{0,3})@?(?=[a-z0-9_.]{0,30}(?:_|\.[a-z0-9]|[a-z]{3}[a-z0-9]{0,20}\d))[a-z0-9][a-z0-9_.]{2,29}[a-z0-9]\b`,
+  // ("Snapchat." is not "snap" + "chat.").
+  String.raw`\b(?:${HANDLE_APPS})\b(?:\s{1,3}(?:(?:is|handle|page|name|username|id|at)\s{1,3})?|\s{0,3}[:@–—-]\s{0,3})@?${HANDLE_SHAPED}\b`,
   "i",
 );
-/** "search adeshop on Instagram", "we are adeshop_ng on tiktok". */
+/** "my snap: adeshop22", "my gram is adeshop_ng": a short app name the seller owns, then a handle. */
+const POSSESSIVE_HANDLE_RE = new RegExp(
+  String.raw`\b(?:my|our)\s{1,3}(?:snap|threads|gram|ig|insta|tg|tiktok|telegram|twitter|x)\s{0,3}(?:is\s{1,3}|[:=@–—-]\s{0,3})?@?${HANDLE_SHAPED}\b`,
+  "i",
+);
 const HANDLE_ON_APP_RE = new RegExp(
-  // Handle-shaped as above, or written with its "@": "find inspiration on TikTok" is neither.
-  String.raw`\b(?:search|find|follow|check|add|we\s+are|i\s+am|i'?m)\s+(?:for\s+|out\s+|us\s+as\s+|me\s+as\s+)?(?:@[a-z0-9][a-z0-9_.]{2,29}|(?=[a-z0-9_.]{0,30}(?:_|\.[a-z0-9]|[a-z]{3}[a-z0-9]{0,20}\d))[a-z0-9][a-z0-9_.]{2,29})\s+on\s+(?:${HANDLE_APPS})\b`,
+  // Handle-shaped, or written with its "@": "find inspiration on TikTok" is neither.
+  String.raw`\b(?:search|find|follow|check|add|we\s{1,3}are|i\s{1,3}am|i'?m)\s{1,3}(?:for\s{1,3}|out\s{1,3}|us\s{1,3}as\s{1,3}|me\s{1,3}as\s{1,3})?(?:@[a-z0-9][a-z0-9_.]{2,29}|${HANDLE_SHAPED})\s{1,3}on\s{1,3}(?:${HANDLE_APPS})\b`,
   "i",
 );
 /** "search adeshop on Instagram": one plain word to look up. A person looks (it may be an ordinary word). */
 const WORD_ON_APP_RE = new RegExp(
-  String.raw`\b(?:search|find|follow|ping|buzz|holla|we\s+are|i\s+am|i'?m|we\s+dey\s+(?:for|on)\s+(?:${HANDLE_APPS})\s+as)\s+(?:for\s+)?([a-z][a-z0-9]{3,29})(?:\s+on\s+(?:${HANDLE_APPS})\b|\b(?<=\bas\s[a-z0-9]{4,30}))`,
+  String.raw`\b(?:search|find|follow|ping|buzz|holla|we\s{1,3}are|i\s{1,3}am|i'?m|we\s{1,3}dey\s{1,3}(?:for|on)\s{1,3}(?:${HANDLE_APPS})\s{1,3}as)\s{1,3}(?:for\s{1,3})?([a-z][a-z0-9]{3,29})(?:\s{1,3}on\s{1,3}(?:${HANDLE_APPS})\b|\b(?<=\bas\s[a-z0-9]{4,30}))`,
   "i",
 );
-/** Ordinary words that follow "find … on Instagram" in honest copy. */
+/**
+ * "IG adeshop", "tiktok adeshopng", "IG — adeshop": an app name, then one plain
+ * word ending the sentence. A person looks — unless the word is one honest copy
+ * puts there ("Instagram videos", "Facebook live", "Telegram stand").
+ */
+const APP_THEN_WORD_RE = new RegExp(
+  String.raw`\b(?:${HANDLE_APPS})\b\s{0,3}(?:(?:is|na|=|:|-|–|—)\s{0,3})?@?([a-z][a-z0-9]{3,29})\b(?=\s{0,3}(?:$|[.,;!?)\n]))`,
+  "gi",
+);
+/** Ordinary words that follow "find … on Instagram" or an app name in honest copy. */
 const NOT_A_HANDLE = new Set([
-  "more", "inspiration", "ideas", "them", "videos", "reviews", "prices", "deals", "tutorials", "styles",
-  "tips", "content", "photos", "pictures", "trends", "looks", "outfits", "designs", "recipes", "samples",
-  "examples", "updates", "people", "friends", "everything", "anything", "something", "others", "live",
+  "more", "inspiration", "ideas", "them", "videos", "video", "reviews", "prices", "deals", "tutorials", "styles",
+  "style", "tips", "content", "photos", "photo", "pictures", "picture", "pics", "trends", "trend", "trending", "looks",
+  "look", "outfits", "outfit", "designs", "recipes", "recipe", "samples", "examples", "updates", "update", "people",
+  "friends", "everything", "anything", "something", "others", "live", "reels", "reel", "stories", "story", "posts",
+  "post", "filters", "filter", "lenses", "lens", "business", "marketplace", "ads", "advert", "adverts", "clips",
+  "clip", "influencer", "influencers", "creator", "creators", "users", "user", "fans", "followers", "follower",
+  "famous", "viral", "ready", "worthy", "shop", "shops", "store", "stores", "page", "pages", "account", "accounts",
+  "handle", "handles", "streaming", "stream", "streams", "calls", "call", "chats", "chat", "groups", "group",
+  "channel", "channels", "status", "stickers", "sticker", "desktop", "apps", "compatible", "support", "supported",
+  "links", "lite", "messenger", "dance", "dances", "challenge", "challenges", "lights", "light", "ring", "tripod",
+  "selfie", "photography", "vlog", "vlogs", "vlogging", "marketing", "growth", "likes", "views", "feed", "grid",
+  "profile", "template", "templates", "accessories", "version", "premium", "verified", "boost", "promotion", "promo",
+  "sales", "seller", "sellers", "fashion", "inspired", "aesthetic", "baddie", "baddies", "shorts", "series", "games",
+  "game", "songs", "song", "music", "audio", "sound", "sounds", "effects", "effect", "campaign", "campaigns", "tricks",
+  "hacks", "inbox", "messages", "message", "notifications", "notification", "integration", "friendly", "optimized",
+  "optimised", "format", "formats", "size", "sizes", "ratio", "portrait", "landscape", "square", "vertical",
+  "horizontal", "resolution", "quality", "stand", "stands", "holder", "mount", "kit", "kits", "bundle", "lamp",
+  "backdrop", "backdrops", "studio", "shoots", "shoot", "content", "creator", "web", "voice", "notes", "backup",
 ]);
-/** "drop your number", "leave your contact in a review" — asking the BUYER for a way to reach them. */
-const CONTACT_REQUEST_RE =
-  /\b(?:drop|leave|put|send|share|give)\s+(?:me\s+|us\s+)?(?:your|ur)\s+(?:number|contact|digits|phone|whatsapp|line)\b/i;
-/** "link in bio", "my linktree", "scan the QR code to order". */
-const LINK_IN_BIO_RE =
-  /\blink\s+(?:is\s+)?in\s+(?:my\s+|our\s+|the\s+)?bio\b|\b(?:in|on)\s+(?:my|our)\s+bio\b|\b(?:is|are)\s+in\s+the\s+bio\b|\blinktree\b|\bscan\s+(?:the\s+|our\s+|my\s+|this\s+)?qr(?:\s+code)?\b[^.\n]{0,30}\b(?:order|pay|buy|contact|chat|reach)\b/i;
-/** "the number is on the picture" — the contact was moved where text rules cannot read it. */
+/** "@Lekki", "@home", "@retail" — the sign used for "at", not a handle. */
+const AT_NOT_A_HANDLE = new Set([
+  "home", "work", "office", "school", "church", "mosque", "night", "noon", "midnight", "dawn", "all", "any", "every",
+  "last", "least", "best", "first", "once", "cost", "price", "retail", "wholesale", "discount", "checkout", "delivery",
+  "pickup", "store", "shop", "the", "this", "that", "our", "your", "each", "only", "just", "affordable", "factory",
+  "source", "market", "marketplace", "lekki", "ikeja", "yaba", "ajah", "ikoyi", "surulere", "festac", "gbagada",
+  "ogba", "maryland", "magodo", "agege", "oshodi", "apapa", "mushin", "ikorodu", "badagry", "epe", "lagos", "abuja",
+  "ibadan", "kano", "kaduna", "enugu", "owerri", "onitsha", "aba", "uyo", "calabar", "asaba", "benin", "warri", "jos",
+  "ilorin", "abeokuta", "akure", "osogbo", "ife", "port", "phc", "nsukka", "makurdi", "lokoja", "minna", "sokoto",
+  "zaria", "ota", "sango", "mowe", "ibafo", "berger", "ojota", "ketu", "ikotun", "egbeda", "idimu", "ejigbo", "isolo",
+  "ilupeju", "obalende", "marina", "oniru", "chevron", "sangotedo", "ibeju", "wuse", "garki", "maitama", "gwarinpa",
+  "kubwa", "jabi", "utako", "asokoro", "nyanya", "lugbe", "victoria", "island", "mainland", "estate",
+]);
+/** "@shopname" — needs a letter, and is not a price ("@5000", "@N5000"). */
+const AT_WORD_RE = /(?:^|[\s(,;])@(?!(?:ngn|n|₦)?\s?\d)((?=[a-z0-9_.]{0,29}[a-z])[a-z0-9_.]{3,30})\b/gi;
+
+/**
+ * Asking the BUYER for a way to reach them: "drop your number", "comment your
+ * number", "tell me your number", "your number abeg, I go call you", "just drop
+ * number", "share your handle make I follow you". Not "put your phone on the pad",
+ * "your number plate", "your contact lenses", "your number on the jersey".
+ */
+const BUYER_NOUN = String.raw`(?:phone\s{1,3}(?:number|no)|mobile\s{1,3}(?:number|no)|whatsapp\s{1,3}(?:number|no|line)|number|digits|contacts?|whatsapp|wa\s{1,3}(?:number|no))`;
+const BUYER_NOUN_GUARD = String.raw`(?!\s{1,3}(?:plates?|lens(?:es)?|paper|adhesive|glue|grill|solution|on\s{1,3}(?:the|your|a)\s{1,3}(?:back|front|jersey|shirt|kit|cake|cap|sleeve|shorts|card)|printed|print|of\b|status|stickers?|chats?|backup|business|web|messages)\b)`;
+const BUYER_CONTACT_REQUEST_RE = new RegExp(
+  String.raw`\b(?:drop|leave|put|send|share|give|comment|write|type|tell|post|enter|paste|key\s{1,3}in|provide|submit|forward|whatsapp|inbox|dm)\s{1,3}(?:me\s{1,3}|us\s{1,3})?(?:your|ur|yr)\s{1,3}${BUYER_NOUN}\b${BUYER_NOUN_GUARD}|\b(?:drop|leave|send|share|give|comment|post)\s{1,3}(?:me\s{1,3}|us\s{1,3})?(?:number|digits)\b${BUYER_NOUN_GUARD}|\b(?:your|ur|yr)\s{1,3}${BUYER_NOUN}\b${BUYER_NOUN_GUARD}[^.\n]{0,12}?\b(?:abeg|pls|please|make\s{1,3}(?:i|we)|so\s{1,3}(?:i|we)|i\s{1,3}(?:go|will|wil)|i'll|we\s{1,3}(?:go|will))\b|\b(?:share|drop|send|give)\s{1,3}(?:me\s{1,3}|us\s{1,3})?(?:your|ur)\s{1,3}(?:ig\s{1,3}|instagram\s{1,3}|tiktok\s{1,3}|snap\s{1,3})?handle\b(?=[ \t]{0,3}(?:make\s{1,3}(?:i|we)|so\s{1,3}(?:i|we)|for\s{1,3}(?:me|us)|[\n.,!]|$))`,
+  "i",
+);
+/**
+ * The number was moved where text rules cannot read it: "the number is on the
+ * picture", "my WhatsApp number is in the picture". Not "the phone is in the
+ * picture for size" or "part number is in the picture".
+ */
 const CONTACT_IN_IMAGE_RE =
-  /\b(?:number|contact|phone|whatsapp|digits|line)\s+(?:is|are)\s+(?:on|in)\s+the\s+(?:picture|photo|image|pic|flyer|banner)s?\b/i;
+  /\b(?:(?:my|our)\s{1,3}(?:whatsapp\s{1,3}|phone\s{1,3}|mobile\s{1,3}|contact\s{1,3}|account\s{1,3}|bank\s{1,3})?(?:number|digits|contacts?|line|whatsapp|details|handle|ig|instagram|account)|the\s{1,3}(?:whatsapp\s{1,3}|phone\s{1,3}|mobile\s{1,3}|contact\s{1,3})?(?:number|digits)|contact\s{1,3}(?:number|details|info))\s{1,3}(?:is|are|dey|na)\s{1,3}(?:on|in|for)\s{1,3}(?:the|my|our|this)\s{1,3}(?:[a-z]{1,10}\s{1,3})?(?:picture|photo|image|pic|flyer|banner|poster|video)s?\b/i;
+/** "check my store name for my number", "details in my store name". Never "see our shop for the details". */
+const CONTACT_ELSEWHERE_RE =
+  /\b(?:check|see|look\s{1,3}at|view|visit|open)\s{1,3}(?:my|our|the)\s{1,3}(?:store|shop|profile|bio|page)(?:\s{1,3}name)?\s{1,3}for\s{1,3}(?:my|our)\s{1,3}(?:number|contact|phone|whatsapp|digits|line|details|account)\b|\b(?:number|contact|digits|whatsapp|details|account(?:\s{1,3}details)?)\s{1,3}(?:is\s{1,3}|are\s{1,3})?(?:in|on)\s{1,3}(?:my|our|the)\s{1,3}(?:store|shop)\s{1,3}name\b/i;
+
+/** Phone evidence that comes from a phrase, not from digits. */
+const PHRASE_EVIDENCE = new Set(["contact_elsewhere"]);
+/** Handle evidence that is a datum (a handle-shaped word, an @handle, a capitalised name). */
+const DATUM_HANDLE_EVIDENCE = new Set(["app_handle", "handle"]);
+
+function appThenWord(text: string): boolean {
+  APP_THEN_WORD_RE.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = APP_THEN_WORD_RE.exec(text)) !== null) {
+    if (!NOT_A_HANDLE.has(match[1].toLowerCase())) return true;
+  }
+  return false;
+}
+
+function atHandle(text: string): boolean {
+  AT_WORD_RE.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = AT_WORD_RE.exec(text)) !== null) {
+    if (!AT_NOT_A_HANDLE.has(match[1].toLowerCase().replace(/\.+$/, ""))) return true;
+  }
+  return false;
+}
 
 // ---- Public API ------------------------------------------------------------
 
@@ -876,12 +1454,14 @@ export function detectContactDetails(input: string): ContactDetailsResult {
   }
 
   // A wa.me / t.me link is a phone number or a handle by another name.
-  if (CONTACT_LINK_RE.test(text) || LINK_IN_BIO_RE.test(text)) {
+  if (CONTACT_LINK_RE.test(text) || SPELLED_CONTACT_LINK_RE.test(text)) {
     hits.push({ kind: "link", confidence: "high", evidence: "contact_link" });
   } else if (URL_RE.test(text)) {
     hits.push({ kind: "link", confidence: "medium", evidence: "url" });
   } else if (PATH_LINK_RE.test(text)) {
     hits.push({ kind: "link", confidence: "medium", evidence: "link_path" });
+  } else if (LINK_ELSEWHERE_RE.test(text) || QR_STEER_RE.test(text)) {
+    hits.push({ kind: "link", confidence: "medium", evidence: "link_elsewhere" });
   }
 
   if (EMAIL_RE.test(text) || AT_WEBMAIL_RE.test(text)) {
@@ -894,12 +1474,12 @@ export function detectContactDetails(input: string): ContactDetailsResult {
     WEBMAIL_LABEL_RE.test(text)
   ) {
     hits.push({ kind: "email", confidence: "high", evidence: "email_spelled" });
-  } else if (WEBMAIL_HINT_RE.test(text) || WEBMAIL_MENTION_RE.test(text)) {
+  } else if (WEBMAIL_HINT_RE.test(text) || WEBMAIL_POINTER_RE.test(text)) {
     hits.push({ kind: "email", confidence: "medium", evidence: "webmail_hint" });
   } else if (EMAIL_LIKE_RE.test(text)) {
     hits.push({ kind: "email", confidence: "medium", evidence: "email_like" });
   } else if (
-    !hits.some((hit) => hit.kind === "link") &&
+    !hits.some((hit) => hit.kind === "link" && hit.evidence !== "link_elsewhere") &&
     (BARE_DOMAIN_RE.test(text) ||
       WORD_DOMAIN_RE.test(text) ||
       WORD_DOMAIN_CAPS_RE.test(text) ||
@@ -910,42 +1490,59 @@ export function detectContactDetails(input: string): ContactDetailsResult {
   }
 
   // Two readings of the same text: "|" as a look-alike for 1, and "|" as a divider
-  // between groups. A number glued to a word ("call08031234567") is cut free first.
+  // between groups. A number glued to a word ("call08031234567") is cut free first,
+  // and "S/N", "P/N" are read as the labels they are.
   const phoneText = text
     .replace(/(?<=[A-Za-z]{2})(?=\d{7})/g, " ")
     .replace(/(?<=\d{7})(?=[A-Za-z]{2})/g, " ")
     .replace(/(^|[^A-Za-z0-9])([A-Za-z])(?=(?:0|234)[789][01]\d{8}(?!\d))/g, "$1$2 ")
-    .replace(/((?:^|[^0-9])(?:0|234)[789][01]\d{8})(?=[A-Za-z])/g, "$1 ");
+    .replace(/((?:^|[^0-9])(?:0|234)[789][01]\d{8})(?=[A-Za-z])/g, "$1 ")
+    .replace(/\b([SsPp])\s?\/\s?([Nn])\b/g, "$1$2");
   const readings = phoneText.includes("|") ? [phoneText, phoneText.replace(/\|/g, " ")] : [phoneText];
-  let strongestPhone: ContactHit | null = null;
+  const phone: { hit: ContactHit | null } = { hit: null };
+  const consider = (hit: ContactHit) => {
+    if (!phone.hit || CONFIDENCE_RANK[hit.confidence] > CONFIDENCE_RANK[phone.hit.confidence]) phone.hit = hit;
+  };
   for (const reading of readings) {
-    for (const run of collectPhoneRuns(reading)) {
+    const tokens = tokenize(reading);
+    const runs = collectPhoneRuns(tokens);
+    for (const run of runs) {
       const hit = classifyPhoneRun(run);
-      if (!hit) continue;
-      if (!strongestPhone || CONFIDENCE_RANK[hit.confidence] > CONFIDENCE_RANK[strongestPhone.confidence]) {
-        strongestPhone = hit;
+      if (hit) consider(hit);
+    }
+    if (phone.hit?.confidence !== "high" && joinsAcrossWords(runs, tokens)) consider(phoneHit("high", "ng_mobile_joined"));
+    if (phone.hit?.confidence !== "high") {
+      const { pieces, sequences } = placePieces(tokens);
+      if (sequences.some(([a, b]) => isNgMobile(a + b)) || piecesMake(pieces, isNgMobile, false)) {
+        consider(phoneHit("high", "ng_mobile_pieces"));
       }
     }
   }
-  if (CONTACT_IN_IMAGE_RE.test(text) || CONTACT_ELSEWHERE_RE.test(text) || CONTACT_REQUEST_RE.test(text)) {
-    strongestPhone = { kind: "phone", confidence: "high", evidence: "contact_elsewhere" };
-  } else if (
-    (!strongestPhone || strongestPhone.confidence === "low") &&
-    hasSplitNigerianMobile(phoneText)
-  ) {
-    strongestPhone = { kind: "phone", confidence: "medium", evidence: "ng_mobile_split" };
+  if ((!phone.hit || phone.hit.confidence === "low") && hasSplitNigerianMobile(phoneText)) {
+    consider(phoneHit("medium", "ng_mobile_split"));
   }
-  if (strongestPhone) hits.push(strongestPhone);
-
+  // A phrase that asks for, or points to, a number that is not in the text: a person looks.
   if (
+    (!phone.hit || phone.hit.confidence === "low") &&
+    (CONTACT_IN_IMAGE_RE.test(text) || CONTACT_ELSEWHERE_RE.test(text) || BUYER_CONTACT_REQUEST_RE.test(text))
+  ) {
+    phone.hit = phoneHit("medium", "contact_elsewhere");
+  }
+  if (phone.hit) hits.push(phone.hit);
+
+  // Steering to an app is a phrase (held); an app used as the label of a number or
+  // a handle is the whole instruction (refused).
+  if (APP_LABEL_DATUM_RE.test(text)) {
+    hits.push({ kind: "messaging_app", confidence: "high", evidence: "app_label" });
+  } else if (
     APP_STEER_PRONOUN_RE.test(text) ||
+    APP_AS_VERB_RE.test(text) ||
     APP_POSSESSIVE_RE.test(text) ||
     APP_CHANNEL_RE.test(text) ||
-    APP_LABEL_RE.test(text) ||
     APP_DESTINATION_RE.test(text) ||
     APP_SLANG_RE.test(text)
   ) {
-    hits.push({ kind: "messaging_app", confidence: "high", evidence: "app_steer" });
+    hits.push({ kind: "messaging_app", confidence: "medium", evidence: "app_steer" });
   } else if (DM_RE.test(text)) {
     hits.push({ kind: "messaging_app", confidence: "medium", evidence: "dm_request" });
   } else if (APP_MENTION_RE.test(text)) {
@@ -957,28 +1554,38 @@ export function detectContactDetails(input: string): ContactDetailsResult {
   const word = WORD_ON_APP_RE.exec(text);
   if (
     APP_THEN_HANDLE_RE.test(text) ||
+    POSSESSIVE_HANDLE_RE.test(text) ||
     HANDLE_ON_APP_RE.test(text) ||
+    SLANG_HANDLE_RE.test(text) ||
+    TAGGED_HANDLE_RE.test(text) ||
     // A capitalised name to look up ("find Ade Shop NG on Facebook"), not "find the latest styles on …".
     (named !== null && /^[A-Z]/.test(named[1]))
   ) {
     hits.push({ kind: "social_handle", confidence: "high", evidence: "app_handle" });
-  } else if (word !== null && !NOT_A_HANDLE.has(word[1].toLowerCase())) {
+  } else if ((word !== null && !NOT_A_HANDLE.has(word[1].toLowerCase())) || appThenWord(text)) {
     hits.push({ kind: "social_handle", confidence: "medium", evidence: "word_on_app" });
-  } else if (HANDLE_RE.test(text) && !hits.some((hit) => hit.kind === "email")) {
+  } else if (!hits.some((hit) => hit.kind === "email") && atHandle(text)) {
     hits.push({ kind: "social_handle", confidence: "medium", evidence: "handle" });
   }
 
   // A messaging app named next to a number or a handle is the whole instruction.
+  // Only a datum lifts it: a phrase next to an app stays a phrase.
   const hasApp = hits.some((hit) => hit.kind === "messaging_app");
-  const hasReach = hits.some(
-    (hit) => (hit.kind === "phone" && hit.confidence !== "low") || hit.kind === "social_handle",
+  const hasDatum = hits.some(
+    (hit) =>
+      (hit.kind === "phone" && hit.confidence !== "low" && !PHRASE_EVIDENCE.has(hit.evidence)) ||
+      (hit.kind === "social_handle" && DATUM_HANDLE_EVIDENCE.has(hit.evidence)),
   );
-  if (hasApp && hasReach) {
+  if (hasApp && hasDatum) {
     for (const hit of hits) {
       if (hit.kind === "messaging_app" && hit.confidence !== "high") {
         hit.confidence = "high";
         hit.evidence = "app_with_contact";
-      } else if ((hit.kind === "phone" || hit.kind === "social_handle") && hit.confidence === "medium") {
+      } else if (
+        hit.confidence === "medium" &&
+        ((hit.kind === "phone" && !PHRASE_EVIDENCE.has(hit.evidence)) ||
+          (hit.kind === "social_handle" && DATUM_HANDLE_EVIDENCE.has(hit.evidence)))
+      ) {
         hit.confidence = "high";
         hit.evidence = `${hit.evidence}_with_app`;
       }

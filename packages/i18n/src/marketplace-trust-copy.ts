@@ -29,6 +29,7 @@ export type MarketplaceTrustReasonKey =
   | "contact_details"
   | "off_platform_payment"
   | "incomplete_listing"
+  | "listing_too_long"
   | "price_invalid"
   | "image_not_first_party"
   | "plan_listing_limit"
@@ -256,6 +257,10 @@ const EN: MarketplaceTrustCopy = {
       label: "Listing is incomplete",
       fix: "Add a clear title, a sentence or two of description and at least one photo.",
     },
+    listing_too_long: {
+      label: "Text too long",
+      fix: "Shorten the text and publish again. A title or name fits in 300 characters, a description or story in 20,000, and any other field in 1,000.",
+    },
     price_invalid: {
       label: "Price needs fixing",
       fix: "Enter a whole-number price above zero. A previous price must be higher than the selling price.",
@@ -481,6 +486,7 @@ const FR: DeepPartial<MarketplaceTrustCopy> = {
     contact_details: { label: "Coordonnées dans l'annonce", fix: "Retirez numéros, e-mails, liens et identifiants de messagerie. Les acheteurs vous contactent par la messagerie {brand}, ce qui vous protège tous les deux." },
     off_platform_payment: { label: "Paiement hors {brand}", fix: "Retirez toute demande de paiement par virement, espèces, crypto ou hors du paiement en ligne. Le paiement passe par {brand} pour protéger la commande." },
     incomplete_listing: { label: "Annonce incomplète", fix: "Ajoutez un titre clair, une ou deux phrases de description et au moins une photo." },
+    listing_too_long: { label: "Texte trop long", fix: "Raccourcissez le texte puis publiez à nouveau. Un titre ou un nom tient en 300 caractères, une description ou une présentation en 20 000, et tout autre champ en 1 000." },
     price_invalid: { label: "Prix à corriger", fix: "Saisissez un prix entier supérieur à zéro. L'ancien prix doit être plus élevé que le prix de vente." },
     image_not_first_party: { label: "Photo non téléversée ici", fix: "Ajoutez vos photos avec le bouton de téléversement. Les liens vers des images hébergées ailleurs ne sont pas acceptés." },
     plan_listing_limit: { label: "Quota d'annonces du forfait atteint", fix: "Retirez une annonce ou passez à un forfait supérieur." },
@@ -628,6 +634,7 @@ const ES: DeepPartial<MarketplaceTrustCopy> = {
     contact_details: { label: "Datos de contacto en el anuncio", fix: "Elimina teléfonos, correos, enlaces y usuarios de mensajería. Los compradores te escriben por los mensajes de {brand}, lo que os protege a ambos." },
     off_platform_payment: { label: "Pago fuera de {brand}", fix: "Elimina cualquier petición de pago por transferencia, efectivo, cripto o fuera del pago en línea. El pago pasa por {brand} para proteger el pedido." },
     incomplete_listing: { label: "Anuncio incompleto", fix: "Añade un título claro, una o dos frases de descripción y al menos una foto." },
+    listing_too_long: { label: "Texto demasiado largo", fix: "Acorta el texto y publica de nuevo. Un título o un nombre caben en 300 caracteres, una descripción o una historia en 20.000, y cualquier otro campo en 1.000." },
     price_invalid: { label: "Precio por corregir", fix: "Introduce un precio entero mayor que cero. El precio anterior debe ser superior al de venta." },
     image_not_first_party: { label: "Foto no subida aquí", fix: "Añade las fotos con el botón de subida. No se aceptan enlaces a imágenes alojadas en otro sitio." },
     plan_listing_limit: { label: "Cupo de anuncios del plan completo", fix: "Retira un anuncio o pasa a un plan mayor." },
@@ -775,6 +782,7 @@ const PT: DeepPartial<MarketplaceTrustCopy> = {
     contact_details: { label: "Contactos no anúncio", fix: "Remova telefones, e-mails, ligações e contas de mensagens. Os compradores falam consigo pelas mensagens {brand}, o que protege ambos." },
     off_platform_payment: { label: "Pagamento fora do {brand}", fix: "Remova qualquer pedido de pagamento por transferência, dinheiro, cripto ou fora do checkout. O pagamento passa pelo {brand} para proteger a encomenda." },
     incomplete_listing: { label: "Anúncio incompleto", fix: "Adicione um título claro, uma ou duas frases de descrição e pelo menos uma foto." },
+    listing_too_long: { label: "Texto demasiado longo", fix: "Encurte o texto e publique novamente. Um título ou nome cabe em 300 caracteres, uma descrição ou história em 20 000, e qualquer outro campo em 1000." },
     price_invalid: { label: "Preço por corrigir", fix: "Indique um preço inteiro acima de zero. O preço anterior tem de ser superior ao preço de venda." },
     image_not_first_party: { label: "Foto não carregada aqui", fix: "Adicione fotos com o botão de carregamento. Não são aceites ligações para imagens alojadas noutro sítio." },
     plan_listing_limit: { label: "Limite de anúncios do plano atingido", fix: "Remova um anúncio ou mude para um plano maior." },
@@ -922,6 +930,7 @@ const DE: DeepPartial<MarketplaceTrustCopy> = {
     contact_details: { label: "Kontaktdaten im Angebot", fix: "Entfernen Sie Telefonnummern, E-Mails, Links und Messenger-Namen. Käufer erreichen Sie über {brand}-Nachrichten – das schützt beide Seiten." },
     off_platform_payment: { label: "Zahlung außerhalb von {brand}", fix: "Entfernen Sie jede Bitte um Zahlung per Überweisung, bar, Krypto oder außerhalb des Checkouts. Die Zahlung läuft über {brand}, damit die Bestellung geschützt ist." },
     incomplete_listing: { label: "Angebot unvollständig", fix: "Ergänzen Sie einen klaren Titel, ein bis zwei Sätze Beschreibung und mindestens ein Foto." },
+    listing_too_long: { label: "Text zu lang", fix: "Kürzen Sie den Text und veröffentlichen Sie erneut. Ein Titel oder Name hat bis zu 300 Zeichen, eine Beschreibung oder Geschichte bis zu 20.000 und jedes andere Feld bis zu 1.000." },
     price_invalid: { label: "Preis korrigieren", fix: "Geben Sie einen ganzzahligen Preis über null ein. Der frühere Preis muss über dem Verkaufspreis liegen." },
     image_not_first_party: { label: "Foto nicht hier hochgeladen", fix: "Fügen Sie Fotos über die Upload-Schaltfläche hinzu. Links zu extern gehosteten Bildern werden nicht akzeptiert." },
     plan_listing_limit: { label: "Angebotskontingent des Tarifs ausgeschöpft", fix: "Entfernen Sie ein Angebot oder wechseln Sie in einen größeren Tarif." },
@@ -1069,6 +1078,7 @@ const IT: DeepPartial<MarketplaceTrustCopy> = {
     contact_details: { label: "Contatti nell'annuncio", fix: "Rimuovi numeri, e-mail, link e nomi utente. Gli acquirenti ti scrivono dai messaggi {brand}, che tutelano entrambi." },
     off_platform_payment: { label: "Pagamento fuori da {brand}", fix: "Rimuovi ogni richiesta di pagamento con bonifico, contanti, cripto o fuori dal checkout. Il pagamento passa da {brand} per proteggere l'ordine." },
     incomplete_listing: { label: "Annuncio incompleto", fix: "Aggiungi un titolo chiaro, una o due frasi di descrizione e almeno una foto." },
+    listing_too_long: { label: "Testo troppo lungo", fix: "Accorcia il testo e pubblica di nuovo. Un titolo o un nome stanno in 300 caratteri, una descrizione o una storia in 20.000 e ogni altro campo in 1.000." },
     price_invalid: { label: "Prezzo da correggere", fix: "Inserisci un prezzo intero maggiore di zero. Il prezzo precedente deve essere superiore a quello di vendita." },
     image_not_first_party: { label: "Foto non caricata qui", fix: "Aggiungi le foto con il pulsante di caricamento. Non si accettano link a immagini ospitate altrove." },
     plan_listing_limit: { label: "Limite annunci del piano raggiunto", fix: "Rimuovi un annuncio o passa a un piano superiore." },
@@ -1217,6 +1227,7 @@ const AR: DeepPartial<MarketplaceTrustCopy> = {
     contact_details: { label: "بيانات اتصال في الإعلان", fix: "احذف أرقام الهاتف والبريد والروابط وحسابات المراسلة. يتواصل المشترون معك عبر رسائل {brand}، وهذا يحمي الطرفين." },
     off_platform_payment: { label: "دفع خارج {brand}", fix: "احذف أي طلب للدفع بالتحويل أو نقدًا أو بالعملات الرقمية أو خارج صفحة الدفع. الدفع يتم عبر {brand} لحماية الطلب." },
     incomplete_listing: { label: "الإعلان غير مكتمل", fix: "أضف عنوانًا واضحًا وجملة أو جملتين للوصف وصورة واحدة على الأقل." },
+    listing_too_long: { label: "النص طويل جدًا", fix: "اختصر النص ثم انشر مرة أخرى. العنوان أو الاسم حتى 300 حرف، والوصف أو القصة حتى 20,000 حرف، وأي حقل آخر حتى 1,000 حرف." },
     price_invalid: { label: "السعر يحتاج تصحيحًا", fix: "أدخل سعرًا صحيحًا أكبر من صفر. السعر السابق يجب أن يكون أعلى من سعر البيع." },
     image_not_first_party: { label: "صورة غير مرفوعة هنا", fix: "أضف الصور بزر الرفع. لا تُقبل روابط صور مستضافة في مكان آخر." },
     plan_listing_limit: { label: "اكتمل حد إعلانات الباقة", fix: "احذف إعلانًا أو انتقل إلى باقة أكبر." },
@@ -1365,6 +1376,7 @@ const ZH: DeepPartial<MarketplaceTrustCopy> = {
     contact_details: { label: "商品中含联系方式", fix: "请删除电话、邮箱、链接和通讯账号。买家通过 {brand} 消息联系您，这对双方都有保障。" },
     off_platform_payment: { label: "在 {brand} 之外付款", fix: "请删除任何要求转账、现金、加密货币或在结账流程之外付款的内容。付款通过 {brand} 完成，订单才受保护。" },
     incomplete_listing: { label: "商品信息不完整", fix: "请添加清晰的标题、一两句描述和至少一张图片。" },
+    listing_too_long: { label: "文字过长", fix: "请缩短文字后重新发布。标题或名称不超过 300 个字符，描述或介绍不超过 20,000 个字符，其他字段不超过 1,000 个字符。" },
     price_invalid: { label: "价格需要修正", fix: "请输入大于零的整数价格。原价必须高于售价。" },
     image_not_first_party: { label: "图片不是在此上传", fix: "请使用上传按钮添加图片。不接受托管在其他地方的图片链接。" },
     plan_listing_limit: { label: "套餐商品额度已满", fix: "请移除一个商品或升级套餐。" },

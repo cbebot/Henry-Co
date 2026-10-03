@@ -145,8 +145,9 @@ const CASES: Record<GateReasonCode, () => GateVerdict> = {
   contact_details: () =>
     evaluateListingPolicy(withListing({ description: "Lovely kettle, boils fast. Call o8o 3123 4567 to order today." })),
   off_platform_payment: () =>
-    evaluateListingPolicy(withListing({ deliveryNote: "Pay me directly, bank transfer only, and save the fee." })),
+    evaluateListingPolicy(withListing({ deliveryNote: "Pay into GTB 0123 456 789 and save the fee." })),
   incomplete_listing: () => verdictOf({ images: { refs: [], notFirstParty: [], foreignRefs: [], matches: [] } }),
+  listing_too_long: () => evaluateListingPolicy(withListing({ description: "Stainless kettle. ".repeat(1_200) })),
   price_invalid: () => evaluateListingPolicy(withListing({ basePrice: 0 })),
   image_not_first_party: () =>
     verdictOf({
@@ -370,9 +371,21 @@ describe("the store profile check at onboarding", () => {
     }
   });
 
-  it("payment steering and prohibited goods are refused", () => {
-    assert.ok(profile({ story: "Pay me directly by bank transfer only and skip the fee." }).reasons.includes("off_platform_payment"));
+  it("an account to pay into and prohibited goods are refused; steering with no account is held", () => {
+    assert.ok(profile({ story: "Pay into my GTB account 0123456789 and skip the fee." }).reasons.includes("off_platform_payment"));
     assert.equal(profile({ storeName: "AK-47 rifles and ammo depot" }).outcome === "publish", false);
+    const steering = profile({ story: "Pay me directly by bank transfer only and skip the fee." });
+    assert.equal(steering.outcome, "hold");
+    assert.ok(steering.reasons.includes("scam_language"));
+  });
+
+  it("a store profile past the size limit is refused before any rule reads it", () => {
+    const verdict = profile({ story: "We sell kettles. ".repeat(1_300) });
+    assert.equal(verdict.outcome, "reject");
+    assert.deepEqual(verdict.reasons, ["listing_too_long"]);
+    assert.deepEqual(verdict.moderationDetail, []);
+    assert.equal(profile({ storeName: "A".repeat(301) }).outcome, "reject");
+    assert.equal(profile({ storeName: "A".repeat(300) }).outcome, "publish");
   });
 
   it("an ambiguous profile goes to a person rather than opening", () => {
@@ -464,6 +477,40 @@ describe("the sweep's decisions on an already-live listing", () => {
   it("the threshold is three independent buyers in fourteen days", () => {
     assert.equal(REPORTS_HIDE_THRESHOLD, 3);
     assert.equal(REPORTS_WINDOW_DAYS, 14);
+  });
+});
+
+describe("text past the size limit is refused before any rule reads it", () => {
+  const limits: Array<[string, Partial<ListingGateInput["listing"]>, Partial<ListingGateInput["listing"]>]> = [
+    ["title", { title: "K".repeat(300) }, { title: "K".repeat(301) }],
+    ["URL handle", { slug: "k".repeat(300) }, { slug: "k".repeat(301) }],
+    ["summary", { summary: "S".repeat(1_000) }, { summary: "S".repeat(1_001) }],
+    ["SKU", { sku: "K".repeat(1_000) }, { sku: "K".repeat(1_001) }],
+    ["delivery note", { deliveryNote: "D".repeat(1_000) }, { deliveryNote: "D".repeat(1_001) }],
+    ["lead time", { leadTime: "L".repeat(1_000) }, { leadTime: "L".repeat(1_001) }],
+    ["one specification value", { specificationValues: ["V".repeat(1_000)] }, { specificationValues: ["V".repeat(1_001)] }],
+    ["all specification values", { specificationValues: Array(20).fill("V".repeat(1_000)) }, { specificationValues: [...Array(20).fill("V".repeat(1_000)), "V"] }],
+    ["description", { description: "D".repeat(20_000) }, { description: "D".repeat(20_001) }],
+  ];
+  for (const [name, at, over] of limits) {
+    it(`${name}: at the limit it is read; one character over, it is refused`, () => {
+      const read = evaluateListingPolicy(withListing(at));
+      assert.ok(!read.reasons.includes("listing_too_long"), JSON.stringify(read.reasons));
+      const refused = evaluateListingPolicy(withListing(over));
+      assert.equal(refused.outcome, "reject");
+      assert.deepEqual(refused.reasons, ["listing_too_long"]);
+      assert.deepEqual(refused.signals.moderationDetail, []);
+    });
+  }
+
+  it("a refusal for size is not a policy violation: the sweep never takes a listing down for it", () => {
+    assert.equal(rescanDecision({ codes: ["listing_too_long"], origin: "policy_engine" }).action, "clear");
+  });
+
+  it("the refusal is immediate, however long the text", () => {
+    const started = performance.now();
+    evaluateListingPolicy(withListing({ description: "o8o3 l23 4567 ".repeat(100_000) }));
+    assert.ok(performance.now() - started < 500);
   });
 });
 
@@ -627,6 +674,8 @@ describe("moderation token mapping", () => {
     assert.deepEqual(codesFromModerationDetail(["contact:link:medium"]), ["contact_suspected"]);
     assert.deepEqual(codesFromModerationDetail(["contact:messaging_app:low"]), []);
     assert.deepEqual(codesFromModerationDetail(["scam:payment_diversion"]), ["off_platform_payment"]);
+    // Steering with no account to pay into is a hold, never a refusal.
+    assert.deepEqual(codesFromModerationDetail(["scam:payment_steering"]), ["scam_language"]);
     assert.deepEqual(codesFromModerationDetail(["scam:phishing"]), ["scam_language"]);
     assert.deepEqual(codesFromModerationDetail(["image:known_bad"]), ["known_bad_image"]);
     assert.deepEqual(codesFromModerationDetail(["signal:urgency", "signal:address"]), ["urgency_language", "pickup_address"]);

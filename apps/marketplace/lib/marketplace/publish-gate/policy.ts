@@ -99,47 +99,160 @@ const MAX_PRICE = 1_000_000_000;
  * must meet the same rule as one listed under "phones". Only above a price where
  * it matters, and not for accessories priced as accessories.
  *
- * Matched on whole words, and on runs of up to six words read together, after
- * folding look-alikes ("iph0ne", "i-phone", "sam sung" all read as the brand).
+ * Read as words after folding look-alikes: "iph0ne", "1phone", "i-phone", "sam
+ * sung" and "S A M S U N G" all read as the brand, and common misspellings
+ * ("Samsumg", "Infinx") as the word meant. Brands that also make televisions,
+ * washing machines and routers count only when the listing is not one of those.
  */
-const HIGH_RISK_TOKENS: ReadonlySet<string> = new Set([
+const HIGH_RISK_DEVICES: ReadonlySet<string> = new Set([
   "iphone", "ipad", "macbook", "imac", "smartphone", "androidphone", "mobilephone", "cellphone", "smartwatch",
-  "applewatch", "samsung", "galaxy", "tecno", "infinix", "itel", "redmi", "xiaomi", "oppo", "vivo", "huawei",
-  "nokia", "oneplus", "pixel6", "pixel7", "pixel8", "pixel9", "laptop", "playstation", "ps4", "ps5", "xbox",
-  "nintendoswitch", "airpods", "rolex", "cartier", "patekphilippe", "audemarspiguet", "18kgold", "22kgold",
-  "24kgold", "18karat", "22karat", "24karat", "diamondring",
+  "applewatch", "redmi", "oneplus", "camon", "pova", "laptop", "playstation", "ps4", "ps5", "xbox", "nintendoswitch",
+  "airpods", "rolex", "cartier", "patekphilippe", "audemarspiguet", "18kgold", "22kgold", "24kgold", "18karat",
+  "22karat", "24karat", "diamondring",
+]);
+/** Brands that sell phones AND appliances: a phone only when the listing is not an appliance. */
+const DUAL_USE_BRANDS: ReadonlySet<string> = new Set([
+  "samsung", "xiaomi", "huawei", "vivo", "oppo", "nokia", "tecno", "infinix", "itel",
+]);
+const MISSPELLINGS: Readonly<Record<string, string>> = {
+  samsumg: "samsung", samsun: "samsung", samsong: "samsung", sumsung: "samsung", samsang: "samsung",
+  sansung: "samsung", samung: "samsung", infinx: "infinix", infinex: "infinix", infinics: "infinix",
+  iphon: "iphone", ifone: "iphone", iphne: "iphone", aiphone: "iphone", ipone: "iphone", airpod: "airpods",
+  aipods: "airpods", macbok: "macbook", playstaion: "playstation", playstion: "playstation", xiomi: "xiaomi",
+  xaomi: "xiaomi", huwei: "huawei", hauwei: "huawei", readmi: "redmi", rollex: "rolex", rolax: "rolex",
+};
+/** Words that make a dual-use brand a phone, a tablet or a watch. */
+const PHONE_WORDS: ReadonlySet<string> = new Set([
+  "phone", "phones", "smartphone", "handset", "mobile", "tablet", "tab", "watch", "earbuds", "buds",
+]);
+/** Goods a dual-use brand also sells, that a new store is not held on. */
+const APPLIANCE_WORDS: ReadonlySet<string> = new Set([
+  "tv", "television", "uhd", "qled", "smarttv", "washing", "washer", "dryer", "fridge", "refrigerator", "freezer",
+  "microwave", "oven", "cooker", "router", "modem", "mifi", "vacuum", "cleaner", "aircon", "conditioner", "monitor",
+  "soundbar", "printer", "projector", "scooter", "shoes", "sneakers", "barefoot", "kettle", "blender", "fan", "iron",
+  "dishwasher", "inverter", "generator", "ssd", "hdd", "powerbank", "toner", "cartridge",
+]);
+/** "18k gold PLATED", "diamond ring LIGHT": the precious word describes something else. */
+const NOT_PRECIOUS: ReadonlySet<string> = new Set([
+  "plated", "plating", "filled", "tone", "toned", "coloured", "colored", "colour", "color", "look", "finish",
+  "effect", "layered", "dipped", "light", "lights",
 ]);
 export const HIGH_RISK_CONTENT_MIN_PRICE = 50_000;
 /** Below this, a listing that says it is an accessory is taken at its word. */
 const ACCESSORY_MAX_PRICE = 100_000;
 const ACCESSORY_RE =
-  /\b(?:case|cases|cover|covers|protector|protectors|screen\s*guard|tempered\s*glass|charger|chargers|cable|cables|adapter|adaptor|strap|straps|stand|holder|mount|pouch|skin|sticker|sleeve)\b/i;
+  /\b(?:case|cases|cover|covers|protector|protectors|screen\s{0,2}guard|tempered\s{0,2}glass|charger|chargers|cable|cables|adapter|adaptor|strap|straps|band|bands|stand|holder|mount|pouch|skin|sticker|sleeve|controller|controllers|gamepad|remote|dock)\b/i;
+/** Goods that name a device but are not one, at any price: "laptop backpack", "phone repair tool kit", "PS5 games". */
+const NOT_A_DEVICE_RE =
+  /\b(?:backpacks?|bags?|table|desk|tray|gimbal|stabili[sz]er|booster|repair|tools?|toolkit|kit|ring\s{1,2}light|lamp|games?(?!\s{1,3}(?:console|consoles|system))|discs?|cartridges?|shoes|sneakers|dress)\b/i;
+/** "with free case", "+ charger", "and stand": what comes after is an extra, not the item. */
+const CONNECTOR_RE = /\b(?:with|plus|and|free|incl|including|includes|bundle|bundled|comes)\b|[+&]/i;
 
-function hasHighRiskToken(text: string): boolean {
-  const words = foldForScreening(text)
-    .toLowerCase()
-    .replace(/0/g, "o")
-    .split(/[^a-z0-9]+/)
-    .filter(Boolean);
-  for (let start = 0; start < words.length; start += 1) {
-    let joined = "";
-    for (let end = start; end < words.length && end < start + 6; end += 1) {
-      joined += words[end];
-      if (HIGH_RISK_TOKENS.has(joined)) return true;
-      if (joined.length > 20) break;
+/** Lower-case words, with spelled-out letters joined ("s a m s u n g" -> "samsung") and misspellings read as meant. */
+function riskWords(text: string): string[] {
+  const raw = foldForScreening(text).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  const words: string[] = [];
+  let letters = "";
+  for (const word of raw) {
+    if (word.length === 1 && word >= "a" && word <= "z") {
+      letters += word;
+      continue;
     }
+    if (letters) words.push(letters);
+    letters = "";
+    words.push(word);
+  }
+  if (letters) words.push(letters);
+  return words.map((word) => {
+    if (HIGH_RISK_DEVICES.has(word) || DUAL_USE_BRANDS.has(word)) return word;
+    // "iph0ne", "1phone", "macb00k": a zero for o, a one for i.
+    const folded = word.replace(/0/g, "o").replace(/1(?=[a-z])/g, "i");
+    return MISSPELLINGS[word] ?? MISSPELLINGS[folded] ?? (HIGH_RISK_DEVICES.has(folded) || DUAL_USE_BRANDS.has(folded) ? folded : word);
+  });
+}
+
+const MODEL_AFTER_GALAXY_RE = /^(?:[saczmf]\d{1,3}[a-z]?|note\d{0,2}|z|fold\d?|flip\d?|tab|watch\d?|buds\d?)$/;
+
+/** `title` says what the item IS: only its words make a dual-use brand an appliance. */
+function hasHighRiskToken(text: string, title: string): boolean {
+  const words = riskWords(text);
+  const appliance = riskWords(title).some((word) => APPLIANCE_WORDS.has(word));
+  let dualUse = false;
+  let phoneWord = false;
+  for (let start = 0; start < words.length; start += 1) {
+    const word = words[start];
+    const next = words[start + 1] ?? "";
+    if (PHONE_WORDS.has(word)) phoneWord = true;
+    // Model names that are a phone on their own: "Galaxy S24", "Pixel 8", "Apple 15 Pro Max", "S24 Ultra".
+    // ("Galaxy" alone is a star projector or a print.)
+    if (word === "galaxy" && MODEL_AFTER_GALAXY_RE.test(next)) return true;
+    if (/^galaxy[saz]\d/.test(word)) return true;
+    if (word === "pixel" && /^\d{1,2}[a-z]?$/.test(next)) return true;
+    if (word === "apple" && /^\d{1,2}$/.test(next) && /^(?:pro|max|plus|mini|\d{2,4}gb)$/.test(words[start + 2] ?? "")) return true;
+    if (/^s\d{2}$/.test(word) && /^(?:ultra|plus|fe)$/.test(next)) return true;
+    let joined = "";
+    for (let end = start; end < words.length && end < start + 3; end += 1) {
+      joined += words[end];
+      if (joined.length > 20) break;
+      const after = words[end + 1] ?? "";
+      const parts = end - start + 1;
+      if (HIGH_RISK_DEVICES.has(joined)) {
+        // "10 x box" is ten boxes; "one plus one free" is an offer; "18k gold plated" is not gold.
+        if (joined === "xbox" && parts > 1 && /^\d/.test(words[start - 1] ?? "")) continue;
+        if (joined === "oneplus" && parts > 1 && !/^(?:\d{1,2}[a-z]?|nord|open|ace)$/.test(after)) continue;
+        if (/(?:gold|karat|ring)$/.test(joined) && NOT_PRECIOUS.has(after)) continue;
+        return true;
+      }
+      // "no Kia" is a car brand after "no".
+      if (DUAL_USE_BRANDS.has(joined) && !(joined === "nokia" && parts > 1)) dualUse = true;
+    }
+  }
+  return dualUse && (phoneWord || !appliance);
+}
+
+/** A model named in the description as the item itself ("Samsung Galaxy S24 Ultra, sealed"), not as what it fits. */
+const DESCRIPTION_MODEL_RE =
+  /\b(?:iphone\s?\d{1,2}|ipad\s?(?:pro|air|mini|\d{1,2})|macbook\s?(?:air|pro)|airpods(?:\s?(?:pro|max|\d))?|apple\s+watch|samsung\s+galaxy|galaxy\s+(?:[saczmf]\s?\d{1,3}|note|z\s?(?:fold|flip)|tab|watch|buds)|s\d{2}\s+(?:ultra|plus|fe)|ps\s?[45]|playstation\s?[45]|xbox\s+(?:series|one)|nintendo\s+switch|rolex\s+[a-z]{3,}|tecno\s+(?:camon|spark|pova|phantom)|infinix\s+(?:hot|note|zero|smart)|redmi\s+(?:note\s+)?\d{1,2}|pixel\s+\d{1,2}|oneplus\s+\d{1,2})\b/g;
+const COMPATIBILITY_RE = /\b(?:fits?|for|compatible|compatibility|works\s+with|work\s+with|supports?|designed\s+for|suitable\s+for|made\s+for)\b[^.\n]{0,25}$/;
+
+function describesHighRiskItem(description: string): boolean {
+  const text = riskWords(description).join(" ");
+  DESCRIPTION_MODEL_RE.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = DESCRIPTION_MODEL_RE.exec(text)) !== null) {
+    if (!COMPATIBILITY_RE.test(text.slice(Math.max(0, match.index - 40), match.index))) return true;
   }
   return false;
 }
 
+/**
+ * What the title is: an accessory or another non-device ("Samsung charger",
+ * "laptop backpack", "PS5 games") when that word heads it — it comes before any
+ * "with", "+" or "and" ("iPhone 11 with free case" is a phone).
+ */
+function titleHead(title: string): "accessory" | "not_device" | null {
+  const accessory = ACCESSORY_RE.exec(title);
+  const other = NOT_A_DEVICE_RE.exec(title);
+  const first = accessory && (!other || accessory.index <= other.index) ? accessory : other;
+  if (!first) return null;
+  if (CONNECTOR_RE.test(title.slice(0, first.index))) return null;
+  return first === accessory ? "accessory" : "not_device";
+}
+
 export function contentIsHighRisk(
-  listing: Pick<ListingGateInput["listing"], "title" | "summary" | "basePrice"> & { slug?: string },
+  listing: Pick<ListingGateInput["listing"], "title" | "summary" | "basePrice"> & { slug?: string; description?: string },
 ): boolean {
   const price = Number(listing.basePrice);
   if (!(price >= HIGH_RISK_CONTENT_MIN_PRICE)) return false;
   const title = String(listing.title ?? "");
-  if (price < ACCESSORY_MAX_PRICE && ACCESSORY_RE.test(title)) return false;
-  return hasHighRiskToken(`${title}\n${String(listing.summary ?? "")}\n${String(listing.slug ?? "").replace(/[-_]+/g, " ")}`);
+  const head = titleHead(title);
+  if (head === "not_device") return false;
+  if (head === "accessory" && price < ACCESSORY_MAX_PRICE) return false;
+  if (hasHighRiskToken(`${title}\n${String(listing.summary ?? "")}\n${String(listing.slug ?? "").replace(/[-_]+/g, " ")}`, title)) {
+    return true;
+  }
+  // The description names the item only when the title does not say it is something else.
+  return head === null && describesHighRiskItem(String(listing.description ?? ""));
 }
 
 /** A URL handle as a reader sees it: percent-escapes decoded ("%30" is "0"). */
@@ -153,6 +266,39 @@ function readableSlug(slug: unknown): string {
     }
   }
   return value.replace(/[-_+]+/g, " ");
+}
+
+/**
+ * The longest text a field may hold. No real listing comes near these; past them
+ * the text is refused (`listing_too_long`) before any rule reads it, so no field
+ * can be made long enough to slow the gate down.
+ */
+export const TEXT_LIMITS = {
+  /** A title, a store name, a URL handle, a category. */
+  short: 300,
+  /** A summary, SKU, delivery note, lead time, one specification value, a category focus. */
+  line: 1_000,
+  /** A description or a store story, and all the specification values together. */
+  long: 20_000,
+} as const;
+
+function listingTooLong(listing: ListingGateInput["listing"]): boolean {
+  let specTotal = 0;
+  for (const value of listing.specificationValues) {
+    if (value.length > TEXT_LIMITS.line) return true;
+    specTotal += value.length;
+  }
+  return (
+    specTotal > TEXT_LIMITS.long ||
+    listing.title.length > TEXT_LIMITS.short ||
+    (listing.slug ?? "").length > TEXT_LIMITS.short ||
+    listing.categorySlug.length > TEXT_LIMITS.short ||
+    listing.summary.length > TEXT_LIMITS.line ||
+    listing.sku.length > TEXT_LIMITS.line ||
+    listing.deliveryNote.length > TEXT_LIMITS.line ||
+    listing.leadTime.length > TEXT_LIMITS.line ||
+    listing.description.length > TEXT_LIMITS.long
+  );
 }
 
 /** Every field as text, whatever the caller passed: a malformed draft is screened, not thrown on. */
@@ -221,6 +367,16 @@ export function evaluateListingPolicy(rawInput: ListingGateInput): GateVerdict {
   const codes: GateReasonCode[] = [];
   const input: ListingGateInput = { ...rawInput, listing: normaliseListing(rawInput.listing) };
   const { listing, images, seller } = input;
+
+  // ---- size: refused before any rule reads the text ---------------------------
+  if (listingTooLong(listing)) {
+    const reasons = normalizeReasons(["listing_too_long"]);
+    return {
+      outcome: composeOutcome(reasons),
+      reasons,
+      signals: { qualityScore: 0, moderationDetail: [], probationActive: Boolean(seller?.probation.active), aiConsulted: false },
+    };
+  }
 
   // ---- essentials -----------------------------------------------------------
   const title = listing.title.trim();
@@ -359,6 +515,16 @@ export function evaluateStorePolicy(input: {
   story: string;
   locale: string;
 }): StoreProfileVerdict {
+  const length = (value: unknown) => (typeof value === "string" ? value.length : value == null ? 0 : String(value).length);
+  if (
+    length(input.storeName) > TEXT_LIMITS.short ||
+    length(input.storeSlug) > TEXT_LIMITS.short ||
+    length(input.categoryFocus) > TEXT_LIMITS.line ||
+    length(input.story) > TEXT_LIMITS.long
+  ) {
+    const reasons = normalizeReasons(["listing_too_long"]);
+    return { outcome: composeOutcome(reasons), reasons, moderationDetail: [] };
+  }
   const text = [input.storeName, input.categoryFocus, input.story, readableSlug(input.storeSlug)]
     .map((part) => String(part ?? "").trim())
     .filter(Boolean)

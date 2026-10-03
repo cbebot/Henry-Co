@@ -81,6 +81,11 @@ describe("reason vocabulary", () => {
   it("the engine version carries the content ruleset version", () => {
     assert.match(GATE_ENGINE_VERSION, /^mkt_gate_\d+\+listing_v2\.\d+$/);
   });
+
+  it("text past the size limit is a refusal the seller can fix, not a policy violation", () => {
+    assert.equal(reasonClass("listing_too_long"), "reject");
+    assert.equal(isGateReasonCode("listing_too_long"), true);
+  });
 });
 
 describe("composeOutcome", () => {
@@ -167,6 +172,9 @@ describe("lockstep with the migration", () => {
       "profile_changed",
       "store_owner_immutable",
       "store_type_immutable",
+      "live_listing_reference",
+      "listing_handle_held",
+      "listing_store_immutable",
     ]);
     for (const hint of hints) {
       assert.ok(isGateReasonCode(hint) || guardOnly.has(hint), hint);
