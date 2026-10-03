@@ -123,7 +123,6 @@ export type HubHomeCopy = {
   faq: {
     eyebrow: string;
     title: string;
-    subtitle: string;
   };
   topBar: { search: string; explore: string };
   footer: {
@@ -196,25 +195,20 @@ export type HubHomeCopy = {
   };
   standard: {
     statement: string;
-    sub: string;
     ctaPrimary: string;
     proofRailLabel: string;
   };
   index: {
     kicker: string;
-    lead: string;
     ariaRowSuffix: string;
     empty: string;
   };
   operatingStandard: {
     kicker: string;
     lead: string;
-    body: string;
     principles: { title: string; body: string }[];
   };
   proof: {
-    kicker: string;
-    lead: string;
     makersMark: string;
   };
 };
@@ -378,8 +372,6 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
   faq: {
     eyebrow: "Questions",
     title: "Before you reach out",
-    subtitle:
-      "The essentials customers, partners, and stakeholders usually check first.",
   },
   topBar: {
     search: "Search hub",
@@ -431,19 +423,11 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
   faqFallback: [
     {
       q: "Can I go directly to a division instead of starting here?",
-      a: "Yes. Every division has its own destination and is reachable directly. The hub exists so the wider company is easier to read and so you can reach the right business in one step.",
-    },
-    {
-      q: "Will new divisions appear here as the company grows?",
-      a: "Yes. New divisions join the same directory and inherit the same operating standard, so the public experience stays consistent as the group expands.",
-    },
-    {
-      q: "Who is this hub designed for?",
-      a: "Customers deciding where to go, partners evaluating the company, suppliers looking for the right contact, media and investors vetting the group, and talent exploring who they would be joining.",
+      a: "Yes. Every division has its own destination and is reachable directly.",
     },
     {
       q: "Which company pages matter most?",
-      a: "About, Contact, Privacy, and Terms. Together they explain the company's posture, how to reach us, how information is handled, and the basis for using our public surfaces.",
+      a: "About, Contact, Privacy, and Terms.",
     },
   ],
   contactHeroForm: {
@@ -475,38 +459,29 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
   },
   standard: {
     statement: "One standard, held across every engine we run.",
-    sub: "Henry Onyx is one operating standard expressed through many divisions — the same calm, the same rigor, whichever door you enter.",
     ctaPrimary: "See the engines",
     proofRailLabel: "Live across the group",
   },
   index: {
     kicker: "The index of engines",
-    lead: "Each engine runs a different business on the same standard. Open any one to step inside.",
     ariaRowSuffix: ". Open division.",
     empty: "The engine directory is loading.",
   },
   operatingStandard: {
     kicker: "The operating standard",
     lead: "Different businesses, run the same way.",
-    body: "Same clarity, same honest delivery, same calm surface — built in-house, so it never fragments between divisions.",
     principles: [
       {
         title: "One surface",
-        body: "The same interface language everywhere. Nothing to relearn.",
+        body: "Nothing to relearn.",
       },
       {
         title: "Honest by default",
-        body: "Numbers are real, or they are not shown — never inflated.",
-      },
-      {
-        title: "Built in-house",
-        body: "One platform, built by Henry Onyx Studio. One team, one standard.",
+        body: "Numbers are real, or they are not shown.",
       },
     ],
   },
   proof: {
-    kicker: "Proof, and who makes it",
-    lead: "The proof is simple: the numbers above are real, and the work is ours.",
     makersMark: "Built in-house by Henry Onyx Studio",
   },
 };
@@ -666,8 +641,6 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
   faq: {
     eyebrow: "Questions fréquentes",
     title: "Questions fréquentes",
-    subtitle:
-      "Ces réponses aident clients, partenaires et parties prenantes à comprendre le fonctionnement du groupe avant de vous écrire.",
   },
   topBar: {
     search: "Rechercher",
@@ -716,24 +689,6 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
     leadFallbackTitle: "Profil de direction",
     links: "Liens",
   },
-  faqFallback: [
-    {
-      q: "Puis-je aller directement sur une division sans passer par cette page ?",
-      a: "Oui. Chaque division reste accessible directement. Ce hub clarifie l’ensemble du groupe et aide à rejoindre plus vite la bonne activité.",
-    },
-    {
-      q: "D’autres divisions apparaîtront-elles quand l’entreprise grandit ?",
-      a: "Oui. À mesure que Henry Onyx se développe, de nouvelles divisions s’intègrent dans le même cadre pour garder une expérience publique claire et cohérente.",
-    },
-    {
-      q: "À qui s’adresse ce site ?",
-      a: "Le hub sert clients, partenaires, fournisseurs, médias, talents et parties prenantes qui veulent une vision plus nette du groupe et de ses activités.",
-    },
-    {
-      q: "Quelles pages lire en premier ?",
-      a: "Commencez par À propos, Contact, Confidentialité et Conditions. Ensemble, elles expliquent le groupe, ses standards et ses politiques publiques.",
-    },
-  ],
   contactHeroForm: {
     formEyebrow: "Contacter l'entreprise",
     formTitle: "Envoyer un message à l'entreprise",
@@ -763,37 +718,18 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
   },
   standard: {
     statement: "Un seul standard, tenu dans chaque moteur que nous exploitons.",
-    sub: "Henry Onyx est un seul standard opérationnel exprimé à travers de nombreuses divisions — le même calme, la même rigueur, quelle que soit la porte que vous franchissez.",
     ctaPrimary: "Voir les moteurs",
     proofRailLabel: "En direct dans tout le groupe",
   },
   index: {
     kicker: "L’index des moteurs",
-    lead: "Chaque moteur exploite une activité différente selon le même standard. Ouvrez-en un pour entrer.",
     ariaRowSuffix: ". Ouvrir la division.",
   },
   operatingStandard: {
     kicker: "Le standard opérationnel",
     lead: "Des activités différentes, menées de la même manière.",
-    body: "Quelle que soit la division que vous franchissez, le standard tient : la même clarté, la même livraison honnête, la même surface calme qui respecte votre temps. Nous concevons le logiciel en interne, afin que l’expérience ne se fragmente jamais aux jointures entre une activité et la suivante.",
-    principles: [
-      {
-        title: "Une seule surface",
-        body: "Chaque division partage le même langage d’interface ; passer de l’une à l’autre ne demande rien à réapprendre.",
-      },
-      {
-        title: "Honnête par défaut",
-        body: "Les chiffres sont réels ou ne sont pas affichés. Nous ne gonflons jamais les preuves pour paraître plus grands que nous ne le sommes.",
-      },
-      {
-        title: "Conçu en interne",
-        body: "La plateforme derrière chaque moteur est réalisée par Henry Onyx Studio — une équipe, un standard, de bout en bout.",
-      },
-    ],
   },
   proof: {
-    kicker: "La preuve, et qui la réalise",
-    lead: "La preuve est simple : les chiffres ci-dessus sont réels, et le travail est le nôtre.",
     makersMark: "Conçu en interne par Henry Onyx Studio",
   },
 };
@@ -883,7 +819,7 @@ const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
     cards: ["Estándar corporativo", "Navegación del cliente", "Confianza de marca"],
     cardValues: ["Consistente y profesional", "Clara y guiada", "Presencia pública premium"],
   },
-  faq: { eyebrow: "Preguntas frecuentes", title: "Preguntas frecuentes", subtitle: "Estas respuestas ayudan a clientes, socios y partes interesadas a entender cómo funciona la empresa antes de ponerse en contacto." },
+  faq: { eyebrow: "Preguntas frecuentes", title: "Preguntas frecuentes",},
   topBar: { search: "Buscar", explore: "Explorar" },
   footer: { exploreDivisions: "Explorar divisiones", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globales", copyrightAllRightsReserved: "Todos los derechos reservados.", linkPrivacy: "Privacidad", linkTerms: "Términos", linkPreferences: "Preferencias", designedBy: "Diseñado y desarrollado internamente por Henry Onyx Studio para el ecosistema Henry Onyx" },
   cards: {
@@ -896,12 +832,6 @@ const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
     closeAria: "Cerrar", enterDivision: "Entrar a la división", kpiStatus: "Estado", kpiSubdomain: "Subdominio", kpiFeatured: "Destacado", kpiUpdated: "Actualizado", kpiYes: "Sí", kpiNo: "No",
     who: "A quién sirve", how: "Cómo funciona", trust: "Por qué los clientes lo eligen", highlights: "Destacados", leadEyebrow: "Responsable de división", leadFallbackTitle: "Perfil de liderazgo", links: "Enlaces",
   },
-  faqFallback: [
-    { q: "¿Puedo ir directamente a una división sin comenzar desde esta página?", a: "Sí. Cada división puede seguir siendo accedida directamente. Este hub existe para hacer más fácil entender la empresa y ayudar a los visitantes a llegar al negocio correcto más rápidamente." },
-    { q: "¿Aparecerán divisiones adicionales aquí a medida que la empresa crezca?", a: "Sí. A medida que Henry Onyx se expande, se pueden introducir nuevas divisiones a través del mismo marco corporativo para que la experiencia pública siga siendo clara, consistente y bien organizada." },
-    { q: "¿Para quién está diseñado este sitio web?", a: "El hub sirve a clientes, socios, proveedores, medios, talento y partes interesadas que necesitan una visión más clara del grupo Henry Onyx y sus negocios operativos." },
-    { q: "¿Qué páginas corporativas debo revisar primero?", a: "Los mejores puntos de partida son las páginas Acerca de, Contacto, Aviso de Privacidad y Términos y Condiciones. Juntas, proporcionan una visión más clara de la empresa, sus estándares y sus políticas públicas." },
-  ],
   contactHeroForm: {
     formEyebrow: "Contacta con la empresa",
     formTitle: "Envía una nota a la empresa",
@@ -1016,7 +946,7 @@ const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
     cards: ["Padrão corporativo", "Navegação do cliente", "Confiança de marca"],
     cardValues: ["Consistente e profissional", "Clara e guiada", "Presença pública premium"],
   },
-  faq: { eyebrow: "Perguntas frequentes", title: "Perguntas frequentes", subtitle: "Estas respostas ajudam clientes, parceiros e partes interessadas a entender como a empresa funciona antes de entrar em contato." },
+  faq: { eyebrow: "Perguntas frequentes", title: "Perguntas frequentes",},
   topBar: { search: "Pesquisar", explore: "Explorar" },
   footer: { exploreDivisions: "Explorar divisões", companyPages: "Páginas corporativas", colHub: "Hub corporativo", colGlobal: "Páginas globais", copyrightAllRightsReserved: "Todos os direitos reservados.", linkPrivacy: "Privacidade", linkTerms: "Termos", linkPreferences: "Preferências", designedBy: "Projetado e desenvolvido internamente pela Henry Onyx Studio para o ecossistema Henry Onyx" },
   cards: {
@@ -1029,12 +959,6 @@ const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
     closeAria: "Fechar", enterDivision: "Entrar na divisão", kpiStatus: "Status", kpiSubdomain: "Subdomínio", kpiFeatured: "Destaque", kpiUpdated: "Atualizado", kpiYes: "Sim", kpiNo: "Não",
     who: "A quem serve", how: "Como funciona", trust: "Por que os clientes escolhem", highlights: "Destaques", leadEyebrow: "Responsável da divisão", leadFallbackTitle: "Perfil de liderança", links: "Links",
   },
-  faqFallback: [
-    { q: "Posso ir diretamente a uma divisão sem começar por esta página?", a: "Sim. Cada divisão ainda pode ser acessada diretamente pelo seu próprio destino. Este hub existe para tornar a empresa mais fácil de entender e ajudar os visitantes a chegar ao negócio certo mais rapidamente." },
-    { q: "Divisões adicionais aparecerão aqui à medida que a empresa crescer?", a: "Sim. À medida que a Henry Onyx se expande, novas divisões podem ser introduzidas pelo mesmo framework corporativo para que a experiência pública permaneça clara, consistente e bem organizada." },
-    { q: "Para quem este site foi projetado?", a: "O hub serve clientes, parceiros, fornecedores, mídia, talentos e partes interessadas que precisam de uma visão mais clara do grupo Henry Onyx e seus negócios operacionais." },
-    { q: "Quais páginas corporativas devo revisar primeiro?", a: "Os melhores pontos de partida são as páginas Sobre, Contato, Aviso de Privacidade e Termos e Condições. Juntas, fornecem uma visão mais clara da empresa, seus padrões e suas políticas públicas." },
-  ],
   contactHeroForm: {
     formEyebrow: "Fale com a empresa",
     formTitle: "Envie uma mensagem à empresa",
@@ -1149,7 +1073,7 @@ const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
     cards: ["معيار الشركة", "تنقل العملاء", "ثقة العلامة التجارية"],
     cardValues: ["متسق واحترافي", "واضح وموجه", "حضور عام متميز"],
   },
-  faq: { eyebrow: "الأسئلة المتكررة", title: "الأسئلة الشائعة", subtitle: "هذه الإجابات تساعد العملاء والشركاء وأصحاب المصلحة على فهم كيفية عمل الشركة قبل التواصل معنا." },
+  faq: { eyebrow: "الأسئلة المتكررة", title: "الأسئلة الشائعة",},
   topBar: { search: "بحث", explore: "استكشاف" },
   footer: { exploreDivisions: "استكشاف الأقسام", companyPages: "صفحات الشركة", colHub: "مركز الشركة", colGlobal: "الصفحات العالمية", copyrightAllRightsReserved: "جميع الحقوق محفوظة.", linkPrivacy: "الخصوصية", linkTerms: "الشروط", linkPreferences: "التفضيلات", designedBy: "صُمم وطُور داخلياً بواسطة Henry Onyx Studio لمنظومة Henry Onyx" },
   cards: {
@@ -1162,12 +1086,6 @@ const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
     closeAria: "إغلاق", enterDivision: "دخول القسم", kpiStatus: "الحالة", kpiSubdomain: "النطاق الفرعي", kpiFeatured: "مميز", kpiUpdated: "محدّث", kpiYes: "نعم", kpiNo: "لا",
     who: "من يخدم", how: "كيف يعمل", trust: "لماذا يختاره العملاء", highlights: "أبرز المميزات", leadEyebrow: "قائد القسم", leadFallbackTitle: "الملف القيادي", links: "الروابط",
   },
-  faqFallback: [
-    { q: "هل يمكنني الذهاب مباشرة إلى قسم دون البدء من هذه الصفحة؟", a: "نعم. يمكن الوصول إلى كل قسم مباشرة عبر وجهته الخاصة. يوجد هذا المركز لتسهيل فهم الشركة الأشمل ومساعدة الزوار على الوصول إلى العمل الصحيح بشكل أسرع." },
-    { q: "هل ستظهر أقسام إضافية هنا مع نمو الشركة؟", a: "نعم. مع توسع Henry Onyx، يمكن تقديم أقسام جديدة من خلال نفس الإطار المؤسسي ليبقى التجربة العامة واضحة ومتسقة ومنظمة." },
-    { q: "لمن صُمم هذا الموقع؟", a: "يخدم المركز العملاء والشركاء والموردين والإعلام والكفاءات وأصحاب المصلحة الذين يحتاجون إلى رؤية أوضح لمجموعة Henry Onyx وأعمالها التشغيلية." },
-    { q: "ما صفحات الشركة التي يجب مراجعتها أولاً؟", a: "أفضل نقاط البداية هي صفحات من نحن والاتصال وإشعار الخصوصية والشروط والأحكام. معاً توفر رؤية أوضح للشركة ومعاييرها وسياساتها العامة." },
-  ],
   contactHeroForm: {
     formEyebrow: "تواصل مع الشركة",
     formTitle: "أرسل رسالة إلى الشركة",
@@ -1282,7 +1200,7 @@ const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
     cards: ["Unternehmensstandard", "Kundennavigation", "Markenvertrauen"],
     cardValues: ["Konsistent und professionell", "Klar und geführt", "Premium öffentliche Präsenz"],
   },
-  faq: { eyebrow: "Häufig gestellt", title: "Häufig gestellte Fragen", subtitle: "Diese Antworten helfen Kunden, Partnern und Stakeholdern dabei, zu verstehen, wie das Unternehmen funktioniert, bevor sie sich melden müssen." },
+  faq: { eyebrow: "Häufig gestellt", title: "Häufig gestellte Fragen",},
   topBar: { search: "Hub durchsuchen", explore: "Erkunden" },
   footer: { exploreDivisions: "Abteilungen erkunden", companyPages: "Unternehmensseiten", colHub: "Unternehmens-Hub", colGlobal: "Globale Seiten", copyrightAllRightsReserved: "Alle Rechte vorbehalten.", linkPrivacy: "Datenschutz", linkTerms: "AGB", linkPreferences: "Einstellungen", designedBy: "Intern entworfen und entwickelt von Henry Onyx Studio für das Henry Onyx-Ökosystem" },
   cards: {
@@ -1295,12 +1213,6 @@ const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
     closeAria: "Schließen", enterDivision: "Abteilung betreten", kpiStatus: "Status", kpiSubdomain: "Subdomain", kpiFeatured: "Highlights", kpiUpdated: "Aktualisiert", kpiYes: "Ja", kpiNo: "Nein",
     who: "Wen es bedient", how: "Wie es funktioniert", trust: "Warum Kunden es wählen", highlights: "Highlights", leadEyebrow: "Abteilungsleitung", leadFallbackTitle: "Führungsprofil", links: "Links",
   },
-  faqFallback: [
-    { q: "Kann ich direkt zu einer Abteilung gehen, ohne von dieser Seite aus zu starten?", a: "Ja. Jede Abteilung kann weiterhin direkt über ihr eigenes Ziel aufgerufen werden. Dieser Hub existiert, um das Verständnis des breiteren Unternehmens zu erleichtern und Besuchern zu helfen, das richtige Unternehmen schneller zu erreichen." },
-    { q: "Werden hier weitere Abteilungen erscheinen, wenn das Unternehmen wächst?", a: "Ja. Mit der Expansion von Henry Onyx können neue Abteilungen im gleichen Unternehmensrahmen eingeführt werden, sodass das öffentliche Erlebnis klar, konsistent und gut organisiert bleibt." },
-    { q: "Für wen ist diese Website konzipiert?", a: "Der Hub dient Kunden, Partnern, Lieferanten, Medien, Talenten und Stakeholdern, die einen klareren Überblick über die Henry Onyx Gruppe und ihre operativen Unternehmen benötigen." },
-    { q: "Welche Unternehmensseiten sollte ich zuerst ansehen?", a: "Die besten Ausgangspunkte sind die Seiten Über uns, Kontakt, Datenschutzhinweis und Allgemeine Geschäftsbedingungen. Zusammen bieten sie einen klareren Überblick über das Unternehmen, seine Standards und seine öffentlichen Richtlinien." },
-  ],
   contactHeroForm: {
     formEyebrow: "Kontakt zum Unternehmen",
     formTitle: "Eine Nachricht an das Unternehmen senden",
@@ -1415,7 +1327,7 @@ const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
     cards: ["公司标准", "客户导航", "品牌信心"],
     cardValues: ["一致且专业", "清晰且引导", "优质公众形象"],
   },
-  faq: { eyebrow: "常见问题", title: "常见问题解答", subtitle: "这些解答帮助客户、合作伙伴和利益相关者在需要联系之前了解公司的运作方式。" },
+  faq: { eyebrow: "常见问题", title: "常见问题解答",},
   topBar: { search: "搜索中心", explore: "探索" },
   footer: { exploreDivisions: "探索部门", companyPages: "公司页面", colHub: "公司中心", colGlobal: "全球页面", copyrightAllRightsReserved: "版权所有。", linkPrivacy: "隐私", linkTerms: "条款", linkPreferences: "偏好设置", designedBy: "由 Henry Onyx Studio 内部为 Henry Onyx 生态系统设计与开发" },
   cards: {
@@ -1428,12 +1340,6 @@ const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
     closeAria: "关闭", enterDivision: "进入部门", kpiStatus: "状态", kpiSubdomain: "子域名", kpiFeatured: "精选", kpiUpdated: "已更新", kpiYes: "是", kpiNo: "否",
     who: "服务对象", how: "运作方式", trust: "客户选择原因", highlights: "亮点", leadEyebrow: "部门负责人", leadFallbackTitle: "领导简介", links: "链接",
   },
-  faqFallback: [
-    { q: "我可以直接前往某个部门而不从此页开始吗？", a: "可以。每个部门仍然可以通过其自己的目的地直接访问。该中心的存在是为了让更广泛的公司更容易理解，并帮助访客更快地到达正确的业务。" },
-    { q: "随着公司的成长，这里会出现更多部门吗？", a: "会的。随着 Henry Onyx 的扩张，可以通过同一企业框架引入新部门，使公众体验保持清晰、一致且组织良好。" },
-    { q: "这个网站是为谁设计的？", a: "该中心服务于需要更清晰了解 Henry Onyx 集团及其运营业务的客户、合作伙伴、供应商、媒体、人才和利益相关者。" },
-    { q: "我应该首先查看哪些公司页面？", a: "最佳起点是关于我们、联系我们、隐私声明和条款与条件页面。它们共同提供了对公司、其标准和公共政策的更清晰了解。" },
-  ],
   contactHeroForm: {
     formEyebrow: "联系公司",
     formTitle: "向公司发送信息",
@@ -1548,7 +1454,7 @@ const HUB_HOME_COPY_HI: DeepPartial<HubHomeCopy> = {
     cards: ["कंपनी मानक", "ग्राहक नेविगेशन", "ब्रांड आत्मविश्वास"],
     cardValues: ["सुसंगत और पेशेवर", "स्पष्ट और निर्देशित", "प्रीमियम सार्वजनिक उपस्थिति"],
   },
-  faq: { eyebrow: "अक्सर पूछे जाने वाले प्रश्न", title: "अक्सर पूछे जाने वाले प्रश्न", subtitle: "ये उत्तर ग्राहकों, भागीदारों और हितधारकों को संपर्क करने से पहले कंपनी के काम को समझने में मदद करते हैं।" },
+  faq: { eyebrow: "अक्सर पूछे जाने वाले प्रश्न", title: "अक्सर पूछे जाने वाले प्रश्न",},
   topBar: { search: "हब खोजें", explore: "एक्सप्लोर करें" },
   footer: { exploreDivisions: "प्रभाग एक्सप्लोर करें", companyPages: "कंपनी पेज", colHub: "कंपनी हब", colGlobal: "ग्लोबल पेज", copyrightAllRightsReserved: "सर्वाधिकार सुरक्षित।", linkPrivacy: "गोपनीयता", linkTerms: "नियम", linkPreferences: "वरीयताएँ", designedBy: "Henry Onyx Studio द्वारा Henry Onyx इकोसिस्टम के लिए इन-हाउस डिज़ाइन और निर्मित" },
   cards: {
@@ -1561,12 +1467,6 @@ const HUB_HOME_COPY_HI: DeepPartial<HubHomeCopy> = {
     closeAria: "बंद करें", enterDivision: "प्रभाग में प्रवेश करें", kpiStatus: "स्थिति", kpiSubdomain: "सबडोमेन", kpiFeatured: "फीचर्ड", kpiUpdated: "अपडेट किया गया", kpiYes: "हां", kpiNo: "नहीं",
     who: "यह किसकी सेवा करता है", how: "यह कैसे काम करता है", trust: "ग्राहक इसे क्यों चुनते हैं", highlights: "हाइलाइट्स", leadEyebrow: "प्रभाग प्रमुख", leadFallbackTitle: "नेतृत्व प्रोफ़ाइल", links: "लिंक",
   },
-  faqFallback: [
-    { q: "क्या मैं इस पेज से शुरू किए बिना सीधे किसी प्रभाग में जा सकता हूं?", a: "हां। प्रत्येक प्रभाग अभी भी अपने गंतव्य के माध्यम से सीधे पहुंचा जा सकता है। यह हब व्यापक कंपनी को समझना आसान बनाने और आगंतुकों को सही व्यवसाय तक अधिक तेजी से पहुंचने में मदद करने के लिए है।" },
-    { q: "क्या कंपनी के बढ़ने पर यहां अतिरिक्त प्रभाग दिखाई देंगे?", a: "हां। जैसे-जैसे Henry Onyx का विस्तार होता है, उसी कंपनी ढांचे के माध्यम से नए प्रभाग पेश किए जा सकते हैं ताकि सार्वजनिक अनुभव स्पष्ट, सुसंगत और सुव्यवस्थित रहे।" },
-    { q: "यह वेबसाइट किसके लिए डिज़ाइन की गई है?", a: "हब ग्राहकों, भागीदारों, आपूर्तिकर्ताओं, मीडिया, प्रतिभाओं और हितधारकों की सेवा करता है जिन्हें Henry Onyx समूह और इसके परिचालन व्यवसायों का स्पष्ट दृश्य चाहिए।" },
-    { q: "मुझे पहले कौन से कंपनी पेज देखने चाहिए?", a: "सबसे अच्छे शुरुआती बिंदु हमारे बारे में, संपर्क, गोपनीयता नोटिस और नियम और शर्तें पेज हैं। साथ में, वे कंपनी, इसके मानकों और इसकी सार्वजनिक नीतियों का स्पष्ट दृश्य प्रदान करते हैं।" },
-  ],
   contactHeroForm: {
     formEyebrow: "कंपनी से संपर्क करें",
     formTitle: "कंपनी को एक संदेश भेजें",
@@ -1681,7 +1581,7 @@ const HUB_HOME_COPY_IG: DeepPartial<HubHomeCopy> = {
     cards: ["Ọkọlọtọ ụlọ ọrụ", "Ọganihu ndị ahịa", "Ntụkwasị obi akara"],
     cardValues: ["Họrọ na ọ dị ọcha", "Doro anya ma duzie", "Nnabata ọha kacha mma"],
   },
-  faq: { eyebrow: "A na-ajụ ajụjụ ndị a mgbe niile", title: "Ajụjụ ndị a na-ajụ mgbe niile", subtitle: "Azịza ndị a na-enyere ndị ahịa, ndị mmekọ na ndị nwere ọrụ aka ịghọta otu ụlọ ọrụ ahụ si arụ ọrụ tupu ha kpọtụrụ." },
+  faq: { eyebrow: "A na-ajụ ajụjụ ndị a mgbe niile", title: "Ajụjụ ndị a na-ajụ mgbe niile",},
   topBar: { search: "Chọọ hub", explore: "Nyochaa" },
   footer: { exploreDivisions: "Nyochaa ngalaba", companyPages: "Peeji ụlọ ọrụ", colHub: "Hub ụlọ ọrụ", colGlobal: "Peeji zuru ụwa ọnụ", copyrightAllRightsReserved: "Ikike niile e debere.", linkPrivacy: "Nzuzo", linkTerms: "Usoro", linkPreferences: "Mmasị", designedBy: "Henry Onyx Studio mere ma rụọ ya n'ime ụlọ maka usoro ihe ọkụkụ Henry Onyx" },
   cards: {
@@ -1694,12 +1594,6 @@ const HUB_HOME_COPY_IG: DeepPartial<HubHomeCopy> = {
     closeAria: "Mechie", enterDivision: "Bata ngalaba", kpiStatus: "Ọnọdụ", kpiSubdomain: "Subdomain", kpiFeatured: "A họpụtara", kpiUpdated: "Emelitere", kpiYes: "Ee", kpiNo: "Mba",
     who: "Onye ọ na-ejere ọrụ", how: "Otu ọ si arụ ọrụ", trust: "Ihe kpatara ndị ahịa na-ahọrọ ya", highlights: "Ihe kachasị mma", leadEyebrow: "Onye ndu ngalaba", leadFallbackTitle: "Profaịlụ ndu", links: "Njikọ",
   },
-  faqFallback: [
-    { q: "Enwere m ike iga ozugbo n'ime ngalaba na-amalitebeghị n'ibe a?", a: "Ee. Enwere ike iru ngalaba ọ bụla ozugbo site n'ebe ya. Hub a dị iji mee ka ịghọta ụlọ ọrụ ka ọ bụ dị mfe ma enyere ndị ọbịa aka iru azụmahịa ziri ezi ngwa ngwa." },
-    { q: "Ọ ga-adị ngalaba ndị ọzọ ebe a ka ụlọ ọrụ na-eto eto?", a: "Ee. Ka Henry Onyx na-agbasawanye, enwere ike iwebata ngalaba ọhụụ site n'otu usoro ụlọ ọrụ ahụ ka ahụmịhe ọha nọdụ doro anya, họrọ ma dị njikere." },
-    { q: "Maka onye e wuru saịtị a?", a: "Hub na-ejere ọrụ ndị ahịa, ndị mmekọ, ndị na-enye ngwaahịa, ndị ọchịchọ, ndị nka, na ndị nwere ọrụ ndị chọrọ ọhụụ doro anya nke ìgwè Henry Onyx na azụmahịa ya na-arụ ọrụ." },
-    { q: "Kedu peeji ụlọ ọrụ m kwesịrị nyochaa ụzọ mbụ?", a: "Isi mmalite ndị kacha mma bụ peeji Maka anyị, Kpọtụrụ anyị, Ọkwa Nzuzo, na Usoro na Ọnọdụ. Ọ bụ ọnụ ọgụgụ, ha na-enye ọhụụ doro anya nke ụlọ ọrụ, ọkọlọtọ ya, na iwu ya n'ọha." },
-  ],
   contactHeroForm: {
     formEyebrow: "Kpọtụrụ ụlọ ọrụ",
     formTitle: "Zipu ụlọ ọrụ ozi",
@@ -1814,7 +1708,7 @@ const HUB_HOME_COPY_YO: DeepPartial<HubHomeCopy> = {
     cards: ["Ìtọ́kasí ilé-iṣẹ́", "Ìtọ́nisọ́nà oníbàárà", "Ìgbẹ́kẹ̀lé àmì-ìdánimọ̀"],
     cardValues: ["Tó ní ìbámu tí ó sì ṣọ́jọgbọ́n", "Tó mọ̀ tí a sì ń darí", "Ìhànjú àgbéga gbangba"],
   },
-  faq: { eyebrow: "Tí a máa ń béèrè", title: "Àwọn ìbéèrè tó máa ń wọ́pọ̀", subtitle: "Àwọn ìdáhùn wọ̀nyí ń ràn àwọn oníbàárà, àwọn alábàákẹ́gbẹ́, àti àwọn olùjọpọ̀ lọ́wọ́ láti mọ bí ilé-iṣẹ́ ṣe ń ṣiṣẹ́ ṣáájú kí wọn to kàn sí." },
+  faq: { eyebrow: "Tí a máa ń béèrè", title: "Àwọn ìbéèrè tó máa ń wọ́pọ̀",},
   topBar: { search: "Wá hub", explore: "Ṣàwárí" },
   footer: { exploreDivisions: "Ṣàwárí àwọn ẹ̀ka", companyPages: "Àwọn ojúewé ilé-iṣẹ́", colHub: "Hub ilé-iṣẹ́", colGlobal: "Àwọn ojúewé àgbáyé", copyrightAllRightsReserved: "Gbogbo ẹ̀tọ́ wà ní àìbàjẹ́.", linkPrivacy: "Ìpamọ́", linkTerms: "Àwọn òfin", linkPreferences: "Àwọn àyànfẹ́", designedBy: "Tí a ṣe àpẹrẹ tí a sì kọ́ ní ilé-iṣẹ́ nípasẹ̀ Henry Onyx Studio fún ètò-àyíká Henry Onyx" },
   cards: {
@@ -1827,12 +1721,6 @@ const HUB_HOME_COPY_YO: DeepPartial<HubHomeCopy> = {
     closeAria: "Pa dé", enterDivision: "Wọlé sí ẹ̀ka", kpiStatus: "Ipò", kpiSubdomain: "Subdomain", kpiFeatured: "Tí a yàn", kpiUpdated: "Tí a ṣe àtúnṣe", kpiYes: "Bẹ̃ẹ̃ni", kpiNo: "Bẹ́ẹ̀kọ́",
     who: "Ẹni tó ń sìn", how: "Bí ó ṣe ń ṣiṣẹ́", trust: "Ìdí tí àwọn oníbàárà fi ń yàn", highlights: "Àwọn ìfẹnukò", leadEyebrow: "Olórí ẹ̀ka", leadFallbackTitle: "Profáìlù ìdarí", links: "Àwọn ọ̀nà asopọ̀",
   },
-  faqFallback: [
-    { q: "Ṣé mo lè lọ tààrà sí ẹ̀ka kan láì bẹ̀rẹ̀ láti ojúewé yìí?", a: "Bẹ̃ẹ̃ni. A ṣì lè wọlé sí ẹ̀ka kọ̀ọ̀kan tààrà nípasẹ̀ ìgbésẹ̀ tirẹ̀. Hub yìí wà láti mú kí ó rọrùn láti mọ ilé-iṣẹ́ tó gbòòrò àti láti ràn àwọn àlejò lọ́wọ́ láti dé iṣẹ́-ṣe tó péye ní iyára jùlọ." },
-    { q: "Ṣé àwọn ẹ̀ka àfikún yóò hàn ibí bí ilé-iṣẹ́ ṣe ń gbilẹ̀?", a: "Bẹ̃ẹ̃ni. Bí Henry Onyx ṣe ń gbòòrò, àwọn ẹ̀ka tuntun lè jẹ́ mọ̀ sí nípasẹ̀ ètò ilé-iṣẹ́ kannáà kí ìrírí gbangba máa ṣetọrọ tó mọ̀, tó ní ìbámu, tí a sì ṣètò dáadáa." },
-    { q: "Fún tani a ṣe ojúewé ìntánẹ́ẹ̀tì yìí?", a: "Hub ń sìn àwọn oníbàárà, àwọn alábàákẹ́gbẹ́, àwọn olùpèsè, àwọn oníròyìn, àwọn ẹni tí wọ́n ń wá iṣẹ́, àti àwọn olùjọpọ̀ tí wọ́n nílò ìwò tó mọ̀ síi ti ìjọ Henry Onyx àti àwọn iṣẹ́-ṣe ìṣiṣẹ́ rẹ̀." },
-    { q: "Àwọn ojúewé ilé-iṣẹ́ wo nì mí gbọdọ̀ tún wo àkọ́kọ́?", a: "Àwọn ìbẹ̀rẹ̀ tó dára jùlọ ni àwọn ojúewé Nípa Wa, Kàn Sí Wa, Ìkìlọ̀ Ìpamọ́, àti Àwọn Òfin àti Ìpèsè. Pọ̀pọ̀, wọ́n pèsè ìwò tó mọ̀ síi ti ilé-iṣẹ́, àwọn ìtọ́kasí rẹ̀, àti àwọn ìlànà gbangba rẹ̀." },
-  ],
   contactHeroForm: {
     formEyebrow: "Kàn sí ilé-iṣẹ́",
     formTitle: "Fi ìránṣẹ́ ránṣẹ́ sí ilé-iṣẹ́",
@@ -1947,7 +1835,7 @@ const HUB_HOME_COPY_HA: DeepPartial<HubHomeCopy> = {
     cards: ["Ma'aunin kamfani", "Haɓakar abokin ciniki", "Amincewa da alama"],
     cardValues: ["Daidaitacce kuma ƙwararren", "Bayyananne kuma jagora", "Kasancewar jama'a na musamman"],
   },
-  faq: { eyebrow: "Ana tambaya akai-akai", title: "Tambayoyin da ake yi akai-akai", subtitle: "Waɗannan amsoshi suna taimaka wa abokan ciniki, abokan hulɗa, da masu ruwa da tsaki su fahimci yadda kamfani ke aiki kafin su tuntuɓa." },
+  faq: { eyebrow: "Ana tambaya akai-akai", title: "Tambayoyin da ake yi akai-akai",},
   topBar: { search: "Bincika hub", explore: "Bincika" },
   footer: { exploreDivisions: "Bincika sassan", companyPages: "Shafukan kamfani", colHub: "Hub na kamfani", colGlobal: "Shafukan duniya", copyrightAllRightsReserved: "Duk haƙƙoƙin sun kiyaye.", linkPrivacy: "Sirri", linkTerms: "Sharuɗɗa", linkPreferences: "Abubuwan da aka fi so", designedBy: "An ƙira tare da ginawa a cikin gida ta Henry Onyx Studio don tsarin yanayi na Henry Onyx" },
   cards: {
@@ -1960,12 +1848,6 @@ const HUB_HOME_COPY_HA: DeepPartial<HubHomeCopy> = {
     closeAria: "Rufe", enterDivision: "Shiga sashi", kpiStatus: "Halin", kpiSubdomain: "Subdomain", kpiFeatured: "Zaɓaɓɓu", kpiUpdated: "An sabunta", kpiYes: "Eh", kpiNo: "A'a",
     who: "Wa yake yi masa sabis", how: "Yadda yake aiki", trust: "Dalilin da abokan ciniki ke zaɓa", highlights: "Manyan abubuwa", leadEyebrow: "Shugaban sashi", leadFallbackTitle: "Bayanan shugabanci", links: "Hanyoyin haɗi",
   },
-  faqFallback: [
-    { q: "Zan iya zuwa kai tsaye zuwa sashi ba tare da farawa daga wannan shafi ba?", a: "Eh. Ana iya shiga kowanne sashi kai tsaye ta hanyar wurinsa. Wannan hub yana nan don sauƙaƙa fahimtar ƙungiyar mafi girma kuma taimaka wa baƙi su isa kasuwancin da ya dace da sauri." },
-    { q: "Shin za a sami ƙarin sassan a nan yayin da kamfani ke girma?", a: "Eh. Yayin da Henry Onyx ke faɗaɗa, ana iya gabatar da sabbin sassan ta tsarin kamfani ɗaya don ƙwarewar jama'a ta kasance bayyananniya, daidaitacciya, da yadda ya kamata ta tsarawa." },
-    { q: "Ga wa aka tsara wannan gidan yanar gizo?", a: "Hub yana sabis ga abokan ciniki, abokan hulɗa, masu ba da kayayyaki, kafofin watsa labarai, ƙwararru, da masu ruwa da tsaki waɗanda ke buƙatar ƙarin bayyananniyar ra'ayi na ƙungiyar Henry Onyx da kasuwancinta na aiki." },
-    { q: "Waɗanne shafukan kamfani ya kamata na duba da farko?", a: "Mafi kyawun wuraren farawa sune shafukan Game da Mu, Tuntuɓa Mu, Sanarwar Sirri, da Sharuɗɗa da Yanayi. Tare, suna ba da ƙarin bayyananniyar ra'ayi na kamfani, ma'aunansa, da manufofinsa na jama'a." },
-  ],
   contactHeroForm: {
     formEyebrow: "Tuntuɓi kamfani",
     formTitle: "Aika sakon kamfani",
@@ -2150,7 +2032,6 @@ const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
   "faq": {
     "eyebrow": "Chiesto frequentemente",
     "title": "Domande frequenti",
-    "subtitle": "Queste risposte aiutano i clienti, i partner e le parti interessate a comprendere come funziona l'azienda prima che abbiano bisogno di contattarli."
   },
   "topBar": {
     "search": "Centro di ricerca",
@@ -2197,24 +2078,6 @@ const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
     "leadFallbackTitle": "Profilo dirigenziale",
     "links": "Collegamenti"
   },
-  "faqFallback": [
-    {
-      "q": "Posso andare direttamente ad una divisione senza partire da questa pagina?",
-      "a": "Sì. Ad ogni divisione è comunque possibile accedere direttamente attraverso la propria destinazione. Questo hub esiste per rendere più semplice la comprensione dell'azienda nel suo insieme e per aiutare i visitatori a raggiungere più rapidamente l'azienda giusta."
-    },
-    {
-      "q": "Verranno visualizzate ulteriori divisioni man mano che l'azienda cresce?",
-      "a": "Sì. Man mano che Henry Onyx si espande, nuove divisioni possono essere introdotte attraverso la stessa struttura aziendale in modo che l'esperienza pubblica rimanga chiara, coerente e ben organizzata."
-    },
-    {
-      "q": "Per chi è progettato questo sito web?",
-      "a": "L'hub è al servizio di clienti, partner, fornitori, media, talenti e parti interessate che necessitano di una visione più chiara del gruppo Henry Onyx e delle sue attività operative."
-    },
-    {
-      "q": "Quali pagine aziendali dovrei rivedere per prime?",
-      "a": "I migliori punti di partenza sono le pagine Informazioni, Contatti, Informativa sulla privacy e Termini e condizioni. Insieme, forniscono una visione più chiara dell’azienda, dei suoi standard e delle sue politiche pubbliche."
-    }
-  ],
   contactHeroForm: {
     formEyebrow: "Contatta l’azienda",
     formTitle: "Invia un messaggio all’azienda",

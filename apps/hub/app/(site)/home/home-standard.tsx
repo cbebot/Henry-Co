@@ -26,8 +26,8 @@ type LiveMetric = { id: string; metric: string; name: string };
  * HomeStandard — the above-the-fold beat: "One standard, many engines".
  *
  * No giant hero. It leads with a confident operator's statement (display
- * serif, gravity not size), one calm sub-line, a single way in, and an honest
- * live proof rail. Every rail number is real: the counts derive from
+ * serif, gravity not size), a single way in, and an honest live proof rail.
+ * Every rail number is real: the counts derive from
  * `initialDivisions`; the live phrases come from `divisionStats[key].metric`,
  * which is `string | null` — nulls are filtered out, so a fabricated or zero
  * number cannot render. A restrained ambient depth layer sits behind it all.
@@ -90,13 +90,6 @@ export function HomeStandard({
         >
           {copy.standard.statement}
         </motion.h1>
-
-        <motion.p
-          variants={m.reveal}
-          className="hc-font-reading text-pretty mt-6 max-w-2xl text-[1.0625rem] leading-[1.6] text-[color:var(--home-ink-75)] sm:text-[1.1875rem]"
-        >
-          {copy.standard.sub}
-        </motion.p>
 
         <motion.div variants={m.reveal} className="mt-9">
           <a

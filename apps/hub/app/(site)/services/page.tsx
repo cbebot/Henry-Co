@@ -60,11 +60,7 @@ export default async function HubServicesPage() {
 
   return (
     <Section rhythm="hero">
-      <SectionHeader
-        eyebrow={copy.hubDirectory.eyebrow}
-        title={copy.hubDirectory.title}
-        lede={copy.hubDirectory.body}
-      />
+      <SectionHeader title={copy.hubDirectory.title} level={1} />
       <EditorialList className="mt-12">
         {localized.map((vertical) => (
           <EditorialRow

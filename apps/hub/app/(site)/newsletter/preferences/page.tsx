@@ -28,8 +28,8 @@ export default async function NewsletterPreferencesPage({
       <main className="mx-auto w-full max-w-2xl px-5 py-16 text-[color:var(--home-ink)]">
         <h1 className="home-display">Preference link missing</h1>
         <p className="mt-3 text-[color:var(--home-ink-65)]">
-          Open the &ldquo;Manage preferences&rdquo; link from any Henry Onyx email to land here with a
-          valid token. If your link has expired, subscribe again and we&rsquo;ll issue a new one.
+          Open the &ldquo;Manage preferences&rdquo; link from any Henry Onyx email. If your link has
+          expired, subscribe again and we&rsquo;ll issue a new one.
         </p>
       </main>
     );

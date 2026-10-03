@@ -49,7 +49,6 @@ export default async function TryJourneyPage() {
     <>
       <Section rhythm="hero" width="prose">
         <SectionHeader eyebrow={copy.eyebrow} title={copy.title} lede={copy.lede} level={1} />
-        <p className="home-caption mt-6 text-[color:var(--home-ink-50)]">{copy.noAccountNote}</p>
       </Section>
 
       <Section>
@@ -70,10 +69,6 @@ export default async function TryJourneyPage() {
             />
           ))}
         </EditorialList>
-      </Section>
-
-      <Section rhythm="tight" width="prose">
-        <p className="home-body-sm text-[color:var(--home-ink-50)]">{copy.closing}</p>
       </Section>
     </>
   );

@@ -53,9 +53,6 @@ export function HomeFaq({ copy, faqs }: HomeFaqProps) {
           >
             {copy.faq.title}
           </h2>
-          <p className="hc-font-reading text-pretty mt-4 max-w-prose text-[1.0625rem] leading-[1.6] text-[color:var(--home-ink-70)]">
-            {copy.faq.subtitle}
-          </p>
         </motion.header>
 
         <motion.div variants={m.stagger} className="mt-12 border-t border-[color:var(--home-line)] sm:mt-16">

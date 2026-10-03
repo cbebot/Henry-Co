@@ -468,13 +468,10 @@ export function HubSearchExperience({
     if (loading && flat.length === 0) return "Searching across Henry Onyx…";
     if (!queryActive) return `Top routes across ${chipDivisions.length} divisions`;
     if (snapshot.source === "live") {
-      const base = `${snapshot.total} ${snapshot.total === 1 ? "result" : "results"}`;
-      const timing = snapshot.tookMs != null ? ` · answered in ${snapshot.tookMs} ms` : "";
-      return `${base}${timing} · ${scopeLabel}`;
+      return `${snapshot.total} ${snapshot.total === 1 ? "result" : "results"} · ${scopeLabel}`;
     }
     if (flat.length === 0) return `No results · ${scopeLabel}`;
-    const tail = errorNote ? "live index unavailable" : "from the curated catalog";
-    return `${flat.length} ${flat.length === 1 ? "route" : "routes"} · ${tail}`;
+    return `${flat.length} ${flat.length === 1 ? "result" : "results"} · ${scopeLabel}`;
   })();
 
   const a11yStatus = (() => {
@@ -486,14 +483,17 @@ export function HubSearchExperience({
     return head + hi;
   })();
 
-  const reveal = (delay: number) =>
-    reduceMotion
-      ? {}
-      : {
-          initial: { opacity: 0, y: 14 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.45, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-        };
+  // Server and client must render the same `initial` (the server cannot know
+  // the motion preference): returning `{}` under reduced motion left the SSR
+  // `opacity:0` in place after hydration, so the hero, the h1 and the search
+  // field never appeared. Reduced motion now only collapses the duration.
+  const reveal = (delay: number) => ({
+    initial: { opacity: 0, y: 14 },
+    animate: { opacity: 1, y: 0 },
+    transition: reduceMotion
+      ? { duration: 0 }
+      : { duration: 0.45, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  });
 
   return (
     <div className="relative isolate min-h-[calc(100vh-5rem)] text-[color:var(--home-ink)]">
@@ -512,13 +512,6 @@ export function HubSearchExperience({
       <div className="mx-auto max-w-7xl px-4 pb-28 pt-10 sm:px-6 sm:pt-14 lg:px-8">
         {/* ---- Hero ---- */}
         <header className="max-w-3xl">
-          <motion.p
-            {...reveal(0)}
-            className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]"
-          >
-            <Compass className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" aria-hidden />
-            Henry Onyx · Universal search
-          </motion.p>
           {firstName ? (
             <motion.p {...reveal(0.02)} className="mt-4 text-sm font-medium text-[color:var(--home-ink-55)]">
               Signed in · {firstName}
@@ -531,11 +524,6 @@ export function HubSearchExperience({
             Search everything{" "}
             <span className="text-[color:var(--home-accent-text)]">Henry Onyx</span> operates.
           </motion.h1>
-          <motion.p {...reveal(0.06)} className="mt-5 max-w-2xl text-[15px] leading-7 text-[color:var(--home-ink-70)] sm:text-base">
-            One entry point across marketplace, property, jobs, learning, care, logistics, and studio —
-            plus your account workflows and help routes. Live, ranked, and one keystroke from the exact
-            destination.
-          </motion.p>
         </header>
 
         {/* ---- The instrument: input ---- */}
@@ -676,7 +664,7 @@ export function HubSearchExperience({
             className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-[color:var(--hc-status-warning-border)] bg-[color:var(--hc-status-warning-bg)] px-4 py-3 text-sm text-[color:var(--hc-status-warning-text)]"
           >
             <AlertTriangle className="h-4 w-4 shrink-0 text-[color:var(--hc-status-warning-text)]" aria-hidden />
-            <span className="flex-1">{errorNote} Showing curated routes meanwhile.</span>
+            <span className="flex-1">{errorNote}</span>
             <button
               type="button"
               onClick={() => void runSearch(snapshot.query, scope)}
@@ -761,10 +749,6 @@ export function HubSearchExperience({
           <aside className="mt-16 border-l-2 border-[color:var(--home-accent)] pl-5">
             <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-55)]">
               <Lock className="h-3.5 w-3.5" aria-hidden /> More routes open after sign in
-            </p>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-[color:var(--home-ink-70)]">
-              Orders, wallet, invoices, applications, viewings and support live behind your account.
-              Sign in to search them and land on the exact destination.
             </p>
             {lockedPreview.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-1.5">
@@ -851,7 +835,7 @@ function SectionHeader({ label, count, accent }: { label: string; count: number;
       ) : null}
       <h2 className="text-[1.18rem] font-semibold tracking-tight text-[color:var(--home-ink)]">{label}</h2>
       <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[color:var(--home-ink-50)]">
-        {count} {count === 1 ? "route" : "routes"}
+        {count}
       </span>
       <span className="h-px flex-1 bg-[color:var(--home-line)]" />
     </header>
@@ -910,18 +894,6 @@ function ResultRow({
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-            <span
-              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.2em]"
-              style={{ color: meta.accentText }}
-            >
-              <span className="h-1 w-1 rounded-full" style={{ backgroundColor: meta.accent }} aria-hidden />
-              {meta.label}
-            </span>
-            {hit.badge ? (
-              <span className="rounded-full bg-[color:var(--home-surface-07)] px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-65)]">
-                {hit.badge}
-              </span>
-            ) : null}
             {hit.authRequirement !== "none" ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-[color:var(--home-line-15)] px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.18em] text-[color:var(--home-ink-60)]">
                 <Lock className="h-2.5 w-2.5" aria-hidden /> Sign in
@@ -933,12 +905,12 @@ function ResultRow({
             <HighlightedText text={hit.title} query={query} />
           </h3>
 
-          {hit.description ? (
+          {/* Indexed records (products, listings, roles) keep their own summary;
+              the static route catalogue's descriptions only restated the title. */}
+          {hit.resolution === "indexed" && hit.description ? (
             <p className="mt-1.5 line-clamp-2 max-w-3xl text-sm leading-relaxed text-[color:var(--home-ink-65)]">
               {hit.description}
             </p>
-          ) : hit.subtitle ? (
-            <p className="mt-1.5 text-sm leading-relaxed text-[color:var(--home-ink-65)]">{hit.subtitle}</p>
           ) : null}
 
           <p className="mt-2 truncate font-mono text-[11px] tracking-tight text-[color:var(--home-ink-35)]">
@@ -969,10 +941,6 @@ function EmptyState({ recents, onPick }: { recents: string[]; onPick: (q: string
         </p>
         <p className="mt-4 text-balance text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
           Try a division, a workflow, or what you want to get done.
-        </p>
-        <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
-          Every Henry Onyx route is one search away — orders, deliveries, viewings, bookings,
-          certificates, wallet. Start typing, or pick a prompt.
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
           {EXAMPLE_PROMPTS.map((prompt) => (

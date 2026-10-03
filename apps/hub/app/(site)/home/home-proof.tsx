@@ -18,9 +18,8 @@ type LedgerEntry = { id: string; name: string; metric: string };
 /**
  * HomeProof — the honest ledger, and who makes it.
  *
- * The thesis is the copy: "the numbers above are real, and the work is ours."
- * So this beat does NOT re-print the hero's big stat cells — that would
- * contradict "above" and read as padding. Instead it presents the COMPLETE,
+ * This beat does NOT re-print the hero's big stat cells — that would read as
+ * padding. Instead it presents the COMPLETE,
  * uncapped live ledger: every division reporting a real `metric`, quiet and
  * tabular (the hero only teased the first three). A `metric: null` never
  * becomes a row, so a fabricated or zero number cannot appear here.
@@ -48,18 +47,6 @@ export function HomeProof({ copy, divisions, divisionStats }: HomeProofProps) {
         whileInView="visible"
         viewport={{ once: true, margin: "-12% 0px -10% 0px" }}
       >
-        <motion.header variants={m.reveal} className="max-w-3xl">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
-            {copy.proof.kicker}
-          </p>
-          <h2
-            className="mt-4 text-balance text-2xl font-semibold leading-[1.15] tracking-tight text-[color:var(--home-ink)] sm:text-3xl lg:text-4xl"
-            style={{ fontFamily: "var(--acct-font-display)" }}
-          >
-            {copy.proof.lead}
-          </h2>
-        </motion.header>
-
         {ledger.length > 0 ? (
           <motion.div variants={m.reveal} className="mt-14 sm:mt-16">
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">

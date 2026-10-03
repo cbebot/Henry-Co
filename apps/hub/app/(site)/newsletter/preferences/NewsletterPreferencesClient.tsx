@@ -26,18 +26,6 @@ type SubmissionState =
   | { status: "saved"; topicKeys: string[]; nextStatus: string }
   | { status: "error"; message: string };
 
-const DIVISION_LABEL: Record<NewsletterDivision, string> = {
-  hub: "Henry Onyx",
-  account: "Account",
-  care: "Care",
-  jobs: "Jobs",
-  learn: "Learn",
-  logistics: "Logistics",
-  marketplace: "Marketplace",
-  property: "Property",
-  studio: "Studio",
-};
-
 export default function NewsletterPreferencesClient(props: Props) {
   const [selected, setSelected] = useState<Set<string>>(() => new Set(props.initialTopicKeys));
   const [paused, setPaused] = useState(props.initialStatus === "paused");
@@ -118,9 +106,6 @@ export default function NewsletterPreferencesClient(props: Props) {
       <div className="space-y-6">
         {props.groups.map((group) => (
           <section key={group.division} className="space-y-3">
-            <h3 className="home-eyebrow text-[color:var(--home-ink-50)]">
-              {DIVISION_LABEL[group.division]}
-            </h3>
             <div className="space-y-2">
               {group.topics.map((topic) => {
                 const id = `pref-${topic.key}`;
@@ -144,9 +129,6 @@ export default function NewsletterPreferencesClient(props: Props) {
                     />
                     <span>
                       <span className="block text-sm font-medium text-[color:var(--home-ink)]">{topic.label}</span>
-                      <span className="mt-1 block text-xs text-[color:var(--home-ink-60)]">
-                        {topic.description}
-                      </span>
                     </span>
                   </label>
                 );

@@ -7,8 +7,8 @@ import { AmbientGlow, Magnetic, PublicCTA } from "@henryco/ui/public-design";
  * in the footer).
  *
  * Placed directly after the divisions index — the visitor has just seen
- * what exists; this band offers the walk. Lagos doctrine applied: three
- * elements (title, one support line, one primary CTA), 2x breathing,
+ * what exists; this band offers the walk. Lagos doctrine applied: two
+ * elements (title, one primary CTA), 2x breathing,
  * the shared AmbientGlow as its depth layer, the primary magnetized.
  * All copy arrives pre-translated from the v3 namespace — zero new keys.
  */
@@ -16,7 +16,6 @@ import { AmbientGlow, Magnetic, PublicCTA } from "@henryco/ui/public-design";
 export type HomeEcosystemCopy = {
   eyebrow: string;
   title: string;
-  supportLine: string;
   tryLabel: string;
   earnLabel: string;
 };
@@ -31,9 +30,6 @@ export function HomeEcosystem({ copy }: { copy: HomeEcosystemCopy }) {
             {copy.eyebrow}
           </p>
           <h2 className="home-display mt-6 text-[color:var(--home-ink)]">{copy.title}</h2>
-          <p className="home-body-sm mt-6 max-w-xl text-[color:var(--home-ink-60)]">
-            {copy.supportLine}
-          </p>
         </div>
 
         <div className="home-reveal mt-12 flex flex-wrap items-center gap-x-6 gap-y-4">

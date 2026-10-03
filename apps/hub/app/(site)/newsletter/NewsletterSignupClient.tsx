@@ -19,19 +19,6 @@ type SubmissionState =
   | { status: "success"; preferenceUrl: string | null; created: boolean; topics: string[] }
   | { status: "error"; message: string };
 
-// Division names are brand proper nouns (left untranslated, like the public selector).
-const DIVISION_LABEL: Record<NewsletterDivision, string> = {
-  hub: "Henry Onyx",
-  account: "Account",
-  care: "Care",
-  jobs: "Jobs",
-  learn: "Learn",
-  logistics: "Logistics",
-  marketplace: "Marketplace",
-  property: "Property",
-  studio: "Studio",
-};
-
 const FIELD_CLASS =
   "rounded-xl border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-3 py-2.5 text-sm text-[color:var(--home-ink)] outline-none placeholder:text-[color:var(--home-ink-35)] focus:border-[color:var(--home-accent)] focus:ring-2 focus:ring-[color:var(--home-accent-ring)]";
 
@@ -160,13 +147,9 @@ export default function NewsletterSignupClient({ groups, copy }: GroupProps) {
 
       <div>
         <p className="text-sm font-medium text-[color:var(--home-ink)]">{copy.topicsTitle}</p>
-        <p className="mt-1 text-xs text-[color:var(--home-ink-55)]">{copy.topicsHint}</p>
         <div className="mt-4 space-y-6">
           {groups.map((group) => (
             <section key={group.division} className="space-y-3">
-              <h3 className="home-eyebrow text-[color:var(--home-ink-50)]">
-                {DIVISION_LABEL[group.division]}
-              </h3>
               <div className="space-y-2">
                 {group.topics.map((topic) => {
                   const id = `topic-${topic.key}`;
@@ -191,9 +174,6 @@ export default function NewsletterSignupClient({ groups, copy }: GroupProps) {
                       <span>
                         <span className="block text-sm font-medium text-[color:var(--home-ink)]">
                           {topic.label}
-                        </span>
-                        <span className="mt-1 block text-xs text-[color:var(--home-ink-60)]">
-                          {topic.description}
                         </span>
                       </span>
                     </label>

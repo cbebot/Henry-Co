@@ -58,7 +58,7 @@ export default async function PressKitPage() {
   return (
     <>
       <Section rhythm="hero" width="prose">
-        <SectionHeader eyebrow={copy.eyebrow} title={copy.title} lede={copy.lede} level={1} />
+        <SectionHeader eyebrow={copy.eyebrow} title={copy.title} level={1} />
       </Section>
 
       <Section width="prose">

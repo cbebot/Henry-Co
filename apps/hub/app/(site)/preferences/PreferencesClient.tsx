@@ -186,7 +186,6 @@ export default function PreferencesClient({
           <Globe className="h-5 w-5 text-[color:var(--home-accent-text)]" />
           <h2 className="text-lg font-semibold text-[color:var(--home-ink)]">{copy.language.label}</h2>
         </div>
-        <p className="mb-4 text-sm text-[color:var(--home-ink-60)]">{copy.language.hint}</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {languageOptions.map((code) => {
             const active = code === localeChoice;
@@ -204,7 +203,6 @@ export default function PreferencesClient({
                 dir={isRtlLocale(code) ? "rtl" : "ltr"}
               >
                 <span className="text-sm font-semibold text-[color:var(--home-ink)]">{LOCALE_LABELS[code].native}</span>
-                <span className="text-xs text-[color:var(--home-ink-50)]">{LOCALE_LABELS[code].en}</span>
                 {!isPublicSelectorLocale(code) ? (
                   <span className="mt-2 rounded-full border border-[color:var(--home-line-12)] bg-[color:var(--home-surface-04)] px-2 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-[color:var(--home-ink-55)]">
                     Scaffold

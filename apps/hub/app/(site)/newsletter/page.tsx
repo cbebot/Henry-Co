@@ -20,7 +20,6 @@ export default async function NewsletterPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-5 py-16 text-[color:var(--home-ink)]">
       <header className="mb-10">
-        <p className="home-eyebrow text-[color:var(--home-accent-text)]">{copy.eyebrow}</p>
         <h1 className="home-display mt-3">{copy.title}</h1>
         <p className="home-lede mt-4 max-w-2xl">{copy.intro}</p>
       </header>

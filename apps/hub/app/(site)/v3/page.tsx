@@ -6,7 +6,6 @@ import { emitEvent } from "@henryco/observability";
 import {
   EditorialList,
   EditorialRow,
-  Hairline,
   PublicCTA,
   Section,
   SectionHeader,
@@ -64,7 +63,7 @@ export default async function V3StoryPage() {
   return (
     <>
       <Section rhythm="hero">
-        <SectionHeader eyebrow={copy.eyebrow} title={copy.title} lede={copy.lede} level={1} />
+        <SectionHeader eyebrow={copy.eyebrow} title={copy.title} level={1} />
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <PublicCTA href="/v3/try" size="lg" trailingIcon={<ArrowRight className="h-4 w-4" aria-hidden />}>
             {copy.tryLink}
@@ -79,7 +78,7 @@ export default async function V3StoryPage() {
       </Section>
 
       <Section id="divisions">
-        <SectionHeader title={copy.divisionsTitle} lede={copy.divisionsLede} size="headline" />
+        <SectionHeader title={copy.divisionsTitle} size="headline" />
         <EditorialList className="mt-6">
           {STORY_DIVISIONS.map((key, i) => {
             const division = COMPANY.divisions[key];
@@ -101,20 +100,6 @@ export default async function V3StoryPage() {
             );
           })}
         </EditorialList>
-        <p className="home-caption mt-6 text-[color:var(--home-ink-50)]">{copy.roadmapNote}</p>
-      </Section>
-
-      <Section>
-        <Hairline className="mb-10" />
-        <SectionHeader title={copy.spineTitle} lede={copy.spineLede} size="headline" />
-        <div className="mt-8 grid gap-x-10 gap-y-8 sm:grid-cols-2">
-          {copy.spine.map((item) => (
-            <div key={item.title}>
-              <h3 className="home-title">{item.title}</h3>
-              <p className="home-body-sm mt-2 text-[color:var(--home-ink-60)]">{item.body}</p>
-            </div>
-          ))}
-        </div>
       </Section>
 
       <Section rhythm="tight">
@@ -132,7 +117,6 @@ export default async function V3StoryPage() {
             success: newsletterCopy.form.successCreatedTitle,
           }}
         />
-        <p className="home-body-sm mt-8 max-w-2xl text-[color:var(--home-ink-50)]">{copy.honestyNote}</p>
       </Section>
     </>
   );

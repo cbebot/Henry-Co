@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Henry Onyx Company Hub",
-    description: "Premium multi-division ecosystem for Henry Onyx",
+    description: "Henry Onyx — fabric care, marketplace, property, studio, jobs, learn and logistics.",
   };
 }
 

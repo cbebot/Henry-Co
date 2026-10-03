@@ -202,7 +202,6 @@ export default async function HomePage() {
   const ecosystemBand = {
     eyebrow: v3Copy.story.eyebrow,
     title: v3Copy.story.title,
-    supportLine: v3Copy.story.divisionsLede,
     tryLabel: v3Copy.story.tryLink,
     earnLabel: v3Copy.story.earnLink,
   };

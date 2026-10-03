@@ -11,9 +11,8 @@ import { getHubPublicLocale } from "../../../../lib/locale-server";
  *
  * A tight per-division list of what exists TODAY, each block with one
  * "see it live" link to the division's real surface. Nothing deferred is
- * dressed as product — the page says so explicitly. Division names and
- * URLs resolve from @henryco/config, so the inventory cannot drift from
- * the real division registry.
+ * dressed as product. Division names and URLs resolve from @henryco/config,
+ * so the inventory cannot drift from the real division registry.
  */
 
 export const revalidate = 60;
@@ -52,7 +51,7 @@ export default async function WhatShippedPage() {
   return (
     <>
       <Section rhythm="hero" width="prose">
-        <SectionHeader eyebrow={copy.eyebrow} title={copy.title} lede={copy.lede} level={1} />
+        <SectionHeader eyebrow={copy.eyebrow} title={copy.title} level={1} />
       </Section>
 
       <Section>
@@ -64,7 +63,6 @@ export default async function WhatShippedPage() {
             return (
               <Card key={key}>
                 <h2 className="home-title">{division.name}</h2>
-                <p className="home-body-sm mt-1 text-[color:var(--home-ink-60)]">{entry.summary}</p>
                 <ul className="mt-4 space-y-2">
                   {entry.items.map((item) => (
                     <li key={item} className="home-body-sm flex gap-2 text-[color:var(--home-ink-70)]">
@@ -86,10 +84,6 @@ export default async function WhatShippedPage() {
             );
           })}
         </div>
-      </Section>
-
-      <Section rhythm="tight" width="prose">
-        <p className="home-body-sm text-[color:var(--home-ink-50)]">{copy.note}</p>
       </Section>
     </>
   );

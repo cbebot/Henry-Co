@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Search — Henry Onyx",
   description:
-    "Search across every Henry Onyx division — marketplace, property, jobs, learning, care, logistics, and studio — plus your account workflows and help routes, from one live hub.",
+    "Search every Henry Onyx division — marketplace, property, jobs, learning, fabric care, logistics and studio — plus account and help pages.",
   alternates: { canonical: "/search" },
   robots: { index: true, follow: true },
   openGraph: {

@@ -84,6 +84,7 @@ export default async function ContactPage({
         page={localizedPage}
         serverWarning={pageResult.hasServerError}
         hideHero
+        hideFooter
         copy={copy.companyPage}
         locale={locale}
       />

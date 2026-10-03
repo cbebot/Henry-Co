@@ -43,14 +43,11 @@ export function HomeIndex({ copy, divisions, divisionStats }: HomeIndexProps) {
         viewport={{ once: true, margin: "-12% 0px -10% 0px" }}
       >
         <motion.header variants={m.reveal} className="max-w-3xl">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-ink-50)]">
-            {copy.index.kicker}
-          </p>
           <h2
             className="mt-4 text-balance text-xl leading-relaxed text-[color:var(--home-ink-75)] sm:text-2xl"
             style={{ fontFamily: "var(--acct-font-display)" }}
           >
-            {copy.index.lead}
+            {copy.index.kicker}
           </h2>
         </motion.header>
 

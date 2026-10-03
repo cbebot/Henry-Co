@@ -12,8 +12,8 @@ type HomeOperatingStandardProps = {
  * HomeOperatingStandard — why every engine feels the same.
  *
  * This is the "nuke the value cards" section. Instead of a grid of equal
- * boxes, an editorial spread: a sticky thesis column (kicker → serif lead →
- * prose body) beside a hairline-ruled definition list of concrete
+ * boxes, an editorial spread: a sticky thesis column (kicker → serif lead)
+ * beside a hairline-ruled definition list of concrete
  * commitments. Each commitment is a term/description pair (real <dl>
  * semantics), numbered like an annual-report spec sheet — typography and
  * negative space do the work, not chrome.
@@ -42,9 +42,6 @@ export function HomeOperatingStandard({ copy }: HomeOperatingStandardProps) {
             >
               {os.lead}
             </h2>
-            <p className="hc-font-reading text-pretty mt-6 max-w-prose text-[1.0625rem] leading-[1.6] text-[color:var(--home-ink-80)] sm:text-[1.1875rem]">
-              {os.body}
-            </p>
           </motion.div>
 
           <motion.dl variants={m.stagger} className="lg:pt-1">
