@@ -18,8 +18,10 @@ import type {
  * (/docs/property-verification-state-model.md) and renders one of four
  * editorial badges on a listing detail page:
  *
- *   - "Verified property" — listing is in approved/published AND carries
- *     a verification trust badge.
+ *   - "Reviewed by Henry Onyx" — listing is in approved/published AND carries
+ *     a verification trust badge. (COPY-RESET: the label claims only the
+ *     staff publication review; no ownership/document check backs a
+ *     "verified" claim — see docs/copy-audit/recon/claims-truth-map.md P1.)
  *   - "Managed by HenryCo" — listing has managedByHenryCo = true.
  *   - "Under review" — listing is in any review/inspection state.
  *   - "Submission stage" — listing is in draft/submitted/changes_requested.
@@ -60,36 +62,27 @@ const COPY: Record<
   VerificationVariant,
   {
     label: string;
-    summary: string;
     Icon: React.ComponentType<{ className?: string }>;
     tone: string;
   }
 > = {
   verified: {
-    label: "Verified property",
-    summary:
-      "Henry Onyx has verified ownership, documents, and access. The listing carries the full trust posture before publication.",
+    label: "Reviewed by Henry Onyx",
     Icon: ShieldCheck,
     tone: "text-[var(--home-accent-text)]",
   },
   managed: {
     label: "Managed by Henry Onyx",
-    summary:
-      "Operations sit with Henry Onyx after move-in. Viewings, screening, and maintenance run on the same audit ledger as marketing.",
     Icon: ClipboardCheck,
     tone: "text-[var(--property-sage-soft)]",
   },
   in_review: {
     label: "Under review",
-    summary:
-      "The trust pipeline is active. Documents, eligibility, or inspection are still being reconciled before this listing can publish.",
     Icon: TimerReset,
     tone: "text-[var(--property-ink-soft)]",
   },
   submission: {
     label: "Submission stage",
-    summary:
-      "Editorial review has not started yet. Owner-facing surfaces show this badge until the listing enters the moderation queue.",
     Icon: ShieldQuestion,
     tone: "text-[var(--property-ink-muted)]",
   },
@@ -138,9 +131,6 @@ export function PropertyVerificationBadge({
       >
         {t("Property verification posture")}
       </h2>
-      <p className="mt-3 max-w-md text-[13.5px] leading-7 text-[var(--property-ink-soft)]">
-        {t(copy.summary)}
-      </p>
       {listing.trustBadges.length > 0 && variant !== "submission" ? (
         <ul className="mt-3 flex flex-wrap gap-1.5">
           {listing.trustBadges.slice(0, 4).map((badge) => (

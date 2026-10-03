@@ -53,7 +53,7 @@ export default async function AreaPage({
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker={data.area.city}
-        title={`${areaName || data.area.name}: ${t("context before commitment.")}`}
+        title={areaName || data.area.name}
         description={areaHero || data.area.hero}
       />
 

@@ -80,7 +80,7 @@ function buildRuntimeMetrics(input: Omit<PropertySnapshot, "metrics">): Property
       hint: "Active managed-property records tracked in Henry Onyx operations.",
     },
     {
-      label: "Viewing pipeline",
+      label: "Viewing requests",
       value: String(viewingPipeline),
       hint: "Open viewing requests currently being scheduled or confirmed.",
     },

@@ -49,8 +49,7 @@ export default async function ManagedPropertyPage() {
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker={t("Managed property")}
-        title={t("Operations-grade management after the listing goes live.")}
-        description={t("Tenant communication, inspections, reporting, maintenance coordination, short-let operations, and owner trust workflows — held on one operating rail rather than scattered across apps and chat threads.")}
+        title={t("Property management after the listing goes live.")}
         actions={
           <Link
             href="/submit"
@@ -71,11 +70,8 @@ export default async function ManagedPropertyPage() {
 
       <section className="mt-14 grid gap-12 xl:grid-cols-[0.95fr_1.05fr] xl:divide-x xl:divide-[var(--property-line)]">
         <div>
-          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            {t("Service lines")}
-          </p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
-            {t("What Henry Onyx handles after acceptance.")}
+            {t("Managed services")}
           </h2>
           <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
             {localizedServices.map((service) => (
@@ -105,7 +101,7 @@ export default async function ManagedPropertyPage() {
 
         <div className="xl:pl-12">
           <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            {t("Recent managed records")}
+            {t("Managed portfolios")}
           </p>
           <div className="mt-6 space-y-5">
             {snapshot.managedRecords.map((record) => (
@@ -116,11 +112,7 @@ export default async function ManagedPropertyPage() {
       </section>
 
       <section className="mt-14">
-        <PropertySectionIntro
-          kicker={t("Managed listings")}
-          title={t("Homes and stays already on managed rails.")}
-          description={t("Stronger readiness, reporting, and coordination than passive pass-through inventory.")}
-        />
+        <PropertySectionIntro as="h2" title={t("Managed homes and stays")} />
         <div className="mt-8 grid gap-5 xl:grid-cols-3">
           {managedListings.map((listing) => (
             <PropertyListingCard key={listing.id} listing={listing} />
@@ -131,15 +123,9 @@ export default async function ManagedPropertyPage() {
       <section className="mt-14 border-t border-[var(--property-line)] pt-10">
         <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
-            <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-              {t("Move forward")}
-            </p>
             <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
-              {t("Submit your property — we’ll review the operating fit, not just the badge.")}
+              {t("Submit your property")}
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--property-ink-soft)]">
-              {t("Managed acceptance implies Henry Onyx operational involvement. Non-managed listings can still publish, but the owner remains responsible for day-to-day reality.")}
-            </p>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
             <Link
@@ -153,7 +139,7 @@ export default async function ManagedPropertyPage() {
               href="/trust"
               className="inline-flex items-center gap-2 rounded-full border border-[var(--property-line)] px-6 py-3 text-sm font-semibold text-[var(--property-ink)] transition hover:border-[var(--property-accent-strong)]/50"
             >
-              {t("How Henry Onyx governs listings")}
+              {t("Trust standards")}
             </Link>
           </div>
         </div>

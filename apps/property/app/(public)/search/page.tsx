@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t("Search property listings | Henry Onyx Property"),
     description: t(
-      "Search Henry Onyx Property with deep-linkable filters for area, listing kind, management, and furnishing state.",
+      "Search Henry Onyx Property listings by area, category, management and furnishing.",
     ),
   };
 }
@@ -112,13 +112,7 @@ export default async function PropertySearchPage({
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
-      <PropertySectionIntro
-        kicker={t("Search")}
-        title={t("Find the right place. Keep your filters.")}
-        description={t(
-          "Filter state stays shareable in the URL, results update without a blunt refresh, and every listing carries trust context before you invest time in it.",
-        )}
-      />
+      <PropertySectionIntro kicker={t("Search")} title={t("Find the right place.")} />
 
       <div className="mt-8">
         <PropertySearchBar
@@ -141,7 +135,7 @@ export default async function PropertySearchPage({
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-l-2 border-[var(--property-line)] pl-4">
           <p className="max-w-md text-[13px] leading-6 text-[var(--property-ink-soft)]">
             {t(
-              "Save this search and Henry Onyx Property will notify you when a new listing matches. Cadence is daily by default — change it later in your account.",
+              "Save this search and Henry Onyx Property will notify you when a new listing matches.",
             )}
           </p>
           {viewer.user ? (
@@ -247,9 +241,7 @@ export default async function PropertySearchPage({
             mapboxAccessToken={mapboxAccessToken}
           />
           <p className="mt-3 text-[12px] leading-6 text-[var(--property-ink-muted)]">
-            {t(
-              "Pins cluster by area. Tap a pin to open the area sheet with the top listings and a deep link into the filtered list. Switch back to",
-            )}{" "}
+            {t("Switch back to")}{" "}
             <Link href={buildViewHref(params, "list")} className="font-semibold text-[var(--property-accent-strong)] underline-offset-4 hover:underline">
               {t("list view")}
             </Link>{" "}
@@ -309,9 +301,7 @@ export default async function PropertySearchPage({
         <div className="mt-8">
           <PropertyEmptyState
             title={t("No listings match this combination yet.")}
-            body={t(
-              "Try broadening the area, removing one filter at a time, or switching from a precise phrase to the property type you want Henry Onyx to surface.",
-            )}
+            body={t("Try a wider area or fewer filters.")}
             action={
               <Link
                 href="/search"

@@ -24,7 +24,7 @@ export async function PropertySiteFooter() {
       title: t("Owners and agents"),
       links: [
         { href: "/submit", label: t("Submit a listing") },
-        { href: "/agent", label: t("Agent surface") },
+        { href: "/agent", label: t("Agent workspace") },
         { href: getSharedAccountPropertyUrl("viewings"), label: t("Viewings and inquiries") },
         { href: getSharedAccountPropertyUrl("listings"), label: t("Listing activity") },
       ],
@@ -51,9 +51,6 @@ export async function PropertySiteFooter() {
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
           <div className="space-y-5">
             <div className="property-kicker">{t(property.name)}</div>
-            <p className="max-w-md text-sm leading-7 text-[var(--property-ink-soft)]">
-              {t("Property discovery with tighter moderation and calmer inquiry handling — built for serious renters, buyers, owners, and operators.")}
-            </p>
             <div className="space-y-1.5 text-sm text-[var(--property-ink-soft)]">
               <p className="font-medium text-[var(--property-ink)]">{property.supportEmail}</p>
               {/* NUMBER-PURGE (owner 2026-07-08): masked WhatsApp link. */}

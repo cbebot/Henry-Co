@@ -86,10 +86,6 @@ export async function ComparablePricingRail({
         <p className="property-kicker">Comparable pricing</p>
         <span className="h-px flex-1 bg-[var(--property-line)]" />
       </div>
-      <p className="mt-4 max-w-md text-[13.5px] leading-7 text-[var(--property-ink-soft)]">
-        Similar listings in the same category and area, ranked by closeness on
-        beds, size, and location. Use the delta column to gauge market posture.
-      </p>
 
       <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
         {localizedComparables.map((row) => {

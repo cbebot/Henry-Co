@@ -4,7 +4,6 @@ import {
   CalendarRange,
   FileCheck2,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import {
@@ -21,102 +20,47 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t("Trust standards | Henry Onyx Property"),
     description: t(
-      "How Henry Onyx Property governs listing submissions, documents, inspections, managed operations, and publication safety.",
+      "Every Henry Onyx Property listing is reviewed before it goes public. Read the standards each listing must meet.",
     ),
   };
 }
 
-const trustRails = [
+/**
+ * COPY-RESET (2026-10-03): outcomes only — each line is enforced in code.
+ * Do not describe how review, holds, or fraud checks work.
+ *   - private until approved: apps/property/lib/property/store.ts (visibility
+ *     "private" on create) + app/api/property/route.ts staff decision
+ *     (visibility "public" only on approved/published)
+ *   - documents / identity holds block publication: route.ts
+ *     (awaiting_documents / awaiting_eligibility refuse publish)
+ *   - open inspection blocks publication: route.ts (requested / scheduled)
+ */
+const standards = [
   {
     icon: ShieldCheck,
-    title: "The public site is not an open dump",
-    body:
-      "A listing does not go live just because somebody filled a form. Henry Onyx holds every submission privately first, then decides whether the documents, authority, identity, and property reality are strong enough for public release.",
+    title: "Private until approved",
+    body: "Every submission stays private until Henry Onyx reviews and approves it.",
   },
   {
     icon: FileCheck2,
-    title: "Documents depend on the listing path",
-    body:
-      "Owner-listed, agent-led, managed, commercial, land, and inspection-sensitive submissions do not carry the same evidence burden. Henry Onyx asks for the documents that actually explain the path instead of hiding requirements until later.",
+    title: "Documents first",
+    body: "A listing still waiting on required documents is not published.",
   },
   {
     icon: CalendarRange,
-    title: "Inspection is operational, not decorative",
-    body:
-      "If a listing needs an inspection, that becomes a tracked workflow. It can be requested, scheduled, completed, waived, failed, or cancelled, and publication should not pretend the check is done when it is not.",
-  },
-];
-
-const statusGuide = [
-  {
-    title: "Awaiting documents",
-    body:
-      "Henry Onyx still needs stronger authority, ownership, management, or supporting evidence before the listing can move deeper into review.",
-  },
-  {
-    title: "Awaiting eligibility",
-    body:
-      "Identity, duplicate-contact review, or another trust prerequisite is still unresolved. The listing is held privately until that is cleared.",
-  },
-  {
-    title: "Inspection requested or scheduled",
-    body:
-      "Henry Onyx has decided that a site check matters for this listing path. The listing is not treated as fully trusted until that inspection rail is closed properly.",
-  },
-  {
-    title: "Under review, approved, or published",
-    body:
-      "Once the trust gates are satisfied, the listing can move into editorial review, approval, and then public visibility if the remaining quality checks pass.",
-  },
-];
-
-const expectationColumns = [
-  {
-    heading: "What Henry Onyx checks",
-    bullets: [
-      "Whether the submitter appears authorised to market, manage, or request inspection for the property.",
-      "Whether the media, pricing, occupancy reality, and location context are serious enough for a premium platform.",
-      "Whether the account trust posture is strong enough for higher-risk listing paths.",
-      "Whether a managed listing is truly asking for Henry Onyx operations, not just a badge.",
-    ],
-  },
-  {
-    heading: "What owners and agents should expect",
-    bullets: [
-      "Direct uploads are better than pasted document links because staff need a reviewable file trail.",
-      "If a listing is weak, Henry Onyx may request better proof, stronger copy, or clearer readiness details before it moves.",
-      "Managed and non-managed listings are different paths; approval for one should not silently imply the other.",
-      "If a listing gets held or escalated, the goal is cleaner publication truth, not bureaucratic noise.",
-    ],
-  },
-];
-
-const policyCards = [
-  {
-    icon: Building2,
-    title: "Managed vs non-managed",
-    body:
-      "Managed listings imply Henry Onyx operational involvement after acceptance. Non-managed listings can still be reviewed and published, but the owner or agent remains responsible for the operating reality after first contact.",
+    title: "Inspections finished first",
+    body: "If a listing needs a site inspection, it stays private until the inspection is finished.",
   },
   {
     icon: ShieldCheck,
-    title: "Duplicate-contact resistance",
-    body:
-      "If the same email or phone appears across multiple Henry Onyx accounts or submissions, the listing may stay in manual review until the ownership picture is clearer.",
+    title: "Identity and ownership",
+    body: "A listing can stay in review until the owner's identity or ownership is confirmed.",
   },
   {
-    icon: CalendarRange,
-    title: "Inspection and viewing continuity",
-    body:
-      "Henry Onyx treats inspections and viewings as tracked workflows. Requests, schedules, and follow-up should remain visible to staff and to the account history instead of vanishing into chat.",
+    icon: Building2,
+    title: "Owner-run listings",
+    body: "Listings not managed by Henry Onyx are run by their owner or agent, who remains responsible after first contact.",
   },
-];
-
-const nextSteps = [
-  "Submitters see a private listing record first, not instant publication.",
-  "Henry Onyx reviews the evidence, the trust posture, and whether the listing belongs on a managed, non-managed, or inspection-sensitive rail.",
-  "If more information is needed, the listing can move into corrections, document hold, eligibility hold, or escalation before publication.",
-  "Only after those checks are coherent should the listing move toward approval and public release.",
 ];
 
 export default async function TrustPage() {
@@ -126,27 +70,19 @@ export default async function TrustPage() {
   const translatedMetrics = snapshot.metrics.map((metric) => ({
     label: t(metric.label),
     value: metric.value,
-    hint: t(metric.hint),
   }));
 
   return (
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
-      <PropertySectionIntro
-        kicker={t("Trust")}
-        title={t("Governed before it is public.")}
-        description={t(
-          "Documents are path-specific, inspections are real workflows, and managed vs non-managed publication is not blurred together. Calm, but serious.",
-        )}
-      />
+      <PropertySectionIntro kicker={t("Trust")} title={t("Reviewed before it is public.")} />
 
       <div className="mt-10">
         <PropertyMetricGrid items={translatedMetrics} />
       </div>
 
       <section className="mt-14">
-        <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">{t("Core trust rails")}</p>
         <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-          {trustRails.map((item) => {
+          {standards.map((item) => {
             const Icon = item.icon;
             return (
               <li
@@ -169,91 +105,6 @@ export default async function TrustPage() {
             );
           })}
         </ul>
-      </section>
-
-      <section className="mt-14 grid gap-12 xl:grid-cols-[1.05fr_0.95fr] xl:divide-x xl:divide-[var(--property-line)]">
-        <div>
-          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            {t("What the listing states mean")}
-          </p>
-          <ul className="mt-6 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-            {statusGuide.map((item) => (
-              <li key={item.title} className="py-5">
-                <h3 className="text-base font-semibold tracking-tight text-[var(--property-ink)]">
-                  {t(item.title)}
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-                  {t(item.body)}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="xl:pl-12">
-          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            {t("Two-sided expectations")}
-          </p>
-          <div className="mt-6 grid gap-10 md:grid-cols-2 md:divide-x md:divide-[var(--property-line)]">
-            {expectationColumns.map((column, i) => (
-              <div key={column.heading} className={i > 0 ? "md:pl-8" : ""}>
-                <h3 className="text-sm font-semibold tracking-tight text-[var(--property-ink)]">
-                  {t(column.heading)}
-                </h3>
-                <ul className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-                  {column.bullets.map((bullet) => (
-                    <li key={bullet} className="flex gap-3">
-                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--property-accent-strong)]" />
-                      <span>{t(bullet)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-14">
-        <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-          {t("Policy clarifications")}
-        </p>
-        <ul className="mt-8 grid gap-10 md:grid-cols-2 xl:grid-cols-3 xl:divide-x xl:divide-[var(--property-line)]">
-          {policyCards.map((card, i) => {
-            const Icon = card.icon;
-            return (
-              <li key={card.title} className={i > 0 && i < 3 ? "xl:pl-8" : ""}>
-                <Icon
-                  className="h-5 w-5 text-[var(--property-accent-strong)]"
-                  aria-hidden
-                />
-                <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--property-ink)]">
-                  {t(card.title)}
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-                  {t(card.body)}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
-      <section className="mt-14 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
-        <p className="property-kicker text-[10.5px] uppercase tracking-[0.22em]">
-          <Sparkles className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
-          {t("What happens next after submission")}
-        </p>
-        <ol className="mt-4 space-y-3 text-sm leading-7 text-[var(--property-ink-soft)]">
-          {nextSteps.map((item, i) => (
-            <li key={item} className="flex gap-3">
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span>{t(item)}</span>
-            </li>
-          ))}
-        </ol>
       </section>
     </main>
   );

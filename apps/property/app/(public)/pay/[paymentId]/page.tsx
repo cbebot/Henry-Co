@@ -16,8 +16,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Property · Payment workspace",
-  description: "Track property payment workflows once the finance pipeline goes live.",
+  title: "Property payment",
+  description: "Henry Onyx Property payment page.",
   robots: { index: false, follow: false },
 };
 

@@ -144,12 +144,6 @@ export function PropertyInquiryForm({ listingId, slug, defaults }: Props) {
         />
       </label>
 
-      <p className="text-xs leading-6 text-[var(--property-ink-muted)]">
-        {t(
-          "Henry Onyx uses your account so replies, clarifications, and the next trust checks stay in one place.",
-        )}
-      </p>
-
       <button
         type="submit"
         disabled={pending}

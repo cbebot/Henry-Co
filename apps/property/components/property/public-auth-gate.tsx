@@ -16,7 +16,7 @@ export async function PropertyPublicAuthGate({
   signupHref,
 }: {
   title: string;
-  description: string;
+  description?: string;
   loginHref: string;
   signupHref: string;
 }) {
@@ -36,9 +36,11 @@ export async function PropertyPublicAuthGate({
       <h3 className="mt-3 max-w-md text-[1.25rem] font-semibold leading-snug tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.4rem]">
         {title}
       </h3>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--property-ink-soft)]">
-        {description}
-      </p>
+      {description ? (
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--property-ink-soft)]">
+          {description}
+        </p>
+      ) : null}
       <div className="mt-5 flex flex-wrap gap-3">
         <Link
           href={loginHref}
@@ -55,9 +57,7 @@ export async function PropertyPublicAuthGate({
         </Link>
       </div>
       <p className="mt-4 text-xs leading-relaxed text-[var(--property-ink-soft)]">
-        {t(
-          "You’ll return to this page after signing in. Henry Onyx uses one account across divisions so inquiries and listings stay traceable and secure.",
-        )}
+        {t("You’ll return to this page after signing in.")}
       </p>
     </div>
   );

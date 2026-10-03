@@ -46,23 +46,28 @@ export function PropertySectionIntro({
   title,
   description,
   actions,
+  as: Heading = "h1",
 }: {
-  kicker: string;
+  kicker?: string;
   title: string;
-  description: string;
+  description?: string;
   actions?: React.ReactNode;
+  /** A page has exactly one h1 — a second intro on the same page passes "h2". */
+  as?: "h1" | "h2";
 }) {
   return (
     <section>
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
-          <p className="property-kicker">{kicker}</p>
-          <h1 className="property-heading mt-4 text-balance">{title}</h1>
+          {kicker ? <p className="property-kicker">{kicker}</p> : null}
+          <Heading className="property-heading mt-4 text-balance">{title}</Heading>
           {/* READING-02: hero sub-copy in the editorial serif reading face
               (--property-ink-soft already aliases the ink-70 equivalent). */}
-          <p className="hc-font-reading mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--property-ink-soft)] sm:text-lg">
-            {description}
-          </p>
+          {description ? (
+            <p className="hc-font-reading mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--property-ink-soft)] sm:text-lg">
+              {description}
+            </p>
+          ) : null}
         </div>
         {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
       </div>
@@ -73,7 +78,7 @@ export function PropertySectionIntro({
 export function PropertyMetricGrid({
   items,
 }: {
-  items: Array<{ label: string; value: string; hint: string }>;
+  items: Array<{ label: string; value: string; hint?: string }>;
 }) {
   return (
     <dl className="grid grid-cols-2 gap-x-6 gap-y-6 border-y border-[var(--property-line)] py-6 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-12 md:grid-cols-3">
@@ -85,9 +90,11 @@ export function PropertyMetricGrid({
           <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[2rem]">
             {item.value}
           </dd>
-          <p className="max-w-sm text-[12.5px] leading-relaxed text-[var(--property-ink-soft)]">
-            {item.hint}
-          </p>
+          {item.hint ? (
+            <p className="max-w-sm text-[12.5px] leading-relaxed text-[var(--property-ink-soft)]">
+              {item.hint}
+            </p>
+          ) : null}
         </div>
       ))}
     </dl>
@@ -707,33 +714,21 @@ export function PropertyPortfolioStats({
   return (
     <ol className="grid gap-8 md:grid-cols-3 md:divide-x md:divide-[var(--property-line)]">
       <li>
-        <p className="property-kicker">{statsCopy?.managedStock ?? "Managed stock"}</p>
+        <p className="property-kicker">{statsCopy?.managedStock ?? "Managed listings"}</p>
         <p className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[2.4rem]">
           {managed}
         </p>
-        <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
-          {statsCopy?.managedStockBody ??
-            "Listings currently running through Henry Onyx managed-property rails."}
-        </p>
       </li>
       <li className="md:pl-8">
-        <p className="property-kicker">{statsCopy?.featuredSurfaces ?? "Featured surfaces"}</p>
+        <p className="property-kicker">{statsCopy?.featuredSurfaces ?? "Featured listings"}</p>
         <p className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[2.4rem]">
           {featured}
         </p>
-        <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
-          {statsCopy?.featuredSurfacesBody ??
-            "Listings currently elevated across editorial and campaign surfaces."}
-        </p>
       </li>
       <li className="md:pl-8">
-        <p className="property-kicker">{statsCopy?.managedValue ?? "Managed value"}</p>
+        <p className="property-kicker">{statsCopy?.managedValue ?? "Portfolio value"}</p>
         <p className="mt-3 text-[2rem] font-semibold leading-tight tracking-tight text-[var(--property-ink)] sm:text-[2.4rem]">
           {formatCompactNumber(portfolioValue)}
-        </p>
-        <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--property-ink-soft)]">
-          {statsCopy?.managedValueBody ??
-            "Combined managed-property portfolio value under Henry Onyx trust operations."}
         </p>
       </li>
     </ol>

@@ -313,7 +313,7 @@ export function evaluatePropertySubmissionPolicy(
     bullets.push("Inspection: Henry Onyx may send an agent to verify the property and location before it goes live.");
   }
   if (ctx.trust.signals.duplicateEmailMatches > 0 || ctx.trust.signals.duplicatePhoneMatches > 0) {
-    bullets.push("Contact review: shared contact details keep the submission in manual review until ownership is confirmed.");
+    bullets.push("Ownership check: the submission stays in review until ownership is confirmed.");
   }
   if (requiresEnhancedKyc) {
     bullets.push("Enhanced verification: higher-risk listings may require extra identity or ownership proof.");

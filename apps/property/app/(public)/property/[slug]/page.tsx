@@ -46,6 +46,10 @@ type SearchParams = {
   removed?: string;
 };
 
+/**
+ * COPY-RESET (2026-10-03): one true line + the limiting qualifier per
+ * variant (legal recon PR3 — the qualifiers stay). No mechanism wording.
+ */
 function getTrustCopy(
   listing: NonNullable<Awaited<ReturnType<typeof getPropertyBySlug>>>["listing"],
   locale: AppLocale,
@@ -54,64 +58,28 @@ function getTrustCopy(
   if (listing.managedByHenryCo) {
     return {
       title: t("Managed by Henry Onyx"),
-      body: t(
-        "Henry Onyx is involved beyond publication. That usually means clearer viewing coordination, tighter listing upkeep, and a more reliable post-inquiry path.",
+      body: t("Viewings and maintenance for managed homes are coordinated by Henry Onyx."),
+      qualifier: t(
+        "Managed properties can still require documents or extra checks before the next step moves forward.",
       ),
-      bullets: [
-        t("Viewing coordination can stay with Henry Onyx instead of being passed around informally."),
-        t("Listing updates and follow-through are handled with stronger operational continuity."),
-        t("Managed properties can still require documents or extra checks before the next step moves forward."),
-      ],
     };
   }
 
   if (listing.trustBadges.some((badge) => badge.toLowerCase().includes("review"))) {
     return {
       title: t("Reviewed before publication"),
-      body: t(
-        "This listing is not appearing here as an untouched upload. Henry Onyx has already reviewed the record before showing it publicly.",
+      body: t("Henry Onyx reviewed this listing before showing it publicly."),
+      qualifier: t(
+        "Publication does not remove the possibility of later document or access verification.",
       ),
-      bullets: [
-        t("Trust notes stay visible so seekers understand what has been checked."),
-        t("Publication does not remove the possibility of later document or access verification."),
-        t("If the listing changes materially, it can move back into review."),
-      ],
     };
   }
 
   return {
-    title: t("Serious-listing standard"),
-    body: t(
-      "Henry Onyx expects pricing, media, and listing identity to be strong enough for real decision-making before a property is promoted publicly.",
-    ),
-    bullets: [
-      t("If a viewing is requested, Henry Onyx may still confirm access, location, or readiness before the appointment."),
-      t("Higher-risk listings can move through extra checks even after they appear live."),
-      t("Managed and verified labels reflect a stronger operating path than a basic submission."),
-    ],
+    title: t("Listing standard"),
+    body: null,
+    qualifier: t("Higher-risk listings can move through extra checks even after they appear live."),
   };
-}
-
-function getViewingFlow(listingTitle: string, locale: AppLocale) {
-  const t = (text: string) => translateSurfaceLabel(locale, text);
-  return [
-    {
-      title: t("Request is logged"),
-      body: `${t("Your request for")} ${listingTitle} ${t("is written into Henry Onyx Property's viewing queue instead of being left in a chat thread.")}`,
-    },
-    {
-      title: t("Access and location are confirmed"),
-      body: t(
-        "A Henry Onyx agent may confirm the property location, access conditions, or calendar before your appointment is finalised.",
-      ),
-    },
-    {
-      title: t("Post-viewing checks stay clear"),
-      body: t(
-        "If you want to move forward, Henry Onyx may request identity, affordability, or company documents before the next approval step.",
-      ),
-    },
-  ];
 }
 
 export default async function PropertyDetailPage({
@@ -211,7 +179,6 @@ export default async function PropertyDetailPage({
   const loginHref = getSharedAccountLoginUrl({ nextPath: returnPath, propertyOrigin });
   const signupHref = getSharedAccountSignupUrl({ nextPath: returnPath, propertyOrigin });
   const trustCopy = getTrustCopy(data.listing, locale);
-  const viewingFlow = getViewingFlow(listingTitle || data.listing.title, locale);
 
   const canonicalUrl = `${propertyOrigin.replace(/\/$/, "")}${returnPath}`;
   const heroImage = resolvePropertyMediaUrl(data.listing.heroImage);
@@ -271,16 +238,12 @@ export default async function PropertyDetailPage({
       <div className="mt-6 space-y-3">
         {messages.inquiry === "sent" ? (
           <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
-            {t(
-              "Inquiry submitted. Henry Onyx Property has placed it in the follow-up queue and the next response will stay tied to your account.",
-            )}
+            {t("Inquiry submitted.")}
           </p>
         ) : null}
         {messages.viewing === "requested" ? (
           <p className="border-l-2 border-[var(--property-sage-soft)]/55 pl-4 text-sm leading-7 text-[var(--property-sage-soft)]">
-            {t(
-              "Viewing request submitted. Scheduling, reminders, and any verification follow-up are now attached to a recorded workflow.",
-            )}
+            {t("Viewing request submitted.")}
           </p>
         ) : null}
         {messages.saved === "1" || messages.removed === "1" ? (
@@ -384,19 +347,16 @@ export default async function PropertyDetailPage({
                 </h2>
               </div>
               <div>
-                <p className="text-sm leading-7 text-[var(--property-ink-soft)]">
-                  {trustCopy.body}
-                </p>
+                {trustCopy.body ? (
+                  <p className="text-sm leading-7 text-[var(--property-ink-soft)]">
+                    {trustCopy.body}
+                  </p>
+                ) : null}
                 <ul className="mt-4 space-y-2.5">
-                  {trustCopy.bullets.map((bullet) => (
-                    <li
-                      key={bullet}
-                      className="flex gap-2.5 text-sm leading-7 text-[var(--property-ink-soft)]"
-                    >
-                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--property-accent-strong)]" />
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
+                  <li className="flex gap-2.5 text-sm leading-7 text-[var(--property-ink-soft)]">
+                    <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--property-accent-strong)]" />
+                    <span>{trustCopy.qualifier}</span>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -472,9 +432,6 @@ export default async function PropertyDetailPage({
                       <h3 className="text-[1rem] font-semibold tracking-tight text-[var(--property-ink)]">
                         {t("Inquiry status")}
                       </h3>
-                      <p className="mt-1 text-sm leading-7 text-[var(--property-ink-soft)]">
-                        {t("Tracked in the Henry Onyx account timeline.")}
-                      </p>
                     </div>
                     <PropertyStatusBadge status={myInquiry.status} />
                   </li>
@@ -505,34 +462,8 @@ export default async function PropertyDetailPage({
             </section>
           ) : null}
 
-          {/* Viewing flow — horizontal numbered timeline */}
-          <section>
-            <p className="property-kicker">{t("What happens after you request a viewing")}</p>
-            <ol className="mt-5 grid gap-6 md:grid-cols-3">
-              {viewingFlow.map((step, i) => (
-                <li
-                  key={step.title}
-                  className={`border-t border-[var(--property-line)] pt-5 ${
-                    i > 0 ? "md:border-l md:border-t-0 md:pl-5 md:pt-0" : ""
-                  }`}
-                >
-                  <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
-                    {t("Step")} {String(i + 1).padStart(2, "0")}
-                  </p>
-                  <h3 className="mt-3 text-[1rem] font-semibold leading-snug tracking-tight text-[var(--property-ink)]">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-                    {step.body}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </section>
-
           {/* Inquiry form — editorial, no panel */}
           <section>
-            <p className="property-kicker">{t("Inquiry")}</p>
             <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
               {t("Ask about this property")}
             </h2>
@@ -549,9 +480,6 @@ export default async function PropertyDetailPage({
               <div className="mt-6">
                 <PropertyPublicAuthGate
                   title={t("Sign in to send an inquiry")}
-                  description={t(
-                    "Inquiries are tied to your Henry Onyx account so agents can respond securely and you can track follow-up in one place.",
-                  )}
                   loginHref={loginHref}
                   signupHref={signupHref}
                 />
@@ -561,7 +489,6 @@ export default async function PropertyDetailPage({
 
           {/* Viewing request form — editorial, no panel */}
           <section>
-            <p className="property-kicker">{t("Viewing request")}</p>
             <h2 className="mt-4 max-w-md text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--property-ink)] sm:text-[1.85rem]">
               {t("Request a viewing")}
             </h2>
@@ -579,7 +506,7 @@ export default async function PropertyDetailPage({
                 <PropertyPublicAuthGate
                   title={t("Sign in to request a viewing")}
                   description={t(
-                    "Viewings are scheduled through your Henry Onyx account so confirmations, reminders, and updates stay in one secure timeline.",
+                    "If you want to move forward, Henry Onyx may request identity, affordability, or company documents before the next approval step.",
                   )}
                   loginHref={loginHref}
                   signupHref={signupHref}
@@ -604,13 +531,7 @@ export default async function PropertyDetailPage({
 
       {data.related.length ? (
         <section className="mt-16">
-          <PropertySectionIntro
-            kicker={t("Related listings")}
-            title={t("Other homes and spaces worth shortlisting.")}
-            description={t(
-              "Similar inventory in the same area or category, surfaced with the same editorial standard.",
-            )}
-          />
+          <PropertySectionIntro as="h2" title={t("Related listings")} />
           <div className="mt-8 grid gap-5 xl:grid-cols-3">
             {data.related.map((listing) => (
               <PropertyListingCard key={listing.id} listing={listing} />

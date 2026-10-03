@@ -646,21 +646,21 @@ export const propertyCampaigns: PropertyFeaturedCampaign[] = [
 export const propertyServices: PropertyService[] = [
   {
     id: "service-managed",
-    title: "Managed Property Trust Services",
-    summary: "Henry Onyx can operate the property after it is listed, occupied, and handed over.",
-    bullets: ["Owner reporting", "Maintenance coordination", "Rent follow-up", "Viewing and inspection standards"],
+    title: "Managed property services",
+    summary: "Henry Onyx can run the property after it is let.",
+    bullets: ["Owner reporting", "Maintenance coordination", "Rent follow-up", "Inspections"],
   },
   {
     id: "service-marketing",
-    title: "Listing Marketing and Positioning",
-    summary: "Sharper presentation, stronger photography direction, and better inquiry conversion.",
-    bullets: ["Editorial listing copy", "Premium media sequencing", "Featured campaign placement", "Viewing-prep workflows"],
+    title: "Listing marketing",
+    summary: "Henry Onyx can prepare and promote your listing.",
+    bullets: ["Listing copy", "Photography direction", "Featured placement", "Viewing preparation"],
   },
   {
     id: "service-tenant",
-    title: "Inquiry and Viewing Operations",
-    summary: "Henry Onyx can handle response sequencing, screening, and viewing scheduling with calmer rigor.",
-    bullets: ["Lead triage", "Scheduling coordination", "Reminder automation", "No-show reduction"],
+    title: "Inquiries and viewings",
+    summary: "Henry Onyx can handle prospective tenants and buyers for you.",
+    bullets: ["Inquiry handling", "Applicant screening", "Viewing scheduling", "Viewing reminders"],
   },
 ];
 
@@ -668,27 +668,27 @@ export const propertyFaqs: PropertyFaq[] = [
   {
     id: "faq-1",
     question: "What makes a Henry Onyx-managed property different?",
-    answer: "Managed properties carry stronger readiness checks, operator follow-through, viewing coordination, and owner reporting than standard pass-through listings.",
+    answer: "Viewings and maintenance for managed homes are coordinated by Henry Onyx.",
   },
   {
     id: "faq-2",
     question: "Can I submit a property before my media is perfect?",
-    answer: "Yes. Henry Onyx can accept a submission with baseline media, then request improved assets before public approval if the listing needs a stronger premium presentation.",
+    answer: "Yes. Henry Onyx may ask for better photos before the listing is approved.",
   },
   {
     id: "faq-3",
     question: "How are viewing requests confirmed?",
-    answer: "Viewing requests are logged, assigned, and moved through confirmation and reminder steps server-side, with email and WhatsApp follow-up where configuration allows.",
+    answer: "Henry Onyx confirms the time with you and sends a reminder before the viewing.",
   },
   {
     id: "faq-4",
     question: "Do you support commercial properties?",
-    answer: "Yes. Commercial listings get fit-out context, screening notes, and more disciplined inquiry handling so teams avoid low-information tours.",
+    answer: "Yes. Offices, retail, hospitality and industrial spaces can be listed and searched.",
   },
   {
     id: "faq-5",
     question: "Can Henry Onyx manage a property after occupancy?",
-    answer: "Yes. Managed-property services can include owner reporting, maintenance vendor coordination, rent follow-up, inspections, and occupancy support.",
+    answer: "Yes. Managed services can include rent follow-up, maintenance, inspections and owner reporting.",
   },
 ];
 

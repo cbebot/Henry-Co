@@ -355,7 +355,7 @@ export function getPropertySubmissionBlueprint(
       {
         name: "occupancy_status",
         label: "Occupancy status",
-        description: "This affects inspection timing and viewing truth.",
+        description: "This affects inspection timing.",
         kind: "select",
         required: true,
         options: selectOptions.occupancyStatus,
@@ -411,7 +411,7 @@ export function getPropertySubmissionBlueprint(
         "identity_docs",
         "Identity or KYC support",
         "identity_evidence",
-        "Optional supporting identity evidence for trust review. Your Henry Onyx account verification status is still the main identity gate.",
+        "Optional supporting identity documents.",
         false
       )
     );

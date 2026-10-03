@@ -242,7 +242,7 @@ function PropertySearchBarInner({
         <p className="text-xs text-[var(--property-ink-muted)]" aria-live="polite">
           {isPending
             ? copy?.searchBar.refreshingResults ?? "Refreshing results without losing your place."
-            : copy?.searchBar.shareableFilters ?? "Filters stay in the URL so you can share the exact search or come back to it later."}
+            : null}
         </p>
       </div>
     </form>

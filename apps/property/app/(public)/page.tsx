@@ -6,7 +6,6 @@ import {
   CalendarRange,
   Compass,
   KeyRound,
-  Search,
   ShieldCheck,
 } from "lucide-react";
 import { resolveLocalizedDynamicField } from "@henryco/i18n/server";
@@ -32,9 +31,9 @@ const NGN = (value: number) => formatCurrency(value, "NGN");
  * Composition principles (deliberately distinct from Zillow / Compass /
  * Sotheby's / Airbnb / Booking):
  *
- *   1. Lead with INTENT, not a search box. Three intent paths — Live in
- *      it / Own it / List or steward it — sit as ledger rows under the
- *      title. Search is offered as a refinement at the top-right of
+ *   1. Lead with INTENT, not a search box. Three numbered intent paths —
+ *      rent or buy / managed homes / list a property — sit as ledger rows
+ *      under the title. Search is offered as a refinement at the top-right of
  *      the hero, not as the dominant element.
  *
  *   2. Inventory presented as a LEDGER (left) + FEATURED IMAGE column
@@ -42,19 +41,17 @@ const NGN = (value: number) => formatCurrency(value, "NGN");
  *      typeset in tabular numerals on hairline-divided rows. No card
  *      sprawl, no Zillow-style 3-up tile grids for areas.
  *
- *   3. Differentiators surfaced as a PULL-QUOTE editorial spread, not
- *      as a 4-up feature grid.
- *
- *   4. Agents shown as a CONTRIBUTORS page — single image per row,
+ *   3. Agents shown as a CONTRIBUTORS page — single image per row,
  *      name, territory, one-line bio. Magazine layout, not the
  *      generic "Meet the team" 3-up cards every property platform ships.
+ *      The band renders only when agents exist.
  *
- *   5. Featured listings keep the existing PropertyListingCard atom but
+ *   4. Featured listings keep the existing PropertyListingCard atom but
  *      sit inside a clean two-row band, not a deep-shadow grid.
  *
- *   6. Every section ships designed empty-state copy when its data is
- *      absent, so a fresh tenant operator never sees a broken-looking
- *      page.
+ *   5. COPY-RESET (2026-10-03): no explanation copy. Headings are plain
+ *      labels; empty states say what is missing, never how the back
+ *      office works.
  *
  * Tokens used: --property-ink, --property-ink-soft, --property-ink-muted,
  * --property-line, --property-line-strong, --property-accent-strong,
@@ -100,57 +97,11 @@ export default async function PropertyHomePage() {
     0
   );
   const agents = snapshot.agents ?? [];
-  const differentiators = snapshot.differentiators ?? [];
   const viewerFirstName = viewer.user?.fullName?.split(/\s+/)[0]?.trim() || null;
-  const inventoryYear = new Date().getFullYear();
 
-  // Home page renders three small Supabase-row ledgers: differentiators
-  // (capped at 4), services (full list), agents (capped at 8). Each list
-  // is short and visible, so wrap title/name + description/summary.
-  // Areas table renders area.name + marketNote and gets wrapped too.
-  const visibleDifferentiators = differentiators.slice(0, 4);
-  const localizedDifferentiators = await Promise.all(
-    visibleDifferentiators.map(async (item) => {
-      const [name, description] = await Promise.all([
-        resolveLocalizedDynamicField({
-          record: item as unknown as Record<string, unknown>,
-          field: "name",
-          locale,
-          fallback: item.name ?? "",
-          machineTranslate: locale !== "en",
-        }),
-        resolveLocalizedDynamicField({
-          record: item as unknown as Record<string, unknown>,
-          field: "description",
-          locale,
-          fallback: item.description ?? "",
-          machineTranslate: locale !== "en",
-        }),
-      ]);
-      return { ...item, name, description };
-    }),
-  );
-  const localizedServices = await Promise.all(
-    (snapshot.services ?? []).map(async (service) => {
-      const [title, summary] = await Promise.all([
-        resolveLocalizedDynamicField({
-          record: service as unknown as Record<string, unknown>,
-          field: "title",
-          locale,
-          fallback: service.title ?? "",
-          machineTranslate: locale !== "en",
-        }),
-        resolveLocalizedDynamicField({
-          record: service as unknown as Record<string, unknown>,
-          field: "summary",
-          locale,
-          fallback: service.summary ?? "",
-          machineTranslate: locale !== "en",
-        }),
-      ]);
-      return { ...service, title, summary };
-    }),
-  );
+  // Home page renders one small Supabase-row ledger: agents (capped at 8),
+  // so wrap name + label. Areas table renders area.name + marketNote and
+  // gets wrapped too.
   const visibleAgents = agents.slice(0, 8);
   const localizedAgents = await Promise.all(
     visibleAgents.map(async (agent) => {
@@ -201,10 +152,8 @@ export default async function PropertyHomePage() {
     <main id="henryco-main" tabIndex={-1} className="pb-24">
       {/* HERO ──────────────────────────────────────────────────────── */}
       <section className="relative mx-auto max-w-[92rem] px-5 pt-10 sm:px-8 sm:pt-14 lg:px-10 lg:pt-20">
-        {/* Top trust strip — three calm signals, anchored by a tiny live
-            indicator and the inventory year. The year is a deliberately
-            understated provenance signal — "this is a working ledger,
-            not a mood board". */}
+        {/* Top trust strip — two calm signals, anchored by a tiny live
+            indicator. */}
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10.5px] font-semibold uppercase tracking-[0.26em] text-[var(--property-ink-soft)]">
           <span className="inline-flex items-center gap-1.5 text-[var(--property-accent-strong)]">
             <ShieldCheck className="h-3.5 w-3.5" />
@@ -222,8 +171,6 @@ export default async function PropertyHomePage() {
                 : copy.home.trustStrip.curatedBeforePublic
               : copy.home.trustStrip.inventoryUnderReview}
           </span>
-          <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[var(--property-line-strong)] sm:inline-block" />
-          <span>{copy.home.trustStrip.inventoryLabel} {inventoryYear}</span>
         </div>
 
         <div className="mt-7 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.78fr)] lg:items-end lg:gap-16">
@@ -232,9 +179,6 @@ export default async function PropertyHomePage() {
             <h1 className="property-display max-w-3xl text-balance text-[var(--property-ink)]">
               {copy.home.heroPage.title}
             </h1>
-            <p className="mt-5 max-w-xl text-pretty text-[15px] leading-7 text-[var(--property-ink-soft)] sm:text-[15.5px] sm:leading-8">
-              {copy.home.heroPage.body}
-            </p>
 
             {/* Intent ledger — three rows, each is a real next step.
                 On mobile, rows stack at full width. On desktop the
@@ -246,21 +190,18 @@ export default async function PropertyHomePage() {
                   href: "/search",
                   kicker: copy.home.intentLedger[0]?.kicker ?? "",
                   title: copy.home.intentLedger[0]?.title ?? "",
-                  body: copy.home.intentLedger[0]?.body ?? "",
                   icon: Compass,
                 },
                 {
                   href: "/search?managed=1",
                   kicker: copy.home.intentLedger[1]?.kicker ?? "",
                   title: copy.home.intentLedger[1]?.title ?? "",
-                  body: copy.home.intentLedger[1]?.body ?? "",
                   icon: CalendarRange,
                 },
                 {
                   href: "/submit",
                   kicker: copy.home.intentLedger[2]?.kicker ?? "",
                   title: copy.home.intentLedger[2]?.title ?? "",
-                  body: copy.home.intentLedger[2]?.body ?? "",
                   icon: KeyRound,
                 },
               ].map((row) => {
@@ -283,9 +224,6 @@ export default async function PropertyHomePage() {
                       <span className="block">
                         <span className="block text-[18px] font-semibold leading-[1.25] tracking-[-0.012em] text-[var(--property-ink)] transition-transform duration-300 ease-out group-hover/row:translate-x-[2px] sm:text-[19px]">
                           {row.title}
-                        </span>
-                        <span className="mt-1.5 block max-w-xl text-[13.5px] leading-6 text-[var(--property-ink-soft)]">
-                          {row.body}
                         </span>
                       </span>
                       <span
@@ -370,7 +308,7 @@ export default async function PropertyHomePage() {
                           .slice(0, 3)
                           .map((a) => a.name)
                           .join(" · ")
-                      : copy.home.inventorySnapshot.areasCoveredEmptyHint
+                      : undefined
                   }
                 />
                 <Stat
@@ -398,15 +336,10 @@ export default async function PropertyHomePage() {
                 <Stat
                   label={copy.home.inventorySnapshot.pendingReviewLabel}
                   value={`${snapshot.listings.filter((listing) => listing.status === "submitted" || listing.status === "under_review").length}`}
-                  hint={copy.home.inventorySnapshot.pendingReviewHint}
                 />
               </dl>
 
               <div className="mt-6">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-soft)]">
-                  <Search className="mr-1.5 inline h-3 w-3 align-[-1px] text-[var(--property-accent-strong)]" />
-                  {copy.home.inventorySnapshot.refineSearchLabel}
-                </p>
                 <div className="mt-3">
                   <PropertySearchBar
                     areas={snapshot.areas}
@@ -424,13 +357,9 @@ export default async function PropertyHomePage() {
       <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:px-8 sm:mt-24 lg:px-10">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <div>
-            <p className="property-kicker">{copy.home.featuredKicker}</p>
             <h2 className="mt-3 text-balance text-[1.7rem] font-semibold leading-[1.08] tracking-[-0.02em] text-[var(--property-ink)] sm:text-[2.1rem]">
               {copy.home.featuredTitle}
             </h2>
-            <p className="mt-3 max-w-2xl text-[14.5px] leading-7 text-[var(--property-ink-soft)]">
-              {copy.home.featuredDescription}
-            </p>
           </div>
           <Link
             href="/search"
@@ -452,23 +381,12 @@ export default async function PropertyHomePage() {
             ))}
           </div>
         ) : (
-          // Empty state — designed, not "no items". Tells the visitor
-          // exactly what's happening at the operator layer.
+          // Empty state — says what is missing and offers the next step.
           <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-6 py-10 sm:px-10 sm:py-14">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
               {copy.home.featuredEmpty.eyebrow}
             </p>
-            <p className="mt-4 max-w-xl text-[15px] leading-7 text-[var(--property-ink-soft)]">
-              {copy.home.featuredEmpty.body}
-            </p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                href="/search"
-                className="property-button-secondary inline-flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-semibold"
-              >
-                {copy.home.featuredEmpty.browseCta}
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
               <Link
                 href={submitCta(copy.home.featuredEmpty.submitCta).href}
                 className="inline-flex items-center gap-1.5 px-1 text-[13px] font-semibold text-[var(--property-accent-strong)] underline-offset-4 transition hover:underline"
@@ -487,13 +405,9 @@ export default async function PropertyHomePage() {
       <section className="mx-auto mt-20 max-w-[92rem] px-5 sm:mt-24 sm:px-8 lg:px-10">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:items-end">
           <div>
-            <p className="property-kicker">{copy.home.areasKicker}</p>
             <h2 className="mt-3 text-balance text-[1.7rem] font-semibold leading-[1.08] tracking-[-0.02em] text-[var(--property-ink)] sm:text-[2.1rem]">
               {copy.home.areasTitle}
             </h2>
-            <p className="mt-3 max-w-md text-[14.5px] leading-7 text-[var(--property-ink-soft)]">
-              {copy.home.areasDescription}
-            </p>
           </div>
 
           {areaIndex.length > 0 ? (
@@ -569,147 +483,24 @@ export default async function PropertyHomePage() {
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
                 {copy.home.areasTable.emptyEyebrow}
               </p>
-              <p className="mt-3 text-[14.5px] leading-7 text-[var(--property-ink-soft)]">
-                {copy.home.areasTable.emptyBody}
-              </p>
             </div>
           )}
         </div>
       </section>
 
-      {/* DIFFERENTIATORS — editorial pull-quote band ────────────────── */}
-      {differentiators.length > 0 ? (
+      {/* AGENT CONTRIBUTORS PAGE — only when agents exist ─────────────── */}
+      {agents.length > 0 ? (
         <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.45fr] lg:gap-20">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
             <div>
-              <p className="property-kicker">{copy.home.differentiatorsKicker}</p>
-              <h2 className="mt-3 text-balance text-[1.6rem] font-semibold leading-[1.08] tracking-[-0.02em] text-[var(--property-ink)] sm:text-[2rem]">
-                {copy.home.differentiatorsTitle}
+              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.08] tracking-[-0.018em] text-[var(--property-ink)] sm:text-[1.85rem]">
+                {copy.home.agentsTitle}
               </h2>
-              <p className="mt-4 max-w-md text-[14.5px] leading-7 text-[var(--property-ink-soft)]">
-                {copy.home.differentiatorsDescription}
-              </p>
             </div>
-
-            {/* Pull-quote spread — each differentiator becomes a numbered
-                editorial entry, hairline divided. No tile chrome, no
-                rounded-card noise. */}
-            <ol className="divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-              {localizedDifferentiators.map((item, index) => (
-                <li key={item.id} className="py-6 sm:py-7">
-                  <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[3rem_minmax(0,1fr)] sm:gap-x-6">
-                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.26em] text-[var(--property-accent-strong)]">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <p className="text-[17px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--property-ink)] sm:text-[18.5px]">
-                        {item.name}
-                      </p>
-                      <p className="mt-2 max-w-2xl text-[14px] leading-7 text-[var(--property-ink-soft)]">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-      ) : null}
-
-      {/* MANAGED OPERATING LANE ─────────────────────────────────────── */}
-      <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-          <div>
-            <p className="property-kicker">{copy.home.managedKicker}</p>
-            <h2 className="mt-3 text-balance text-[1.7rem] font-semibold leading-[1.06] tracking-[-0.022em] text-[var(--property-ink)] sm:text-[2.1rem]">
-              {copy.home.managedTitle}
-            </h2>
-            <p className="mt-5 max-w-xl text-[15px] leading-8 text-[var(--property-ink-soft)]">
-              {copy.home.managedBody}
-            </p>
-
-            {localizedServices.length > 0 ? (
-              <ul className="mt-8 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-                {localizedServices.map((service, index) => (
-                  <li key={service.id} className="py-5 sm:py-6">
-                    <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[3rem_minmax(0,1fr)] sm:gap-x-6">
-                      <span className="text-[10.5px] font-semibold uppercase tracking-[0.26em] text-[var(--property-sage-soft)]/85">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <div>
-                        <p className="text-[15.5px] font-semibold tracking-[-0.005em] text-[var(--property-ink)]">
-                          {service.title}
-                        </p>
-                        <p className="mt-1 max-w-xl text-[13.5px] leading-7 text-[var(--property-ink-soft)]">
-                          {service.summary}
-                        </p>
-                        {service.bullets && service.bullets.length > 0 ? (
-                          <ul className="mt-3 flex flex-wrap gap-2">
-                            {service.bullets.slice(0, 4).map((bullet) => (
-                              <li
-                                key={bullet}
-                                className="rounded-full border border-[var(--property-line)] bg-[color:var(--home-surface-04)] px-2.5 py-1 text-[11px] font-medium text-[var(--property-ink-soft)]"
-                              >
-                                {bullet}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : null}
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
           </div>
 
-          {/* Numerical column — managed economics visible up front */}
-          <aside className="lg:pt-20">
-            <div className="rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-sheet)] p-6 sm:p-7 shadow-[0_30px_90px_-55px_rgb(var(--home-ink-rgb)/0.18)]">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--home-accent-text)]">
-                {copy.home.managedAside.title}
-              </p>
-              <dl className="mt-5 divide-y divide-[var(--property-line)] border-y border-[var(--property-line)]">
-                <Stat
-                  label={copy.home.managedAside.activeEngagementsLabel}
-                  value={`${managedActive}`}
-                />
-                <Stat
-                  label={copy.home.managedAside.inPipelineLabel}
-                  value={`${managedPipeline}`}
-                />
-                <Stat
-                  label={copy.home.managedAside.combinedValueLabel}
-                  value={managedValue > 0 ? `${formatCompactNumber(managedValue)} NGN` : "—"}
-                  hint={copy.home.managedAside.combinedValueHint}
-                />
-              </dl>
-              <p className="mt-5 text-[12.5px] leading-6 text-[var(--property-ink-muted)]">
-                {copy.home.managedAside.footnote}
-              </p>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      {/* AGENT CONTRIBUTORS PAGE ────────────────────────────────────── */}
-      <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-          <div>
-            <p className="property-kicker">{copy.home.agentsKicker}</p>
-            <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.08] tracking-[-0.018em] text-[var(--property-ink)] sm:text-[1.85rem]">
-              {copy.home.agentsTitle}
-            </h2>
-            <p className="mt-3 max-w-2xl text-[14px] leading-7 text-[var(--property-ink-soft)]">
-              {copy.home.agentsDescription}
-            </p>
-          </div>
-        </div>
-
-        {agents.length > 0 ? (
-          // Editorial spread — large image, name, territory, one-line bio.
-          // Snaps on mobile, 4-up grid on desktop. No card chrome.
+          {/* Editorial spread — large image, name, territory, one-line bio.
+              Snaps on mobile, 4-up grid on desktop. No card chrome. */}
           <ol className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
             {localizedAgents.map((agent) => (
               <li key={agent.id} className="group/agent">
@@ -756,50 +547,8 @@ export default async function PropertyHomePage() {
               </li>
             ))}
           </ol>
-        ) : (
-          // Empty state — editorial. Operator-facing message.
-          <div className="mt-10 rounded-[1.4rem] border border-[var(--property-line)] bg-[color:var(--home-surface-04)] p-8">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--property-ink-muted)]">
-              {copy.home.agentsEmpty.eyebrow}
-            </p>
-            <p className="mt-3 max-w-xl text-[14px] leading-7 text-[var(--property-ink-soft)]">
-              {copy.home.agentsEmpty.body}
-            </p>
-          </div>
-        )}
-      </section>
-
-      {/* CLOSING CTA ─────────────────────────────────────────────────── */}
-      <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
-        <div className="rounded-[1.6rem] border border-[var(--property-line-strong)] bg-gradient-to-br from-[color:color-mix(in_srgb,var(--home-accent)_8%,transparent)] via-transparent to-[color:color-mix(in_srgb,var(--property-sage)_8%,transparent)] p-7 sm:p-10">
-          <div className="grid gap-6 sm:grid-cols-[1.4fr_1fr] sm:items-center sm:gap-10">
-            <div>
-              <p className="property-kicker">{copy.home.closingCta.eyebrow}</p>
-              <h2 className="mt-3 text-balance text-[1.5rem] font-semibold leading-[1.1] tracking-[-0.018em] text-[var(--property-ink)] sm:text-[1.85rem]">
-                {copy.home.closingCta.title}
-              </h2>
-              <p className="mt-3 max-w-xl text-[13.5px] leading-7 text-[var(--property-ink-soft)]">
-                {copy.home.closingCta.body}
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:items-end">
-              <Link
-                href="/search"
-                className="property-button-primary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-semibold sm:w-auto"
-              >
-                {copy.home.closingCta.browseCta}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href={submitCta(copy.home.closingCta.submitCta).href}
-                className="property-button-secondary inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[13.5px] font-semibold sm:w-auto"
-              >
-                {submitCta(copy.home.closingCta.submitCta).label}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
     </main>
   );
 }

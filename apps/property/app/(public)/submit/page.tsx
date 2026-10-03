@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, FileCheck2, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { BRAND_EMAILS, getAccountUrl } from "@henryco/config";
 import { translateSurfaceLabel } from "@henryco/i18n";
 import { PropertyPublicAuthGate } from "@/components/property/public-auth-gate";
@@ -21,24 +21,6 @@ export const dynamic = "force-dynamic";
 // Flag-dark: the metered "Draft with Henry Onyx Intelligence" assist renders only when the
 // company turns it on (and the global AI kill switch is enabled — the gateway enforces that).
 const PROPERTY_AI_LISTING_ASSIST = isAiSurfaceEnabled(process.env.PROPERTY_AI_LISTING_ASSIST, process.env);
-
-const standards = [
-  {
-    icon: Sparkles,
-    title: "Service-aware routing",
-    body: "Residential, commercial, managed, agent-assisted, and inspection-led submissions do not all face the same evidence or review path.",
-  },
-  {
-    icon: FileCheck2,
-    title: "Direct trust uploads",
-    body: "Authority proof, ownership evidence, management instructions, and supporting files upload directly into the review record.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Managed vs non-managed clarity",
-    body: "Managed submissions imply Henry Onyx operational involvement after acceptance. Non-managed listings can still be reviewed without pretending Henry Onyx is running them.",
-  },
-];
 
 export default async function SubmitListingPage({
   searchParams,
@@ -63,18 +45,16 @@ export default async function SubmitListingPage({
     <main className="mx-auto max-w-[92rem] px-5 py-10 sm:px-8 lg:px-10">
       <PropertySectionIntro
         kicker={t("Submit")}
-        title={t("Submit through the right trust path.")}
-        description={t(
-          "Each submission is routed by service type, authority reality, inspection sensitivity, and account trust. The form adapts to the path; documents upload directly; the listing stays private until governance clears it.",
-        )}
+        title={t("List a property with Henry Onyx.")}
+        description={t("Your listing stays private until Henry Onyx approves it.")}
       />
 
       {params.submitted === "1" ? (
         // Submission confirmation — refined editorial treatment.
-        // Governance info preserved (reference + stage + expected window
-        // + contact path) per CHROME-02 contract; only the visual
-        // treatment is restated. Three-column ledger on desktop, single
-        // column on mobile, hairline divides instead of nested cards.
+        // Governance info preserved (reference + stage + contact path) per
+        // CHROME-02 contract; only the visual treatment is restated.
+        // COPY-RESET: the "Within 2 business days" response window was
+        // removed — no SLA in code or config backs it.
         <div
           className="
             mt-8 overflow-hidden rounded-[1.4rem]
@@ -89,12 +69,10 @@ export default async function SubmitListingPage({
                 {t("Submission received")}
               </p>
               <h2 className="mt-3 text-balance text-[1.25rem] font-semibold leading-[1.2] tracking-[-0.014em] text-[var(--property-ink)] sm:text-[1.5rem]">
-                {t("Your listing is under review and stays private until governance clears it.")}
+                {t("Your listing is under review and stays private until it is approved.")}
               </h2>
               <p className="mt-3 max-w-md text-[13.5px] leading-7 text-[var(--property-ink-soft)]">
-                {t(
-                  "Quote the reference when you write in. Edits and additional evidence land directly on the same record.",
-                )}
+                {t("Quote the reference when you write in.")}
               </p>
             </div>
 
@@ -117,14 +95,6 @@ export default async function SubmitListingPage({
                 </dt>
                 <dd className="text-right text-[13px] font-semibold tracking-tight text-[var(--property-ink)]">
                   {params.policy ? params.policy.replaceAll("_", " ") : t("Queued for review")}
-                </dd>
-              </div>
-              <div className="flex items-baseline justify-between gap-6 py-3">
-                <dt className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-ink-muted)]">
-                  {t("Expected response")}
-                </dt>
-                <dd className="text-right text-[13px] font-semibold tracking-tight text-[var(--property-ink)]">
-                  {t("Within 2 business days")}
                 </dd>
               </div>
             </dl>
@@ -169,34 +139,8 @@ export default async function SubmitListingPage({
         </div>
       ) : null}
 
-      <section className="mt-12">
-        <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-          {t("Submission standards")}
-        </p>
-        <ul className="mt-6 grid gap-10 lg:grid-cols-3 lg:divide-x lg:divide-[var(--property-line)]">
-          {standards.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <li key={item.title} className={i > 0 ? "lg:pl-10" : ""}>
-                <Icon
-                  className="h-5 w-5 text-[var(--property-accent-strong)]"
-                  aria-hidden
-                />
-                <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--property-ink)]">
-                  {t(item.title)}
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--property-ink-soft)]">{t(item.body)}</p>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
       <section id="submission" className="mt-14 grid gap-12 xl:grid-cols-[0.95fr_1.05fr] xl:divide-x xl:divide-[var(--property-line)]">
         <div>
-          <p className="property-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            {t("Account context")}
-          </p>
           {viewer.user ? (
             <div className="mt-5 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
               <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
@@ -207,35 +151,18 @@ export default async function SubmitListingPage({
                 <span className="font-semibold text-[var(--property-ink)]">
                   {viewer.user.email}
                 </span>
-                . {t(
-                  "Your submission will be linked to this Henry Onyx account for moderation, identity-aware trust review, and follow-up.",
-                )}
+                .
               </p>
             </div>
           ) : (
             <div className="mt-6">
               <PropertyPublicAuthGate
                 title={t("Sign in to submit a listing")}
-                description={t(
-                  "Listing submissions require a Henry Onyx account so verification documents, moderation, and owner communications stay auditable and secure.",
-                )}
                 loginHref={submitLoginHref}
                 signupHref={submitSignupHref}
               />
             </div>
           )}
-
-          <div className="mt-8 border-l-2 border-[var(--property-accent-strong)]/55 pl-5">
-            <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--property-accent-strong)]">
-              {t("What happens next")}
-            </p>
-            <ol className="mt-3 space-y-2 text-sm leading-7 text-[var(--property-ink-soft)]">
-              <li>1. {t("Submission saved privately and routed to the right trust path.")}</li>
-              <li>2. {t("Documents read; eligibility and authority assessed.")}</li>
-              <li>3. {t("Inspection scheduled if the path requires it.")}</li>
-              <li>4. {t("Editorial review, approval, then publication if quality holds.")}</li>
-            </ol>
-          </div>
         </div>
 
         <div className="xl:pl-12">
@@ -273,14 +200,7 @@ export default async function SubmitListingPage({
             </div>
           ) : (
             <p className="mt-6 border-l-2 border-[var(--property-line)] pl-5 text-sm leading-7 text-[var(--property-ink-soft)]">
-              {t("The listing form unlocks after you sign in. Use the panel on the left, or")}{" "}
-              <Link
-                href={submitLoginHref}
-                className="font-semibold text-[var(--property-ink)] underline-offset-4 hover:underline"
-              >
-                {t("sign in here")}
-              </Link>
-              .
+              {t("The listing form unlocks after you sign in.")}
             </p>
           )}
         </div>
