@@ -149,6 +149,57 @@ export async function getApplicationContext(applicationId: string): Promise<Hiri
   };
 }
 
+export type PipelineOwnership = {
+  applicationId: string;
+  pipelineId: string;
+  employerId: string | null;
+  businessId: string | null;
+  jobTitle: string | null;
+};
+
+/**
+ * V3-CARE-JOBS-PREAPPLY-FIX-01 — the owner keys of an application's pipeline,
+ * for `actorOwnsPipeline`. Unlike getApplicationContext, the V3-70 `business_id`
+ * is read in its own query: on a database where that column does not exist yet
+ * the lookup fails on its own and `businessId` is null, while `employer_id`
+ * (always present) still resolves. Null when the application or its pipeline
+ * cannot be found.
+ */
+export async function getPipelineOwnership(applicationId: string): Promise<PipelineOwnership | null> {
+  const admin = createAdminSupabase();
+  const { data: app } = await admin
+    .from("jobs_applications")
+    .select("id, pipeline_id")
+    .eq("id", applicationId)
+    .maybeSingle();
+  const a = (app ?? null) as Record<string, unknown> | null;
+  const pipelineId = a ? asString(a.pipeline_id) : "";
+  if (!a || !pipelineId) return null;
+
+  const { data: pipe } = await admin
+    .from("jobs_hiring_pipelines")
+    .select("id, employer_id, job_title")
+    .eq("id", pipelineId)
+    .maybeSingle();
+  const p = (pipe ?? null) as Record<string, unknown> | null;
+  if (!p) return null;
+
+  const { data: scope, error: scopeError } = await admin
+    .from("jobs_hiring_pipelines")
+    .select("business_id")
+    .eq("id", pipelineId)
+    .maybeSingle();
+  const s = (!scopeError && scope ? scope : null) as Record<string, unknown> | null;
+
+  return {
+    applicationId: asString(a.id),
+    pipelineId: asString(p.id),
+    employerId: p.employer_id ? asString(p.employer_id) : null,
+    businessId: s?.business_id ? asString(s.business_id) : null,
+    jobTitle: p.job_title ? asString(p.job_title) : null,
+  };
+}
+
 /* ------------------------------------------------------------------ */
 /*  Business members (mention typeahead + interview attendees)         */
 /* ------------------------------------------------------------------ */

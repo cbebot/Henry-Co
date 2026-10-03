@@ -4,10 +4,12 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 /**
  * V3 PASS 21 — /api/care/recurring
  *
- * Customer-side recurring auto-book schedule management. The
+ * Customer-side recurring auto-book schedule management. The daily
  * /api/cron/care-automation sweep reads `care_recurring_schedules`
- * rows whose `next_run_at` lands within 24h and creates a booking row
- * from the stored `service_payload`.
+ * rows whose `next_run_at` is dated tomorrow or earlier (UTC) and creates
+ * a booking row from the stored `service_payload`, the day before pickup.
+ * The sweep books only with CARE_RECURRING_AUTOBOOK=1 (off by default);
+ * schedules saved here while it is off create no bookings.
  *
  * Endpoints:
  *   GET    — list caller's own schedules.

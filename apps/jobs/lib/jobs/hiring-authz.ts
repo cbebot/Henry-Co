@@ -7,9 +7,10 @@
 // their inputs (acting context, application context, conversation rows) and
 // delegate the allow/deny + payload-normalization DECISION here.
 //
-// The business_id model is the ONLY trusted owner key: employer_id may store an
-// activityId rather than a slug, so ownership is NEVER inferred from slug
-// matching — only from `businesses.id` equality.
+// Ownership is never inferred from slug matching. The trusted owner keys are
+// `businesses.id` equality (V3-70 business_id) and, for a pipeline that is not
+// bound to a business, a direct identity match on
+// jobs_hiring_pipelines.employer_id (see actorOwnsPipeline).
 import type { ActingContext } from "@henryco/auth/server/acting-context";
 
 /* ------------------------------------------------------------------ */
@@ -136,6 +137,55 @@ export function actingBusinessOwnsApplication(
     appCtx.businessId != null &&
     appCtx.businessId === ctx.businessId
   );
+}
+
+/**
+ * Owner keys of a hiring pipeline, read server-side (never from the request).
+ * `employerId` is `jobs_hiring_pipelines.employer_id` (FK auth.users — the
+ * employer account that owns the pipeline on prod today). `businessId` is the
+ * V3-70 `business_id` (null until that migration applies and the pipeline is
+ * bound to a business).
+ */
+export type PipelineOwnerKeys = {
+  employerId: string | null;
+  businessId: string | null;
+};
+
+/**
+ * V3-CARE-JOBS-PREAPPLY-FIX-01 — may this session actor act on this pipeline's
+ * applications (offer letters, interview-room notes)?
+ *   - A pipeline bound to a business (V3-70 business_id) is owned by that
+ *     business: only a caller acting as it passes (the same rule as
+ *     actingBusinessOwnsApplication). The creator's employer_id no longer
+ *     counts, so someone who has left the business loses access.
+ *   - A pipeline not bound to a business (every pipeline on prod today, where
+ *     business_id does not exist yet) is owned by its employer account: the
+ *     session user must BE jobs_hiring_pipelines.employer_id (FK auth.users; a
+ *     direct identity match, never slug or membership inference; an
+ *     employer_id that is not a user id simply never matches).
+ * Everything else — anonymous, another employer, another business, a pipeline
+ * that could not be resolved — is denied.
+ *
+ * Trust boundary: like every jobs ownership check, this trusts the owner keys
+ * (jobs_hiring_pipelines.employer_id / business_id, jobs_applications
+ * .pipeline_id) as server data. Request roles cannot write those tables
+ * because SEC-HARDEN-03 (hub 20260614120000_sec_harden_03_world_writable_lockdown,
+ * applied to prod 2026-06-14) dropped their world-writable policy and revoked
+ * anon/authenticated writes; the V3-FIRE-JOBS live probe (2026-06-27)
+ * confirmed it. CI replays that migration on a representative fixture: its
+ * invariant (apps/hub/supabase/tests/sec_harden_03_grant_invariant.sql)
+ * asserts jobs_applications, while jobs_hiring_pipelines is locked by the same
+ * loop but is not in the fixture. Never re-open request-role writes on them.
+ */
+export function actorOwnsPipeline(
+  ctx: ActingContext,
+  owner: PipelineOwnerKeys | null,
+): boolean {
+  if (!owner || !ctx.userId) return false;
+  if (owner.businessId) {
+    return ctx.kind === "business" && owner.businessId === ctx.businessId;
+  }
+  return Boolean(owner.employerId) && owner.employerId === ctx.userId;
 }
 
 /* ------------------------------------------------------------------ */

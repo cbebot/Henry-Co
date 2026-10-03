@@ -24,11 +24,14 @@ export function hiringAuditClient(): AuditLogSupabaseClient {
  * to resolveActingContextForUser — which performs the SAME signed-cookie
  * verification + live `business_members` role re-check (fail-closed to personal).
  *
- * Every employer/hiring mutation requires a BUSINESS context; a personal context
- * is rejected with 403 at the route. The acting-context cookie carries intent,
- * never authority — the owning-business check is still re-done per resource (the
- * pipeline must belong to ctx.businessId) and the bulk-move RPC re-validates
- * membership server-side.
+ * The V3-70 hiring routes require a BUSINESS context and reject a personal one
+ * with 403. The offers and interview-notes routes decide with actorOwnsPipeline
+ * (lib/jobs/hiring-authz.ts): a pipeline bound to a business also needs a
+ * caller acting as that business, and a pipeline not yet bound to one (every
+ * pipeline on prod today) is owned by its employer account. The acting-context
+ * cookie carries intent, never authority — the owning-business check is still
+ * re-done per resource (the pipeline must belong to ctx.businessId) and the
+ * bulk-move RPC re-validates membership server-side.
  */
 export async function resolveHiringActingContext(): Promise<ActingContext> {
   const supabase = await createSupabaseServer();
