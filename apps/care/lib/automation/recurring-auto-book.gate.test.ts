@@ -32,14 +32,16 @@ function setFlag(value: string | undefined) {
 }
 
 describe("CARE_RECURRING_AUTOBOOK gate", () => {
-  it("is on only for the exact value 1", async () => {
+  it("is on only for 1, allowing the stray whitespace a saved env value can carry", async () => {
     const { isRecurringAutoBookEnabled } = await loadSweep();
-    for (const value of [undefined, "", "0", "true", "yes", "on", " 1", "1 "]) {
+    for (const value of [undefined, "", "0", "true", "yes", "on", "10", "1.0", "01", "1 0"]) {
       setFlag(value);
       assert.equal(isRecurringAutoBookEnabled(), false, JSON.stringify(value));
     }
-    setFlag("1");
-    assert.equal(isRecurringAutoBookEnabled(), true);
+    for (const value of ["1", "1\n", "\r\n1\r\n", " 1 "]) {
+      setFlag(value);
+      assert.equal(isRecurringAutoBookEnabled(), true, JSON.stringify(value));
+    }
     setFlag(undefined);
   });
 

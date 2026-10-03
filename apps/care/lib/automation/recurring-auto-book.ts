@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash, randomUUID } from "node:crypto";
 import { normalizeEmail, normalizePhone } from "@henryco/config";
+import { getOptionalEnv } from "@/lib/env";
 import { createAdminSupabase } from "@/lib/supabase";
 
 /**
@@ -173,9 +174,13 @@ type BookingInputs = {
   run: Date;
 };
 
-/** The sweep books only with CARE_RECURRING_AUTOBOOK=1; see the FLAG-DARK note above. */
+/**
+ * The sweep books only with CARE_RECURRING_AUTOBOOK=1; see the FLAG-DARK note
+ * above. Read through the app's env helper, which drops the stray line break
+ * a value saved on Vercel can carry, so "1\n" means on; any other value is off.
+ */
 export function isRecurringAutoBookEnabled(): boolean {
-  return process.env.CARE_RECURRING_AUTOBOOK === "1";
+  return getOptionalEnv("CARE_RECURRING_AUTOBOOK") === "1";
 }
 
 /**
