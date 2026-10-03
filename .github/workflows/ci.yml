@@ -96,6 +96,12 @@ jobs:
       - name: Test (super-app)
         run: pnpm run test:workspace
 
+      # Object keys stay inside their bucket: the prefix guard against `..`, `%2e`,
+      # `?`, `#` and `\` (an unauthenticated care upload passed a caller string as a
+      # prefix), plus the media:// ref and validation rules. Previously ungated.
+      - name: Test (@henryco/media — object-key guard + refs)
+        run: pnpm --filter @henryco/media run test
+
       # V3-41 — the predictive engines ship their proofs as package tests
       # (back-tests, no-auto-punishment, reserve-before-run/concurrency, opacity).
       # CI ran NO packages/* suite before this, so these would have gated nothing.
