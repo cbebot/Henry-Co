@@ -13,7 +13,7 @@
 
 Still no prod contact; money objects untouched (digest-proven).
 **Amended by V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24):** the 14 not-apply-ready files were resolved: **6 repaired** (proved clean + re-runnable on the same shadow), **8 retired** as DO-NOT-APPLY. The full local dry-run now clears **84/93** (was 79/93), with zero regressions. See §4 and §8.1. Still no prod contact, and `payments_private` / money RPCs are still untouched.
-**Amended by V3-CARE-JOBS-PREAPPLY-FIX-01 (2026-10-03, PR #541):** PR #541 fixes the §4 "App drift in shipped code" in code. The care/jobs PASS-21 GATED files (#22, #22a, #23a, #23b, #24a, #26a) apply in one order only: **merge #541 → the production deployment of `care` (and of `jobs` for #22a/#23b) built from a `main` commit that contains #541 is READY and serving its domain → apply**. Merged alone is not enough. #23a `care_claims` stays the hard gate: the pre-#541 claims route arms its evidence-signing IDOR the moment the table exists. The checks are in §4, and the day-of step is §6.1 step 7.
+**Amended by V3-CARE-JOBS-PREAPPLY-FIX-01 (2026-10-03, PR #541):** PR #541 fixes the §4 "App drift in shipped code" in code. The care/jobs PASS-21 GATED files (#22, #22a, #23a, #23b, #24a, #26a) apply in one order only: **merge #541 → the production deployment of `care` (and of `jobs` for #22a/#23b) built from a `main` commit that contains #541 is READY and serving its domain → apply**. Merged alone is not enough. #23a `care_claims` stays the hard gate: the pre-#541 claims route arms its evidence-signing IDOR the moment the table exists. The recurring auto-book sweep stays off (`CARE_RECURRING_AUTOBOOK`, default off) until its launch pass. The checks are in §4, and the day-of step is §6.1 step 7.
 
 > **Why this file exists.** Merged-to-main ≠ applied-to-prod (the V3-73 and V3-34 lesson, `docs/v3/automation/RE-GROUNDING-2026-07-24.md:76`). Several passes shipped "flag-dark, committed-not-applied" migrations. Prod is paused, so it can't be queried. This runbook turns everything git knows into (1) one dependency-ordered apply sequence and (2) a single read-only query. The moment Supabase resumes, that query converts every NEEDS-PROD-CONFIRMATION row into ground truth, so the apply session starts from facts, not memory.
 
@@ -270,7 +270,7 @@ The edges come from three sources:
 19. `20260515120000_property_amenities_catalog.sql` — PASS-21 property depth
 20. `20260515120500_care_user_preferences.sql` — PASS-21 care depth
 21. `20260515120500_property_floorplans.sql` — PASS-21 property depth
-22. `20260515121000_care_recurring_schedules.sql` — PASS-21 care depth — ⚠ prerequisites §4 (launch prerequisites) before applying · only after PR #541 is merged and the care production deploy is READY (§4)
+22. `20260515121000_care_recurring_schedules.sql` — PASS-21 care depth — ⚠ prerequisites §4 (launch prerequisites) before applying · only after PR #541 is merged and the care production deploy is READY (§4) · the auto-book sweep then stays off until `CARE_RECURRING_AUTOBOOK=1` (default off; the recurring launch pass)
 22a. `20260515121000_jobs_interview_rooms.sql` — PASS-21 jobs depth (Daily.co interview rooms) — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying · only after PR #541 is merged and the jobs production deploy is READY (§4)
 23. `20260515121000_property_virtual_tours.sql` — PASS-21 property depth
 23a. `20260515121500_care_claims.sql` — PASS-21 care depth — **repaired FIX-01** — ⚠ **HARD pre-apply gate** (claim-evidence IDOR): merge PR #541 → care production deploy READY → apply; see §4
@@ -340,12 +340,17 @@ The GATED realtime files next to these families (`care_realtime_publication` #29
   - `apps/care/lib/automation/recurring-auto-book.ts:152` inserted `care_bookings.user_id` and omitted the NOT NULL `phone_normalized`, so recurring auto-book never booked (the error was swallowed as `skippedInvalid`).
     - **Fixed:** it inserts `customer_id` with `phone_normalized` and CHECK-valid `status` / `payment_status`.
     - Six adversarial rounds also made the sweep idempotent, bounded and fair (see #541).
+    - **Gated (default off).** The sweep runs only with `CARE_RECURRING_AUTOBOOK=1` in the care production environment; a redeploy applies a change. Off, it returns a no-op summary (`recurringEnabled: false`) and the rest of the care automation cron runs as before. So applying #22 creates the table but books nothing.
+    - Turn the flag on only in the recurring launch pass, once the launch prerequisites are done:
+      - a per-user cap on active schedules and `check (next_run_at is null or isfinite(next_run_at))` in the database;
+      - partial saves in `/api/care/recurring` that keep the stored address and phone (today a pause or resume wipes them);
+      - a scheduler that collects a pickup address.
   - `apps/jobs/app/api/jobs/offers/route.ts:82` selected `jobs_applications.candidate_user_id`, so the route always answered 403. It also lacked an employer↔pipeline ownership check, as did `interviews/rooms/[roomId]/notes/route.ts`.
     - **Fixed:** it selects `candidate_id`, and both routes require the session user to own the application's pipeline (`actorOwnsPipeline`).
   - `/api/care/claims` accepted client `evidence_urls`, and `signCareMediaUrl` signed any `media://private/<bucket>/<key>` with the service role (a latent IDOR once `care_claims` is live).
     - **Fixed:** caller-supplied evidence is refused, uploads are bound to the session user, and only the caller's own uploads are signed.
     - `signCareMediaUrl` signs payment and expense receipts only.
-  - **Order.** Applying, not launching, is the trigger: `/api/care/recurring`, the auto-book cron and `/api/care/claims` are already deployed with no flag. So the fixed code must be **live**, not merely merged, before #22/#22a/#23a/#23b/#24a/#26a are applied.
+  - **Order.** Applying, not launching, is the trigger: `/api/care/recurring` and `/api/care/claims` are deployed with no flag (and so was the auto-book cron before #541 gated it). So the fixed code must be **live**, not merely merged, before #22/#22a/#23a/#23b/#24a/#26a are applied.
     1. **Merge #541 with GitHub's merge or squash button.** GitHub signs that commit, and the Vercel projects deploy verified commits only. A merge made locally and pushed unsigned is cancelled, and production keeps serving the old build.
     2. **Wait for the production deployment.** It must be READY, built from the #541 merge commit or a later `main` commit, and be the one serving `care.henryonyx.com` (for #22a/#23b, the same in `jobs` for `jobs.henryonyx.com`). In Vercel → project → Deployments, the Production entry at the top shows Ready and its commit is the #541 merge or later.
     3. **Optional live check, before #23a is applied.** Signed in on `care.henryonyx.com`, run in the browser console:
