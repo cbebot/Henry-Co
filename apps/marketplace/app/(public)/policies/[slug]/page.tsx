@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { ecosystemOffers, policyPages } from "@/lib/marketplace/policy";
+import { policyPages } from "@/lib/marketplace/policy";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
 import type { MarketplacePublicCopy } from "@/lib/public-copy";
@@ -11,7 +10,6 @@ export const dynamic = "force-dynamic";
 
 type PolicyMetadata = {
   coverage: string;
-  enforcement: string;
   updated: string;
 };
 
@@ -26,19 +24,16 @@ function policyMetadata(
     case "buyer-protection":
       return {
         coverage: policiesCopy.coverageBySlug.buyerProtection,
-        enforcement: policiesCopy.enforcementBySlug.buyerProtection,
         updated: policiesCopy.updatedBySlug.buyerProtection,
       };
     case "seller-policy":
       return {
         coverage: policiesCopy.coverageBySlug.sellerPolicy,
-        enforcement: policiesCopy.enforcementBySlug.sellerPolicy,
         updated: policiesCopy.updatedBySlug.sellerPolicy,
       };
     default:
       return {
         coverage: policiesCopy.coverageBySlug.fallback,
-        enforcement: policiesCopy.enforcementBySlug.fallback,
         updated: policiesCopy.updatedBySlug.fallback,
       };
   }
@@ -127,14 +122,6 @@ export default async function MarketplacePolicyPage({
                 {meta.coverage}
               </span>
             </li>
-            <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                {copy.policies.details.enforcementLabel}
-              </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                {meta.enforcement}
-              </span>
-            </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 {copy.policies.details.updatedLabel}
@@ -167,29 +154,6 @@ export default async function MarketplacePolicyPage({
             </li>
           ))}
         </ol>
-      </section>
-
-      <section className="border-t border-[var(--market-line)] pt-10">
-        <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
-          {copy.policies.ecosystem.kicker}
-        </p>
-        <ul className="mt-8 grid gap-10 md:grid-cols-2 xl:grid-cols-3 xl:divide-x xl:divide-[var(--market-line)]">
-          {ecosystemOffers.slice(0, 3).map((offer, i) => (
-            <li key={offer.title} className={i > 0 && i < 3 ? "xl:pl-8" : ""}>
-              <a href={offer.href} className="group block transition hover:opacity-95">
-                <Sparkles className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
-                <h3 className="mt-3 text-base font-semibold tracking-tight text-[var(--market-ink)] group-hover:text-[var(--market-brass)]">
-                  {offer.title}
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{offer.body}</p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[11.5px] font-semibold uppercase tracking-[0.18em] text-[var(--market-brass)] underline-offset-4 group-hover:underline">
-                  {copy.policies.ecosystem.openLabel}
-                  <ArrowRight className="h-3 w-3" />
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
       </section>
     </main>
   );

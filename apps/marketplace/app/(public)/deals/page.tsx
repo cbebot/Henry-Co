@@ -51,15 +51,10 @@ export default async function DealsPage() {
       <PageIntro
         kicker={copy.deals.pageIntro.kicker}
         title={copy.deals.pageIntro.title}
-        description={copy.deals.pageIntro.description}
       />
 
-      {/*
-       * CHROME-01B FIX 8: deals shown as a 3-column grid, not a single
-       * oversized hero card. "Refreshed daily" was renamed to "Updated
-       * regularly" because the page does not yet implement a true daily
-       * refresh job.
-       */}
+      {/* CHROME-01B FIX 8: deals shown as a 3-column grid, not a single
+          oversized hero card. */}
       {allDeals.length > 0 ? (
         <section aria-label={copy.deals.sectionLabel}>
           <div className="flex items-baseline justify-between gap-3">
@@ -67,9 +62,6 @@ export default async function DealsPage() {
               <Sparkles className="h-3.5 w-3.5" />
               {copy.deals.listEyebrow}
             </p>
-            <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">
-              {copy.deals.refreshNote}
-            </span>
           </div>
           <div className="mt-4 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {allDeals.map(({ product, discount }) => (
@@ -86,9 +78,6 @@ export default async function DealsPage() {
         <div className="rounded-[1.4rem] border border-dashed border-[var(--market-line)] bg-[var(--market-bg-elevated)] px-6 py-12 text-center">
           <p className="text-sm font-semibold text-[var(--market-paper-white)]">
             {copy.deals.emptyState.title}
-          </p>
-          <p className="mt-1 text-sm text-[var(--market-muted)]">
-            {copy.deals.emptyState.body}
           </p>
         </div>
       )}

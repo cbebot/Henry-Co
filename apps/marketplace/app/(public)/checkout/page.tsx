@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getAccountUrl } from "@henryco/config";
-import { AlertCircle, LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import {
   emitEngagementEvent,
   recordCartRecoveryState,
@@ -67,8 +67,9 @@ export default async function CheckoutPage({
     return (
       <div className="mx-auto max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">
         <EmptyState
+          titleAs="h1"
           title="There is nothing to check out yet."
-          body="Add products to your cart, or restore something you saved earlier — your saved items keep the price you locked in."
+          body="Add products to your cart, or restore something you saved earlier."
           ctaHref="/search"
           ctaLabel="Browse products"
         />
@@ -90,48 +91,14 @@ export default async function CheckoutPage({
         <PageIntro
           kicker="Checkout"
           title="Sign in with your Henry Onyx account to continue."
-          description="Browsing stays open, but checkout uses your Henry Onyx account so orders, payments, addresses, notifications, and support history stay together — across every device, every session."
         />
         <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
           <EmptyState
             title="Sign in required"
-            body="Your cart is intact and waiting. Sign in once and we'll bring you back to this exact step."
+            body="Your cart is intact and waiting."
             ctaHref={buildSharedAccountLoginUrl("/checkout")}
             ctaLabel="Sign in to continue"
           />
-          <section className="market-paper rounded-[2rem] p-6 sm:p-8">
-            <p className="market-kicker">Why Henry Onyx checkout</p>
-            <div className="mt-5 space-y-4">
-              {[
-                {
-                  icon: LockKeyhole,
-                  title: "Account-protected",
-                  body: "Your card, address, and order history live in one Henry Onyx account — never re-keyed across surfaces.",
-                },
-                {
-                  icon: ShieldCheck,
-                  title: "Receipts and disputes in one place",
-                  body: "Payment proofs, delivery proof, returns, and seller messages stay tied to the same order record.",
-                },
-                {
-                  icon: WalletCards,
-                  title: "One basket, every session",
-                  body: "Walk away mid-checkout — the cart waits for you. Across phone, tablet, and laptop.",
-                },
-              ].map(({ icon: Icon, title, body }) => (
-                <div
-                  key={title}
-                  className="rounded-[1.5rem] border border-[var(--market-line)] bg-[var(--home-surface-04)] p-4"
-                >
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--market-line)] bg-[var(--home-surface-07)] text-[var(--market-brass)]">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <p className="mt-3 text-base font-semibold text-[var(--market-paper-white)]">{title}</p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--market-muted)]">{body}</p>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
       </div>
     );

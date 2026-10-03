@@ -127,7 +127,7 @@ function buildPaymentMethods(
             id: "card" as const,
             label: t("Card"),
             description: t(
-              "Pay securely by card. Your order is confirmed the moment payment clears — nothing to upload.",
+              "Pay securely by card. Your order is confirmed the moment payment clears.",
             ),
             icon: CreditCard,
           },
@@ -136,9 +136,7 @@ function buildPaymentMethods(
     {
       id: "wallet_balance",
       label: t("Henry Onyx balance"),
-      description: t(
-        "Use cleared Henry Onyx wallet funds immediately. The order is marked paid only after the balance debit succeeds.",
-      ),
+      description: t("Use cleared Henry Onyx wallet funds immediately."),
       icon: Wallet,
     },
     // Bank transfer is RETIRED — no more manual transfer + proof. The buyer pays by the live
@@ -632,13 +630,9 @@ export function CheckoutExperience({
     <div className="mx-auto max-w-[1180px] space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="market-kicker">{t("Checkout")}</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--market-paper-white)] sm:text-4xl">
-            {t("Three measured steps. No surprises.")}
+            {t("Checkout")}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-            {t("Save items for later at any point — your basket waits, your prices hold, and the timeline updates the moment payment lands.")}
-          </p>
         </div>
         <Link
           href="/cart"
@@ -816,18 +810,18 @@ export function CheckoutExperience({
 
             <p className="ml-auto inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--market-muted)]">
               <Lock className="h-3 w-3" />
-              {t("Encrypted · session bound · audit-logged")}
+              {t("Encrypted")}
             </p>
           </div>
 
           {step === "confirm" ? (
             <p className="border-l-2 border-[var(--market-brass)]/55 pl-4 text-xs leading-6 text-[var(--market-muted)]">
               {paymentMethod === "wallet_balance"
-                ? t("On confirm, your wallet debits and the order is held in escrow until the vendor accepts and dispatches.")
+                ? t("On confirm, your wallet is debited and the payment is held until delivery is confirmed.")
                 : paymentMethod === "bank_transfer"
-                ? t("On confirm, your payment proof is submitted for review. Verification usually completes within a few business hours and the timeline updates automatically the moment it does.")
+                ? t("On confirm, your payment proof is submitted for review.")
                 : paymentMethod === "card"
-                ? t("On confirm, you continue to a secure page to complete card payment. Your order is confirmed automatically the moment payment clears.")
+                ? t("On confirm, you continue to a secure page to complete card payment. The payment is held until delivery is confirmed.")
                 : t("On confirm, the order opens for vendor acceptance. The rider collects payment when the order arrives.")}
             </p>
           ) : null}
@@ -1048,7 +1042,7 @@ function DeliveryStep({
         </div>
       ) : (
         <p className="mt-5 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] px-4 py-3 text-sm leading-6 text-[var(--market-muted)]">
-          {t("You don't have any saved addresses yet. Enter delivery details below — we'll offer to save it to your address book after the order is placed.")}
+          {t("You don't have any saved addresses yet. Enter delivery details below.")}
         </p>
       )}
 
@@ -1209,12 +1203,6 @@ function PaymentStep({
         </div>
       </header>
 
-      <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-        {t(
-          "Use your cleared Henry Onyx balance first when it covers the total, or transfer the exact amount and upload proof so we can confirm your payment.",
-        )}
-      </p>
-
       <div className="mt-5 grid gap-3 lg:grid-cols-3">
         {buildPaymentMethods(t, cardEnabled).map((option) => {
           const Icon = option.icon;
@@ -1293,7 +1281,7 @@ function PaymentStep({
             <p className="mt-4 flex items-start gap-2 text-sm leading-7 text-[var(--market-muted)]">
               <Check className="mt-1 h-4 w-4 text-[var(--market-brass)]" />
               {t(
-                "Your wallet is debited and the payment is held securely in escrow until the seller fulfils your order.",
+                "Your wallet is debited and the payment is held until delivery is confirmed.",
               )}
             </p>
           ) : (
@@ -1301,7 +1289,7 @@ function PaymentStep({
               <div className="flex items-start gap-2">
                 <AlertCircle className="mt-1 h-4 w-4 shrink-0" />
                 <p>
-                  {t("Balance cannot cover this checkout. Fund your wallet or use bank transfer with proof.")}
+                  {t("Balance cannot cover this checkout. Top up your wallet or choose another payment method.")}
                 </p>
               </div>
               <Link
@@ -1818,6 +1806,8 @@ function OrderSummaryRail({
   onSaveItemForLater: (itemId: string) => void;
   pendingSavedItemIds: string[];
 }) {
+  const locale = useHenryCoLocale();
+  const t = (text: string) => translateSurfaceLabel(locale, text);
   return (
     <aside className="market-panel sticky top-28 h-fit rounded-[2rem] p-6">
       <p className="market-kicker">Order review</p>
@@ -1883,13 +1873,7 @@ function OrderSummaryRail({
       </div>
 
       <div className="mt-6 rounded-[1.4rem] border border-[var(--market-line)] bg-[var(--market-fill-faint)] p-4 text-xs leading-7 text-[var(--market-muted)]">
-        <p className="font-semibold text-[var(--market-paper-white)]">
-          Your basket waits for you
-        </p>
-        <p className="mt-1">
-          Walk away from checkout — your cart and progress survive. Sign in on any
-          device to continue.
-        </p>
+        <p>{t("Prices include VAT where it applies.")}</p>
       </div>
     </aside>
   );

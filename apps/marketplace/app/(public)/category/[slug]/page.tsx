@@ -87,9 +87,6 @@ export default async function CategoryPage({
             {t("This category isn't")}{" "}
             <span className="italic text-[color:var(--home-accent-text)]">{t("live yet.")}</span>
           </DisplayHeading>
-          <Lede className="mt-6 max-w-2xl">
-            {t("Browse the full catalogue — verified sellers, honest delivery, one trusted record.")}
-          </Lede>
           <div className="mt-9">
             <PublicCTA
               href="/search"
@@ -149,9 +146,11 @@ export default async function CategoryPage({
           <span className="italic text-[color:var(--home-accent-text)]">{localizedCategoryName}</span>{" "}
           {t("edit.")}
         </DisplayHeading>
-        <Lede className="mt-6 max-w-2xl">
-          {localizedCategoryHero || localizedCategoryDescription || t("Verified sellers, honest delivery, one trusted record.")}
-        </Lede>
+        {localizedCategoryHero || localizedCategoryDescription ? (
+          <Lede className="mt-6 max-w-2xl">
+            {localizedCategoryHero || localizedCategoryDescription}
+          </Lede>
+        ) : null}
         <div className="mt-9 flex flex-wrap items-center gap-3">
           <PublicCTA
             href={searchHref}
@@ -193,7 +192,6 @@ export default async function CategoryPage({
       {/* ── CURATED RAILS — a hairline list, not a wall of cards ── */}
       {relatedCollections.length > 0 ? (
         <Section rhythm="tight">
-          <Eyebrow>{copy.category.collectionsRail.kicker}</Eyebrow>
           <DisplayHeading level={2} size="display" className="mt-4 max-w-2xl">
             {copy.category.collectionsRail.title}
           </DisplayHeading>
@@ -221,7 +219,6 @@ export default async function CategoryPage({
       <Section rhythm={relatedCollections.length > 0 ? "tight" : "default"}>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-2xl">
-            <Eyebrow>{copy.category.catalog.kicker}</Eyebrow>
             <DisplayHeading level={2} size="display" className="mt-4">
               {copy.category.catalog.title}
             </DisplayHeading>
@@ -268,9 +265,6 @@ export default async function CategoryPage({
             <DisplayHeading level={2} size="headline">
               {t("Looking for something specific?")}
             </DisplayHeading>
-            <Body className="mt-2">
-              {t("Search the full catalogue — every listing carries a seller passport and honest delivery before checkout.")}
-            </Body>
           </div>
           <PublicCTA
             href={searchHref}

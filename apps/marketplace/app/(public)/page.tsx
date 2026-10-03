@@ -1,12 +1,11 @@
+import type { Metadata } from "next";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
 import {
-  Body,
   DisplayHeading,
   EditorialList,
   EditorialRow,
   Eyebrow,
-  Lede,
   PublicCTA,
   PublicProofRail,
   Section,
@@ -29,6 +28,16 @@ import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { getMarketplacePublicCopy } from "@/lib/public-copy";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getMarketplacePublicLocale();
+  return {
+    description: translateSurfaceLabel(
+      locale,
+      "Shop products from approved stores on Henry Onyx Marketplace.",
+    ),
+  };
+}
 
 /* TODO(wave3-catalogue): paginate translation — the home page renders many
    catalogue rows (featured products, categories, collections, vendors). Wrapping
@@ -100,14 +109,9 @@ export default async function MarketplaceHomePage() {
           <div className="mt-6 grid gap-x-12 gap-y-10 lg:grid-cols-[1.5fr_1fr] lg:items-end">
             <div>
               <DisplayHeading level={1} size="xl" className="home-rise home-delay-1 max-w-2xl">
-                {t("Buy from verified stores,")}{" "}
+                {t("Buy from approved stores,")}{" "}
                 <span className="italic text-[color:var(--home-accent-text)]">{t("without the noise.")}</span>
               </DisplayHeading>
-              <Lede className="mt-6 max-w-xl home-rise home-delay-2">
-                {t(
-                  "A calmer marketplace — curated sellers, honest delivery, and every order on one Henry Onyx record.",
-                )}
-              </Lede>
               <div className="mt-9 flex flex-wrap items-center gap-3 home-rise home-delay-3">
                 <PublicCTA
                   href="/search"
@@ -180,7 +184,6 @@ export default async function MarketplaceHomePage() {
               size="display"
               eyebrow={t("Featured")}
               title={t("Worth a closer look.")}
-              lede={t("Hand-picked listings from verified Henry Onyx sellers.")}
             />
             <PublicCTA href="/search" variant="ghost" trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}>
               {copy.home.browseAll}
@@ -206,12 +209,7 @@ export default async function MarketplaceHomePage() {
       {/* ── CURATED COLLECTIONS — tasteful Card moment (true tiles) ── */}
       {featuredCollections.length > 0 ? (
         <Section>
-          <SectionHeader
-            level={2}
-            size="display"
-            eyebrow={t("Curated")}
-            title={t("Edits that guide, never shout.")}
-          />
+          <SectionHeader level={2} size="display" title={t("Collections")} />
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {featuredCollections.map((collection) => (
               <CollectionCard key={collection.slug} collection={collection} copy={copy} />
@@ -224,13 +222,7 @@ export default async function MarketplaceHomePage() {
       {featuredVendors.length > 0 ? (
         <Section rhythm="tight">
           <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-            <SectionHeader
-              level={2}
-              size="display"
-              eyebrow={t("Stores")}
-              title={t("Sellers you can read.")}
-              lede={t("Verified vendors with accountability you can see before you buy.")}
-            />
+            <SectionHeader level={2} size="display" title={t("Stores")} />
             <PublicCTA href="/search" variant="ghost" trailingIcon={<ArrowUpRight aria-hidden className="h-4 w-4" />}>
               {t("All stores")}
             </PublicCTA>
@@ -243,21 +235,14 @@ export default async function MarketplaceHomePage() {
         </Section>
       ) : null}
 
-      {/* ── TRUST, COMPRESSED — the reason to relax, after the shopping;
-             the full story lives on /trust, not on the landing path ── */}
+      {/* ── TRUST, COMPRESSED — one link out; the facts live on /trust ── */}
       <Section rhythm="tight" tone="sunken">
         <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1fr_0.85fr] lg:items-center">
           <div>
-            <Eyebrow>{t("Why it feels different")}</Eyebrow>
-            <DisplayHeading level={2} size="headline" className="mt-4">
+            <DisplayHeading level={2} size="headline">
               {t("Trust, visible")}{" "}
               <span className="italic text-[color:var(--home-accent-text)]">{t("before you pay.")}</span>
             </DisplayHeading>
-            <Lede className="mt-5 max-w-lg">
-              {t(
-                "Verification, delivery promises, and dispute history sit beside the buy button — and orders, payments, and support stay on one account.",
-              )}
-            </Lede>
             <div className="mt-7">
               <PublicCTA
                 href="/trust"
@@ -268,23 +253,6 @@ export default async function MarketplaceHomePage() {
               </PublicCTA>
             </div>
           </div>
-          <EditorialList>
-            <EditorialRow
-              index="01"
-              title={t("Verified, not crowded")}
-              body={t("Curated stores with seller passports — quality over catalogue sprawl.")}
-            />
-            <EditorialRow
-              index="02"
-              title={t("Honest split orders")}
-              body={t("Items from different sellers stay clearly segmented through delivery.")}
-            />
-            <EditorialRow
-              index="03"
-              title={t("One record")}
-              body={t("Orders, payments, reviews, and support live in one Henry Onyx account.")}
-            />
-          </EditorialList>
         </div>
       </Section>
 
@@ -295,9 +263,6 @@ export default async function MarketplaceHomePage() {
             <DisplayHeading level={2} size="headline">
               {t("Start with what you need.")}
             </DisplayHeading>
-            <Body className="mt-2">
-              {t("Search the catalog, or open a store you can trust — every order lands on one record.")}
-            </Body>
           </div>
           <PublicCTA
             href="/search"

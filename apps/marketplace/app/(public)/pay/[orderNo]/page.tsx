@@ -124,16 +124,14 @@ export default async function MarketplacePaymentWorkspace({
     copy: {
       bodyByStatus: {
         paid: "Payment confirmed. Your order is in escrow until fulfillment lands.",
-        processing:
-          "We're confirming your payment — usually within one business day. This page updates automatically.",
+        processing: "We're confirming your payment.",
         pending:
           "Send the order total to the verified company account below. After transfer, contact support so the proof can be re-attached.",
         failed:
           "We couldn't match the previous transfer. Open a support thread so we can re-check it or accept a fresh proof.",
       },
       guideTitle: "Send the order total using the verified company account",
-      proofHint:
-        "If you need to re-attach a receipt after rejection, open a support thread from the bottom rail — keeping all proofs on the same record helps us confirm quickly.",
+      proofHint: "To re-attach a rejected receipt, open a support thread.",
       receiptText:
         "Confirmed on {date}.{proof} Your payment is protected and the seller is preparing dispatch.",
     },

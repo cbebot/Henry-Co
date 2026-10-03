@@ -442,7 +442,7 @@ const HUB_HOME_COPY_EN: HubHomeCopy = {
     reasonLabel: "Reason",
     messageLabel: "Message",
     messagePlaceholder: "A short note about why you are reaching out.",
-    defaultResponseTime: "Replies within 1 business day",
+    defaultResponseTime: "Replies by email",
     partnerPlanContext:
       "I'd like to discuss the marketplace Partner tier — custom inventory terms and direct placement controls. Here is what I'm working with: ",
     sendingLabel: "Sending…",
@@ -701,7 +701,6 @@ const HUB_HOME_COPY_FR: DeepPartial<HubHomeCopy> = {
     reasonLabel: "Motif",
     messageLabel: "Votre message",
     messagePlaceholder: "Un mot sur la raison de votre prise de contact.",
-    defaultResponseTime: "Réponse sous 1 jour ouvré",
     partnerPlanContext:
       "Je souhaite discuter du niveau Partenaire Marketplace — conditions d'inventaire personnalisées et contrôles de placement direct. Voici ma situation : ",
     sendingLabel: "Envoi en cours…",
@@ -844,7 +843,6 @@ const HUB_HOME_COPY_ES: DeepPartial<HubHomeCopy> = {
     reasonLabel: "Motivo",
     messageLabel: "Mensaje",
     messagePlaceholder: "Una breve nota sobre el motivo de tu contacto.",
-    defaultResponseTime: "Respuesta en 1 día hábil",
     partnerPlanContext:
       "Me gustaría hablar sobre el nivel Socio del Marketplace — términos de inventario personalizados y controles de colocación directa. Aquí está mi situación: ",
     sendingLabel: "Enviando…",
@@ -971,7 +969,6 @@ const HUB_HOME_COPY_PT: DeepPartial<HubHomeCopy> = {
     reasonLabel: "Motivo",
     messageLabel: "Mensagem",
     messagePlaceholder: "Uma breve nota sobre o motivo do seu contato.",
-    defaultResponseTime: "Resposta em até 1 dia útil",
     partnerPlanContext:
       "Gostaria de discutir o nível Parceiro do Marketplace — termos de inventário personalizados e controles de posicionamento direto. Aqui está minha situação: ",
     sendingLabel: "Enviando…",
@@ -1098,7 +1095,6 @@ const HUB_HOME_COPY_AR: DeepPartial<HubHomeCopy> = {
     reasonLabel: "السبب",
     messageLabel: "الرسالة",
     messagePlaceholder: "ملاحظة قصيرة حول سبب تواصلك.",
-    defaultResponseTime: "رد خلال يوم عمل واحد",
     partnerPlanContext:
       "أود مناقشة مستوى الشريك في السوق — شروط المخزون المخصصة وضوابط الوضع المباشر. إليك وضعي: ",
     sendingLabel: "جارٍ الإرسال…",
@@ -1225,7 +1221,6 @@ const HUB_HOME_COPY_DE: DeepPartial<HubHomeCopy> = {
     reasonLabel: "Grund",
     messageLabel: "Nachricht",
     messagePlaceholder: "Eine kurze Notiz zum Grund Ihrer Kontaktaufnahme.",
-    defaultResponseTime: "Antwort innerhalb von 1 Werktag",
     partnerPlanContext:
       "Ich möchte die Marketplace-Partnerstufe besprechen — individuelle Lagerkonditionen und direkte Platzierungskontrollen. Hier ist meine Situation: ",
     sendingLabel: "Wird gesendet…",
@@ -1352,7 +1347,6 @@ const HUB_HOME_COPY_ZH: DeepPartial<HubHomeCopy> = {
     reasonLabel: "原因",
     messageLabel: "信息",
     messagePlaceholder: "请简要说明您联系的原因。",
-    defaultResponseTime: "1个工作日内回复",
     partnerPlanContext:
       "我想讨论Marketplace合作伙伴级别 — 定制库存条款和直接投放控制。以下是我的情况：",
     sendingLabel: "发送中…",
@@ -1479,7 +1473,6 @@ const HUB_HOME_COPY_HI: DeepPartial<HubHomeCopy> = {
     reasonLabel: "कारण",
     messageLabel: "संदेश",
     messagePlaceholder: "संपर्क के कारण के बारे में एक संक्षिप्त नोट।",
-    defaultResponseTime: "1 कार्य दिवस के भीतर जवाब",
     partnerPlanContext:
       "मैं Marketplace Partner स्तर के बारे में चर्चा करना चाहता हूं — कस्टम इन्वेंटरी शर्तें और प्रत्यक्ष प्लेसमेंट नियंत्रण। यहां मेरी स्थिति है: ",
     sendingLabel: "भेजा जा रहा है…",
@@ -1606,7 +1599,6 @@ const HUB_HOME_COPY_IG: DeepPartial<HubHomeCopy> = {
     reasonLabel: "Ihe kpatara",
     messageLabel: "Ozi",
     messagePlaceholder: "Ozi dị mkpụmkpụ gbasara ihe mere ị kpọtụrụ anyị.",
-    defaultResponseTime: "Ọzaazị n'ime ụbọchị ọrụ 1",
     partnerPlanContext:
       "Achọrọ m ịkọwa gbasara ọkwa Onye mmekọ Marketplace — ọnọdụ ngwaahịa pụrụ iche na njikwa ntinye. Nke a bụ ọnọdụ m: ",
     sendingLabel: "Na-eziga…",
@@ -1733,7 +1725,6 @@ const HUB_HOME_COPY_YO: DeepPartial<HubHomeCopy> = {
     reasonLabel: "Ìdí",
     messageLabel: "Ìránṣẹ́",
     messagePlaceholder: "Àkọsílẹ̀ kúkúrú nípa ìdí tí o fi ń kàn wá.",
-    defaultResponseTime: "Ìdáhùn láàárín ọjọ́ iṣẹ́ 1",
     partnerPlanContext:
       "Mo fẹ́ jíròrò nípa ìpele Alábàárọ̀ Marketplace — àwọn ìpèsè àkójọpọ̀ àti àwọn ìdarí ìgbékalẹ̀ tààrà. Èyí ni ipò mi: ",
     sendingLabel: "Ń ránsẹ́…",
@@ -1860,7 +1851,6 @@ const HUB_HOME_COPY_HA: DeepPartial<HubHomeCopy> = {
     reasonLabel: "Dalili",
     messageLabel: "Sako",
     messagePlaceholder: "Takaitaccen bayanin dalilin tuntuɓinku.",
-    defaultResponseTime: "Amsawa cikin kwana 1 na aiki",
     partnerPlanContext:
       "Ina son tattauna matakin Abokin Hulɗa na Marketplace — tsarin kayan aiki na musamman da kula da saka kai tsaye. Ga halin da nake ciki: ",
     sendingLabel: "Ana aika…",
@@ -2090,7 +2080,6 @@ const HUB_HOME_COPY_IT: DeepPartial<HubHomeCopy> = {
     reasonLabel: "Motivo",
     messageLabel: "Messaggio",
     messagePlaceholder: "Una breve nota sul motivo del tuo contatto.",
-    defaultResponseTime: "Risposta entro 1 giorno lavorativo",
     partnerPlanContext:
       "Vorrei discutere il livello Partner Marketplace — termini di inventario personalizzati e controlli di posizionamento diretto. Ecco la mia situazione: ",
     sendingLabel: "Invio in corso…",

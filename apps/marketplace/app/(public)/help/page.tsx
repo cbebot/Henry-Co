@@ -47,10 +47,6 @@ export default async function HelpPage({
         <h1 className="mt-4 text-balance text-[2rem] font-semibold leading-[1.08] tracking-[-0.02em] text-[var(--market-ink)] sm:text-[2.4rem] md:text-[2.8rem]">
           {copy.help.hero.title}
         </h1>
-        {/* READING-02: hero body in the editorial serif reading face. */}
-        <p className="hc-font-reading mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-          {copy.help.hero.body}
-        </p>
       </section>
 
       <MarketplaceHelpCentre categories={MARKETPLACE_FAQS} />
@@ -64,9 +60,6 @@ export default async function HelpPage({
             <h2 className="mt-3 text-balance text-[1.4rem] font-semibold leading-[1.18] tracking-[-0.012em] text-[var(--market-ink)] sm:text-[1.7rem]">
               {copy.help.stillNeedHelp.title}
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--market-muted)]">
-              {copy.help.stillNeedHelp.body}
-            </p>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
             <Link

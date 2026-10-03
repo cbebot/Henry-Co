@@ -81,9 +81,7 @@ export async function PublicSurface({ children }: { children: React.ReactNode })
       </main>
       <LivePublicSiteFooter
         copy={{
-          statement: t(
-            "A calmer marketplace — verified sellers, honest delivery, every order on one trusted record.",
-          ),
+          statement: t("A calmer marketplace of approved sellers."),
           divisionsLabel: t("The Henry Onyx group"),
           rightsReserved: t("All rights reserved."),
           attribution: t("Built in-house by Henry Onyx Studio."),
@@ -234,7 +232,7 @@ export function PageIntro({
 }: {
   kicker: string;
   title: string;
-  description: string;
+  description?: string;
   actions?: React.ReactNode;
 }) {
   return (
@@ -245,9 +243,11 @@ export function PageIntro({
           <h1 className="market-heading mt-4 max-w-3xl text-balance text-[var(--market-paper-white)]">
             {title}
           </h1>
-          <p className="mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)] sm:text-lg">
-            {description}
-          </p>
+          {description ? (
+            <p className="mt-4 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)] sm:text-lg">
+              {description}
+            </p>
+          ) : null}
         </div>
         {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
       </div>
@@ -465,11 +465,6 @@ export function TrustPassport({
           label={localeCopy.trustPassport.disputeRate}
           value={`${vendor.disputeRate}%`}
         />
-        <TrustPassportRow
-          icon={<ShieldCheck className="h-3.5 w-3.5" />}
-          label={localeCopy.trustPassport.responseSla}
-          value={`${vendor.responseSlaHours}h`}
-        />
       </dl>
     </section>
   );
@@ -646,17 +641,20 @@ export function EmptyState({
   body,
   ctaHref,
   ctaLabel,
+  titleAs: TitleTag = "p",
 }: {
   title: string;
   body: string;
   ctaHref?: string;
   ctaLabel?: string;
+  /** Element for the title — "h1" when the empty state is the page's only heading. */
+  titleAs?: "p" | "h1";
 }) {
   return (
     <section className="border-l-2 border-[var(--market-brass)]/55 px-5 py-4">
-      <p className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
+      <TitleTag className="text-[1.4rem] font-semibold leading-tight tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[1.65rem]">
         {title}
-      </p>
+      </TitleTag>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--market-muted)]">{body}</p>
       {ctaHref && ctaLabel ? (
         <Link

@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: translateMarketplacePublicLabel(locale, "Track an order"),
     description: translateMarketplacePublicLabel(
       locale,
-      "Look up a marketplace order by its reference code to see fulfillment, payment, and payout status.",
+      "Track a Henry Onyx Marketplace order by its reference.",
     ),
   };
 }
@@ -45,15 +45,13 @@ export default async function TrackIndexPage() {
           {t("Track an order")}
         </h1>
         <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-          {t(
-            "Enter your order reference to see fulfillment, payment, and payout status. You can find the reference in your order confirmation or in your account.",
-          )}
+          {t("You can find the reference in your order confirmation or in your account.")}
         </p>
 
         <TrackLookupForm
           labels={{
             inputLabel: t("Order reference"),
-            placeholder: t("e.g. MKT-2026-0001"),
+            placeholder: t("Order reference"),
             submit: t("Track order"),
             emptyError: t("Enter an order reference to continue."),
           }}
@@ -67,11 +65,6 @@ export default async function TrackIndexPage() {
         <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
           <LifeBuoy className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
           {t("Need help finding your order?")}
-        </p>
-        <p className="mt-3 max-w-2xl text-sm leading-[1.7] text-[var(--market-muted)]">
-          {t(
-            "Signed in? Open your orders to track everything in one place. Otherwise, our help centre can point you to the right reference.",
-          )}
         </p>
         <div className="mt-4 flex flex-wrap gap-2.5">
           <Link

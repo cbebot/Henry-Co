@@ -165,9 +165,6 @@ export function MarketplaceCartDrawer() {
                 <div className="rounded-[1.8rem] border border-dashed border-[var(--home-line)] bg-[var(--home-surface-04)] p-8 text-center">
                   <ShoppingBag className="mx-auto h-8 w-8 text-[var(--home-accent-text)]" />
                   <p className="mt-4 text-xl font-semibold tracking-tight">Start building the basket.</p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--home-ink-65)]">
-                    Quick-add from any card and the basket will stay updated here without a hard refresh.
-                  </p>
                   <div className="mt-5 flex flex-col items-center gap-2">
                     <Link
                       href="/search"
@@ -201,9 +198,6 @@ export function MarketplaceCartDrawer() {
                   {formatCurrency(cart.subtotal, cart.items[0]?.currency || "NGN")}
                 </span>
               </div>
-              <p className="mt-3 text-sm leading-7 text-[var(--home-ink-65)]">
-                Split-order clarity, delivery windows, and payment states stay visible again at checkout.
-              </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {cartSyncing ? (
                   <div className="sm:col-span-2 rounded-[1.35rem] border border-[var(--home-line)] bg-[var(--home-surface-04)] px-4 py-4 text-center text-sm font-semibold text-[var(--home-ink-65)]">

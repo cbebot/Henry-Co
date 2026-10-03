@@ -1,59 +1,30 @@
-import { getAccountUrl, getDivisionUrl, getHqUrl } from "@henryco/config";
 import { sellerPlans } from "@/lib/marketplace/governance";
 
 export const sellerTrustTierRules = [
   {
     tier: "Unverified",
-    privileges: "Up to 8 active listings, strict moderation, no premium high-risk category access, longest payout reserve.",
-    payoutWindow: "10-day payout reserve, 5-day auto-release after verified delivery.",
+    privileges: "Up to 8 active listings.",
+    payoutWindow: "5-day auto-release after delivery.",
   },
   {
     tier: "Basic verified",
-    privileges: "Up to 30 active listings, standard moderation, growth plan economics, featured placement only after clean history.",
-    payoutWindow: "7-day payout reserve, 4-day auto-release after verified delivery.",
+    privileges: "Up to 30 active listings, growth plan economics.",
+    payoutWindow: "4-day auto-release after delivery.",
   },
   {
     tier: "Trusted seller",
-    privileges: "Up to 90 active listings, high-risk category access, featured placement eligibility, lighter moderation unless risk spikes.",
-    payoutWindow: "4-day payout reserve, 3-day auto-release after verified delivery.",
+    privileges: "Up to 90 active listings, high-risk category access, featured placement eligibility.",
+    payoutWindow: "3-day auto-release after delivery.",
   },
   {
     tier: "Premium verified business",
-    privileges: "Up to 250 active listings, stronger merchandising access, faster payout posture, stronger trust badge treatment.",
-    payoutWindow: "2-day payout reserve, 2-day auto-release after verified delivery.",
+    privileges: "Up to 250 active listings.",
+    payoutWindow: "2-day auto-release after delivery.",
   },
   {
     tier: "Henry Onyx verified partner",
-    privileges: "Partner inventory terms, direct placement controls, lowest payout friction, top trust passport treatment.",
-    payoutWindow: "1-day payout reserve, 1-day auto-release after verified delivery.",
-  },
-];
-
-export const ecosystemOffers = [
-  {
-    title: "Studio launch services",
-    body: "Sellers can buy Henry Onyx Studio help for storefront setup, product photography, creative assets, conversion copy, and merchandising refreshes.",
-    href: `${getDivisionUrl("studio")}/services`,
-  },
-  {
-    title: "Learn seller academy",
-    body: "Seller coaching routes into Learn so onboarding, moderation hygiene, and trust readiness can materially improve seller performance.",
-    href: `${getDivisionUrl("learn")}/courses/marketplace-seller-academy`,
-  },
-  {
-    title: "Logistics verification",
-    body: "Delivery proof, tracking confidence, and payout-release evidence can route through Henry Onyx Logistics where supported.",
-    href: `${getDivisionUrl("logistics")}/track`,
-  },
-  {
-    title: "HQ operator controls",
-    body: "Moderation, finance, payout review, and trust operations can escalate into Henry Onyx HQ and Workspace operating surfaces.",
-    href: getHqUrl("/"),
-  },
-  {
-    title: "Shared account continuity",
-    body: "Orders, disputes, seller application state, and marketplace notifications follow the shared Henry Onyx account instead of a competing auth silo.",
-    href: getAccountUrl("/marketplace"),
+    privileges: "Partner inventory terms.",
+    payoutWindow: "1-day auto-release after delivery.",
   },
 ];
 
@@ -87,7 +58,6 @@ export const policyPages = [
     summary: "Marketplace listings are scored for quality and risk before they move into approval queues.",
     bullets: [
       "Thin titles, weak summaries, missing images, vague delivery notes, and missing SKU metadata reduce listing quality score.",
-      "Duplicate primary images, suspicious wording, and listing velocity spikes increase risk score and can force manual review.",
       "Featured placement requests only unlock for eligible trust tiers and still remain subject to operator approval.",
     ],
   },
@@ -130,9 +100,9 @@ export const policyPages = [
     kicker: "Controlled payout release",
     summary: "Seller funds are held until orders clear, then become available to withdraw. Every payout is reviewed and tracked so balances stay accurate.",
     bullets: [
-      "Payout requests can only draw from releasable balances calculated from order-group truth.",
+      "Payout requests can only draw from releasable balances.",
       "Newer or weaker-trust sellers face longer reserve windows before funds become releasable.",
-      "Payout requests are reviewed before release and can be approved, held, or declined. Your balance is always calculated from your actual settled orders and cannot be changed manually.",
+      "Payout requests are reviewed before release and can be approved, held, or declined.",
     ],
   },
   {
@@ -143,7 +113,6 @@ export const policyPages = [
     bullets: [
       "Verification levels influence listing limits, payout speed, category access, and featured placement rights.",
       "Stronger seller history can shorten payout reserve and auto-release windows.",
-      "Moderation incidents and dispute spikes can pull sellers back into stricter review posture.",
     ],
   },
   {
@@ -152,7 +121,6 @@ export const policyPages = [
     kicker: "Multi-angle fraud control",
     summary: "Marketplace trust combines risk scoring, moderation queues, watchlist behaviors, delivery verification, and communication review.",
     bullets: [
-      "Suspicious messaging, risky listing copy, repeated media, and unusual payout patterns trigger queue visibility.",
       "High-risk behaviors can freeze payout, reduce permissions, or route a seller into manual review.",
       "Buyer abuse patterns are also monitored to reduce false disputes and refund abuse.",
     ],

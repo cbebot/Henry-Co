@@ -83,9 +83,9 @@ export function CardCheckoutLauncher({
         {t("Secured payment")}
       </span>
 
-      <p className="mt-6 text-sm font-medium" style={{ color: "var(--launch-soft)" }}>
+      <h1 className="mt-6 text-sm font-medium" style={{ color: "var(--launch-soft)" }}>
         {t("Order")} {orderNo}
-      </p>
+      </h1>
       <p className="mt-1 text-3xl font-semibold tabular-nums" style={{ color: "var(--launch-ink)" }}>
         {amountLabel}
       </p>

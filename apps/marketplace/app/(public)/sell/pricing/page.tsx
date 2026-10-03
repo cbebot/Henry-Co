@@ -30,10 +30,11 @@ function planCtaHref(planId: string) {
 /**
  * Seller pricing — the economics page on the locked --home-* public design
  * system. Marketplace personality: calm-premium commerce, fees stated in the
- * open. Narrative arc, one climax: Hook → Plans (the climax, a hairline list
- * where the monthly price is the bronze focal value, NOT a wall of plan cards)
- * → How it's deducted → Trust-tier payout timing → Invite. Server component on
- * the same copy/data it already sourced — re-presented, not refetched.
+ * open. Narrative arc, one climax: Hook → Plans (the climax, a hairline list of
+ * the fees each plan deducts, NOT a wall of plan cards; plan subscriptions are
+ * not billed, so no monthly price is shown) → How it's deducted → Trust-tier
+ * payout timing → Invite. Server component on the same copy/data it already
+ * sourced — re-presented, not refetched.
  *
  * i18n: copy.sellPricing.* arrives pre-translated; connective labels via
  * translateSurfaceLabel. Plan/tier ROW values are policy-derived data. Proof
@@ -62,8 +63,7 @@ export default async function SellerPricingPage() {
       <Section rhythm="hero">
         <Eyebrow>{sp.hero.kicker}</Eyebrow>
         <DisplayHeading level={1} size="xl" className="mt-5 max-w-3xl">
-          {t("Clear economics.")}{" "}
-          <span className="italic text-[color:var(--home-accent-text)]">{t("No hidden fees.")}</span>
+          {t("Clear economics.")}
         </DisplayHeading>
         <Lede className="mt-6 max-w-2xl">{sp.hero.body}</Lede>
         <PublicProofRail
@@ -76,13 +76,13 @@ export default async function SellerPricingPage() {
         />
       </Section>
 
-      {/* ── THE PLANS — the climax: a hairline ladder, price as the bronze line ── */}
+      {/* ── THE PLANS — the climax: a hairline ladder of each plan's fees ── */}
       <Section rhythm="tight" tone="sunken">
         <SectionHeader
           level={2}
           size="display"
           eyebrow={sp.plans.kicker}
-          title={t("Pick a plan. The price is the headline.")}
+          title={t("Your plan follows your trust tier.")}
         />
         <EditorialList className="mt-10">
           {sellerPlanRows.map((plan, i) => (
@@ -91,12 +91,7 @@ export default async function SellerPricingPage() {
               index={String(i + 1).padStart(2, "0")}
               href={planCtaHref(plan.id)}
               title={plan.name}
-              body={`${plan.summary} · ${plan.marketplaceFeeLabel} · ${plan.payoutFeeLabel} · ${plan.includedListings} ${sp.plans.includedSuffix}`}
-              trailing={
-                <span className="home-num text-right text-sm font-semibold text-[color:var(--home-accent-text)] sm:text-base">
-                  {plan.monthlyLabel}
-                </span>
-              }
+              body={`${plan.summary} · ${plan.marketplaceFeeLabel} · ${plan.payoutFeeLabel}`}
             />
           ))}
         </EditorialList>
@@ -104,7 +99,7 @@ export default async function SellerPricingPage() {
 
       {/* ── HOW IT'S DEDUCTED — tight, in the open ── */}
       <Section rhythm="tight">
-        <SectionHeader level={2} size="headline" eyebrow={sp.economics.kicker} title={sp.economics.title} />
+        <SectionHeader level={2} size="headline" title={sp.economics.title} />
         <ol className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
           {sp.economics.items.map((item, index) => (
             <li key={item} className="flex flex-col gap-3">
@@ -122,12 +117,7 @@ export default async function SellerPricingPage() {
 
       {/* ── PAYOUT TIMING — better behaviour, shorter holds ── */}
       <Section>
-        <SectionHeader
-          level={2}
-          size="display"
-          eyebrow={sp.trustTiers.kicker}
-          title={sp.trustTiers.title}
-        />
+        <SectionHeader level={2} size="display" title={sp.trustTiers.title} />
         <EditorialList className="mt-10">
           {sellerTrustTierRules.map((tier, i) => (
             <EditorialRow
@@ -152,7 +142,6 @@ export default async function SellerPricingPage() {
             <DisplayHeading level={2} size="headline">
               {sp.closing.title}
             </DisplayHeading>
-            <Lede className="mt-2">{sp.closing.body}</Lede>
           </div>
           <PublicCTA
             href="/account/seller-application"

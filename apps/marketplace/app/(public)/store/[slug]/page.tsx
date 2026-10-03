@@ -102,15 +102,6 @@ export default async function StorePage({
             </div>
             <div className="flex flex-col gap-1">
               <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                {copy.store.stats.responseSla}
-              </dt>
-              <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[2rem]">
-                {data.vendor.responseSlaHours}
-                {copy.store.stats.responseSlaSuffix}
-              </dd>
-            </div>
-            <div className="flex flex-col gap-1">
-              <dt className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 {copy.store.stats.followers}
               </dt>
               <dd className="text-[1.7rem] font-semibold leading-tight tracking-tight text-[var(--market-paper-white)] sm:text-[2rem]">
@@ -139,15 +130,6 @@ export default async function StorePage({
           <div className="mt-6 border-l-2 border-[var(--market-brass)]/55 pl-4">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--home-ink-50)]">
               {copy.store.support.eyebrow}
-            </p>
-            <p className="mt-2 max-w-md text-sm leading-7 text-[var(--home-ink-70)]">
-              <Link
-                href={helpHref}
-                className="font-semibold text-[var(--market-brass)] underline-offset-4 outline-none transition hover:underline focus-visible:underline focus-visible:ring-2 focus-visible:ring-[var(--market-brass)]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--home-canvas)] rounded-sm"
-              >
-                {copy.store.support.contactLinkLabel}
-              </Link>
-              {copy.store.support.contactBodySuffix}
             </p>
             <Link
               href={helpHref}
@@ -194,7 +176,6 @@ export default async function StorePage({
       <section className="space-y-6">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="market-kicker">{copy.store.catalog.kicker}</p>
             <h2 className="mt-4 max-w-2xl text-balance text-[1.7rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-paper-white)] sm:text-[2.2rem]">
               {copy.store.catalog.title}
             </h2>

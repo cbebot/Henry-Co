@@ -380,7 +380,7 @@ export const COMPANY = {
       tagline:
         "Premium dispatch and delivery operations with sharper booking, cleaner tracking, and confident execution.",
       description:
-        "Henry Onyx Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.",
+        "Henry Onyx Logistics handles package pickup and delivery, same-day and scheduled runs, and shipment tracking.",
       path: "/",
       subdomain: "logistics",
       accent: "#D06F32",
@@ -447,11 +447,10 @@ export const COMPANY = {
       key: "jobs",
       name: "Henry Onyx Jobs",
       shortName: "Jobs",
-      sub: "Hiring, verified talent, and recruitment operations",
-      tagline:
-        "A premium hiring operating system for serious employers, verified talent, and cleaner recruitment.",
+      sub: "Hiring and recruitment",
+      tagline: "Hiring for serious employers and candidates.",
       description:
-        "Henry Onyx Jobs brings public hiring, verified candidate profiles, trusted employer onboarding, recruiter pipelines, and internal Henry Onyx hiring into one premium operating system.",
+        "Henry Onyx Jobs brings public hiring, candidate profiles with optional skill and document verification, staff-reviewed employers, and recruiter pipelines together.",
       path: "/",
       subdomain: "jobs",
       accent: "#0E7C86",

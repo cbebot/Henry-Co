@@ -1,5 +1,7 @@
 import { PublicSurface } from "@/components/marketplace/shell";
-import MarketplaceHomePage from "./(public)/page";
+import MarketplaceHomePage, { generateMetadata } from "./(public)/page";
+
+export { generateMetadata };
 
 export const dynamic = "force-dynamic";
 

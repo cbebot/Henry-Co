@@ -100,14 +100,6 @@ export default async function BrandPage({
                 {products.length}
               </span>
             </li>
-            <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                {copy.brand.stats.listingsReviewed}
-              </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                {copy.brand.stats.listingsReviewedValue}
-              </span>
-            </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 {copy.brand.stats.buyerProtection}

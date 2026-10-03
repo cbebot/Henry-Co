@@ -137,9 +137,6 @@ export default async function TrackOrderPage({
             <h1 className="mt-4 text-balance text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.025em] text-[var(--market-ink)] sm:text-[2.7rem] md:text-[3.1rem]">
               {t.hero.titlePrefix} {order.orderNo}
             </h1>
-            <p className="mt-5 max-w-2xl text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-              {t.hero.body}
-            </p>
           </div>
           <ul className="grid gap-3 text-sm">
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
@@ -236,7 +233,6 @@ export default async function TrackOrderPage({
 
       <section className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:divide-x lg:divide-[var(--market-line)]">
         <div>
-          <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">{t.timeline.kicker}</p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
             {t.timeline.title}
           </h2>
@@ -256,9 +252,6 @@ export default async function TrackOrderPage({
         </div>
 
         <div className="lg:pl-12">
-          <p className="market-kicker text-[10.5px] uppercase tracking-[0.28em]">
-            {t.segments.kicker}
-          </p>
           <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[var(--market-ink)] sm:text-[1.85rem]">
             {t.segments.title}
           </h2>

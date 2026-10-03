@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
 import {
-  Body,
   DisplayHeading,
   EditorialList,
   EditorialRow,
@@ -180,10 +179,6 @@ export default async function ProductPage({
     : productCopy.fulfillment.availabilityValuePlural
   ).replace("{count}", String(stockCount));
 
-  const sellerTrustValue = data.vendor
-    ? productCopy.fulfillment.sellerTrustValueTemplate.replace("{vendor}", data.vendor.name)
-    : productCopy.fulfillment.sellerTrustValueFallback;
-
   // Honest hero proof — real figures only; null self-suppresses (no "0 reviews").
   const heroProof = [
     { value: stockCount > 0 ? String(stockCount) : null, label: productCopy.fulfillment.availabilityLabel },
@@ -194,9 +189,9 @@ export default async function ProductPage({
     },
   ];
 
-  // Fulfillment promises as a hairline list (not a 4-tile wall).
+  // Fulfillment facts as a hairline list (not a 4-tile wall). The delivery row is
+  // the seller's own note; the protection row states only what checkout enforces.
   const fulfillmentRows = [
-    { label: productCopy.fulfillment.sellerTrustLabel, value: sellerTrustValue },
     { label: productCopy.fulfillment.availabilityLabel, value: stockLabel },
     {
       label: productCopy.fulfillment.fulfillmentLabel,
@@ -208,24 +203,11 @@ export default async function ProductPage({
         ? productCopy.fulfillment.paymentValueCod
         : productCopy.fulfillment.paymentValueVerified,
     },
+    {
+      label: productCopy.fulfillment.protectionLabel,
+      value: productCopy.fulfillment.protectionValue,
+    },
   ].filter((row) => Boolean(row.value));
-
-  // The trust beat — only genuinely-true lines (rating suppressed until real).
-  const safetyItems = [
-    productCopy.safety.stockTemplate.replace("{count}", String(stockCount)),
-    data.product.codEligible ? productCopy.safety.codEligible : productCopy.safety.codFallback,
-    data.vendor
-      ? productCopy.safety.vendorLinkedTemplate.replace("{vendor}", data.vendor.name)
-      : productCopy.safety.vendorPending,
-    data.product.reviewCount > 0
-      ? (data.product.reviewCount === 1
-          ? productCopy.safety.reviewsTemplateSingular
-          : productCopy.safety.reviewsTemplatePlural
-        )
-          .replace("{count}", String(data.product.reviewCount))
-          .replace("{rating}", data.product.rating.toFixed(1))
-      : null,
-  ].filter((item): item is string => Boolean(item));
 
   // One quiet, real buyer voice as proof (prefer a verified purchase). No reviews → null.
   const featuredReview =
@@ -281,7 +263,7 @@ export default async function ProductPage({
                 {data.product.henryOnyxVerified ? (
                   <span
                     className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--home-accent)] bg-[color:var(--home-accent-soft)] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--home-accent-text)]"
-                    title={translateSurfaceLabel(locale, "Reviewed by Henry Onyx Intelligence for authenticity and safety")}
+                    title={translateSurfaceLabel(locale, "Photos and details passed Henry Onyx's automated listing review.")}
                   >
                     <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
                     {translateSurfaceLabel(locale, "Henry Onyx Verified")}
@@ -342,11 +324,7 @@ export default async function ProductPage({
       {fulfillmentRows.length > 0 || specEntries.length > 0 ? (
         <Section>
           <div className="grid gap-x-12 gap-y-12 lg:grid-cols-[0.42fr_0.58fr]">
-            <SectionHeaderInline
-              eyebrow={productCopy.detail.kicker}
-              title={productCopy.detail.title}
-              lede={localizedDeliveryNote || productCopy.detail.deliveryFallback}
-            />
+            <SectionHeaderInline title={productCopy.detail.title} />
             <div className="space-y-10">
               {fulfillmentRows.length > 0 ? (
                 <EditorialList>
@@ -381,41 +359,25 @@ export default async function ProductPage({
         </Section>
       ) : null}
 
-      {/* ── THE ONE REASON — the climax: trust visible before payment ── */}
-      {safetyItems.length > 0 ? (
+      {/* ── ONE REAL BUYER VOICE — only when a review exists ── */}
+      {featuredReview ? (
         <Section rhythm="hero" tone="sunken">
-          <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
-            <div>
-              <Eyebrow>{productCopy.safety.kicker}</Eyebrow>
-              <DisplayHeading level={2} size="display" className="mt-4 max-w-md">
-                {copy.home.whyTitle}
-              </DisplayHeading>
-            </div>
-            <EditorialList>
-              {safetyItems.map((item, i) => (
-                <EditorialRow key={item} index={String(i + 1).padStart(2, "0")} title={item} />
-              ))}
-            </EditorialList>
-          </div>
-
-          {featuredReview ? (
-            <figure className="mt-12 max-w-2xl">
-              <p className="home-eyebrow">
-                {featuredReview.verifiedPurchase
-                  ? productCopy.reviews.verifiedPurchase
-                  : productCopy.reviews.reviewLabel}
-              </p>
-              <blockquote
-                className="home-headline mt-4 text-[color:var(--home-ink-85)]"
-                style={{ fontFamily: "var(--home-font-display)" }}
-              >
-                <span className="text-[color:var(--home-accent-text)]">&ldquo;</span>
-                {featuredReview.title || featuredReview.body}
-                <span className="text-[color:var(--home-accent-text)]">&rdquo;</span>
-              </blockquote>
-              <figcaption className="home-caption mt-4">{featuredReview.buyerName}</figcaption>
-            </figure>
-          ) : null}
+          <figure className="mt-12 max-w-2xl">
+            <p className="home-eyebrow">
+              {featuredReview.verifiedPurchase
+                ? productCopy.reviews.verifiedPurchase
+                : productCopy.reviews.reviewLabel}
+            </p>
+            <blockquote
+              className="home-headline mt-4 text-[color:var(--home-ink-85)]"
+              style={{ fontFamily: "var(--home-font-display)" }}
+            >
+              <span className="text-[color:var(--home-accent-text)]">&ldquo;</span>
+              {featuredReview.title || featuredReview.body}
+              <span className="text-[color:var(--home-accent-text)]">&rdquo;</span>
+            </blockquote>
+            <figcaption className="home-caption mt-4">{featuredReview.buyerName}</figcaption>
+          </figure>
         </Section>
       ) : null}
 
@@ -423,11 +385,9 @@ export default async function ProductPage({
       {data.related.length > 0 ? (
         <Section>
           <header className="flex max-w-2xl flex-col gap-4">
-            <Eyebrow>{productCopy.related.kicker}</Eyebrow>
             <DisplayHeading level={2} size="display">
               {productCopy.related.title}
             </DisplayHeading>
-            <Lede>{productCopy.related.body}</Lede>
           </header>
           <EditorialList className="mt-10">
             {data.related.slice(0, 4).map((product, i) => (
@@ -455,7 +415,6 @@ export default async function ProductPage({
             <DisplayHeading level={2} size="headline">
               {productCopy.rail.headline}
             </DisplayHeading>
-            <Body className="mt-2">{productCopy.rail.caption}</Body>
           </div>
           <PublicCTA
             href="/search"
@@ -491,22 +450,12 @@ export default async function ProductPage({
 }
 
 /** Local inline section header (start-aligned, no max-width clamp on the column). */
-function SectionHeaderInline({
-  eyebrow,
-  title,
-  lede,
-}: {
-  eyebrow: string;
-  title: string;
-  lede?: string;
-}) {
+function SectionHeaderInline({ title }: { title: string }) {
   return (
     <header className="flex flex-col gap-4">
-      <Eyebrow>{eyebrow}</Eyebrow>
       <DisplayHeading level={2} size="headline">
         {title}
       </DisplayHeading>
-      {lede ? <Lede>{lede}</Lede> : null}
     </header>
   );
 }

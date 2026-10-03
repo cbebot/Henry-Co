@@ -36,7 +36,7 @@ const FALLBACK_VERTICALS: HubServiceVertical[] = [
   { slug: "moving", name: "Moving & Relocation", summary: "Packing, loading, and relocation support for a calm moving day.", icon: "Truck", display_order: 80, service_count: 2 },
   { slug: "event-support", name: "Event Support", summary: "Set-up, staffing, and a thorough reset for your events.", icon: "PartyPopper", display_order: 90, service_count: 2 },
   { slug: "business-support", name: "Business Support", summary: "Standing operational care and concierge support for businesses.", icon: "Briefcase", display_order: 100, service_count: 2 },
-  { slug: "provider-assisted", name: "Provider-Assisted", summary: "Specialist services delivered by verified providers.", icon: "BadgeCheck", display_order: 110, service_count: 2 },
+  { slug: "provider-assisted", name: "Provider-Assisted", summary: "Specialist services, scoped to your request.", icon: "BadgeCheck", display_order: 110, service_count: 2 },
 ];
 
 function asText(value: unknown, fallback = ""): string {

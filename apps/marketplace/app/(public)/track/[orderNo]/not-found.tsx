@@ -35,9 +35,7 @@ export default async function TrackOrderNotFound() {
           {t("We couldn't find that order")}
         </h1>
         <p className="mt-5 text-pretty text-base leading-[1.7] text-[var(--market-muted)]">
-          {t(
-            "That reference didn't match any order on record. A small typo in the code is easy to miss — check it against your order confirmation and try again below.",
-          )}
+          {t("Check the reference against your order confirmation and try again.")}
         </p>
 
         <TrackAttemptedCode label={t("You searched for")} />
@@ -45,7 +43,7 @@ export default async function TrackOrderNotFound() {
         <TrackLookupForm
           labels={{
             inputLabel: t("Order reference"),
-            placeholder: t("e.g. MKT-2026-0001"),
+            placeholder: t("Order reference"),
             submit: t("Try again"),
             emptyError: t("Enter an order reference to continue."),
           }}
@@ -59,11 +57,6 @@ export default async function TrackOrderNotFound() {
         <p className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
           <LifeBuoy className="h-4 w-4 text-[var(--market-brass)]" aria-hidden />
           {t("Need help finding your order?")}
-        </p>
-        <p className="mt-3 max-w-2xl text-sm leading-[1.7] text-[var(--market-muted)]">
-          {t(
-            "Signed in? Open your orders to track everything in one place. Otherwise, our help centre can point you to the right reference.",
-          )}
         </p>
         <div className="mt-4 flex flex-wrap gap-2.5">
           <Link

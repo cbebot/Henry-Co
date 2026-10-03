@@ -1,5 +1,6 @@
+import type { Metadata } from "next";
 import { translateSurfaceLabel } from "@henryco/i18n/server";
-import { DisplayHeading, Eyebrow, Lede, Section } from "@henryco/ui/public-design";
+import { DisplayHeading, Eyebrow, Section } from "@henryco/ui/public-design";
 import {
   SearchExperience,
   type SearchExperienceLabels,
@@ -8,6 +9,16 @@ import { getMarketplaceHomeData, searchMarketplace } from "@/lib/marketplace/dat
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getMarketplacePublicLocale();
+  return {
+    description: translateSurfaceLabel(
+      locale,
+      "Search approved stores and listings on Henry Onyx Marketplace.",
+    ),
+  };
+}
 
 /**
  * Search — standardized onto the locked --home-* public design system (same
@@ -39,7 +50,7 @@ export default async function SearchPage({
     allBrands: t("All brands"),
     trustFilters: t("Trust filters"),
     onyxVerified: t("Henry Onyx Verified"),
-    onyxVerifiedHint: t("Listings independently checked by Henry Onyx."),
+    onyxVerifiedHint: t("Photos and details passed Henry Onyx's automated listing review."),
     verifiedSellersOnly: t("Verified sellers only"),
     verifiedSellersChip: t("Verified sellers"),
     codEligible: t("Cash on delivery eligible"),
@@ -60,12 +71,6 @@ export default async function SearchPage({
     showMore: t("Show {count} more"),
     allShown: t("All {count} products shown."),
     moreArrivingKicker: t("More arriving soon"),
-    moreArrivingTitle: t(
-      "Henry Onyx Marketplace is opening with a small, hand-picked set of vendors so the trust signals stay real.",
-    ),
-    moreArrivingBody: t(
-      "New stores and listings are being verified weekly. Save the categories you care about and we will surface fresh inventory as it lands.",
-    ),
     applyToSell: t("Apply to sell"),
     howTrustWorks: t("How trust works"),
     emptyTitle: t("Nothing matched that exact combination."),
@@ -83,9 +88,6 @@ export default async function SearchPage({
             {t("Trust what you see.")}
           </span>
         </DisplayHeading>
-        <Lede className="mt-5 max-w-xl">
-          {t("Refine by seller, brand, category, and delivery terms — trust signals stay beside every result.")}
-        </Lede>
       </header>
 
       <div className="mt-12">

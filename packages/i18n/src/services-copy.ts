@@ -56,9 +56,7 @@ export type ServicesCopy = {
   hubDirectory: {
     metadataTitle: string; // "Services — {brand}"
     metadataDescription: string;
-    eyebrow: string;
     title: string;
-    body: string;
     exploreCta: string;
   };
 };
@@ -115,9 +113,7 @@ const SERVICES_COPY_EN: ServicesCopy = {
     metadataTitle: "Services — {brand}",
     metadataDescription:
       "Explore the services Henry Onyx delivers — garment care, laundry, cleaning, repairs, errands, moving, and more — and start where you need to.",
-    eyebrow: "Across Henry Onyx",
     title: "Services for home, work, and everything between.",
-    body: "One catalogue of dependable services, delivered with clear booking and polished follow-through. Choose a line to see what it covers.",
     exploreCta: "View line",
   },
 };
@@ -165,9 +161,7 @@ const SERVICES_COPY_FR: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "Services — {brand}",
     "metadataDescription": "Découvrez les services proposés par Henry Onyx — entretien du linge, blanchisserie, nettoyage, réparations, courses, déménagement et plus encore — et commencez là où vous en avez besoin.",
-    "eyebrow": "Dans tout l'univers Henry Onyx",
     "title": "Des services pour la maison, le travail et tout ce qui se trouve entre les deux.",
-    "body": "Un seul catalogue de services fiables, assurés avec une réservation claire et un suivi soigné. Choisissez une ligne pour voir ce qu'elle couvre.",
     "exploreCta": "Voir la ligne"
   }
 };
@@ -215,9 +209,7 @@ const SERVICES_COPY_IG: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "Ọrụ — {brand}",
     "metadataDescription": "Chọgharịa ọrụ Henry Onyx na-eweta — nlekọta uwe, ịsa ákwà, mmecharị, nrụzi, ozi, mbufe ngwongwo, na ndị ọzọ — wee malite ebe ịchọrọ.",
-    "eyebrow": "Gafee Henry Onyx",
     "title": "Ọrụ maka ụlọ, ọrụ, na ihe niile dị n'etiti.",
-    "body": "Otu katalọgụ ọrụ a pụrụ ịtụkwasị obi, nke a na-eweta site na ndebe oge doro anya na nsoso a kpụzigara nke ọma. Họrọ ahịrị ka ị hụ ihe ọ na-ekpuchi.",
     "exploreCta": "Lee ahịrị"
   }
 };
@@ -265,9 +257,7 @@ const SERVICES_COPY_YO: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "Àwọn iṣẹ́ — {brand}",
     "metadataDescription": "Ṣàwárí àwọn iṣẹ́ tí Henry Onyx ń ṣe — ìtọ́jú aṣọ, ìfọṣọ, ìmọ́tótó, àtúnṣe, iṣẹ́ ránṣẹ́, gbígbé ẹrù, àti bẹ́ẹ̀ bẹ́ẹ̀ lọ — kí o sì bẹ̀rẹ̀ níbi tí o nílò.",
-    "eyebrow": "Káàkiri Henry Onyx",
     "title": "Àwọn iṣẹ́ fún ilé, iṣẹ́, àti ohun gbogbo tí ó wà láàrin.",
-    "body": "Àkójọ kan ṣoṣo ti àwọn iṣẹ́ tí a lè gbáralé, tí a ń ṣe pẹ̀lú ìfìṣẹ̀dà tó ṣe kedere àti àbójútó dáradára. Yan ìlà kan láti wo ohun tí ó ń bò.",
     "exploreCta": "Wo ìlà"
   }
 };
@@ -315,9 +305,7 @@ const SERVICES_COPY_HA: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "Ayyuka — {brand}",
     "metadataDescription": "Bincika ayyukan da Henry Onyx ke bayarwa — kula da tufafi, wanki, tsaftacewa, gyare-gyare, aikawa, ƙaura, da ƙari — sannan ka fara inda kake bukata.",
-    "eyebrow": "Ko'ina cikin Henry Onyx",
     "title": "Ayyuka don gida, aiki, da duk abin da ke tsakanin.",
-    "body": "Jeri ɗaya na ayyuka abin dogaro, da ake bayarwa tare da bayyananniyar rijista da kyakkyawan biyan baya. Zaɓi layi don ka ga abin da ya ƙunsa.",
     "exploreCta": "Duba layi"
   }
 };
@@ -365,9 +353,7 @@ const SERVICES_COPY_AR: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "الخدمات — {brand}",
     "metadataDescription": "استكشف الخدمات التي تقدّمها Henry Onyx — العناية بالملابس، الغسيل، التنظيف، الإصلاحات، المهام، النقل، والمزيد — وابدأ من حيث تحتاج.",
-    "eyebrow": "عبر Henry Onyx",
     "title": "خدمات للمنزل والعمل وكل ما بينهما.",
-    "body": "كتالوج واحد من الخدمات الموثوقة، يُقدَّم بحجز واضح ومتابعة متقنة. اختر خطًا لترى ما يشمله.",
     "exploreCta": "عرض الخط"
   }
 };
@@ -415,9 +401,7 @@ const SERVICES_COPY_ES: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "Servicios — {brand}",
     "metadataDescription": "Explora los servicios que ofrece Henry Onyx — cuidado de prendas, lavandería, limpieza, reparaciones, gestiones, mudanzas y más — y empieza por donde lo necesites.",
-    "eyebrow": "En todo Henry Onyx",
     "title": "Servicios para el hogar, el trabajo y todo lo demás.",
-    "body": "Un solo catálogo de servicios fiables, con reservas claras y un seguimiento impecable. Elige una línea para ver qué cubre.",
     "exploreCta": "Ver línea"
   }
 };
@@ -465,9 +449,7 @@ const SERVICES_COPY_PT: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "Serviços — {brand}",
     "metadataDescription": "Explore os serviços que a Henry Onyx oferece — cuidado de roupas, lavandaria, limpeza, reparos, recados, mudanças e mais — e comece por onde precisar.",
-    "eyebrow": "Em toda a Henry Onyx",
     "title": "Serviços para casa, trabalho e tudo o que está no meio.",
-    "body": "Um único catálogo de serviços confiáveis, entregues com reservas claras e um acompanhamento impecável. Escolha uma linha para ver o que ela cobre.",
     "exploreCta": "Ver linha"
   }
 };
@@ -515,9 +497,7 @@ const SERVICES_COPY_DE: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "Leistungen — {brand}",
     "metadataDescription": "Entdecken Sie die Leistungen von Henry Onyx — Textilpflege, Wäscheservice, Reinigung, Reparaturen, Besorgungen, Umzüge und mehr — und beginnen Sie dort, wo Sie es brauchen.",
-    "eyebrow": "Bei Henry Onyx",
     "title": "Leistungen für Zuhause, Büro und alles dazwischen.",
-    "body": "Ein Katalog verlässlicher Leistungen, erbracht mit klarer Buchung und sorgfältiger Begleitung. Wählen Sie einen Bereich, um zu sehen, was er umfasst.",
     "exploreCta": "Bereich ansehen"
   }
 };
@@ -565,9 +545,7 @@ const SERVICES_COPY_IT: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "Servizi — {brand}",
     "metadataDescription": "Esplora i servizi che Henry Onyx offre — cura dei capi, lavanderia, pulizia, riparazioni, commissioni, traslochi e altro — e inizia da dove ti serve.",
-    "eyebrow": "In tutta Henry Onyx",
     "title": "Servizi per la casa, il lavoro e tutto ciò che sta nel mezzo.",
-    "body": "Un unico catalogo di servizi affidabili, con prenotazione chiara e una gestione curata fino in fondo. Scegli una linea per scoprire cosa copre.",
     "exploreCta": "Vedi linea"
   }
 };
@@ -615,9 +593,7 @@ const SERVICES_COPY_ZH: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "服务 — {brand}",
     "metadataDescription": "探索 Henry Onyx 提供的服务 — 衣物护理、洗护、保洁、维修、跑腿、搬运等等 — 从您需要的地方开始。",
-    "eyebrow": "纵览 Henry Onyx",
     "title": "服务于家居、办公及两者之间的一切。",
-    "body": "一份可靠服务的目录，配以清晰的预约与细致的跟进。选择一条服务线，了解它涵盖的内容。",
     "exploreCta": "查看服务线"
   }
 };
@@ -665,9 +641,7 @@ const SERVICES_COPY_HI: DeepPartial<ServicesCopy> = {
   "hubDirectory": {
     "metadataTitle": "सेवाएँ — {brand}",
     "metadataDescription": "Henry Onyx द्वारा दी जाने वाली सेवाएँ देखें — वस्त्र देखभाल, धुलाई, सफाई, मरम्मत, छोटे काम, सामान स्थानांतरण, और बहुत कुछ — और जहाँ ज़रूरत हो वहाँ से शुरू करें।",
-    "eyebrow": "Henry Onyx में हर जगह",
     "title": "घर, काम और उनके बीच की हर ज़रूरत के लिए सेवाएँ।",
-    "body": "भरोसेमंद सेवाओं की एक ही सूची, स्पष्ट बुकिंग और बेहतरीन फ़ॉलो-थ्रू के साथ। यह जानने के लिए कि किसमें क्या शामिल है, एक श्रेणी चुनें।",
     "exploreCta": "श्रेणी देखें"
   }
 };

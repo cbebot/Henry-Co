@@ -43,12 +43,6 @@ export default async function PublicBusinessProfilePage({
             />
           </dl>
         </article>
-        <aside className="rounded-2xl border border-[var(--market-line)] bg-[color-mix(in_srgb,var(--market-paper-white)_4%,transparent)] p-6">
-          <p className="market-kicker">{copy.profile.verified}</p>
-          <p className="mt-3 text-sm text-[var(--market-muted)]">
-            {verified ? copy.profile.verified : copy.profile.unverified}
-          </p>
-        </aside>
       </section>
 
       <section className="space-y-6">

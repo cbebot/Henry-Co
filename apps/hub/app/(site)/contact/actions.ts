@@ -101,7 +101,7 @@ export async function submitContactMessage(
     return {
       status: "success",
       message:
-        "Thanks — your message is in. The company team replies within one business day.",
+        "Thanks — your message is in. The company team will reply by email.",
     };
   }
 

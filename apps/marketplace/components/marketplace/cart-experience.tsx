@@ -40,9 +40,6 @@ export function CartExperience() {
           >
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-                  Split-order clarity
-                </p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--market-paper-white)]">
                   {groupName}
                 </h2>
@@ -169,7 +166,7 @@ export function CartExperience() {
 
       <aside className="market-panel sticky top-28 h-fit rounded-[2rem] p-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--market-brass)]">
-          Checkout readiness
+          Order summary
         </p>
         <div className="mt-5 space-y-3 text-sm text-[var(--market-muted)]">
           <div className="flex items-center justify-between">
@@ -188,9 +185,6 @@ export function CartExperience() {
               {cart.subtotal > 350000 ? "Free" : formatCurrency(18000, cart.items[0]?.currency || "NGN")}
             </span>
           </div>
-        </div>
-        <div className="mt-6 rounded-[1.5rem] border border-[var(--market-line)] bg-[color:var(--home-surface-04)] px-4 py-4 text-sm leading-7 text-[var(--market-muted)]">
-          Each vendor segment stays visible during checkout so buyers understand delivery timing, payment state, and post-order support before confirming.
         </div>
         <div className="mt-6 grid gap-3">
           <Link

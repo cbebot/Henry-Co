@@ -129,14 +129,6 @@ export default async function CollectionPage({
                 {data.products.length}
               </span>
             </li>
-            <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3">
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
-                {c.sidebar.editedByLabel}
-              </span>
-              <span className="ml-auto text-right text-sm font-semibold tracking-tight text-[var(--market-ink)]">
-                {c.sidebar.editedByValue}
-              </span>
-            </li>
             <li className="flex items-baseline gap-3 border-b border-[var(--market-line)] py-3 last:border-b-0">
               <span className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[var(--market-muted)]">
                 {c.sidebar.buyerProtectionLabel}

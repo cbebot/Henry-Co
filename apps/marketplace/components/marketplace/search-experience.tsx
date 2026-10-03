@@ -46,8 +46,6 @@ export type SearchExperienceLabels = {
   showMore: string;
   allShown: string;
   moreArrivingKicker: string;
-  moreArrivingTitle: string;
-  moreArrivingBody: string;
   applyToSell: string;
   howTrustWorks: string;
   emptyTitle: string;
@@ -466,12 +464,6 @@ export function SearchExperience({
                 <div className="mt-8 rounded-[1.6rem] border border-[var(--market-line)] bg-[rgba(255,255,255,0.025)] p-6 sm:p-8">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[var(--market-brass)]">
                     {labels.moreArrivingKicker}
-                  </p>
-                  <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--market-paper-white)]">
-                    {labels.moreArrivingTitle}
-                  </p>
-                  <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--market-muted)]">
-                    {labels.moreArrivingBody}
                   </p>
                   <div className="mt-5 flex flex-wrap gap-3">
                     <Link
