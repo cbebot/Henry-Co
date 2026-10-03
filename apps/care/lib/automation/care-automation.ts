@@ -21,7 +21,10 @@ import {
   sendWhatsAppText,
 } from "@/lib/support/whatsapp";
 import { getOperationsIntelligenceSnapshot } from "@/lib/operations-intelligence";
-import { runRecurringAutoBookSweep } from "@/lib/automation/recurring-auto-book";
+import {
+  runRecurringAutoBookSweep,
+  type RecurringAutoBookSummary,
+} from "@/lib/automation/recurring-auto-book";
 
 type BookingAutomationRow = {
   id: string;
@@ -72,6 +75,7 @@ type AutomationRunSummary = {
   recurringSkippedDuplicates: number;
   recurringSkippedInvalid: number;
   recurringSkippedDeferred: number;
+  recurringScanStoppedBy: RecurringAutoBookSummary["scanStoppedBy"];
 };
 
 const LAGOS_TIME_ZONE = "Africa/Lagos";
@@ -898,13 +902,16 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
       sendPaymentReminders(now, settings, dataset),
       sendMarketingNurture(now, dataset),
       // V3 PASS 21 — recurring auto-book sweep (books each run the day before).
-      runRecurringAutoBookSweep(now).catch(() => ({
-        scheduledRunsConsidered: 0,
-        bookingsCreated: 0,
-        skippedDuplicates: 0,
-        skippedInvalid: 0,
-        skippedDeferred: 0,
-      })),
+      runRecurringAutoBookSweep(now).catch(
+        (): RecurringAutoBookSummary => ({
+          scheduledRunsConsidered: 0,
+          bookingsCreated: 0,
+          skippedDuplicates: 0,
+          skippedInvalid: 0,
+          skippedDeferred: 0,
+          scanStoppedBy: "error",
+        }),
+      ),
     ]);
 
     const summary = {
@@ -922,6 +929,7 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
       recurringSkippedDuplicates: recurring.skippedDuplicates,
       recurringSkippedInvalid: recurring.skippedInvalid,
       recurringSkippedDeferred: recurring.skippedDeferred,
+      recurringScanStoppedBy: recurring.scanStoppedBy,
     } satisfies AutomationRunSummary;
 
     await writeAutomationLog({

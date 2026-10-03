@@ -51,20 +51,24 @@ import { createAdminSupabase } from "@/lib/supabase";
  * settled later through the guarded payment path, never here. Phone, name and
  * email fall back to the schedule owner's customer profile, like an
  * authenticated booking. A schedule that still cannot supply a phone, an
- * address and a slot is counted as skippedInvalid and retried next sweep.
- * It costs no request and holds no place in the sweep.
+ * address, a slot and a usable run (see runToBook) is counted as
+ * skippedInvalid and retried next sweep. It costs no request and holds no
+ * place in the sweep.
  *
  * Fairness and bounds: the due set is read a page at a time in id order,
  * starting after a random id and wrapping round, up to MAX_SCANNED_PER_SWEEP
  * rows. One sweep books at most MAX_RUNS_PER_SWEEP schedules, the bound it
- * has always had, and at most MAX_RUNS_PER_CUSTOMER of one customer's; the
- * rest are counted as skippedDeferred and taken up by the next sweep. So
- * schedules that can never book, however many and wherever their ids fall,
- * cannot keep the sweep from another customer's schedule: below the scan
- * ceiling every due schedule is read, and above it the random start spreads
- * the reads over successive sweeps. Abusive volume is bounded for good by a
- * per-user cap on active schedules, which belongs in the database, since the
- * owner insert policy lets a customer write rows directly.
+ * has always had, and at most MAX_RUNS_PER_CUSTOMER of one customer's;
+ * bookable schedules it reads beyond those bounds are counted as
+ * skippedDeferred, and the next sweep takes them up. Below the scan ceiling
+ * every due schedule is read on every sweep, so schedules that can never
+ * book, however many and wherever their ids fall, cannot keep the sweep from
+ * another customer's schedule. Above the ceiling each sweep reads a random
+ * slice, so one account holding a very large number of schedules can delay
+ * other customers' runs by days. Only a per-user cap on active schedules in
+ * the database bounds that volume (the owner insert policy lets a customer
+ * write rows directly); it is a launch prerequisite of this table, and
+ * scanStoppedBy in the summary shows when a sweep stopped early.
  *
  * Each schedule is handled on its own: an error on one is logged and counted
  * as skippedInvalid, and the sweep carries on with the rest.
@@ -129,8 +133,14 @@ export type RecurringAutoBookSummary = {
   bookingsCreated: number;
   skippedDuplicates: number;
   skippedInvalid: number;
-  /** Bookable schedules left for the next sweep by the sweep or customer bound. */
+  /** Bookable schedules read but left for the next sweep by the sweep or customer bound. */
   skippedDeferred: number;
+  /**
+   * Why the scan stopped before reading every due schedule: the sweep's
+   * booking budget was spent, the scan ceiling was reached, or a read failed.
+   * Null when every due schedule was read.
+   */
+  scanStoppedBy: "budget" | "ceiling" | "error" | null;
 };
 
 export type RecurringAutoBookOptions = {
@@ -149,6 +159,8 @@ type BookingInputs = {
   contact: { phone: string; phoneNormalized: string };
   pickupAddress: string;
   pickupSlot: string;
+  /** The run to book: the stored next_run_at, or the due time of a schedule without one. */
+  run: Date;
 };
 
 /**
@@ -194,6 +206,26 @@ export function dueWithoutStoredRun(lastRunAt: string | null, cadence: string, n
   if (!lastRun || Number.isNaN(lastRun.getTime())) return now;
   const next = advanceNextRunAt(lastRun, cadence);
   return next.getTime() > now.getTime() ? next : now;
+}
+
+/**
+ * The run a sweep would book for a schedule: its stored `next_run_at`, or,
+ * without one, the due time from its last run. Null when the stored dates
+ * give no usable run: unparseable (PostgreSQL's "-infinity", a BC date) or
+ * outside years 1–9999, which the timestamp columns cannot take back as an
+ * ISO string. The owner can write such values directly, and a schedule
+ * without a usable run cannot book.
+ */
+export function runToBook(
+  nextRunAt: string | null,
+  lastRunAt: string | null,
+  cadence: string,
+  now: Date,
+): Date | null {
+  const run = nextRunAt ? new Date(nextRunAt) : dueWithoutStoredRun(lastRunAt, cadence, now);
+  if (Number.isNaN(run.getTime())) return null;
+  const year = run.getUTCFullYear();
+  return year >= 1 && year <= 9999 ? run : null;
 }
 
 function payloadString(payload: Record<string, unknown>, key: string): string | null {
@@ -247,12 +279,13 @@ function resolvePickupSlot(row: ScheduleRow): string | null {
 }
 
 /** What a booking needs from the schedule and its owner, or null when it cannot book. */
-function bookingInputs(row: ScheduleRow, owner: OwnerProfile | null): BookingInputs | null {
+function bookingInputs(row: ScheduleRow, owner: OwnerProfile | null, now: Date): BookingInputs | null {
   const pickupAddress = formatPickupAddress(row.pickup_address);
   const pickupSlot = resolvePickupSlot(row);
   const contact = resolvePhone(row.contact_phone, owner?.phone);
-  if (!row.user_id || !pickupAddress || !pickupSlot || !contact) return null;
-  return { contact, pickupAddress, pickupSlot };
+  const run = runToBook(row.next_run_at, row.last_run_at, row.cadence, now);
+  if (!row.user_id || !pickupAddress || !pickupSlot || !contact || !run) return null;
+  return { contact, pickupAddress, pickupSlot, run };
 }
 
 /**
@@ -353,20 +386,18 @@ async function bookScheduleRun(
 
   // The run is always a stored next_run_at, so every retry of it computes the
   // same tracking code. A schedule without one claims its due time first.
+  const scheduledRun = inputs.run;
   let storedRun = row.next_run_at;
   if (!storedRun) {
-    const due = dueWithoutStoredRun(row.last_run_at, row.cadence, now);
-    const claim = await claimRun(admin, row, due.toISOString(), now);
+    const claim = await claimRun(admin, row, scheduledRun.toISOString(), now);
     if (claim === "failed") return "invalid";
     if (claim === "lost") return "duplicate";
     // Due after tomorrow: the current period already has its booking. The
     // claim stored the next run, so a later sweep books it.
-    if (due.getTime() >= horizon.getTime()) return "duplicate";
-    storedRun = due.toISOString();
+    if (scheduledRun.getTime() >= horizon.getTime()) return "duplicate";
+    storedRun = scheduledRun.toISOString();
   }
 
-  const scheduledRun = new Date(storedRun);
-  if (Number.isNaN(scheduledRun.getTime())) return "invalid";
   // A run scheduled before today (a paused schedule resuming, or a missed
   // cron day) is carried out today: its pickup is never dated in the past,
   // and the schedule resumes on its cadence from now instead of booking once
@@ -442,17 +473,20 @@ async function bookScheduleRun(
   return "created";
 }
 
+type ScanState = { stoppedBy: RecurringAutoBookSummary["scanStoppedBy"] };
+
 /**
  * The due schedules, a page at a time in id order: those after `startAfter`,
  * then, wrapping round, those up to it. Reads at most MAX_SCANNED_PER_SWEEP
  * rows. A failed read ends the scan; it is logged and the next sweep starts
- * again.
+ * again. `scan.stoppedBy` records why the scan ended early.
  */
 async function* dueSchedulePages(
   admin: AdminClient,
   now: Date,
   horizon: Date,
   startAfter: string,
+  scan: ScanState,
 ): AsyncGenerator<ScheduleRow[]> {
   const nowIso = now.toISOString();
   const horizonIso = horizon.toISOString();
@@ -462,6 +496,8 @@ async function* dueSchedulePages(
     let cursor: string | null = upTo ? null : startAfter;
     for (;;) {
       if (remaining <= 0) {
+        // Stopped at the ceiling; more due schedules may remain.
+        scan.stoppedBy = "ceiling";
         console.warn("[care:recurring-auto-book] scan ceiling reached", MAX_SCANNED_PER_SWEEP, startAfter);
         return;
       }
@@ -476,6 +512,7 @@ async function* dueSchedulePages(
       if (upTo) page = page.lte("id", upTo);
       const { data, error } = await page.order("id", { ascending: true }).limit(size);
       if (error) {
+        scan.stoppedBy = "error";
         console.error("[care:recurring-auto-book] due schedules read failed", error.message);
         return;
       }
@@ -537,18 +574,20 @@ export async function runRecurringAutoBookSweep(
     skippedDuplicates: 0,
     skippedInvalid: 0,
     skippedDeferred: 0,
+    scanStoppedBy: null,
   };
 
   const admin = createAdminSupabase();
   const horizon = bookingHorizon(now);
   const budget = createSweepBudget();
   const owners = new Map<string, OwnerProfile | null>();
+  const scan: ScanState = { stoppedBy: null };
   const startAfter =
     options.startAfter && UUID_PATTERN.test(options.startAfter)
       ? options.startAfter.toLowerCase()
       : randomUUID();
 
-  for await (const page of dueSchedulePages(admin, now, horizon, startAfter)) {
+  for await (const page of dueSchedulePages(admin, now, horizon, startAfter, scan)) {
     summary.scheduledRunsConsidered += page.length;
     await loadOwnerProfiles(admin, page, owners);
 
@@ -556,7 +595,7 @@ export async function runRecurringAutoBookSweep(
       let outcome: RunOutcome;
       try {
         const owner = owners.get(row.user_id) ?? null;
-        const inputs = bookingInputs(row, owner);
+        const inputs = bookingInputs(row, owner, now);
         if (!inputs) outcome = "invalid";
         else if (!budget.take(row.user_id)) outcome = "deferred";
         else outcome = await bookScheduleRun(admin, row, inputs, owner, now, horizon);
@@ -575,8 +614,12 @@ export async function runRecurringAutoBookSweep(
       else summary.skippedInvalid += 1;
     }
 
-    if (budget.spent) break;
+    if (budget.spent) {
+      scan.stoppedBy = "budget";
+      break;
+    }
   }
 
+  summary.scanStoppedBy = scan.stoppedBy;
   return summary;
 }

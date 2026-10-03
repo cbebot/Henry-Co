@@ -8,6 +8,7 @@ import {
   createSweepBudget,
   dueWithoutStoredRun,
   recurringTrackingCode,
+  runToBook,
 } from "./recurring-auto-book";
 
 // Run from apps/care (so the `@/` path alias resolves):
@@ -93,6 +94,37 @@ describe("dueWithoutStoredRun", () => {
   it("treats an unreadable last run as never run", () => {
     assert.equal(dueWithoutStoredRun("infinity", "weekly", now).getTime(), now.getTime());
     assert.equal(dueWithoutStoredRun("not a date", "constructor", now).getTime(), now.getTime());
+  });
+});
+
+describe("runToBook", () => {
+  const now = new Date("2026-10-05T08:15:00.000Z");
+
+  it("is the stored run when there is one", () => {
+    assert.equal(runToBook("2026-10-06T06:00:00+00:00", null, "weekly", now)?.toISOString(), "2026-10-06T06:00:00.000Z");
+  });
+
+  it("is the due time from the last run when nothing is stored", () => {
+    assert.equal(runToBook(null, null, "weekly", now)?.getTime(), now.getTime());
+    assert.equal(
+      runToBook(null, "2026-10-04T08:15:00.000Z", "weekly", now)?.toISOString(),
+      "2026-10-11T08:15:00.000Z",
+    );
+  });
+
+  it("is null for stored values the owner can write but no run can use", () => {
+    // PostgreSQL renders these as text a Date cannot parse.
+    assert.equal(runToBook("-infinity", null, "weekly", now), null);
+    assert.equal(runToBook("infinity", null, "weekly", now), null);
+    assert.equal(runToBook("0044-03-15T00:00:00+00:00 BC", null, "weekly", now), null);
+    assert.equal(runToBook("not a date", null, "weekly", now), null);
+  });
+
+  it("is null when the due time leaves years 1–9999", () => {
+    // A far-future last run puts the due time in year 10000, which the
+    // timestamp column cannot take back as an ISO string.
+    assert.equal(runToBook(null, "9999-12-30T00:00:00.000Z", "weekly", now), null);
+    assert.ok(runToBook(null, "9999-12-01T00:00:00.000Z", "weekly", now));
   });
 });
 
