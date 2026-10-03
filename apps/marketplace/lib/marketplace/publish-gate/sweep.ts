@@ -221,6 +221,14 @@ async function judgedUpTo(
 // 1. Policy re-scan
 // ---------------------------------------------------------------------------
 
+/**
+ * The re-scan reads at most this much of a listing's text. Nothing the gate lets
+ * through comes close (TEXT_LIMITS in policy.ts); a longer listing — one approved
+ * before the gate — is read up to here and sent to a person, so one row can never
+ * stall the pass.
+ */
+export const RESCAN_MAX_TEXT = 200_000;
+
 async function sweepPolicy(admin: GateAdmin, summary: TrustSweepSummary): Promise<boolean> {
   const { data, error } = await admin.rpc("marketplace_gate_rescan_candidates", {
     p_engine_version: GATE_ENGINE_VERSION,
@@ -242,28 +250,33 @@ async function sweepPolicy(admin: GateAdmin, summary: TrustSweepSummary): Promis
     if (!product || product.approval_status !== "approved") continue;
     summary.scanned += 1;
     try {
+      const text = listingText({
+        title: product.title ?? "",
+        summary: product.summary ?? "",
+        description: product.description ?? "",
+        sku: product.sku ?? "",
+        categorySlug: "",
+        basePrice: 0,
+        compareAtPrice: null,
+        deliveryNote: product.delivery_note ?? "",
+        leadTime: product.lead_time ?? "",
+        specificationValues: specificationValues(product.specifications),
+      });
+      const oversize = text.length > RESCAN_MAX_TEXT;
       const content = runDeterministic(
         {
           contentType: "marketplace_listing",
           contentId: product.id,
-          text: listingText({
-            title: product.title ?? "",
-            summary: product.summary ?? "",
-            description: product.description ?? "",
-            sku: product.sku ?? "",
-            categorySlug: "",
-            basePrice: 0,
-            compareAtPrice: null,
-            deliveryNote: product.delivery_note ?? "",
-            leadTime: product.lead_time ?? "",
-            specificationValues: specificationValues(product.specifications),
-          }),
+          text: oversize ? text.slice(0, RESCAN_MAX_TEXT) : text,
           locale: "en",
         },
         { ruleset: "listing_v2" },
       );
       const detail = content.detail ?? [];
-      const decision = rescanDecision({ codes: codesFromModerationDetail(detail), origin: candidate.origin });
+      const found = rescanDecision({ codes: codesFromModerationDetail(detail), origin: candidate.origin });
+      const decision = oversize
+        ? { action: "review" as const, reasons: [...found.reasons, "listing_too_long" as const] }
+        : found;
 
       if (decision.action === "hide") {
         const hidden = await hideListing(admin, product, "policy", decision.reasons, { detail: [...detail] });

@@ -185,11 +185,16 @@ it lands, append:
 ## Known limits
 
 - Image matching is tuned to avoid false matches; it recognises identical files and most re-encoded,
-  resized or mirrored copies, not crops or overlays. Details and measurements: design doc §3.8.
+  resized or mirrored copies of pictures detailed enough to hash, not crops or overlays. Most plain
+  single-product photos are matched only when the file is identical. Details: design doc §3.8.
+- The perceptual hash changed during this pass. Run the fingerprint backfill (step 6) with this build;
+  any perceptual entries in `MARKETPLACE_KNOWN_BAD_IMAGE_HASHES` must be computed with it too (SHA-256
+  entries are unaffected).
 - The report-based take-down needs V3-25's tables. Its public reporting screens, appeals and the
   moderation queue's own interface are V3-MKT-TRUST-02.
 - The optional AI screen is not deduplicated: re-publishing the same listing calls it again. One
   store can trigger at most 12 screens a day, and the daily budget bounds the total.
-- The content rules are a deterministic floor. They do not read a number spelled only in Pidgin,
-  Yoruba, Igbo or Hausa words, a number written backwards, or anything inside a picture. Details:
-  design doc §3.9.
+- The content rules are a deterministic floor. A listing is refused only for a concrete datum (a
+  number, email, link, app handle or account number); a phrase alone is held for you. They do not
+  read a number spelled only in Yoruba, Igbo or Hausa words, a number written backwards, or anything
+  inside a picture. Details: design doc §3.9.

@@ -280,19 +280,26 @@ prompt builder — without one a surface can never reach the provider.
 ### 3.8 Image matching — what it does and does not catch
 
 Two fingerprints per first-party picture: SHA-256 of the bytes, and a perceptual hash (each of 64
-neighbouring pairs on a 9×8 grid is brighter-left, brighter-right or flat; mirror-invariant; "flat"
-is measured against the picture's own contrast, so a brighter or darker copy classes like the
-original). Tuned for precision, because a match holds an honest seller's listing:
+neighbouring pairs on a 9×8 grid is brighter-left, brighter-right or flat; mirror-invariant). Before
+the grid is read, the picture is put in log tone and the smooth light of the backdrop — side light,
+a lamp, a spot, vignetting — is fitted on the frame's edge and removed; each grid cell is the exact
+mean of its block. Tuned for precision, because a match holds an honest seller's listing:
 
-- measured on 27,040 different-picture pairs (object scenes on a studio backdrop and on plain
-  white), and on the 320-picture set adversarial round 2 built: **0 false matches**;
-- catches every byte-identical re-upload, and most re-encoded, resized, stretched, mirrored, darker
-  or higher-contrast copies of pictures that have enough structure to hash;
-- a picture with too little structure (a small object on a plain background) gets no perceptual
-  hash — only the byte hash — because nothing in it can tell two such pictures apart;
-- it does not catch a crop, a rotation, an added border or frame, an upside-down copy, an overlay,
-  a redrawn picture, and some lossy re-saves in another format or strong brightening of some
-  pictures. A duplicate picture is one signal among several, never the only line of defence.
+- a picture is hashed only when it carries enough information: at least 20 structured cells, and at
+  least 10 of them new compared with the cell above (repeating rows — stripes, gradients, a plain
+  product outline — do not count);
+- measured on about 6,000 different pictures in three independently drawn sets (side-lit product
+  shots, backdrops, white scenes, fabric, labels, textures, crops of real photographs): **0 false
+  matches** apart from flyers made from one template; adversarial round 3's 500-picture set went
+  from 303 false matches to 0;
+- catches every byte-identical re-upload, and most re-encoded (JPEG, WebP), resized, stretched,
+  mirrored, blurred, brighter or darker copies of pictures that have a perceptual hash;
+- most single-product photos on a plain or lit backdrop get **no** perceptual hash — only the byte
+  hash — because nothing in them can tell two such pictures apart at this size; re-saved copies of
+  those are not matched;
+- it does not catch a crop, a rotation, an added border or frame, an upside-down copy, an overlay, a
+  redrawn picture, or a brightness or contrast change that clips large areas. A duplicate picture is
+  one signal among several, never the only line of defence.
 
 Consequence by store: on probation a match **holds**; an established store gets a signal only
 (usually a shared manufacturer photo). Attaching another store's uploaded object directly — which
@@ -307,22 +314,37 @@ first place. The storage origin and the optional delivery base in front of it
 
 ### 3.9 Content rules — what they catch and what they do not
 
-Contact details and payment steering are refused or held however they are dressed: look-alike
-letters and digits from other scripts, invisible characters, any separator, a number glued to a
-word, number words glued together or read out with joining words, a dropped leading zero, a number
-cut across fields (in either order), an account number beside a bank, a wallet, "acct" or "aza", a
-bare ten-digit number, USSD transfer codes, Pidgin steering ("make we talk price for outside",
-"transfer come my side"), asking for the buyer's number, "link in bio", links without a scheme,
-handles named next to an app, a mailbox provider with or without its dot. The listing's URL handle
-(decoded) and the store's handle are screened like any other text. Two corpora hold the rules in
-place (`publish-gate/__tests__/corpus.ts`): 117 ordinary listing lines and 9 store names that must
-publish, and 140 evasions that must not, in every field. Every pattern is bounded: a
-100,000-character field is screened in well under a second.
+**Refused only for a datum; held for a phrase.** A listing is refused only when it carries a
+concrete way to reach or pay the seller outside the platform: a number that rebuilds into a phone
+number, an email, a link, a handle tied to an app, or an account number with a bank, wallet or
+account word anywhere in the listing. A phrase with no datum — "message me on WhatsApp", "pay me
+directly", "link in bio", "drop your number" — is held for a person, and the phrase rules are
+narrowed so ordinary product sentences ("put your phone on the pad", "heat transfer only", "pay
+directly at checkout", "part number 90915-10003") do not fire at all.
+
+The datum is found however it is dressed: look-alike letters and digits from other scripts,
+invisible characters, any separator, a number glued to a word, number words glued together or read
+out with joining words, Pidgin digit words, a dropped leading zero, a number in up to three pieces
+in any order with any short word between them, a number cut across fields, an account number in
+halves, behind a label or across a sentence break, USSD transfer codes, links without a scheme,
+handles named next to an app, a mailbox provider with or without its dot. Labels (part, serial,
+IMEI, barcode, ISBN…) are read before cue words, and only real Nigerian mobile prefixes count, so
+clock times, dimensions and product codes are not read as phone numbers. The listing's URL handle
+(decoded) and the store's handle are screened like any other text.
+
+Text beyond a sane size is refused before any rule runs (`listing_too_long`: a title or name over
+300 characters, a description or store story over 20,000, any other field over 1,000). Every
+pattern is bounded and the detectors are linear: a 100,000-character field is screened in under
+200 ms. Corpora hold the rules in place in both directions (`publish-gate/__tests__/corpus.ts`):
+the ordinary listing lines of three adversarial rounds must publish (a short, justified list may be
+held but never refused), and their evasions must not publish, in every field.
 
 Known limits, by design of a deterministic floor: a number spelled only in Yoruba, Igbo or Hausa
 words, a number written backwards or with an arithmetic hint, a few look-alike glyphs nobody would
-read as digits, and anything inside a picture. Those are what the optional AI screen and the
-report-based take-down are for.
+read as digits, steering in ordinary words ("order through my page", "message me on Line"), a plain
+word after an app name or a bare ten-digit number with no bank word (held, not refused — a rule
+cannot tell them from an ordinary word or a serial number), and anything inside a picture. Those are
+what the optional AI screen and the report-based take-down are for.
 
 ## 4. Flag OFF is the current behaviour
 

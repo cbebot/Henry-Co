@@ -129,6 +129,13 @@ describe("round 3 — a reporter's age is the age when they reported", () => {
   });
 });
 
+describe("round 3 — the re-scan is bounded", () => {
+  it("reads at most RESCAN_MAX_TEXT characters and sends a longer listing to a person", () => {
+    assert.ok(SWEEP.includes("text: oversize ? text.slice(0, RESCAN_MAX_TEXT) : text,"));
+    assert.ok(SWEEP.includes('? { action: "review" as const, reasons: [...found.reasons, "listing_too_long" as const] }'));
+  });
+});
+
 describe("round 3 — a refused approval says why wherever the queue is", () => {
   it("the notice maps both refusals and renders nothing otherwise", () => {
     assert.ok(NOTICE.includes('error === "store-handle-taken"'));
