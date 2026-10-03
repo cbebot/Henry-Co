@@ -304,18 +304,23 @@ the grid is read, the picture is put in log tone and the smooth light of the bac
 a lamp, a spot, vignetting — is fitted on the frame's edge and removed; each grid cell is the exact
 mean of its block. Tuned for precision, because a match holds an honest seller's listing:
 
-- a picture is hashed only when it carries enough information: at least 20 structured cells, and at
+- a picture is hashed only when it carries enough information: at least 20 structured cells, at
   least 10 of them new compared with the cell above (repeating rows — stripes, gradients, a plain
-  product outline — do not count);
-- measured on about 6,000 different pictures in three independently drawn sets (side-lit product
-  shots, backdrops, white scenes, fabric, labels, textures, crops of real photographs): **0 false
-  matches** apart from flyers made from one template; adversarial round 3's 500-picture set went
-  from 303 false matches to 0;
+  product outline — do not count), and either fine detail (texture, print — measured against each
+  pixel's neighbourhood median, above the picture's own noise) in at least 26 structured cells or a
+  busy scene (17 strong new cells). The seams and walls of a photo box, a shelf or a room corner do
+  not count as information, so two products shot in the same box are not "the same picture";
+- measured on about 25,000 different pictures (side-lit product shots, backdrops, white scenes,
+  fabric, labels, textures, photo boxes — one box shared by every scene — shelves, sensor noise,
+  crops of real photographs, collages, framed pictures): **0 false matches** apart from flyers made
+  from one template; adversarial round 3's 500-picture set went from 303 false matches to 0, round
+  4's lightbox family from 8 to 0;
 - catches every byte-identical re-upload, and most re-encoded (JPEG, WebP), resized, stretched,
   mirrored, blurred, brighter or darker copies of pictures that have a perceptual hash;
-- most single-product photos on a plain or lit backdrop get **no** perceptual hash — only the byte
-  hash — because nothing in them can tell two such pictures apart at this size; re-saved copies of
-  those are not matched;
+- most single-product photos on a plain, lit or photo-box backdrop, and smooth or flat pictures, get
+  **no** perceptual hash — only the byte hash — because nothing in them can tell two such pictures
+  apart at this size (about three in four of the measured set; about one real photograph in eight
+  of those that had one before); re-saved copies of those are not matched;
 - it does not catch a crop, a rotation, an added border or frame, an upside-down copy, an overlay, a
   redrawn picture, or a brightness or contrast change that clips large areas. A duplicate picture is
   one signal among several, never the only line of defence.

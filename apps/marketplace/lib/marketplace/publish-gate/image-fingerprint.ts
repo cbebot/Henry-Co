@@ -39,16 +39,37 @@
 //     the top row. Rows that repeat carry little: stripes, a smooth gradient, or
 //     a plain box, bottle or shoe against a backdrop, whose rows are the same
 //     outline row after row. Two different products with the same outline give
-//     the same rows, so such pictures are not hashed at this resolution.
+//     the same rows, so such pictures are not hashed at this resolution; and
+//   * the information is the picture's own, not its setting's. Adversarial round
+//     4: different products shot in one photo box matched — the box's seams and
+//     walls passed for structure, and a product a third of the frame wide changes
+//     too few cells to tell two products apart. The picture needs EITHER fine
+//     detail in at least MIN_DETAIL_CELLS cells that the grid sees as structure —
+//     pixels standing off the median of their 3x3 neighbourhood, a test that
+//     straight seams, walls, outlines and light pass unseen, measured so that
+//     sensor noise does not count — OR at least MIN_FEATURE_CELLS new cells of
+//     clear structure (FEATURE_FLAT times the flat threshold), as a busy scene or
+//     folded fabric has. A detailed product that fills most of the frame still
+//     qualifies.
 // Measured on about 6,000 different pictures in three independently drawn sets
 // (adversarial reviewer C's side-lit and other families, the round-2 scenes,
-// harder lighting, crops of real photographs, check patterns, flyers): no false
-// matches apart from same-template flyers (below), and no two different hashed
-// pictures closer than 8 differing cells.
+// harder lighting, crops of real photographs, check patterns, flyers), reviewer
+// C's round-4 set (real photographs, crops, collages, framed copies, photo boxes)
+// and about 14,000 photo-box, shelf, room-corner and table scenes (white, dark
+// and high-contrast boxes, one box shared by every scene, products of every size,
+// sensor noise, small low-quality uploads): no false matches apart from
+// same-template flyers (below), and no two different hashed pictures closer than
+// 6 differing cells.
 //
 // Known limits, stated plainly:
 //   * most single-product photos on a plain or lit backdrop, stripes, gradients,
 //     near-flat, low-contrast and dark-on-black pictures get no perceptual hash;
+//   * nor do most product photos in a photo box, on a shelf or against walls,
+//     flat graphics (shapes on a plain backdrop) and smooth pictures (soft
+//     gradients, abstract wallpapers);
+//   * a detailed product filling about half the frame or more is still hashed in
+//     a shared box; in tests two such pictures differed in at least 7 cells, a
+//     thinner margin than other pictures have;
 //   * pictures made from one template (a flyer layout with different text) can
 //     match each other — the text is finer than the grid;
 //   * a crop, a rotation, an added border or frame, an upside-down copy, an
@@ -99,6 +120,19 @@ export const MIN_STRONG_CELLS = 20;
 export const MIN_NEW_CELLS = 10;
 /** ...of which at least this many below the top row. */
 export const MIN_NEW_CELLS_BELOW_TOP = 8;
+/**
+ * A setting is not information (round 4). The picture also needs EITHER this many
+ * cells (of 72) with fine detail where the grid itself sees structure...
+ */
+export const MIN_DETAIL_CELLS = 26;
+/** ...a cell's pixels standing off the median of their 3x3 neighbourhood by this much on average (grey levels, or tone units)... */
+const DETAIL_LEVEL = 1.5;
+/** ...and, in tone, by this many times the picture's own noise floor: the level of its quietest fifth of cells. */
+const DETAIL_NOISE_FACTOR = 3;
+const DETAIL_NOISE_SHARE = 0.2;
+/** ...OR this many new cells when structure needs FEATURE_FLAT times the flat threshold. */
+export const MIN_FEATURE_CELLS = 17;
+const FEATURE_FLAT = 1.5;
 
 /** Log tone, scaled so one unit is about one grey level at mid-grey. */
 const TONE_OFFSET = 16;
@@ -325,6 +359,53 @@ function newCells(diff: Float64Array, flat: number): { all: number; belowTop: nu
   return { all, belowTop };
 }
 
+/**
+ * Cells with fine detail: the mean distance of a cell's pixels from the median of
+ * their 3x3 neighbourhood. A median keeps straight edges and smooth ramps — a box's
+ * seams and walls, a product's outline, light — so only texture, print and fine
+ * detail count. Counted in grey levels and in tone, the larger count wins; in tone,
+ * dark areas magnify sensor noise, so a cell must also clear the picture's own
+ * noise floor. Only cells the grid sees as structure (part of a non-flat pair)
+ * count: texture finer than a cell averages out, and two products whose cells
+ * are uniform differ by their outlines alone.
+ */
+function detailCells(picture: Uint8Array, diff: Float64Array, flat: number): number {
+  const grey = new Float64Array(COLS * ROWS);
+  const tone = new Float64Array(COLS * ROWS);
+  const window = new Uint8Array(9);
+  for (let y = 0; y < GRID_HEIGHT; y += 1) {
+    for (let x = 0; x < GRID_WIDTH; x += 1) {
+      let k = 0;
+      for (let dy = -1; dy <= 1; dy += 1) {
+        const row = Math.min(GRID_HEIGHT - 1, Math.max(0, y + dy)) * GRID_WIDTH;
+        for (let dx = -1; dx <= 1; dx += 1) window[k++] = picture[row + Math.min(GRID_WIDTH - 1, Math.max(0, x + dx))];
+      }
+      window.sort();
+      const value = picture[y * GRID_WIDTH + x];
+      const cell = Math.floor(y / CELL) * COLS + Math.floor(x / CELL);
+      grey[cell] += Math.abs(value - window[4]);
+      // The tone is monotonic, so the median of the tones is the tone of the median.
+      tone[cell] += Math.abs(TONE[value] - TONE[window[4]]);
+    }
+  }
+  const pixels = CELL * CELL;
+  const quiet = Array.from(tone).sort((a, b) => a - b)[Math.floor(DETAIL_NOISE_SHARE * (tone.length - 1))] / pixels;
+  const toneLevel = Math.max(DETAIL_LEVEL, DETAIL_NOISE_FACTOR * quiet);
+  let inGrey = 0;
+  let inTone = 0;
+  for (let row = 0; row < ROWS; row += 1) {
+    for (let col = 0; col < COLS; col += 1) {
+      const structured =
+        (col > 0 && Math.abs(diff[row * 8 + col - 1]) >= flat) || (col < COLS - 1 && Math.abs(diff[row * 8 + col]) >= flat);
+      if (!structured) continue;
+      const cell = row * COLS + col;
+      if (grey[cell] / pixels >= DETAIL_LEVEL) inGrey += 1;
+      if (tone[cell] / pixels >= toneLevel) inTone += 1;
+    }
+  }
+  return Math.max(inGrey, inTone);
+}
+
 /** A 9x8 grid read as a GRID_WIDTH x GRID_HEIGHT picture of 8x8-pixel cells. */
 function cellPicture(grid: Uint8Array): Uint8Array {
   const picture = new Uint8Array(GRID_WIDTH * GRID_HEIGHT);
@@ -348,6 +429,8 @@ export function perceptualHashOfGrid(pixels: Uint8Array): PerceptualHash | null 
   if (plain.strong < MIN_STRONG_CELLS) return null;
   const fresh = newCells(diff, flat);
   if (fresh.all < MIN_NEW_CELLS || fresh.belowTop < MIN_NEW_CELLS_BELOW_TOP) return null;
+  // Not just a setting: clear structure in many new cells, or fine detail across much of the frame.
+  if (newCells(diff, FEATURE_FLAT * flat).all < MIN_FEATURE_CELLS && detailCells(picture, diff, flat) < MIN_DETAIL_CELLS) return null;
   const mirror = masksOf(diff, flat, true);
   // The smaller pair is the same for a picture and its mirror image.
   const pick = plain.pos < mirror.pos || (plain.pos === mirror.pos && plain.neg <= mirror.neg) ? plain : mirror;
