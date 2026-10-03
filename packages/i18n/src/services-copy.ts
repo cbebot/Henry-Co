@@ -18,9 +18,7 @@ export type ServicesCopy = {
     exploreCta: string;
     serviceCountOne: string; // "1 service"
     serviceCountOther: string; // "{count} services"
-    closingEyebrow: string;
     closingTitle: string;
-    closingBody: string;
     closingCta: string;
   };
   vertical: {
@@ -72,15 +70,12 @@ const SERVICES_COPY_EN: ServicesCopy = {
       "Browse every service line — garment care, laundry, home and office cleaning, repairs, errands, moving, and more — and book the one you need.",
     eyebrow: "The services catalogue",
     title: "Every service, in one place.",
-    body: "Henry Onyx Fabric Care has grown beyond cleaning. Explore the full set of service lines, see what each one covers, and start a booking when you're ready.",
+    body: "Explore every service line and start a booking.",
     linesEyebrow: "Service lines",
     exploreCta: "Explore",
     serviceCountOne: "1 service",
     serviceCountOther: "{count} services",
-    closingEyebrow: "Ready when you are",
-    closingTitle: "Find the service you need and book it in one calm form.",
-    closingBody:
-      "Choose a service line, review what's included, and continue to a single booking form with clear estimates and dependable timing.",
+    closingTitle: "Book the service you need.",
     closingCta: "Book a service",
   },
   vertical: {
@@ -91,7 +86,7 @@ const SERVICES_COPY_EN: ServicesCopy = {
     emptyBody:
       "We're expanding this service line. Check back soon, or explore the other lines in the catalogue.",
     viewService: "View service",
-    fromLabel: "from",
+    fromLabel: "Est. from",
     onRequestLabel: "On request",
   },
   service: {
@@ -103,12 +98,12 @@ const SERVICES_COPY_EN: ServicesCopy = {
     durationLabel: "Typical duration",
     minutesUnit: "min",
     hoursUnit: "hr",
-    priceLabel: "Price",
+    priceLabel: "Estimated price",
     fromLabel: "from",
     onRequestLabel: "Price on request",
     providersHeading: "Providers",
-    providersComingSoon: "Verified providers coming soon",
-    providerSuppliedNote: "This service is delivered by a verified provider.",
+    providersComingSoon: "Providers coming soon",
+    providerSuppliedNote: "This service is delivered by a specialist provider.",
     bookCta: "Book this service",
     bookNote: "You'll continue to the booking form to confirm the details.",
   },
@@ -133,14 +128,10 @@ const SERVICES_COPY_FR: DeepPartial<ServicesCopy> = {
     "description": "Parcourez toutes les lignes de service — entretien du linge, blanchisserie, nettoyage à domicile et au bureau, réparations, courses, déménagement et plus encore — et réservez celle qu'il vous faut.",
     "eyebrow": "Le catalogue des services",
     "title": "Tous les services, en un seul endroit.",
-    "body": "Henry Onyx Fabric Care ne se limite plus au nettoyage. Explorez l'ensemble des lignes de service, découvrez ce que chacune couvre et lancez une réservation dès que vous êtes prêt.",
     "linesEyebrow": "Lignes de service",
     "exploreCta": "Explorer",
     "serviceCountOne": "1 service",
     "serviceCountOther": "{count} services",
-    "closingEyebrow": "Prêt quand vous l'êtes",
-    "closingTitle": "Trouvez le service qu'il vous faut et réservez-le en un seul formulaire serein.",
-    "closingBody": "Choisissez une ligne de service, vérifiez ce qui est inclus, puis poursuivez vers un formulaire de réservation unique, avec des estimations claires et des délais fiables.",
     "closingCta": "Réserver un service"
   },
   "vertical": {
@@ -150,7 +141,6 @@ const SERVICES_COPY_FR: DeepPartial<ServicesCopy> = {
     "emptyTitle": "D'autres services arrivent bientôt",
     "emptyBody": "Nous développons cette ligne de service. Revenez bientôt, ou explorez les autres lignes du catalogue.",
     "viewService": "Voir le service",
-    "fromLabel": "à partir de",
     "onRequestLabel": "Sur demande"
   },
   "service": {
@@ -162,12 +152,9 @@ const SERVICES_COPY_FR: DeepPartial<ServicesCopy> = {
     "durationLabel": "Durée habituelle",
     "minutesUnit": "min",
     "hoursUnit": "h",
-    "priceLabel": "Prix",
     "fromLabel": "à partir de",
     "onRequestLabel": "Prix sur demande",
     "providersHeading": "Prestataires",
-    "providersComingSoon": "Prestataires vérifiés bientôt disponibles",
-    "providerSuppliedNote": "Ce service est assuré par un prestataire vérifié.",
     "bookCta": "Réserver ce service",
     "bookNote": "Vous serez dirigé vers le formulaire de réservation pour confirmer les détails."
   },
@@ -191,14 +178,10 @@ const SERVICES_COPY_IG: DeepPartial<ServicesCopy> = {
     "description": "Chọgharịa ahịrị ọrụ ọ bụla — nlekọta uwe, ịsa ákwà, mmecharị ụlọ na ụlọ ọrụ, nrụzi, ozi, mbufe ngwongwo, na ndị ọzọ — wee debe nke ịchọrọ.",
     "eyebrow": "Katalọgụ ọrụ",
     "title": "Ọrụ ọ bụla, n'otu ebe.",
-    "body": "Henry Onyx Fabric Care etoola karịa mmecharị. Chọgharịa ahịrị ọrụ niile, hụ ihe nke ọ bụla na-ekpuchi, wee malite ndebe oge mgbe ị dị njikere.",
     "linesEyebrow": "Ahịrị ọrụ",
     "exploreCta": "Chọgharịa",
     "serviceCountOne": "Ọrụ 1",
     "serviceCountOther": "Ọrụ {count}",
-    "closingEyebrow": "Njikere mgbe ọ bụla ị dị njikere",
-    "closingTitle": "Chọta ọrụ ịchọrọ wee debe ya n'otu fọm dị jụụ.",
-    "closingBody": "Họrọ ahịrị ọrụ, lelee ihe so na ya, wee gaa n'ihu na otu fọm ndebe oge nwere atụmatụ doro anya na oge a pụrụ ịtụkwasị obi.",
     "closingCta": "Debe ọrụ"
   },
   "vertical": {
@@ -208,7 +191,6 @@ const SERVICES_COPY_IG: DeepPartial<ServicesCopy> = {
     "emptyTitle": "Ọrụ ndị ọzọ na-abịa",
     "emptyBody": "Anyị na-agbasa ahịrị ọrụ a. Lọghachi n'oge na-adịghị anya, ma ọ bụ chọgharịa ahịrị ndị ọzọ dị na katalọgụ.",
     "viewService": "Lee ọrụ",
-    "fromLabel": "site na",
     "onRequestLabel": "Na arịrịọ"
   },
   "service": {
@@ -220,12 +202,9 @@ const SERVICES_COPY_IG: DeepPartial<ServicesCopy> = {
     "durationLabel": "Ogologo oge a na-ahụkarị",
     "minutesUnit": "nkeji",
     "hoursUnit": "awa",
-    "priceLabel": "Ọnụ ahịa",
     "fromLabel": "site na",
     "onRequestLabel": "Ọnụ ahịa na arịrịọ",
     "providersHeading": "Ndị na-enye ọrụ",
-    "providersComingSoon": "Ndị na-enye ọrụ nyochara na-abịa n'oge na-adịghị anya",
-    "providerSuppliedNote": "Onye na-enye ọrụ a nyochara na-eweta ọrụ a.",
     "bookCta": "Debe ọrụ a",
     "bookNote": "Ị ga-aga n'ihu na fọm ndebe oge iji kwado nkọwa ndị ahụ."
   },
@@ -249,14 +228,10 @@ const SERVICES_COPY_YO: DeepPartial<ServicesCopy> = {
     "description": "Ṣàwárí gbogbo ìlà iṣẹ́ — ìtọ́jú aṣọ, ìfọṣọ, ìmọ́tótó ilé àti ọ́fíìsì, àtúnṣe, iṣẹ́ ránṣẹ́, gbígbé ẹrù, àti bẹ́ẹ̀ bẹ́ẹ̀ lọ — kí o sì gba èyí tí o nílò.",
     "eyebrow": "Àkójọ àwọn iṣẹ́",
     "title": "Gbogbo iṣẹ́, ní ibi kan.",
-    "body": "Henry Onyx Fabric Care ti dàgbà ré kọjá ìmọ́tótó. Ṣàwárí gbogbo ìlà iṣẹ́ náà, wo ohun tí ọ̀kọ̀ọ̀kan ń bò, kí o sì bẹ̀rẹ̀ ìfìṣẹ̀dà nígbà tí o bá ti múra tán.",
     "linesEyebrow": "Àwọn ìlà iṣẹ́",
     "exploreCta": "Ṣàwárí",
     "serviceCountOne": "iṣẹ́ 1",
     "serviceCountOther": "iṣẹ́ {count}",
-    "closingEyebrow": "À ti múra sílẹ̀ nígbà tí o bá ṣetán",
-    "closingTitle": "Wá iṣẹ́ tí o nílò kí o sì ṣe ìfìṣẹ̀dà rẹ̀ nínú fọ́ọ̀mù tútù kan.",
-    "closingBody": "Yan ìlà iṣẹ́ kan, ṣàyẹ̀wò ohun tí ó wà nínú rẹ̀, kí o sì tẹ̀ síwájú sí fọ́ọ̀mù ìfìṣẹ̀dà kan ṣoṣo pẹ̀lú ìṣirò tó ṣe kedere àti àkókò tí a lè gbáralé.",
     "closingCta": "Ṣe ìfìṣẹ̀dà iṣẹ́"
   },
   "vertical": {
@@ -266,7 +241,6 @@ const SERVICES_COPY_YO: DeepPartial<ServicesCopy> = {
     "emptyTitle": "Àwọn iṣẹ́ mìíràn ń bọ̀",
     "emptyBody": "À ń mú ìlà iṣẹ́ yìí gbòòrò sí i. Pa dà wá láìpẹ́, tàbí ṣàwárí àwọn ìlà mìíràn nínú àkójọ náà.",
     "viewService": "Wo iṣẹ́",
-    "fromLabel": "láti",
     "onRequestLabel": "Lórí ìbéèrè"
   },
   "service": {
@@ -278,12 +252,9 @@ const SERVICES_COPY_YO: DeepPartial<ServicesCopy> = {
     "durationLabel": "Àkókò tó wọ́pọ̀",
     "minutesUnit": "ìṣẹ́j",
     "hoursUnit": "wákàtí",
-    "priceLabel": "Iye",
     "fromLabel": "láti",
     "onRequestLabel": "Iye lórí ìbéèrè",
     "providersHeading": "Àwọn olùpèsè",
-    "providersComingSoon": "Àwọn olùpèsè tí a ti fọwọ́ sí ń bọ̀ láìpẹ́",
-    "providerSuppliedNote": "Olùpèsè tí a ti fọwọ́ sí ni ó ń ṣe iṣẹ́ yìí.",
     "bookCta": "Ṣe ìfìṣẹ̀dà iṣẹ́ yìí",
     "bookNote": "Wàá tẹ̀ síwájú sí fọ́ọ̀mù ìfìṣẹ̀dà láti fìdí àwọn àlàyé múlẹ̀."
   },
@@ -307,14 +278,10 @@ const SERVICES_COPY_HA: DeepPartial<ServicesCopy> = {
     "description": "Bincika kowane layin aiki — kula da tufafi, wanki, tsaftace gida da ofis, gyare-gyare, aikawa, ƙaura, da ƙari — sannan ka yi rijistar wanda kake bukata.",
     "eyebrow": "Jerin ayyuka",
     "title": "Kowane aiki, a wuri ɗaya.",
-    "body": "Henry Onyx Fabric Care ya zarce tsaftacewa kawai. Bincika cikakken jerin layukan aiki, ka ga abin da kowanne ya ƙunsa, sannan ka fara rijista lokacin da ka shirya.",
     "linesEyebrow": "Layukan aiki",
     "exploreCta": "Bincika",
     "serviceCountOne": "Aiki 1",
     "serviceCountOther": "Ayyuka {count}",
-    "closingEyebrow": "A shirye sa'ad da kake shirye",
-    "closingTitle": "Nemo aikin da kake bukata ka yi rijista a fom ɗaya mai sauƙi.",
-    "closingBody": "Zaɓi layin aiki, duba abin da ke ciki, sannan ka ci gaba zuwa fom ɗaya na rijista mai bayyananniyar ƙiyasi da lokaci abin dogaro.",
     "closingCta": "Yi rijistar aiki"
   },
   "vertical": {
@@ -324,7 +291,6 @@ const SERVICES_COPY_HA: DeepPartial<ServicesCopy> = {
     "emptyTitle": "Ƙarin ayyuka suna zuwa",
     "emptyBody": "Muna faɗaɗa wannan layin aiki. Ka sake dubawa nan ba da daɗewa ba, ko ka bincika sauran layukan a jerin.",
     "viewService": "Duba aiki",
-    "fromLabel": "daga",
     "onRequestLabel": "Bisa buƙata"
   },
   "service": {
@@ -336,12 +302,9 @@ const SERVICES_COPY_HA: DeepPartial<ServicesCopy> = {
     "durationLabel": "Tsawon lokaci na yau da kullum",
     "minutesUnit": "min",
     "hoursUnit": "awa",
-    "priceLabel": "Farashi",
     "fromLabel": "daga",
     "onRequestLabel": "Farashi bisa buƙata",
     "providersHeading": "Masu bayarwa",
-    "providersComingSoon": "Tabbatattun masu bayarwa suna zuwa nan ba da daɗewa ba",
-    "providerSuppliedNote": "Tabbataccen mai bayarwa ne ke gudanar da wannan aiki.",
     "bookCta": "Yi rijistar wannan aiki",
     "bookNote": "Za ka ci gaba zuwa fom ɗin rijista don tabbatar da bayanan."
   },
@@ -365,14 +328,10 @@ const SERVICES_COPY_AR: DeepPartial<ServicesCopy> = {
     "description": "تصفّح كل خطوط الخدمة — العناية بالملابس، الغسيل، تنظيف المنازل والمكاتب، الإصلاحات، المهام، النقل، والمزيد — واحجز ما تحتاجه.",
     "eyebrow": "كتالوج الخدمات",
     "title": "كل الخدمات في مكان واحد.",
-    "body": "تطوّرت Henry Onyx Fabric Care لتتجاوز التنظيف. استكشف مجموعة خطوط الخدمة كاملةً، واطّلع على ما يشمله كل منها، وابدأ الحجز عندما تكون جاهزًا.",
     "linesEyebrow": "خطوط الخدمة",
     "exploreCta": "استكشف",
     "serviceCountOne": "خدمة واحدة",
     "serviceCountOther": "{count} خدمة",
-    "closingEyebrow": "جاهزون متى شئت",
-    "closingTitle": "اعثر على الخدمة التي تحتاجها واحجزها عبر نموذج واحد بسيط.",
-    "closingBody": "اختر خط خدمة، وراجع ما يتضمنه، وتابع إلى نموذج حجز واحد بتقديرات واضحة ومواعيد موثوقة.",
     "closingCta": "احجز خدمة"
   },
   "vertical": {
@@ -382,7 +341,6 @@ const SERVICES_COPY_AR: DeepPartial<ServicesCopy> = {
     "emptyTitle": "المزيد من الخدمات في الطريق",
     "emptyBody": "نعمل على توسيع خط الخدمة هذا. عُد قريبًا، أو استكشف الخطوط الأخرى في الكتالوج.",
     "viewService": "عرض الخدمة",
-    "fromLabel": "من",
     "onRequestLabel": "عند الطلب"
   },
   "service": {
@@ -394,12 +352,9 @@ const SERVICES_COPY_AR: DeepPartial<ServicesCopy> = {
     "durationLabel": "المدة المعتادة",
     "minutesUnit": "د",
     "hoursUnit": "س",
-    "priceLabel": "السعر",
     "fromLabel": "من",
     "onRequestLabel": "السعر عند الطلب",
     "providersHeading": "المزوّدون",
-    "providersComingSoon": "مزوّدون موثّقون قريبًا",
-    "providerSuppliedNote": "تُقدَّم هذه الخدمة عبر مزوّد موثّق.",
     "bookCta": "احجز هذه الخدمة",
     "bookNote": "ستتابع إلى نموذج الحجز لتأكيد التفاصيل."
   },
@@ -423,14 +378,10 @@ const SERVICES_COPY_ES: DeepPartial<ServicesCopy> = {
     "description": "Explora todas las líneas de servicio — cuidado de prendas, lavandería, limpieza de hogar y oficina, reparaciones, gestiones, mudanzas y más — y reserva la que necesites.",
     "eyebrow": "El catálogo de servicios",
     "title": "Todos los servicios, en un solo lugar.",
-    "body": "Henry Onyx Fabric Care ha crecido más allá de la limpieza. Explora el conjunto completo de líneas de servicio, descubre qué cubre cada una y empieza una reserva cuando estés listo.",
     "linesEyebrow": "Líneas de servicio",
     "exploreCta": "Explorar",
     "serviceCountOne": "1 servicio",
     "serviceCountOther": "{count} servicios",
-    "closingEyebrow": "Listos cuando tú lo estés",
-    "closingTitle": "Encuentra el servicio que necesitas y resérvalo en un solo formulario, con calma.",
-    "closingBody": "Elige una línea de servicio, revisa qué incluye y continúa a un único formulario de reserva con estimaciones claras y tiempos fiables.",
     "closingCta": "Reservar un servicio"
   },
   "vertical": {
@@ -440,7 +391,6 @@ const SERVICES_COPY_ES: DeepPartial<ServicesCopy> = {
     "emptyTitle": "Pronto habrá más servicios",
     "emptyBody": "Estamos ampliando esta línea de servicio. Vuelve pronto o explora las demás líneas del catálogo.",
     "viewService": "Ver servicio",
-    "fromLabel": "desde",
     "onRequestLabel": "Bajo solicitud"
   },
   "service": {
@@ -452,12 +402,9 @@ const SERVICES_COPY_ES: DeepPartial<ServicesCopy> = {
     "durationLabel": "Duración habitual",
     "minutesUnit": "min",
     "hoursUnit": "h",
-    "priceLabel": "Precio",
     "fromLabel": "desde",
     "onRequestLabel": "Precio bajo solicitud",
     "providersHeading": "Proveedores",
-    "providersComingSoon": "Proveedores verificados muy pronto",
-    "providerSuppliedNote": "Este servicio lo presta un proveedor verificado.",
     "bookCta": "Reservar este servicio",
     "bookNote": "Continuarás al formulario de reserva para confirmar los detalles."
   },
@@ -481,14 +428,10 @@ const SERVICES_COPY_PT: DeepPartial<ServicesCopy> = {
     "description": "Explore todas as linhas de serviço — cuidado de roupas, lavandaria, limpeza de casa e escritório, reparos, recados, mudanças e mais — e agende o que precisa.",
     "eyebrow": "O catálogo de serviços",
     "title": "Todos os serviços, num só lugar.",
-    "body": "A Henry Onyx Fabric Care cresceu para além da limpeza. Explore o conjunto completo de linhas de serviço, veja o que cada uma cobre e inicie uma reserva quando estiver pronto.",
     "linesEyebrow": "Linhas de serviço",
     "exploreCta": "Explorar",
     "serviceCountOne": "1 serviço",
     "serviceCountOther": "{count} serviços",
-    "closingEyebrow": "Prontos quando você estiver",
-    "closingTitle": "Encontre o serviço de que precisa e agende-o num único formulário tranquilo.",
-    "closingBody": "Escolha uma linha de serviço, reveja o que está incluído e prossiga para um único formulário de reserva com estimativas claras e prazos confiáveis.",
     "closingCta": "Agendar um serviço"
   },
   "vertical": {
@@ -498,7 +441,6 @@ const SERVICES_COPY_PT: DeepPartial<ServicesCopy> = {
     "emptyTitle": "Mais serviços a caminho",
     "emptyBody": "Estamos a expandir esta linha de serviço. Volte em breve ou explore as outras linhas do catálogo.",
     "viewService": "Ver serviço",
-    "fromLabel": "a partir de",
     "onRequestLabel": "Sob consulta"
   },
   "service": {
@@ -510,12 +452,9 @@ const SERVICES_COPY_PT: DeepPartial<ServicesCopy> = {
     "durationLabel": "Duração típica",
     "minutesUnit": "min",
     "hoursUnit": "h",
-    "priceLabel": "Preço",
     "fromLabel": "a partir de",
     "onRequestLabel": "Preço sob consulta",
     "providersHeading": "Prestadores",
-    "providersComingSoon": "Prestadores verificados em breve",
-    "providerSuppliedNote": "Este serviço é prestado por um prestador verificado.",
     "bookCta": "Agendar este serviço",
     "bookNote": "Você prosseguirá para o formulário de reserva para confirmar os detalhes."
   },
@@ -539,14 +478,10 @@ const SERVICES_COPY_DE: DeepPartial<ServicesCopy> = {
     "description": "Durchstöbern Sie alle Leistungsbereiche — Textilpflege, Wäscheservice, Reinigung von Wohnung und Büro, Reparaturen, Besorgungen, Umzüge und mehr — und buchen Sie die passende.",
     "eyebrow": "Der Leistungskatalog",
     "title": "Alle Leistungen an einem Ort.",
-    "body": "Henry Onyx Fabric Care ist über die Reinigung hinausgewachsen. Entdecken Sie alle Leistungsbereiche, sehen Sie, was jeder umfasst, und starten Sie eine Buchung, sobald Sie bereit sind.",
     "linesEyebrow": "Leistungsbereiche",
     "exploreCta": "Entdecken",
     "serviceCountOne": "1 Leistung",
     "serviceCountOther": "{count} Leistungen",
-    "closingEyebrow": "Bereit, wann Sie es sind",
-    "closingTitle": "Finden Sie die passende Leistung und buchen Sie sie in einem ruhigen Formular.",
-    "closingBody": "Wählen Sie einen Leistungsbereich, prüfen Sie, was enthalten ist, und gelangen Sie zu einem einzigen Buchungsformular mit klaren Schätzungen und verlässlicher Terminierung.",
     "closingCta": "Leistung buchen"
   },
   "vertical": {
@@ -556,7 +491,6 @@ const SERVICES_COPY_DE: DeepPartial<ServicesCopy> = {
     "emptyTitle": "Weitere Leistungen folgen in Kürze",
     "emptyBody": "Wir bauen diesen Leistungsbereich aus. Schauen Sie bald wieder vorbei oder entdecken Sie die anderen Bereiche im Katalog.",
     "viewService": "Leistung ansehen",
-    "fromLabel": "ab",
     "onRequestLabel": "Auf Anfrage"
   },
   "service": {
@@ -568,12 +502,9 @@ const SERVICES_COPY_DE: DeepPartial<ServicesCopy> = {
     "durationLabel": "Übliche Dauer",
     "minutesUnit": "Min.",
     "hoursUnit": "Std.",
-    "priceLabel": "Preis",
     "fromLabel": "ab",
     "onRequestLabel": "Preis auf Anfrage",
     "providersHeading": "Anbieter",
-    "providersComingSoon": "Verifizierte Anbieter folgen in Kürze",
-    "providerSuppliedNote": "Diese Leistung wird von einem verifizierten Anbieter erbracht.",
     "bookCta": "Diese Leistung buchen",
     "bookNote": "Sie gelangen zum Buchungsformular, um die Details zu bestätigen."
   },
@@ -597,14 +528,10 @@ const SERVICES_COPY_IT: DeepPartial<ServicesCopy> = {
     "description": "Esplora ogni linea di servizio — cura dei capi, lavanderia, pulizia di casa e ufficio, riparazioni, commissioni, traslochi e altro — e prenota quello che ti serve.",
     "eyebrow": "Il catalogo dei servizi",
     "title": "Ogni servizio, in un solo posto.",
-    "body": "Henry Onyx Fabric Care è cresciuta oltre la pulizia. Esplora tutte le linee di servizio, scopri cosa copre ciascuna e avvia una prenotazione quando vuoi.",
     "linesEyebrow": "Linee di servizio",
     "exploreCta": "Esplora",
     "serviceCountOne": "1 servizio",
     "serviceCountOther": "{count} servizi",
-    "closingEyebrow": "Pronti quando lo sei tu",
-    "closingTitle": "Trova il servizio che ti serve e prenotalo con un unico modulo, senza stress.",
-    "closingBody": "Scegli una linea di servizio, controlla cosa è incluso e prosegui con un unico modulo di prenotazione, con stime chiare e tempi affidabili.",
     "closingCta": "Prenota un servizio"
   },
   "vertical": {
@@ -614,7 +541,6 @@ const SERVICES_COPY_IT: DeepPartial<ServicesCopy> = {
     "emptyTitle": "Altri servizi sono in arrivo",
     "emptyBody": "Stiamo ampliando questa linea di servizio. Torna a trovarci presto o esplora le altre linee del catalogo.",
     "viewService": "Vedi servizio",
-    "fromLabel": "da",
     "onRequestLabel": "Su richiesta"
   },
   "service": {
@@ -626,12 +552,9 @@ const SERVICES_COPY_IT: DeepPartial<ServicesCopy> = {
     "durationLabel": "Durata tipica",
     "minutesUnit": "min",
     "hoursUnit": "h",
-    "priceLabel": "Prezzo",
     "fromLabel": "da",
     "onRequestLabel": "Prezzo su richiesta",
     "providersHeading": "Fornitori",
-    "providersComingSoon": "Fornitori verificati in arrivo",
-    "providerSuppliedNote": "Questo servizio è erogato da un fornitore verificato.",
     "bookCta": "Prenota questo servizio",
     "bookNote": "Proseguirai con il modulo di prenotazione per confermare i dettagli."
   },
@@ -655,14 +578,10 @@ const SERVICES_COPY_ZH: DeepPartial<ServicesCopy> = {
     "description": "浏览全部服务线 — 衣物护理、洗护、家居与办公保洁、维修、跑腿、搬运等等 — 并预约您所需的服务。",
     "eyebrow": "服务目录",
     "title": "所有服务，集于一处。",
-    "body": "Henry Onyx Fabric Care 已不止于保洁。探索完整的服务线，了解每一项涵盖的内容，准备好后即可开始预约。",
     "linesEyebrow": "服务线",
     "exploreCta": "探索",
     "serviceCountOne": "1 项服务",
     "serviceCountOther": "{count} 项服务",
-    "closingEyebrow": "随时为您准备就绪",
-    "closingTitle": "找到所需的服务，用一份从容的表单完成预约。",
-    "closingBody": "选择一条服务线，查看包含的内容，继续填写单一预约表单，获得清晰的估价与可靠的时间安排。",
     "closingCta": "预约服务"
   },
   "vertical": {
@@ -672,7 +591,6 @@ const SERVICES_COPY_ZH: DeepPartial<ServicesCopy> = {
     "emptyTitle": "更多服务即将上线",
     "emptyBody": "我们正在扩展这条服务线。请稍后再来查看，或浏览目录中的其他服务线。",
     "viewService": "查看服务",
-    "fromLabel": "起",
     "onRequestLabel": "按需报价"
   },
   "service": {
@@ -684,12 +602,9 @@ const SERVICES_COPY_ZH: DeepPartial<ServicesCopy> = {
     "durationLabel": "通常时长",
     "minutesUnit": "分钟",
     "hoursUnit": "小时",
-    "priceLabel": "价格",
     "fromLabel": "起",
     "onRequestLabel": "价格按需报价",
     "providersHeading": "服务方",
-    "providersComingSoon": "认证服务方即将上线",
-    "providerSuppliedNote": "此服务由认证服务方提供。",
     "bookCta": "预约此服务",
     "bookNote": "您将继续填写预约表单以确认详情。"
   },
@@ -713,14 +628,10 @@ const SERVICES_COPY_HI: DeepPartial<ServicesCopy> = {
     "description": "हर सेवा श्रेणी देखें — वस्त्र देखभाल, धुलाई, घर और कार्यालय की सफाई, मरम्मत, छोटे काम, सामान स्थानांतरण, और बहुत कुछ — और जो आपको चाहिए उसे बुक करें।",
     "eyebrow": "सेवा सूची",
     "title": "हर सेवा, एक ही जगह।",
-    "body": "Henry Onyx Fabric Care अब सफाई से कहीं आगे बढ़ चुका है। सेवाओं की पूरी श्रेणी देखें, जानें कि हर एक में क्या शामिल है, और तैयार होने पर बुकिंग शुरू करें।",
     "linesEyebrow": "सेवा श्रेणियाँ",
     "exploreCta": "देखें",
     "serviceCountOne": "1 सेवा",
     "serviceCountOther": "{count} सेवाएँ",
-    "closingEyebrow": "जब आप तैयार हों",
-    "closingTitle": "जो सेवा आपको चाहिए उसे ढूँढें और एक सरल फ़ॉर्म से बुक करें।",
-    "closingBody": "एक सेवा श्रेणी चुनें, देखें कि उसमें क्या शामिल है, और स्पष्ट अनुमान तथा भरोसेमंद समय के साथ एक ही बुकिंग फ़ॉर्म पर आगे बढ़ें।",
     "closingCta": "सेवा बुक करें"
   },
   "vertical": {
@@ -730,7 +641,6 @@ const SERVICES_COPY_HI: DeepPartial<ServicesCopy> = {
     "emptyTitle": "और सेवाएँ जल्द आ रही हैं",
     "emptyBody": "हम इस सेवा श्रेणी का विस्तार कर रहे हैं। जल्द फिर देखें, या सूची की दूसरी श्रेणियाँ देखें।",
     "viewService": "सेवा देखें",
-    "fromLabel": "से",
     "onRequestLabel": "अनुरोध पर"
   },
   "service": {
@@ -742,12 +652,9 @@ const SERVICES_COPY_HI: DeepPartial<ServicesCopy> = {
     "durationLabel": "सामान्य अवधि",
     "minutesUnit": "मि",
     "hoursUnit": "घं",
-    "priceLabel": "मूल्य",
     "fromLabel": "से",
     "onRequestLabel": "मूल्य अनुरोध पर",
     "providersHeading": "प्रदाता",
-    "providersComingSoon": "सत्यापित प्रदाता जल्द आ रहे हैं",
-    "providerSuppliedNote": "यह सेवा एक सत्यापित प्रदाता द्वारा दी जाती है।",
     "bookCta": "यह सेवा बुक करें",
     "bookNote": "विवरण की पुष्टि के लिए आप बुकिंग फ़ॉर्म पर आगे बढ़ेंगे।"
   },

@@ -362,13 +362,13 @@ export default function SignupForm() {
           </div>
         </div>
 
-        <p className="rounded-[0.9rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft,var(--acct-bg))] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
-          {selectedCountry?.currency === "NGN"
-            ? surfaceCopy.accountForms.regionalDefaultsLocal
-            : formatSurfaceTemplate(surfaceCopy.accountForms.regionalDefaultsNgnOnly, {
-                currency: selectedCountry?.currency || "NGN",
-              })}
-        </p>
+        {selectedCountry?.currency !== "NGN" ? (
+          <p className="rounded-[0.9rem] border border-[var(--acct-line)] bg-[var(--acct-bg-soft,var(--acct-bg))] px-4 py-3 text-xs leading-relaxed text-[var(--acct-muted)]">
+            {formatSurfaceTemplate(surfaceCopy.accountForms.regionalDefaultsNgnOnly, {
+              currency: selectedCountry?.currency || "NGN",
+            })}
+          </p>
+        ) : null}
 
         <div className="auth-field">
           <div className="auth-field-row">

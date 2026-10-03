@@ -172,15 +172,9 @@ export default async function ContactPage() {
         <section className="border-t border-[color:var(--home-line)] pt-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.28em] text-[color:var(--home-accent-text)]">
-                {copy.footer.eyebrow}
-              </p>
-              <h2 className="mt-3 text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
+              <h2 className="text-balance text-[1.55rem] font-semibold leading-[1.15] tracking-[-0.015em] text-[color:var(--home-ink)] sm:text-[1.85rem]">
                 {copy.footer.title}
               </h2>
-              <p className="mt-3 text-sm leading-7 text-[color:var(--home-ink-70)]">
-                {copy.footer.body}
-              </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link

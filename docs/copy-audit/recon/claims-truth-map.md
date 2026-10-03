@@ -1,15 +1,72 @@
 # Claims Truth Map — public copy (copy-reset prep)
 
-Worktree: `copy-reset-prep` @ b1efffe3 (main). Read-only research, 2026-10-03.
-Scope: the 139 public routes in `public-routes.tsv`; classes FEES · VAT · DELIVERY · REFUNDS · PROTECTION.
-Method: per-route import closure (page + layouts, app files followed by import, `@henryco/*` followed by symbol) → keyword sweep of every closure file + EN baselines of the i18n modules each route actually calls → each claim traced to the enforcing code by reading it. `packages/search-ui` excluded.
+Worktree: `copy-reset-prep` @ **HEAD b1efffe3** (main). Read-only research, 2026-10-03.
+Scope: the 139 public routes in `public-routes.tsv`; classes FEES · VAT · DELIVERY · REFUNDS · PROTECTION. `packages/search-ui` excluded; emails/notifications out of scope.
 
-Verdicts: **TRACED** = code enforces what the copy says · **MISMATCH** = code does something different (both stated) · **UNTRACEABLE** = no code/config backs it.
-All paths are repo-relative to the worktree. "route.ts" in the marketplace table = `apps/marketplace/app/api/marketplace/route.ts`.
+**Method.** For every route I built the import closure (page + every enclosing layout; app files followed by relative/`@/` import; `@henryco/*` followed by exported symbol), swept every closure file plus the EN baseline of each i18n module the route actually calls for the five claim classes, then read the code that would make each claim true. A row groups sibling strings that make the same claim (~300 strings → 155 rows). Every file:line below was opened during this research.
 
-> STATUS: written incrementally. Sections are appended per domain.
+**Line numbers are HEAD b1efffe3.** Another session began editing this worktree during the research (uncommitted changes in `apps/care/*`). For those care files the lines were read from `git show HEAD:<path>`; all other files were unmodified when read.
+
+Verdicts: **TRACED** = the code enforces what the copy says · **MISMATCH** = the code does something different (both stated) · **UNTRACEABLE** = nothing in code/config backs it. "partial" = one half traced, the other untraceable.
+
+Not rendered on any public route (ignore them in the reset): `packages/i18n/src/marketplace-copy.ts`, `care-copy.ts`, `care-services-copy.ts` — no public page calls their getters (closure check).
+Data-driven copy is outside this map: seller `delivery_note` / `lead_time`, category `trust_notes`, vendor `badges`, care `settings.pricing_note` / `pickup_hours`, CMS rows. They render on decision pages but come from the database, so no code can back them; keep them seller- or ops-attributed.
 
 ---
+
+## A. Summary
+
+### A1. By class (a row that touches two classes is counted in both)
+
+| class | rows | TRACED | MISMATCH | UNTRACEABLE | partial |
+|---|---|---|---|---|---|
+| FEES | 50 | 20 | 22 | 7 | 1 |
+| VAT | 4 | 1 | 2 | 0 | 1 |
+| DELIVERY | 23 | 6 | 11 | 4 | 2 |
+| REFUNDS | 15 | 1 | 6 | 8 | 0 |
+| PROTECTION | 83 | 27 | 42 | 11 | 3 |
+
+### A2. By domain (each row counted once)
+
+| domain | rows | TRACED | MISMATCH | UNTRACEABLE | partial |
+|---|---|---|---|---|---|
+| Marketplace (B1) | 65 | 17 | 36 | 10 | 2 |
+| Care (B2) | 13 | 5 | 4 | 4 | 0 |
+| Logistics (B3) | 12 | 4 | 7 | 0 | 1 |
+| Studio (B4) | 17 | 4 | 5 | 7 | 1 |
+| Property (B5) | 8 | 5 | 2 | 1 | 0 |
+| Jobs (B6) | 8 | 5 | 3 | 0 | 0 |
+| Learn (B7) | 8 | 7 | 1 | 0 | 0 |
+| Hub + shared chrome (B8) | 24 | 3 | 13 | 6 | 2 |
+| Account (7 auth routes) | 0 | — | — | — | — |
+| **Total** | **155** | **50** | **71** | **28** | **6** |
+
+### A3. What the rewriter most needs to know
+
+1. **Refunds have no customer-facing machinery anywhere.** A marketplace dispute resolved "refund to buyer" only flips a status and writes "a refund has been issued" to the timeline (`apps/marketplace/app/api/marketplace/route.ts:2333-2358`). The only real refund is a staff-only card refund in the account app; customer self-serve refunds are "deliberately unbuilt" (`apps/account/app/api/payments/intents/[id]/refund/route.ts:13-20`). Every refund window, timing or method claim is UNTRACEABLE or MISMATCH: marketplace FAQ 7-day returns, "3–7 business days", "wallet refunds are instant"; studio 24-hour cooling-off and "10 working days"; learn "7 days from enrolment"; care and logistics "claim window posted at checkout".
+2. **VAT is computed but never stated.** It is carved *inclusive* at 7.5 % per product category (`packages/config/tax.ts:33-48`; marketplace `route.ts:674-697`). The only public VAT statement is the property AI receipt "(incl. {vat} VAT)", which is TRACED. Hub /terms promises tax disclosure before payment and "state consumption taxes added at checkout"; both are false. Safe true line: **"Prices include VAT where it applies."**
+3. **"Protection" is real only for card and wallet payments.** Card and wallet payments are held until you confirm delivery or a 1–5-day auto-release passes, and an open dispute freezes the seller's payout (TRACED). Cash-on-delivery orders are never held. "Verified delivery" is the seller marking the order delivered. The 1–10-day "payout reserve" is computed but never enforced.
+4. **"Verified" is the biggest false word.**
+   - Marketplace "Verified seller/store" means staff-approved. A KYC-*pending* seller becomes "silver" / "Basic verified".
+   - Property shows **"Verified property — Henry Onyx has verified ownership, documents, and access"** whenever a regex matches the auto-added badge "Owner verification pending".
+   - Care shows "verified providers" although no provider program exists.
+   - Hub /about says "KYC verified before payout", which is false on main (the identity-at-payout gate is only in unmerged PR #543).
+5. **Fees: the buyer side is clean, the seller and ecosystem pages are not.**
+   - **Buyer side (clean):** marketplace delivery ₦18,000, free at ₦350,000 and above, buyer platform fee ₦0. The client shows ">" where the server uses "≥", and the client doesn't know about delivery waivers.
+   - **Seller side:** commission and payout fee are TRACED. Monthly plan fees, posting fees and featured fees are never billed.
+   - "No hidden fees" on /sell/pricing hides the posting and featured fees.
+   - Jobs /hire says posting needs a paid subscription, but none exists.
+   - Hub /v3/how-we-earn lists a care platform fee and a learn revenue share that don't exist, and says studio "payment held until delivery" when studio takes deposits up front.
+6. **Delivery times are mostly unbacked.**
+   - Marketplace has no delivery window or ETA field at all.
+   - Logistics "confidence %" is a constant heuristic.
+   - "Proof of delivery on every shipment" is not enforced.
+   - Care pickup hours (8 AM–7 PM) disagree with the form's 8 AM–6 PM windows.
+   - Studio kickoff and warranty promises are not enforced, and the warranty in code is 14 days against a 30-day promise.
+
+---
+
+## B. Claim tables by domain
 
 ## B1. Marketplace (`apps/marketplace`)
 
@@ -85,10 +142,14 @@ Key mechanics (read once, cited below):
 | M57 | FEES | FAQ "Card, bank transfer, and Henry Onyx wallet." | `help-faqs.ts:64` | /help | card gated by `MARKETPLACE_CARD_CHECKOUT` (`pay/[orderNo]/page.tsx:85-95`); bank transfer removed from client methods (`checkout-experience.tsx:144-147`) | MISMATCH | |
 | M58 | FEES | FAQ "Bank transfers can take up to 30 minutes to clear…" | `help-faqs.ts:51` | /help | manual verification, no timing | UNTRACEABLE | |
 | M59 | PROTECTION | seller hero "honest buyer protection"; sell highlight "Selection — Manual review, not pay-to-list" | `public-copy.ts:822, 827` | /sell | applications approved manually by staff (`route.ts:1905-1941`) | TRACED (manual review) | |
+| M60 | REFUNDS | policy "Return & Refund Policy — Refund and return outcomes must align with order evidence, payout state, and dispute review." · "Refund decisions are recorded against disputes and reflected in payout state changes." · "Affected seller funds can remain frozen or be marked refunded before payout release." | `policy.ts:109-113` | /policies/returns-refunds, /trust | dispute resolution writes `resolution_type`, `refund_amount`, group `refunded`/frozen (`route.ts:2333-2351, 2246-2256`) | TRACED (as record-keeping) | no money moves (M54) — say "a refund is arranged by our team" |
+| M61 | PROTECTION | policy "Disputes open a formal case, pause the affected payout, and are reviewed by our team." · "Once resolved, a dispute either returns the order to normal processing or marks it refunded." | `policy.ts:120-123` | /policies/dispute-resolution, /trust | case + moderation queue + freeze (`route.ts:2230-2268`); resolution branch (`route.ts:2345-2351`) | TRACED | |
+| M62 | FEES / PROTECTION | policy "Seller funds are held until orders clear, then become available to withdraw. Every payout is reviewed…" · "Payout requests can only draw from releasable balances…" · "Payout requests are reviewed before release and can be approved, held, or declined." · seller policy "Seller payouts can be delayed, held, or declined following a review." | `policy.ts:80, 131-135` | /policies/payout-policy, /policies/seller-policy, /trust | `route.ts:2435-2466` (releasable only), `2832-2878` (staff decision) | TRACED | |
+| M63 | FEES / PROTECTION | policy "Newer or weaker-trust sellers face longer reserve windows before funds become releasable." · "Stronger seller history can shorten payout reserve and auto-release windows." | `policy.ts:134, 145` | /policies/payout-policy, /policies/seller-verification | auto-release 5→1 days by tier TRACED (`governance.ts:219`); "reserve" not enforced (`governance.ts:218` unused) | MISMATCH (reserve) | say "auto-release windows" only |
+| M64 | PROTECTION | policy "Listings asking buyers to pay directly on WhatsApp, Telegram, crypto, or outside Henry Onyx checkout can be blocked automatically." · "Off-platform payment steering, duplicate spam listings, and suspicious media reuse can block submission or trigger moderation cases." | `policy.ts:79, 101` | /policies/prohibited-goods-services, /policies/seller-policy | `governance.ts:148-157, 297-300, 322` (steering text → block) ; duplicates → risk + review `305-308, 331` | TRACED | |
+| M65 | FEES | policy "Featured placement is a paid privilege…" · "Featured placement pricing depends on seller plan and trust posture." | `policy.ts:175-177` | /policies/featured-listings | fee table per plan (`governance.ts:100,113,126,139`) but never charged (`route.ts:1813-1814`) | MISMATCH | |
 
 VAT (marketplace): **no VAT claim is rendered on any marketplace public route** (grep of the full closure; `marketplace-copy.ts` is not imported by any public route). True, available statement if wanted: "Prices include VAT where it applies" — backed by inclusive carve `route.ts:674-697` + `packages/pricing/src/vat.ts:128-205` + `packages/config/tax.ts:33-48` (7.5% standard; exempt/zero-rated categories `tax.ts:139-144`).
-
-> NOTE ON LINE NUMBERS: another session is editing this worktree concurrently (uncommitted changes appeared in `apps/care/*` during this research). **Every file:line in this report is against HEAD b1efffe3.** For the care files that are currently modified (`app/(public)/page.tsx`, `app/(public)/book/page.tsx`, `app/(public)/review/page.tsx`, `components/care/BookPickupForm.tsx`, `components/care/ReviewForm.tsx`, `components/care/TrackLookupClient.tsx`, `lib/care-settings-shared.ts`) lines were read from `git show HEAD:<path>`.
 
 ---
 
@@ -143,4 +204,315 @@ Key mechanics:
 | L10 | DELIVERY | "Routing assigns within the operating window; pickup milestone writes live to the timeline." · "Booking issues a tracking code and dispatch begins routing within current operating hours." | `logistics-book-copy.ts:102`; `logistics-home-copy.ts:181`; `logistics-quote-copy.ts:106` | /book, /, /quote | tracking code issued at booking (`write.ts:140, 150-152`); assignment is a manual dispatcher action (`app/api/logistics/dispatch/assign/route.ts:156`) with no timing rule | TRACED (tracking code) · UNTRACEABLE (routing timing) | |
 | L11 | DELIVERY / FEES | "Same-day, scheduled, dispatch, and inter-city logistics services with governed pricing." · metric "Same-day to inter-city" | `logistics-services-copy.ts:50`; `logistics-home-copy.ts:146`; `content.ts:46` | /services, / | rate cards per tier (`pricing.ts:10-83`) | TRACED (tiers priced) | no same-day delivery guarantee exists in code |
 | L12 | DELIVERY | business "Tracking codes are issued on booking; proof-of-delivery records attach to the right invoice." · "predictable pricing … proof-of-delivery discipline" | `logistics-business-copy.ts:85, 121` | /business | tracking code TRACED (`write.ts:140`); PoD as L7 | MISMATCH (PoD) | |
+
+
+---
+
+## B4. Studio (`apps/studio`)
+
+Key mechanics:
+- **Estimates**: `apps/studio/lib/studio/pricing.ts:79-216` (`estimateStudioPricing`: package price or service base + priced options + timeline/urgency modifiers; deposit = package `depositRate` or 35 % / 40 % / 45 % by total, `pricing.ts:54-58`). A proposal can differ from the estimate — the delta is added as a "Scope & delivery" line (`pricing.ts:253-268`). Package prices / deposit rates / delivery windows are config (`lib/studio/content.ts:19-188`).
+- **Templates**: deposit = round(price × `depositRate`), balance = price − deposit (`lib/studio/template-reservation.ts:74-75, 199, 277, 298-305, 399`). `readyInDays` (12–45 days, `lib/studio/templates.ts:35-486`) is the **launch window measured from kickoff** (`template-reservation.ts:232, 275, 284`), not time-to-kickoff.
+- **Card charge = invoice amount**, no surcharge (`lib/studio/card-math.ts:13-20`; `lib/studio/card-rail.ts:74`). Card rail is flag-gated (`card-rail.ts:44-46`); bank transfer can be retired by flag (`card-rail.ts:48-52`).
+- **Proposal acceptance** writes a signature row + `status='accepted'` (`app/api/studio/proposals/sign/route.ts:185-214`); no price snapshot or edit lock is written.
+- **Refunds**: no studio refund/cancellation code exists; the only refund path is the staff card-intent refund in the account app (provider refund to the card, `apps/account/app/api/payments/intents/[id]/refund/route.ts:197-201`).
+- **Warranty in code**: the agency aftercare closes the job after **14 days** (`lib/agency/aftercare.ts:11-12, 37`).
+- No review-window auto-approval, revision quota, kickoff timer or response-time logic exists in `lib/` or `app/api`.
+
+| # | class | claim (quoted, EN) | copy source | route(s) | backing code/config + value | verdict | note |
+|---|---|---|---|---|---|---|---|
+| S1 | FEES | template "the price is fixed" · policy "Template reservations are fixed-price; the deposit and balance figures shown on the template page are final." · deposit % / deposit / balance figures | `app/checkout/template/[slug]/page.tsx:163, 420-430`; `lib/studio/policies.ts:72`; `app/(public)/pick/[slug]/page.tsx:65-66, 96, 146-149, 200` | /pick/[slug], /checkout/template/[slug], /policies/terms | invoice and milestones built from the same `price × depositRate` (`template-reservation.ts:74-75, 199, 298-305, 399`) | TRACED | |
+| S2 | FEES | "We do not pass along bank or transfer charges — what you see on the invoice is what you pay." | `policies.ts:69` | /policies/terms | card charge = invoice × 100, no surcharge (`card-math.ts:13-20`) | TRACED | |
+| S3 | FEES | "A brief takes about 8 minutes — and you see honest pricing before you submit." · "…with honest pricing before you submit." · "Both land in one brief with honest pricing." · "Preview reflects scope, platform, and timing." | `app/(public)/page.tsx:117, 262`; `app/(public)/work/page.tsx:98`; `app/(public)/services/page.tsx:82`; `components/studio/brief-composer/pricing-rail.tsx:137` | /, /work, /services, /request/build | live estimate from `estimateStudioPricing` (`pricing-rail.tsx:84-163`); final price is set in the proposal and may differ (`pricing.ts:253-268`) | MISMATCH (wording) | true: "You see an estimate before you submit; the proposal confirms the price." |
+| S4 | FEES | "Fixed price. Locked at proposal acceptance — no surprise overages." · "Fixed package price — locked at proposal acceptance, no surprise overages." · "Out-of-scope work is quoted as a written change order before any additional charge." | `components/studio/brief-composer/section-editors.tsx:323, 394`; `policies.ts:74` | /request/build, /policies/terms | acceptance stores no price snapshot/lock (`proposals/sign/route.ts:185-214`); change orders are a manual process | UNTRACEABLE (lock) | keep only as a contractual term |
+| S5 | FEES | package rows: price, "Deposit {n}%", delivery lane | `app/(public)/pricing/page.tsx:81-84`; `components/studio/request-path-step.tsx:176-179, 233-236`; values `content.ts:111-188` | /pricing, /request/build | the same package `depositRate` and `price` feed the estimate (`pricing.ts:90-95, 206-207`) | TRACED | |
+| S6 | DELIVERY | template "Pay the deposit and we kick off within {readyInDays} days." · "Reserve {template} — pay the deposit, we start in {n} days." | `app/checkout/template/[slug]/page.tsx:110, 159` | /checkout/template/[slug] | `readyInDays` is the launch window after kickoff (`template-reservation.ts:232, 275`); SLA policy says kickoff within 2 working days (`policies.ts:489`); nothing enforces either | MISMATCH | true: "Launch about {n} days after kickoff." |
+| S7 | DELIVERY | services "a delivery window stated up front" + windows "3 to 6 weeks" … "8 to 18 weeks"; "Delivery window" on service pages | `app/(public)/services/page.tsx:42`; `content.ts:19-97`; `app/(public)/services/[slug]/page.tsx:143-146` | /services, /services/[slug] | config text only (`lib/studio/catalog.ts:146`) | UNTRACEABLE | present as typical ranges |
+| S8 | DELIVERY | SLA: "Kickoff begins within two (2) working days of verified deposit" · "we respond to messages within one (1) working day…" · "If a milestone slips … by more than two (2) working days, we proactively notify…" · launch QA list (LCP < 2.5 s, WCAG 2.1 AA…) | `policies.ts:489, 495, 501, 507` | /policies/sla | no timers, notifications or QA gates in code | UNTRACEABLE | contractual — owner decision (see C) |
+| S9 | PROTECTION | "Every engagement carries a thirty (30) day warranty from launch…" | `policies.ts:513` | /policies/sla | agency aftercare warranty window = **14 days** (`lib/agency/aftercare.ts:11-12, 37`) | MISMATCH | align to 14 days or change the constant |
+| S10 | REFUNDS | "If you cancel within twenty-four (24) hours of paying the deposit, and before kickoff begins, we refund 100% of the deposit." · per-milestone schedule ("minimum of 50% retained") · template deposit non-refundable after kickoff · Henry Onyx-initiated cancellation = full refund · "We refund what you paid for work that has not yet been done…" | `policies.ts:281, 295, 301-306, 312, 318` | /policies/refunds | no studio refund/cancellation logic; staff-only card refund route (key mechanics) | UNTRACEABLE | contractual — owner decision |
+| S11 | REFUNDS | "Refunds are paid by bank transfer to the originating account, within ten (10) working days…" | `policies.ts:324` | /policies/refunds | card refunds go back through the provider to the card (`refund/route.ts:197-201`); no timing logic | MISMATCH | true: "Refunds return to the original payment method." |
+| S12 | REFUNDS | checkout consent "I understand the deposit reserves my build slot and is non-refundable once kickoff begins, per the refund schedule." · "Deposit secured by milestone discipline; refundable on the published schedule." | `app/checkout/template/[slug]/page.tsx:374-376, 459` | /checkout/template/[slug] | as S10 | UNTRACEABLE | decision-point text — keep only if S10 is kept |
+| S13 | REFUNDS / PROTECTION | "If you disagree with a refund calculation, raise it … within thirty (30) days … mediation" · Terms disputes "If unresolved within thirty (30) days, the parties submit to mediation in Lagos." · chargebacks = material breach | `policies.ts:330, 135, 336` | /policies/refunds, /policies/terms | legal process, no code | UNTRACEABLE | contractual — owner/legal decision |
+| S14 | PROTECTION / FEES | Terms §5 "Bank transfer to the verified … corporate account is the active payment method. Card and online-gateway payments may be added in the future…" vs template page "Bank transfer or card." | `policies.ts:87`; `app/(public)/pick/[slug]/page.tsx:217` | /policies/terms, /pick/[slug] | card rail exists, flag-gated (`card-rail.ts:44-46`; `/pay/[paymentId]/card` is public); transfer can be retired by flag (`card-rail.ts:48-52`) | MISMATCH | the two pages contradict each other; truth depends on flags |
+| S15 | PROTECTION | Terms §4/§6/§7: "Work begins after the deposit is verified" · 5-working-day review window, "approved by silence" · "fixed number of revision rounds … at no additional cost" | `policies.ts:80-81, 94, 100` | /policies/terms | deposit-gated workflow status exists (`template-reservation.ts:329-332` "pending_deposit"); no auto-approval or revision-quota code | TRACED (deposit gate) · UNTRACEABLE (review window, revisions) | |
+| S16 | PROTECTION | pay page "finance reviews within one business day" · checkout "the team starts the moment finance verifies the transfer" · brief "We come back inside one business day with a fixed scope, a fixed delivery window…" | `app/pay/[paymentId]/page.tsx:207`; `app/checkout/template/[slug]/page.tsx:163`; `section-editors.tsx:373` | /pay/[paymentId], /checkout/template/[slug], /request/build | manual review, no timers | UNTRACEABLE | |
+| S17 | PROTECTION | trust "Milestone visibility — Payments and delivery checkpoints stay visible to the client." · "Every enquiry becomes a formal proposal with clear scope, pricing, and timelines." | `app/(public)/trust/page.tsx:13-14, 18` | /trust | client payment overview + milestones (`pricing.ts:273-308`) | TRACED | |
+
+Out of the five classes (not assessed): Studio security/privacy statements in `policies.ts:406-471` (TLS, AES-256 backups, RPO/RTO, 90-day secret rotation, monthly role audits) and IP-transfer terms (`policies.ts:104-109, 349-401`; checkout "IP transfers to you on full payment, in writing.", `checkout/template/[slug]/page.tsx:467`). They are equally unbacked by code and should get the same owner/legal decision.
+
+
+---
+
+## B5. Property (`apps/property`)
+
+Key mechanics:
+- **Fees**: every property submission fee is configured to **₦0** (`packages/pricing/src/index.ts:322-335`; computed lines omitted when 0, `index.ts:372-377`). Rent is VAT-exempt, sales out of scope (`packages/config/tax.ts:174-176`). No property page states a listing fee.
+- **Publication gate** (staff decision, `apps/property/app/api/property/route.ts:1490-1552`): a note is required to hold/reject; publishing is refused while an inspection is open (`1519-1525`) or the listing is in `awaiting_documents` / `awaiting_eligibility` (`1527-1536`); public visibility only on approved/published (`1541`); badges "Henry Onyx reviewed", "Publication cleared" added (`1545-1548`).
+- **Badge bug**: every new submission is stamped with the trust badge **"Owner verification pending"** (`lib/property/store.ts:636-639`). The detail-page badge shows **"Verified property — Henry Onyx has verified ownership, documents, and access"** whenever an approved/published listing has *any* badge matching `/verif/i` (`components/property/verification-badge.tsx:33-40, 68-71`) — so "verification pending" alone produces "Verified property".
+- **Duplicate-contact review**: duplicate email/phone signals raise a review flag (`lib/property/policy.ts:181-183, 273-274, 315`).
+
+| # | class | claim (quoted, EN) | copy source | route(s) | backing code/config + value | verdict | note |
+|---|---|---|---|---|---|---|---|
+| P1 | PROTECTION | badge "Verified property — Henry Onyx has verified ownership, documents, and access. The listing carries the full trust posture before publication." | `components/property/verification-badge.tsx:68-71` | /property/[slug] | fires on `/verif/i` badge match + approved/published (`verification-badge.tsx:37-40`); "Owner verification pending" matches (`store.ts:636-639`); there is no ownership-verification step in the publish path (`route.ts:1490-1552`) | MISMATCH | serious: rename to "Reviewed by Henry Onyx" and drive it from the publish decision, not a regex |
+| P2 | PROTECTION | "Reviewed before publication — … Henry Onyx has already reviewed the record before showing it publicly." · trust "Submitters see a private listing record first, not instant publication." · "The listing is held privately until that is cleared." | `app/(public)/property/[slug]/page.tsx:70-77`; `app/(public)/trust/page.tsx:59, 116-119` | /property/[slug], /trust | staff decision required; private until approved (`route.ts:1490-1552`, `1541`) | TRACED | |
+| P3 | PROTECTION | "Inspection is operational, not decorative … publication should not pretend the check is done when it is not." · "The listing is not treated as fully trusted until that inspection rail is closed properly." | `trust/page.tsx:44-46, 62-64` | /trust | publish blocked while an inspection is requested/scheduled (`route.ts:1502-1525`) | TRACED | |
+| P4 | PROTECTION | "Duplicate-contact resistance — If the same email or phone appears across multiple … submissions, the listing may stay in manual review…" | `trust/page.tsx:103-105` | /trust | `lib/property/policy.ts:181-183, 273-274, 315` | TRACED | |
+| P5 | PROTECTION | "Higher-risk property submissions stay in eligibility review until your Henry Onyx identity verification is approved." | `app/(public)/submit/page.tsx:159` | /submit | eligibility hold blocks publish (`route.ts:1527-1536`); hold set by policy (`route.ts:342`) | TRACED | |
+| P6 | PROTECTION | managed explainer "Operations sit with Henry Onyx after move-in. Viewings, screening, and maintenance run on the same audit ledger as marketing." | `verification-badge.tsx:76-78` | /property/[slug] (managed listings) | managed flag only (`verification-badge.tsx:36`); no managed-operations ledger found | UNTRACEABLE | |
+| P7 | FEES / VAT | AI draft receipt "Henry Onyx Intelligence · {price} (incl. {vat} VAT) · {tier}" | `app/(public)/submit/page.tsx:257`; `packages/i18n/src/surface-copy.ts:167-168` | /submit | `{price}` = billed total, `{vat}` = tax line inside it (`components/property/ai/DraftListingPanel.tsx:58-64`); total = net + 7.5 % output VAT (`packages/pricing/src/ai-usage.ts:92-157`; `packages/ai-gateway/src/orchestrator.ts:270-282`) | TRACED | the only VAT-inclusive price statement on any public route |
+| P8 | PROTECTION | newsletter topic "Selected verified property listings and neighborhood updates." | `packages/newsletter/src/topics.ts:69` | hub /newsletter, /newsletter/preferences | depends on P1 | MISMATCH | inherits P1 |
+
+
+---
+
+## B6. Jobs (`apps/jobs`)
+
+Key mechanics:
+- **No jobs billing exists**: `/pay/[paymentId]` returns `notFound()` — "awaiting a payment data model (employer plan invoices, sponsored post fees — none currently persisted)" (`apps/jobs/app/pay/[paymentId]/page.tsx:4-10, 23-30`). The employer-subscription gate **allows posting when no subscription row exists** ("soft-fail … before billing infrastructure exists", `lib/jobs/employer-subscription.ts:5-16, 39-50`); it only blocks employers with an expired/cancelled row (`:52-66`).
+- **Employer verification** is a staff decision (recruiter/admin/owner/moderator) — `app/actions.ts:216-225` → `lib/jobs/write.ts:1536+`; status pending / verified / watch / rejected. No paid path to "verified".
+- **Post moderation**: scam-keyword scan flags any non-internal post (`write.ts:1170-1179`); a **verified employer with auto-approval is published without human review** unless flagged; others go to `pending_review` (`write.ts:1181-1188`).
+
+| # | class | claim (quoted, EN) | copy source | route(s) | backing code/config + value | verdict | note |
+|---|---|---|---|---|---|---|---|
+| J1 | FEES | /hire notice "Posting live roles requires an active employer subscription. Candidates always browse for free; the subscription pays for moderation, anti-scam review, and candidate trust signals." | `packages/i18n/src/jobs-copy.ts:1186` (rendered `app/hire/page.tsx:117`) | /hire | no subscription billing; gate allows posting without a row (`employer-subscription.ts:5-16, 39-50`); pay route 404s | MISMATCH | true: "Posting is free while employer plans are being set up." |
+| J2 | FEES | "Browse for free. Sign in when you want to save or apply." · "Browsing is always free…" · "Join free to apply" · "Start hiring — sign up free" · "Create a free account" · "No throwaway emails, no hidden fees, no black-hole applications" | `apps/jobs/lib/public-copy.ts:218, 221`; `app/jobs/page.tsx:45, 113`; `app/talent/page.tsx:122`; `jobs-copy.ts:1188`; `app/jobs/[slug]/page.tsx:630` | /, /jobs, /jobs/[slug], /talent, /hire | nothing in jobs charges money (pay route `notFound`, `pay/[paymentId]/page.tsx:23-30`) | TRACED (no charges exist) | keep "free" only while J1 billing stays unbuilt |
+| J3 | PROTECTION | "Verified employer" / "Not yet verified" badges · filter "Verified employers only" · KPI "Verified employers" | `components/job-card.tsx:26, 33-34, 52-53, 144`; `components/jobs-browse-panel.tsx:13, 92`; `app/jobs/page.tsx:29, 76-77, 209`; `app/employers/[slug]/page.tsx:27, 63, 84, 158`; `app/categories/[slug]/page.tsx:27-28, 77` | /, /jobs, /jobs/[slug], /employers/[slug], /categories/[slug], /careers | status set only by staff action (`app/actions.ts:216-225`) | TRACED | |
+| J4 | PROTECTION | "Verification — Manual review — no pay-to-play" · "Real brands. Reviewed posts. No badges for sale." · "Verification means a human review of employer intent and profile quality — not a pay-to-play badge." · trust "Verification — Manual, not pay-to-play" · "Verified employers have passed a review of identity and intent—not just a paid badge." | `jobs-copy.ts:1191-1192, 1209-1211`; `app/trust/page.tsx:18-19, 69`; `app/help/page.tsx:35` | /hire, /trust, /help | staff-only status change (`app/actions.ts:216-225`); no paid verification path | TRACED (manual, not paid) | the review criteria ("identity and intent") are not encoded — process claim |
+| J5 | PROTECTION | "New posts may sit in review briefly while we check for scams and quality." · "Moderation checks for clarity, fairness, and fraud patterns." · "Post review — Clarity, fairness, fraud checks" · "New and edited job posts can be checked for scams, unclear pay, or misleading titles." · "Employer verification and post review cut down scam listings…" | `jobs-copy.ts:1194, 1204, 1215`; `app/trust/page.tsx:24`; `lib/public-copy.ts:197` | /hire, /trust, / | scam scan on every non-internal post (`write.ts:1170-1179`); non-verified → `pending_review` (`write.ts:1181-1188`) | TRACED | automated keyword scan, not a human fraud check |
+| J6 | PROTECTION | help "We still moderate individual posts so a verified label is not a free pass to post anything." | `app/help/page.tsx:35` | /help | verified employers with auto-approval publish without human review unless the scam scan flags (`write.ts:1181-1186`) | MISMATCH (partial) | true: "Every post is scanned for scam signals; flagged posts are held for review." |
+| J7 | PROTECTION | "Hiring, verified talent, without the usual noise." · shell "Premium hiring — verified talent, trusted employers…" · talent "…uploaded documents, verified skills, and work history…" | `jobs-copy.ts:629`; `components/public-shell.tsx:158`; `app/talent/page.tsx:34`; `packages/config/company.ts:450-454` | /, all jobs routes (shell), /talent | candidate verification is per-candidate and optional (`lib/jobs/data.ts:1202-1205`); unverified candidates can apply | MISMATCH | true: "Candidates can verify skills and documents; verified items are labelled." |
+| J8 | PROTECTION | "This employer aims to respond within about {N} hours." | `app/jobs/[slug]/page.tsx:695` | /jobs/[slug] | employer-declared `employerResponseSlaHours` (`app/jobs/[slug]/page.tsx:695`) | TRACED (as employer-declared) | wording "aims to" is honest — keep |
+
+
+---
+
+## B7. Learn (`apps/learn`)
+
+Key mechanics:
+- **Enrolment**: free course → active immediately; paid → `awaiting_payment` until paid (`apps/learn/lib/learn/workflows.ts:157-174`).
+- **Certificates** are issued server-side only when the enrolment is `completed` (`workflows.ts:526-565`); the public check looks the certificate up by verification code (`lib/learn/data.ts:764-774`) and renders "Revoked" for revoked rows (`app/(public)/certifications/verify/[code]/page.tsx:117-120, 200`).
+- **Seller-tier fee discount** is not wired into any app and is zero until ratified (`packages/pricing/src/seller-tier-discount.ts:19-38`).
+- No refund, VAT or delivery statement is rendered on Learn public routes (paid courses default standard-rated, `packages/config/tax.ts:164`).
+
+| # | class | claim (quoted, EN) | copy source | route(s) | backing code/config + value | verdict | note |
+|---|---|---|---|---|---|---|---|
+| LE1 | FEES | "Free courses open immediately; paid ones follow our checkout flow." · course badge "Free" · "Create a free Henry Onyx account first…" | `app/(public)/academy/page.tsx:36`; `app/(public)/courses/[slug]/page.tsx:317-323`; `app/(public)/courses/page.tsx:48` | /academy, /courses, /courses/[slug] | `workflows.ts:157-174`; free price stored as 0 (`workflows.ts:1638`) | TRACED | |
+| LE2 | FEES | "Commercial terms, including any revenue share, are discussed only after approval." | `app/(public)/academy/page.tsx:169` | /academy | no automated revenue share; applications reviewed (`lib/learn/actions.ts:181`, `workflows.ts:1279`) | TRACED | |
+| LE3 | FEES | "Platform-fee benefit — Tier-based fee benefits are not active yet. When enabled, higher tiers will lower your platform fee automatically." | `packages/i18n/src/seller-academy-copy.ts:132-134` | /academy/seller | discount table zero / unwired (`seller-tier-discount.ts:19-38`) | TRACED | honest — keep |
+| LE4 | PROTECTION | "Credentials you can show. Anyone can verify." · "Code-checkable, no account needed" · "…a public verification code for employers, clients, and partners." · layout "verified certificates" · home "earn a certificate others can verify online" | `learn-certifications-copy.ts:62-69`; `app/(public)/layout.tsx:28`; `app/(public)/page.tsx:91`; `app/(public)/courses/[slug]/page.tsx:485` | /certifications, /, all learn (layout), /courses/[slug] | public lookup by code (`data.ts:764-774`; `verify/[code]/page.tsx:78-79`) | TRACED | |
+| LE5 | PROTECTION | "…completion is verified against your actual progress — not self-declared." · "Enrollments, progress, quizzes, and certificates are recorded and enforced by Henry Onyx" · "Authoritative and tamper-resistant" · seller academy "Completion is recorded against your enrolment — there is no self-marking." | `learn-trust-copy.ts:55, 59, 69`; `seller-academy-copy.ts:88` | /trust, /academy/seller | certificate only on server-side `completed` (`workflows.ts:526-534`) | TRACED | |
+| LE6 | PROTECTION | verify page "Trust checks — The verification code matches an active certificate issued by Henry Onyx Learn." | `app/(public)/certifications/verify/[code]/page.tsx:215-219` | /certifications/verify/[code] | static list shown for every certificate, including revoked ones (status handled separately `:117-120`) | MISMATCH (revoked case) | show the bullet only when status ≠ revoked |
+| LE7 | PROTECTION | "Verification — Manual review, no bought bios" | `learn-instructors-copy.ts:51-52` | /instructors | teacher applications reviewed by staff (`lib/learn/actions.ts:181`) | TRACED | |
+| LE8 | PROTECTION | learn-to-earn on job pages: "Complete {course} on Henry Onyx Learn to apply. Your verified completion is checked automatically." | `packages/i18n/src/learn-to-earn-copy.ts:101` | jobs /jobs/[slug] | `apps/jobs/app/jobs/[slug]/page.tsx:67-73` (`getVerifiedLearnCourseIds`) | TRACED | |
+
+
+---
+
+## B8. Hub (`apps/hub`) + shared chrome
+
+Copy sources: `packages/i18n/src/hub-public-copy.ts` EN (`v3` block 448-497 → /v3; `earn` 498-576 → /v3/how-we-earn; `shipped` 577-644 → /v3/what-shipped; `journey` 645+ → /v3/try — mapping confirmed in `app/(site)/v3/*/page.tsx`), `apps/hub/app/lib/company-pages.ts` (/about, /contact, /privacy, /terms).
+The hub pages make **cross-division** promises, so most verdicts below reuse findings from B1–B7.
+
+| # | class | claim (quoted, EN) | copy source | route(s) | backing code/config + value | verdict | note |
+|---|---|---|---|---|---|---|---|
+| H1 | FEES | "You know what you're paying for — No hidden fees, no surprise charges. If a fee applies, it's a named line item before you commit." · spine "No hidden fees — the fee line is a feature, not a confession." | `hub-public-copy.ts:510, 484` | /v3/how-we-earn, /v3 | buyer-side: marketplace platform fee is 0 and delivery is a named line (`packages/pricing/src/index.ts:240-283`); seller-side posting/featured fees are not shown up front (M31-M32, M38) | MISMATCH (seller side) | true for buyers today |
+| H2 | FEES | marketplace row "A commission on completed orders, and promoted placements always labeled as promoted." | `hub-public-copy.ts:529` | /v3/how-we-earn | commission stored per order group at checkout and netted from payout (`apps/marketplace/app/api/marketplace/route.ts:845-866`); no "Promoted"/"Sponsored" label is rendered anywhere in marketplace components (repo grep) and featured fees are never charged (M38) | TRACED (commission) · UNTRACEABLE (promoted label) | |
+| H3 | PROTECTION | marketplace exchange "Verified sellers, payment protection, order tracking, and a real dispute process." · "Shop verified sellers…" (×5: ecosystem, shipped, journey) | `hub-public-copy.ts:456, 466, 530, 596-598, 669` | /v3, /v3/how-we-earn, /v3/what-shipped, /v3/try | payment protection + disputes TRACED (M2, M3); "verified sellers" MISMATCH (M21-M23) | MISMATCH (verified) | |
+| H4 | FEES | care row "A platform fee on completed bookings, itemized at checkout." (live) | `hub-public-copy.ts:535` | /v3/how-we-earn | no care platform fee exists — quote = package/items + travel/add-ons/rules (`apps/care/lib/care-catalog.ts:573-648`; `apps/care/app/(public)/book/actions.ts:740-752`) | UNTRACEABLE | remove, or mark "not charged today" |
+| H5 | PROTECTION | care "Vetted providers" · "booked with verified providers" · "Home and fabric care with verified providers." · "browse verified providers" | `hub-public-copy.ts:465, 536, 588-590, 657` | /v3, /v3/how-we-earn, /v3/what-shipped, /v3/try | no provider vetting exists (C5) | UNTRACEABLE | |
+| H6 | FEES | learn row "A revenue share with instructors on paid courses." (live) | `hub-public-copy.ts:541` | /v3/how-we-earn | no revenue-share computation; terms "discussed only after approval" (LE2) | UNTRACEABLE | |
+| H7 | FEES | learn "Free previews before you pay" · "Free previews before any payment" · "Preview a course free — The preview is free — you pay only when you choose to enroll." | `hub-public-copy.ts:468, 542, 614, 680-681` | /v3, /v3/how-we-earn, /v3/what-shipped, /v3/try | lessons carry `is_preview` (`apps/learn/lib/learn/data.ts:181`); paid enrolment needs payment (`apps/learn/lib/learn/workflows.ts:157-174`) | TRACED | |
+| H8 | PROTECTION | studio exchange "A shared workspace, milestone clarity, and payment held until delivery." | `hub-public-copy.ts:548` | /v3/how-we-earn | studio takes a deposit **before** kickoff (35–50 %), non-refundable after kickoff by policy; no hold-until-delivery mechanism (`apps/studio/lib/studio/pricing.ts:54-58, 206-207`; `template-reservation.ts:329-332`) | MISMATCH | true: "deposit to start, milestone payments as work is delivered" |
+| H9 | FEES | studio "Card and wallet payment on delivery terms" | `hub-public-copy.ts:631` | /v3/what-shipped | card rail flag-gated (`apps/studio/lib/studio/card-rail.ts:44-46`); deposits are paid up front (H8); no studio wallet payment path found | MISMATCH | |
+| H10 | FEES | jobs row "Employer-side tools and postings. Candidates never pay to apply." (live) · terms "Employer pays. Candidates pay nothing…" | `hub-public-copy.ts:553`; `company-pages.ts:757` | /v3/how-we-earn, /terms | candidates: nothing charged (J2) TRACED; employers: no billing exists (J1) | TRACED (candidates) · MISMATCH ("live" employer charge) | |
+| H11 | FEES / DELIVERY | logistics "A margin on each shipment, quoted up front — the price you see is the price." · "Shipments quoted up front and tracked end to end." · "Get a shipment quote before you commit" | `hub-public-copy.ts:469, 559, 622` | /v3, /v3/how-we-earn, /v3/what-shipped | quote engine = booking engine (`apps/logistics/lib/logistics/write.ts:123-137`) — re-priced at booking (L2) | TRACED (with L2 caveat) | |
+| H12 | PROTECTION | property "Verified listings and a documented inquiry trail." · "Find and inquire about property with verified listings." · "Verified listings, documented inquiries." | `hub-public-copy.ts:471, 566, 635` | /v3, /v3/how-we-earn, /v3/what-shipped | badge bug P1 | MISMATCH | |
+| H13 | FEES | "The platform fee, named — Where a platform fee applies, it appears as its own line at checkout… It funds … verification, dispute resolution, and 24/7 support. The same explanation appears in the fee tooltip at every checkout…" | `hub-public-copy.ts:570-572` | /v3/how-we-earn | no checkout has a fee tooltip (repo grep: none); marketplace platform fee = 0 (`packages/pricing/src/index.ts:240-244`); no 24/7 support code | UNTRACEABLE | |
+| H14 | FEES / VAT | spine "A double-entry ledger behind every payment, tax itemized, receipts that name the legal entity." | `hub-public-copy.ts:484` | /v3 | card sales post to the ledger and mint receipts with the VAT figure (`apps/marketplace/lib/checkout/sale-reconcile-port.ts:201-227`); manual transfers / COD are not posted (`route.ts:2060-2093`) | MISMATCH ("every payment") | true: "Card payments post to a double-entry ledger; receipts itemize VAT and name the legal entity." |
+| H15 | FEES | "Prices in your currency, not ours." · "…in your language, with prices in your currency." · "The price is shown before you commit, in your currency, with any platform fee itemized and named." · terms "We show prices in your currency. The rate is locked when you check out." | `hub-public-copy.ts:492, 652, 663`; `company-pages.ts:910-915` | /v3, /v3/try, /terms | care prices are hard-formatted `₦` (`apps/care/app/(public)/pricing/page.tsx:33-35`); marketplace FAQ says NGN only (`apps/marketplace/lib/marketplace/help-faqs.ts:88`); marketplace charges NGN (`route.ts:772`) | MISMATCH | |
+| H16 | VAT | terms "VAT applies … at the prevailing rate. State consumption taxes (where applicable) are added at checkout." · "Nigerian VAT — Charged on taxable supplies" · "State consumption tax — Added at checkout where applicable" · "the platform issues payout statements suitable for vendor tax filings" | `company-pages.ts:936-941` | /terms | VAT 7.5 % carved **inclusive**, classified per category (`packages/config/tax.ts:33-48, 139-176`; `apps/marketplace/app/api/marketplace/route.ts:674-697`); nothing adds a state consumption tax; no vendor payout-statement generator found | TRACED (VAT) · UNTRACEABLE (state tax, payout statements) | true: "Prices include VAT where it applies." |
+| H17 | FEES / VAT | terms "Taxes and division-specific fees are disclosed before payment." · "Tax and fee disclosure — Before payment confirmation" | `company-pages.ts:910, 915` | /terms | marketplace checkout shows no VAT line (`checkout-experience.tsx:1766-1783`); VAT is inside the total | MISMATCH | true: "Prices include VAT; delivery and any fee are shown before you pay." |
+| H18 | REFUNDS | terms §4 per division: Marketplace "Returns within the window posted on the listing." · Logistics "…proof-of-delivery and claim window posted at checkout." · Care "…damage claim window posted at booking." · Learn "Course refund window: 7 days from enrolment, unused content only." · Property "Agent-only fees are paid on tenancy formation or transaction close." · Studio "Refund only on undelivered milestones…" | `company-pages.ts:752-758` | /terms | no return window on listings (M49); no claim window shown at logistics checkout or care booking (B2, B3); no learn refund logic; property fees ₦0 (`packages/pricing/src/index.ts:322-335`); studio refunds manual (S10) | UNTRACEABLE (all six) | FCCPA floor sentence (`:749`) is legal and can stay |
+| H19 | PROTECTION | about "KYC verified before payout — Vendors and operators complete NIN + BVN verification (where applicable) and bank-account verification before any payout is released." | `company-pages.ts:293-294` | /about | marketplace payout request/decision check only role + releasable balance — no KYC or bank check (`route.ts:2415-2484, 2832-2878`) | MISMATCH | identity-at-payout exists only in unmerged PR #543 |
+| H20 | PROTECTION | about "We are not a bank — … route payouts to verified bank accounts. We do not hold deposits…" | `company-pages.ts:358-359` | /about | contradicts marketplace "Henry Onyx holds your payment" (M1-M2) and the wallet; no bank-account verification found (H19) | MISMATCH | reconcile with escrow wording |
+| H21 | PROTECTION | about "Support response target: 24h … Time-critical disputes (delivery failure, refund window) route through a dedicated support desk with explicit priority queues." | `company-pages.ts:302-304` | /about | no priority dispute desk/queue logic found | UNTRACEABLE | |
+| H22 | PROTECTION | terms "Trust badges (Verified, KYC complete, Active in good standing) are operational signals based on verifiable inputs (identity verification, transaction history, dispute outcome). They … are not a financial guarantee, an insurance product, or a warranty…" | `company-pages.ts:810-814` | /terms | marketplace "Verified seller" is not identity-based (M22); property "Verified property" is a regex (P1); the disclaimer half is accurate | MISMATCH (inputs) · TRACED (not insurance) | |
+| H23 | PROTECTION | shared support widget topic "Buyer protection — Disputes, refunds, and Henry Onyx escrow review" | `packages/ui/src/support/SupportAssist.tsx:296-297` | all public routes | support topic routing only | TRACED (as a topic label) | |
+| H24 | DELIVERY / PROTECTION | division descriptions: logistics "…same-day and scheduled runs … proof of delivery…"; jobs "…verified candidate profiles, trusted employer onboarding…"; learn "…earn Henry Onyx certificates with a public verification code"; (gaming "free-to-play", `company.ts:526`, not rendered — division not on /about) | `packages/config/company.ts:383, 454, 493` (rendered via `apps/hub/app/lib/company-pages.ts:274-280`) | /about | logistics: same-day tier priced + PoD capture exists (L11, `apps/logistics/app/api/logistics/pod/route.ts:43-117`); jobs: candidate verification optional (J7); learn: LE4 | TRACED (logistics capability, learn) · MISMATCH (jobs "verified candidate profiles") | |
+
+**Account** (`apps/account`, 7 auth routes): no claim in the five classes ("Your Henry Onyx account is verified." on /auth/verified is a literal email-verification state).
+
+---
+
+## C. MISMATCH and UNTRACEABLE — recommended disposition
+
+Dispositions:
+- **FIX** — rewrite to the exact true wording given; the code already does what the new wording says.
+- **REMOVE** — nothing true to say.
+- **CODE** — the copy is the intended behaviour and the code is the bug. Owner decides whether to fix the code or apply the FIX wording.
+- **OWNER/LEGAL** — a contractual commitment that is fulfilled manually (policies, terms). The brief's rule says remove it; deleting refund or SLA terms from a legal page is itself a risk, so the owner signs off.
+
+### C1. Marketplace
+
+| ID | verdict | disposition | exact true wording (or action) |
+|---|---|---|---|
+| M1 | MISMATCH | FIX | "Card and wallet payments are held by Henry Onyx until you confirm delivery or the seller's auto-release window passes. An open dispute freezes the seller's payout. Cash-on-delivery orders are paid to the rider and are not held." |
+| M4 | MISMATCH | FIX | "If you don't confirm and no dispute is open, the seller's payout becomes releasable 1–5 days (depending on seller tier) after the seller marks the order delivered." |
+| M5, M6 | MISMATCH | FIX | "Escrow control — Card and wallet payments are held until you confirm delivery or the auto-release window passes with no dispute open." · pillar: "Held until delivery is confirmed" |
+| M8 | MISMATCH | FIX | "Anti-fraud review — Off-platform payment steering, duplicate media and listing-velocity spikes send listings to review." |
+| M10 | MISMATCH | FIX | "Buyer protection — Card and wallet payments held until delivery" |
+| M11 | MISMATCH | CODE | Show "Escrow active" only for `paid_held / awaiting_auto_release / payout_releasable / requested / approved`. Until then: "Payment status" label with "Awaiting payment / Held / Frozen". |
+| M14 | MISMATCH | FIX | "Disputes and delivery concerns route through one thread. Refunds are arranged by our team after review." |
+| M16 (partial) | partial | REMOVE (part) | Keep "If the seller can't fulfil, the order is cancelled with no charge." Remove the carrier call / drop-off window / POS lines. |
+| M17 | MISMATCH | FIX | "On confirm, your wallet is debited and the payment is held until delivery is confirmed." |
+| M19 | UNTRACEABLE | REMOVE | (bank-transfer branch is retired in the client anyway) |
+| M20 (partial) | partial | REMOVE (part) | drop "— usually within one business day" |
+| M21 | MISMATCH | FIX | "Every store is reviewed and approved by Henry Onyx before it can sell." KPI "Approved stores". Use "verified" only for gold (KYC-verified) stores. |
+| M22 | MISMATCH | CODE | Render the real tier label (`governance.ts:209-210`: "Verification pending" / "Basic verified" / …), or use "Approved seller" on every card. |
+| M23 | MISMATCH | CODE | Either exclude silver (KYC pending) from `verified=1` (`data.ts:674-677`) or relabel the filter "Silver tier and above". |
+| M24 | MISMATCH | FIX | "Henry Onyx Verified — photos and details passed Henry Onyx's automated listing review." |
+| M25 | UNTRACEABLE | REMOVE | |
+| M26 | MISMATCH | FIX | "Trust passports show each store's verification level and — once it has order history — its fulfilment and dispute record." Remove "Response SLA" until it is measured. |
+| M27 | MISMATCH | FIX | "Deals — approved listings currently priced below their compare-at price." |
+| M28 | MISMATCH | FIX | "Ordered on Henry Onyx" (or gate the label on a delivered order). |
+| M29 | MISMATCH (part) | FIX | "Higher-risk categories need a stronger trust tier or a manual review." |
+| M30, M63 | MISMATCH | FIX | Tier lines: "Auto-release 5 / 4 / 3 / 2 / 1 days after the seller marks delivery". Drop every "payout reserve" figure. |
+| M31, M32 | MISMATCH | CODE or FIX | Render posting (₦3,500 / ₦2,500 / ₦0) and featured (₦15,000 / ₦10,000 / ₦6,000) fees on /sell/pricing **only if they will be charged**. Otherwise: "Commission and payout processing are shown per plan before you publish." |
+| M33 | UNTRACEABLE | REMOVE (or label) | Remove monthly prices, or "Plan subscriptions are not charged yet." |
+| M34 | MISMATCH | FIX | "Your plan follows your trust tier: 15 % commission (new sellers), 12 % (basic verified), 9 % (trusted and premium)." Remove "Pick a plan". |
+| M38, M65 | MISMATCH | REMOVE (or label) | "Posting and featured-placement fees are not charged yet." |
+| M39 | MISMATCH | FIX | "Commission is 15 %, 12 % or 9 % by trust tier, plus a payout processing fee (2 % + ₦300, 1.5 % + ₦250 or 1 % + ₦250). Both are deducted from your settlement." |
+| M40 | MISMATCH | FIX | "Request a payout from your releasable balance at any time. Funds become releasable when the buyer confirms, or 1–5 days after delivery (by tier). Every request is reviewed before release." |
+| M41 | MISMATCH | FIX | "Verification unlocks higher listing limits and faster auto-release." |
+| M42 | MISMATCH | CODE | Make `checkout-experience.tsx:229` and `cart-experience.tsx:188` use `≥ 350000` and the server's waivers (or render the server breakdown). Wording "Free delivery on orders of ₦350,000 or more" is TRACED server-side. |
+| M44 | MISMATCH | FIX | "Free delivery to {state} when everything in your cart qualifies[ and is over ₦{min}]" |
+| M45 | UNTRACEABLE | REMOVE | Replace with the seller's own note: "Delivery: {seller delivery note}". |
+| M46 | MISMATCH | FIX | "Each shipment shows its status, carrier and tracking code." |
+| M47, M48, M49, M50 | UNTRACEABLE | REMOVE | Replace the whole Returns FAQ with: "Problem with an order? Open a dispute from the order page — the seller's payout is frozen while our team reviews it and arranges any refund." |
+| M51, M52 | MISMATCH | FIX | "Card and wallet payments are held until delivery is confirmed. If something goes wrong, open a dispute and our team reviews it." |
+| M53 | UNTRACEABLE | REMOVE | drop "within 24 hours", "within 3 business days", "the seller will be removed" |
+| M54 | MISMATCH | FIX (timeline text) | "Your dispute is resolved in your favour — our team is arranging your refund." |
+| M55 | MISMATCH | FIX | "Items in your cart keep the price they were added at; saved items come back at today's price." |
+| M56 | MISMATCH | CODE or FIX | Enforce `cod_eligible`, or "Cash on delivery — pay the rider when the order arrives." |
+| M57 | MISMATCH | FIX | "Pay by card (where available), Henry Onyx wallet, or cash on delivery." |
+| M58 | UNTRACEABLE | REMOVE | |
+
+### C2. Care
+
+| ID | verdict | disposition | exact true wording |
+|---|---|---|---|
+| C1 | MISMATCH | FIX | "Every charge — package or items, travel, urgency and add-ons — is shown in the booking form before you submit. Garment totals are confirmed at intake." (and either list travel + all modifiers on /pricing, or stop calling /pricing complete) |
+| C4 | UNTRACEABLE | FIX | prefix "Indicative" or remove the "from ₦…" and duration lines |
+| C5 | UNTRACEABLE | REMOVE | all "verified provider / verified pro / vetted" wording until V3-50 ships |
+| C7 | MISMATCH | FIX | "Reviews are checked before they appear; we never edit what you write." |
+| C8 | UNTRACEABLE | FIX | "Stage photos appear here when our team records them." |
+| C9 | MISMATCH | FIX | "Pickup windows 8:00 AM – 6:00 PM" (or set `pickup_hours` in settings to match) |
+| C12 | UNTRACEABLE | REMOVE | drop "within one business day" |
+| C13 | MISMATCH | FIX (shared) | "Refund issued to your original payment method." |
+
+### C3. Logistics
+
+| ID | verdict | disposition | exact true wording |
+|---|---|---|---|
+| L2 | MISMATCH | FIX | "Your quote is saved with a reference. Booking uses the same rate tables — no add-ons after you book." |
+| L5 | MISMATCH | REMOVE | the "% confidence" figure |
+| L6 | MISMATCH | FIX | "Typical delivery windows, rate-card pricing, and proof-of-delivery capture." |
+| L7, L12 | MISMATCH | FIX | "Riders record proof of delivery — photo, signature and recipient — on the shipment." |
+| L8 | MISMATCH | FIX | "Every milestone is recorded in a server-side event log." |
+| L9 | MISMATCH | FIX | "{activeZones} active zones · pickups {pickupHours}. Outside these zones, contact us before booking." |
+| L10 (partial) | partial | REMOVE (part) | keep "Booking issues a tracking code"; drop "within current operating hours / within the operating window" |
+
+### C4. Studio
+
+| ID | verdict | disposition | exact true wording |
+|---|---|---|---|
+| S3 | MISMATCH | FIX | "A brief takes about 8 minutes, and you see an estimate before you submit. The proposal confirms the price." |
+| S4 | UNTRACEABLE | OWNER/LEGAL | contractual: "Your accepted proposal fixes the price; changes are quoted as written change orders." |
+| S6 | MISMATCH | FIX | "Launch about {readyInDays} days after kickoff." |
+| S7 | UNTRACEABLE | FIX | "Typical delivery: {window}" |
+| S8 | UNTRACEABLE | OWNER/LEGAL | kickoff 2 working days, 1-working-day response, slip notice, launch QA list |
+| S9 | MISMATCH | CODE or FIX | "14-day warranty from launch" (`lib/agency/aftercare.ts:12`), or raise the constant to 30 |
+| S10, S12, S13 | UNTRACEABLE | OWNER/LEGAL | studio refund schedule, checkout refund consent, dispute/mediation terms |
+| S11 | MISMATCH | FIX | "Refunds are returned to the original payment method." |
+| S14 | MISMATCH | FIX | one statement on both pages: "Pay by bank transfer, or by card where card payments are enabled." |
+| S15 (partial) | partial | OWNER/LEGAL | keep "Work begins after the deposit is verified" (TRACED); review window and revision quota are contractual |
+| S16 | UNTRACEABLE | REMOVE | drop "within one business day" (3 places) |
+
+### C5. Property · Jobs · Learn
+
+| ID | verdict | disposition | exact true wording |
+|---|---|---|---|
+| P1 | MISMATCH | CODE + FIX | badge "Reviewed by Henry Onyx — checked before publication; inspections and document holds must be cleared first." Drive it from the publish decision, not `/verif/i`. |
+| P6 | UNTRACEABLE | FIX | "Viewings and maintenance for managed homes are coordinated by Henry Onyx." |
+| P8 | MISMATCH | FIX | "Selected reviewed property listings and neighbourhood updates." |
+| J1 | MISMATCH | FIX | "Posting is free while employer plans are being set up." |
+| J6 | MISMATCH | FIX | "Every post is scanned for scam signals; flagged posts are held for review." |
+| J7 | MISMATCH | FIX | "Candidates can verify skills and documents; verified items are labelled." |
+| LE6 | MISMATCH | CODE or FIX | show the bullet only when not revoked; or "The code matches a certificate issued by Henry Onyx Learn — its current status is shown above." |
+
+### C6. Hub and shared chrome
+
+| ID | verdict | disposition | exact true wording |
+|---|---|---|---|
+| H1 | MISMATCH | FIX | "For buyers, delivery and any fee appear as named lines before you pay." |
+| H2 (partial) | partial | REMOVE (part) | drop "promoted placements always labeled as promoted" |
+| H3, H12 | MISMATCH | FIX | "Shop approved sellers…" / "Find and inquire about reviewed property listings." |
+| H4 | UNTRACEABLE | REMOVE | (no care platform fee exists) — or "Care: package and service pricing; no separate platform fee today." |
+| H5 | UNTRACEABLE | REMOVE | "verified / vetted providers" |
+| H6 | UNTRACEABLE | FIX | "Instructor terms are agreed case by case after approval." |
+| H8 | MISMATCH | FIX | "A deposit to start, then milestone payments as work is delivered." |
+| H9 | MISMATCH | FIX | "Bank transfer or card, milestone by milestone." |
+| H10 | MISMATCH | FIX | "Candidates never pay to apply. Employer plans are not charged yet." |
+| H13 | UNTRACEABLE | REMOVE | fee-tooltip and 24/7-support sentences |
+| H14 | MISMATCH | FIX | "Card payments post to a double-entry ledger; receipts itemize VAT and name the legal entity." |
+| H15 | MISMATCH | FIX | "Prices are shown and charged in naira (NGN)." |
+| H16 (partial) | partial | FIX | "Prices include VAT where it applies." Remove the state-consumption-tax and payout-statement sentences. |
+| H17 | MISMATCH | FIX | "Prices include VAT. Delivery and any fees are shown before you pay." |
+| H18 | UNTRACEABLE | OWNER/LEGAL | Replace the six division refund rows with what exists: "Marketplace and other divisions: problems are raised as a dispute or support request; our team reviews and arranges any refund to the original payment method." Keep the FCCPA floor sentence. |
+| H19 | MISMATCH | FIX | "Payouts are reviewed by our finance team before release." (restore the KYC line when PR #543 merges) |
+| H20 | MISMATCH | FIX | "We are not a bank and do not offer credit. Marketplace card and wallet payments are held until delivery is confirmed." |
+| H21 | UNTRACEABLE | REMOVE | "dedicated support desk with explicit priority queues" |
+| H22 | MISMATCH | FIX | "Badges reflect specific checks (seller approval, KYC level, listing review); they are not insurance or a guarantee." |
+| H24 | MISMATCH (jobs part) | FIX | `packages/config/company.ts:454` → "…candidate profiles with optional skill and document verification, staff-reviewed employers…" (logistics and learn descriptions can stay) |
+
+
+---
+
+## D. Decision points — what each one currently shows
+
+Decision points are the public routes where a visitor commits money or a commitment. Cells give the claim IDs and file:line now rendered there; "—" means the class is absent today. The last column is what the reset should keep visible there: TRACED statements, or the FIX wording from section C.
+
+| route | commitment | FEES | VAT | DELIVERY | REFUNDS | PROTECTION | keep visible after the reset (true wording) |
+|---|---|---|---|---|---|---|---|
+| marketplace /product/[slug] | add to cart | price; payment row "COD or verified transfer" (`app/(public)/product/[slug]/page.tsx:205-210` → `lib/public-copy.ts:1080-1081`; M56) | — | seller delivery note / lead time (`page.tsx:202-204`); Delivery-Promise badge (`page.tsx:297`; M44); "Delivery windows will be clarified at checkout." (`page.tsx:348` → `public-copy.ts:1101`; M45) | — | "Henry Onyx Verified" (`page.tsx:281-287`; M24); safety list (`page.tsx:214-228`); "Verified purchase" (M28); "Verified seller" on rail cards (M22) | M1 short form ("card and wallet payments held until delivery"); seller's delivery note, labelled as the seller's; real seller tier label |
+| marketplace /cart | proceed to checkout | subtotal; "Estimated shipping: Free / ₦18,000" (`components/marketplace/cart-experience.tsx:186-188`; M42) | — | split-order copy (`cart-experience.tsx:193`; M45) | — | "Verified vendor" (`cart-experience.tsx:51`; M22) | delivery ₦18,000, free at ₦350,000 or more (TRACED server-side, fix the client ">" — M42) |
+| marketplace /checkout | place order / pay | Subtotal · Shipping · Total (`checkout-experience.tsx:1766-1783`); shipping rule (`:229`; M42) | **— (none shown)** | shipping line only | — (signed-out panel mentions "returns", `app/(public)/checkout/page.tsx:114`) | wallet escrow (`checkout-experience.tsx:826` M17, `:1296` M18); card "confirmed the moment payment clears" (`:129-130, 830`); COD "eligible orders only" (`:150-152`; M56); policy consent link to /policies/buyer-protection (`:1793-1797`) | **add** "Prices include VAT where it applies" (TRACED); delivery line; M1 wording next to the consent link; "Cash-on-delivery orders are paid to the rider and are not held" |
+| marketplace /pay/[orderNo], /pay/[orderNo]/card | pay | amount | — | — | shared "Refund issued. The transfer was returned…" (`packages/payment-surface/src/payment-surface.tsx:35`; C13) | "Your order is in escrow until fulfillment lands." (`app/(public)/pay/[orderNo]/page.tsx:126`, `:138`; M20) | escrow line (TRACED); drop the 1-business-day SLA |
+| marketplace /track, /track/[orderNo] | confirm completion / dispute | order value | — | vendor segments, tracking code | help "Disputes, refunds…" (`public-copy.ts:700`; M14); dispute timeline (M54) | "Escrow active"/"Frozen" (`app/(public)/track/[orderNo]/page.tsx:115, 169`; M11); completion text (`public-copy.ts:695`; M13 TRACED) | M13 (TRACED); M3; corrected M11/M54 |
+| marketplace /sell, /sell/pricing | apply as seller | plans: monthly (M33), commission (M34), payout fee (M35), included listings (M36); "No hidden fees" (`sell/pricing/page.tsx:65-66`; M31); economics list (`public-copy.ts:911-916`; M37-M38) | — | — | — | tier ladder + payout windows (`lib/marketplace/policy.ts:4-29`; M29-M30) | commission + payout fee (TRACED); auto-release days (TRACED); either show posting/featured fees or say they aren't charged |
+| marketplace /policies/[slug] | read before paying (linked from checkout) | featured fees (M65) | — | — | returns-refunds (M60) | buyer-protection (M1-M4), dispute (M61), payout (M62-M63), prohibited (M64) | canonical home for the true protection and dispute text |
+| care /book | book + pay | live estimate (`components/care/BookPickupForm.tsx:1058, 1342-1353, 1649, 1742`; C1); urgency surcharges (C10) | — | pickup windows 8–6 (`BookPickupForm.tsx:70-75`; C9); return delivery (`app/(public)/book/page.tsx:163, 192, 259`; C11) | — | — | C1 FIX wording; pickup windows as configured |
+| care /pricing | plan service | price rows (C3); hero "You see the price before you book." (`care-pricing-copy.ts:58-60`; C1) | — | — | — | — | C2/C3 (TRACED); C1 FIX |
+| care /services/[verticalSlug]/[serviceSlug] | "Book this service" | "from ₦…" (C4) | — | "Typical duration" (C4) | — | "delivered by a verified provider" (`services-copy.ts:111`; C5) | label prices "indicative"; remove provider claim |
+| care /pay/[trackingCode], /card | pay | amount | — | — | shared refunded text (C13) | "within one business day" (`app/(public)/pay/[trackingCode]/page.tsx:162`; C12) | — (remove SLA) |
+| logistics /quote | get price | inline price (`logistics-quote-copy.ts:68, 98`; L1); "No surprise add-ons", "carries through", "one click" (`:69-70, 119`; L2) | — | promise window (L4) | — | — | L1 (TRACED); L2 FIX |
+| logistics /book | book | inline price (L1) | — | PoD claims (`logistics-book-copy.ts:77, 106`; L7); routing within window (`:102`; L10) | — | — | tracking code at booking (TRACED); L7 FIX |
+| logistics /pricing | compare | zone base + rate cards (`app/(public)/pricing/page.tsx:89-146`; L3) | — | typical windows (`page.tsx:97-100`; L4) | — | — | L3/L4 (TRACED) |
+| logistics /track | follow shipment | — | — | typical window + "% confidence" (`app/(public)/track/page.tsx:232, 350, 479-481`; L4-L5) | — | PoD timeline text (`lib/logistics/content.ts:282`; L7) | L4 only |
+| logistics, property, jobs /pay/[paymentId] | — | **stubs: render `notFound()`** (`apps/logistics/app/pay/[paymentId]/page.tsx:35`; `apps/property/app/(public)/pay/[paymentId]/page.tsx:30`; `apps/jobs/app/pay/[paymentId]/page.tsx:29`) | — | — | — | — | nothing to rewrite; don't link to them |
+| studio /pricing | choose package | package price + "Deposit {n}%" (`app/(public)/pricing/page.tsx:81-84`; S5) | — | — | — | — | S5 (TRACED) |
+| studio /pick/[slug] | pay deposit | deposit / balance (`app/(public)/pick/[slug]/page.tsx:65-66, 96, 146-149, 200`; S1); "Bank transfer or card" (`:217`; S14) | — | — | — | — | S1 (TRACED); S14 FIX |
+| studio /checkout/template/[slug] | pay deposit | "the price is fixed"; deposit/balance (`app/checkout/template/[slug]/page.tsx:163, 420-430`; S1) | — | "we kick off within {n} days" (`:110, 159`; S6) | refund consent (`:374-376`; S12); "refundable on the published schedule" (`:459`; S12) | same (S12) | S1 (TRACED); S6 FIX; refund consent only if owner keeps the S10 policy |
+| studio /request/build (+ /guided, /copilot) | submit brief | live estimate (`components/studio/brief-composer/pricing-rail.tsx:84-163`; S3); "Fixed price. Locked at proposal acceptance" (`section-editors.tsx:323, 394`; S4) | — | delivery window per service (`components/studio/request-path-step.tsx:176`; S7) | — | "Nothing goes live until you approve scope and payment." (`submit-block.tsx:172`) | S3 FIX; S5 |
+| studio /pay/[paymentId], /card | pay invoice | invoice amount = charge (S2 TRACED) | — | — | shared refunded text (C13) | "finance reviews within one business day" (`app/pay/[paymentId]/page.tsx:207`; S16) | S2 (TRACED) |
+| studio /policies/refunds, /sla, /terms | contractual | S2 (TRACED) | — | S8 | S10-S13 | S9, S15 | owner/legal sign-off (section C4) |
+| property /submit | submit listing / paid AI draft | AI receipt "{price} (incl. {vat} VAT)" (`app/(public)/submit/page.tsx:257`; P7) | **P7 (TRACED)** | — | — | eligibility hold (`:159`; P5) | P7, P5 (TRACED); listing fees are ₦0 (no statement needed) |
+| property /property/[slug] | inquire / request viewing | — | — | — | — | "Verified property" badge (`components/property/verification-badge.tsx:68-71`; P1); "Reviewed before publication" (`page.tsx:70-77`; P2) | P2 (TRACED); P1 must change |
+| jobs /hire | start employer account | "Posting live roles requires an active employer subscription…" (`packages/i18n/src/jobs-copy.ts:1186` → `app/hire/page.tsx:117`; J1) | — | — | — | manual verification, post review (`jobs-copy.ts:1191-1215`; J4-J5) | J4-J5 (TRACED); J1 FIX |
+| jobs /jobs/[slug] | apply | "Create a free account" (`app/jobs/[slug]/page.tsx:630`; J2) | — | — | — | Verified / Not yet verified (`:161-166, 678`; J3); response-time aim (`:695`; J8) | J2, J3, J8 (TRACED) |
+| learn /courses/[slug] | enrol / pay | "Free" or price badge (`app/(public)/courses/[slug]/page.tsx:317-323`; LE1) | — | — | **— (no refund term shown; /terms says 7 days — H18)** | certificate + verification code (`:325, 485`; LE4) | LE1, LE4 (TRACED) |
+| learn /academy/seller | join track | fee-benefit "not active yet" (`seller-academy-copy.ts:132-134`; LE3) | — | — | — | completion recorded (`:88`; LE5) | LE3, LE5 (TRACED) |
+| hub /v3/how-we-earn | ecosystem pricing promise | H1, H2, H4, H6, H10, H11, H13 (`hub-public-copy.ts:505-575`) | — | H11 | — | H3, H5, H8, H12 | only the TRACED rows (H7, H11, marketplace commission) plus the FIX wordings |
+| hub /terms | binding terms | currency/fees (H15) | H16-H17 (`company-pages.ts:906-941`) | — | H18 (`company-pages.ts:746-758`) | H22 | "Prices include VAT where it applies"; owner/legal rewrite of §4 |
 

@@ -3,7 +3,32 @@
 Worktree: `C:\Users\HP VICTUS\HenryCo\.claude\worktrees\copy-reset-prep` (read-only; nothing in the repo was edited).
 Date: 2026-10-03. All paths are repo-relative unless absolute.
 
-(Summary is written last — see bottom of build; sections are saved incrementally.)
+## Summary
+- **Registration and tax numbers (§1).**
+  - Two real identifiers exist: the CAC RC `9594234` (`packages/config/legal.ts:286`) and the FIRS TIN `2621481857689` (`legal.ts:299`).
+  - The NDPC registration and the DPO are `[OWNER-TO-CONFIRM]` placeholders, and they print verbatim on hub `/privacy`.
+  - There are no licence or permit numbers. The company bank account lives only in the DB.
+  - **For the owner's decision:** the RC on hub `/about` (`apps/hub/app/lib/company-pages.ts:253`, `:258`), on `/press/v3` (`page.tsx:45`), and hardcoded in the AI doctrine (`packages/ai-gateway/src/doctrine.ts:22`, `:24`).
+  - **Do not delete:** the RC/TIN on `/privacy` and `/terms`, on receipts, invoices and credit notes, and in the email footer. The TIN never appears on a public page.
+- **Legal lines (§2).**
+  - KEEP-critical:
+    - The clickwrap checkboxes: signup, marketplace checkout, studio template checkout, newsletter.
+    - "© {year} Henry Onyx Limited" in the shared footer.
+    - Hub `/privacy` and `/terms`, plus the studio and marketplace policies.
+    - The FCCPA refund floor.
+    - The agent-not-party, platform-not-employer and not-a-bank disclaimers. These live only on hub `/about`.
+    - The payee entity on every `/pay` page.
+  - 17 contradictions or gaps (F1–F17) are listed for legal review rather than for rewriting, e.g.:
+    - "escrow" wording vs "not a bank".
+    - Arbitration vs courts.
+    - The 7-day return window vs "window on the listing".
+    - The 18+ rule vs parental consent.
+    - The `/v3` newsletter capture with no consent box.
+    - The property footer © naming "Henry Onyx Property".
+    - A revoked certificate still reading "active".
+    - No cookie notice on the 7 division sites.
+- **Emails (§3).** Heaviest: the owner report (299 words), care marketing nurture (135) and studio inquiry (125). The heaviest files are the marketplace event copy (1,741) and care templates (1,236).
+- **`packages/search-ui` (§4).** About 360 user-facing words. It shows "HenryCo" to users 9 times. Owner-reserved: list only.
 
 ---
 
@@ -318,10 +343,112 @@ There is no "not an accredited / government-recognised qualification" disclaimer
 
 ## 3. Heavy email + notification templates (out of scope — list only)
 
-_(in progress)_
+**Counting method.** I count alphabetic words in the English string and template literals inside each template's code unit (its `case` clause, `if` branch, or build/send function). `${…}` values, markup, CSS, URLs, identifiers and log/error strings are stripped. Every channel and variant inside the unit is summed (email + WhatsApp + in-app, client + owner, status variants). The shared footer is excluded. Script: TypeScript-AST pass `recon/email-wordcount.mjs`.
+
+| rank | template | file | approx EN words | division | note |
+|---|---|---|---|---|---|
+| 1 | Owner report email (monthly / weekly / morning brief) `renderOwnerReportEmail` | `apps/hub/lib/owner-reporting.ts:318-556` | 299 | hub (owner) | 3 variants combined |
+| 2 | Care marketing nurture (service reminder + re-engagement) `sendMarketingNurture` | `apps/care/lib/automation/care-automation.ts:675-881` | 135 | care | email + WhatsApp; opt-out "Reply STOP by email if you want outreach paused." (`:834`, `:843`) |
+| 3 | Studio inquiry received `sendInquiryNotifications` | `apps/studio/lib/studio/email/send.ts:338-410` | 125 | studio | client ack + owner alert + WhatsApp |
+| 4 | Studio payment instructions `sendPaymentInstructionsNotifications` | `send.ts:472-548` | 112 | studio | carries bank details |
+| 5 | Care booking received `buildLayout:booking_confirmation` | `apps/care/lib/email/templates.ts:454-483` | 110 | care | |
+| 6 | Care payment details `payment_request` | `templates.ts:575-603` | 105 | care | carries bank details |
+| 7 | Studio payment reminder `sendPaymentReminderNotification` | `send.ts:825-877` | 95 | studio | |
+| 8 | Marketplace buyer welcome `buildEventCopy:buyer_welcome` | `apps/marketplace/lib/marketplace/notifications.ts:242-263` | 94 | marketplace | email + WhatsApp + in-app |
+| 9 | Care customer re-engagement `customer_reengagement` | `templates.ts:822-842` | 93 | care | marketing |
+| 10 | Learn instructor-application decision `sendTeacherApplicationStatusNotification` | `apps/learn/lib/email/learn-templates.ts:780-855` | 93 | learn | approved / changes / declined |
+| 11 | Care staff invitation `staff_invitation` | `templates.ts:529-552` | 91 | care (staff) | |
+| 12 | Care staff password recovery `password_recovery` | `templates.ts:553-574` | 91 | care (staff) | |
+| 13 | Marketplace order lifecycle (placed / payment reminder / verified / shipped / delivered / delayed) | `notifications.ts:508-576` | 90 | marketplace | one builder, 6 events |
+| 14 | Marketplace product review outcome (approved / changes / rejected) | `notifications.ts:472-507` | 89 | marketplace (seller) | 3 events |
+| 15 | Care service reminder `service_reminder` | `templates.ts:800-821` | 86 | care | |
+| 16 | Studio proposal decision `sendProposalDecisionNotifications` | `send.ts:550-584` | 85 | studio | |
+| 17 | Logistics request created `notifyLogisticsRequestCreated` | `apps/logistics/lib/logistics/notify-customer.ts:68-220` | 82 | logistics | email + WhatsApp |
+| 18 | Care payment receipt received `payment_receipt_received` | `templates.ts:626-650` | 81 | care | |
+| 19 | Marketplace abandoned cart | `notifications.ts:697-713` | 81 | marketplace | marketing |
+| 20 | Marketplace payment instructions | `notifications.ts:304-322` | 80 | marketplace | |
+| 21 | Care payment reminder `payment_reminder` | `templates.ts:774-799` | 76 | care | |
+| 22 | Marketplace vendor application submitted | `notifications.ts:359-378` | 76 | marketplace (seller) | |
+| 23 | Care contact confirmation | `templates.ts:694-719` | 74 | care | |
+| 24 | Care owner monthly summary | `templates.ts:743-773` | 74 | care (owner) | |
+| 25 | Care support-desk alerts `createSupportThread` | `apps/care/lib/support/data.ts:877-997` | 73 | care (staff) | new-contact + thread-opened alerts |
+| 26 | Studio aftercare check-in `sendAftercareCheckin` | `apps/studio/lib/studio/email/agency.ts:177-199` | 69 | studio | |
+| 27 | Care review request `review_request` | `templates.ts:675-693` | 68 | care | |
+| 28 | Care support reply `support_reply` | `templates.ts:720-742` | 65 | care | |
+| 29 | Learn academy welcome `sendAcademyWelcomeNotification` | `learn-templates.ts:446-470` | 65 | learn | |
+| 30 | Marketplace seller onboarding complete | `notifications.ts:431-451` | 65 | marketplace (seller) | |
+
+- **Just below the cut:**
+  - Studio review reminder, 63 (`agency.ts:152-172`).
+  - Care payment-reminder automation, 63 (`care-automation.ts:550-673`).
+  - Account welcome, 62 (`apps/account/lib/email/templates.ts:411-427`).
+  - Marketplace vendor application rejected / changes requested, 62 each (`notifications.ts:395-430`).
+  - Abandoned-journey recovery email, about 60 (`packages/i18n/src/recovery-copy.ts:121-130`).
+  - Auth signup confirmation, 59 (`packages/email/auth-hook-templates.ts:110-124`).
+- **Excluded (not templates despite high literal counts):**
+  - Jobs `createJobPost` 180 and `createEmployerProfile` 112 (`apps/jobs/lib/jobs/write.ts`): server actions that mix validation errors with in-app payloads.
+  - Care `projectThreads` 106: timeline mapper.
+  - Marketplace `sendMarketplaceEvent` 94: dispatcher.
+  - Hub `buildOwnerReportProps` 88: PDF report props.
+  - Newsletter bodies: CMS-authored.
+- **File totals (all units):**
+
+  | File | Words |
+  |---|---|
+  | `apps/marketplace/lib/marketplace/notifications.ts` | 1,741 |
+  | `apps/care/lib/email/templates.ts` | 1,236 |
+  | `apps/studio/lib/studio/email/send.ts` | 878 |
+  | `apps/learn/lib/email/learn-templates.ts` | 526 |
+  | `apps/hub/lib/owner-reporting.ts` | 469 |
+  | `apps/property/lib/property/notifications.ts` | 428 |
+  | `apps/studio/lib/studio/email/agency.ts` | 341 |
+  | `packages/email/auth-hook-templates.ts` | 303 |
+  | `apps/account/lib/email/templates.ts` | 290 |
+  | `apps/care/lib/automation/care-automation.ts` | 243 |
+
+- **Shared footer** on every shared-layout email: `packages/email/layout.ts:375-413`. It holds the RC, registered office and © line (§1 d1-d3), so it must survive any future email pass.
 
 ---
 
-## 4. packages/search-ui heavy copy (owner-reserved — list only)
+## 4. packages/search-ui heavy copy (owner-reserved — list only, never modify)
 
-_(in progress)_
+**Total: about 360 words of user-facing English across ~150 strings.** The raw literal scan finds 547 words; the rest are CSS keywords, `"use client"` directives and event names, which I excluded. Heaviest first:
+
+| words | file:line | exact string |
+|---|---|---|
+| 10 | `packages/search-ui/src/palette/CommandPalette.tsx:422` | "Try a single word like “orders”, “support”, “track”, or “wallet”." |
+| 10 | `packages/search-ui/src/palette/KeyboardCheatSheet.tsx:45` | "Jump to a module on the rail by its position" |
+| 9 | `packages/search-ui/src/palette/DashboardCommandPalette.tsx:1037` | "Try a single keyword like “orders”, “withdraw”, or “support”." |
+| 9 | `packages/search-ui/src/results/SearchResultsPage.tsx:210` | "No matches. Try a different scope or shorter query." |
+| 8 | `DashboardCommandPalette.tsx:1033` | "Search across orders, support, wallet, listings, and more." |
+| 7 | `packages/search-ui/src/palette/error-copy.ts:31` | "Too many searches — slow down a moment." |
+| 6 | `DashboardCommandPalette.tsx:94` | "Try “withdraw to my Access bank”" |
+| 6 | `error-copy.ts:30` | "Your session expired. Refresh the page." |
+| 6 | `KeyboardCheatSheet.tsx:34` | "Close the palette or this sheet" |
+| 6 | `SearchResultsPage.tsx:187` | placeholder "Search HenryCo: orders, listings, jobs, courses…" |
+| 5 | `CommandPalette.tsx:267`, `:387` | "Type to search across HenryCo" |
+| 5 | `DashboardCommandPalette.tsx:98` | "Try “resume my care booking”" |
+| 5 | `error-copy.ts:24`, `:33` | "Try again in a moment." |
+| 5 | `error-copy.ts:27` | "Check your connection, then retry." |
+| 5 | `error-copy.ts:32` | "Our search service is reconnecting." |
+| 5 | `KeyboardCheatSheet.tsx:32`, `:33`, `:46` | scope "Anywhere (not inside an input)" |
+| 5 | `KeyboardCheatSheet.tsx:33` | "Open this keyboard cheat sheet" |
+| 5 | `KeyboardCheatSheet.tsx:130` | "On Windows / Linux, ⌘ is Ctrl." |
+| 4 | `DashboardCommandPalette.tsx:93`, `:96`, `:99` | "Try “orders awaiting confirmation”" / "Try “download last invoice”" / "Try “message Studio team”" |
+| 4 | `DashboardCommandPalette.tsx:454` | "Idle. Type to search." |
+| 4 | `DashboardCommandPalette.tsx:1008` | "Opening that for you…" |
+| 4 | `DashboardCommandPalette.tsx:1038` | "Press ? for keyboard shortcuts." |
+| 4 | `KeyboardCheatSheet.tsx:31`, `:32`; `:36`; `:37`; `:38` | "Open the command palette" (×2) / "Cycle to next group" / "Cycle to previous group" / "Open the highlighted row" |
+| 3–4 | `CommandPalette.tsx:420`; `DashboardCommandPalette.tsx:1032` | "No matches for "{q}"." / "No results for "{q}"" |
+| 3 | `CommandPalette.tsx:412`; `DashboardCommandPalette.tsx:1022` | "Searching across HenryCo…" |
+| 3 | `CommandPalette.tsx:390`, `:393`; `:589` | "Care booking confirm", "Property near me"; "esc to close" |
+| 3 | `DashboardCommandPalette.tsx:95`, `:97` | "Try “verify identity”", "Try “support ticket #4382”" |
+| 3 | `error-copy.ts:25`; `KeyboardCheatSheet.tsx:35` | "Cancelled. Try again."; "Move between rows" |
+| 2 each | `CommandPalette.tsx`: `:171`, `:279`, `:284`, `:389`, `:391`, `:392`, `:453`, `:587`, `:588`, `:45`. `DashboardCommandPalette.tsx`: `:512`, `:513`, `:770`, `:842`, `:870`, `:909`, `:1029`, `:1050`, `:1126`. `SearchResultsPage.tsx:190`. `KeyboardCheatSheet.tsx:34-38` (scope "Palette open"). | "Search HenryCo" (×5), "Close search", "Resume cart", "Wallet withdrawal", "Marketplace orders", "Search results", "↑↓ to move", "↵ to open", "Staff HQ", "Find anything", "Couldn’t load.", "Close palette", "Search scope", "No matches", "Start typing", "Palette results", "cycle group" |
+| 1 each (~85) | `aggregator.ts:35-51`, `:63-113`, `:175-180`; `CommandPalette.tsx:36-54`, `:318`, `:400`, `:430`; `DashboardCommandPalette.tsx:77-84`, `:786`, `:921`, `:1124-1128`; `KeyboardCheatSheet.tsx:31`, `:51`; `recents.ts:81`, `:86`; `SearchResultsPage.tsx:23-36`, `:104`, `:121`, `:154`, `:201` | Division and group labels ("Marketplace", "Commands", "Suggestions", "Recents"), "All", "Retry", "Keyboard"/"Shortcuts", "Relevance"/"Recent"/"Urgency", "Filters", "Division", "Sort", "Searching…" |
+
+By file: DashboardCommandPalette ≈150, CommandPalette ≈95, KeyboardCheatSheet ≈90, SearchResultsPage ≈35, error-copy 36, aggregator/recents ≈35.
+
+**Flags for the owner (no edit).**
+- The retired code shorthand **"HenryCo"** is shown to users 9 times: `CommandPalette.tsx:171`, `:279`, `:387`, `:412`; `DashboardCommandPalette.tsx:512`, `:842`, `:1022`; `SearchResultsPage.tsx:187`, `:190`. This breaks the brand rule in `packages/config/company.ts:557-566`.
+- `SearchResultsPage.tsx:203-206` renders `{error}` raw. That can surface "Search failed: {status}" (`packages/search-ui/src/hooks/useSearchQuery.ts:66`, `:72`).

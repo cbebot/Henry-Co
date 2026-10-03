@@ -57,7 +57,7 @@ const CARE_PRICING_COPY_EN: CarePricingCopy = {
     eyebrow: "Pricing clarity",
     title: "You see the price before you book.",
     body:
-      "Garment pricing, home and office packages, and service add-ons — stated before the request is placed, not after.",
+      "Every charge is shown in the booking form before you submit. Garment totals are confirmed at intake.",
     pricingNoteEyebrow: "Pricing note",
   },
   packages: {
@@ -94,8 +94,6 @@ const CARE_PRICING_COPY_FR: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "Tarifs en clair",
     title: "Vous connaissez le prix avant de réserver.",
-    body:
-      "Tarification au textile, forfaits domicile et bureau, et options de service — annoncés avant la demande, pas après.",
     pricingNoteEyebrow: "Note tarifaire",
   },
   packages: {
@@ -132,8 +130,6 @@ const CARE_PRICING_COPY_ES: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "Tarifas claras",
     title: "Conoce el precio antes de reservar.",
-    body:
-      "Precios por prenda, paquetes para hogar y oficina, y servicios complementarios — comunicados antes de la solicitud, no después.",
     pricingNoteEyebrow: "Nota tarifaria",
   },
   packages: {
@@ -170,8 +166,6 @@ const CARE_PRICING_COPY_PT: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "Preços com clareza",
     title: "Vê o preço antes de reservar.",
-    body:
-      "Preços por peça, pacotes de casa e escritório e complementos de serviço — anunciados antes do pedido, não depois.",
     pricingNoteEyebrow: "Nota de preços",
   },
   packages: {
@@ -208,8 +202,6 @@ const CARE_PRICING_COPY_AR: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "وضوح في الأسعار",
     title: "ترى السعر قبل أن تحجز.",
-    body:
-      "أسعار الملابس، وباقات المنازل والمكاتب، والخدمات الإضافية — مُعلَنة قبل تقديم الطلب، لا بعده.",
     pricingNoteEyebrow: "ملاحظة بشأن السعر",
   },
   packages: {
@@ -246,8 +238,6 @@ const CARE_PRICING_COPY_DE: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "Preisklarheit",
     title: "Sie sehen den Preis vor der Buchung.",
-    body:
-      "Textilpreise, Pakete für Privathaushalt und Büro sowie Zusatzleistungen — vor der Anfrage genannt, nicht erst danach.",
     pricingNoteEyebrow: "Preishinweis",
   },
   packages: {
@@ -284,8 +274,6 @@ const CARE_PRICING_COPY_IT: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "Tariffe chiare",
     title: "Vede il prezzo prima di prenotare.",
-    body:
-      "Prezzi al capo, pacchetti casa e ufficio, e servizi aggiuntivi — comunicati prima della richiesta, non dopo.",
     pricingNoteEyebrow: "Nota tariffaria",
   },
   packages: {
@@ -322,8 +310,6 @@ const CARE_PRICING_COPY_ZH: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "价格清晰",
     title: "下单前即可看到价格。",
-    body:
-      "衣物清洗价格、家庭与办公套餐、服务附加项——在提交需求之前明示,而非事后。",
     pricingNoteEyebrow: "价格说明",
   },
   packages: {
@@ -360,8 +346,6 @@ const CARE_PRICING_COPY_HI: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "स्पष्ट मूल्य",
     title: "बुक करने से पहले ही आपको मूल्य दिख जाता है।",
-    body:
-      "वस्त्रों की दरें, घर और कार्यालय के पैकेज, और सेवा ऐड-ऑन — अनुरोध रखने से पहले बताए जाते हैं, बाद में नहीं।",
     pricingNoteEyebrow: "मूल्य संबंधी सूचना",
   },
   packages: {
@@ -398,8 +382,6 @@ const CARE_PRICING_COPY_IG: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "Ọnụ ahịa doro anya",
     title: "Ị na-ahụ ọnụ ahịa tupu ị tinye akwụkwọ.",
-    body:
-      "Ọnụ ahịa nke uwe, ngwugwu ụlọ na ọfịs, na ọrụ mgbakwunye — a na-akpọpụta ya tupu arịrịọ, ọ bụghị mgbe e mesịrị.",
     pricingNoteEyebrow: "Ndetu ọnụ ahịa",
   },
   packages: {
@@ -436,8 +418,6 @@ const CARE_PRICING_COPY_YO: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "Iye owó tó dájú",
     title: "O máa rí iye owó kí o tó forí jin.",
-    body:
-      "Iye owó aṣọ, pákéjì ilé àti ọ́físì, àti ìṣẹ́ àfikún — a sọ ọ́ kí ìbéèrè náà tó dé, kì í ṣe lẹ́yìn rẹ̀.",
     pricingNoteEyebrow: "Àkíyèsí lórí iye owó",
   },
   packages: {
@@ -474,8 +454,6 @@ const CARE_PRICING_COPY_HA: DeepPartial<CarePricingCopy> = {
   hero: {
     eyebrow: "Farashi a sarari",
     title: "Kana ganin farashi kafin ka yi rijista.",
-    body:
-      "Farashin tufafi, fakitocin gida da ofis, da ƙarin ayyuka — ana sanar da su kafin a aika buƙatar, ba bayan ba.",
     pricingNoteEyebrow: "Bayanin farashi",
   },
   packages: {

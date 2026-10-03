@@ -26,6 +26,20 @@ You are cutting the public website copy of ONE domain. Work like a senior editor
 4. Your domain's measured copy: `node scripts/copy-audit/transcript.mjs docs/copy-audit/before/<domain>.json`
    Each line: words, `^` = in the first viewport, element, text. Header lines show the route's budget.
 
+## Truth and legal inputs (mandatory)
+
+- `docs/copy-audit/recon/claims-truth-map.md` — every fee / VAT / delivery / refund / protection claim on
+  the public routes, traced to code. Read section A3, your domain's table in B and its dispositions in C.
+  Apply them: an UNTRACEABLE claim is removed; a MISMATCH is rewritten to the true wording section C gives
+  (or removed if no true short wording exists). Exceptions — do NOT edit, only list in your report:
+  (a) claims on legal/policy pages (terms, privacy, policies), (b) items C marks "owner decision" or
+  "fix the code", (c) text a component computes from data (badges, tiers) where changing the label would
+  change meaning on signed-in or seller surfaces.
+- `docs/copy-audit/recon/legal-and-out-of-scope.md` §1–§2 — legal lines and registration numbers. A KEEP
+  line survives verbatim in meaning; a MAY-TIGHTEN line may shrink but the obligation stays. Never add or
+  remove a registration/tax number.
+- Line numbers in the claims map are against commit b1efffe3; re-grep the text before editing.
+
 ## Method
 
 - For every route over budget, cut until it is clearly under budget (aim ~15% under, so later edits

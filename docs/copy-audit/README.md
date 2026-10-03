@@ -39,9 +39,9 @@ h1 and a meta description of at most 160 characters.
 | `summary-before.md`, `summary.md` | per-route tables (before; before → after) |
 | `aria/<stage>/<domain>/*.yaml` | accessibility-tree snapshots (names) per route |
 | `CUT-DOCTRINE.md` | what was cut and what is protected |
-| `legal-lines.md`, `claims-ledger.md` | protected lines; claims traced to code |
+| `recon/claims-truth-map.md` | every fee / VAT / delivery / refund / protection claim traced to code |
+| `recon/legal-and-out-of-scope.md` | legal lines, registration/tax numbers, heavy emails, search-ui copy |
 | `translation-manifest.json` | locale keys stripped for re-translation |
-| `out-of-scope.md` | heavy email/notification templates, search-ui copy |
 
 Screenshots (not committed): `.codex-temp/copy-reset/screens/<stage>/` in the
 main checkout.

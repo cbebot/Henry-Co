@@ -74,12 +74,7 @@ export default function TrackStagePhotos({ locale, photos }: TrackStagePhotosPro
           <Camera className="h-4 w-4" />
           {t("Stage photos")}
         </div>
-        <h3 className="mt-3 text-xl font-bold">{t("Photos will appear as your service progresses.")}</h3>
-        <p className="care-muted mt-2 text-sm leading-7">
-          {t(
-            "Our team photographs every garment at intake and again at completion. Pickup and delivery confirmations also include a stamped photo.",
-          )}
-        </p>
+        <h3 className="mt-3 text-xl font-bold">{t("Stage photos appear here when our team records them.")}</h3>
       </section>
     );
   }

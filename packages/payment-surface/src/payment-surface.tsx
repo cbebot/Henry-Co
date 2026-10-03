@@ -32,7 +32,7 @@ const DEFAULT_BODY: Record<string, string> = {
   paid: "Payment confirmed. Thank you — your record stays moving.",
   failed:
     "We could not match this transfer. Please re-upload your proof or contact support below.",
-  refunded: "Refund issued. The transfer was returned to the source account.",
+  refunded: "Refund issued to your original payment method.",
   cancelled: "This payment was cancelled. No further action is needed.",
 };
 

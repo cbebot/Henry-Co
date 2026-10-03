@@ -28,11 +28,11 @@ code makes true**. Everything else goes.
 - Navigation and CTAs that are a path somewhere — never strand a visitor.
 - Form labels, placeholders that name a field, errors, consent and
   terms-acceptance lines, and every `aria-label` / `alt` / accessible name.
-- Legally required or sensitive lines (see `legal-lines.md`); legal pages are
+- Legally required or sensitive lines (see `recon/legal-and-out-of-scope.md`); legal pages are
   measured but not budgeted — any change there is listed.
 - Decision-point truth: fees, VAT-inclusive pricing, delivery, refunds,
   protection — accurate and visible where money is committed. A claim survives
-  only if code or config makes it true (see `claims-ledger.md`); an untraceable
+  only if code or config makes it true (see `recon/claims-truth-map.md`); an untraceable
   claim is removed, a mismatched one is corrected to what the code does.
 - Real data (prices, listings, hours, contact email).
 - Registration and tax numbers: never add one; never delete one from legal

@@ -1,5 +1,5 @@
 import type { AppLocale } from "./locales";
-import { deepMergeMessages } from "./merge-messages";
+import {deepMergeMessages, type DeepPartial } from "./merge-messages";
 import {
   EXTRA_SURFACE_LABELS_AR,
   EXTRA_SURFACE_LABELS_DE,
@@ -125,7 +125,6 @@ export type SurfaceCopy = {
     contactWhatsapp: string;
     contactPhone: string;
     contactInApp: string;
-    regionalDefaultsLocal: string;
     regionalDefaultsNgnOnly: string;
     fullNameRequired: string;
     emailRequired: string;
@@ -344,7 +343,6 @@ const EN: SurfaceCopy = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "Phone call",
     contactInApp: "In-app only",
-    regionalDefaultsLocal: "Your regional defaults will follow this country selection.",
     regionalDefaultsNgnOnly:
       "Your app can show prices in {currency}. You'll be paid out in Nigerian Naira (NGN).",
     fullNameRequired: "Full name is required.",
@@ -371,7 +369,7 @@ const EN: SurfaceCopy = {
   },
 };
 
-const FR: Partial<SurfaceCopy> = {
+const FR: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_FR,
     ...PASS_18_EXTRA_FR,
@@ -528,7 +526,6 @@ const FR: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "Appel téléphonique",
     contactInApp: "Dans l'application uniquement",
-    regionalDefaultsLocal: "Vos paramètres régionaux suivront cette sélection de pays.",
     regionalDefaultsNgnOnly:
       "Votre application peut afficher les prix en {currency}. Vos paiements sont effectués en nairas nigérians (NGN).",
     fullNameRequired: "Le nom complet est requis.",
@@ -555,7 +552,7 @@ const FR: Partial<SurfaceCopy> = {
   },
 };
 
-const ES: Partial<SurfaceCopy> = {
+const ES: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_ES,
     ...PASS_18_EXTRA_ES,
@@ -712,7 +709,6 @@ const ES: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "Llamada telefónica",
     contactInApp: "Solo en la app",
-    regionalDefaultsLocal: "Tus valores regionales seguirán esta selección de país.",
     regionalDefaultsNgnOnly:
       "Tu aplicación puede mostrar los precios en {currency}. Tus pagos se realizan en nairas nigerianos (NGN).",
     fullNameRequired: "El nombre completo es obligatorio.",
@@ -739,7 +735,7 @@ const ES: Partial<SurfaceCopy> = {
   },
 };
 
-const PT: Partial<SurfaceCopy> = {
+const PT: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_PT,
     ...PASS_18_EXTRA_PT,
@@ -896,7 +892,6 @@ const PT: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "Ligação",
     contactInApp: "Somente no app",
-    regionalDefaultsLocal: "Seus padrões regionais seguirão essa seleção de país.",
     regionalDefaultsNgnOnly:
       "Seu aplicativo pode exibir os preços em {currency}. Seus pagamentos são feitos em nairas nigerianas (NGN).",
     fullNameRequired: "O nome completo é obrigatório.",
@@ -923,7 +918,7 @@ const PT: Partial<SurfaceCopy> = {
   },
 };
 
-const AR: Partial<SurfaceCopy> = {
+const AR: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_AR,
     ...PASS_18_EXTRA_AR,
@@ -1079,7 +1074,6 @@ const AR: Partial<SurfaceCopy> = {
     contactWhatsapp: "واتساب",
     contactPhone: "مكالمة هاتفية",
     contactInApp: "داخل التطبيق فقط",
-    regionalDefaultsLocal: "ستتبع إعداداتك الإقليمية هذا البلد.",
     regionalDefaultsNgnOnly:
       "يمكن أن يعرض التطبيق الأسعار بعملة {currency}. تُدفع مستحقاتك بالنايرا النيجيري (NGN).",
     fullNameRequired: "الاسم الكامل مطلوب.",
@@ -1106,7 +1100,7 @@ const AR: Partial<SurfaceCopy> = {
   },
 };
 
-const DE: Partial<SurfaceCopy> = {
+const DE: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_DE,
     ...PASS_18_EXTRA_DE,
@@ -1266,7 +1260,6 @@ const DE: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "Anruf",
     contactInApp: "Nur in der App",
-    regionalDefaultsLocal: "Ihre regionalen Voreinstellungen folgen dieser Länderauswahl.",
     regionalDefaultsNgnOnly:
       "Ihre App kann Preise in {currency} anzeigen. Ausgezahlt werden Sie in Nigerianischen Naira (NGN).",
     fullNameRequired: "Vollständiger Name ist erforderlich.",
@@ -1293,7 +1286,7 @@ const DE: Partial<SurfaceCopy> = {
   },
 };
 
-const ZH: Partial<SurfaceCopy> = {
+const ZH: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_ZH,
     ...PASS_18_EXTRA_ZH,
@@ -1439,7 +1432,6 @@ const ZH: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "电话",
     contactInApp: "仅应用内",
-    regionalDefaultsLocal: "您的区域默认设置将依据该国家选择。",
     regionalDefaultsNgnOnly: "您的应用可以用 {currency} 显示价格。您将以尼日利亚奈拉 (NGN) 收款。",
     fullNameRequired: "请输入全名。",
     emailRequired: "请输入电子邮件。",
@@ -1463,7 +1455,7 @@ const ZH: Partial<SurfaceCopy> = {
   },
 };
 
-const HI: Partial<SurfaceCopy> = {
+const HI: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_HI,
     ...PASS_18_EXTRA_HI,
@@ -1612,7 +1604,6 @@ const HI: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "फ़ोन कॉल",
     contactInApp: "केवल ऐप में",
-    regionalDefaultsLocal: "आपके क्षेत्रीय डिफ़ॉल्ट्स इस देश चयन का अनुसरण करेंगे।",
     regionalDefaultsNgnOnly: "आपका ऐप कीमतें {currency} में दिखा सकता है। आपका भुगतान नाइजीरियाई नायरा (NGN) में किया जाएगा।",
     fullNameRequired: "पूरा नाम आवश्यक है।",
     emailRequired: "ईमेल आवश्यक है।",
@@ -1638,7 +1629,7 @@ const HI: Partial<SurfaceCopy> = {
   },
 };
 
-const IG: Partial<SurfaceCopy> = {
+const IG: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_IG,
     ...PASS_18_EXTRA_IG,
@@ -1787,7 +1778,6 @@ const IG: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "Oku ekwentị",
     contactInApp: "Naanị n'ime ngwa",
-    regionalDefaultsLocal: "Nhọrọ mpaghara ndabara gị ga-eso nhọrọ mba a.",
     regionalDefaultsNgnOnly: "Your app can show prices in {currency}. You'll be paid out in Nigerian Naira (NGN).",
     fullNameRequired: "Achọrọ aha zuru ezu.",
     emailRequired: "Achọrọ email.",
@@ -1813,7 +1803,7 @@ const IG: Partial<SurfaceCopy> = {
   },
 };
 
-const YO: Partial<SurfaceCopy> = {
+const YO: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_YO,
     ...PASS_18_EXTRA_YO,
@@ -1962,7 +1952,6 @@ const YO: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "Pípè fóònù",
     contactInApp: "Nínú ohun èlò nìkan",
-    regionalDefaultsLocal: "Àwọn ìpilẹ̀ àgbègbè rẹ yóò tẹ̀lé yíyàn orílẹ̀-èdè yìí.",
     regionalDefaultsNgnOnly: "Your app can show prices in {currency}. You'll be paid out in Nigerian Naira (NGN).",
     fullNameRequired: "A nílò orúkọ pípé.",
     emailRequired: "A nílò imeeli.",
@@ -1988,7 +1977,7 @@ const YO: Partial<SurfaceCopy> = {
   },
 };
 
-const HA: Partial<SurfaceCopy> = {
+const HA: DeepPartial<SurfaceCopy> = {
   labels: {
     ...EXTRA_SURFACE_LABELS_HA,
     ...PASS_18_EXTRA_HA,
@@ -2137,7 +2126,6 @@ const HA: Partial<SurfaceCopy> = {
     contactWhatsapp: "WhatsApp",
     contactPhone: "Kira ta waya",
     contactInApp: "A cikin manhaja kawai",
-    regionalDefaultsLocal: "Tsoffin saitunan yankinka za su bi wannan zaɓin ƙasa.",
     regionalDefaultsNgnOnly: "Your app can show prices in {currency}. You'll be paid out in Nigerian Naira (NGN).",
     fullNameRequired: "Ana buƙatar cikakken suna.",
     emailRequired: "Ana buƙatar imel.",
@@ -2163,7 +2151,7 @@ const HA: Partial<SurfaceCopy> = {
   },
 };
 
-const IT: Partial<SurfaceCopy> = {
+const IT: DeepPartial<SurfaceCopy> = {
   "labels": {
     ...EXTRA_SURFACE_LABELS_IT,
     ...PASS_18_EXTRA_IT,
@@ -2309,7 +2297,6 @@ const IT: Partial<SurfaceCopy> = {
     "contactWhatsapp": "WhatsApp",
     "contactPhone": "Telefonata",
     "contactInApp": "Solo in-app",
-    "regionalDefaultsLocal": "Le impostazioni predefinite regionali seguiranno la selezione del Paese.",
     "regionalDefaultsNgnOnly": "La tua app può mostrare i prezzi in {currency}. I pagamenti vengono effettuati in naira nigeriane (NGN).",
     "fullNameRequired": "È richiesto il nome completo.",
     "emailRequired": "L'e-mail è obbligatoria.",
@@ -2333,7 +2320,7 @@ const IT: Partial<SurfaceCopy> = {
   }
 };
 
-const LOCALE_OVERRIDES: Partial<Record<AppLocale, Partial<SurfaceCopy>>> = {
+const LOCALE_OVERRIDES: Partial<Record<AppLocale, DeepPartial<SurfaceCopy>>> = {
   fr: FR,
   es: ES,
   pt: PT,

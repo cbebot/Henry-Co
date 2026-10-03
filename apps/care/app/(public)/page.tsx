@@ -233,7 +233,7 @@ export default async function CareHomePage() {
               <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[color:var(--home-line-15)] sm:inline-block" />
               <span className="inline-flex items-center gap-1.5">
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500/85" />
-                {settings.pickup_hours || t("Mon – Sat • 8:00 AM to 7:00 PM")}
+                {settings.pickup_hours || t("8:00 AM – 6:00 PM")}
               </span>
             </div>
             <Link
@@ -376,7 +376,7 @@ export default async function CareHomePage() {
                         key: "hours",
                         icon: <Clock3 className="h-4 w-4" />,
                         label: t("Service hours"),
-                        value: settings.pickup_hours || "Mon–Sat · 8:00 AM – 7:00 PM",
+                        value: settings.pickup_hours || t("8:00 AM – 6:00 PM"),
                       },
                       {
                         key: "desk",

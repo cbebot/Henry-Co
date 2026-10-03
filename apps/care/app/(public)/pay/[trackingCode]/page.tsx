@@ -158,10 +158,8 @@ export default async function CarePaymentWorkspace({
     copy: {
       bodyByStatus: {
         paid: "Payment confirmed. Your booking moves to the next stage automatically.",
-        processing:
-          "Proof received. Care finance verifies bank transfers within one business day — this page updates automatically.",
-        pending:
-          "Open the booking timeline to send your transfer proof — Care's tracking flow is the canonical proof intake so all evidence stays on the booking record.",
+        processing: "Proof received. Care finance is verifying your transfer — this page updates automatically.",
+        pending: "Open the booking timeline to send your transfer proof.",
         failed:
           "We need a corrected proof. Open the booking timeline to attach a fresh receipt and add a note about what changed.",
       },

@@ -74,7 +74,7 @@ const DEFAULT_SERVICE_VERTICALS: ServiceVertical[] = [
   { id: "vert_moving", slug: "moving", name: "Moving & Relocation", summary: "Packing, loading, and relocation support for a calm moving day.", icon: "Truck", division: "care", display_order: 80, status: "active" },
   { id: "vert_event_support", slug: "event-support", name: "Event Support", summary: "Set-up, staffing, and a thorough reset for your events.", icon: "PartyPopper", division: "care", display_order: 90, status: "active" },
   { id: "vert_business_support", slug: "business-support", name: "Business Support", summary: "Standing operational care and concierge support for businesses.", icon: "Briefcase", division: "care", display_order: 100, status: "active" },
-  { id: "vert_provider_assisted", slug: "provider-assisted", name: "Provider-Assisted", summary: "Specialist services delivered by verified providers.", icon: "BadgeCheck", division: "care", display_order: 110, status: "active" },
+  { id: "vert_provider_assisted", slug: "provider-assisted", name: "Provider-Assisted", summary: "Specialist services, scoped to your request.", icon: "BadgeCheck", division: "care", display_order: 110, status: "active" },
 ];
 
 function svc(
@@ -126,23 +126,23 @@ const DEFAULT_CATALOG_SERVICES: CatalogService[] = [
   svc("deep-cleaning", "deep-reset", "Deep Reset", "A high-intensity deep clean for kitchens, bathrooms, and neglected detail.", "A heavy, detail-line clean for kitchens, bathrooms, and the build-up that routine cleaning leaves behind.", "flat", 4200000, 320, false, "care_service_packages"),
   svc("deep-cleaning", "move-in-move-out-clean", "Move-in / Move-out Clean", "A full turnover clean prepared for vacant properties and handovers.", "A complete reset for empty properties — built for move transitions, handovers, and turnover quality.", "from", 5000000, 360, false, null),
   // repairs (provider-supplied)
-  svc("repairs", "home-repairs-handyman", "Home Repairs & Handyman", "Fittings, fixes, and minor home repairs handled by a verified pro.", "The small jobs that pile up — fittings, mounts, and minor repairs — handled in one visit by a verified provider.", "from", 800000, 120, true, null),
+  svc("repairs", "home-repairs-handyman", "Home Repairs & Handyman", "Fittings, fixes, and minor home repairs.", "The small jobs that pile up — fittings, mounts, and minor repairs — handled in one visit.", "from", 800000, 120, true, null),
   svc("repairs", "appliance-fitting", "Appliance Fitting", "Safe installation and fitting for home and office appliances.", "Correct, safe installation and fitting for the appliances that need a steady, qualified hand.", "from", 1000000, 120, true, null),
   // errands
   svc("errands", "personal-errands", "Personal Errands", "Pickups, drop-offs, queueing, and the tasks you would rather hand off.", "A flexible block of time to run the errands and tasks that take up your day.", "from", 600000, 120, false, null),
   svc("errands", "pickup-and-dropoff", "Pickup & Drop-off", "Reliable courier pickups and drop-offs across the service area.", "A dependable pickup-and-drop-off run for documents, parcels, and the things that need to move.", "from", 450000, 90, false, null),
   // moving
-  svc("moving", "home-move-support", "Home Move Support", "Packing, loading, and relocation support for a calm moving day.", "A coordinated team for packing, loading, and the moving-day work, delivered by a verified provider.", "from", 4500000, 480, true, null),
+  svc("moving", "home-move-support", "Home Move Support", "Packing, loading, and relocation support for a calm moving day.", "A coordinated team for packing, loading, and the moving-day work.", "from", 4500000, 480, true, null),
   svc("moving", "packing-service", "Packing Service", "Careful, labelled packing so nothing arrives broken or lost.", "Methodical, labelled packing of your home or office so the move stays organised and nothing is lost.", "from", 1800000, 240, false, null),
   // event support
   svc("event-support", "event-setup-and-cleanup", "Event Setup & Cleanup", "Set-up before and a thorough reset after your event.", "Arrive to a prepared space and leave the clean-up to us — set-up before and a full reset after.", "from", 3500000, 360, false, null),
-  svc("event-support", "event-staffing", "Event Staffing", "Verified support staff for the run of your event.", "Vetted support staff scheduled for the run of your event and scoped to what the day needs.", "quote", null, null, true, null),
+  svc("event-support", "event-staffing", "Event Staffing", "Support staff for the run of your event.", "Support staff scheduled for your event and scoped to what the day needs.", "quote", null, null, true, null),
   // business support
   svc("business-support", "recurring-facility-care", "Recurring Facility Care", "A standing operational care plan for offices and facilities.", "A standing plan that keeps offices and facilities consistently maintained on a schedule you set.", "from", 8000000, 480, false, null),
   svc("business-support", "business-concierge", "Business Concierge", "An ongoing support partner for the errands your business runs on.", "A recurring concierge for the operational errands and tasks that keep a business moving.", "from", 6000000, null, false, null),
   // provider-assisted
-  svc("provider-assisted", "specialist-deep-clean", "Specialist Deep Clean", "Specialist-grade deep cleaning delivered by a verified provider.", "A specialist-grade deep clean for demanding spaces, delivered by a verified provider.", "from", 5000000, 360, true, null),
-  svc("provider-assisted", "verified-specialist-service", "Verified Specialist Service", "Bespoke specialist work scoped and quoted by a verified provider.", "Bespoke specialist work scoped to your request and quoted by a verified provider before any commitment.", "quote", null, null, true, null),
+  svc("provider-assisted", "specialist-deep-clean", "Specialist Deep Clean", "Specialist-grade deep cleaning for demanding spaces.", "A specialist-grade deep clean for demanding spaces.", "from", 5000000, 360, true, null),
+  svc("provider-assisted", "verified-specialist-service", "Specialist Service", "Bespoke specialist work, scoped and quoted on request.", "Bespoke specialist work scoped to your request and quoted before any commitment.", "quote", null, null, true, null),
 ];
 
 export function getDefaultServicesCatalog(): ServicesCatalog {

@@ -196,13 +196,9 @@ export default async function ServicesPage() {
       <section className="mx-auto mt-24 max-w-[92rem] px-5 sm:px-8 lg:px-10">
         <div className="rounded-[2.5rem] border border-[color:var(--home-line)] bg-[color:var(--home-sheet)] px-8 py-10 sm:px-10 lg:flex lg:items-center lg:justify-between">
           <div className="max-w-2xl">
-            <p className="care-kicker">{copy.directory.closingEyebrow}</p>
-            <h2 className="mt-4 care-section-title text-[color:var(--home-ink)]">
+            <h2 className="care-section-title text-[color:var(--home-ink)]">
               {copy.directory.closingTitle}
             </h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-[color:var(--home-ink-70)]">
-              {copy.directory.closingBody}
-            </p>
           </div>
           <Link
             href="/book"

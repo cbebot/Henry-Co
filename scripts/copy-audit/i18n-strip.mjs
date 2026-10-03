@@ -259,6 +259,30 @@ report.totals = { filesWithEnglishChanges: report.files.length, keysStripped: un
 if (!ONLY && (WRITE || !CHECK)) {
   mkdirSync(dirname(manifestPath), { recursive: true });
   writeFileSync(manifestPath, JSON.stringify(report, null, 1));
+  const md = [
+    "# Re-translation manifest",
+    "",
+    `English changed since \`${base.slice(0, 8)}\`. Each key below was removed from the listed locales, which now show the new English until translated.`,
+    "",
+    `Totals: ${report.totals.keysStripped} key(s) · ${report.totals.localeEntriesStripped} locale entr(ies) · ${report.labels.added.length} new English-keyed label(s).`,
+  ];
+  for (const f of report.files) {
+    for (const fam of f.families) {
+      const keys = new Map();
+      for (const [loc, paths] of Object.entries(fam.stripped)) for (const p of paths) keys.set(p, [...(keys.get(p) || []), loc]);
+      if (!keys.size) continue;
+      md.push("", `## ${f.file}${fam.family !== "(default)" ? ` — ${fam.family}` : ""}`, "", "| key | locales | new English |", "|---|---|---|");
+      for (const [p, locs] of [...keys].sort()) {
+        const en = fam.newEnglish[p] ? fam.newEnglish[p].replace(/\s+/g, " ").replace(/\|/g, "\\|").slice(0, 160) : fam.removed.includes(p) ? "_(removed)_" : "";
+        md.push(`| \`${p}\` | ${locs.join(", ")} | ${en} |`);
+      }
+    }
+  }
+  if (report.labels.added.length) {
+    md.push("", "## New English-keyed labels (add to each locale's label dictionary)", "", "| label | file |", "|---|---|");
+    for (const l of report.labels.added) md.push(`| ${l.label.replace(/\|/g, "\\|")} | ${l.file} |`);
+  }
+  writeFileSync(manifestPath.replace(/\.json$/, ".md"), md.join("\n") + "\n");
 }
 console.log(`[i18n-strip] base ${base.slice(0, 8)} · ${report.files.length} module(s) with English changes · ${uniqueKeys.size} key(s) / ${entries} locale entr(ies) ${WRITE ? "stripped" : "to strip"} · ${report.labels.added.length} new English label(s)`);
 if (CHECK && staleOverrides > 0) {
