@@ -257,9 +257,9 @@ begin
   -- lock is pinned on the function source.
   -- (the media guard reads the listing twice — the listing a picture leaves, and the
   -- one it lands on — and locks both; the delete guard reads it once)
-  if (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_variant_guard()'::regprocedure)), 'for share', 'g')) < 1
-     or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_guard()'::regprocedure)), 'for share', 'g')) < 2
-     or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_delete_guard()'::regprocedure)), 'for share', 'g')) < 1
+  if (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_variant_guard()'::regprocedure)), 'for share;', 'g')) < 1
+     or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_guard()'::regprocedure)), 'for share;', 'g')) < 2
+     or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_delete_guard()'::regprocedure)), 'for share;', 'g')) < 1
   then
     raise warning 'VIOLATION: a child guard reads the listing row without locking it'; violations := violations + 1;
   end if;
