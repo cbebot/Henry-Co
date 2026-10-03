@@ -380,7 +380,7 @@ export const COMPANY = {
       tagline:
         "Premium dispatch and delivery operations with sharper booking, cleaner tracking, and confident execution.",
       description:
-        "Henry Onyx Logistics handles package pickup and delivery, same-day and scheduled runs, and shipment tracking.",
+        "Henry Onyx Logistics handles package pickup, dispatch delivery, same-day and scheduled runs, inter-city readiness, fleet coordination, rider workflows, proof of delivery, pricing governance, and customer tracking through one premium operating surface.",
       path: "/",
       subdomain: "logistics",
       accent: "#D06F32",

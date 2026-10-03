@@ -73,6 +73,12 @@ decide yourself. Ordered by severity.
 12d. **Consent:** the /v3 email capture has no consent checkbox (F17); the newsletter consent line
     "sends are paused during active support or billing issues" is only partly true
     (`packages/newsletter/src/segmentation.ts:159` hard-codes `activePaymentIncident = false`).
+12f. **Division descriptions inside hub /terms §2** come from `packages/config/company.ts` (also used by
+    search cards, V3 pages, the manifest and OG image). Changed: the jobs description, which claimed
+    "verified candidate profiles" (false — verification is optional; claims map H24/J7), now reads
+    "candidate profiles with optional skill and document verification, staff-reviewed employers".
+    Not changed (legal sign-off): the logistics description still lists internal operations ("rider
+    workflows", "pricing governance", "one premium operating surface") — accurate, but heavy.
 12e. **Pre-existing broken anchor:** `/#divisions` is linked from hub /about and several components; no
     element on `/` has that id.
 

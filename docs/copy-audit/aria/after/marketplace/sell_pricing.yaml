@@ -1,0 +1,182 @@
+- banner:
+  - link "Henry Onyx Marketplace home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Marketplace
+  - navigation "Marketplace":
+    - link "Search":
+      - /url: /search
+    - link "Deals":
+      - /url: /deals
+    - link "Track":
+      - /url: /track
+    - link "Sell":
+      - /url: /sell
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - textbox "Search lighting, office, decor, verified stores, founder-ready edits..."
+  - button "Search"
+  - button "Cart"
+  - link "Create a Henry Onyx account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Fsell%2Fpricing
+    - text: Get started
+  - link "Sign in to your Henry Onyx account":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Fsell%2Fpricing
+    - text: Sign in
+- main:
+  - paragraph: Seller pricing
+  - heading "Clear economics." [level=1]
+  - paragraph: Commission and payout processing are shown per plan before you publish.
+  - term: Plan tiers
+  - definition: "4"
+  - term: Trust tiers
+  - definition: "5"
+  - term: Featured slots
+  - definition: Reviewed individually
+  - paragraph: Plans at a glance
+  - heading "Your plan follows your trust tier." [level=2]
+  - list:
+    - listitem:
+      - link "01 Launch New sellers proving trust and delivery reliability. · 15% commission · 2% + NGN 300":
+        - /url: /account/seller-application/start?plan=launch
+        - text: 01 Launch
+        - paragraph: New sellers proving trust and delivery reliability. · 15% commission · 2% + NGN 300
+    - listitem:
+      - link "02 Growth Verified stores with cleaner operations and more catalog room. · 12% commission · 1.5% + NGN 250":
+        - /url: /account/seller-application/start?plan=growth
+        - text: 02 Growth
+        - paragraph: Verified stores with cleaner operations and more catalog room. · 12% commission · 1.5% + NGN 250
+    - listitem:
+      - link "03 Scale High-trust stores running serious volume. · 9% commission · 1% + NGN 250":
+        - /url: /account/seller-application/start?plan=scale
+        - text: 03 Scale
+        - paragraph: High-trust stores running serious volume. · 9% commission · 1% + NGN 250
+    - listitem:
+      - link "04 Partner Henry Onyx-managed or strategic partner inventory. · 0% commission · Custom payout terms":
+        - /url: https://henryonyx.com/contact?reason=partnerships&plan=partner
+        - text: 04 Partner
+        - paragraph: Henry Onyx-managed or strategic partner inventory. · 0% commission · Custom payout terms
+  - heading "How fees are charged" [level=2]
+  - list:
+    - listitem:
+      - text: "01"
+      - paragraph: Commission and the payout processing fee are both deducted from your settlement.
+    - listitem:
+      - text: "02"
+      - paragraph: Plan subscriptions, posting fees and featured placement are not charged yet.
+  - heading "Payout timing by trust tier" [level=2]
+  - list:
+    - listitem:
+      - text: 01 Unverified
+      - paragraph: Up to 8 active listings.
+      - text: 5-day auto-release after delivery.
+    - listitem:
+      - text: 02 Basic verified
+      - paragraph: Up to 30 active listings, growth plan economics.
+      - text: 4-day auto-release after delivery.
+    - listitem:
+      - text: 03 Trusted seller
+      - paragraph: Up to 90 active listings, high-risk category access, featured placement eligibility.
+      - text: 3-day auto-release after delivery.
+    - listitem:
+      - text: 04 Premium verified business
+      - paragraph: Up to 250 active listings.
+      - text: 2-day auto-release after delivery.
+    - listitem:
+      - text: 05 Henry Onyx verified partner
+      - paragraph: Partner inventory terms.
+      - text: 1-day auto-release after delivery.
+  - heading "Application opens in your Henry Onyx account." [level=2]
+  - link "Apply as seller":
+    - /url: /account/seller-application
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: A calmer marketplace of approved sellers.
+  - link "marketplace@henryonyx.com":
+    - /url: mailto:marketplace@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Shop":
+    - paragraph: Shop
+    - list:
+      - listitem:
+        - link "Search the marketplace":
+          - /url: /search
+      - listitem:
+        - link "Deals and timed edits":
+          - /url: /deals
+      - listitem:
+        - link "Trust passport":
+          - /url: /trust
+      - listitem:
+        - link "Buyer protection policy":
+          - /url: /policies/buyer-protection
+      - listitem:
+        - link "Support and resolution":
+          - /url: /help
+  - navigation "Sell":
+    - paragraph: Sell
+    - list:
+      - listitem:
+        - link "Why sell on Henry Onyx":
+          - /url: /sell
+      - listitem:
+        - link "Seller pricing and fees":
+          - /url: /sell/pricing
+      - listitem:
+        - link "Seller policy":
+          - /url: /policies/seller-policy
+      - listitem:
+        - link "Seller application":
+          - /url: /account/seller-application
+      - listitem:
+        - link "Vendor workspace":
+          - /url: /vendor
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/marketplace
+  - navigation "Support":
+    - paragraph: Support
+    - list:
+      - listitem:
+        - link "Help and support":
+          - /url: /help
+      - listitem:
+        - link "Contact":
+          - /url: https://henryonyx.com/contact
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

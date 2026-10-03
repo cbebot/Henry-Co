@@ -1,0 +1,124 @@
+- banner:
+  - link "Henry Onyx Marketplace home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Marketplace
+  - navigation "Marketplace":
+    - link "Search":
+      - /url: /search
+    - link "Deals":
+      - /url: /deals
+    - link "Track":
+      - /url: /track
+    - link "Sell":
+      - /url: /sell
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - textbox "Search lighting, office, decor, verified stores, founder-ready edits..."
+  - button "Search"
+  - button "Cart"
+  - link "Create a Henry Onyx account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Fcart
+    - text: Get started
+  - link "Sign in to your Henry Onyx account":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Fcart
+    - text: Sign in
+- main:
+  - paragraph: Cart
+  - heading "Your cart" [level=1]
+  - paragraph: Review your items, then continue to checkout.
+  - paragraph: Your cart is still empty.
+  - paragraph: Add products from any listing.
+  - link "Browse products":
+    - /url: /search
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: A calmer marketplace of approved sellers.
+  - link "marketplace@henryonyx.com":
+    - /url: mailto:marketplace@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Shop":
+    - paragraph: Shop
+    - list:
+      - listitem:
+        - link "Search the marketplace":
+          - /url: /search
+      - listitem:
+        - link "Deals and timed edits":
+          - /url: /deals
+      - listitem:
+        - link "Trust passport":
+          - /url: /trust
+      - listitem:
+        - link "Buyer protection policy":
+          - /url: /policies/buyer-protection
+      - listitem:
+        - link "Support and resolution":
+          - /url: /help
+  - navigation "Sell":
+    - paragraph: Sell
+    - list:
+      - listitem:
+        - link "Why sell on Henry Onyx":
+          - /url: /sell
+      - listitem:
+        - link "Seller pricing and fees":
+          - /url: /sell/pricing
+      - listitem:
+        - link "Seller policy":
+          - /url: /policies/seller-policy
+      - listitem:
+        - link "Seller application":
+          - /url: /account/seller-application
+      - listitem:
+        - link "Vendor workspace":
+          - /url: /vendor
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/marketplace
+  - navigation "Support":
+    - paragraph: Support
+    - list:
+      - listitem:
+        - link "Help and support":
+          - /url: /help
+      - listitem:
+        - link "Contact":
+          - /url: https://henryonyx.com/contact
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

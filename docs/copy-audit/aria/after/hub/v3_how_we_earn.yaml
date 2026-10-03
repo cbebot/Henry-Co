@@ -1,0 +1,129 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx
+  - navigation:
+    - link "Directory":
+      - /url: /#directory
+    - link "About":
+      - /url: /about
+    - link "Contact":
+      - /url: /contact
+  - link "Search Henry Onyx":
+    - /url: /search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fv3%2Fhow-we-earn
+  - link "Explore divisions":
+    - /url: /#divisions
+- main:
+  - paragraph: The earning map
+  - heading "How Henry Onyx earns" [level=1]
+  - paragraph: For buyers, delivery and any fee appear as named lines before you pay.
+  - separator
+  - heading "Division by division" [level=2]
+  - list:
+    - listitem:
+      - text: Henry Onyx Marketplace
+      - paragraph: A commission on completed orders. Approved sellers, protection on card and wallet payments, order tracking, and a dispute process.
+      - text: Live today
+    - listitem:
+      - text: Henry Onyx Fabric Care
+      - paragraph: Package and service pricing; no separate platform fee today. Every charge is shown before you submit a booking; garment totals are confirmed at intake.
+      - text: Live today
+    - listitem:
+      - text: Henry Onyx Learn
+      - paragraph: Instructor terms are agreed case by case after approval. Free previews before you pay, and shareable certificates.
+      - text: Live today
+    - listitem:
+      - text: Henry Onyx Studio
+      - paragraph: A project fee on commissioned creative work. A shared workspace. A deposit to start, then milestone payments as work is delivered.
+      - text: Live today
+    - listitem:
+      - text: Henry Onyx Jobs
+      - paragraph: Candidates never pay to apply. Employer plans are not charged yet. Real conversations with employers, application status you can see, interview scheduling.
+      - text: Not charged yet
+    - listitem:
+      - text: Henry Onyx Logistics
+      - paragraph: A margin on each shipment. Up-front quotes and end-to-end tracking.
+      - text: Live today
+    - listitem:
+      - text: Henry Onyx Property
+      - paragraph: Listing and management tools for owners and managers. Reviewed property listings.
+      - text: Not charged yet
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Henry Onyx provides a clear way to understand the company and reach the right business with confidence.
+  - link "hello@henryonyx.com":
+    - /url: mailto:hello@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "Divisions directory":
+    - paragraph: Divisions directory
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+      - listitem:
+        - link "Search":
+          - /url: /search
+      - listitem:
+        - link "The ecosystem":
+          - /url: /v3
+      - listitem:
+        - link "The earning map":
+          - /url: /v3/how-we-earn
+      - listitem:
+        - link "Press":
+          - /url: /press/v3
+  - navigation "Legal":
+    - paragraph: Legal
+    - list:
+      - listitem:
+        - link "Privacy":
+          - /url: /privacy
+      - listitem:
+        - link "Terms":
+          - /url: /terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /preferences
+  - button "Continue"
+- alert

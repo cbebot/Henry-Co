@@ -1,0 +1,179 @@
+- banner:
+  - link "Henry Onyx Marketplace home":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Marketplace
+  - navigation "Marketplace":
+    - link "Search":
+      - /url: /search
+    - link "Deals":
+      - /url: /deals
+    - link "Track":
+      - /url: /track
+    - link "Sell":
+      - /url: /sell
+    - link "Trust":
+      - /url: /trust
+    - link "Help":
+      - /url: /help
+  - textbox "Search lighting, office, decor, verified stores, founder-ready edits..."
+  - button "Search"
+  - button "Cart"
+  - link "Create a Henry Onyx account":
+    - /url: https://account.henryonyx.com/signup?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Ftrust
+    - text: Get started
+  - link "Sign in to your Henry Onyx account":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fmarketplace.henryonyx.com%2Ftrust
+    - text: Sign in
+- main:
+  - main:
+    - paragraph: Trust & safety
+    - heading "Visible before checkout. Enforced after it." [level=1]
+    - list:
+      - listitem:
+        - heading "Payments held" [level=2]
+        - paragraph: Card and wallet payments are held by Henry Onyx until you confirm delivery or the seller's auto-release window passes.
+      - listitem:
+        - heading "Disputes" [level=2]
+        - paragraph: An open dispute freezes the seller's payout while our team reviews it and arranges any refund.
+      - listitem:
+        - heading "Cash on delivery" [level=2]
+        - paragraph: Cash-on-delivery orders are paid to the rider and are not held.
+      - listitem:
+        - heading "Approved sellers" [level=2]
+        - paragraph: Every store is reviewed and approved by Henry Onyx before it can sell.
+    - heading "Policies" [level=2]
+    - list:
+      - listitem:
+        - link "Buyer Protection Policy":
+          - /url: /policies/buyer-protection
+          - heading "Buyer Protection Policy" [level=3]
+      - listitem:
+        - link "Seller Policy":
+          - /url: /policies/seller-policy
+          - heading "Seller Policy" [level=3]
+      - listitem:
+        - link "Listing Standards":
+          - /url: /policies/listing-standards
+          - heading "Listing Standards" [level=3]
+      - listitem:
+        - link "Prohibited Goods & Services":
+          - /url: /policies/prohibited-goods-services
+          - heading "Prohibited Goods & Services" [level=3]
+      - listitem:
+        - link "Return & Refund Policy":
+          - /url: /policies/returns-refunds
+          - heading "Return & Refund Policy" [level=3]
+      - listitem:
+        - link "Dispute Resolution Policy":
+          - /url: /policies/dispute-resolution
+          - heading "Dispute Resolution Policy" [level=3]
+      - listitem:
+        - link "Payout Policy":
+          - /url: /policies/payout-policy
+          - heading "Payout Policy" [level=3]
+      - listitem:
+        - link "Seller Verification Policy":
+          - /url: /policies/seller-verification
+          - heading "Seller Verification Policy" [level=3]
+      - listitem:
+        - link "Trust & Safety Rules":
+          - /url: /policies/trust-safety
+          - heading "Trust & Safety Rules" [level=3]
+      - listitem:
+        - link "Referral & Reward Policy":
+          - /url: /policies/referral-reward
+          - heading "Referral & Reward Policy" [level=3]
+      - listitem:
+        - link "Featured Listing Policy":
+          - /url: /policies/featured-listings
+          - heading "Featured Listing Policy" [level=3]
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: A calmer marketplace of approved sellers.
+  - link "marketplace@henryonyx.com":
+    - /url: mailto:marketplace@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "The Henry Onyx group":
+    - paragraph: The Henry Onyx group
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Shop":
+    - paragraph: Shop
+    - list:
+      - listitem:
+        - link "Search the marketplace":
+          - /url: /search
+      - listitem:
+        - link "Deals and timed edits":
+          - /url: /deals
+      - listitem:
+        - link "Trust passport":
+          - /url: /trust
+      - listitem:
+        - link "Buyer protection policy":
+          - /url: /policies/buyer-protection
+      - listitem:
+        - link "Support and resolution":
+          - /url: /help
+  - navigation "Sell":
+    - paragraph: Sell
+    - list:
+      - listitem:
+        - link "Why sell on Henry Onyx":
+          - /url: /sell
+      - listitem:
+        - link "Seller pricing and fees":
+          - /url: /sell/pricing
+      - listitem:
+        - link "Seller policy":
+          - /url: /policies/seller-policy
+      - listitem:
+        - link "Seller application":
+          - /url: /account/seller-application
+      - listitem:
+        - link "Vendor workspace":
+          - /url: /vendor
+      - listitem:
+        - link "Your account":
+          - /url: https://account.henryonyx.com/marketplace
+  - navigation "Support":
+    - paragraph: Support
+    - list:
+      - listitem:
+        - link "Help and support":
+          - /url: /help
+      - listitem:
+        - link "Contact":
+          - /url: https://henryonyx.com/contact
+      - listitem:
+        - link "Trust":
+          - /url: /trust
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Built in-house by Henry Onyx Studio.
+- button "How can we help? — Need help?": Help
+- alert

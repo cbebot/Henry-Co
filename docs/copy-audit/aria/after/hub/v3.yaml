@@ -1,0 +1,150 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx
+  - navigation:
+    - link "Directory":
+      - /url: /#directory
+    - link "About":
+      - /url: /about
+    - link "Contact":
+      - /url: /contact
+  - link "Search Henry Onyx":
+    - /url: /search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fv3
+  - link "Explore divisions":
+    - /url: /#divisions
+- main:
+  - paragraph: The ecosystem
+  - heading "One account. One wallet. Seven live divisions." [level=1]
+  - link "Try the journey":
+    - /url: /v3/try
+  - link "What's live":
+    - /url: /v3/what-shipped
+  - link "How we earn — in plain language":
+    - /url: /v3/how-we-earn
+  - heading "The divisions" [level=2]
+  - list:
+    - listitem:
+      - link "01 Henry Onyx Fabric Care Home and fabric care. See it live":
+        - /url: https://care.henryonyx.com
+        - text: 01 Henry Onyx Fabric Care
+        - paragraph: Home and fabric care.
+        - text: See it live
+    - listitem:
+      - link "02 Henry Onyx Marketplace Shop approved sellers, with every order tracked. See it live":
+        - /url: https://marketplace.henryonyx.com
+        - text: 02 Henry Onyx Marketplace
+        - paragraph: Shop approved sellers, with every order tracked.
+        - text: See it live
+    - listitem:
+      - link "03 Henry Onyx Jobs Apply, interview, and get hired. See it live":
+        - /url: https://jobs.henryonyx.com
+        - text: 03 Henry Onyx Jobs
+        - paragraph: Apply, interview, and get hired.
+        - text: See it live
+    - listitem:
+      - link "04 Henry Onyx Learn Courses with free previews and certificates. See it live":
+        - /url: https://learn.henryonyx.com
+        - text: 04 Henry Onyx Learn
+        - paragraph: Courses with free previews and certificates.
+        - text: See it live
+    - listitem:
+      - link "05 Henry Onyx Logistics Shipments quoted up front and tracked end to end. See it live":
+        - /url: https://logistics.henryonyx.com
+        - text: 05 Henry Onyx Logistics
+        - paragraph: Shipments quoted up front and tracked end to end.
+        - text: See it live
+    - listitem:
+      - link "06 Henry Onyx Studio Commission creative work with a shared client workspace. See it live":
+        - /url: https://studio.henryonyx.com
+        - text: 06 Henry Onyx Studio
+        - paragraph: Commission creative work with a shared client workspace.
+        - text: See it live
+    - listitem:
+      - link "07 Henry Onyx Property Find and inquire about reviewed property listings. See it live":
+        - /url: https://property.henryonyx.com
+        - text: 07 Henry Onyx Property
+        - paragraph: Find and inquire about reviewed property listings.
+        - text: See it live
+  - paragraph: Choose your topics — change or unsubscribe any time.
+  - textbox "you@example.com"
+  - button "Subscribe"
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Henry Onyx provides a clear way to understand the company and reach the right business with confidence.
+  - link "hello@henryonyx.com":
+    - /url: mailto:hello@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "Divisions directory":
+    - paragraph: Divisions directory
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+      - listitem:
+        - link "Search":
+          - /url: /search
+      - listitem:
+        - link "The ecosystem":
+          - /url: /v3
+      - listitem:
+        - link "The earning map":
+          - /url: /v3/how-we-earn
+      - listitem:
+        - link "Press":
+          - /url: /press/v3
+  - navigation "Legal":
+    - paragraph: Legal
+    - list:
+      - listitem:
+        - link "Privacy":
+          - /url: /privacy
+      - listitem:
+        - link "Terms":
+          - /url: /terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /preferences
+  - button "Continue"
+- alert

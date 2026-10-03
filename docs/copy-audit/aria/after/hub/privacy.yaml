@@ -1,0 +1,402 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx
+  - navigation:
+    - link "Directory":
+      - /url: /#directory
+    - link "About":
+      - /url: /about
+    - link "Contact":
+      - /url: /contact
+  - link "Search Henry Onyx":
+    - /url: /search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fhenryonyx.com%2Fprivacy
+  - link "Explore divisions":
+    - /url: /#divisions
+- main:
+  - paragraph: NDPA 2023 · v1.0
+  - heading "Privacy Policy" [level=1]
+  - paragraph: Henry Onyx processes personal data as a data controller under the Nigeria Data Protection Act 2023. This policy names every category of data collected, the lawful basis under NDPA §25, the sub-processors who receive data on the controller's behalf, the retention windows tied to statute, and the rights every data subject can exercise. The canonical version is English; 11 locales are available for reference.
+  - link "Exercise your rights":
+    - /url: mailto:privacy@henryonyx.com
+  - link "Terms and Conditions":
+    - /url: /terms
+  - term: Updated
+  - definition: Recently updated
+  - term: Section
+  - definition: Nigeria Data Protection Act 2023 · Effective 2026-05-14 · v1.0
+  - term: Standard
+  - definition: Corporate-grade
+  - term: Effective
+  - definition: 2026-05-14
+  - term: Version
+  - definition: v1.0
+  - term: Locales
+  - definition: 11 (English canonical)
+  - paragraph: Some content may still be refreshing.
+  - paragraph: 1. Controller identity
+  - heading "Who is responsible for this data" [level=2]
+  - paragraph: "Henry Onyx Limited (RC 9594234), trading as Henry Onyx, with registered office at 001 Airport Road, Emene, Enugu State, Nigeria , is the data controller for personal data processed across henryonyx.com and every division surface. NDPC registration: [OWNER-TO-CONFIRM: NDPC registration reference]. Data Protection Officer: [OWNER-TO-CONFIRM: DPO name + email + phone, or 'External DPO consulted on material changes']."
+  - paragraph: "— In plain English: One Nigerian company runs all the Henry Onyx divisions, and it is the entity legally answerable for how your data is handled."
+  - heading "Controller" [level=3]
+  - paragraph: Henry Onyx Limited
+  - heading "CAC RC number" [level=3]
+  - paragraph: "9594234"
+  - heading "Registered office" [level=3]
+  - paragraph: Emene, Enugu State
+  - heading "NDPC registration" [level=3]
+  - paragraph: "[OWNER-TO-CONFIRM: NDPC registration reference]"
+  - heading "DPO" [level=3]
+  - paragraph: "[OWNER-TO-CONFIRM: DPO name + email + phone, or 'External DPO consulted on material changes']"
+  - paragraph: 2. Lawful bases
+  - heading "Why processing is lawful under the NDPA" [level=2]
+  - paragraph: Every processing activity on this platform rests on one or more lawful bases listed in NDPA 2023 §25. The basis used for each activity is named alongside the data category in the next section. We do not rely on a generic "applicable law" phrasing — each ground is cited.
+  - paragraph: "— In plain English: For every kind of data we touch, we name the legal reason we are allowed to touch it, instead of waving at \"the law\"."
+  - heading "Consent · NDPA 2023 §25(1)(a)" [level=3]
+  - paragraph: Newsletter signup, WhatsApp opt-in, marketing push notifications, optional analytics cookies.
+  - heading "Performance of a contract · NDPA 2023 §25(1)(b)" [level=3]
+  - paragraph: Order fulfilment, logistics pickup, care booking, studio milestones, learn enrolment, property viewing coordination.
+  - heading "Compliance with a legal obligation · NDPA 2023 §25(1)(c)" [level=3]
+  - paragraph: KYC under CBN AML/CFT Regulations, transaction records under CITN/CAMA, audit-log retention under CBN guidance.
+  - heading "Vital interests of the data subject or another person · NDPA 2023 §25(1)(d)" [level=3]
+  - paragraph: Emergency contact in safety-critical incidents during logistics dispatch or care home visits.
+  - heading "Task carried out in the public interest · NDPA 2023 §25(1)(e)" [level=3]
+  - paragraph: Fraud-prevention signals shared with FCCPC or NDPC on lawful request.
+  - heading "Legitimate interests pursued by Henry Onyx or a third party · NDPA 2023 §25(1)(f)" [level=3]
+  - paragraph: Trust scoring, device-risk signals, abuse prevention, service security — each balanced against the data subject's rights.
+  - paragraph: 3. Categories of personal data
+  - heading "Exactly what is collected" [level=2]
+  - paragraph: The categories below are concrete. Each row names the data, the purpose it serves, and the lawful basis under NDPA §25. The list replaces the rubric-banned phrasing "information we may collect" — we collect these categories, full stop.
+  - paragraph: "— In plain English: This is the exact list of personal data we hold, paired with the reason we hold it."
+  - heading "Identity" [level=3]
+  - paragraph: "Full name, date of birth, nationality, photograph. Purpose: Account creation, KYC verification, signed-document attribution. Lawful basis: Contract (§25(1)(b)); legal obligation for KYC (§25(1)(c))."
+  - heading "Contact" [level=3]
+  - paragraph: "Email address, phone number, postal address. Purpose: Order updates, support correspondence, delivery, statutory notices. Lawful basis: Contract (§25(1)(b)); legitimate interests for security-critical notifications (§25(1)(f))."
+  - heading "KYC and identity verification" [level=3]
+  - paragraph: "NIN, BVN, government-ID image, selfie liveness, address proof. Purpose: AML/CFT screening, payout eligibility, fraud prevention. Lawful basis: Legal obligation under CBN AML/CFT Regulations and Money Laundering (Prevention and Prohibition) Act 2022 (§25(1)(c))."
+  - heading "Financial" [level=3]
+  - paragraph: "Bank account, payment-method token (processed by our PCI-compliant payment processor; Henry Onyx does not store full card numbers), payout history, wallet balance, invoices. Purpose: Order settlement, vendor payout, refund processing, tax reporting. Lawful basis: Contract (§25(1)(b)); legal obligation for tax records (§25(1)(c))."
+  - heading "Transaction" [level=3]
+  - paragraph: "Order content, line items, shipping addresses, dispatch and proof-of-delivery records, ratings. Purpose: Fulfilment, dispute resolution, performance analytics within a tenant. Lawful basis: Contract (§25(1)(b)); legitimate interests for analytics (§25(1)(f))."
+  - heading "User content" [level=3]
+  - paragraph: "Support messages, hiring messages, studio briefs and assets, listing photos, proof-of-delivery photos, claim evidence, audio and video from booked sessions (recorded only with explicit consent screen). Purpose: Service delivery, dispute evidence, training data only with explicit opt-in. Lawful basis: Contract (§25(1)(b)); consent for recordings (§25(1)(a)); legitimate interests for dispute evidence (§25(1)(f))."
+  - heading "Behavioural and engagement" [level=3]
+  - paragraph: "Page views, search queries, click paths, time-on-task, conversion events. Purpose: Service improvement, A/B testing, fraud signals. Lawful basis: Legitimate interests (§25(1)(f)); consent where analytics cookies are non-essential (§25(1)(a))."
+  - heading "Device and technical" [level=3]
+  - paragraph: "IP address, browser, OS, device identifier, device-risk visitor ID, locale. Purpose: Session security, abuse prevention, trust scoring. Lawful basis: Legitimate interests (§25(1)(f))."
+  - heading "Communication metadata" [level=3]
+  - paragraph: "Email open/click events, WhatsApp delivery receipts, push-notification delivery, support-ticket timestamps. Purpose: Deliverability, SLA tracking, opt-out enforcement. Lawful basis: Legitimate interests (§25(1)(f)); contract for transactional notifications (§25(1)(b))."
+  - heading "Inferred" [level=3]
+  - paragraph: "Trust score, risk flags, vendor performance bands, learner skill maps. Purpose: Fraud prevention, marketplace ranking, certification eligibility. Lawful basis: Legitimate interests (§25(1)(f)); contract for ranking (§25(1)(b))."
+  - paragraph: 4. Purposes paired with categories
+  - heading "Why each category is processed" [level=2]
+  - paragraph: Purposes are not stated in abstract — they are paired one-to-one with the data category that serves them in section 3. The categories table is the authoritative reference. If a new purpose is added, the categories table is updated and the policy version is bumped per section 17.
+  - paragraph: "— In plain English: Every purpose maps back to exactly one or two data categories. Nothing is collected for vague \"future use\"."
+  - heading "Order and service fulfilment" [level=3]
+  - paragraph: Identity, contact, transaction, financial, content categories
+  - heading "KYC and AML compliance" [level=3]
+  - paragraph: KYC and identity-verification category under CBN AML/CFT Regulations
+  - heading "Security and fraud prevention" [level=3]
+  - paragraph: Device, behavioural, and inferred categories
+  - heading "Customer support" [level=3]
+  - paragraph: Contact, content, communication-metadata categories
+  - heading "Service improvement and A/B testing" [level=3]
+  - paragraph: Behavioural and inferred categories (consent for non-essential analytics)
+  - heading "Marketing communication" [level=3]
+  - paragraph: Contact and behavioural categories (consent only; transactional notifications are contractual)
+  - paragraph: 5. Sub-processors
+  - heading "Third parties who receive personal data" [level=2]
+  - paragraph: These are the named sub-processors that receive personal data to help operate the platform. Each is bound by a written data-processing agreement and is selected for capability, security posture, and jurisdictional fit. Changes to this list are announced in advance under section 17.
+  - paragraph: "— In plain English: These specific companies help us run the platform. We name them rather than saying \"third-party service providers\"."
+  - heading "Supabase" [level=3]
+  - paragraph: "Database, authentication, and file storage. Region: European Union and United States."
+  - heading "Vercel" [level=3]
+  - paragraph: "Application hosting. Region: European Union and United States."
+  - heading "Cloudinary" [level=3]
+  - paragraph: "Image storage and delivery. Region: Global."
+  - heading "Stripe" [level=3]
+  - paragraph: "Card and bank payment processing. Region: United States."
+  - heading "Resend" [level=3]
+  - paragraph: "Transactional email delivery. Region: United States."
+  - heading "Brevo" [level=3]
+  - paragraph: "Editorial and newsletter email delivery. Region: European Union."
+  - heading "Sentry" [level=3]
+  - paragraph: "Application error monitoring. Region: United States."
+  - heading "OneSignal" [level=3]
+  - paragraph: "Push notification delivery. Region: United States."
+  - heading "Daily.co" [level=3]
+  - paragraph: "Video and voice calls for studio and jobs interviews. Region: United States."
+  - heading "SignWell" [level=3]
+  - paragraph: "Electronic signature for contracts and proposals. Region: United States."
+  - heading "FingerprintJS" [level=3]
+  - paragraph: "Device-risk and abuse signals. Region: United States and European Union."
+  - heading "DeepL" [level=3]
+  - paragraph: "Translation services. Region: European Union."
+  - heading "Twilio" [level=3]
+  - paragraph: "SMS notifications. Region: United States."
+  - heading "Mapbox" [level=3]
+  - paragraph: "Mapping and routing for logistics and property. Region: United States."
+  - heading "Typesense" [level=3]
+  - paragraph: "Search index. Region: European Union."
+  - heading "Meta WhatsApp Business" [level=3]
+  - paragraph: "WhatsApp messaging for support and order updates. Region: Global."
+  - heading "Google Places + Calendar" [level=3]
+  - paragraph: "Address autocomplete and booking calendar sync. Region: United States and European Union."
+  - heading "Freshdesk and inbound email" [level=3]
+  - paragraph: "Support-ticket intake and routing. Region: United States and India."
+  - paragraph: 6. International data transfers
+  - heading "Cross-border data movement" [level=2]
+  - paragraph: Personal data may leave Nigeria when processed by a sub-processor named in section 5 with infrastructure outside Nigeria. Transfers rely on adequacy decisions where they exist, on Standard Contractual Clauses Module 2 (controller-to-processor) issued by the European Commission, and on the UK International Data Transfer Addendum for UK-origin data subjects. The lawful basis for transfer is set out under the Nigeria Data Protection Act 2023, supported by NDPC's general guidance on cross-border transfers.
+  - paragraph: "— In plain English: When your data is processed outside Nigeria, we use the same standard contracts the EU and UK use to make sure your protections travel with it."
+  - heading "Primary destinations" [level=3]
+  - paragraph: European Union, United Kingdom, United States
+  - heading "EU/UK mechanism" [level=3]
+  - paragraph: SCCs Module 2 (controller-to-processor) + UK IDTA
+  - heading "Nigerian basis" [level=3]
+  - paragraph: Nigeria Data Protection Act 2023 + NDPC general guidance
+  - heading "Risk mitigations" [level=3]
+  - paragraph: Encryption in transit and at rest, named regions, regular DPA review
+  - paragraph: 7. Retention periods
+  - heading "How long data is kept" [level=2]
+  - paragraph: Retention is tied to the statute that drives it, not to vague phrasing. Concrete windows below. Where multiple statutes apply, the longest applicable window controls.
+  - paragraph: "— In plain English: We keep data for a specific number of years tied to a specific Nigerian law, then it is deleted."
+  - heading "KYC documents (NIN, BVN, ID images, selfie)" [level=3]
+  - paragraph: "5 years after account closure. Driver: CBN AML/CFT Regulations 2022."
+  - heading "Transaction records (orders, invoices, payouts)" [level=3]
+  - paragraph: "7 years after transaction close. Driver: CAMA 2020 and CITN guidance."
+  - heading "Support correspondence" [level=3]
+  - paragraph: "3 years after ticket close. Driver: FCCPA 2018 dispute window."
+  - heading "Audit log (admin and staff actions)" [level=3]
+  - paragraph: "7 years. Driver: CBN cyber-resilience guidance."
+  - heading "Cookies (analytics)" [level=3]
+  - paragraph: "13 months. Driver: NDPA 2023 cookie guidance + GDPR e-Privacy alignment."
+  - heading "Marketing engagement data after consent withdrawal" [level=3]
+  - paragraph: "90 days suppression only, then deleted. Driver: NDPA 2023 §37."
+  - heading "Account profile after deletion request" [level=3]
+  - paragraph: "30 days soft-delete window, then permanent erasure subject to legal-hold exceptions. Driver: NDPA 2023 §36."
+  - paragraph: 8. International users
+  - heading "Rights under your home jurisdiction" [level=2]
+  - paragraph: Users outside Nigeria retain rights under their home data-protection framework, including (where applicable) the EU/EEA GDPR, UK GDPR, California CCPA/CPRA, Brazil LGPD, South Africa POPIA, Kenya Data Protection Act 2019, Ghana Data Protection Act 2012, Singapore PDPA 2012, Canada PIPEDA, and Australia Privacy Act 1988. The regulator route for each jurisdiction is listed below.
+  - paragraph: "— In plain English: If you live outside Nigeria, your home country's privacy law still protects you, and you can complain to its regulator."
+  - heading "Nigeria · NDPA 2023" [level=3]
+  - paragraph: "Regulator: Nigeria Data Protection Commission (NDPC). Route: complaints@ndpc.gov.ng."
+  - heading "European Union and EEA · GDPR (Regulation 2016/679)" [level=3]
+  - paragraph: "Regulator: Your national supervisory authority. Route: https://edpb.europa.eu/about-edpb/about-edpb/members_en."
+  - heading "United Kingdom · UK GDPR + Data Protection Act 2018" [level=3]
+  - paragraph: "Regulator: Information Commissioner's Office (ICO). Route: https://ico.org.uk/make-a-complaint/."
+  - heading "California, United States · CCPA/CPRA" [level=3]
+  - paragraph: "Regulator: California Privacy Protection Agency (CPPA). Route: https://cppa.ca.gov/."
+  - heading "Brazil · LGPD (Lei nº 13.709/2018)" [level=3]
+  - paragraph: "Regulator: Autoridade Nacional de Proteção de Dados (ANPD). Route: https://www.gov.br/anpd/."
+  - heading "South Africa · POPIA" [level=3]
+  - paragraph: "Regulator: Information Regulator (South Africa). Route: complaints.IR@justice.gov.za."
+  - heading "Kenya · Data Protection Act 2019" [level=3]
+  - paragraph: "Regulator: Office of the Data Protection Commissioner (ODPC). Route: info@odpc.go.ke."
+  - heading "Ghana · Data Protection Act 2012" [level=3]
+  - paragraph: "Regulator: Data Protection Commission Ghana. Route: info@dataprotection.org.gh."
+  - heading "Singapore · PDPA 2012" [level=3]
+  - paragraph: "Regulator: Personal Data Protection Commission (PDPC). Route: https://www.pdpc.gov.sg/."
+  - heading "Canada · PIPEDA" [level=3]
+  - paragraph: "Regulator: Office of the Privacy Commissioner of Canada (OPC). Route: https://www.priv.gc.ca/."
+  - heading "Australia · Privacy Act 1988" [level=3]
+  - paragraph: "Regulator: Office of the Australian Information Commissioner (OAIC). Route: https://www.oaic.gov.au/."
+  - paragraph: 9. Data subject rights
+  - heading "Rights under the NDPA" [level=2]
+  - paragraph: Every data subject has the rights set out under the Nigeria Data Protection Act 2023, including access, rectification, erasure, restriction, portability, objection, and the right not to be subject to a decision based solely on automated processing where it produces legal or similarly significant effects.
+  - paragraph: "— In plain English: You can ask for your data, fix it, delete it, move it, stop us using it, and challenge automated decisions."
+  - heading "Right of access" [level=3]
+  - paragraph: Request a copy of personal data held about you.
+  - heading "Right to rectification" [level=3]
+  - paragraph: Request correction of inaccurate or incomplete data.
+  - heading "Right to erasure" [level=3]
+  - paragraph: Request deletion subject to legal-hold exceptions named in section 7.
+  - heading "Right to restriction" [level=3]
+  - paragraph: Request that processing be paused while a dispute is resolved.
+  - heading "Right to data portability" [level=3]
+  - paragraph: Receive a machine-readable copy of data you provided.
+  - heading "Right to object" [level=3]
+  - paragraph: Object to processing based on legitimate interests or direct marketing.
+  - heading "Right against automated decisions" [level=3]
+  - paragraph: Challenge decisions based solely on automated processing with legal or significant effect.
+  - paragraph: 10. How to exercise rights
+  - heading "Submit a request" [level=2]
+  - paragraph: Send a written request to privacy@henryonyx.com. The controller acknowledges receipt within 5 working days and responds substantively within 30 days under the Nigeria Data Protection Act 2023. Identity is verified before a request is actioned. Where a request is manifestly unfounded or excessive, a fee may be charged or the request refused with reasons.
+  - paragraph: "— In plain English: Email privacy@henryonyx.com. We acknowledge in 5 working days and answer in 30 days. We verify it is really you before sending data."
+  - heading "Email" [level=3]
+  - paragraph: privacy@henryonyx.com
+  - heading "DPO direct line" [level=3]
+  - paragraph: dpo@henryonyx.com
+  - heading "Acknowledgement" [level=3]
+  - paragraph: 5 working days
+  - heading "Substantive response" [level=3]
+  - paragraph: 30 days (extendable once by 60 days with notice under the NDPA)
+  - heading "Identity verification" [level=3]
+  - paragraph: Required before action
+  - paragraph: 11. Cookies
+  - heading "Cookies and similar technologies" [level=2]
+  - paragraph: Cookies fall into four categories. Strictly necessary cookies operate the site and cannot be disabled. Functional cookies remember preferences (language, theme). Analytics cookies measure usage and require consent. Marketing cookies support targeted campaigns and require consent. A consent banner sets initial preferences; preferences can be changed at any time from the footer.
+  - paragraph: "— In plain English: Some cookies make the site work. Others remember settings, measure usage, or support marketing — you control the last three."
+  - heading "Strictly necessary" [level=3]
+  - paragraph: "Authentication, security tokens, cart state. Lawful basis: contract."
+  - heading "Functional" [level=3]
+  - paragraph: "Language, theme, locale preferences. Lawful basis: consent."
+  - heading "Analytics" [level=3]
+  - paragraph: "Usage measurement, A/B testing, error monitoring. Retention 13 months. Lawful basis: consent."
+  - heading "Marketing" [level=3]
+  - paragraph: "Cross-site campaign measurement (only when enabled by the customer). Lawful basis: consent."
+  - paragraph: 12. Children
+  - heading "Children's data" [level=2]
+  - paragraph: The platform is not directed at children under 18. The controller does not knowingly collect personal data from children under 18 without verifiable parental consent. If a child has provided data without consent, a parent or guardian should write to the privacy inbox; the data will be deleted unless retained under a legal-hold exception in section 7.
+  - paragraph: "— In plain English: Under-18s should not use the site without a parent. If they do, write to us and we delete the data."
+  - heading "Minimum age" [level=3]
+  - paragraph: 18 (with verifiable parental consent under 18)
+  - heading "Reporting" [level=3]
+  - paragraph: privacy@henryonyx.com
+  - paragraph: 13. Breach notification
+  - heading "What happens if a breach occurs" [level=2]
+  - paragraph: A personal-data breach with a risk to the rights and freedoms of data subjects is reported to the Nigeria Data Protection Commission within 72 hours of becoming aware, under the Nigeria Data Protection Act 2023. Affected data subjects are notified without undue delay where the breach is likely to result in high risk. Structured logging plus a tamper-evident audit trail retained for 7 years allow forensic reconstruction.
+  - paragraph: "— In plain English: If something goes wrong, we tell the regulator within 72 hours and tell affected users without delay."
+  - heading "Regulator notification" [level=3]
+  - paragraph: Within 72 hours of becoming aware
+  - heading "Affected-user notification" [level=3]
+  - paragraph: Without undue delay where high risk
+  - heading "Forensic support" [level=3]
+  - paragraph: 7-year audit trail + structured logging + error-tracing breadcrumbs
+  - paragraph: 14. Data Protection Officer
+  - heading "How to reach the DPO" [level=2]
+  - paragraph: "The Data Protection Officer is the contact for any privacy concern, NDPA right exercise, or material complaint about how data is handled. [OWNER-TO-CONFIRM: DPO name + email + phone, or 'External DPO consulted on material changes']"
+  - paragraph: "— In plain English: The DPO is the single named person you write to about anything privacy."
+  - heading "Named DPO" [level=3]
+  - paragraph: "[OWNER-TO-CONFIRM: DPO name + email + phone, or 'External DPO consulted on material changes']"
+  - heading "DPO email" [level=3]
+  - paragraph: dpo@henryonyx.com
+  - paragraph: 15. Complaints
+  - heading "Lodge a complaint" [level=2]
+  - paragraph: If a privacy concern is not resolved by the DPO, a complaint can be lodged with the Nigeria Data Protection Commission at complaints@ndpc.gov.ng. International users may complain to their home regulator named in section 8.
+  - paragraph: "— In plain English: If we cannot solve it, you can complain to the Nigerian regulator (or your country's regulator)."
+  - heading "Nigeria (NDPC)" [level=3]
+  - paragraph: complaints@ndpc.gov.ng
+  - heading "International" [level=3]
+  - paragraph: See section 8 for the regulator in your jurisdiction
+  - paragraph: 16. Languages
+  - heading "Canonical language and translations" [level=2]
+  - paragraph: This policy is published in English (canonical) and translated into 11 additional locales. In case of conflict between language versions, the English text controls.
+  - paragraph: "— In plain English: English wins if a translation says something different."
+  - heading "Canonical" [level=3]
+  - paragraph: English
+  - heading "Locales" [level=3]
+  - paragraph: "11"
+  - paragraph: 17. Effective date and version
+  - heading "Version and material change" [level=2]
+  - paragraph: Effective 2026-05-14 · version v1.0. Material changes are emailed to account holders 14 days before they take effect and the version is bumped. Continued use after the effective date is acceptance.
+  - paragraph: "— In plain English: We tell you 14 days before anything important changes, and the version number always goes up."
+  - heading "Effective" [level=3]
+  - paragraph: 2026-05-14
+  - heading "Version" [level=3]
+  - paragraph: v1.0
+  - heading "Material-change notice" [level=3]
+  - paragraph: 14 days, by email to account holders
+  - separator
+  - paragraph: Henry Onyx
+  - heading "The same operating standard our customers, partners, and teams trust." [level=2]
+  - paragraph: Every Henry Onyx company surface — about, contact, governance, policy — ships under one editorial standard so what you read in public matches what we hold ourselves to in private.
+  - term: Use case
+  - definition: Customers · Partners · Media
+  - term: Standard
+  - definition: Structured · Verified
+- contentinfo:
+  - text: Henry Onyx
+  - paragraph: Henry Onyx provides a clear way to understand the company and reach the right business with confidence.
+  - link "hello@henryonyx.com":
+    - /url: mailto:hello@henryonyx.com
+  - link "WhatsApp":
+    - /url: https://wa.me/2349133957084
+  - navigation "Divisions directory":
+    - paragraph: Divisions directory
+    - list:
+      - listitem:
+        - link "Henry Onyx Marketplace":
+          - /url: https://marketplace.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Studio":
+          - /url: https://studio.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Property":
+          - /url: https://property.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Logistics":
+          - /url: https://logistics.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Jobs":
+          - /url: https://jobs.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Learn":
+          - /url: https://learn.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Fabric Care":
+          - /url: https://care.henryonyx.com
+      - listitem:
+        - link "Henry Onyx Live":
+          - /url: https://henryonyx.com
+  - navigation "Company":
+    - paragraph: Company
+    - list:
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Contact":
+          - /url: /contact
+      - listitem:
+        - link "Search":
+          - /url: /search
+      - listitem:
+        - link "The ecosystem":
+          - /url: /v3
+      - listitem:
+        - link "The earning map":
+          - /url: /v3/how-we-earn
+      - listitem:
+        - link "Press":
+          - /url: /press/v3
+  - navigation "Legal":
+    - paragraph: Legal
+    - list:
+      - listitem:
+        - link "Privacy":
+          - /url: /privacy
+      - listitem:
+        - link "Terms":
+          - /url: /terms
+  - paragraph: © 2026 Henry Onyx Limited. All rights reserved.
+  - paragraph: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- text: Experience preferences Choose how Henry Onyx stores settings on this device. Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled. Language
+- combobox:
+  - option "English (English)" [selected]
+  - option "Français (French)"
+  - option "Igbo (Igbo)"
+  - option "Yorùbá (Yoruba)"
+  - option "Hausa (Hausa)"
+  - option "العربية (Arabic)"
+  - option "Español (Spanish)"
+  - option "Português (Portuguese)"
+  - option "Deutsch (German)"
+  - option "Italiano (Italian)"
+  - option "中文 (Chinese)"
+  - option "हिन्दी (Hindi)"
+- paragraph: Applies across Henry Onyx sites that support your selection.
+- button "Essential only"
+- button "Customize"
+- button "Accept all"
+- region "Privacy notice":
+  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
+  - link "Review settings":
+    - /url: /preferences
+  - button "Continue"
+- alert
