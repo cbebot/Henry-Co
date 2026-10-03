@@ -268,14 +268,16 @@ export async function POST(request: Request) {
         { status: 422 },
       );
     }
-    // A handle that already belongs to another store is refused up front (the
-    // database function refuses it again, atomically, when the store is opened).
-    const { data: handleOwner } = await createAdminSupabase()
+    // A handle that already belongs to another store — in any letter case — is refused
+    // up front (the database function refuses it again, atomically, when the store is
+    // opened). The handle is normalised above, so it carries no pattern characters.
+    const { data: handleOwners } = await createAdminSupabase()
       .from("marketplace_vendors")
       .select("id, owner_user_id")
-      .eq("slug", storeSlug.toLowerCase())
-      .maybeSingle();
-    if (handleOwner?.id && String(handleOwner.owner_user_id || "") !== viewer.user.id) {
+      .ilike("slug", storeSlug)
+      .limit(5);
+    const userId = viewer.user.id;
+    if (((handleOwners ?? []) as Array<{ owner_user_id?: string | null }>).some((owner) => String(owner.owner_user_id || "") !== userId)) {
       return NextResponse.json({ error: trustCopy.onboarding.handleTaken, code: "store-handle-taken" }, { status: 409 });
     }
   }

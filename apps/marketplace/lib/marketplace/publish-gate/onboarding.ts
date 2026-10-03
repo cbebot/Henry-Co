@@ -113,13 +113,14 @@ export async function instantOnboard(
   // re-approve — a store with no gate in front of it).
   const owned = await readOwnedStore(admin, input.actorId);
   if (owned) {
-    // The application is closed as "approved" only when that store is open and no
-    // person has withdrawn the owner's approval (the seller state reads "revoked"
-    // then, and the database answers the same way); otherwise it stays with a person.
+    // The application is closed as "approved" only when that store is open, no person
+    // has withdrawn the owner's approval (the seller state reads "revoked" then, and
+    // the database answers the same way), and no person decided this application —
+    // otherwise it stays with a person.
     const standing = await readSellerGateState(admin, owned.id, null);
     const vendorStatus = standing.state?.vendor.status ?? null;
     let applicationApproved = false;
-    if (vendorStatus === "approved") {
+    if (vendorStatus === "approved" && !input.priorDecision) {
       try {
         const { data } = await admin
           .from("marketplace_vendor_applications")

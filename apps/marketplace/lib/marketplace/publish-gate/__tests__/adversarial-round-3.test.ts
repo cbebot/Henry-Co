@@ -35,15 +35,17 @@ const HUB_DECISION = codeOnly(repoRead("apps/hub/lib/seller-decision-write.ts"))
 
 describe("round 3 — a person's revocation stands", () => {
   it("is recorded by the database on the decision itself, not read off the row the seller rewrites", () => {
-    assert.ok(MIGRATION.includes("create table if not exists public.marketplace_seller_revocations ("));
+    assert.ok(MIGRATION.includes("    create table public.marketplace_seller_revocations ("));
     assert.ok(MIGRATION.includes("  after update on public.marketplace_vendor_applications\n"));
-    assert.ok(MIGRATION.includes("public.marketplace_gate_owner_revoked((select v.owner_user_id"));
+    // Round 4: one predicate — the verdict RPC, the guard and the AFTER trigger all ask it.
+    assert.ok(MIGRATION.includes("       and not public.marketplace_gate_owner_revoked(v.owner_user_id)"));
+    assert.ok(MIGRATION.includes("    if not public.marketplace_gate_vendor_may_publish(p_vendor_id) then"));
   });
 
   it("closes an owner's application only when the store is open and its approval stands", () => {
     const owned = ONBOARDING.indexOf("const owned = await readOwnedStore(admin, input.actorId);");
     const standing = ONBOARDING.indexOf("const standing = await readSellerGateState(admin, owned.id, null);");
-    const mark = ONBOARDING.indexOf('if (vendorStatus === "approved") {');
+    const mark = ONBOARDING.indexOf('if (vendorStatus === "approved" && !input.priorDecision) {');
     assert.ok(owned > 0 && standing > owned && mark > standing);
     assert.ok(SELLER_ROUTE.includes('status: result.applicationApproved ? "approved" : application.status'));
   });
@@ -74,7 +76,8 @@ describe("round 3 — an approval keeps one store per account and never rewrites
       const reopen = source.indexOf('.update({ status: "approved" } as never)', start);
       const upsert = source.indexOf('{ onConflict: "slug" }', start);
       assert.ok(start > 0 && reopen > start && upsert > reopen, "the re-open branch comes before the store write");
-      assert.ok(source.includes('.neq("owner_type", "company")'));
+      // Round 4: any store the applicant owns counts, as at onboarding.
+      assert.equal(source.includes('.neq("owner_type", "company")'), false);
     });
 
     it(`${name}: an application with no account behind it is never approved`, () => {
@@ -82,8 +85,16 @@ describe("round 3 — an approval keeps one store per account and never rewrites
     });
   }
 
-  it("a refused approval puts the staff note back with the rest (marketplace console)", () => {
-    assert.ok(ROUTE.includes("review_note: application.review_note ?? null,"));
+  it("an approval opens the store first and marks the application only once it landed", () => {
+    // Round 4: no rollback write — a refused store step changes nothing, and a person's
+    // earlier "no" is lifted only by an approval that really landed.
+    for (const source of [ROUTE, HUB_DECISION]) {
+      const start = source.indexOf("let ownedStoreId: string | null = null;");
+      const store = source.indexOf('{ onConflict: "slug" }', start);
+      const decided = source.indexOf("const { error: decisionError } = await admin", start);
+      assert.ok(start > 0 && store > start && decided > store);
+      assert.equal(source.includes("status: application.status,"), false);
+    }
   });
 });
 

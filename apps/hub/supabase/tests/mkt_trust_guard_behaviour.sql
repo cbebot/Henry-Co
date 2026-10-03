@@ -25,9 +25,10 @@
 --   R. adversarial round 2                   (store ownership, identity waivers, payout status spellings,
 --                                             a person's rejection binds the engine, holds by handle,
 --                                             moved pictures, screened-profile hash, reporter age)
---   S. adversarial round 3                   (a revoked approval, pictures of held listings, handles of
+--   S. adversarial rounds 3–4                (a revoked approval, pictures of held listings, handles of
 --                                             held listings, company stores, live references, a listing's
---                                             store, profile field separation, a deleted owner)
+--                                             store, profile field separation, a deleted owner, look-alike
+--                                             handles at onboarding, decisions made before the gate)
 
 -- Run far from UTC ON PURPOSE. Every clock comparison in the guard must hold for
 -- a true instant whatever the session's TimeZone is: the staff branch compares a
@@ -2221,10 +2222,10 @@ begin
      set approval_status = 'approved', reviewed_by = staff, reviewed_at = clock_timestamp()
    where id = v_pid;
   reset role;
-  select count(*) into v_n from public.marketplace_listing_enforcement
-   where vendor_id = va and slug = 'mkt-trust-t-r5' and status in ('active', 'upheld');
-  if v_n <> 0 then
-    raise warning 'VIOLATION R5g: a staff approval left % decision(s) standing against the listing', v_n; violations := violations + 1;
+  -- (round 4: the deleted listing's hold no longer binds the handle, but it is kept —
+  -- its pictures still count; S12 proves that side)
+  if public.marketplace_gate_human_hold(v_pid, va, 'mkt-trust-t-r5') then
+    raise warning 'VIOLATION R5g: a staff approval left a decision standing against the listing'; violations := violations + 1;
   end if;
   -- "changes requested" by a person binds the same way
   set local role service_role;
@@ -2465,8 +2466,41 @@ begin
       raise warning 'VIOLATION R10g: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
     end if;
   end;
+  -- a seller with a store re-submits (the route rewrites "approved" to "submitted");
+  -- a person then rejects it: that is a "no" to the account, and it is recorded
+  insert into auth.users (id, email) values ('a1000000-0000-4000-8000-000000000014', 'r10h@mkt-trust.test')
+    on conflict (id) do nothing;
+  insert into public.marketplace_vendors (slug, name, owner_user_id, owner_type, status)
+    values ('mkt-trust-t-r10h', 'R10h Store', 'a1000000-0000-4000-8000-000000000014', 'vendor', 'approved');
+  insert into public.marketplace_vendor_applications
+    (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at,
+     reviewed_at, reviewed_by)
+  values
+    ('a1000000-0000-4000-8000-000000000014', 'r10h@mkt-trust.test', 'R10h Store', 'mkt-trust-t-r10h', 'R Ltd',
+     'approved', now() - interval '20 days', now() - interval '20 days', staff)
+  returning id into v_app;
+  update public.marketplace_vendor_applications set status = 'submitted' where id = v_app;
+  update public.marketplace_vendor_applications
+     set status = 'rejected', reviewed_by = staff, reviewed_at = now()
+   where id = v_app;
+  select count(*) into v_n from public.marketplace_seller_revocations
+   where owner_user_id = 'a1000000-0000-4000-8000-000000000014' and lifted_at is null;
+  if v_n <> 1 then
+    raise warning 'VIOLATION R10h: a person''s rejection of a re-submitted application was not recorded (% open)', v_n;
+    violations := violations + 1;
+  end if;
+  -- a second "no" while one stands adds nothing
+  update public.marketplace_vendor_applications
+     set status = 'changes_requested', reviewed_by = staff, reviewed_at = now() + interval '1 second'
+   where id = v_app;
+  select count(*) into v_n from public.marketplace_seller_revocations
+   where owner_user_id = 'a1000000-0000-4000-8000-000000000014' and lifted_at is null;
+  if v_n <> 1 then
+    raise warning 'VIOLATION R10h2: a second "no" was recorded twice (% open)', v_n; violations := violations + 1;
+  end if;
+
   delete from public.marketplace_vendor_applications
-   where user_id in (a_user, 'a1000000-0000-4000-8000-000000000011');
+   where user_id in (a_user, 'a1000000-0000-4000-8000-000000000011', 'a1000000-0000-4000-8000-000000000014');
 
   -- ---- R8. the store is opened on the profile that was screened, or not at all
   insert into auth.users (id, email) values ('a1000000-0000-4000-8000-00000000000f', 'r8-toctou@mkt-trust.test')
@@ -2537,6 +2571,13 @@ begin
   reset role;
   if v_n <> 0 then
     raise warning 'VIOLATION R9c: an account was judged by its age today, not when it reported'; violations := violations + 1;
+  end if;
+  set local role service_role;
+  select count(*) into v_n from public.marketplace_gate_established_accounts(
+    array[b_user], array[now() + interval '30 days'], 7);
+  reset role;
+  if v_n <> 0 then
+    raise warning 'VIOLATION R9d: a report time in the future made a 2-day-old account count'; violations := violations + 1;
   end if;
   begin
     set local role authenticated;
@@ -2723,9 +2764,10 @@ begin
     update public.marketplace_products
        set approval_status = 'approved', reviewed_by = staff, reviewed_at = now()
      where id = v_pid;
-    select count(*) into v_n from public.marketplace_listing_enforcement where id = v_id and status = 'active';
+    select count(*) into v_n from public.marketplace_listing_enforcement
+     where id = v_id and status = 'active' and handle_released_at is null;
     if v_n <> 1 then
-      raise warning 'VIOLATION S2b: approving one listing lifted the hold of another that still exists'; violations := violations + 1;
+      raise warning 'VIOLATION S2b: approving one listing lifted or released the hold of another that still exists'; violations := violations + 1;
     end if;
     delete from public.marketplace_listing_enforcement where id = v_id;
 
@@ -2883,6 +2925,282 @@ begin
       raise warning 'VIOLATION S8: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
     end if;
   end;
+
+  -- ---- S11. every picture a held listing showed stays with its hold
+  declare
+    s_ref constant text := 'media://public/marketplace-images/mkt-trust-t/';
+    v_r uuid;
+  begin
+    insert into public.marketplace_image_fingerprints (ref, sha256, vendor_id) values
+      (s_ref || 's11-p1.jpg', repeat('6a', 32), va), (s_ref || 's11-p2.jpg', repeat('6b', 32), va),
+      (s_ref || 's11-p3.jpg', repeat('6c', 32), va), (s_ref || 's11-p4.jpg', repeat('6d', 32), va),
+      (s_ref || 's11-n2.jpg', repeat('6b', 32), va), (s_ref || 's11-n3.jpg', repeat('6c', 32), va),
+      (s_ref || 's11-n4.jpg', repeat('6d', 32), va);
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-s11', va, 'S11 handbag', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s11', 1500, 'submitted')
+      returning id into v_r;
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_r, s_ref || 's11-p1.jpg', 'image', true, 0);
+    update public.marketplace_products set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now() where id = v_r;
+    -- the seller swaps the picture (not live: free) and a person turns the listing down again
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_r, s_ref || 's11-p2.jpg', 'image', false, 1);
+    delete from public.marketplace_product_media where product_id = v_r and url = s_ref || 's11-p1.jpg';
+    update public.marketplace_products set approval_status = 'submitted' where id = v_r;
+    update public.marketplace_products
+       set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now() + interval '1 second'
+     where id = v_r;
+    select count(*) into v_n from public.marketplace_listing_enforcement e, jsonb_array_elements(e.media_snapshot) x
+     where e.product_id = v_r and x ->> 'ref' = s_ref || 's11-p2.jpg';
+    if v_n < 1 then
+      raise warning 'VIOLATION S11a: a later decision did not keep the picture the person saw'; violations := violations + 1;
+    end if;
+    -- a picture nobody decided on, deleted from the held listing
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_r, s_ref || 's11-p3.jpg', 'image', false, 2);
+    delete from public.marketplace_product_media where product_id = v_r and url = s_ref || 's11-p3.jpg';
+    -- and one replaced in place
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_r, s_ref || 's11-p4.jpg', 'image', false, 3);
+    update public.marketplace_product_media set url = s_ref || 's11-p5.jpg' where product_id = v_r and url = s_ref || 's11-p4.jpg';
+    delete from public.marketplace_product_media where product_id = v_r;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s11-n2', 'S11 again', 1500),
+      array[s_ref || 's11-n2.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S11b: the picture of a second decision published under a new handle: %', v; violations := violations + 1;
+    end if;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s11-n3', 'S11 again', 1500),
+      array[s_ref || 's11-n3.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S11c: a picture deleted from a held listing published under a new handle: %', v; violations := violations + 1;
+    end if;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s11-n4', 'S11 again', 1500),
+      array[s_ref || 's11-n4.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S11d: a picture replaced on a held listing published under a new handle: %', v; violations := violations + 1;
+    end if;
+
+    -- ---- S12. a decoy approved under a deleted held listing's handle does not clear its pictures
+    insert into public.marketplace_image_fingerprints (ref, sha256, vendor_id) values
+      (s_ref || 's12-bag.jpg', repeat('7a', 32), va), (s_ref || 's12-n.jpg', repeat('7a', 32), va);
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-s12', va, 'S12 handbag', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s12', 1500, 'submitted')
+      returning id into v_r;
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order)
+      values (v_r, s_ref || 's12-bag.jpg', 'image', true, 0);
+    update public.marketplace_products set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now() where id = v_r;
+    delete from public.marketplace_products where id = v_r;
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-s12', va, 'S12 mug', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s12', 1500, 'submitted')
+      returning id into v_pid;
+    update public.marketplace_products set approval_status = 'approved', reviewed_by = staff, reviewed_at = now() where id = v_pid;
+    select count(*) into v_n from public.marketplace_listing_enforcement
+     where product_id = v_r and status in ('active', 'upheld') and handle_released_at is not null;
+    if v_n <> 1 then
+      raise warning 'VIOLATION S12a: approving a decoy did not release the handle, or cleared the hold'; violations := violations + 1;
+    end if;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s12-n', 'S12 handbag again', 1500),
+      array[s_ref || 's12-n.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S12b: a decoy''s approval cleared a rejected listing''s picture: %', v; violations := violations + 1;
+    end if;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s12', 'S12 mug', 1700),
+      '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'publish' then
+      raise warning 'VIOLATION S12c: the approved listing under a released handle is still held: %', v; violations := violations + 1;
+    end if;
+
+    -- ---- S14. a seller's listing is never taken into the company store
+    insert into public.marketplace_products (slug, vendor_id, title, sku, base_price, approval_status)
+      values ('mkt-trust-t-s14', va, 'S14 draft', 'SKU-mkt-trust-t-s14', 1500, 'draft')
+      returning id into v_r;
+    begin
+      update public.marketplace_products set vendor_id = vc, inventory_owner_type = 'company' where id = v_r;
+      raise warning 'VIOLATION S14: a seller''s listing was taken into the company store'; violations := violations + 1;
+    exception when others then
+      get stacked diagnostics v_hint = pg_exception_hint;
+      if v_hint is distinct from 'listing_store_immutable' then
+        raise warning 'VIOLATION S14: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+      end if;
+    end;
+  end;
+
+  -- ---- S13. a verdict minted before a person's revocation is not usable after it
+  declare
+    u13 constant uuid := 'a1000000-0000-4000-8000-000000000020';
+    v13 uuid;
+    app13 uuid;
+  begin
+    insert into auth.users (id, email) values (u13, 's13@mkt-trust.test') on conflict (id) do nothing;
+    insert into public.marketplace_vendors (slug, name, owner_user_id, owner_type, status)
+      values ('mkt-trust-t-s13-store', 'S13 Store', u13, 'vendor', 'approved') returning id into v13;
+    insert into public.marketplace_role_memberships (user_id, normalized_email, scope_type, scope_id, role, is_active)
+      values (u13, 's13@mkt-trust.test', 'vendor', v13, 'vendor', true);
+    insert into public.marketplace_vendor_applications
+      (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at,
+       reviewed_at, reviewed_by)
+    values (u13, 's13@mkt-trust.test', 'S13 Store', 'mkt-trust-t-s13-store', 'S Ltd', 'approved', now(),
+            now() - interval '3 days', staff)
+    returning id into app13;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      u13, v13, public.mkt_trust_test_listing('mkt-trust-t-s13', 'S13 clean', 1500),
+      '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'publish' then
+      raise warning 'VIOLATION S13a: setup: the store could not publish: %', v; violations := violations + 1;
+    end if;
+    update public.marketplace_vendor_applications
+       set status = 'rejected', reviewed_by = staff, reviewed_at = now()
+     where id = app13;
+    begin
+      set local role service_role;
+      insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+        values ('mkt-trust-t-s13', v13, 'S13 clean', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s13', 1500, 'approved');
+      reset role;
+      raise warning 'VIOLATION S13b: a verdict minted before a revocation published after it'; violations := violations + 1;
+    exception when others then
+      get stacked diagnostics v_hint = pg_exception_hint;
+      reset role;
+      if v_hint is distinct from 'seller_not_active' then
+        raise warning 'VIOLATION S13b: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+      end if;
+    end;
+    delete from public.marketplace_vendor_applications where user_id = u13;
+  end;
+
+  -- ---- S15. a store of company type that names an owner is not emptied into "the company's"
+  insert into auth.users (id, email) values ('a1000000-0000-4000-8000-000000000021', 's15@mkt-trust.test')
+    on conflict (id) do nothing;
+  insert into public.marketplace_vendors (slug, name, owner_user_id, owner_type, status)
+    values ('mkt-trust-t-s15', 'S15 Company-typed', 'a1000000-0000-4000-8000-000000000021', 'company', 'approved');
+  begin
+    delete from auth.users where id = 'a1000000-0000-4000-8000-000000000021';
+    raise warning 'VIOLATION S15: a company-typed store lost its owner and became the company''s store'; violations := violations + 1;
+  exception when others then
+    if sqlerrm not like 'marketplace_vendor_guard:%' then
+      raise warning 'VIOLATION S15: wrong error: %', sqlerrm; violations := violations + 1;
+    end if;
+  end;
+
+  -- ---- S16. the pictures a listing was last approved with stay with a person's later "no",
+  --          even when they were removed before the decision
+  declare
+    s_ref constant text := 'media://public/marketplace-images/mkt-trust-t/';
+    v_q uuid;
+  begin
+    insert into public.marketplace_image_fingerprints (ref, sha256, vendor_id) values
+      (s_ref || 's16-q.jpg', repeat('8a', 32), va), (s_ref || 's16-q2.jpg', repeat('8b', 32), va),
+      (s_ref || 's16-n.jpg', repeat('8a', 32), va);
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s16', 'S16 clean', 1500),
+      array[s_ref || 's16-q.jpg', s_ref || 's16-q2.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    insert into public.marketplace_products (slug, vendor_id, title, summary, description, sku, base_price, approval_status)
+      values ('mkt-trust-t-s16', va, 'S16 clean', 'A clean summary', 'A clean description', 'SKU-mkt-trust-t-s16', 1500, 'approved')
+      returning id into v_q;
+    insert into public.marketplace_product_media (product_id, url, kind, is_primary, sort_order) values
+      (v_q, s_ref || 's16-q.jpg', 'image', true, 0), (v_q, s_ref || 's16-q2.jpg', 'image', false, 1);
+    -- out of the catalogue (no hold yet), the picture removed, then a person turns it down
+    update public.marketplace_products set approval_status = 'under_review' where id = v_q;
+    delete from public.marketplace_product_media where product_id = v_q and url = s_ref || 's16-q.jpg';
+    reset role;
+    update public.marketplace_products set approval_status = 'rejected', reviewed_by = staff, reviewed_at = now() where id = v_q;
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, va, public.mkt_trust_test_listing('mkt-trust-t-s16-n', 'S16 again', 1500),
+      array[s_ref || 's16-n.jpg'], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'hold' then
+      raise warning 'VIOLATION S16: a picture the listing was last approved with published again after a person''s "no": %', v;
+      violations := violations + 1;
+    end if;
+  end;
+
+  -- ---- S9. at onboarding, a look-alike of another store's handle is that handle
+  insert into public.marketplace_vendors (slug, name, owner_user_id, owner_type, status)
+    values ('mkt-trust-t-S9-Shop', 'S9 Shop', outsider, 'vendor', 'approved');
+  insert into auth.users (id, email) values ('a1000000-0000-4000-8000-000000000019', 's9@mkt-trust.test')
+    on conflict (id) do nothing;
+  insert into public.marketplace_vendor_applications
+    (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at)
+  values
+    ('a1000000-0000-4000-8000-000000000019', 's9@mkt-trust.test', 'S9 Shop', 'mkt-trust-t-s9-shop', 'S Ltd',
+     'submitted', now())
+  returning id into v_app;
+  begin
+    set local role service_role;
+    perform public.marketplace_gate_instant_onboard(
+      'a1000000-0000-4000-8000-000000000019', v_app, '{}'::text[], '{}'::jsonb, 'test', public.mkt_trust_test_profile_hash(v_app));
+    reset role;
+    raise warning 'VIOLATION S9: a store was opened under a look-alike of another store''s handle'; violations := violations + 1;
+  exception when others then
+    get stacked diagnostics v_hint = pg_exception_hint;
+    reset role;
+    if v_hint is distinct from 'store_handle_taken' then
+      raise warning 'VIOLATION S9: wrong refusal: % (hint %)', sqlerrm, v_hint; violations := violations + 1;
+    end if;
+  end;
+  delete from public.marketplace_vendor_applications where user_id = 'a1000000-0000-4000-8000-000000000019';
+
+  -- ---- S10. decisions made before the gate: recorded once, from each account's LATEST decision
+  insert into auth.users (id, email) values
+    ('a1000000-0000-4000-8000-000000000015', 's10-rejected@mkt-trust.test'),
+    ('a1000000-0000-4000-8000-000000000016', 's10-approved-later@mkt-trust.test'),
+    ('a1000000-0000-4000-8000-000000000017', 's10-already-open@mkt-trust.test'),
+    ('a1000000-0000-4000-8000-000000000018', 's10-resubmitted@mkt-trust.test')
+    on conflict (id) do nothing;
+  insert into public.marketplace_vendor_applications
+    (user_id, normalized_email, store_name, proposed_store_slug, legal_name, status, agreement_accepted_at,
+     reviewed_at, reviewed_by)
+  values
+    ('a1000000-0000-4000-8000-000000000015', 's10a@mkt-trust.test', 'S10 A', 'mkt-trust-t-s10a', 'S Ltd',
+     'rejected', now(), now() - interval '40 days', staff),
+    ('a1000000-0000-4000-8000-000000000016', 's10b@mkt-trust.test', 'S10 B', 'mkt-trust-t-s10b', 'S Ltd',
+     'rejected', now(), now() - interval '40 days', staff),
+    ('a1000000-0000-4000-8000-000000000016', 's10b@mkt-trust.test', 'S10 B', 'mkt-trust-t-s10b2', 'S Ltd',
+     'approved', now(), now() - interval '10 days', staff),
+    ('a1000000-0000-4000-8000-000000000017', 's10c@mkt-trust.test', 'S10 C', 'mkt-trust-t-s10c', 'S Ltd',
+     'changes_requested', now(), now() - interval '5 days', staff),
+    ('a1000000-0000-4000-8000-000000000018', 's10d@mkt-trust.test', 'S10 D', 'mkt-trust-t-s10d', 'S Ltd',
+     'submitted', now(), now() - interval '5 days', staff);
+  insert into public.marketplace_seller_revocations (owner_user_id, revoked_by)
+    values ('a1000000-0000-4000-8000-000000000017', staff);
+  perform public.marketplace_gate_seed_revocations();
+  if (select count(*) from public.marketplace_seller_revocations
+       where owner_user_id = 'a1000000-0000-4000-8000-000000000015' and lifted_at is null) <> 1 then
+    raise warning 'VIOLATION S10a: an account whose latest decision was a rejection was not recorded'; violations := violations + 1;
+  end if;
+  if (select count(*) from public.marketplace_seller_revocations
+       where owner_user_id = 'a1000000-0000-4000-8000-000000000016') <> 0 then
+    raise warning 'VIOLATION S10b: an account approved after an earlier rejection was recorded as revoked'; violations := violations + 1;
+  end if;
+  if (select count(*) from public.marketplace_seller_revocations
+       where owner_user_id = 'a1000000-0000-4000-8000-000000000017' and lifted_at is null) <> 1 then
+    raise warning 'VIOLATION S10c: an account was recorded twice'; violations := violations + 1;
+  end if;
+  if (select count(*) from public.marketplace_seller_revocations
+       where owner_user_id = 'a1000000-0000-4000-8000-000000000018') <> 0 then
+    raise warning 'VIOLATION S10d: a re-submitted application was read as a rejection'; violations := violations + 1;
+  end if;
+  delete from public.marketplace_vendor_applications where user_id in (
+    'a1000000-0000-4000-8000-000000000015', 'a1000000-0000-4000-8000-000000000016',
+    'a1000000-0000-4000-8000-000000000017', 'a1000000-0000-4000-8000-000000000018');
 
   if violations > 0 then
     raise exception 'V3-MKT-TRUST-01 guard behaviour FAILED: % violation(s)', violations;

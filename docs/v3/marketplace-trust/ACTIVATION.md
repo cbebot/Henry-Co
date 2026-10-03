@@ -147,10 +147,13 @@ its ratings, counters, description and badges stay, and no second store is opene
 migration's code, the approval rewrote the store and reset those numbers.) This applies with the
 flag off too.
 
-**"Revoke approval" is recorded.** Rejecting, or sending back, an application you had approved is
-recorded by the database. With the flag on, the gate then publishes nothing for that account's
-stores and opens no store for it until you approve an application of that account again. Listings
-already live stay live — take them out of the catalogue if you need to.
+**A "no" to a seller is recorded.** Rejecting, or sending back, any application of an account —
+"Revoke approval" included — is recorded by the database, and so is every such decision made before
+the migration (each account's latest decided application; the preflight counts them). With the flag
+on, the gate then publishes nothing for that account's stores and opens no store for it until you
+approve an application of that account again. Listings already live stay live — take them out of
+the catalogue if you need to. These decisions are recorded only when the deciding account holds a
+marketplace staff role (step 4 lists who does) — the hub owner included.
 
 **A listing a person rejected stays a person's decision.** With the flag on, a seller pressing
 Publish again on a listing you rejected (or sent back for changes) is held for you, not published.

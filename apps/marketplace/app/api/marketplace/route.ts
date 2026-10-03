@@ -2115,25 +2115,17 @@ export async function POST(request: Request) {
             .from("marketplace_vendors")
             .select("id")
             .eq("owner_user_id", applicant)
-            .neq("owner_type", "company")
             .order("created_at", { ascending: true })
             .limit(1)
             .maybeSingle();
           ownedStoreId = (ownedStore as { id?: string } | null)?.id ? String((ownedStore as { id: string }).id) : null;
         }
 
-        await admin
-          .from("marketplace_vendor_applications")
-          .update({
-            status: decision,
-            review_note: reviewNote || null,
-            reviewed_at: new Date().toISOString(),
-            reviewed_by: viewer.user?.id ?? null,
-          } as never)
-          .eq("id", applicationId);
-
+        // An approval opens (or re-opens) the store FIRST and only then marks the
+        // application approved: a store write the database refuses changes nothing, and
+        // a person's earlier "no" stays recorded until an approval has really landed.
+        let vendor: { id?: string } | null = null;
         if (decision === "approved") {
-          let vendor: { id?: string } | null = null;
           if (ownedStoreId) {
             // The applicant's existing store, re-opened as it is: its ratings, counters,
             // description and badges stay what they are, and no second store is opened.
@@ -2187,36 +2179,39 @@ export async function POST(request: Request) {
             vendor = openedStore as { id?: string } | null;
           }
 
-          // No store, no seller role: a refused store write leaves the application where
-          // it was instead of granting a role with no store behind it.
+          // No store: no approval and no seller role.
           if (!vendor?.id) {
-            await admin
-              .from("marketplace_vendor_applications")
-              .update({
-                status: application.status,
-                review_note: application.review_note ?? null,
-                reviewed_at: application.reviewed_at,
-                reviewed_by: application.reviewed_by,
-              } as never)
-              .eq("id", applicationId);
             return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=decision-failed`);
           }
+        }
 
+        const { error: decisionError } = await admin
+          .from("marketplace_vendor_applications")
+          .update({
+            status: decision,
+            review_note: reviewNote || null,
+            reviewed_at: new Date().toISOString(),
+            reviewed_by: viewer.user?.id ?? null,
+          } as never)
+          .eq("id", applicationId);
+        if (decisionError) {
+          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=decision-failed`);
+        }
+
+        if (decision === "approved" && vendor?.id) {
           // Seed initial trust snapshot for audit trail
-          if (vendor?.id) {
-            void syncVendorTrustScore(
-              String(vendor.id),
-              "vendor_application_approved"
-            ).catch(() => {
-              // Best-effort — do not block application approval
-            });
-          }
+          void syncVendorTrustScore(
+            String(vendor.id),
+            "vendor_application_approved"
+          ).catch(() => {
+            // Best-effort — do not block application approval
+          });
 
           await admin.from("marketplace_role_memberships").upsert({
             user_id: application.user_id,
             normalized_email: application.normalized_email,
             scope_type: "vendor",
-            scope_id: vendor?.id ?? null,
+            scope_id: vendor.id,
             role: "vendor",
             is_active: true,
           } as never);

@@ -164,7 +164,6 @@ export async function applySellerDecision(input: {
       .from("marketplace_vendors")
       .select("id")
       .eq("owner_user_id", applicantUserId)
-      .neq("owner_type", "company")
       .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle();
@@ -192,22 +191,12 @@ export async function applySellerDecision(input: {
     return { ok: false, error: "Audit logging failed; seller application was not changed." };
   }
 
-  // The application status update — matches the marketplace route's columns
-  // exactly (status, review_note, reviewed_at, reviewed_by).
-  await admin
-    .from("marketplace_vendor_applications")
-    .update({
-      status: decision,
-      review_note: note.trim() || null,
-      reviewed_at: now,
-      reviewed_by: actorId,
-    } as never)
-    .eq("id", applicationId);
-
-  // On approval, actually activate the seller: upsert the vendor store record
-  // and grant the vendor role membership (marketplace route parity).
+  // On approval the store is opened (or re-opened) FIRST and only then is the
+  // application marked approved (marketplace route parity): a store write the
+  // database refuses changes nothing, and a person's earlier "no" stays recorded
+  // until an approval has really landed.
+  let vendor: { id?: string } | null = null;
   if (decision === "approved") {
-    let vendor: { id?: string } | null = null;
     if (ownedStoreId) {
       // The applicant's existing store, re-opened as it is: its ratings, counters,
       // description and badges stay what they are, and no second store is opened.
@@ -265,25 +254,33 @@ export async function applySellerDecision(input: {
       vendor = openedStore as { id?: string } | null;
     }
 
-    // No store, no seller role: put the application back as it was and say so.
+    // No store: nothing is approved and no seller role is granted.
     if (!vendor?.id) {
-      await admin
-        .from("marketplace_vendor_applications")
-        .update({
-          status: application.status,
-          review_note: application.review_note ?? null,
-          reviewed_at: application.reviewed_at ?? null,
-          reviewed_by: application.reviewed_by ?? null,
-        } as never)
-        .eq("id", applicationId);
       return { ok: false, error: "The store could not be opened. Nothing was approved." };
     }
+  }
 
+  // The application status update — matches the marketplace route's columns
+  // exactly (status, review_note, reviewed_at, reviewed_by).
+  const { error: decisionError } = await admin
+    .from("marketplace_vendor_applications")
+    .update({
+      status: decision,
+      review_note: note.trim() || null,
+      reviewed_at: now,
+      reviewed_by: actorId,
+    } as never)
+    .eq("id", applicationId);
+  if (decisionError) {
+    return { ok: false, error: "The decision could not be saved. Try again." };
+  }
+
+  if (decision === "approved" && vendor?.id) {
     await admin.from("marketplace_role_memberships").upsert({
       user_id: application.user_id,
       normalized_email: application.normalized_email,
       scope_type: "vendor",
-      scope_id: vendor?.id ?? null,
+      scope_id: vendor.id,
       role: "vendor",
       is_active: true,
     } as never);

@@ -153,19 +153,28 @@ TRUNCATE privileges on the guarded tables.
 and a person's own rejection or request for changes all stand against the listing until a person
 approves it. They are matched on the listing id and on store + handle, so deleting the row and
 creating it again under the same handle does not shed them; a listing under such a hold keeps its
-handle while it stands, and an approval lifts handle-bound holds only of listings that no longer
-exist. Listing the same item again under any handle is held too: the held listing's pictures are
-kept with the hold (bytes and perceptual hash), so removing them from the held listing, deleting it,
-or re-saving the picture does not shed it. A picture the listing was itself approved with, or one
-that is also on another live listing of the store (a size chart, a logo), is not counted. Only a
-genuine staff decision counts as a decision — a bare status write records nothing.
+handle while it stands. A person approving a listing lifts that listing's own holds; a DELETED
+listing's hold that was bound to the same handle is released from the handle but kept, so approving
+a harmless listing under that handle does not clear the evidence. Listing the same item again under
+any handle is held too: the pictures a held listing showed — when the hold was placed, at every
+later decision by a person, and every picture deleted, moved or replaced on it since — are kept with
+the hold (bytes and perceptual hash), so removing them, deleting the listing or re-saving the picture
+does not shed it. A picture the listing was itself approved with, or one that is also on another
+live listing of the store (a size chart, a logo), is not counted. The matches are found first and
+only they are looked for in the live catalogue (a store with 3,000 live listings and 400 held ones:
+under 200 ms). Only a genuine staff decision counts as a decision — a bare status write records
+nothing.
 
-**A person's revocation binds the engine too.** "Revoke approval" — a person rejecting, or sending
-back, an application that was approved — is recorded in its own table by a trigger on the decision
-itself: the seller's re-submission rewrites the application row and must not undo it. While it
-stands, the engine publishes nothing for the account's stores and opens no store for it; a person's
-approval of an application of the same account lifts it. Listings already live stay live, as they
-always did: a person decides about them.
+**A person's "no" to an account binds the engine too.** A person rejecting, or sending back, an
+application of the account — "Revoke approval" included, and whatever the application said before —
+is recorded in its own table by a trigger on the decision itself: the seller's re-submission
+rewrites the application row and must not undo it. Decisions made before the gate existed are
+recorded once, when the table is first created (each account's latest decided application). While
+it stands, the engine publishes nothing for the account's stores — a publish verdict minted before
+it is not usable after it — and opens no store for it; a person's approval of an application of the
+same account lifts it. Listings already live stay live, as they always did: a person decides about
+them. Approvals open (or re-open) the store first and mark the application approved only once that
+landed, so a refused store step changes nothing.
 
 **Stores.** A store's owner never changes and its type never changes by UPDATE: the legacy approval
 writes the store with an upsert on its handle, and an application naming another store's handle
@@ -176,8 +185,11 @@ in any letter case — and grant no seller role unless the store write landed. A
 already owns a store keeps that one store: the approval re-opens it as it is (its ratings, counters,
 description and badges stay) and never opens a second one. With instant publish on, the handle a
 seller types is normalised before it is screened, saved and opened. A listing never moves to another
-store. The company's exemptions (catalogue publishing, probation, payout identity) need a company
-store with **no** owner; a store of company type that names an owner is that owner's store.
+store, and a seller's listing is never taken into the company's store. The company's exemptions
+(catalogue publishing, probation, payout identity) need a company store with **no** owner; a store
+of company type that names an owner is that owner's store, and keeps its owner (deleting that
+account is refused rather than turning it into the company's store). An applicant who already owns
+any store — of whatever type — keeps that one store.
 
 **Pictures.** The media and variant guards lock the listing row while they read it, so a picture or
 a variant cannot slip onto a listing whose publish is still in flight in another transaction. A
@@ -364,8 +376,10 @@ behind the flag are deliberate and inert:
   command-palette entry. The page says the ledger is not available until the migration is applied;
 - both seller-approval paths (marketplace console and hub): an applicant who already owns a store
   has that store re-opened as it is — the legacy upsert reset its ratings and counters, and could
-  open a second store — and a handle that matches another store in any letter case is refused with
-  a notice, which now also shows on the console's seller-application pages.
+  open a second store — a handle that matches another store in any letter case is refused with a
+  notice (which now also shows on the console's seller-application pages), an application with no
+  account behind it is not approved, and the store is opened before the application is marked
+  approved (a refused store step leaves everything as it was).
 
 With the migration applied and the flag OFF, the guard is satisfied by today's flows: sellers only
 ever write `draft`/`submitted`/`under_review`, and the human approval paths already stamp
