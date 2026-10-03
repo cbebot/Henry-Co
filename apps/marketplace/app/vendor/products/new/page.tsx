@@ -8,6 +8,8 @@ import { getMarketplaceHomeData, getVendorWorkspaceData } from "@/lib/marketplac
 import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { formatVendorMoney } from "@/lib/marketplace/vendor/money";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { GateNote } from "@/components/marketplace/vendor/gate-panels";
+import { loadVendorGateSurface } from "@/lib/marketplace/publish-gate/surfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,9 @@ export default async function NewVendorProductPage() {
   const t = (text: string) => translateSurfaceLabel(locale, text);
   await requireMarketplaceRoles(["vendor", "marketplace_owner", "marketplace_admin"], "/vendor/products/new");
   const [data, vendorData] = await Promise.all([getMarketplaceHomeData(), getVendorWorkspaceData()]);
+  // V3-MKT-TRUST-01 — null unless instant publish is on. The second button then
+  // publishes; what actually happened comes back from the server as the toast.
+  const gate = await loadVendorGateSurface(vendorData.vendor.id, locale);
 
   return (
     <WorkspaceShell
@@ -76,6 +81,11 @@ export default async function NewVendorProductPage() {
                 )}
               </div>
             </div>
+            {gate ? (
+              <div className="mt-4">
+                <GateNote>{gate.copy.action.formIntro}</GateNote>
+              </div>
+            ) : null}
           </section>
         }
         form={{
@@ -89,20 +99,24 @@ export default async function NewVendorProductPage() {
             {
               name: "submission_mode",
               value: "draft",
-              label: t("Save draft"),
-              pendingLabel: t("Saving draft"),
+              label: gate ? gate.copy.action.saveDraft : t("Save draft"),
+              pendingLabel: gate ? gate.copy.action.savingDraft : t("Saving draft"),
               className: "market-button-secondary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
-              successTitle: t("Draft saved."),
-              successBody: t("The listing stays private until you submit it for moderation."),
+              successTitle: gate ? gate.copy.result.draftTitle : t("Draft saved."),
+              successBody: gate
+                ? gate.copy.result.draftBody
+                : t("The listing stays private until you submit it for moderation."),
             },
             {
               name: "submission_mode",
               value: "submit",
-              label: t("Submit for moderation"),
-              pendingLabel: t("Submitting for moderation"),
+              label: gate ? gate.copy.action.publishNow : t("Submit for moderation"),
+              pendingLabel: gate ? gate.copy.action.publishing : t("Submitting for moderation"),
               className: "market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
-              successTitle: t("Submitted for moderation."),
-              successBody: t("The listing enters review with pricing governance and trust scoring applied."),
+              successTitle: gate ? gate.copy.result.publishedTitle : t("Submitted for moderation."),
+              successBody: gate
+                ? gate.copy.result.publishedBody
+                : t("The listing enters review with pricing governance and trust scoring applied."),
               chime: true,
             },
           ],

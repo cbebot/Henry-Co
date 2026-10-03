@@ -3,6 +3,9 @@ import { MediaValidationError } from "@henryco/media";
 import { getMarketplaceViewer, viewerHasRole } from "@/lib/marketplace/auth";
 import { uploadMarketplaceImage } from "@/lib/marketplace/media";
 import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
+import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
+import { registerUploadedImage } from "@/lib/marketplace/publish-gate/server";
+import { createAdminSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
@@ -30,6 +33,21 @@ export async function POST(request: Request) {
 
   try {
     const ref = await uploadMarketplaceImage(`${scope}/${viewer.user.id}`, file);
+    // V3-MKT-TRUST-01 — record who had this picture first. Flag ON only, product
+    // photos only, and best-effort: an upload never fails on it, and the publish
+    // gate fingerprints anything this misses.
+    if (scope === "product" && isInstantPublishEnabled()) {
+      try {
+        await registerUploadedImage(createAdminSupabase(), {
+          ref,
+          bytes: new Uint8Array(await file.arrayBuffer()),
+          uploaderId: viewer.user.id,
+          vendorId: viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId ?? null,
+        });
+      } catch {
+        // fingerprinting is not part of the upload contract
+      }
+    }
     return NextResponse.json({ ok: true, ref, url: resolveMarketplaceImageUrl(ref) });
   } catch (error) {
     if (error instanceof MediaValidationError) {

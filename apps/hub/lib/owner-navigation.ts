@@ -77,6 +77,7 @@ export const ownerNavItems: OwnerNavItem[] = [
       { href: "/owner/operations", label: "Overview", icon: LayoutDashboard },
       { href: "/owner/operations/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/owner/operations/approvals", label: "Approval center", icon: ClipboardCheck },
+      { href: "/owner/operations/marketplace-trust", label: "Marketplace trust", icon: Shield },
       { href: "/owner/operations/queues", label: "Task Queues", icon: ListTodo },
       { href: "/owner/operations/alerts", label: "Alerts", icon: AlertTriangle },
       { href: "/owner/divisions/performance", label: "Division Ranking", icon: BarChart3 },

@@ -11,6 +11,8 @@ import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
 import { approvalStatusLabel, listingGuidance } from "@/lib/marketplace/vendor/listing-guidance";
 import { vendorWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { ListingGatePanel } from "@/components/marketplace/vendor/gate-panels";
+import { listingGateView, loadVendorGateSurface } from "@/lib/marketplace/publish-gate/surfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +33,10 @@ export default async function VendorProductDetailPage({
   const [data, snapshot] = await Promise.all([getVendorWorkspaceData(), getMarketplaceHomeData()]);
   const product = data.products.find((item) => item.id === id);
   if (!product) notFound();
+  // V3-MKT-TRUST-01 — null unless instant publish is on.
+  const gate = await loadVendorGateSurface(data.vendor.id, locale);
+  const gateView = gate ? listingGateView(gate, product, locale) : null;
+  const isLive = product.approvalStatus === "approved";
 
   return (
     <WorkspaceShell
@@ -71,20 +77,38 @@ export default async function VendorProductDetailPage({
               {
                 name: "submission_mode",
                 value: "draft",
-                label: t("Save draft"),
-                pendingLabel: t("Saving draft"),
+                label: gate
+                  ? isLive
+                    ? gate.copy.action.unpublishDraft
+                    : gate.copy.action.saveDraft
+                  : t("Save draft"),
+                pendingLabel: gate ? gate.copy.action.savingDraft : t("Saving draft"),
                 className: "market-button-secondary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
-                successTitle: t("Draft saved."),
-                successBody: t("The listing stays private until you submit it for moderation."),
+                successTitle: gate ? gate.copy.result.draftTitle : t("Draft saved."),
+                successBody: gate
+                  ? gate.copy.result.draftBody
+                  : t("The listing stays private until you submit it for moderation."),
               },
               {
                 name: "submission_mode",
                 value: "submit",
-                label: t("Submit update"),
-                pendingLabel: t("Submitting update"),
+                label: gate
+                  ? isLive
+                    ? gate.copy.action.publishUpdate
+                    : gate.copy.action.publishNow
+                  : t("Submit update"),
+                pendingLabel: gate ? gate.copy.action.publishing : t("Submitting update"),
                 className: "market-button-primary rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-wait disabled:opacity-80",
-                successTitle: t("Update submitted."),
-                successBody: t("The revised listing enters moderation review."),
+                successTitle: gate
+                  ? isLive
+                    ? gate.copy.result.updatedTitle
+                    : gate.copy.result.publishedTitle
+                  : t("Update submitted."),
+                successBody: gate
+                  ? isLive
+                    ? gate.copy.result.updatedBody
+                    : gate.copy.result.publishedBody
+                  : t("The revised listing enters moderation review."),
                 chime: true,
               },
             ],
@@ -152,11 +176,18 @@ export default async function VendorProductDetailPage({
                   coverHint: t("The first photo is the product’s cover; the rest sit behind it in the gallery."),
                 }}
               />
+              {gate && isLive ? (
+                <label className="flex items-start gap-3 rounded-[1.35rem] border border-[var(--market-line)] bg-[var(--market-bg-soft)] px-4 py-4 text-sm leading-7 text-[var(--market-ink)]">
+                  <input type="checkbox" name="on_hold" value="review" className="mt-1.5" />
+                  <span>{gate.copy.action.reviewOnHold}</span>
+                </label>
+              ) : null}
             </section>
           }
         />
 
         <aside className="space-y-4">
+          {gate && gateView ? <ListingGatePanel view={gateView} intro={gate.copy.action.formIntro} /> : null}
           <article className="market-paper rounded-[1.9rem] p-6">
             <p className="market-kicker">{t("Moderation readiness")}</p>
             <div className="mt-5 grid gap-4">

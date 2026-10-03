@@ -117,6 +117,21 @@ jobs:
       - name: Test (@henryco/dashboard-modules-staff — lens gate + recommendation state)
         run: pnpm --filter @henryco/dashboard-modules-staff run test
 
+      # V3-MKT-TRUST-01 — the instant-publish policy lives in three places, and
+      # none of them was gated before: the contact detector (@henryco/trust), the
+      # content ruleset (@henryco/moderation) and the marketplace gate that
+      # composes them. The marketplace suite proves every gate outcome and reason
+      # code, the probation caps, payout eligibility and that an AI result can
+      # only add; it also brings the app's existing unit tests under CI.
+      - name: Test (@henryco/trust — contact detection, plain and disguised)
+        run: pnpm --filter @henryco/trust run test
+
+      - name: Test (@henryco/moderation — default ruleset pinned + listing ruleset)
+        run: pnpm --filter @henryco/moderation run test
+
+      - name: Test (@henryco/marketplace — publish gate: every outcome and reason code)
+        run: pnpm --filter @henryco/marketplace run test
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
 
@@ -485,3 +500,25 @@ jobs:
 
       - name: Prove the per-role RLS matrix (support staff read 0 risk rows; no actorless accept; writes service-role only)
         run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/staff_intelligence_rls_matrix.sql
+
+      # V3-MKT-TRUST-01 INSTANT PUBLISH — the DB half of "no path can set a listing
+      # live without a recorded gate verdict". Every marketplace write is a
+      # service-role write, so RLS is not the backstop: the guard trigger is, and it
+      # binds service_role too. The behaviour file runs each attack as a real
+      # Postgres role (direct live write, forged verdict, IDOR, clean -> prohibited
+      # edit, the upsert path, media swap, probation caps, payout identity). Locally
+      # it is mutation-tested: every mutant of the migration turns it red.
+      - name: Seed the marketplace tables the instant-publish guard hangs on (V3-MKT-TRUST-01)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/mkt_trust_min.sql
+
+      - name: Apply V3-MKT-TRUST-01 instant-publish migration (fresh)
+        run: psql -v ON_ERROR_STOP=1 -f apps/marketplace/supabase/migrations/20261002120000_v3_mkt_trust_01_instant_publish.sql
+
+      - name: Re-apply V3-MKT-TRUST-01 migration (idempotence)
+        run: psql -v ON_ERROR_STOP=1 -f apps/marketplace/supabase/migrations/20261002120000_v3_mkt_trust_01_instant_publish.sql
+
+      - name: Enforce instant-publish grant invariant (ledger default-deny; RPCs service_role-only; guards installed)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/mkt_trust_grant_invariant.sql
+
+      - name: Prove the publish guard at runtime (no live listing without a recorded verdict, for any role)
+        run: psql -v ON_ERROR_STOP=1 -f apps/hub/supabase/tests/mkt_trust_guard_behaviour.sql

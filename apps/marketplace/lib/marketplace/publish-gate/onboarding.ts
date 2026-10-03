@@ -1,0 +1,253 @@
+// V3-MKT-TRUST-01 — opening a store without a human approval. SERVER ONLY.
+//
+// Called by /api/seller-applications after an application is saved as
+// "submitted", when MARKETPLACE_INSTANT_PUBLISH is on. Three answers:
+//
+//   opened  — the store exists, the seller holds the vendor role, and a
+//             probation row was written IN THE SAME TRANSACTION (the database
+//             function does all of it atomically; no TS branch can open a store
+//             that escapes the caps or the payout identity guard).
+//   review  — the application stays in the legacy queue and a person decides:
+//             the content needs a look, the account is under a staff risk hold,
+//             the handle was taken a moment ago, or the gate is not installed.
+//   already — this account already owns a store.
+//
+// Nothing here creates a vendor row, a membership or a verdict directly — the
+// service-role key holds no write grant on the ledger. Only the RPC can.
+
+import "server-only";
+
+import { createHash } from "node:crypto";
+import { emitGateEvent, outcomeToEvent } from "./events";
+import type { GateVerdict } from "./policy";
+import { GATE_ENGINE_VERSION, composeOutcome, normalizeReasons, type GateReasonCode } from "./reasons";
+import { guardHint, isMissingRpc, readSellerGateState, readStaffRiskHold, type GateAdmin } from "./server";
+
+export type InstantOnboardResult =
+  | { kind: "opened"; vendorId: string; slug: string; identityVerified: boolean }
+  | { kind: "already_seller"; vendorId: string | null; vendorStatus: string | null; applicationApproved: boolean }
+  | {
+      kind: "review";
+      why: "held" | "handle_taken" | "prior_decision" | "profile_changed" | "gate_not_installed" | "error";
+      reasons: GateReasonCode[];
+    };
+
+/**
+ * The fingerprint of a store profile AS SCREENED: handle, name and story. The
+ * database opens the store from the application row, and refuses unless the row
+ * still hashes to this — so a save that lands between the screen and the opening
+ * cannot put unscreened text on a live store. Each field is digested on its own, so
+ * text cannot slide from one field into the next without changing the hash. Must
+ * match the SQL exactly: sha256(hex sha256(lower(handle)) || hex sha256(name) ||
+ * hex sha256(story)), UTF-8, hex.
+ */
+export function screenedProfileHash(profile: { slug: string; name: string; story: string | null }): string {
+  const digest = (value: string) => createHash("sha256").update(value, "utf8").digest("hex");
+  const slug = String(profile.slug ?? "").trim().toLowerCase();
+  const name = String(profile.name ?? "").trim();
+  const story = String(profile.story ?? "");
+  return digest(`${digest(slug)}${digest(name)}${digest(story)}`);
+}
+
+const TRUST_FLAG_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * Unresolved trust flags on the account in the last 30 days (the existing
+ * repeat-offender signal). A read that fails answers "flagged": a store is not
+ * opened instantly on a check that could not be made — a person decides instead.
+ */
+async function hasOpenTrustFlags(admin: GateAdmin, userId: string): Promise<boolean> {
+  try {
+    const { count, error } = await admin
+      .from("trust_flags")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .is("resolved_at", null)
+      .gte("created_at", new Date(Date.now() - TRUST_FLAG_WINDOW_MS).toISOString());
+    if (error) return true;
+    return (count ?? 0) > 0;
+  } catch {
+    return true;
+  }
+}
+
+/** The store this account already owns, if any. */
+async function readOwnedStore(admin: GateAdmin, userId: string): Promise<{ id: string; status: string | null } | null> {
+  try {
+    const { data } = await admin
+      .from("marketplace_vendors")
+      .select("id, status")
+      .eq("owner_user_id", userId)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    const row = data as { id?: string; status?: string | null } | null;
+    return row?.id ? { id: String(row.id), status: row.status ?? null } : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function instantOnboard(
+  admin: GateAdmin,
+  input: {
+    actorId: string;
+    applicationId: string;
+    /** The deterministic store-profile verdict (evaluateStorePolicy). */
+    verdict: Pick<GateVerdict, "outcome" | "reasons">;
+    moderationDetail: ReadonlyArray<string>;
+    /** screenedProfileHash() of the handle, name and story that verdict was given for. */
+    profileHash: string;
+    /**
+     * A person already rejected this account's application, or sent it back for
+     * changes. The gate does not decide it again: it goes back to a person.
+     */
+    priorDecision?: boolean;
+  },
+): Promise<InstantOnboardResult> {
+  const codes: GateReasonCode[] = [...input.verdict.reasons];
+
+  // One store per account, whatever the screen says: an account that already owns
+  // one has nothing to wait for, and its application must not sit in the staff
+  // queue as a second, approvable request (an approval there would open — or
+  // re-approve — a store with no gate in front of it).
+  const owned = await readOwnedStore(admin, input.actorId);
+  if (owned) {
+    // The application is closed as "approved" only when that store is open, no person
+    // has withdrawn the owner's approval (the seller state reads "revoked" then, and
+    // the database answers the same way), and no person decided this application —
+    // otherwise it stays with a person.
+    const standing = await readSellerGateState(admin, owned.id, null);
+    const vendorStatus = standing.state?.vendor.status ?? null;
+    let applicationApproved = false;
+    if (vendorStatus === "approved" && !input.priorDecision) {
+      try {
+        const { data } = await admin
+          .from("marketplace_vendor_applications")
+          .update({ status: "approved" } as never)
+          .eq("id", input.applicationId)
+          .eq("user_id", input.actorId) // only the actor's own application, whatever id was passed
+          .eq("status", "submitted")
+          .select("id");
+        applicationApproved = Array.isArray(data) && data.length > 0;
+      } catch {
+        // the answer below does not depend on it
+      }
+    }
+    return { kind: "already_seller", vendorId: owned.id, vendorStatus: vendorStatus ?? owned.status, applicationApproved };
+  }
+
+  // A person already decided this account's application: it goes back to a person.
+  if (input.priorDecision) {
+    const reasons = normalizeReasons(codes);
+    await emitGateEvent({
+      admin,
+      name: "henry.marketplace.seller_gate.decided",
+      outcome: outcomeToEvent("hold"),
+      actorId: input.actorId,
+      payload: { applicationId: input.applicationId, why: "prior_decision", path: "legacy_review" },
+    });
+    return { kind: "review", why: "prior_decision", reasons };
+  }
+
+  // A staff-applied V3-40 hold/freeze, or open trust flags, send the application
+  // to a person. This gate reads those systems; it never writes to them.
+  const [riskGated, flagged] = await Promise.all([
+    readStaffRiskHold(admin, { accountId: input.actorId, listingId: null }),
+    hasOpenTrustFlags(admin, input.actorId),
+  ]);
+  if (riskGated || flagged) codes.push("risk_hold_active");
+
+  const reasons = normalizeReasons(codes);
+  const outcome = composeOutcome(reasons);
+
+  if (outcome !== "publish") {
+    await emitGateEvent({
+      admin,
+      name: "henry.marketplace.seller_gate.decided",
+      outcome: outcomeToEvent(outcome),
+      actorId: input.actorId,
+      payload: { applicationId: input.applicationId, reasons, path: "legacy_review" },
+    });
+    return { kind: "review", why: "held", reasons };
+  }
+
+  let data: unknown = null;
+  let error: { code?: string; message?: string; hint?: string } | null = null;
+  try {
+    const result = await admin.rpc("marketplace_gate_instant_onboard", {
+      p_actor: input.actorId,
+      p_application_id: input.applicationId,
+      p_reasons: reasons,
+      p_signals: { moderationDetail: [...input.moderationDetail] },
+      p_engine_version: GATE_ENGINE_VERSION,
+      p_profile_hash: input.profileHash,
+    });
+    data = result.data;
+    error = result.error;
+  } catch {
+    error = { message: "rpc threw" };
+  }
+
+  if (error) {
+    const why = isMissingRpc(error)
+      ? ("gate_not_installed" as const)
+      : guardHint(error) === "store_handle_taken"
+        ? ("handle_taken" as const)
+        : guardHint(error) === "prior_human_decision"
+          ? ("prior_decision" as const)
+          : guardHint(error) === "profile_changed"
+            ? ("profile_changed" as const)
+            : ("error" as const);
+    await emitGateEvent({
+      admin,
+      name: "henry.marketplace.seller_gate.decided",
+      outcome: "failed",
+      actorId: input.actorId,
+      payload: { applicationId: input.applicationId, why, hint: guardHint(error), path: "legacy_review" },
+    });
+    return { kind: "review", why, reasons: ["gate_unavailable"] };
+  }
+
+  const payload = data && typeof data === "object" && !Array.isArray(data) ? (data as Record<string, unknown>) : {};
+  if (payload.onboarded === true && typeof payload.vendor_id === "string") {
+    await emitGateEvent({
+      admin,
+      name: "henry.marketplace.seller_gate.decided",
+      outcome: "approved",
+      actorId: input.actorId,
+      payload: {
+        applicationId: input.applicationId,
+        vendorId: payload.vendor_id,
+        identityVerified: payload.identity_verified === true,
+        reasons,
+      },
+    });
+    return {
+      kind: "opened",
+      vendorId: payload.vendor_id,
+      slug: typeof payload.slug === "string" ? payload.slug : "",
+      identityVerified: payload.identity_verified === true,
+    };
+  }
+
+  if (payload.why === "already_seller") {
+    // (A store appeared between the read above and this call.) The database marked
+    // the application only if that store is open and its approval stands.
+    return {
+      kind: "already_seller",
+      vendorId: typeof payload.vendor_id === "string" ? payload.vendor_id : null,
+      vendorStatus: typeof payload.vendor_status === "string" ? payload.vendor_status : null,
+      applicationApproved: false,
+    };
+  }
+
+  await emitGateEvent({
+    admin,
+    name: "henry.marketplace.seller_gate.decided",
+    outcome: "failed",
+    actorId: input.actorId,
+    payload: { applicationId: input.applicationId, why: "unexpected_answer", path: "legacy_review" },
+  });
+  return { kind: "review", why: "error", reasons: ["gate_unavailable"] };
+}

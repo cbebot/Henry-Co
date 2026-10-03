@@ -135,6 +135,41 @@ export async function applySellerDecision(input: {
   const applicantUserId = application.user_id ? String(application.user_id) : null;
   const storeName = String(application.store_name || "your store");
 
+  // The store is opened under the handle the applicant chose. A handle that already
+  // belongs to another account, to the company or to no one — in any letter case — is
+  // refused before anything changes (the marketplace database refuses the takeover
+  // too). An applicant who already owns a store keeps that one store: the approval
+  // re-opens it as it is (marketplace route parity).
+  let ownedStoreId: string | null = null;
+  if (decision === "approved") {
+    if (!applicantUserId) {
+      return { ok: false, error: "That application has no account behind it. Nothing was approved." };
+    }
+    const handle = String(application.proposed_store_slug || "");
+    const handleQuery = admin.from("marketplace_vendors").select("id, owner_user_id, owner_type");
+    const { data: handleOwners } = await (/^[A-Za-z0-9-]+$/.test(handle)
+      ? handleQuery.ilike("slug", handle)
+      : handleQuery.eq("slug", handle)
+    ).limit(5);
+    const handleTaken = ((handleOwners ?? []) as Array<{ owner_user_id?: string | null; owner_type?: string | null }>).some(
+      (owner) => owner.owner_type === "company" || String(owner.owner_user_id || "") !== applicantUserId,
+    );
+    if (handleTaken) {
+      return {
+        ok: false,
+        error: "That store handle already belongs to another store. Nothing was approved; ask the applicant to choose another handle.",
+      };
+    }
+    const { data: ownedStore } = await admin
+      .from("marketplace_vendors")
+      .select("id")
+      .eq("owner_user_id", applicantUserId)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    ownedStoreId = (ownedStore as { id?: string } | null)?.id ? String((ownedStore as { id: string }).id) : null;
+  }
+
   // Audit-first: its failure aborts before any state moves (staff-route parity).
   const { error: auditError } = await admin.from("staff_audit_logs").insert({
     actor_id: actorId,
@@ -156,9 +191,78 @@ export async function applySellerDecision(input: {
     return { ok: false, error: "Audit logging failed; seller application was not changed." };
   }
 
+  // On approval the store is opened (or re-opened) FIRST and only then is the
+  // application marked approved (marketplace route parity): a store write the
+  // database refuses changes nothing, and a person's earlier "no" stays recorded
+  // until an approval has really landed.
+  let vendor: { id?: string } | null = null;
+  if (decision === "approved") {
+    if (ownedStoreId) {
+      // The applicant's existing store, re-opened as it is: its ratings, counters,
+      // description and badges stay what they are, and no second store is opened.
+      const { error: reopenError } = await admin
+        .from("marketplace_vendors")
+        .update({ status: "approved" } as never)
+        .eq("id", ownedStoreId);
+      vendor = reopenError ? null : { id: ownedStoreId };
+    } else {
+      const { data: ownerProfile } = await admin
+        .from("customer_profiles")
+        .select("verification_status")
+        .eq("id", applicantUserId)
+        .maybeSingle();
+      const sharedVerificationStatus = normalizeVerificationStatus(
+        (ownerProfile as { verification_status?: string | null } | null)?.verification_status,
+      );
+      const vendorVerificationLevel = getVendorVerificationLevel(sharedVerificationStatus);
+      const vendorTrustScore = getInitialVendorTrustScore(sharedVerificationStatus);
+
+      const { data: openedStore } = await admin
+        .from("marketplace_vendors")
+        .upsert(
+          {
+            slug: application.proposed_store_slug,
+            name: application.store_name,
+            description: application.story || `${application.store_name} storefront`,
+            owner_user_id: application.user_id,
+            owner_type: "vendor",
+            status: "approved",
+            verification_level: vendorVerificationLevel,
+            trust_score: vendorTrustScore,
+            response_sla_hours: 6,
+            fulfillment_rate: 93,
+            dispute_rate: 2.5,
+            review_score: 4.5,
+            followers_count: 0,
+            accent: "#4D5F34",
+            hero_image_url: null,
+            badges: [
+              "Approved vendor",
+              sharedVerificationStatus === "verified"
+                ? "Identity verified"
+                : sharedVerificationStatus === "pending"
+                  ? "Identity under review"
+                  : "Identity required",
+            ],
+            support_email: application.normalized_email,
+            support_phone: application.contact_phone,
+          } as never,
+          { onConflict: "slug" },
+        )
+        .select("id")
+        .maybeSingle();
+      vendor = openedStore as { id?: string } | null;
+    }
+
+    // No store: nothing is approved and no seller role is granted.
+    if (!vendor?.id) {
+      return { ok: false, error: "The store could not be opened. Nothing was approved." };
+    }
+  }
+
   // The application status update — matches the marketplace route's columns
   // exactly (status, review_note, reviewed_at, reviewed_by).
-  await admin
+  const { error: decisionError } = await admin
     .from("marketplace_vendor_applications")
     .update({
       status: decision,
@@ -167,61 +271,16 @@ export async function applySellerDecision(input: {
       reviewed_by: actorId,
     } as never)
     .eq("id", applicationId);
+  if (decisionError) {
+    return { ok: false, error: "The decision could not be saved. Try again." };
+  }
 
-  // On approval, actually activate the seller: upsert the vendor store record
-  // and grant the vendor role membership (marketplace route parity).
-  if (decision === "approved") {
-    const { data: ownerProfile } = await admin
-      .from("customer_profiles")
-      .select("verification_status")
-      .eq("id", applicantUserId)
-      .maybeSingle();
-    const sharedVerificationStatus = normalizeVerificationStatus(
-      (ownerProfile as { verification_status?: string | null } | null)?.verification_status,
-    );
-    const vendorVerificationLevel = getVendorVerificationLevel(sharedVerificationStatus);
-    const vendorTrustScore = getInitialVendorTrustScore(sharedVerificationStatus);
-
-    const { data: vendor } = await admin
-      .from("marketplace_vendors")
-      .upsert(
-        {
-          slug: application.proposed_store_slug,
-          name: application.store_name,
-          description: application.story || `${application.store_name} storefront`,
-          owner_user_id: application.user_id,
-          owner_type: "vendor",
-          status: "approved",
-          verification_level: vendorVerificationLevel,
-          trust_score: vendorTrustScore,
-          response_sla_hours: 6,
-          fulfillment_rate: 93,
-          dispute_rate: 2.5,
-          review_score: 4.5,
-          followers_count: 0,
-          accent: "#4D5F34",
-          hero_image_url: null,
-          badges: [
-            "Approved vendor",
-            sharedVerificationStatus === "verified"
-              ? "Identity verified"
-              : sharedVerificationStatus === "pending"
-                ? "Identity under review"
-                : "Identity required",
-          ],
-          support_email: application.normalized_email,
-          support_phone: application.contact_phone,
-        } as never,
-        { onConflict: "slug" },
-      )
-      .select("id")
-      .maybeSingle();
-
+  if (decision === "approved" && vendor?.id) {
     await admin.from("marketplace_role_memberships").upsert({
       user_id: application.user_id,
       normalized_email: application.normalized_email,
       scope_type: "vendor",
-      scope_id: vendor?.id ?? null,
+      scope_id: vendor.id,
       role: "vendor",
       is_active: true,
     } as never);

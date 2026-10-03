@@ -22,6 +22,8 @@ export {
   checkImageHashes,
   hammingDistanceHex,
   normalizeForLexicon,
+  runListingRulesetV2,
+  LISTING_RULESET_VERSION,
   type DeterministicOptions,
 } from "./deterministic/index";
 

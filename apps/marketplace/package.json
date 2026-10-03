@@ -11,6 +11,8 @@
     "sync:division": "node ./scripts/sync-marketplace-division.mjs",
     "seed": "node ./scripts/seed-marketplace.mjs",
     "smoke": "node ./scripts/smoke-marketplace.mjs",
+    "gate:backfill": "tsx --conditions=react-server scripts/gate-backfill.mts",
+    "test": "tsx --test \"lib/marketplace/__tests__/*.test.ts\" \"lib/marketplace/*.test.ts\" \"lib/marketplace/vendor/*.test.ts\" \"lib/marketplace/publish-gate/__tests__/*.test.ts\" \"lib/checkout/__tests__/*.test.ts\" \"lib/messaging/__tests__/*.test.ts\"",
     "test:e2e": "playwright test"
   },
   "dependencies": {

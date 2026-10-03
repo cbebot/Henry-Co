@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getDivisionConfig, normalizeStateInput } from "@henryco/config";
@@ -42,6 +42,18 @@ import { isMarketplaceCardCheckoutReady } from "@/lib/checkout/card-rail";
 import { sendMessage as sendOnyxMessage } from "@henryco/messaging/server";
 import { clipBody, screenMessageBody } from "@/lib/messaging/screen-message";
 import { createMarketplaceMessagingAdapter } from "@/lib/messaging/adapter";
+import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { resolveMarketplaceImageUrl } from "@/lib/marketplace/media-image";
+import { createListingAiScan } from "@/lib/marketplace/publish-gate/ai";
+import { emitGateEvent } from "@/lib/marketplace/publish-gate/events";
+import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
+import { classifyImage, firstPartyMediaBases, isOwnUpload } from "@/lib/marketplace/publish-gate/image-refs";
+import { instantListingUpsert } from "@/lib/marketplace/publish-gate/listing-write";
+import { gateNotice } from "@/lib/marketplace/publish-gate/messages";
+import { evaluateStorePolicy } from "@/lib/marketplace/publish-gate/policy";
+import { isPolicyViolation } from "@/lib/marketplace/publish-gate/reasons";
+import { payoutBlockCode, readPayoutGate } from "@/lib/marketplace/publish-gate/payout";
+import { cartHasUnavailableListing, guardHint } from "@/lib/marketplace/publish-gate/server";
 import {
   bumpConversation,
   findOrCreateConversation,
@@ -542,6 +554,18 @@ export async function POST(request: Request) {
           .eq("cart_id", cartId);
         if (itemsError || !cartItems?.length) {
           return redirectTo(request, "/cart?error=empty-cart");
+        }
+
+        // V3-MKT-TRUST-01 — a listing taken down for review must not be buyable from
+        // a cart it was already in. Flag ON only; a read, never a write, and it runs
+        // before any order or payment object exists.
+        if (isInstantPublishEnabled()) {
+          const cartLineProductIds = (cartItems as Array<Record<string, unknown>>)
+            .map((item) => String(item.product_id || ""))
+            .filter(Boolean);
+          if (await cartHasUnavailableListing(admin, cartLineProductIds)) {
+            return redirectTo(request, "/cart?error=item-unavailable");
+          }
         }
 
         const orderNo = makeRef("MKT-ORD");
@@ -1694,10 +1718,166 @@ export async function POST(request: Request) {
           );
         }
 
+        // V3-MKT-TRUST-01 — instant publish. Entered only when the flag is on AND the
+        // seller pressed Publish. With the flag off this block is skipped and everything
+        // below is the unchanged legacy path; a draft save always takes the legacy path
+        // (a draft is not live, so there is nothing to gate). If the gate is not
+        // installed on this database the handler answers "legacy" and we fall through
+        // to the human review queue.
+        if (isInstantPublishEnabled() && text(formData, "submission_mode") === "submit" && vendorScopeId) {
+          const gateLocale = await getMarketplacePublicLocale();
+          // The category the listing will actually sit in — not the posted text.
+          const resolvedCategorySlug =
+            snapshot.categories.find((item) => item.id === categoryId)?.slug ?? text(formData, "category_slug");
+          const instant = await instantListingUpsert({
+            admin,
+            actorId: viewer.user.id,
+            vendorId: vendorScopeId,
+            vendor: vendorRecord,
+            draft: {
+              slug,
+              categoryId,
+              categorySlug: resolvedCategorySlug,
+              brandId,
+              title: text(formData, "title"),
+              summary: text(formData, "summary"),
+              description: text(formData, "description"),
+              basePrice: numberValue(formData, "base_price"),
+              compareAtPrice: numberValue(formData, "compare_at_price", 0) || null,
+              sku: text(formData, "sku"),
+              deliveryNote: text(formData, "delivery_note"),
+              leadTime: text(formData, "lead_time"),
+              codEligible: text(formData, "cod_eligible") === "on",
+              material: text(formData, "material"),
+              warranty: text(formData, "warranty"),
+              requestFeaturedPlacement: text(formData, "feature_requested") === "on",
+            },
+            stock: numberValue(formData, "stock", 0),
+            postedImages: parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url")),
+            onHold: text(formData, "on_hold") === "review" ? "review" : "keep",
+            locale: gateLocale,
+            publicBaseUrl: firstPartyMediaBases(),
+            extraUploaders: [viewer.user.id],
+            // Null unless the optional AI screen is switched on; it can only ADD a hold.
+            aiScan: createListingAiScan(),
+            resolveImageUrl: resolveMarketplaceImageUrl,
+          });
+
+          if (instant.kind === "forbidden") {
+            const refusal = gateNotice({
+              locale: gateLocale,
+              outcome: "reject",
+              reasons: ["seller_not_active"],
+              liveEdit: false,
+              caps: null,
+            });
+            return respondError(json, request, "/vendor/products/new?error=missing-vendor-scope", {
+              message: refusal.body,
+              code: "missing-vendor-scope",
+              status: 403,
+            });
+          }
+
+          if (instant.kind === "done") {
+            const subjectId = instant.productId ?? slug;
+            if (instant.outcome === "hold" && instant.written) {
+              // The exception queue: only what the gate could not decide reaches a person.
+              await createModerationCase(admin, {
+                subjectType: "product",
+                subjectId,
+                queue: "product_risk_review",
+                note: `gate hold: ${instant.reasons.join(", ")}`,
+              });
+              await sendMarketplaceEvent({
+                event: "owner_alert",
+                recipientEmail: process.env.RESEND_SUPPORT_INBOX || marketplace.supportEmail,
+                actorUserId: viewer.user.id,
+                actorEmail: viewer.user.email,
+                entityType: "product",
+                entityId: instant.productId,
+                payload: {
+                  note: `Listing ${slug} is held for review by the publish gate: ${instant.reasons.join(", ")}.`,
+                },
+              });
+            } else if (instant.outcome === "reject" && instant.reasons.some(isPolicyViolation)) {
+              await createModerationCase(admin, {
+                subjectType: "product_submission",
+                subjectId: slug,
+                queue: "listing_blocked",
+                note: `gate reject: ${instant.reasons.join(", ")}`,
+              });
+            }
+
+            await writeMarketplaceEvent(admin, {
+              eventType: "vendor_product_gate_decided",
+              userId: viewer.user.id,
+              normalizedEmail: viewer.user.email,
+              actorUserId: viewer.user.id,
+              actorEmail: viewer.user.email,
+              entityType: "product",
+              entityId: instant.productId,
+              payload: {
+                slug,
+                outcome: instant.outcome,
+                reasons: instant.reasons,
+                wasLive: instant.wasLive,
+                keptLive: instant.keptLive,
+              },
+            });
+
+            if (instant.written) {
+              // The catalogue snapshot is cached; a publish or an unpublish must show now.
+              revalidateTag("marketplace-home", { expire: 0 });
+              revalidatePath("/vendor/products");
+              revalidatePath("/search");
+            }
+
+            const applied = instant.outcome === "publish" || (instant.outcome === "hold" && instant.written);
+            if (!applied) {
+              return respondError(
+                json,
+                request,
+                "/vendor/products/new?error=listing-blocked",
+                { message: instant.notice.body, code: instant.keptLive ? "listing-kept-live" : "listing-blocked" },
+              );
+            }
+            return respondSuccess(
+              json,
+              request,
+              `/vendor/products?${instant.outcome === "publish" ? "published=1" : "held=1"}`,
+              {
+                decision: "submit",
+                productId: instant.productId,
+                outcome: instant.outcome,
+                // The seller reads the reasons in `notice`. The raw codes stay on the
+                // server: some of them say more than a seller should be told (a staff
+                // risk hold, what the optional AI screen flagged).
+                notice: instant.notice,
+              },
+            );
+          }
+          // instant.kind === "legacy" — continue into the review-queue path below.
+        }
+
         const decision = text(formData, "submission_mode") || "draft";
         // Ordered product images (first = cover). New multi-image field posts a JSON array in
         // `image_urls`; the legacy single `image_url` is honoured as a one-element fallback.
-        const imageRefs = parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url"));
+        let imageRefs = parseProductImageRefs(text(formData, "image_urls"), text(formData, "image_url"));
+        // V3-MKT-TRUST-01 — with instant publish on, a draft may only carry this
+        // marketplace's own uploads (or pictures the listing already has). Anything
+        // else would sit on the row and ride into the catalogue with a later Publish.
+        if (isInstantPublishEnabled() && imageRefs.length > 0) {
+          const attached = new Set<string>();
+          if (slugOwner?.id) {
+            const { data: current } = await admin
+              .from("marketplace_product_media")
+              .select("url")
+              .eq("product_id", slugOwner.id);
+            for (const row of (current ?? []) as Array<{ url: string | null }>) if (row.url) attached.add(String(row.url));
+          }
+          const bases = firstPartyMediaBases();
+          imageRefs = imageRefs.filter((value) => attached.has(value) || classifyImage(value, bases).ref !== null);
+        }
         const coverImage = imageRefs[0] ?? "";
         const requestFeaturedPlacement = text(formData, "feature_requested") === "on";
         const [{ count: productCount }, { count: openDisputeCount }, { data: duplicateMedia }] = await Promise.all([
@@ -1908,7 +2088,104 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (!application) return redirectTo(request, "/admin?error=missing-application");
 
-        await admin
+        // An approval opens the store under the handle the applicant chose. A handle
+        // that already belongs to another account, to the company or to no one — in any
+        // letter case — is refused before anything changes: the store write below would
+        // otherwise hand that store over (the database refuses it too). An applicant who
+        // already owns a store keeps that one store: the approval re-opens it as it is.
+        let ownedStoreId: string | null = null;
+        if (decision === "approved") {
+          const applicant = String(application.user_id || "");
+          if (!applicant) {
+            return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=decision-failed`);
+          }
+          const handle = String(application.proposed_store_slug || "");
+          const handleQuery = admin.from("marketplace_vendors").select("id, owner_user_id, owner_type");
+          const { data: handleOwners } = await (/^[A-Za-z0-9-]+$/.test(handle)
+            ? handleQuery.ilike("slug", handle)
+            : handleQuery.eq("slug", handle)
+          ).limit(5);
+          const handleTaken = ((handleOwners ?? []) as Array<{ owner_user_id?: string | null; owner_type?: string | null }>).some(
+            (owner) => owner.owner_type === "company" || String(owner.owner_user_id || "") !== applicant,
+          );
+          if (handleTaken) {
+            return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=store-handle-taken`);
+          }
+          const { data: ownedStore } = await admin
+            .from("marketplace_vendors")
+            .select("id")
+            .eq("owner_user_id", applicant)
+            .order("created_at", { ascending: true })
+            .limit(1)
+            .maybeSingle();
+          ownedStoreId = (ownedStore as { id?: string } | null)?.id ? String((ownedStore as { id: string }).id) : null;
+        }
+
+        // An approval opens (or re-opens) the store FIRST and only then marks the
+        // application approved: a store write the database refuses changes nothing, and
+        // a person's earlier "no" stays recorded until an approval has really landed.
+        let vendor: { id?: string } | null = null;
+        if (decision === "approved") {
+          if (ownedStoreId) {
+            // The applicant's existing store, re-opened as it is: its ratings, counters,
+            // description and badges stay what they are, and no second store is opened.
+            const { error: reopenError } = await admin
+              .from("marketplace_vendors")
+              .update({ status: "approved" } as never)
+              .eq("id", ownedStoreId);
+            vendor = reopenError ? null : { id: ownedStoreId };
+          } else {
+            const { data: ownerProfile } = await admin
+              .from("customer_profiles")
+              .select("verification_status")
+              .eq("id", application.user_id)
+              .maybeSingle();
+            const sharedVerificationStatus = normalizeVerificationStatus(
+              (ownerProfile as { verification_status?: string | null } | null)?.verification_status
+            );
+            const vendorVerificationLevel = getVendorVerificationLevel(sharedVerificationStatus);
+            const vendorTrustScore = getInitialVendorTrustScore(sharedVerificationStatus);
+            const { data: openedStore } = await admin
+              .from("marketplace_vendors")
+              .upsert({
+                slug: application.proposed_store_slug,
+                name: application.store_name,
+                description: application.story || `${application.store_name} storefront`,
+                owner_user_id: application.user_id,
+                owner_type: "vendor",
+                status: "approved",
+                verification_level: vendorVerificationLevel,
+                trust_score: vendorTrustScore,
+                response_sla_hours: 6,
+                fulfillment_rate: 93,
+                dispute_rate: 2.5,
+                review_score: 4.5,
+                followers_count: 0,
+                accent: "#4D5F34",
+                hero_image_url: snapshot.vendors[1]?.heroImage || null,
+                badges: [
+                  "Approved vendor",
+                  sharedVerificationStatus === "verified"
+                    ? "Identity verified"
+                    : sharedVerificationStatus === "pending"
+                      ? "Identity under review"
+                      : "Identity required",
+                ],
+                support_email: application.normalized_email,
+                support_phone: application.contact_phone,
+              } as never, { onConflict: "slug" })
+              .select("id")
+              .maybeSingle();
+            vendor = openedStore as { id?: string } | null;
+          }
+
+          // No store: no approval and no seller role.
+          if (!vendor?.id) {
+            return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=decision-failed`);
+          }
+        }
+
+        const { error: decisionError } = await admin
           .from("marketplace_vendor_applications")
           .update({
             status: decision,
@@ -1917,65 +2194,24 @@ export async function POST(request: Request) {
             reviewed_by: viewer.user?.id ?? null,
           } as never)
           .eq("id", applicationId);
+        if (decisionError) {
+          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=decision-failed`);
+        }
 
-        if (decision === "approved") {
-          const { data: ownerProfile } = await admin
-            .from("customer_profiles")
-            .select("verification_status")
-            .eq("id", application.user_id)
-            .maybeSingle();
-          const sharedVerificationStatus = normalizeVerificationStatus(
-            (ownerProfile as { verification_status?: string | null } | null)?.verification_status
-          );
-          const vendorVerificationLevel = getVendorVerificationLevel(sharedVerificationStatus);
-          const vendorTrustScore = getInitialVendorTrustScore(sharedVerificationStatus);
-          const { data: vendor } = await admin
-            .from("marketplace_vendors")
-            .upsert({
-              slug: application.proposed_store_slug,
-              name: application.store_name,
-              description: application.story || `${application.store_name} storefront`,
-              owner_user_id: application.user_id,
-              owner_type: "vendor",
-              status: "approved",
-              verification_level: vendorVerificationLevel,
-              trust_score: vendorTrustScore,
-              response_sla_hours: 6,
-              fulfillment_rate: 93,
-              dispute_rate: 2.5,
-              review_score: 4.5,
-              followers_count: 0,
-              accent: "#4D5F34",
-              hero_image_url: snapshot.vendors[1]?.heroImage || null,
-              badges: [
-                "Approved vendor",
-                sharedVerificationStatus === "verified"
-                  ? "Identity verified"
-                  : sharedVerificationStatus === "pending"
-                    ? "Identity under review"
-                    : "Identity required",
-              ],
-              support_email: application.normalized_email,
-              support_phone: application.contact_phone,
-            } as never, { onConflict: "slug" })
-            .select("id")
-            .maybeSingle();
-
+        if (decision === "approved" && vendor?.id) {
           // Seed initial trust snapshot for audit trail
-          if (vendor?.id) {
-            void syncVendorTrustScore(
-              String(vendor.id),
-              "vendor_application_approved"
-            ).catch(() => {
-              // Best-effort — do not block application approval
-            });
-          }
+          void syncVendorTrustScore(
+            String(vendor.id),
+            "vendor_application_approved"
+          ).catch(() => {
+            // Best-effort — do not block application approval
+          });
 
           await admin.from("marketplace_role_memberships").upsert({
             user_id: application.user_id,
             normalized_email: application.normalized_email,
             scope_type: "vendor",
-            scope_id: vendor?.id ?? null,
+            scope_id: vendor.id,
             role: "vendor",
             is_active: true,
           } as never);
@@ -2018,7 +2254,7 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (!product) return redirectTo(request, "/moderation?error=missing-product");
 
-        await admin
+        const { error: productDecisionError } = await admin
           .from("marketplace_products")
           .update({
             approval_status: decision,
@@ -2027,6 +2263,17 @@ export async function POST(request: Request) {
             reviewed_by: viewer.user?.id ?? null,
           } as never)
           .eq("id", productId);
+        // V3-MKT-TRUST-01 — the database guard can refuse a listing going live (it
+        // requires the reviewer to be marketplace staff). When it does, the seller
+        // must not be told the listing was approved. Inert unless the write fails.
+        if (productDecisionError) {
+          return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=decision-failed`);
+        }
+        // A staff decision changes what buyers can see; with instant publish on, the
+        // cached catalogue is refreshed at once instead of on its timer.
+        if (isInstantPublishEnabled()) {
+          revalidateTag("marketplace-home", { expire: 0 });
+        }
 
         const vendor = snapshot.vendors.find((item) => item.id === String(product.vendor_id));
         await sendMarketplaceEvent({
@@ -2420,6 +2667,18 @@ export async function POST(request: Request) {
         const vendorId = viewer.memberships.find((membership) => membership.role === "vendor")?.scopeId;
         if (!vendorId) return redirectTo(request, "/vendor/payouts?error=missing-vendor");
 
+        // V3-MKT-TRUST-01 — identity stands in front of the money. Flag ON only: a
+        // store opened by instant onboarding must have a verified identity, and a
+        // staff-applied risk hold pauses any store's payout. It can only refuse —
+        // it reads two facts and writes nothing. If the gate is not installed on
+        // this database it reports `available: false` and nothing changes.
+        if (isInstantPublishEnabled()) {
+          const payoutGate = await readPayoutGate(admin, { vendorId, actorId: viewer.user.id, stage: "request" });
+          if (payoutGate.available && payoutGate.blocked) {
+            return redirectTo(request, `/vendor/payouts?error=${payoutBlockCode(payoutGate.reasons)}`);
+          }
+        }
+
         const { data: openRequest } = await admin
           .from("marketplace_payout_requests")
           .select("id, reference, status")
@@ -2466,7 +2725,7 @@ export async function POST(request: Request) {
         }
 
         const reference = makeRef("MKT-PAY");
-        const { data: payout } = await admin
+        const { data: payout, error: payoutInsertError } = await admin
           .from("marketplace_payout_requests")
           .insert({
             reference,
@@ -2477,6 +2736,15 @@ export async function POST(request: Request) {
           } as never)
           .select("id")
           .maybeSingle();
+        // V3-MKT-TRUST-01 — the database can refuse this request (the payout identity
+        // guard, whatever the flag says). When it does, NOTHING else may be written
+        // for it: no settlement group is marked requested, no notice goes out.
+        if (payoutInsertError) {
+          return redirectTo(
+            request,
+            `/vendor/payouts?error=${guardHint(payoutInsertError) === "identity_unverified" ? "identity-required" : "request-failed"}`,
+          );
+        }
 
         await admin
           .from("marketplace_order_groups")
@@ -2713,6 +2981,60 @@ export async function POST(request: Request) {
           );
         }
 
+        // V3-MKT-TRUST-01 — a store's name and description are in front of buyers
+        // too, and with instant publish on no person reads them first. They go
+        // through the same deterministic content rules as a listing; anything but
+        // a clean result is refused and nothing is written. The hero picture must
+        // be a first-party upload (or the one the store already has). Flag ON only.
+        if (isInstantPublishEnabled()) {
+          const storeLocale = await getMarketplacePublicLocale();
+          const storeVerdict = evaluateStorePolicy({
+            storeName: text(formData, "name"),
+            categoryFocus: "",
+            story: text(formData, "description"),
+            locale: storeLocale,
+          });
+          const postedHero = text(formData, "hero_image_url");
+          let heroRefused = false;
+          if (postedHero) {
+            // A first-party upload made by this session's user — not just any object
+            // in the bucket (another store's picture is not this store's hero).
+            if (!isOwnUpload(postedHero, viewer.user?.id, firstPartyMediaBases())) {
+              const { data: currentStore } = await admin
+                .from("marketplace_vendors")
+                .select("hero_image_url")
+                .eq("id", vendorId)
+                .maybeSingle();
+              heroRefused = String((currentStore as { hero_image_url?: string | null } | null)?.hero_image_url ?? "") !== postedHero;
+            }
+          }
+          if (storeVerdict.outcome !== "publish" || heroRefused) {
+            const storeReasons = heroRefused
+              ? [...storeVerdict.reasons, "image_not_first_party" as const]
+              : storeVerdict.reasons;
+            await emitGateEvent({
+              admin,
+              name: "henry.marketplace.seller_gate.decided",
+              outcome: "rejected",
+              actorId: viewer.user?.id ?? null,
+              payload: { subject: "store_profile", vendorId: String(vendorId), reasons: storeReasons },
+            });
+            const refusal = gateNotice({
+              locale: storeLocale,
+              outcome: "reject",
+              reasons: storeReasons,
+              liveEdit: false,
+              caps: null,
+            });
+            return respondError(
+              json,
+              request,
+              `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=store-profile-refused`,
+              { message: refusal.body, code: "store-profile-refused", status: 422 },
+            );
+          }
+        }
+
         await admin
           .from("marketplace_vendors")
           .update({
@@ -2844,6 +3166,22 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (!payout) return redirectTo(request, "/finance?error=missing-payout");
 
+        // V3-MKT-TRUST-01 — the same wall in front of the finance decision. Flag ON
+        // only, and only for the two decisions that move a payout forward.
+        if (isInstantPublishEnabled() && (decision === "approved" || decision === "released")) {
+          const payoutGate = await readPayoutGate(admin, {
+            vendorId: String(payout.vendor_id),
+            actorId: viewer.user?.id ?? null,
+            stage: "decision",
+          });
+          if (payoutGate.available && payoutGate.blocked) {
+            return redirectTo(
+              request,
+              `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=payout-${payoutBlockCode(payoutGate.reasons)}`,
+            );
+          }
+        }
+
         const requestedStatuses = decision === "released" ? ["requested", "approved"] : ["requested"];
         const groupDecisionStatus =
           decision === "approved"
@@ -2859,7 +3197,7 @@ export async function POST(request: Request) {
           .eq("vendor_id", payout.vendor_id)
           .in("payout_status", requestedStatuses);
 
-        await admin
+        const { error: payoutDecisionError } = await admin
           .from("marketplace_payout_requests")
           .update({
             status: decision,
@@ -2868,6 +3206,17 @@ export async function POST(request: Request) {
             review_note: note || null,
           } as never)
           .eq("id", payoutId);
+        // V3-MKT-TRUST-01 — if the database refused the decision (the payout identity
+        // guard), the settlement groups must not be moved and the seller must not be
+        // told a payout was approved.
+        if (payoutDecisionError) {
+          return redirectTo(
+            request,
+            `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=payout-${
+              guardHint(payoutDecisionError) === "identity_unverified" ? "identity-required" : "decision-failed"
+            }`,
+          );
+        }
 
         await admin
           .from("marketplace_order_groups")

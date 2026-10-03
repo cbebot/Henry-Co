@@ -61,6 +61,15 @@ export type HenryEventName =
   | "henry.marketplace.dispute.opened"
   | "henry.marketplace.dispute.updated"
   | "henry.marketplace.dispute.resolved"
+  // V3-MKT-TRUST-01 publish gate — one event per decision. Payloads carry ids,
+  // reason CODES and counts only (never listing text or contact details).
+  // `decided` outcome: approved (published) | pending (held) | rejected | failed
+  // (gate unavailable → legacy review path). `hidden`: removed | resolved.
+  | "henry.marketplace.listing_gate.decided"
+  | "henry.marketplace.listing_gate.hidden"
+  | "henry.marketplace.listing_gate.swept"
+  | "henry.marketplace.seller_gate.decided"
+  | "henry.marketplace.payout_gate.decided"
   // marketplace profile drawer (mobile workspace nav) — DESIGN-01.
   // `opened` fires when the user taps the trigger; `closed` fires on
   // any dismissal (`via` payload identifies the path); `item_selected`

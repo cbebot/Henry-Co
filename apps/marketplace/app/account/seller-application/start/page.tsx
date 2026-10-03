@@ -5,6 +5,7 @@ import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { sellerPlans } from "@/lib/marketplace/governance";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { sellerWizardInstantCopy } from "@/lib/marketplace/publish-gate/surfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,7 @@ export default async function SellerApplicationStartPage({
         step="start"
         initialApplication={data.application}
         initialPlan={requestedPlan}
+        instant={sellerWizardInstantCopy(locale)}
       />
     </WorkspaceShell>
   );

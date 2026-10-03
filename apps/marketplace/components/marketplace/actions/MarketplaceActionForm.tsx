@@ -123,10 +123,21 @@ export function MarketplaceActionForm({
         return;
       }
 
-      toast.success(mode?.successTitle ?? successTitle, {
-        body: mode?.successBody ?? successBody,
-        chime: (mode ? mode.chime : chime) === true,
-      });
+      // An intent may answer with its own outcome message (the publish gate does:
+      // "live", or "saved, a person looks first"). Without one, the static copy stands.
+      const notice = readServerNotice(payload);
+      if (notice) {
+        const show = notice.tone === "info" ? toast.info : toast.success;
+        show(notice.title, {
+          body: notice.body,
+          chime: notice.tone === "success" && (mode ? mode.chime : chime) === true,
+        });
+      } else {
+        toast.success(mode?.successTitle ?? successTitle, {
+          body: mode?.successBody ?? successBody,
+          chime: (mode ? mode.chime : chime) === true,
+        });
+      }
       if (resetOnSuccess) form.reset();
       onSuccess?.();
       router.refresh();
@@ -194,6 +205,20 @@ export function MarketplaceActionForm({
       )}
     </form>
   );
+}
+
+function readServerNotice(
+  payload: Record<string, unknown> | null,
+): { title: string; body?: string; tone: "success" | "info" } | null {
+  const notice = payload?.notice;
+  if (!notice || typeof notice !== "object") return null;
+  const { title, body, tone } = notice as Record<string, unknown>;
+  if (typeof title !== "string" || title.length === 0) return null;
+  return {
+    title,
+    body: typeof body === "string" && body.length > 0 ? body : undefined,
+    tone: tone === "info" ? "info" : "success",
+  };
 }
 
 function SubmitButton({

@@ -1,3 +1,4 @@
+import { DecisionRefusalNotice } from "@/components/marketplace/decision-refusal-notice";
 import { EmptyState, MetricCard, WorkspaceShell } from "@/components/marketplace/shell";
 import { VendorApplicationQueue } from "@/components/marketplace/vendor-application-queue";
 import {
@@ -48,9 +49,12 @@ function titleCase(value: string) {
 export async function StaffResourcePage({
   root,
   resource,
+  error,
 }: {
   root: StaffRoot;
   resource: string;
+  /** The `?error=` of a decision redirect: a refused approval says why above the queue. */
+  error?: string;
 }) {
   const locale = await getMarketplacePublicLocale();
   const [snapshot, queue, overview] = await Promise.all([
@@ -69,6 +73,7 @@ export async function StaffResourcePage({
     // marketplace_owner for admin_vendor_application_decision.
     return (
       <WorkspaceShell title="Seller applications" description="Review and action seller onboarding requests." nav={nav}>
+        <DecisionRefusalNotice error={error} locale={locale} />
         <VendorApplicationQueue
           applications={queue.applications as Array<Record<string, unknown>>}
           returnTo={`${root}/${resource}`}

@@ -57,7 +57,17 @@ export type AiSurfaceKey =
   // company COGS reserved BEFORE the call against the unified internal daily
   // ledger (reserve-before-run, degrade-CLOSED). Fast tier, small output, audit
   // ON. Dark behind `predictive_quality_narrative` + `ai_gateway`.
-  | "predictive.narrative";
+  | "predictive.narrative"
+  // V3-MKT-TRUST-01 — the listing SCREEN for the marketplace instant-publish gate.
+  // PLATFORM-INVOKED (the seller never asked for it and is never billed for it):
+  // billable:false, runs with noBillingPort, spend reserved BEFORE the call
+  // against the unified internal daily ledger (degrade-CLOSED when that ledger is
+  // absent). ADD-ONLY: it is consulted after the deterministic rules have said
+  // "publish" and can only ask for a person to look — it can never approve what
+  // the rules refused. Unlike its three platform-invoked neighbours it HAS a
+  // registered prompt builder (see listing-screen.ts). Deliberately not named
+  // `.verify` / `.draft`: those suffixes inherit an output validator and a retry.
+  | "marketplace.listing.screen";
 
 export interface AiSurfacePolicy {
   surface: AiSurfaceKey;
@@ -307,6 +317,19 @@ export const AI_SURFACES: Record<AiSurfaceKey, AiSurfacePolicy> = {
     maxOutputTokens: 220,
     maxCalls: 1,
     freeAllowancePerDay: 30,
+  },
+  // V3-MKT-TRUST-01 — the instant-publish listing screen. Never a wallet. The
+  // per-actor allowance is the in-memory backstop (one seller cannot burn the
+  // day's budget alone); the DURABLE ceiling is the caller's reserve-before-run
+  // on the internal spend ledger. The reply is one small JSON object.
+  "marketplace.listing.screen": {
+    surface: "marketplace.listing.screen",
+    billable: false,
+    ruleBookKey: DEFAULT_RULE_BOOK_KEY,
+    modelTier: "fast",
+    maxOutputTokens: 120,
+    maxCalls: 1,
+    freeAllowancePerDay: 60,
   },
 };
 

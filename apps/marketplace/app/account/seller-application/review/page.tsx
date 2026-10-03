@@ -4,6 +4,7 @@ import { requireMarketplaceUser } from "@/lib/marketplace/auth";
 import { getBuyerDashboardData } from "@/lib/marketplace/data";
 import { accountWorkspaceNav } from "@/lib/marketplace/navigation";
 import { getMarketplacePublicLocale } from "@/lib/locale-server";
+import { sellerWizardInstantCopy } from "@/lib/marketplace/publish-gate/surfaces";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,11 @@ export default async function SellerApplicationReviewPage() {
       description="Step 3 confirms the application before it enters moderation and owner-alert workflows."
       {...accountWorkspaceNav("/account/seller-application", locale)}
     >
-      <SellerApplicationWizard step="review" initialApplication={data.application} />
+      <SellerApplicationWizard
+        step="review"
+        initialApplication={data.application}
+        instant={sellerWizardInstantCopy(locale)}
+      />
     </WorkspaceShell>
   );
 }
