@@ -2,7 +2,7 @@
  "domain": "jobs",
  "base": "http://localhost:4107",
  "sha": "b1efffe3",
- "measuredAt": "2026-10-03T10:14:08.775Z",
+ "measuredAt": "2026-10-03T10:23:32.498Z",
  "budgets": {
   "page": {
    "home": 250,

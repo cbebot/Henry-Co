@@ -2,7 +2,7 @@
  "domain": "property",
  "base": "http://localhost:4104",
  "sha": "b1efffe3",
- "measuredAt": "2026-10-03T10:05:49.866Z",
+ "measuredAt": "2026-10-03T10:21:23.607Z",
  "budgets": {
   "page": {
    "home": 250,

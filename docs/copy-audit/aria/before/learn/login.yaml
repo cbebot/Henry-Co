@@ -37,9 +37,3 @@
     - link "Create account":
       - /url: /signup?next=https%3A%2F%2Faccount.henryonyx.com%2Flearn
 - button "Open Henry Onyx Intelligence"
-- alert
-- region "Privacy notice":
-  - paragraph: Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled.
-  - link "Review settings":
-    - /url: /settings#privacy-controls
-  - button "Continue"

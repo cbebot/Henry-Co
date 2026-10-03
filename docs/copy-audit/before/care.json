@@ -2,7 +2,7 @@
  "domain": "care",
  "base": "http://localhost:4102",
  "sha": "b1efffe3",
- "measuredAt": "2026-10-03T09:56:35.427Z",
+ "measuredAt": "2026-10-03T10:19:30.372Z",
  "budgets": {
   "page": {
    "home": 250,
@@ -31,12 +31,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 695,
+     "page": 691,
      "main": 691,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 186
+     "pageAboveFold": 182
     },
     "h1s": [
      {
@@ -163,15 +163,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -1571,12 +1562,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 695,
+     "page": 691,
      "main": 691,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 81
+     "pageAboveFold": 77
     },
     "h1s": [
      {
@@ -1589,10 +1580,10 @@
     "metaDescriptionChars": 122,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 148
+    "blockCount": 147
    },
-   "pageWords": 695,
-   "aboveFold": 186,
+   "pageWords": 691,
+   "aboveFold": 182,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -1604,12 +1595,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 401,
+     "page": 397,
      "main": 397,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 192
+     "pageAboveFold": 188
     },
     "h1s": [
      {
@@ -1691,15 +1682,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -2487,12 +2469,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 401,
+     "page": 397,
      "main": 397,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 82
+     "pageAboveFold": 78
     },
     "h1s": [
      {
@@ -2505,10 +2487,10 @@
     "metaDescriptionChars": 134,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 80
+    "blockCount": 79
    },
-   "pageWords": 401,
-   "aboveFold": 192,
+   "pageWords": 397,
+   "aboveFold": 188,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -2520,12 +2502,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 213,
+     "page": 209,
      "main": 209,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 88
+     "pageAboveFold": 84
     },
     "h1s": [
      {
@@ -2602,15 +2584,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -3353,12 +3326,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 191,
+     "page": 187,
      "main": 187,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 73
+     "pageAboveFold": 69
     },
     "h1s": [
      {
@@ -3371,10 +3344,10 @@
     "metaDescriptionChars": 140,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 64
+    "blockCount": 63
    },
-   "pageWords": 213,
-   "aboveFold": 88,
+   "pageWords": 209,
+   "aboveFold": 84,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -3387,12 +3360,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 61,
+     "page": 57,
      "main": 57,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 61
+     "pageAboveFold": 57
     },
     "h1s": [
      {
@@ -3424,15 +3397,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -3923,12 +3887,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 61,
+     "page": 57,
      "main": 57,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 61
+     "pageAboveFold": 57
     },
     "h1s": [
      {
@@ -3941,10 +3905,10 @@
     "metaDescriptionChars": 63,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 47
+    "blockCount": 46
    },
-   "pageWords": 61,
-   "aboveFold": 61,
+   "pageWords": 57,
+   "aboveFold": 57,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -3957,12 +3921,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 73,
+     "page": 69,
      "main": 69,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 73
+     "pageAboveFold": 69
     },
     "h1s": [
      {
@@ -3978,15 +3942,6 @@
     "headings": [],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -4513,12 +4468,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 73,
+     "page": 69,
      "main": 69,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 69
+     "pageAboveFold": 65
     },
     "h1s": [
      {
@@ -4531,10 +4486,10 @@
     "metaDescriptionChars": 70,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 51
+    "blockCount": 50
    },
-   "pageWords": 73,
-   "aboveFold": 73,
+   "pageWords": 69,
+   "aboveFold": 69,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -4546,12 +4501,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 240,
+     "page": 236,
      "main": 236,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 100
+     "pageAboveFold": 96
     },
     "h1s": [
      {
@@ -4693,15 +4648,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -5804,12 +5750,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 240,
+     "page": 236,
      "main": 236,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 59
+     "pageAboveFold": 55
     },
     "h1s": [
      {
@@ -5822,10 +5768,10 @@
     "metaDescriptionChars": 129,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 115
+    "blockCount": 114
    },
-   "pageWords": 240,
-   "aboveFold": 100,
+   "pageWords": 236,
+   "aboveFold": 96,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -5837,12 +5783,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 596,
+     "page": 592,
      "main": 592,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 121
+     "pageAboveFold": 117
     },
     "h1s": [
      {
@@ -5899,15 +5845,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -7010,12 +6947,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 596,
+     "page": 592,
      "main": 592,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 79
+     "pageAboveFold": 75
     },
     "h1s": [
      {
@@ -7028,10 +6965,10 @@
     "metaDescriptionChars": 168,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 115
+    "blockCount": 114
    },
-   "pageWords": 596,
-   "aboveFold": 121,
+   "pageWords": 592,
+   "aboveFold": 117,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -7043,12 +6980,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 83,
+     "page": 79,
      "main": 79,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 83
+     "pageAboveFold": 79
     },
     "h1s": [
      {
@@ -7064,15 +7001,6 @@
     "headings": [],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -7527,12 +7455,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 83,
+     "page": 79,
      "main": 79,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 60
+     "pageAboveFold": 56
     },
     "h1s": [
      {
@@ -7545,10 +7473,10 @@
     "metaDescriptionChars": 112,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 43
+    "blockCount": 42
    },
-   "pageWords": 83,
-   "aboveFold": 83,
+   "pageWords": 79,
+   "aboveFold": 79,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -7574,12 +7502,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 197,
+     "page": 193,
      "main": 193,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 188
+     "pageAboveFold": 184
     },
     "h1s": [
      {
@@ -7601,15 +7529,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -8190,12 +8109,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 197,
+     "page": 193,
      "main": 193,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 102
+     "pageAboveFold": 98
     },
     "h1s": [
      {
@@ -8208,10 +8127,10 @@
     "metaDescriptionChars": 71,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 57
+    "blockCount": 56
    },
-   "pageWords": 197,
-   "aboveFold": 188,
+   "pageWords": 193,
+   "aboveFold": 184,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -8223,12 +8142,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 300,
+     "page": 296,
      "main": 296,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 210
+     "pageAboveFold": 206
     },
     "h1s": [
      {
@@ -8270,15 +8189,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -9138,12 +9048,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 300,
+     "page": 296,
      "main": 296,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 98
+     "pageAboveFold": 94
     },
     "h1s": [
      {
@@ -9156,10 +9066,10 @@
     "metaDescriptionChars": 165,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 88
+    "blockCount": 87
    },
-   "pageWords": 300,
-   "aboveFold": 210,
+   "pageWords": 296,
+   "aboveFold": 206,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -9172,12 +9082,12 @@
    "redirectedTo": "/",
    "desktop": {
     "counts": {
-     "page": 695,
+     "page": 691,
      "main": 691,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 186
+     "pageAboveFold": 182
     },
     "h1s": [
      {
@@ -9304,15 +9214,6 @@
     ],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -10712,12 +10613,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 695,
+     "page": 691,
      "main": 691,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 81
+     "pageAboveFold": 77
     },
     "h1s": [
      {
@@ -10730,10 +10631,10 @@
     "metaDescriptionChars": 122,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 148
+    "blockCount": 147
    },
-   "pageWords": 695,
-   "aboveFold": 186,
+   "pageWords": 691,
+   "aboveFold": 182,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1
@@ -10745,12 +10646,12 @@
    "status": 200,
    "desktop": {
     "counts": {
-     "page": 71,
+     "page": 67,
      "main": 67,
-     "outside": 4,
+     "outside": 0,
      "chrome": 104,
      "overlay": 1,
-     "pageAboveFold": 71
+     "pageAboveFold": 67
     },
     "h1s": [
      {
@@ -10766,15 +10667,6 @@
     "headings": [],
     "images": [],
     "blocks": [
-     {
-      "region": "outside",
-      "tag": "a",
-      "path": "div.care-page.home-accent-scope > a.absolute.left-4",
-      "top": -72,
-      "aboveFold": true,
-      "words": 4,
-      "text": "Skip to main content"
-     },
      {
       "region": "chrome",
       "tag": "text",
@@ -11211,12 +11103,12 @@
    },
    "mobile": {
     "counts": {
-     "page": 71,
+     "page": 67,
      "main": 67,
-     "outside": 4,
+     "outside": 0,
      "chrome": 95,
      "overlay": 0,
-     "pageAboveFold": 71
+     "pageAboveFold": 67
     },
     "h1s": [
      {
@@ -11229,10 +11121,10 @@
     "metaDescriptionChars": 107,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 41
+    "blockCount": 40
    },
-   "pageWords": 71,
-   "aboveFold": 71,
+   "pageWords": 67,
+   "aboveFold": 67,
    "chromeWords": 104,
    "overlayWords": 1,
    "visibleH1": 1

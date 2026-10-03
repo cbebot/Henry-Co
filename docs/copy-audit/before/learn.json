@@ -2,7 +2,7 @@
  "domain": "learn",
  "base": "http://localhost:4108",
  "sha": "b1efffe3",
- "measuredAt": "2026-10-03T10:15:13.961Z",
+ "measuredAt": "2026-10-03T10:25:33.673Z",
  "budgets": {
   "page": {
    "home": 250,
@@ -7253,7 +7253,7 @@
      "main": 31,
      "outside": 19,
      "chrome": 0,
-     "overlay": 31,
+     "overlay": 0,
      "pageAboveFold": 50
     },
     "h1s": [
@@ -7397,33 +7397,6 @@
       "text": "Create account"
      },
      {
-      "region": "overlay",
-      "tag": "p",
-      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
-      "top": 805,
-      "aboveFold": true,
-      "words": 28,
-      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
-     },
-     {
-      "region": "overlay",
-      "tag": "a",
-      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
-      "top": 830,
-      "aboveFold": true,
-      "words": 2,
-      "text": "Review settings"
-     },
-     {
-      "region": "overlay",
-      "tag": "button",
-      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
-      "top": 830,
-      "aboveFold": true,
-      "words": 1,
-      "text": "Continue"
-     },
-     {
       "region": "main",
       "tag": "input:placeholder",
       "path": "input#email",
@@ -7458,7 +7431,7 @@
      "main": 31,
      "outside": 3,
      "chrome": 0,
-     "overlay": 31,
+     "overlay": 0,
      "pageAboveFold": 34
     },
     "h1s": [
@@ -7472,12 +7445,12 @@
     "metaDescriptionChars": 95,
     "hasMain": true,
     "lang": "en",
-    "blockCount": 18
+    "blockCount": 15
    },
    "pageWords": 50,
    "aboveFold": 50,
    "chromeWords": 0,
-   "overlayWords": 31,
+   "overlayWords": 0,
    "visibleH1": 1
   },
   {

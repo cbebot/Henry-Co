@@ -2,7 +2,7 @@
  "domain": "marketplace",
  "base": "http://localhost:4103",
  "sha": "b1efffe3",
- "measuredAt": "2026-10-03T10:07:17.395Z",
+ "measuredAt": "2026-10-03T10:20:41.592Z",
  "budgets": {
   "page": {
    "home": 250,
