@@ -1,7 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  MAX_RUNS_PER_CUSTOMER,
+  MAX_RUNS_PER_SWEEP,
   advanceNextRunAt,
+  bookingHorizon,
+  createSweepBudget,
   dueWithoutStoredRun,
   recurringTrackingCode,
 } from "./recurring-auto-book";
@@ -12,7 +16,8 @@ import {
 //
 // V3-CARE-JOBS-PREAPPLY-FIX-01. The recurring sweep's pure helpers: the run key
 // that keeps a run from being booked twice, the cadence step (fed by text the
-// schedule owner can write), and the due time of a schedule with no stored run.
+// schedule owner can write), the due time of a schedule with no stored run, the
+// due window, and the per-sweep / per-customer booking bounds.
 
 const DAY = 24 * 60 * 60 * 1000;
 const SCHEDULE = "abcdef01-2345-4678-89ab-cdef01234567";
@@ -88,5 +93,55 @@ describe("dueWithoutStoredRun", () => {
   it("treats an unreadable last run as never run", () => {
     assert.equal(dueWithoutStoredRun("infinity", "weekly", now).getTime(), now.getTime());
     assert.equal(dueWithoutStoredRun("not a date", "constructor", now).getTime(), now.getTime());
+  });
+});
+
+describe("bookingHorizon", () => {
+  const now = new Date("2026-10-05T08:15:00.000Z");
+
+  it("is the start of the day after tomorrow (UTC)", () => {
+    assert.equal(bookingHorizon(now).toISOString(), "2026-10-07T00:00:00.000Z");
+    assert.equal(bookingHorizon(new Date("2026-10-05T00:00:00.000Z")).toISOString(), "2026-10-07T00:00:00.000Z");
+    assert.equal(bookingHorizon(new Date("2026-10-05T23:59:59.999Z")).toISOString(), "2026-10-07T00:00:00.000Z");
+  });
+
+  it("takes in a run at any time tomorrow, whatever the cron's timing", () => {
+    const horizon = bookingHorizon(now).getTime();
+    // Stored with the first claim's milliseconds, a few seconds after this sweep's time.
+    assert.ok(new Date("2026-10-06T08:15:03.123Z").getTime() < horizon);
+    assert.ok(new Date("2026-10-06T23:59:59.999Z").getTime() < horizon);
+    assert.equal(new Date("2026-10-07T00:00:00.000Z").getTime() < horizon, false);
+  });
+});
+
+describe("createSweepBudget", () => {
+  it("gives one customer at most MAX_RUNS_PER_CUSTOMER", () => {
+    const budget = createSweepBudget();
+    for (let i = 0; i < MAX_RUNS_PER_CUSTOMER; i += 1) assert.equal(budget.take("a"), true);
+    assert.equal(budget.take("a"), false);
+    assert.equal(budget.take("b"), true);
+  });
+
+  it("gives the sweep at most MAX_RUNS_PER_SWEEP, then is spent", () => {
+    const budget = createSweepBudget();
+    let taken = 0;
+    for (let customer = 0; taken < MAX_RUNS_PER_SWEEP; customer += 1) {
+      for (let i = 0; i < MAX_RUNS_PER_CUSTOMER && taken < MAX_RUNS_PER_SWEEP; i += 1) {
+        assert.equal(budget.take(`c${customer}`), true);
+        taken += 1;
+      }
+    }
+    assert.equal(budget.spent, true);
+    assert.equal(budget.take("someone-new"), false);
+  });
+
+  it("does not spend the sweep's budget on a refused take", () => {
+    const budget = createSweepBudget(3, 1);
+    assert.equal(budget.take("a"), true);
+    assert.equal(budget.take("a"), false);
+    assert.equal(budget.take("a"), false);
+    assert.equal(budget.take("b"), true);
+    assert.equal(budget.take("c"), true);
+    assert.equal(budget.spent, true);
   });
 });

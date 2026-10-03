@@ -71,6 +71,7 @@ type AutomationRunSummary = {
   recurringBookingsCreated: number;
   recurringSkippedDuplicates: number;
   recurringSkippedInvalid: number;
+  recurringSkippedDeferred: number;
 };
 
 const LAGOS_TIME_ZONE = "Africa/Lagos";
@@ -896,12 +897,13 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
       sendOwnerOperationalAlerts(now),
       sendPaymentReminders(now, settings, dataset),
       sendMarketingNurture(now, dataset),
-      // V3 PASS 21 — recurring auto-book sweep (24h lookahead).
+      // V3 PASS 21 — recurring auto-book sweep (books each run the day before).
       runRecurringAutoBookSweep(now).catch(() => ({
         scheduledRunsConsidered: 0,
         bookingsCreated: 0,
         skippedDuplicates: 0,
         skippedInvalid: 0,
+        skippedDeferred: 0,
       })),
     ]);
 
@@ -919,6 +921,7 @@ export async function runCareAutomationSweep(now = new Date()): Promise<Automati
       recurringBookingsCreated: recurring.bookingsCreated,
       recurringSkippedDuplicates: recurring.skippedDuplicates,
       recurringSkippedInvalid: recurring.skippedInvalid,
+      recurringSkippedDeferred: recurring.skippedDeferred,
     } satisfies AutomationRunSummary;
 
     await writeAutomationLog({

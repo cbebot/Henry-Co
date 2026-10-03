@@ -117,6 +117,16 @@ jobs:
       - name: Test (@henryco/dashboard-modules-staff — lens gate + recommendation state)
         run: pnpm --filter @henryco/dashboard-modules-staff run test
 
+      # V3-CARE-JOBS-PREAPPLY-FIX-01 — the claim-evidence ownership grammar and the
+      # bounded service-role signer, the recurring sweep's run key / due window /
+      # booking bounds, the card-rail kobo conversion, and the jobs pipeline-ownership
+      # gate. These suites existed, but no CI step ran them.
+      - name: Test (@henryco/care — claim evidence, recurring sweep, card math)
+        run: pnpm --filter @henryco/care run test
+
+      - name: Test (@henryco/jobs — hiring authz + pipeline ownership)
+        run: pnpm --filter @henryco/jobs run test
+
       - name: Build validation (Next.js apps; Expo super-app skipped if no build script)
         run: pnpm run build:all
 

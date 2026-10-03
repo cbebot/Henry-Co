@@ -1,21 +1,27 @@
 import "server-only";
 
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { normalizeEmail, normalizePhone } from "@henryco/config";
 import { createAdminSupabase } from "@/lib/supabase";
 
 /**
  * V3 PASS 21 — recurring auto-book sweep.
  *
- * Called from /api/cron/care-automation. Reads
+ * Called daily from /api/cron/care-automation. Reads
  * `care_recurring_schedules` rows where:
  *   - status = 'active'
  *   - paused_until IS NULL OR paused_until <= now()
- *   - next_run_at IS NULL OR next_run_at <= now() + 24h
+ *   - next_run_at IS NULL OR next_run_at is before the end of tomorrow (UTC)
  *
  * For each row, inserts a `care_bookings` row from the stored
  * `service_payload` + `pickup_address`, then advances `next_run_at`
- * forward by the cadence and writes `last_run_at` + `last_booking_id`.
+ * forward by the cadence and writes `last_run_at` (the run's time) +
+ * `last_booking_id`.
+ *
+ * Due window: a run dated tomorrow or earlier (UTC) is due, so the daily
+ * sweep books each run the day before its pickup. A window of "now + 24h"
+ * made the lead time depend on cron timing: a run stored at 08:15:03 was
+ * missed by an 08:15:00 sweep and booked on the pickup day itself.
  *
  * A schedule with no `next_run_at` (new, or saved again through
  * /api/care/recurring, which clears it) is due one cadence after its
@@ -46,6 +52,19 @@ import { createAdminSupabase } from "@/lib/supabase";
  * email fall back to the schedule owner's customer profile, like an
  * authenticated booking. A schedule that still cannot supply a phone, an
  * address and a slot is counted as skippedInvalid and retried next sweep.
+ * It costs no request and holds no place in the sweep.
+ *
+ * Fairness and bounds: the due set is read a page at a time in id order,
+ * starting after a random id and wrapping round, up to MAX_SCANNED_PER_SWEEP
+ * rows. One sweep books at most MAX_RUNS_PER_SWEEP schedules, the bound it
+ * has always had, and at most MAX_RUNS_PER_CUSTOMER of one customer's; the
+ * rest are counted as skippedDeferred and taken up by the next sweep. So
+ * schedules that can never book, however many and wherever their ids fall,
+ * cannot keep the sweep from another customer's schedule: below the scan
+ * ceiling every due schedule is read, and above it the random start spreads
+ * the reads over successive sweeps. Abusive volume is bounded for good by a
+ * per-user cap on active schedules, which belongs in the database, since the
+ * owner insert policy lets a customer write rows directly.
  *
  * Each schedule is handled on its own: an error on one is logged and counted
  * as skippedInvalid, and the sweep carries on with the rest.
@@ -66,7 +85,20 @@ const CADENCE_DAYS = new Map<string, number>([
 const DEFAULT_CADENCE_DAYS = 7;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const LOOKAHEAD_MS = DAY_MS;
+
+/** Due schedules read per request. */
+const PAGE_SIZE = 200;
+/** Due schedules one sweep reads at most. */
+export const MAX_SCANNED_PER_SWEEP = 5_000;
+/** Schedules one sweep books, or finds already booked, at most. */
+export const MAX_RUNS_PER_SWEEP = 200;
+/** Schedules of one customer that one sweep books, or finds already booked, at most. */
+export const MAX_RUNS_PER_CUSTOMER = 5;
+
+const SCHEDULE_COLUMNS =
+  "id, user_id, cadence, day_of_week, time_of_day, pickup_window, service_payload, pickup_address, contact_phone, notes, paused_until, next_run_at, last_run_at";
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type ScheduleRow = {
   id: string;
@@ -97,9 +129,27 @@ export type RecurringAutoBookSummary = {
   bookingsCreated: number;
   skippedDuplicates: number;
   skippedInvalid: number;
+  /** Bookable schedules left for the next sweep by the sweep or customer bound. */
+  skippedDeferred: number;
 };
 
-type RunOutcome = "created" | "duplicate" | "invalid";
+export type RecurringAutoBookOptions = {
+  /**
+   * Where the scan starts: the sweep reads the due schedules with ids after
+   * this one, then those up to it. A random id by default, so where a
+   * schedule's id falls never decides whether a sweep reaches it.
+   */
+  startAfter?: string;
+};
+
+type RunOutcome = "created" | "duplicate" | "invalid" | "deferred";
+
+/** What a booking takes from the schedule and its owner's profile. */
+type BookingInputs = {
+  contact: { phone: string; phoneNormalized: string };
+  pickupAddress: string;
+  pickupSlot: string;
+};
 
 /**
  * The tracking code of one run: `RECUR-` and 32 hex characters of SHA-256
@@ -119,6 +169,15 @@ export function recurringTrackingCode(scheduleId: string, run: Date): string {
 
 function startOfUtcDay(value: Date): Date {
   return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+}
+
+/**
+ * The end of the due window: the start of the day after tomorrow (UTC). A run
+ * dated before it, at any time of day, is due, so the daily sweep books it the
+ * day before its pickup. See the due-window note above.
+ */
+export function bookingHorizon(now: Date): Date {
+  return new Date(startOfUtcDay(now).getTime() + 2 * DAY_MS);
 }
 
 export function advanceNextRunAt(current: Date, cadence: string): Date {
@@ -187,10 +246,44 @@ function resolvePickupSlot(row: ScheduleRow): string | null {
   return /^\d{2}:\d{2}/.test(time) ? time.slice(0, 5) : null;
 }
 
+/** What a booking needs from the schedule and its owner, or null when it cannot book. */
+function bookingInputs(row: ScheduleRow, owner: OwnerProfile | null): BookingInputs | null {
+  const pickupAddress = formatPickupAddress(row.pickup_address);
+  const pickupSlot = resolvePickupSlot(row);
+  const contact = resolvePhone(row.contact_phone, owner?.phone);
+  if (!row.user_id || !pickupAddress || !pickupSlot || !contact) return null;
+  return { contact, pickupAddress, pickupSlot };
+}
+
 /**
- * Move the schedule past a run that has its booking. If this write fails,
- * `next_run_at` still names the same run, so the next sweep finds the booking
- * by its tracking code and advances then; nothing is booked twice.
+ * The bookings one sweep may still make: `perSweep` in all and `perCustomer`
+ * for each customer. `take` reserves one for a customer, or answers false
+ * when the sweep or that customer has none left.
+ */
+export function createSweepBudget(perSweep = MAX_RUNS_PER_SWEEP, perCustomer = MAX_RUNS_PER_CUSTOMER) {
+  let used = 0;
+  const usedBy = new Map<string, number>();
+  return {
+    take(customerId: string): boolean {
+      const customerUsed = usedBy.get(customerId) ?? 0;
+      if (used >= perSweep || customerUsed >= perCustomer) return false;
+      used += 1;
+      usedBy.set(customerId, customerUsed + 1);
+      return true;
+    },
+    get spent(): boolean {
+      return used >= perSweep;
+    },
+  };
+}
+
+/**
+ * Move the schedule past a run that has its booking: the next run is one
+ * cadence after this one, and `last_run_at` is this run's time (the pickup the
+ * booking is for), which a schedule saved again counts its cadence from. If
+ * this write fails, `next_run_at` still names the same run, so the next sweep
+ * finds the booking by its tracking code and advances then; nothing is booked
+ * twice.
  */
 async function recordRun(
   admin: AdminClient,
@@ -203,7 +296,7 @@ async function recordRun(
     .from("care_recurring_schedules")
     .update({
       next_run_at: advanceNextRunAt(runAt, row.cadence).toISOString(),
-      last_run_at: now.toISOString(),
+      last_run_at: runAt.toISOString(),
       last_booking_id: bookingId,
       updated_at: now.toISOString(),
     })
@@ -244,30 +337,31 @@ async function claimRun(
   return data && data.length > 0 ? "claimed" : "lost";
 }
 
+/**
+ * Book one schedule's due run. The caller has checked that the schedule can
+ * book (`inputs`) and reserved its place in the sweep.
+ */
 async function bookScheduleRun(
   admin: AdminClient,
   row: ScheduleRow,
+  inputs: BookingInputs,
   owner: OwnerProfile | null,
   now: Date,
+  horizon: Date,
 ): Promise<RunOutcome> {
-  const contact = resolvePhone(row.contact_phone, owner?.phone);
-  const pickupAddress = formatPickupAddress(row.pickup_address);
-  const pickupSlot = resolvePickupSlot(row);
-  const bookable = Boolean(row.user_id && contact && pickupAddress && pickupSlot);
+  const { contact, pickupAddress, pickupSlot } = inputs;
 
   // The run is always a stored next_run_at, so every retry of it computes the
-  // same tracking code. A schedule without one claims its due time first:
-  // only when it can book (a schedule that cannot is left untouched).
+  // same tracking code. A schedule without one claims its due time first.
   let storedRun = row.next_run_at;
   if (!storedRun) {
-    if (!bookable) return "invalid";
     const due = dueWithoutStoredRun(row.last_run_at, row.cadence, now);
     const claim = await claimRun(admin, row, due.toISOString(), now);
     if (claim === "failed") return "invalid";
     if (claim === "lost") return "duplicate";
-    // Due after the lookahead window: the current period already has its
-    // booking. The claim stored the next run, so a later sweep books it.
-    if (due.getTime() > now.getTime() + LOOKAHEAD_MS) return "duplicate";
+    // Due after tomorrow: the current period already has its booking. The
+    // claim stored the next run, so a later sweep books it.
+    if (due.getTime() >= horizon.getTime()) return "duplicate";
     storedRun = due.toISOString();
   }
 
@@ -295,8 +389,6 @@ async function bookScheduleRun(
     await recordRun(admin, row, runAt, existing.id, now);
     return "duplicate";
   }
-
-  if (!row.user_id || !contact || !pickupAddress || !pickupSlot) return "invalid";
 
   // A stored run is re-checked just before it is booked (a run claimed above
   // was checked when it was claimed).
@@ -350,65 +442,140 @@ async function bookScheduleRun(
   return "created";
 }
 
+/**
+ * The due schedules, a page at a time in id order: those after `startAfter`,
+ * then, wrapping round, those up to it. Reads at most MAX_SCANNED_PER_SWEEP
+ * rows. A failed read ends the scan; it is logged and the next sweep starts
+ * again.
+ */
+async function* dueSchedulePages(
+  admin: AdminClient,
+  now: Date,
+  horizon: Date,
+  startAfter: string,
+): AsyncGenerator<ScheduleRow[]> {
+  const nowIso = now.toISOString();
+  const horizonIso = horizon.toISOString();
+  let remaining = MAX_SCANNED_PER_SWEEP;
+
+  for (const upTo of [null, startAfter]) {
+    let cursor: string | null = upTo ? null : startAfter;
+    for (;;) {
+      if (remaining <= 0) {
+        console.warn("[care:recurring-auto-book] scan ceiling reached", MAX_SCANNED_PER_SWEEP, startAfter);
+        return;
+      }
+      const size = Math.min(PAGE_SIZE, remaining);
+      let page = admin
+        .from("care_recurring_schedules")
+        .select(SCHEDULE_COLUMNS)
+        .eq("status", "active")
+        .or(`paused_until.is.null,paused_until.lte.${nowIso}`)
+        .or(`next_run_at.is.null,next_run_at.lt.${horizonIso}`);
+      if (cursor) page = page.gt("id", cursor);
+      if (upTo) page = page.lte("id", upTo);
+      const { data, error } = await page.order("id", { ascending: true }).limit(size);
+      if (error) {
+        console.error("[care:recurring-auto-book] due schedules read failed", error.message);
+        return;
+      }
+      const rows = (data ?? []) as ScheduleRow[];
+      remaining -= rows.length;
+      if (rows.length > 0) yield rows;
+      if (rows.length < size) break;
+      cursor = rows[rows.length - 1].id;
+    }
+  }
+}
+
+/**
+ * Read the profiles of this page's customers whose schedule has an address and
+ * a slot: their phone, name and email fill in what the schedule lacks. Each
+ * profile is read once per sweep.
+ */
+async function loadOwnerProfiles(
+  admin: AdminClient,
+  rows: ScheduleRow[],
+  owners: Map<string, OwnerProfile | null>,
+): Promise<void> {
+  const ids = [
+    ...new Set(
+      rows
+        .filter(
+          (row) =>
+            row.user_id &&
+            !owners.has(row.user_id) &&
+            formatPickupAddress(row.pickup_address) &&
+            resolvePickupSlot(row),
+        )
+        .map((row) => row.user_id),
+    ),
+  ];
+  if (ids.length === 0) return;
+  for (const id of ids) owners.set(id, null);
+
+  const { data, error } = await admin
+    .from("customer_profiles")
+    .select("id, full_name, phone, email")
+    .in("id", ids);
+  if (error) {
+    console.error("[care:recurring-auto-book] owner profiles read failed", error.message);
+    return;
+  }
+  for (const profile of (data ?? []) as Array<OwnerProfile & { id: string }>) {
+    owners.set(profile.id, profile);
+  }
+}
+
 export async function runRecurringAutoBookSweep(
   now: Date = new Date(),
+  options: RecurringAutoBookOptions = {},
 ): Promise<RecurringAutoBookSummary> {
   const summary: RecurringAutoBookSummary = {
     scheduledRunsConsidered: 0,
     bookingsCreated: 0,
     skippedDuplicates: 0,
     skippedInvalid: 0,
+    skippedDeferred: 0,
   };
 
   const admin = createAdminSupabase();
-  const horizonIso = new Date(now.getTime() + LOOKAHEAD_MS).toISOString();
+  const horizon = bookingHorizon(now);
+  const budget = createSweepBudget();
+  const owners = new Map<string, OwnerProfile | null>();
+  const startAfter =
+    options.startAfter && UUID_PATTERN.test(options.startAfter)
+      ? options.startAfter.toLowerCase()
+      : randomUUID();
 
-  const { data: rows, error } = await admin
-    .from("care_recurring_schedules")
-    .select(
-      "id, user_id, cadence, day_of_week, time_of_day, pickup_window, service_payload, pickup_address, contact_phone, notes, paused_until, next_run_at, last_run_at",
-    )
-    .eq("status", "active")
-    .or(`paused_until.is.null,paused_until.lte.${now.toISOString()}`)
-    .or(`next_run_at.is.null,next_run_at.lte.${horizonIso}`)
-    .limit(200);
+  for await (const page of dueSchedulePages(admin, now, horizon, startAfter)) {
+    summary.scheduledRunsConsidered += page.length;
+    await loadOwnerProfiles(admin, page, owners);
 
-  if (error) {
-    return summary;
-  }
-
-  const scheduleRows = (rows ?? []) as ScheduleRow[];
-  summary.scheduledRunsConsidered = scheduleRows.length;
-
-  // Owner fallbacks for contact details, one read for the whole sweep.
-  const ownerIds = [...new Set(scheduleRows.map((row) => row.user_id).filter(Boolean))];
-  const ownerProfiles = new Map<string, OwnerProfile>();
-  if (ownerIds.length > 0) {
-    const { data: profileRows } = await admin
-      .from("customer_profiles")
-      .select("id, full_name, phone, email")
-      .in("id", ownerIds);
-    for (const profile of (profileRows ?? []) as Array<OwnerProfile & { id: string }>) {
-      ownerProfiles.set(profile.id, profile);
+    for (const row of page) {
+      let outcome: RunOutcome;
+      try {
+        const owner = owners.get(row.user_id) ?? null;
+        const inputs = bookingInputs(row, owner);
+        if (!inputs) outcome = "invalid";
+        else if (!budget.take(row.user_id)) outcome = "deferred";
+        else outcome = await bookScheduleRun(admin, row, inputs, owner, now, horizon);
+      } catch (runError) {
+        // One malformed schedule never stops the sweep for everyone else.
+        console.error(
+          "[care:recurring-auto-book] schedule skipped",
+          row.id,
+          runError instanceof Error ? runError.message : String(runError),
+        );
+        outcome = "invalid";
+      }
+      if (outcome === "created") summary.bookingsCreated += 1;
+      else if (outcome === "duplicate") summary.skippedDuplicates += 1;
+      else if (outcome === "deferred") summary.skippedDeferred += 1;
+      else summary.skippedInvalid += 1;
     }
-  }
 
-  for (const row of scheduleRows) {
-    let outcome: RunOutcome;
-    try {
-      outcome = await bookScheduleRun(admin, row, ownerProfiles.get(row.user_id) ?? null, now);
-    } catch (runError) {
-      // One malformed schedule never stops the sweep for everyone else.
-      console.error(
-        "[care:recurring-auto-book] schedule skipped",
-        row.id,
-        runError instanceof Error ? runError.message : String(runError),
-      );
-      outcome = "invalid";
-    }
-    if (outcome === "created") summary.bookingsCreated += 1;
-    else if (outcome === "duplicate") summary.skippedDuplicates += 1;
-    else summary.skippedInvalid += 1;
+    if (budget.spent) break;
   }
 
   return summary;
