@@ -13,6 +13,7 @@
 
 Still no prod contact; money objects untouched (digest-proven).
 **Amended by V3-ACTIVATION-RUNBOOK-FIX-01 (2026-09-24):** the 14 not-apply-ready files were resolved: **6 repaired** (proved clean + re-runnable on the same shadow), **8 retired** as DO-NOT-APPLY. The full local dry-run now clears **84/93** (was 79/93), with zero regressions. See §4 and §8.1. Still no prod contact, and `payments_private` / money RPCs are still untouched.
+**Amended by V3-CARE-JOBS-PREAPPLY-FIX-01 (2026-10-03, PR #541):** PR #541 fixes the §4 "App drift in shipped code" in code. The care/jobs PASS-21 GATED files (#22, #22a, #23a, #23b, #24a, #26a) apply in one order only: **merge #541 → the production deployment of `care` (and of `jobs` for #22a/#23b) built from a `main` commit that contains #541 is READY and serving its domain → apply**. Merged alone is not enough. #23a `care_claims` stays the hard gate: the pre-#541 claims route arms its evidence-signing IDOR the moment the table exists. The checks are in §4, and the day-of step is §6.1 step 7.
 
 > **Why this file exists.** Merged-to-main ≠ applied-to-prod (the V3-73 and V3-34 lesson, `docs/v3/automation/RE-GROUNDING-2026-07-24.md:76`). Several passes shipped "flag-dark, committed-not-applied" migrations. Prod is paused, so it can't be queried. This runbook turns everything git knows into (1) one dependency-ordered apply sequence and (2) a single read-only query. The moment Supabase resumes, that query converts every NEEDS-PROD-CONFIRMATION row into ground truth, so the apply session starts from facts, not memory.
 
@@ -269,16 +270,16 @@ The edges come from three sources:
 19. `20260515120000_property_amenities_catalog.sql` — PASS-21 property depth
 20. `20260515120500_care_user_preferences.sql` — PASS-21 care depth
 21. `20260515120500_property_floorplans.sql` — PASS-21 property depth
-22. `20260515121000_care_recurring_schedules.sql` — PASS-21 care depth — ⚠ prerequisites §4 (launch prerequisites) before applying
-22a. `20260515121000_jobs_interview_rooms.sql` — PASS-21 jobs depth (Daily.co interview rooms) — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying
+22. `20260515121000_care_recurring_schedules.sql` — PASS-21 care depth — ⚠ prerequisites §4 (launch prerequisites) before applying · only after PR #541 is merged and the care production deploy is READY (§4)
+22a. `20260515121000_jobs_interview_rooms.sql` — PASS-21 jobs depth (Daily.co interview rooms) — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying · only after PR #541 is merged and the jobs production deploy is READY (§4)
 23. `20260515121000_property_virtual_tours.sql` — PASS-21 property depth
-23a. `20260515121500_care_claims.sql` — PASS-21 care depth — **repaired FIX-01** — ⚠ **HARD pre-apply gate** (claim-evidence IDOR), see §4
-23b. `20260515121500_jobs_offer_letters.sql` — PASS-21 jobs depth (SignWell offer letters) — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying
+23a. `20260515121500_care_claims.sql` — PASS-21 care depth — **repaired FIX-01** — ⚠ **HARD pre-apply gate** (claim-evidence IDOR): merge PR #541 → care production deploy READY → apply; see §4
+23b. `20260515121500_jobs_offer_letters.sql` — PASS-21 jobs depth (SignWell offer letters) — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying · only after PR #541 is merged and the jobs production deploy is READY (§4)
 24. `20260515121500_property_neighborhood_signals.sql` — PASS-21 property depth
-24a. `20260515122000_care_pod_records.sql` — PASS-21 care depth — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying
+24a. `20260515122000_care_pod_records.sql` — PASS-21 care depth — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying · only after PR #541 is merged and the care production deploy is READY (§4)
 25. `20260515122000_jobs_salary_benchmarks.sql` — PASS-21 jobs depth
 26. `20260515122000_property_saved_searches.sql` — PASS-21 property depth
-26a. `20260515122500_care_booking_garments.sql` — PASS-21 care depth (needs 18 + 23a) — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying
+26a. `20260515122500_care_booking_garments.sql` — PASS-21 care depth (needs 18 + 23a) — **repaired FIX-01** — ⚠ prerequisites §4 (launch prerequisites) before applying · only after PR #541 is merged and the care production deploy is READY (§4)
 27. `20260515122500_jobs_pipeline_extras.sql` — PASS-21 jobs depth
 28. `20260515122500_property_inspection_rules.sql` — PASS-21 property depth
 29. `20260515123000_care_realtime_publication.sql` — PASS-21 care depth (realtime; re-run after family)
@@ -335,11 +336,26 @@ The GATED realtime files next to these families (`care_realtime_publication` #29
   - **Existing rows** are backfilled as grants. The owner decides which are illegitimate from G10b R1–R9. The held remediation script demotes them, resets self-set KYC, switches off self-promoted console rows together with their comms memberships, and makes every listed account sign in again.
   - **Money escalation (NOT changed; owner's money window):** any signed-in user can INSERT a `payment_intents` row with `status='succeeded'`. It is detected by G10b R9; see `docs/v3/staff-selfgrant-fix-01/README.md` §5.
 - **Care staff UPDATE is column-unrestricted** (it can rewrite `opened_by_user_id` and amounts, not only the triage columns). Restrict it with column grants or a trigger when triage ships.
-- **App drift in shipped code (not migrations):**
-  - `apps/care/lib/automation/recurring-auto-book.ts:152` inserts `care_bookings.user_id` and omits the NOT NULL `phone_normalized`, so recurring auto-book never books (the error is swallowed as `skippedInvalid`).
-  - `apps/jobs/app/api/jobs/offers/route.ts:82` selects `jobs_applications.candidate_user_id`, so the route always answers 403. It also lacks an employer↔pipeline ownership check, as does `interviews/rooms/[roomId]/notes/route.ts`.
-  - `/api/care/claims` accepts client `evidence_urls`, and `signCareMediaUrl` signs any `media://private/<bucket>/<key>` with the service role (a latent IDOR once `care_claims` is live).
-  - Fix all of these in a code pass **before applying** #22/#22a/#23a/#23b/#24a/#26a. Applying (not launching) is the trigger: `/api/care/recurring`, the auto-book cron and `/api/care/claims` are already deployed with no flag. **#23a is a hard pre-apply gate:** the claim-evidence signing IDOR arms the moment `care_claims` exists.
+- **App drift in shipped code (not migrations) — FIXED by PR #541 (V3-CARE-JOBS-PREAPPLY-FIX-01, 2026-10-03):**
+  - `apps/care/lib/automation/recurring-auto-book.ts:152` inserted `care_bookings.user_id` and omitted the NOT NULL `phone_normalized`, so recurring auto-book never booked (the error was swallowed as `skippedInvalid`).
+    - **Fixed:** it inserts `customer_id` with `phone_normalized` and CHECK-valid `status` / `payment_status`.
+    - Six adversarial rounds also made the sweep idempotent, bounded and fair (see #541).
+  - `apps/jobs/app/api/jobs/offers/route.ts:82` selected `jobs_applications.candidate_user_id`, so the route always answered 403. It also lacked an employer↔pipeline ownership check, as did `interviews/rooms/[roomId]/notes/route.ts`.
+    - **Fixed:** it selects `candidate_id`, and both routes require the session user to own the application's pipeline (`actorOwnsPipeline`).
+  - `/api/care/claims` accepted client `evidence_urls`, and `signCareMediaUrl` signed any `media://private/<bucket>/<key>` with the service role (a latent IDOR once `care_claims` is live).
+    - **Fixed:** caller-supplied evidence is refused, uploads are bound to the session user, and only the caller's own uploads are signed.
+    - `signCareMediaUrl` signs payment and expense receipts only.
+  - **Order.** Applying, not launching, is the trigger: `/api/care/recurring`, the auto-book cron and `/api/care/claims` are already deployed with no flag. So the fixed code must be **live**, not merely merged, before #22/#22a/#23a/#23b/#24a/#26a are applied.
+    1. **Merge #541 with GitHub's merge or squash button.** GitHub signs that commit, and the Vercel projects deploy verified commits only. A merge made locally and pushed unsigned is cancelled, and production keeps serving the old build.
+    2. **Wait for the production deployment.** It must be READY, built from the #541 merge commit or a later `main` commit, and be the one serving `care.henryonyx.com` (for #22a/#23b, the same in `jobs` for `jobs.henryonyx.com`). In Vercel → project → Deployments, the Production entry at the top shows Ready and its commit is the #541 merge or later.
+    3. **Optional live check, before #23a is applied.** Signed in on `care.henryonyx.com`, run in the browser console:
+       `fetch("/api/care/claims",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({reason:"deploy check",evidence_urls:["x"]})}).then(r=>r.json()).then(console.log)`
+       - The #541 build answers `Attach evidence as photo files.`
+       - An older build answers `Claim could not be filed. Please try again.` (its insert fails while the table does not exist).
+       - Neither writes anything at that point.
+    4. **Apply** the GATED files in §3.2 order. #23a goes after the deploy, never before.
+  - **Older deployments are not a way back to the old code.** Both projects' Vercel Authentication covers every deployment except the custom domains (`ssoProtection: all_except_custom_domains`, read 2026-10-03), so only the current production build is public.
+  - **#23a also comes after #80.** It is GATED, so it is applied in the care launch pass, after the day-of session's §6.1 step 3a (#80, the staff self-grant fix). Applied before #80, an account that self-grants a staff role could read every customer's claim rows (not the evidence files) through `care claims: staff read`.
 
 **Pre-existing prod observations surfaced by this pass (not changed here, out of scope):**
 - Prod's own `care_bookings` policy `"Users can view bookings by email"` (`lower(email) = lower(jwt email)`) matches `'' = ''`. A phone-auth user whose JWT carries `email: ""` can read every booking with an empty-string email (shadow-proven, 1 of 1 fixture rows visible). The repaired PASS-21 policies are immune (`nullif`), but the baseline policy needs its own `nullif` fix pass.
@@ -414,6 +430,7 @@ Re-runnability: F2 `founder_intelligence` and F3 `founder_action_proposals` are 
 4. Apply the **NOW** rows that are CONFIRMED-UNAPPLIED, **in §3.1 order**, one at a time, and run §5's before/after treatment where it applies. Money rows (#47/#59/#60) and HELD rows (#48–#50) go in their own owner windows.
 5. Re-run §6.2. Every applied NOW row must now read CONFIRMED-APPLIED.
 6. Run §6.4 (post-apply invariants).
+7. **GATED care/jobs PASS-21 files** (#22, #22a, #23a, #23b, #24a, #26a): only in their launch pass, not by default in this session. Before any of them, confirm the §4 order: PR #541 merged, and the `care` / `jobs` production deployments built from it READY and serving. Then apply them in §3.2 order.
 
 ### 6.2 · The single confirmation query (read-only)
 
