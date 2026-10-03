@@ -1,0 +1,96 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Property":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Property
+  - navigation:
+    - link "Search":
+      - /url: /search
+    - link "Managed":
+      - /url: /managed
+    - link "Trust":
+      - /url: /trust
+    - link "Submit":
+      - /url: /submit
+    - link "FAQ":
+      - /url: /faq
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2Fmanaged&division=property
+  - link "Browse listings":
+    - /url: /search
+- main:
+  - paragraph: Managed property
+  - heading "Property management after the listing goes live." [level=1]
+  - link "Submit a managed property":
+    - /url: /submit
+  - list:
+    - listitem:
+      - paragraph: Managed listings
+      - paragraph: "0"
+    - listitem:
+      - paragraph: Featured listings
+      - paragraph: "0"
+    - listitem:
+      - paragraph: Portfolio value
+      - paragraph: "0"
+  - heading "Managed services" [level=2]
+  - list:
+    - listitem:
+      - heading "Managed property services" [level=3]
+      - paragraph: Henry Onyx can run the property after it is let.
+      - text: Owner reporting Maintenance coordination Rent follow-up Inspections
+    - listitem:
+      - heading "Listing marketing" [level=3]
+      - paragraph: Henry Onyx can prepare and promote your listing.
+      - text: Listing copy Photography direction Featured placement Viewing preparation
+    - listitem:
+      - heading "Inquiries and viewings" [level=3]
+      - paragraph: Henry Onyx can handle prospective tenants and buyers for you.
+      - text: Inquiry handling Applicant screening Viewing scheduling Viewing reminders
+  - paragraph: Managed portfolios
+  - heading "Managed homes and stays" [level=2]
+  - heading "Submit your property" [level=2]
+  - link "Submit a property":
+    - /url: /submit
+  - link "Trust standards":
+    - /url: /trust
+- contentinfo:
+  - text: Henry Onyx Property
+  - paragraph: property@henryonyx.com
+  - paragraph:
+    - link "WhatsApp":
+      - /url: https://wa.me/2349133957084
+  - text: Discover
+  - link "Search listings":
+    - /url: /search
+  - link "Managed properties":
+    - /url: /managed
+  - link "Trust standards":
+    - /url: /trust
+  - link "FAQ":
+    - /url: /faq
+  - text: Owners and agents
+  - link "Submit a listing":
+    - /url: /submit
+  - link "Agent workspace":
+    - /url: /agent
+  - link "Viewings and inquiries":
+    - /url: https://account.henryonyx.com/property?panel=viewings
+  - link "Listing activity":
+    - /url: https://account.henryonyx.com/property?panel=listings
+  - text: Account
+  - link "Property activity":
+    - /url: https://account.henryonyx.com/property
+  - link "Henry Onyx account sign-in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2F&division=property
+  - text: © 2026 Henry Onyx Property. All rights reserved.
+  - link "Trust":
+    - /url: /trust
+  - text: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- alert

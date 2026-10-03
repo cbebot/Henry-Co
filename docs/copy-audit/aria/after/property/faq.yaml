@@ -1,0 +1,79 @@
+- link "Skip to main content":
+  - /url: "#henryco-main"
+- banner:
+  - link "Henry Onyx Henry Onyx Property":
+    - /url: /
+    - img "Henry Onyx": Onyx
+    - text: Henry Onyx Property
+  - navigation:
+    - link "Search":
+      - /url: /search
+    - link "Managed":
+      - /url: /managed
+    - link "Trust":
+      - /url: /trust
+    - link "Submit":
+      - /url: /submit
+    - link "FAQ":
+      - /url: /faq
+  - link "Search Henry Onyx":
+    - /url: https://henryonyx.com/search
+  - button "Switch to dark theme"
+  - link "Sign in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2Ffaq&division=property
+  - link "Browse listings":
+    - /url: /search
+- main:
+  - paragraph: FAQ
+  - heading "Before you reach out." [level=1]
+  - list:
+    - listitem:
+      - group: What makes a Henry Onyx-managed property different?
+    - listitem:
+      - group: Can I submit a property before my media is perfect?
+    - listitem:
+      - group: How are viewing requests confirmed?
+    - listitem:
+      - group: Do you support commercial properties?
+    - listitem:
+      - group: Can Henry Onyx manage a property after occupancy?
+  - heading "Still have a question?" [level=2]
+  - link "Submit a listing":
+    - /url: /submit
+  - link "Trust standards":
+    - /url: /trust
+- contentinfo:
+  - text: Henry Onyx Property
+  - paragraph: property@henryonyx.com
+  - paragraph:
+    - link "WhatsApp":
+      - /url: https://wa.me/2349133957084
+  - text: Discover
+  - link "Search listings":
+    - /url: /search
+  - link "Managed properties":
+    - /url: /managed
+  - link "Trust standards":
+    - /url: /trust
+  - link "FAQ":
+    - /url: /faq
+  - text: Owners and agents
+  - link "Submit a listing":
+    - /url: /submit
+  - link "Agent workspace":
+    - /url: /agent
+  - link "Viewings and inquiries":
+    - /url: https://account.henryonyx.com/property?panel=viewings
+  - link "Listing activity":
+    - /url: https://account.henryonyx.com/property?panel=listings
+  - text: Account
+  - link "Property activity":
+    - /url: https://account.henryonyx.com/property
+  - link "Henry Onyx account sign-in":
+    - /url: https://account.henryonyx.com/login?next=https%3A%2F%2Fproperty.henryonyx.com%2F&division=property
+  - text: © 2026 Henry Onyx Property. All rights reserved.
+  - link "Trust":
+    - /url: /trust
+  - text: Designed and built in-house by Henry Onyx Studio for the Henry Onyx ecosystem
+- button "How can we help? — Need help?": Help
+- alert

@@ -1,0 +1,1751 @@
+{
+ "domain": "account",
+ "base": "http://localhost:4101",
+ "sha": "a6bac9ac",
+ "measuredAt": "2026-10-03T14:01:20.309Z",
+ "budgets": {
+  "page": {
+   "home": 250,
+   "landing": 250,
+   "info": 280,
+   "pricing": 300,
+   "index": 180,
+   "detail": 220,
+   "help": 250,
+   "transactional": 150,
+   "auth": 80,
+   "utility": 100,
+   "legal": null
+  },
+  "aboveFold": 60,
+  "h1MaxWords": 12,
+  "metaDescriptionMaxChars": 160,
+  "metaDescriptionMinChars": 50,
+  "chrome": 160
+ },
+ "routes": [
+  {
+   "path": "/login",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 50,
+     "main": 31,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 50
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 240,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 281,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > span.font-medium",
+      "top": 232,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Language"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 284,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Welcome back"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 334,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Sign in to continue with your Henry Onyx account."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 386,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 478,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Password"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > a.auth-field-link",
+      "top": 479,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Forgot password?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 594,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 659,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Don't have an account yet?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 659,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 829,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 843,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 843,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 413,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 507,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Your password"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > select.bg-transparent.outline-none",
+      "top": 232,
+      "aboveFold": true,
+      "words": 2,
+      "text": "English (English)"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 34,
+     "main": 31,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 34
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 18
+   },
+   "pageWords": 50,
+   "aboveFold": 50,
+   "chromeWords": 0,
+   "overlayWords": 31,
+   "visibleH1": 1
+  },
+  {
+   "path": "/signup",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 83,
+     "main": 64,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 83
+    },
+    "h1s": [
+     {
+      "text": "Create your account",
+      "visible": true
+     }
+    ],
+    "title": "Create account — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 262,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 303,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 53,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Create your account"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 104,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Set up one account for all Henry Onyx divisions."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 155,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Full name"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 247,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 339,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Password"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 431,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Confirm password"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.auth-fieldset > div.grid > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 523,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Country"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "div.auth-fieldset > div.grid > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 523,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Phone number"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.auth-fieldset > div.grid > div.auth-field > div.flex > span.inline-flex.items-center",
+      "top": 565,
+      "aboveFold": true,
+      "words": 1,
+      "text": "+234"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > span.auth-label",
+      "top": 615,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Preferred contact method"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.grid.grid-cols-2 > button.border.px-3",
+      "top": 654,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Email"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.grid.grid-cols-2 > button.border.px-3",
+      "top": 654,
+      "aboveFold": true,
+      "words": 1,
+      "text": "WhatsApp"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.grid.grid-cols-2 > button.border.px-3",
+      "top": 704,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Phone call"
+     },
+     {
+      "region": "main",
+      "tag": "button",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.grid.grid-cols-2 > button.border.px-3",
+      "top": 704,
+      "aboveFold": true,
+      "words": 2,
+      "text": "In-app only"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.auth-form-inner > form.auth-stagger > div.auth-fieldset > label.flex.cursor-pointer > span.text-xs.leading-relaxed",
+      "top": 752,
+      "aboveFold": true,
+      "words": 7,
+      "text": "I agree to the Henry Onyx and"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > label.flex.cursor-pointer > span.text-xs.leading-relaxed > a.auth-field-link",
+      "top": 752,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Terms of Service"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > label.flex.cursor-pointer > span.text-xs.leading-relaxed > a.auth-field-link",
+      "top": 752,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Privacy Policy"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 811,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 876,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Already have an account?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 876,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 829,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 843,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 843,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#fullName",
+      "top": 183,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Your full name"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 275,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 367,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Min. 8 characters"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#confirmPassword",
+      "top": 459,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Re-enter your password"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#phone",
+      "top": 551,
+      "aboveFold": true,
+      "words": 1,
+      "text": "8012345678"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "select#country",
+      "top": 551,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Nigeria"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 67,
+     "main": 64,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 47
+    },
+    "h1s": [
+     {
+      "text": "Create your account",
+      "visible": true
+     }
+    ],
+    "title": "Create account — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 32
+   },
+   "pageWords": 83,
+   "aboveFold": 83,
+   "chromeWords": 0,
+   "overlayWords": 31,
+   "visibleH1": 1
+  },
+  {
+   "path": "/forgot-password",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 43,
+     "main": 24,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 32,
+     "pageAboveFold": 43
+    },
+    "h1s": [
+     {
+      "text": "Reset your password",
+      "visible": true
+     }
+    ],
+    "title": "Reset your password — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 240,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 281,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 301,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Reset your password"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 352,
+      "aboveFold": true,
+      "words": 9,
+      "text": "We'll email a secure reset link to your inbox."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 404,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 518,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Send reset link"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 583,
+      "aboveFold": true,
+      "words": 4,
+      "text": "Already have an account?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 583,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 855,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 829,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 843,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 843,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 431,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 27,
+     "main": 24,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 27
+    },
+    "h1s": [
+     {
+      "text": "Reset your password",
+      "visible": true
+     }
+    ],
+    "title": "Reset your password — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 13
+   },
+   "pageWords": 43,
+   "aboveFold": 43,
+   "chromeWords": 0,
+   "overlayWords": 32,
+   "visibleH1": 1
+  },
+  {
+   "path": "/reset-password",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "desktop": {
+    "counts": {
+     "page": 42,
+     "main": 23,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 32,
+     "pageAboveFold": 42
+    },
+    "h1s": [
+     {
+      "text": "Set new password",
+      "visible": true
+     }
+    ],
+    "title": "Set new password — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 240,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 281,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 280,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Set new password"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 330,
+      "aboveFold": true,
+      "words": 7,
+      "text": "Choose a new password for your account"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 382,
+      "aboveFold": true,
+      "words": 2,
+      "text": "New password"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 474,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Confirm password"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 589,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Set new password"
+     },
+     {
+      "region": "overlay",
+      "tag": "span",
+      "path": "div.hc-assist-root > button.hc-assist-trigger > span.hc-assist-trigger-label",
+      "top": 855,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Help"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 829,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 843,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 843,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 409,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Min. 8 characters"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#confirm",
+      "top": 501,
+      "aboveFold": true,
+      "words": 3,
+      "text": "Repeat new password"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 26,
+     "main": 23,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 26
+    },
+    "h1s": [
+     {
+      "text": "Set new password",
+      "visible": true
+     }
+    ],
+    "title": "Set new password — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 13
+   },
+   "pageWords": 42,
+   "aboveFold": 42,
+   "chromeWords": 0,
+   "overlayWords": 32,
+   "visibleH1": 1
+  },
+  {
+   "path": "/auth/choose",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "redirectedTo": "/login",
+   "desktop": {
+    "counts": {
+     "page": 50,
+     "main": 31,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 50
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 240,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 281,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > span.font-medium",
+      "top": 232,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Language"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 284,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Welcome back"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 334,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Sign in to continue with your Henry Onyx account."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 386,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 478,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Password"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > a.auth-field-link",
+      "top": 479,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Forgot password?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 594,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 659,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Don't have an account yet?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 659,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 829,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 843,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 843,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 413,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 507,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Your password"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > select.bg-transparent.outline-none",
+      "top": 232,
+      "aboveFold": true,
+      "words": 2,
+      "text": "English (English)"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 34,
+     "main": 31,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 34
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 18
+   },
+   "pageWords": 50,
+   "aboveFold": 50,
+   "chromeWords": 0,
+   "overlayWords": 31,
+   "visibleH1": 1
+  },
+  {
+   "path": "/auth/link-account",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "redirectedTo": "/login",
+   "desktop": {
+    "counts": {
+     "page": 50,
+     "main": 31,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 50
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 240,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 281,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > span.font-medium",
+      "top": 232,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Language"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 284,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Welcome back"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 334,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Sign in to continue with your Henry Onyx account."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 386,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 478,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Password"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > a.auth-field-link",
+      "top": 479,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Forgot password?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 594,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 659,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Don't have an account yet?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 659,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 829,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 843,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 843,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 413,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 507,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Your password"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > select.bg-transparent.outline-none",
+      "top": 232,
+      "aboveFold": true,
+      "words": 2,
+      "text": "English (English)"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 34,
+     "main": 31,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 34
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 18
+   },
+   "pageWords": 50,
+   "aboveFold": 50,
+   "chromeWords": 0,
+   "overlayWords": 31,
+   "visibleH1": 1
+  },
+  {
+   "path": "/auth/verified",
+   "type": "auth",
+   "budget": 80,
+   "status": 200,
+   "redirectedTo": "/login",
+   "desktop": {
+    "counts": {
+     "page": 50,
+     "main": 31,
+     "outside": 19,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 50
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "headings": [],
+    "images": [],
+    "blocks": [
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "a.auth-brand-mark > span.inline-flex.items-center > svg.inline-block.align-middle > g > text",
+      "top": 70,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Henry"
+     },
+     {
+      "region": "outside",
+      "tag": "text",
+      "path": "span.inline-flex.items-center > span.inline-flex.flex-col > svg.inline-block.align-middle > g > text",
+      "top": 51,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Onyx"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-eyebrow",
+      "top": 240,
+      "aboveFold": true,
+      "words": 4,
+      "text": "One account, every service"
+     },
+     {
+      "region": "outside",
+      "tag": "p",
+      "path": "div.auth-scene > aside.auth-brand > div.auth-brand-lede > p.auth-brand-line",
+      "top": 281,
+      "aboveFold": true,
+      "words": 12,
+      "text": "One sign-in for care, commerce, studio, learning — and everything we build next."
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > span.font-medium",
+      "top": 232,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Language"
+     },
+     {
+      "region": "main",
+      "tag": "h1",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > h1.auth-title",
+      "top": 284,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Welcome back"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > div.auth-rise > p.auth-subtitle",
+      "top": 334,
+      "aboveFold": true,
+      "words": 9,
+      "text": "Sign in to continue with your Henry Onyx account."
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 386,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Email address"
+     },
+     {
+      "region": "main",
+      "tag": "label",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > label.auth-label",
+      "top": 478,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Password"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "form.auth-stagger > div.auth-fieldset > div.auth-field > div.auth-field-row > a.auth-field-link",
+      "top": 479,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Forgot password?"
+     },
+     {
+      "region": "main",
+      "tag": "span",
+      "path": "div.inline-flex.auth-submit-magnet > button.auth-submit > span.grid.place-items-center > span.col-start-1.row-start-1 > span",
+      "top": 594,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Sign in"
+     },
+     {
+      "region": "main",
+      "tag": "p",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt",
+      "top": 659,
+      "aboveFold": true,
+      "words": 5,
+      "text": "Don't have an account yet?"
+     },
+     {
+      "region": "main",
+      "tag": "a",
+      "path": "div.auth-scene > main.auth-form-panel > div.auth-form-inner > p.auth-alt > a",
+      "top": 659,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Create account"
+     },
+     {
+      "region": "overlay",
+      "tag": "p",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.items-start > p.text-sm.leading-6",
+      "top": 829,
+      "aboveFold": true,
+      "words": 28,
+      "text": "Essential storage keeps security, navigation, and core flows reliable. Optional categories help remember language and interface choices, measure quality, and support carefully scoped outreach when programs are enabled."
+     },
+     {
+      "region": "overlay",
+      "tag": "a",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > a.rounded-full.border",
+      "top": 843,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Review settings"
+     },
+     {
+      "region": "overlay",
+      "tag": "button",
+      "path": "div.fixed.inset-x-0 > div.pointer-events-auto.mx-auto > div.flex.flex-col > div.flex.shrink-0 > button.inline-flex.items-center",
+      "top": 843,
+      "aboveFold": true,
+      "words": 1,
+      "text": "Continue"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#email",
+      "top": 413,
+      "aboveFold": true,
+      "words": 1,
+      "text": "you@example.com"
+     },
+     {
+      "region": "main",
+      "tag": "input:placeholder",
+      "path": "input#password",
+      "top": 507,
+      "aboveFold": true,
+      "words": 2,
+      "text": "Your password"
+     },
+     {
+      "region": "main",
+      "tag": "select:select",
+      "path": "main.auth-form-panel > div.auth-form-inner > div.mb-6.flex > label.inline-flex.items-center > select.bg-transparent.outline-none",
+      "top": 232,
+      "aboveFold": true,
+      "words": 2,
+      "text": "English (English)"
+     }
+    ]
+   },
+   "mobile": {
+    "counts": {
+     "page": 34,
+     "main": 31,
+     "outside": 3,
+     "chrome": 0,
+     "overlay": 31,
+     "pageAboveFold": 34
+    },
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "visible": true
+     }
+    ],
+    "title": "Sign in — Henry Onyx",
+    "metaDescription": "Manage your Henry Onyx account, wallet, payments, orders, and preferences across all divisions.",
+    "metaDescriptionChars": 95,
+    "hasMain": true,
+    "lang": "en",
+    "blockCount": 18
+   },
+   "pageWords": 50,
+   "aboveFold": 50,
+   "chromeWords": 0,
+   "overlayWords": 31,
+   "visibleH1": 1
+  }
+ ]
+}

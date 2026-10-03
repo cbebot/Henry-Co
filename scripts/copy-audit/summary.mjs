@@ -57,7 +57,7 @@ for (const d of DOMAINS) {
       lines.push(`| ${r.path}${redirect} | ${r.type} | ${budget} | ${r.pageWords} | ${r.aboveFold} | ${r.chromeWords} | ${r.visibleH1} | ${o ? "+" + o : counted ? "" : "redirect"} |`);
     }
   }
-  totals.push({ domain: d.domain, before: sumA, after: compare ? sumB : null, over });
+  totals.push({ domain: d.domain, before: sumA, after: compare && b ? sumB : null, over });
 }
 
 const head = [
@@ -68,7 +68,9 @@ const head = [
   compare ? "| domain | before | after | cut |\n|---|---:|---:|---:|" : "| domain | visible page words | routes over budget |\n|---|---:|---:|",
   ...totals.map((t) =>
     compare
-      ? `| ${t.domain} | ${t.before} | ${t.after} | ${t.before ? Math.round((1 - t.after / t.before) * 100) : 0}% |`
+      ? t.after == null
+        ? `| ${t.domain} | ${t.before} | not measured yet | |`
+        : `| ${t.domain} | ${t.before} | ${t.after} | ${t.before ? Math.round((1 - t.after / t.before) * 100) : 0}% |`
       : `| ${t.domain} | ${t.before} | ${t.over} |`,
   ),
 ];

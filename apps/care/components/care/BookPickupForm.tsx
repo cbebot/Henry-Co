@@ -12,7 +12,6 @@ import {
   Phone,
   Package2,
   Plus,
-  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import {
@@ -801,10 +800,7 @@ export default function BookPickupForm({
           <div className="rounded-[30px] border border-black/10 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-                  {t("Current garment pricing")}
-                </div>
-                <div className="mt-2 text-xl font-semibold text-zinc-950 dark:text-white">
+                <div className="text-xl font-semibold text-zinc-950 dark:text-white">
                   {t("Add your garments")}
                 </div>
               </div>
@@ -1155,7 +1151,7 @@ export default function BookPickupForm({
                 })
               ) : (
                 <div className="rounded-[28px] border border-black/10 bg-black/[0.02] p-8 text-center text-sm text-zinc-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/55">
-                  {t("No garment lines selected yet. Add items above to build the manifest.")}
+                  {t("No items selected yet.")}
                 </div>
               )}
             </div>
@@ -1703,10 +1699,7 @@ export default function BookPickupForm({
       <div className="rounded-[30px] border border-black/10 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
         <div className="grid gap-5">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">
-              {t("Before you submit")}
-            </div>
-            <div className="mt-2 text-lg font-semibold text-zinc-950 dark:text-white">
+            <div className="text-lg font-semibold text-zinc-950 dark:text-white">
               {mode === "garment"
                 ? t("Send the garment request and receive one tracking code.")
                 : t("Send the service request with the current quote.")}
@@ -1741,7 +1734,7 @@ export default function BookPickupForm({
                 ) : null}
               </div>
               <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
-                {t("Send the request now and complete payment after the team confirms the next step.")}
+                {t("Pay after the team confirms the booking.")}
               </div>
             </button>
 
@@ -1769,7 +1762,7 @@ export default function BookPickupForm({
                 ) : null}
               </div>
               <div className="mt-4 text-lg font-semibold text-zinc-950 dark:text-white">
-                {t("Submit the booking and receive payment details right away.")}
+                {t("Get payment details right away.")}
               </div>
             </button>
           </div>
@@ -1835,14 +1828,6 @@ export default function BookPickupForm({
           ) : null}
 
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="space-y-2 text-sm leading-7 text-zinc-600 dark:text-white/65">
-              <div className="flex items-start gap-2 text-[12px] leading-6 text-zinc-500 dark:text-white/55">
-                <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--accent)]" />
-                <span>
-                  {t("Your request is reviewed before confirmation, and you can track updates after booking.")}
-                </span>
-              </div>
-            </div>
 
             <PendingSubmitButton
               disabled={mode === "garment" ? selectedItems.length === 0 : !serviceQuote}

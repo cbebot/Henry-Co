@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { getDivisionConfig } from "@henryco/config";
 import { getServicesCopy, resolveLocalizedDynamicField, translateSurfaceLabel } from "@henryco/i18n/server";
-import { ArrowRight, CalendarCheck2, CheckCircle2, Search, Wallet } from "lucide-react";
+import { ArrowRight, Search, Wallet } from "lucide-react";
 
 import BookingSuccessNotice from "@/components/care/BookingSuccessNotice";
 import BookPickupForm from "@/components/care/BookPickupForm";
@@ -133,12 +133,8 @@ export default async function BookPage({
       <div className="mx-auto grid max-w-[92rem] items-start gap-12 2xl:grid-cols-[1.15fr_0.85fr]">
         <section className="order-2 space-y-12 2xl:order-2">
           <div>
-            <p className="care-kicker inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.32em] text-[color:var(--home-accent-text)]">
-              <CalendarCheck2 className="h-3.5 w-3.5" />
-              {t("Service booking")}
-            </p>
-            <h1 className="mt-5 max-w-3xl text-balance care-display text-[color:var(--home-ink)]">
-              {t("Book a service. One calm form.")}
+            <h1 className="max-w-3xl text-balance care-display text-[color:var(--home-ink)]">
+              {t("Book a service.")}
             </h1>
           </div>
 
@@ -211,11 +207,6 @@ export default async function BookPage({
                 action={createPublicBookingAction}
               />
             </div>
-
-            <p className="mt-7 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-[color:var(--home-ink-50)]">
-              <CheckCircle2 className="h-3.5 w-3.5 text-[color:var(--home-accent-text)]" />
-              {t("One tracking code per request")}
-            </p>
           </div>
         </section>
       </div>

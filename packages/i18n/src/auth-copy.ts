@@ -51,7 +51,7 @@ export type AuthCopy = {
 const EN: AuthCopy = {
   scene: {
     eyebrow: "One account, every service",
-    line: "One sign-in for care, commerce, studio, learning — and everything we build next.",
+    line: "One sign-in for care, commerce, studio, and learning.",
     showPassword: "Show password",
     hidePassword: "Hide password",
   },
