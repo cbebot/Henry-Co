@@ -131,6 +131,13 @@ describe("content rules: contact details and payment steering never publish", ()
     assert.notEqual(verdict.outcome, "publish");
   });
 
+  it("the first half in the URL handle and the rest in the title is held too (wrong order)", () => {
+    const verdict = evaluateListingPolicy(
+      listing({ slug: "kettle-0803", title: "Stainless steel electric kettle 1234567" }),
+    );
+    assert.notEqual(verdict.outcome, "publish");
+  });
+
   it('a phone number is not a "was" price', () => {
     const verdict = evaluateListingPolicy(listing({ compareAtPrice: 8031234567 }));
     assert.equal(verdict.outcome, "reject");

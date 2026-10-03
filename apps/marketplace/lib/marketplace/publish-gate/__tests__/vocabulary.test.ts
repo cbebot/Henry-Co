@@ -164,6 +164,9 @@ describe("lockstep with the migration", () => {
       "listing_id_immutable",
       "variants_need_review",
       "prior_human_decision",
+      "profile_changed",
+      "store_owner_immutable",
+      "store_type_immutable",
     ]);
     for (const hint of hints) {
       assert.ok(isGateReasonCode(hint) || guardOnly.has(hint), hint);

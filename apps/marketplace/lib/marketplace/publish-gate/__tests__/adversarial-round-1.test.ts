@@ -97,8 +97,10 @@ describe("round 1 — pictures", () => {
     assert.equal(published.outcome, "publish");
   });
 
-  it("the gate passes the count of unfingerprinted pictures to the policy", () => {
-    assert.ok(SERVER.includes("unfingerprinted: fingerprints.missing,"));
+  it("the gate passes the count of pictures it could not compare to the policy", () => {
+    // Round 2: a failed registry read counts like a picture that could not be fingerprinted.
+    assert.ok(SERVER.includes("const notCompared = fingerprints.missing + (matchRead === null ? images.refs.length : 0);"));
+    assert.ok(SERVER.includes("unfingerprinted: notCompared,"));
   });
 
   it("an edit may only keep pictures the listing's STANDING verdict covers", () => {
@@ -229,9 +231,12 @@ describe("round 1 — the optional AI screen and the take-down sweep", () => {
 
   it("a take-down is never decided on reporters that could not be checked", () => {
     const start = SWEEP.indexOf("const sellers = new Set<string>();");
-    const block = SWEEP.slice(start, start + 1400);
+    const block = SWEEP.slice(start, start + 1600);
     assert.ok(block.includes("if (error) return;"));
-    assert.ok(block.includes("if (profileError) return;"));
+    // Round 2: account age comes from the account (auth), not from a profile row its owner can edit.
+    assert.ok(block.includes('admin.rpc("marketplace_gate_established_accounts", {'));
+    assert.equal(block.includes('.from("customer_profiles")'), false);
+    assert.ok(block.includes("if (ageError || !Array.isArray(accounts)) return;"));
     assert.ok(block.includes("for (const id of reporterIds) if (!established.has(id)) sellers.add(id);"));
     assert.ok(block.includes("} catch {\n    return;\n  }"));
   });

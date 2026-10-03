@@ -67,6 +67,7 @@ export async function readPayoutGate(
         stage: input.stage,
         reasons: decision.reasons,
         instantOnboarded: facts?.instantOnboarded ?? null,
+        identityWaived: facts?.identityWaived ?? null,
       },
     });
   }

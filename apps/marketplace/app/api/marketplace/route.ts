@@ -2088,6 +2088,22 @@ export async function POST(request: Request) {
           .maybeSingle();
         if (!application) return redirectTo(request, "/admin?error=missing-application");
 
+        // An approval opens the store under the handle the applicant chose. A handle
+        // that already belongs to another account — or to the company — is refused
+        // before anything changes: the store write below would otherwise hand that
+        // store over (the database refuses it too).
+        if (decision === "approved") {
+          const { data: handleOwner } = await admin
+            .from("marketplace_vendors")
+            .select("id, owner_user_id, owner_type")
+            .eq("slug", String(application.proposed_store_slug || ""))
+            .maybeSingle();
+          const owner = handleOwner as { owner_user_id?: string | null; owner_type?: string | null } | null;
+          if (owner && (owner.owner_type === "company" || String(owner.owner_user_id || "") !== String(application.user_id || ""))) {
+            return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=store-handle-taken`);
+          }
+        }
+
         await admin
           .from("marketplace_vendor_applications")
           .update({
@@ -2140,6 +2156,16 @@ export async function POST(request: Request) {
             } as never, { onConflict: "slug" })
             .select("id")
             .maybeSingle();
+
+          // No store, no seller role: a refused store write leaves the application where
+          // it was instead of granting a role with no store behind it.
+          if (!vendor?.id) {
+            await admin
+              .from("marketplace_vendor_applications")
+              .update({ status: application.status, reviewed_at: application.reviewed_at, reviewed_by: application.reviewed_by } as never)
+              .eq("id", applicationId);
+            return redirectTo(request, `${returnTo}${returnTo.includes("?") ? "&" : "?"}error=decision-failed`);
+          }
 
           // Seed initial trust snapshot for audit trail
           if (vendor?.id) {

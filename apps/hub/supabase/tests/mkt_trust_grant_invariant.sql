@@ -27,7 +27,8 @@ begin
   -- 1 + 2. tables
   for t in select unnest(array[
     'marketplace_listing_gate_verdicts', 'marketplace_seller_probation',
-    'marketplace_listing_enforcement', 'marketplace_image_fingerprints'
+    'marketplace_listing_enforcement', 'marketplace_image_fingerprints',
+    'marketplace_seller_identity_waivers'
   ]) loop
     select c.relrowsecurity into v_ok
       from pg_class c join pg_namespace n on n.oid = c.relnamespace
@@ -81,6 +82,10 @@ begin
     'public.marketplace_payout_identity_guard()',
     'public.marketplace_product_variant_guard()',
     'public.marketplace_vendors_probation_enroll()',
+    'public.marketplace_vendors_owner_guard()',
+    'public.marketplace_product_media_delete_guard()',
+    'public.marketplace_gate_human_hold(uuid,uuid,text)',
+    'public.marketplace_gate_established_accounts(uuid[],integer)',
     'public.marketplace_gate_seller_state(uuid,text)',
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
@@ -88,7 +93,7 @@ begin
     'public.marketplace_gate_hide_listing(uuid,text,text[],jsonb,text)',
     'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid,bigint)',
     'public.marketplace_gate_image_matches(uuid,text,text[],integer)',
-    'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text)',
+    'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text,text)',
     'public.marketplace_gate_payout_eligibility(uuid)'
   ]) loop
     if to_regprocedure(f) is null then
@@ -113,8 +118,9 @@ begin
     'public.marketplace_gate_hide_listing(uuid,text,text[],jsonb,text)',
     'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid,bigint)',
     'public.marketplace_gate_image_matches(uuid,text,text[],integer)',
-    'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text)',
-    'public.marketplace_gate_payout_eligibility(uuid)'
+    'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text,text)',
+    'public.marketplace_gate_payout_eligibility(uuid)',
+    'public.marketplace_gate_established_accounts(uuid[],integer)'
   ]) loop
     if to_regprocedure(f) is not null and not has_function_privilege('service_role', f, 'EXECUTE') then
       raise warning 'VIOLATION: service_role cannot execute %', f; violations := violations + 1;
@@ -135,6 +141,10 @@ begin
     'public.marketplace_payout_identity_guard()',
     'public.marketplace_product_variant_guard()',
     'public.marketplace_vendors_probation_enroll()',
+    'public.marketplace_vendors_owner_guard()',
+    'public.marketplace_product_media_delete_guard()',
+    'public.marketplace_gate_human_hold(uuid,uuid,text)',
+    'public.marketplace_gate_established_accounts(uuid[],integer)',
     'public.marketplace_gate_seller_state(uuid,text)',
     'public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)',
     'public.marketplace_gate_record_rescan(uuid,text)',
@@ -142,7 +152,7 @@ begin
     'public.marketplace_gate_hide_listing(uuid,text,text[],jsonb,text)',
     'public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid,bigint)',
     'public.marketplace_gate_image_matches(uuid,text,text[],integer)',
-    'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text)',
+    'public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text,text)',
     'public.marketplace_gate_payout_eligibility(uuid)'
   ]) loop
     if to_regprocedure(f) is null then continue; end if;
@@ -221,9 +231,37 @@ begin
     select 1 from pg_trigger tg
     where tg.tgrelid = 'public.marketplace_vendors'::regclass and tg.tgname = 'marketplace_vendors_probation_enroll'
       and not tg.tgisinternal and tg.tgenabled = 'O'
-      and (tg.tgtype & 2) = 0 and (tg.tgtype & 4) = 4 and (tg.tgtype & 1) = 1
+      and (tg.tgtype & 2) = 0 and (tg.tgtype & 4) = 4 and (tg.tgtype & 16) = 16 and (tg.tgtype & 1) = 1
   ) then
-    raise warning 'VIOLATION: probation enrolment trigger missing or disabled'; violations := violations + 1;
+    raise warning 'VIOLATION: probation enrolment trigger missing, disabled or not AFTER INSERT OR UPDATE'; violations := violations + 1;
+  end if;
+  if not exists (
+    select 1 from pg_trigger tg
+    where tg.tgrelid = 'public.marketplace_vendors'::regclass and tg.tgname = 'marketplace_vendors_owner_guard'
+      and not tg.tgisinternal and tg.tgenabled = 'O'
+      and (tg.tgtype & 2) = 2 and (tg.tgtype & 16) = 16 and (tg.tgtype & 1) = 1
+  ) then
+    raise warning 'VIOLATION: store owner guard trigger missing or disabled'; violations := violations + 1;
+  end if;
+  if not exists (
+    select 1 from pg_trigger tg
+    where tg.tgrelid = 'public.marketplace_product_media'::regclass and tg.tgname = 'marketplace_product_media_delete_guard'
+      and not tg.tgisinternal and tg.tgenabled = 'O'
+      and (tg.tgtype & 2) = 2 and (tg.tgtype & 8) = 8 and (tg.tgtype & 1) = 1
+  ) then
+    raise warning 'VIOLATION: picture delete guard trigger missing or disabled'; violations := violations + 1;
+  end if;
+  -- The two child guards must LOCK the listing row they read (FOR SHARE): without it a
+  -- variant or a picture can slip onto a listing while its publish is still in flight
+  -- in another transaction. Concurrency cannot be exercised from one session, so the
+  -- lock is pinned on the function source.
+  -- (the media guard reads the listing twice — the listing a picture leaves, and the
+  -- one it lands on — and locks both; the delete guard reads it once)
+  if (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_variant_guard()'::regprocedure)), 'for share', 'g')) < 1
+     or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_guard()'::regprocedure)), 'for share', 'g')) < 2
+     or (select count(*) from regexp_matches(lower(pg_get_functiondef('public.marketplace_product_media_delete_guard()'::regprocedure)), 'for share', 'g')) < 1
+  then
+    raise warning 'VIOLATION: a child guard reads the listing row without locking it'; violations := violations + 1;
   end if;
 
   -- 6b. no request role may add a trigger to, or truncate, a guarded table

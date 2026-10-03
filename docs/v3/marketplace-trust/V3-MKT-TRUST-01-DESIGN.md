@@ -14,7 +14,7 @@ committed and held; production was not touched. Day-of steps: `ACTIVATION.md`.
 
 | Today (flag OFF, unchanged) | With the flag ON |
 |---|---|
-| Apply → upload identity + payout documents → wait for a human to approve the store | Apply → the store opens immediately, on probation. Identity is asked for at the first payout, not before the first listing. |
+| Apply → upload identity + payout documents → wait for a human to approve the store | Apply → the store opens immediately, on probation. Identity is asked for at the first payout, not before the first listing — for every store opened after the gate, whoever opened it. |
 | Submit a listing → human approval queue → live | Publish → the policy gate decides at write time: **publish** (live now), **hold** (a person looks — exceptions only) or **reject** (named reasons, nothing is written). |
 | Any edit of a live listing unpublishes it and re-queues it | An edit is re-evaluated at write time; a clean edit stays live. A held or refused edit leaves the live version untouched unless the seller asks for it to be sent for review. |
 | A reported or risky live listing stays live until a human acts | Deterministic evidence can take a listing down for review. That is the only automated enforcement, and it is reversible. |
@@ -148,6 +148,22 @@ TRUNCATE privileges on the guarded tables.
 
 **A listing's id never changes.** Take-downs and standing verdicts are keyed on it.
 
+**A person's decision binds the engine.** An open reports or risk take-down, one a person upheld,
+and a person's own rejection or request for changes all stand against the listing until a person
+approves it. They are matched on the listing id and on store + handle, so deleting the row and
+creating it again under the same handle does not shed them, and listing the same item again under a
+new handle with the same picture is held too. Only a genuine staff decision counts as one — a bare
+status write records nothing.
+
+**Stores.** A store's owner never changes and its type never changes by UPDATE: the legacy approval
+writes the store with an upsert on its handle, and an application naming another store's handle
+would otherwise hand that store — its catalogue and its balance — to the applicant. Both approval
+paths also refuse such a handle up front, and grant no seller role unless the store write landed.
+
+**Pictures.** The media and variant guards lock the listing row while they read it, so a picture or
+a variant cannot slip onto a listing whose publish is still in flight in another transaction. A
+picture is never moved off a live listing, and a live listing is never left without a picture.
+
 **Variants.** `marketplace_product_variants` is in front of buyers (options, price, SKU) and no rule
 screens it. Until the engine does, the position is default-deny: the engine never publishes a
 listing that carries variant rows (the RPC answers `hold`, the guard refuses the engine verdict —
@@ -157,12 +173,12 @@ this binds direct writes and future routes.
 
 ### 3.4 Probation **(assumption)**
 
-Applies to stores opened by instant onboarding — and to any store a **person** approves from an
-application that carries no identity + payout documents. With the flag on those documents are
-optional on every application, so one the gate holds reaches the staff queue without them; a
-database trigger on the store row enrols it, whichever path created it. (With the flag off an
-application cannot be submitted without documents, so nothing is enrolled.) Ends when identity is
-verified **and** 3 orders are delivered **and** 14 days have passed.
+Applies to every store opened after the gate is installed — by the gate or by a person. Adversarial
+round 2 showed why "a person approved it" cannot exempt a store: the review queue never showed the
+identity documents, and any string passed as one. A database trigger on the store row enrols it,
+whichever path created it (and again if an ownerless store is later given an owner). Stores that
+existed before the gate are untouched. Ends when identity is verified **and** 3 orders are
+delivered **and** 14 days have passed.
 
 An application a person has already rejected, or sent back for changes, is never opened by the
 gate: submitting it again returns it to a person.
@@ -182,16 +198,17 @@ the launch plan) still applies on top; it is commercial, not a trust rule.
 
 ### 3.5 Identity at the payout gate **(assumption)**
 
-`payoutEligibility` and the trigger on `marketplace_payout_requests` enforce the same rule:
+`payoutEligibility` and the trigger on `marketplace_payout_requests` enforce the same rule, and it
+**fails closed**: a payout needs an owner whose identity is verified.
 
-- a store **on the probation register** (opened instantly, or approved by a person without
-  documents) cannot request, and finance cannot approve or release, a payout until its owner's
-  identity is verified. "Verified" requires a staff-reviewed identity
-  document as well as the profile flag — that flag alone is writable by its own user on production;
-- a store **a person approved** from an application with its documents handed them over at
-  application time and is not asked again;
-- an open request cannot be re-pointed at another store: the database re-checks a request whenever
-  its status or its store changes;
+- "Verified" requires a staff-reviewed identity document as well as the profile flag — that flag
+  alone is writable by its own user on production;
+- the exceptions are the company's own store, and a store that existed **before** the gate was
+  installed: the migration records each of those once, as a waiver bound to the owner it had then.
+  The waiver stops applying if the store's owner is not that account, and nothing can add one;
+- an open request cannot be re-pointed at another store, and a status is read as a person reads it
+  ("Requested", " requested" and "requested" are the same request; only plainly closed statuses —
+  rejected, frozen, cancelled and the like — are not checked);
 - a staff-applied V3-40 hold on the owner's account pauses any store's payout (TS wall, flag ON).
 
 The gate only refuses. No money RPC, and nothing in `payments_private`, is read or written.
@@ -206,8 +223,8 @@ deterministic evidence:
    back to a person (the original approver survives any number of clean re-scans);
 2. **reports** — three independent buyers within 14 days. Other sellers, anonymous reports and
    accounts less than a week old do not count, so neither a competitor nor a handful of new
-   accounts can pull a listing; if the reporters cannot be checked, nothing is taken down on that
-   pass;
+   accounts can pull a listing. The age is the account's own (auth), not a profile date its owner
+   can edit; if the reporters cannot be checked, nothing is taken down on that pass;
 3. **risk** — a staff-applied V3-40 hold/freeze on the listing (mirrored, never created).
 
 A take-down moves the listing to `under_review`, records why, notifies the seller, and blocks
@@ -230,15 +247,19 @@ prompt builder — without one a surface can never reach the provider.
 ### 3.8 Image matching — what it does and does not catch
 
 Two fingerprints per first-party picture: SHA-256 of the bytes, and a perceptual hash (each of 64
-neighbouring pairs on a 9×8 grid is brighter-left, brighter-right or flat; mirror-invariant).
-Tuned for precision, because a match holds an honest seller's listing:
+neighbouring pairs on a 9×8 grid is brighter-left, brighter-right or flat; mirror-invariant; "flat"
+is measured against the picture's own contrast, so a brighter or darker copy classes like the
+original). Tuned for precision, because a match holds an honest seller's listing:
 
-- measured on 2,856 different-picture pairs (photo-like and object-on-white): **0 false matches**;
-- catches every byte-identical re-upload, and about three quarters of re-encoded, resized or
-  mirrored copies of pictures that have enough structure to hash;
+- measured on 27,040 different-picture pairs (object scenes on a studio backdrop and on plain
+  white), and on the 320-picture set adversarial round 2 built: **0 false matches**;
+- catches every byte-identical re-upload, and most re-encoded, resized, stretched, mirrored, darker
+  or higher-contrast copies of pictures that have enough structure to hash;
 - a picture with too little structure (a small object on a plain background) gets no perceptual
   hash — only the byte hash — because nothing in it can tell two such pictures apart;
-- it does not catch a crop, a rotation, an overlay or a redrawn picture.
+- it does not catch a crop, a rotation, an added border or frame, an upside-down copy, an overlay,
+  a redrawn picture, and some lossy re-saves in another format or strong brightening of some
+  pictures. A duplicate picture is one signal among several, never the only line of defence.
 
 Consequence by store: on probation a match **holds**; an established store gets a signal only
 (usually a shared manufacturer photo). Attaching another store's uploaded object directly — which
@@ -255,15 +276,19 @@ first place. The storage origin and the optional delivery base in front of it
 
 Contact details and payment steering are refused or held however they are dressed: look-alike
 letters and digits from other scripts, invisible characters, any separator, a number glued to a
-word, number words glued together, a dropped leading zero, a number cut across fields, an account
-number beside a bank or wallet name, links without a scheme, handles named next to an app, a
-mailbox provider with or without its dot. The listing's URL handle is screened like any other text.
-Two corpora hold the rules in place (`publish-gate/__tests__/corpus.ts`): 82 ordinary listings
-that must publish and 79 evasions that must not, in every field.
+word, number words glued together or read out with joining words, a dropped leading zero, a number
+cut across fields (in either order), an account number beside a bank, a wallet, "acct" or "aza", a
+bare ten-digit number, USSD transfer codes, Pidgin steering ("make we talk price for outside",
+"transfer come my side"), asking for the buyer's number, "link in bio", links without a scheme,
+handles named next to an app, a mailbox provider with or without its dot. The listing's URL handle
+(decoded) and the store's handle are screened like any other text. Two corpora hold the rules in
+place (`publish-gate/__tests__/corpus.ts`): 117 ordinary listing lines and 9 store names that must
+publish, and 140 evasions that must not, in every field. Every pattern is bounded: a
+100,000-character field is screened in well under a second.
 
-Known limits, by design of a deterministic floor: a number spelled only in Pidgin, Yoruba, Igbo or
-Hausa words, a number written backwards or with an arithmetic hint, digits separated by filler
-words in plain form, and anything inside a picture. Those are what the optional AI screen and the
+Known limits, by design of a deterministic floor: a number spelled only in Yoruba, Igbo or Hausa
+words, a number written backwards or with an arithmetic hint, a few look-alike glyphs nobody would
+read as digits, and anything inside a picture. Those are what the optional AI screen and the
 report-based take-down are for.
 
 ## 4. Flag OFF is the current behaviour
@@ -287,8 +312,11 @@ With the migration applied and the flag OFF, the guard is satisfied by today's f
 ever write `draft`/`submitted`/`under_review`, and the human approval paths already stamp
 `reviewed_by`/`reviewed_at`. What the database itself now refuses, whichever way the flag points:
 a change to a live listing's content without a decision behind it, a change of a listing's id, a
-change to the variants of a live listing, and a payout for a store on the probation register
-whose owner's identity is not verified.
+change to the variants of a live listing, removing the last picture of a live listing, a change of a
+store's owner or type, and a payout for any store opened after the gate whose owner's identity is
+not verified. That last one is deliberate and applies with the flag off too: no path that opens a
+store ever reviewed identity documents, so the payout is where identity is checked. Stores that
+existed before the gate keep the payout path they had.
 
 ## 5. Rollout
 

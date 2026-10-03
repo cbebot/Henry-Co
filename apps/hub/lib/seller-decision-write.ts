@@ -135,6 +135,24 @@ export async function applySellerDecision(input: {
   const applicantUserId = application.user_id ? String(application.user_id) : null;
   const storeName = String(application.store_name || "your store");
 
+  // The store is opened under the handle the applicant chose. A handle that already
+  // belongs to another account, or to the company, is refused before anything
+  // changes (the marketplace database refuses the takeover too).
+  if (decision === "approved") {
+    const { data: handleOwner } = await admin
+      .from("marketplace_vendors")
+      .select("id, owner_user_id, owner_type")
+      .eq("slug", String(application.proposed_store_slug || ""))
+      .maybeSingle();
+    const owner = handleOwner as { owner_user_id?: string | null; owner_type?: string | null } | null;
+    if (owner && (owner.owner_type === "company" || String(owner.owner_user_id || "") !== String(applicantUserId || ""))) {
+      return {
+        ok: false,
+        error: "That store handle already belongs to another store. Nothing was approved; ask the applicant to choose another handle.",
+      };
+    }
+  }
+
   // Audit-first: its failure aborts before any state moves (staff-route parity).
   const { error: auditError } = await admin.from("staff_audit_logs").insert({
     actor_id: actorId,
@@ -216,6 +234,20 @@ export async function applySellerDecision(input: {
       )
       .select("id")
       .maybeSingle();
+
+    // No store, no seller role: put the application back as it was and say so.
+    if (!vendor?.id) {
+      await admin
+        .from("marketplace_vendor_applications")
+        .update({
+          status: application.status,
+          review_note: application.review_note ?? null,
+          reviewed_at: application.reviewed_at ?? null,
+          reviewed_by: application.reviewed_by ?? null,
+        } as never)
+        .eq("id", applicationId);
+      return { ok: false, error: "The store could not be opened. Nothing was approved." };
+    }
 
     await admin.from("marketplace_role_memberships").upsert({
       user_id: application.user_id,

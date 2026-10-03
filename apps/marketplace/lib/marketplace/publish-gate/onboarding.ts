@@ -17,6 +17,7 @@
 
 import "server-only";
 
+import { createHash } from "node:crypto";
 import { emitGateEvent, outcomeToEvent } from "./events";
 import type { GateVerdict } from "./policy";
 import { GATE_ENGINE_VERSION, composeOutcome, normalizeReasons, type GateReasonCode } from "./reasons";
@@ -27,13 +28,31 @@ export type InstantOnboardResult =
   | { kind: "already_seller"; vendorId: string | null; vendorStatus: string | null }
   | {
       kind: "review";
-      why: "held" | "handle_taken" | "prior_decision" | "gate_not_installed" | "error";
+      why: "held" | "handle_taken" | "prior_decision" | "profile_changed" | "gate_not_installed" | "error";
       reasons: GateReasonCode[];
     };
 
+/**
+ * The fingerprint of a store profile AS SCREENED: handle, name and story. The
+ * database opens the store from the application row, and refuses unless the row
+ * still hashes to this — so a save that lands between the screen and the opening
+ * cannot put unscreened text on a live store. Must match the SQL exactly:
+ * sha256(lower(handle) || '|' || name || '|' || story), UTF-8, hex.
+ */
+export function screenedProfileHash(profile: { slug: string; name: string; story: string | null }): string {
+  const slug = String(profile.slug ?? "").trim().toLowerCase();
+  const name = String(profile.name ?? "").trim();
+  const story = String(profile.story ?? "");
+  return createHash("sha256").update(`${slug}|${name}|${story}`, "utf8").digest("hex");
+}
+
 const TRUST_FLAG_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
-/** Unresolved trust flags on the account in the last 30 days (the existing repeat-offender signal). */
+/**
+ * Unresolved trust flags on the account in the last 30 days (the existing
+ * repeat-offender signal). A read that fails answers "flagged": a store is not
+ * opened instantly on a check that could not be made — a person decides instead.
+ */
 async function hasOpenTrustFlags(admin: GateAdmin, userId: string): Promise<boolean> {
   try {
     const { count, error } = await admin
@@ -42,10 +61,27 @@ async function hasOpenTrustFlags(admin: GateAdmin, userId: string): Promise<bool
       .eq("user_id", userId)
       .is("resolved_at", null)
       .gte("created_at", new Date(Date.now() - TRUST_FLAG_WINDOW_MS).toISOString());
-    if (error) return false;
+    if (error) return true;
     return (count ?? 0) > 0;
   } catch {
-    return false;
+    return true;
+  }
+}
+
+/** The store this account already owns, if any. */
+async function readOwnedStore(admin: GateAdmin, userId: string): Promise<{ id: string; status: string | null } | null> {
+  try {
+    const { data } = await admin
+      .from("marketplace_vendors")
+      .select("id, status")
+      .eq("owner_user_id", userId)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    const row = data as { id?: string; status?: string | null } | null;
+    return row?.id ? { id: String(row.id), status: row.status ?? null } : null;
+  } catch {
+    return null;
   }
 }
 
@@ -57,9 +93,30 @@ export async function instantOnboard(
     /** The deterministic store-profile verdict (evaluateStorePolicy). */
     verdict: Pick<GateVerdict, "outcome" | "reasons">;
     moderationDetail: ReadonlyArray<string>;
+    /** screenedProfileHash() of the handle, name and story that verdict was given for. */
+    profileHash: string;
   },
 ): Promise<InstantOnboardResult> {
   const codes: GateReasonCode[] = [...input.verdict.reasons];
+
+  // One store per account, whatever the screen says: an account that already owns
+  // one has nothing to wait for, and its application must not sit in the staff
+  // queue as a second, approvable request (an approval there would open — or
+  // re-approve — a store with no gate in front of it).
+  const owned = await readOwnedStore(admin, input.actorId);
+  if (owned) {
+    try {
+      await admin
+        .from("marketplace_vendor_applications")
+        .update({ status: "approved" } as never)
+        .eq("id", input.applicationId)
+        .eq("user_id", input.actorId) // only the actor's own application, whatever id was passed
+        .eq("status", "submitted");
+    } catch {
+      // the answer below does not depend on it
+    }
+    return { kind: "already_seller", vendorId: owned.id, vendorStatus: owned.status };
+  }
 
   // A staff-applied V3-40 hold/freeze, or open trust flags, send the application
   // to a person. This gate reads those systems; it never writes to them.
@@ -92,6 +149,7 @@ export async function instantOnboard(
       p_reasons: reasons,
       p_signals: { moderationDetail: [...input.moderationDetail] },
       p_engine_version: GATE_ENGINE_VERSION,
+      p_profile_hash: input.profileHash,
     });
     data = result.data;
     error = result.error;
@@ -106,7 +164,9 @@ export async function instantOnboard(
         ? ("handle_taken" as const)
         : guardHint(error) === "prior_human_decision"
           ? ("prior_decision" as const)
-          : ("error" as const);
+          : guardHint(error) === "profile_changed"
+            ? ("profile_changed" as const)
+            : ("error" as const);
     await emitGateEvent({
       admin,
       name: "henry.marketplace.seller_gate.decided",

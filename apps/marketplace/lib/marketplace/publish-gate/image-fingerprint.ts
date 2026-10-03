@@ -8,8 +8,11 @@
 //   phash  — a perceptual hash of the decoded picture: the picture is reduced to
 //            a 9x8 greyscale grid and each of the 64 neighbouring pairs is
 //            classed as brighter-left, brighter-right or FLAT. That gives two
-//            64-bit masks. It survives a re-encode, a resize, a recompress and a
-//            mirror — the cheap ways to make the same photo a "different file".
+//            64-bit masks. "Flat" is measured against the picture's own contrast,
+//            so a brighter or darker copy is classed like the original. It
+//            survives most re-encodes, resizes, recompressions, mirror images and
+//            brightness or contrast changes — the cheap ways to make the same
+//            photo a "different file".
 //
 // TUNED FOR PRECISION. A match holds an honest seller's listing for a person, so
 // a false match is the expensive error:
@@ -19,12 +22,13 @@
 //   * a picture with fewer than MIN_STRONG_CELLS structured cells gets NO
 //     perceptual hash. There is too little in it to tell two pictures apart;
 //     only the byte hash is used.
-// Measured on 3,540 different-picture pairs (photo-like and object-on-white):
-// zero false matches at the distance the database uses.
+// Measured on 27,040 different-picture pairs (object scenes on a studio backdrop
+// and on plain white): zero false matches at the distance the database uses.
 //
-// It does not catch a crop, a rotation, an overlay or a redrawn picture. That is
-// a known limit of a deterministic hash, not something this module pretends to
-// solve: a duplicate image is one signal, never the only line of defence.
+// It does not catch a crop, a rotation, an added border or frame, an upside-down
+// copy, an overlay or a redrawn picture. That is a known limit of a deterministic
+// hash, not something this module pretends to solve: a duplicate image is one
+// signal, never the only line of defence.
 //
 // The decoder (`sharp`) is loaded lazily. If it cannot be loaded the byte hash
 // still works and `phash` is null — detection degrades, the gate does not fail.
@@ -46,8 +50,10 @@ export interface ImageFingerprint {
 }
 
 const MAX_BYTES = 12 * 1024 * 1024;
-/** Grey levels (0-255) two neighbouring cells must differ by to count as structure. */
+/** Grey levels (0-255) two neighbouring cells must differ by, at least, to count as structure. */
 const FLAT_DELTA = 4;
+/** ...or this share of the grid's own contrast range, whichever is larger. */
+const FLAT_SHARE = 0.03;
 /** Structured cells (of 64) a picture needs before its perceptual hash is trusted. */
 export const MIN_STRONG_CELLS = 20;
 // The app targets below ES2020, where bigint literals are not available.
@@ -89,7 +95,7 @@ interface Masks {
 }
 
 /** 9x8 greyscale → the two masks. `mirrored` reads the grid right-to-left. */
-function gradientMasks(pixels: Uint8Array, mirrored: boolean): Masks {
+function gradientMasks(pixels: Uint8Array, mirrored: boolean, flat: number): Masks {
   let pos = ZERO;
   let neg = ZERO;
   let strong = 0;
@@ -101,10 +107,10 @@ function gradientMasks(pixels: Uint8Array, mirrored: boolean): Masks {
       const diff = left - right;
       pos <<= ONE;
       neg <<= ONE;
-      if (diff >= FLAT_DELTA) {
+      if (diff >= flat) {
         pos |= ONE;
         strong += 1;
-      } else if (-diff >= FLAT_DELTA) {
+      } else if (-diff >= flat) {
         neg |= ONE;
         strong += 1;
       }
@@ -116,9 +122,18 @@ function gradientMasks(pixels: Uint8Array, mirrored: boolean): Masks {
 /** The masks of a 9x8 greyscale grid, canonical under a horizontal flip; null when too flat. */
 export function perceptualHashOfGrid(pixels: Uint8Array): PerceptualHash | null {
   if (pixels.length < 72) return null;
-  const plain = gradientMasks(pixels, false);
+  // "Flat" relative to the picture's own contrast: a copy made brighter, darker or
+  // punchier scales every difference, and the threshold scales with it.
+  let low = 255;
+  let high = 0;
+  for (let index = 0; index < 72; index += 1) {
+    if (pixels[index] < low) low = pixels[index];
+    if (pixels[index] > high) high = pixels[index];
+  }
+  const flat = Math.max(FLAT_DELTA, Math.round((high - low) * FLAT_SHARE));
+  const plain = gradientMasks(pixels, false, flat);
   if (plain.strong < MIN_STRONG_CELLS) return null;
-  const mirror = gradientMasks(pixels, true);
+  const mirror = gradientMasks(pixels, true, flat);
   // The smaller pair is the same for a picture and its mirror image.
   const pick = plain.pos < mirror.pos || (plain.pos === mirror.pos && plain.neg <= mirror.neg) ? plain : mirror;
   return { pos: BigInt.asIntN(64, pick.pos).toString(), neg: BigInt.asIntN(64, pick.neg).toString() };

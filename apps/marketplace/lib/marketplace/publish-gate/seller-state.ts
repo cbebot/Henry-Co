@@ -37,8 +37,12 @@ export interface SellerGateState {
   };
   /** The listing being written, when it already exists. */
   product: { id: string; vendorId: string | null; approvalStatus: string } | null;
-  /** An open hide on that listing. */
-  activeHide: { id: string; kind: "policy" | "reports" | "risk"; reasons: string[] } | null;
+  /**
+   * What stands against that listing: an open take-down, or a decision a person
+   * made (an upheld take-down, a rejection, a request for changes). Only `policy`
+   * lifts itself when the seller's fix passes; everything else needs a person.
+   */
+  activeHide: { id: string; kind: "policy" | "reports" | "risk" | "staff_decision"; reasons: string[] } | null;
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -139,7 +143,9 @@ export function parseSellerGateState(payload: unknown): SellerGateState | null {
           }
         : null,
     activeHide:
-      hide && asString(hide.id) && (hideKind === "policy" || hideKind === "reports" || hideKind === "risk")
+      hide &&
+      asString(hide.id) &&
+      (hideKind === "policy" || hideKind === "reports" || hideKind === "risk" || hideKind === "staff_decision")
         ? {
             id: asString(hide.id) as string,
             kind: hideKind,

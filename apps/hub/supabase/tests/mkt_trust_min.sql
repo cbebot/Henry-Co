@@ -223,3 +223,5 @@ select 'v3-mkt-trust-01 seed ready' as status;
 -- V3-MKT-TRUST-01: auth.users.email_confirmed_at — present on Supabase; the gate reads it to
 -- decide whether an unclaimed membership seed grants its role (verified mailbox only).
 alter table auth.users add column if not exists email_confirmed_at timestamptz;
+-- ...and auth.users.created_at: the age of an account is read from here, not from a profile row.
+alter table auth.users add column if not exists created_at timestamptz default now();

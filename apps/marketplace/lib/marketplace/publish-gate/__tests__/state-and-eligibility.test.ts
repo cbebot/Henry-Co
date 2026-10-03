@@ -186,6 +186,8 @@ describe("payoutEligibility", () => {
     vendorStatus: "approved",
     ownerUserId: OWNER,
     identityVerified: true,
+    identityWaived: false,
+    companyStore: false,
     instantOnboarded: true,
     ...overrides,
   });
@@ -199,10 +201,28 @@ describe("payoutEligibility", () => {
     assert.deepEqual(result, { eligible: false, reasons: ["identity_unverified"] });
   });
 
-  it("a store a person approved already handed over its documents: it is not asked again", () => {
-    // Mirrors the database trigger, which only binds stores with a probation row.
+  it("a store a person approved is asked too: nobody reviewed documents when it opened", () => {
+    // Round 2: the review queue never showed documents and any string passed as one.
     const result = payoutEligibility({ facts: facts({ identityVerified: false, instantOnboarded: false }), riskGated: false });
+    assert.deepEqual(result, { eligible: false, reasons: ["identity_unverified"] });
+  });
+
+  it("a store from before the gate, still with its owner, keeps the payout path it had", () => {
+    const result = payoutEligibility({
+      facts: facts({ identityVerified: false, instantOnboarded: false, identityWaived: true }),
+      riskGated: false,
+    });
     assert.deepEqual(result, { eligible: true, reasons: [] });
+  });
+
+  it("the company's own store is not asked for an identity", () => {
+    const result = payoutEligibility({ facts: facts({ identityVerified: false, companyStore: true }), riskGated: false });
+    assert.deepEqual(result, { eligible: true, reasons: [] });
+  });
+
+  it("a store with no owner is not paid", () => {
+    const result = payoutEligibility({ facts: facts({ ownerUserId: null, identityVerified: false }), riskGated: false });
+    assert.deepEqual(result.reasons, ["identity_unverified"]);
   });
 
   it("a staff-applied risk hold blocks, on its own and together with identity", () => {
@@ -224,9 +244,12 @@ describe("payoutEligibility", () => {
     });
   });
 
-  it("a staff risk hold blocks a human-approved store too", () => {
+  it("a staff risk hold blocks a store from before the gate too", () => {
     assert.deepEqual(
-      payoutEligibility({ facts: facts({ instantOnboarded: false, identityVerified: false }), riskGated: true }).reasons,
+      payoutEligibility({
+        facts: facts({ instantOnboarded: false, identityVerified: false, identityWaived: true }),
+        riskGated: true,
+      }).reasons,
       ["risk_hold_active"],
     );
   });
@@ -248,6 +271,27 @@ describe("payoutEligibility", () => {
         instant_onboarded: false,
       }),
       facts({ instantOnboarded: false }),
+    );
+    // A waiver or a company store is never assumed: only an explicit `true` counts.
+    assert.equal(
+      parsePayoutEligibilityFacts({
+        vendor_found: true,
+        identity_verified: false,
+        instant_onboarded: false,
+        identity_waived: "true",
+        company_store: 1,
+      })?.identityWaived,
+      false,
+    );
+    assert.equal(
+      parsePayoutEligibilityFacts({
+        vendor_found: true,
+        identity_verified: false,
+        instant_onboarded: false,
+        identity_waived: true,
+        company_store: true,
+      })?.companyStore,
+      true,
     );
     assert.equal(parsePayoutEligibilityFacts({ vendor_found: false })?.vendorFound, false);
     for (const payload of [null, undefined, "x", [], {}, { vendor_found: true }, { vendor_found: true, identity_verified: "true", instant_onboarded: true }]) {

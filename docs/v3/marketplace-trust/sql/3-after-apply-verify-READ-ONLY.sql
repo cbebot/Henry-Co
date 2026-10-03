@@ -28,6 +28,10 @@ with fn(sig, rpc) as (
     ('public.marketplace_payout_identity_guard()', false),
     ('public.marketplace_product_variant_guard()', false),
     ('public.marketplace_vendors_probation_enroll()', false),
+    ('public.marketplace_vendors_owner_guard()', false),
+    ('public.marketplace_product_media_delete_guard()', false),
+    ('public.marketplace_gate_human_hold(uuid,uuid,text)', false),
+    ('public.marketplace_gate_established_accounts(uuid[],integer)', true),
     ('public.marketplace_gate_seller_state(uuid,text)', true),
     ('public.marketplace_gate_record_listing_verdict(uuid,uuid,jsonb,text[],text,text[],jsonb,text,text)', true),
     ('public.marketplace_gate_record_rescan(uuid,text)', true),
@@ -35,7 +39,7 @@ with fn(sig, rpc) as (
     ('public.marketplace_gate_hide_listing(uuid,text,text[],jsonb,text)', true),
     ('public.marketplace_gate_register_image(text,text,bigint,bigint,uuid,uuid,bigint)', true),
     ('public.marketplace_gate_image_matches(uuid,text,text[],integer)', true),
-    ('public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text)', true),
+    ('public.marketplace_gate_instant_onboard(uuid,uuid,text[],jsonb,text,text)', true),
     ('public.marketplace_gate_payout_eligibility(uuid)', true)
 ),
 function_checks as (
@@ -58,7 +62,8 @@ function_checks as (
 ),
 tbl(name) as (
   values ('marketplace_listing_gate_verdicts'), ('marketplace_seller_probation'),
-         ('marketplace_listing_enforcement'), ('marketplace_image_fingerprints')
+         ('marketplace_listing_enforcement'), ('marketplace_image_fingerprints'),
+         ('marketplace_seller_identity_waivers')
 ),
 table_checks as (
   select 'table public.' || name || ' has row level security ON' as check_name,
@@ -88,7 +93,9 @@ trg(tbl_name, trg_name) as (
          ('marketplace_product_media', 'marketplace_product_media_guard'),
          ('marketplace_payout_requests', 'marketplace_payout_identity_guard'),
          ('marketplace_product_variants', 'marketplace_product_variant_guard'),
-         ('marketplace_vendors', 'marketplace_vendors_probation_enroll')
+         ('marketplace_vendors', 'marketplace_vendors_probation_enroll'),
+         ('marketplace_vendors', 'marketplace_vendors_owner_guard'),
+         ('marketplace_product_media', 'marketplace_product_media_delete_guard')
 ),
 trigger_checks as (
   select 'trigger ' || trg_name || ' on ' || tbl_name || ' is present and enabled' as check_name,
@@ -111,6 +118,18 @@ privilege_checks as (
                ('marketplace_payout_requests'), ('marketplace_vendors')) t(tbl)
 ),
 data_checks as (
+  select 'every store with an owner is on the probation register or holds a pre-gate identity waiver' as check_name,
+         not exists (
+           select 1 from public.marketplace_vendors v
+            where v.owner_user_id is not null
+              and v.owner_type is distinct from 'company'
+              and not exists (select 1 from public.marketplace_seller_probation p where p.vendor_id = v.id)
+              and not exists (
+                select 1 from public.marketplace_seller_identity_waivers w
+                 where w.vendor_id = v.id and w.owner_user_id = v.owner_user_id
+              )
+         ) as ok
+  union all
   select 'every listing that is live has a verdict on record' as check_name,
          not exists (
            select 1 from public.marketplace_products p

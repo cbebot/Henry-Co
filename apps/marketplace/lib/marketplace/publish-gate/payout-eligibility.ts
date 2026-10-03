@@ -9,11 +9,15 @@
 // that column can be written by its own user on production today, so a
 // staff-reviewed identity document is required as well.
 //
-// WHO THE IDENTITY RULE BINDS. A store opened by instant onboarding never passed
-// a human identity review, so it must verify before its first payout. A store a
-// person approved the old way handed over its identity documents at application
-// time; it is not asked again. This is exactly the rule the database trigger on
-// marketplace_payout_requests enforces — the two walls agree by construction.
+// WHO THE IDENTITY RULE BINDS. Every store, unless its owner's identity is
+// verified. Nobody reviews identity documents when a store is opened — not the
+// gate, and not the human approval either (the review queue does not show them,
+// and any string passes as one) — so "a person approved it" says nothing about who
+// is being paid. Two exceptions: the company's own store, and a store that existed
+// before the gate was installed, which keeps the payout path it had for as long as
+// it keeps the owner it had then (the database records that once, as a waiver).
+// This is exactly the rule the database trigger on marketplace_payout_requests
+// enforces — the two walls agree by construction.
 
 export type PayoutBlockReason =
   | "identity_unverified"
@@ -26,7 +30,11 @@ export interface PayoutEligibilityFacts {
   vendorStatus: string | null;
   ownerUserId: string | null;
   identityVerified: boolean;
-  /** The store was opened by instant onboarding (never passed a human identity review). */
+  /** A store from before the gate, still with the owner it had then. */
+  identityWaived: boolean;
+  /** The company's own store. */
+  companyStore: boolean;
+  /** The store is on the new-store register (opened instantly or by a person after the gate). */
   instantOnboarded: boolean;
 }
 
@@ -44,7 +52,15 @@ export function parsePayoutEligibilityFacts(payload: unknown): PayoutEligibility
   const root = asRecord(payload);
   if (!root || typeof root.vendor_found !== "boolean") return null;
   if (!root.vendor_found) {
-    return { vendorFound: false, vendorStatus: null, ownerUserId: null, identityVerified: false, instantOnboarded: false };
+    return {
+      vendorFound: false,
+      vendorStatus: null,
+      ownerUserId: null,
+      identityVerified: false,
+      identityWaived: false,
+      companyStore: false,
+      instantOnboarded: false,
+    };
   }
   if (typeof root.identity_verified !== "boolean" || typeof root.instant_onboarded !== "boolean") return null;
   return {
@@ -52,6 +68,9 @@ export function parsePayoutEligibilityFacts(payload: unknown): PayoutEligibility
     vendorStatus: typeof root.vendor_status === "string" ? root.vendor_status : null,
     ownerUserId: typeof root.owner_user_id === "string" ? root.owner_user_id : null,
     identityVerified: root.identity_verified,
+    // Absent means "no": a waiver or a company store is never assumed.
+    identityWaived: root.identity_waived === true,
+    companyStore: root.company_store === true,
     instantOnboarded: root.instant_onboarded,
   };
 }
@@ -74,7 +93,7 @@ export function payoutEligibility(input: {
     reasons.push("eligibility_unavailable");
   } else if (!input.facts.vendorFound) {
     reasons.push("seller_not_active");
-  } else if (input.facts.instantOnboarded && !input.facts.identityVerified) {
+  } else if (!input.facts.companyStore && !input.facts.identityVerified && !input.facts.identityWaived) {
     reasons.push("identity_unverified");
   }
 

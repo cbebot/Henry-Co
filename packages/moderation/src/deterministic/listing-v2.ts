@@ -188,9 +188,23 @@ const SCAM: Rule[] = [
     // An account number: ten digits beside a bank, a wallet or the word "account".
     // "power bank 20000mAh" is a battery; a bank has a name in front of it.
     re: new RegExp(
-      `\\b(?:${BANK_NAMES}|acct|a\\/c|account)\\b(?<!power\\s+bank)[^\\n.]{0,24}?${TEN_DIGITS}|${TEN_DIGITS}[^\\n.]{0,12}?\\b(?:${BANK_NAMES})\\b(?<!power\\s+bank)`,
+      `\\b(?:${BANK_NAMES}|acct|acc|a\\/c|account|aza)\\b(?<!power\\s+bank)[^\\n.]{0,60}?${TEN_DIGITS}|${TEN_DIGITS}[^\\n.]{0,40}?\\b(?:${BANK_NAMES}|aza)\\b(?<!power\\s+bank)`,
       "i",
     ),
+    token: "scam:payment_diversion",
+  },
+  {
+    // A bare account number beside a word for paying into it ("just send to 0123456789",
+    // "number to credit: 0123456789", "0123456789 send alert"), and USSD transfer codes.
+    re: new RegExp(
+      `\\b(?:send|transfer|pay|credit|deposit)\\w*\\s+(?:(?:it|am|money|cash|payment|funds|alert|the\\s+money)\\s+)?(?:to\\s+|into\\s+)?[:\\-]?\\s?${TEN_DIGITS}|\\bcredit\\b[^\\n.]{0,12}?[:\\-]\\s?${TEN_DIGITS}|${TEN_DIGITS}[^\\n.]{0,16}?\\b(?:send\\s+alert|credit\\s+alert|for\\s+(?:payment|transfer|alert))\\b|\\*\\d{3}\\*[\\d*]{4,40}#`,
+      "i",
+    ),
+    token: "scam:payment_diversion",
+  },
+  {
+    // "aza" — the everyday word for a bank account — and the Pidgin for paying outside.
+    re: /\b(?:my|our|the|this)\s+aza\b|\baza\s*(?::|=|-|is\b|na\b|no\b|number\b|details?\b)|\b(?:send|drop|share)\s+(?:your\s+|ur\s+|me\s+your\s+)?aza\b|\btalk\s+(?:price|business|am)\s+(?:for\s+)?outside\b|\bna\s+outside\b|\bno\s+be\s+here\s+you\s+go\s+pay\b|\bpay\s+(?:for|na)\s+outside\b|\b(?:settle|pay|send|transfer|balance)\b[^.\n]{0,30}\bto\s+my\s+(?:number|line|phone)\b|\b(?:transfer|send|pay)\s+(?:am\s+|it\s+)?come\s+my\s+side\b|\b(?:order|buy)\s+from\s+(?:my|our)\s+(?:page|profile|ig|instagram|whatsapp|website|site)\b/i,
     token: "scam:payment_diversion",
   },
   {
@@ -206,12 +220,19 @@ const SCAM: Rule[] = [
     token: "scam:payment_diversion",
   },
   {
-    re: /\bdeal\w*\s+(?:privately|offline|outside|directly)\b|\b(?:deal|transaction|sale)\s+offline\b|\bno\s+need\s+to\s+(?:order|pay|buy|check\s?out)\s+(?:here|on\s+(?:the|this)\s+(?:app|site|platform))\b|\bbuy\s+(?:it\s+)?from\s+(?:me|us)\s+direct(?:ly)?\b|\bno\s+(?:platform|service|app)\s+(?:charges?|fees?|commission)\b|\b(?:account|acct|bank|payment)\s+(?:details?|number|info)\s+(?:(?:is|are)\s+)?(?:on|in)\s+the\s+(?:picture|photo|image|pic|flyer)s?\b|\b(?:bank\s+)?transfer\s+only\b|\bpayment\s+(?:by|via)\s+(?:bank\s+)?transfer\b|\b(?:usdt|btc|bitcoin|crypto)\s+accepted\b/i,
+    re: /\bdeal\w*\s+(?:privately|offline|outside)\b|\bdeal\s+with\s+(?:me|us)\s+direct(?:ly)?\b|\b(?:deal|transaction|sale)\s+offline\b|\bno\s+need\s+to\s+(?:order|pay|buy|check\s?out)\s+(?:here|on\s+(?:the|this)\s+(?:app|site|platform))\b|\bbuy\s+(?:it\s+)?from\s+(?:me|us)\s+direct(?:ly)?\b|\bno\s+(?:platform|service|app)\s+(?:charges?|fees?|commission)\b|\b(?:account|acct|bank|payment)\s+(?:details?|number|info)\s+(?:(?:is|are)\s+)?(?:on|in)\s+the\s+(?:picture|photo|image|pic|flyer)s?\b|\b(?:bank\s+)?transfer\s+only\b|\bpayment\s+(?:by|via)\s+(?:bank\s+)?transfer\b|\b(?:usdt|btc|bitcoin|crypto)\s+accepted\b/i,
+    token: "scam:payment_diversion",
+  },
+  {
+    // More of the same, in Pidgin and in shorthand.
+    // Each needs its money context: "delivery price for outside Lagos", "sends an alert to
+    // your phone" and "just transfer the files" are honest.
+    re: /\b(?:my|correct|real|last|better|best)\s+price\s+(?:for|na)\s+outside\b|\bno\s+dey\s+pay\s+for\s+here\b|\bsend\s+(?:me\s+|us\s+)?(?:the\s+)?(?:credit|payment|transfer|bank)\s+alert\b|\bsend\s+alert\s+(?:after|once|when)\s+(?:you\s+)?(?:pay|transfer|payment)\w*|\bpay\s+(?:me\s+|us\s+)?for\s+hand\b|\bsettle\s+(?:me|us)\s+outside\b|\bforget\s+(?:this|the)\s+(?:app|platform|site|website)\b|\bno\s+need\s+to\s+check\s?out\b|\bpay\s+(?:me|us)\s+(?:through|via|with|on)\s+my\b|\bwire\s+(?:it|the\s+money|money)\s+to\b/i,
     token: "scam:payment_diversion",
   },
   {
     // Money asked for before anything is sent.
-    re: /\b(?:deposit|part[-\s]payment|advance\s+payment|upfront)\b[^.\n]{0,40}\bbefore\s+(?:i|we)\s+(?:ship|send|deliver|dispatch)\b/i,
+    re: /\b(?:deposit|part[-\s]payment|advance\s+payment|upfront)\b[^.\n]{0,40}\bbefore\s+(?:i|we)\s+(?:ship|send|deliver|dispatch|release)\b|\bdeposit\s+first\b|\b(?:half|part|some)\s+upfront\b|\bupfront\s+to\s+(?:secure|reserve|book)\b/i,
     token: "scam:advance_fee",
   },
   {

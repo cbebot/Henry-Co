@@ -20,7 +20,7 @@ import { getMarketplacePublicLocale } from "@/lib/locale-server";
 import { emitGateEvent } from "@/lib/marketplace/publish-gate/events";
 import { isInstantPublishEnabled } from "@/lib/marketplace/publish-gate/flag";
 import { describeReasons } from "@/lib/marketplace/publish-gate/messages";
-import { instantOnboard } from "@/lib/marketplace/publish-gate/onboarding";
+import { instantOnboard, screenedProfileHash } from "@/lib/marketplace/publish-gate/onboarding";
 import { evaluateStorePolicy, type StoreProfileVerdict } from "@/lib/marketplace/publish-gate/policy";
 import { syncVendorTrustScore } from "@/lib/marketplace/trust";
 
@@ -243,7 +243,7 @@ export async function POST(request: Request) {
   if (instantPublish && mode === "submit") {
     gateLocale = await getMarketplacePublicLocale();
     const trustCopy = getMarketplaceTrustCopy(gateLocale);
-    storeVerdict = evaluateStorePolicy({ storeName, categoryFocus, story, locale: gateLocale });
+    storeVerdict = evaluateStorePolicy({ storeName, storeSlug, categoryFocus, story, locale: gateLocale });
     if (storeVerdict.outcome === "reject") {
       await emitGateEvent({
         admin: createAdminSupabase(),
@@ -367,6 +367,8 @@ export async function POST(request: Request) {
       applicationId: String(application.id),
       verdict: storeVerdict,
       moderationDetail: storeVerdict.moderationDetail,
+      // What was screened above — the store is opened from the saved row only if it still says this.
+      profileHash: screenedProfileHash({ slug: storeSlug, name: storeName, story: story || null }),
     });
     if (result.kind === "already_seller") {
       // The account already has a store: nothing was opened and nothing is queued.

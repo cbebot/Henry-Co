@@ -61,7 +61,9 @@ with required_columns(tbl, col) as (
     ('public.customer_profiles', 'id'), ('public.customer_profiles', 'verification_status'),
     ('public.customer_verification_submissions', 'user_id'), ('public.customer_verification_submissions', 'document_type'),
     ('public.customer_verification_submissions', 'status'), ('public.customer_verification_submissions', 'reviewer_id'),
-    ('auth.users', 'id'), ('auth.users', 'email'), ('auth.users', 'email_confirmed_at')
+    ('auth.users', 'id'), ('auth.users', 'email'), ('auth.users', 'email_confirmed_at'), ('auth.users', 'created_at'),
+    ('public.marketplace_products', 'id'), ('public.marketplace_products', 'slug'),
+    ('public.marketplace_products', 'base_price'), ('public.marketplace_vendors', 'updated_at')
 ),
 column_checks as (
   select

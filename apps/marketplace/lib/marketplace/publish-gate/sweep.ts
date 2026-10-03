@@ -363,16 +363,17 @@ async function sweepReports(admin: GateAdmin, summary: TrustSweepSummary, now: D
     if (error) return;
     for (const row of (data ?? []) as Array<{ user_id: string | null }>) if (row.user_id) sellers.add(String(row.user_id));
 
-    const cutoff = now.getTime() - REPORTER_MIN_ACCOUNT_AGE_DAYS * 24 * 60 * 60 * 1000;
+    // The account's age comes from the account itself (auth), through a gate
+    // function — a profile row is its owner's to edit, dates included.
     const established = new Set<string>();
-    const { data: profiles, error: profileError } = await admin
-      .from("customer_profiles")
-      .select("id, created_at")
-      .in("id", reporterIds);
-    if (profileError) return;
-    for (const row of (profiles ?? []) as Array<{ id: string; created_at: string | null }>) {
-      const created = row.created_at ? new Date(row.created_at).getTime() : Number.NaN;
-      if (Number.isFinite(created) && created <= cutoff) established.add(String(row.id));
+    const { data: accounts, error: ageError } = await admin.rpc("marketplace_gate_established_accounts", {
+      p_users: reporterIds,
+      p_min_age_days: REPORTER_MIN_ACCOUNT_AGE_DAYS,
+    });
+    if (ageError || !Array.isArray(accounts)) return;
+    for (const value of accounts as unknown[]) {
+      const id = typeof value === "string" ? value : (value as { marketplace_gate_established_accounts?: unknown })?.marketplace_gate_established_accounts;
+      if (typeof id === "string") established.add(id);
     }
     for (const id of reporterIds) if (!established.has(id)) sellers.add(id);
   } catch {

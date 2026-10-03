@@ -13,6 +13,7 @@
 // "publish", and can only add hold-class codes (see applyAiSignal).
 
 import { runDeterministic, type AiScanResult } from "@henryco/moderation";
+import { foldForScreening } from "@henryco/trust/contact";
 import { categoryIsHighRisk, evaluateListingSubmission } from "../governance";
 import type { MarketplaceVendor } from "../types";
 import {
@@ -96,17 +97,79 @@ const MAX_PRICE = 1_000_000_000;
  * Goods a new store is held on whatever category it files them under: the
  * category is the seller's own choice, so a phone listed under "everyday tech"
  * must meet the same rule as one listed under "phones". Only above a price where
- * it matters — a phone case is not a phone.
+ * it matters, and not for accessories priced as accessories.
+ *
+ * Matched on whole words, and on runs of up to six words read together, after
+ * folding look-alikes ("iph0ne", "i-phone", "sam sung" all read as the brand).
  */
-const HIGH_RISK_CONTENT_RE =
-  /\b(?:iphone|ipad|macbook|smartphone|android\s+phone|samsung|galaxy|tecno|infinix|itel|redmi|xiaomi|oppo|vivo|huawei|nokia|pixel|laptop|playstation|ps[45]|xbox|airpods|rolex|cartier|(?:18|22|24)\s?k(?:arat)?\s+gold|diamond\s+ring)\b/i;
+const HIGH_RISK_TOKENS: ReadonlySet<string> = new Set([
+  "iphone", "ipad", "macbook", "imac", "smartphone", "androidphone", "mobilephone", "cellphone", "smartwatch",
+  "applewatch", "samsung", "galaxy", "tecno", "infinix", "itel", "redmi", "xiaomi", "oppo", "vivo", "huawei",
+  "nokia", "oneplus", "pixel6", "pixel7", "pixel8", "pixel9", "laptop", "playstation", "ps4", "ps5", "xbox",
+  "nintendoswitch", "airpods", "rolex", "cartier", "patekphilippe", "audemarspiguet", "18kgold", "22kgold",
+  "24kgold", "18karat", "22karat", "24karat", "diamondring",
+]);
 export const HIGH_RISK_CONTENT_MIN_PRICE = 50_000;
+/** Below this, a listing that says it is an accessory is taken at its word. */
+const ACCESSORY_MAX_PRICE = 100_000;
+const ACCESSORY_RE =
+  /\b(?:case|cases|cover|covers|protector|protectors|screen\s*guard|tempered\s*glass|charger|chargers|cable|cables|adapter|adaptor|strap|straps|stand|holder|mount|pouch|skin|sticker|sleeve)\b/i;
 
-export function contentIsHighRisk(listing: Pick<ListingGateInput["listing"], "title" | "summary" | "basePrice">): boolean {
-  return (
-    Number(listing.basePrice) >= HIGH_RISK_CONTENT_MIN_PRICE &&
-    HIGH_RISK_CONTENT_RE.test(`${listing.title}\n${listing.summary}`)
-  );
+function hasHighRiskToken(text: string): boolean {
+  const words = foldForScreening(text)
+    .toLowerCase()
+    .replace(/0/g, "o")
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+  for (let start = 0; start < words.length; start += 1) {
+    let joined = "";
+    for (let end = start; end < words.length && end < start + 6; end += 1) {
+      joined += words[end];
+      if (HIGH_RISK_TOKENS.has(joined)) return true;
+      if (joined.length > 20) break;
+    }
+  }
+  return false;
+}
+
+export function contentIsHighRisk(
+  listing: Pick<ListingGateInput["listing"], "title" | "summary" | "basePrice"> & { slug?: string },
+): boolean {
+  const price = Number(listing.basePrice);
+  if (!(price >= HIGH_RISK_CONTENT_MIN_PRICE)) return false;
+  const title = String(listing.title ?? "");
+  if (price < ACCESSORY_MAX_PRICE && ACCESSORY_RE.test(title)) return false;
+  return hasHighRiskToken(`${title}\n${String(listing.summary ?? "")}\n${String(listing.slug ?? "").replace(/[-_]+/g, " ")}`);
+}
+
+/** A URL handle as a reader sees it: percent-escapes decoded ("%30" is "0"). */
+function readableSlug(slug: unknown): string {
+  let value = String(slug ?? "");
+  for (let pass = 0; pass < 3 && /%[0-9a-f]{2}/i.test(value); pass += 1) {
+    try {
+      value = decodeURIComponent(value);
+    } catch {
+      value = value.replace(/%([0-9a-f]{2})/gi, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)));
+    }
+  }
+  return value.replace(/[-_+]+/g, " ");
+}
+
+/** Every field as text, whatever the caller passed: a malformed draft is screened, not thrown on. */
+function normaliseListing(listing: ListingGateInput["listing"]): ListingGateInput["listing"] {
+  const text = (value: unknown) => (typeof value === "string" ? value : value == null ? "" : String(value));
+  return {
+    ...listing,
+    slug: text(listing.slug),
+    title: text(listing.title),
+    summary: text(listing.summary),
+    description: text(listing.description),
+    sku: text(listing.sku),
+    categorySlug: text(listing.categorySlug),
+    deliveryNote: text(listing.deliveryNote),
+    leadTime: text(listing.leadTime),
+    specificationValues: Array.isArray(listing.specificationValues) ? listing.specificationValues.map(text) : [],
+  };
 }
 
 /** Map the moderation ruleset's machine tokens to gate reason codes. */
@@ -141,8 +204,9 @@ export function listingText(listing: ListingGateInput["listing"]): string {
     listing.leadTime,
     listing.sku,
     ...listing.specificationValues,
-    // Last, and with its hyphens opened up, so "call-0803-…" reads as words and digits.
-    String(listing.slug ?? "").replace(/[-_]+/g, " "),
+    // Last, decoded and with its hyphens opened up, so "call-0803-…" and "%30%38…"
+    // read as the words and digits they are.
+    readableSlug(listing.slug),
   ]
     .map((part) => String(part ?? "").trim())
     .filter(Boolean)
@@ -153,8 +217,9 @@ export function listingText(listing: ListingGateInput["listing"]): string {
  * The deterministic floor. Complete on its own: with no AI and no network it
  * returns the verdict the listing is held to.
  */
-export function evaluateListingPolicy(input: ListingGateInput): GateVerdict {
+export function evaluateListingPolicy(rawInput: ListingGateInput): GateVerdict {
   const codes: GateReasonCode[] = [];
+  const input: ListingGateInput = { ...rawInput, listing: normaliseListing(rawInput.listing) };
   const { listing, images, seller } = input;
 
   // ---- essentials -----------------------------------------------------------
@@ -236,7 +301,7 @@ export function evaluateListingPolicy(input: ListingGateInput): GateVerdict {
       contentType: "marketplace_listing",
       contentId: "gate",
       text: listingText(listing),
-      locale: input.locale || "en",
+      locale: typeof input.locale === "string" && input.locale ? input.locale : "en",
     },
     {
       ruleset: "listing_v2",
@@ -288,11 +353,13 @@ export interface StoreProfileVerdict {
  */
 export function evaluateStorePolicy(input: {
   storeName: string;
+  /** The store's URL handle — seller text like the rest. */
+  storeSlug?: string;
   categoryFocus: string;
   story: string;
   locale: string;
 }): StoreProfileVerdict {
-  const text = [input.storeName, input.categoryFocus, input.story]
+  const text = [input.storeName, input.categoryFocus, input.story, readableSlug(input.storeSlug)]
     .map((part) => String(part ?? "").trim())
     .filter(Boolean)
     .join("\n");

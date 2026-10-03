@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/owner-auth";
 import { applyProductReview } from "@/lib/product-review-write";
+import { createAdminSupabase } from "@/lib/supabase";
 
 const PAGE = "/owner/operations/marketplace-trust";
 
@@ -29,6 +30,20 @@ export async function resolveHiddenListing(formData: FormData): Promise<void> {
     .slice(0, 500);
 
   if (!productId || !decision) {
+    redirect(`${PAGE}?done=failed`);
+  }
+
+  // This page decides take-downs, and nothing else: a listing with no open
+  // take-down is decided in the product review queue, not here.
+  const admin = createAdminSupabase();
+  const { data: openHide } = await admin
+    .from("marketplace_listing_enforcement")
+    .select("id")
+    .eq("product_id", productId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!openHide) {
     redirect(`${PAGE}?done=failed`);
   }
 

@@ -59,7 +59,43 @@ const DIGIT_ZEROS = [
   0x0e50, // Thai
   0x0ed0, // Lao
   0x1040, // Myanmar
+  0x1090, // Myanmar Shan
+  0x0de6, // Sinhala Lith
+  0x0f20, // Tibetan
+  0x17e0, // Khmer
+  0x1810, // Mongolian
+  0x1946, // Limbu
+  0x19d0, // New Tai Lue
+  0x1a80, // Tai Tham Hora
+  0x1a90, // Tai Tham Tham
+  0x1b50, // Balinese
+  0x1bb0, // Sundanese
+  0x1c40, // Lepcha
+  0x1c50, // Ol Chiki
+  0xa620, // Vai
+  0xa8d0, // Saurashtra
+  0xa900, // Kayah Li
+  0xa9d0, // Javanese
+  0xaa50, // Cham
+  0xabf0, // Meetei Mayek
+  0x104a0, // Osmanya
+  0x1e950, // Adlam
 ];
+
+/** Han numerals, read as the digits they are. */
+const HAN_DIGITS: Record<string, string> = {
+  "\u3007": "0",
+  "\u96f6": "0",
+  "\u4e00": "1",
+  "\u4e8c": "2",
+  "\u4e09": "3",
+  "\u56db": "4",
+  "\u4e94": "5",
+  "\u516d": "6",
+  "\u4e03": "7",
+  "\u516b": "8",
+  "\u4e5d": "9",
+};
 
 /**
  * Everything that renders as nothing: format characters (soft hyphen, zero-width
@@ -80,6 +116,10 @@ const CONFUSABLES: Record<string, string> = {
   "\u04c0": "I", // palochka
   "\u0399": "I", // Greek Ι
   "\u0417": "3", // Cyrillic З
+  "\u3002": ".", // ideographic full stop
+  "\uff61": ".", // halfwidth ideographic full stop
+  "\u2024": ".", // one dot leader
+  "\u00b7": ".", // middle dot
 };
 
 /** Dingbat digit series NFKC leaves alone: [first code point, value of that code point, count]. */
@@ -106,7 +146,7 @@ export function foldForScreening(input: string): string {
     const cp = ch.codePointAt(0) as number;
     let mapped = ch;
     if (cp > 0x7f) {
-      const confusable = CONFUSABLES[ch];
+      const confusable = CONFUSABLES[ch] ?? HAN_DIGITS[ch];
       if (confusable !== undefined) {
         mapped = confusable;
       } else {
@@ -150,6 +190,28 @@ const NUMBER_WORDS: Record<string, string> = {
 };
 
 const MULTIPLIER_WORDS: Record<string, number> = { double: 2, triple: 3, treble: 3 };
+
+/**
+ * Pidgin spellings of the digits. Every one of them is an ordinary word too
+ * ("tree", "for"-like sounds), so they count only INSIDE a number that is already
+ * being spelled out in words — never on their own.
+ */
+const PIDGIN_NUMBER_WORDS: Record<string, string> = {
+  wan: "1",
+  tu: "2",
+  tree: "3",
+  fo: "4",
+  faiv: "5",
+  siks: "6",
+  sevin: "7",
+  eit: "8",
+  nain: "9",
+};
+
+/** Words that only join the pieces of a number being read out: "…three THEN one two three THEN…". */
+const FILLER_WORDS = new Set([
+  "then", "and", "plus", "dash", "space", "next", "comma", "den", "hyphen", "x", "by", "to", "dot", "slash", "stroke",
+]);
 
 /**
  * Words that say "this number is how you reach me". Deliberately verbs and
@@ -219,7 +281,7 @@ const NOT_A_PHONE_LABELS = new Set([
  */
 const HAS_LETTER_OR_DIGIT_RE = new RegExp("[\\p{L}\\p{N}]", "u");
 function isSeparator(piece: string): boolean {
-  return piece.length <= 6 && !HAS_LETTER_OR_DIGIT_RE.test(piece);
+  return piece.length <= 12 && !HAS_LETTER_OR_DIGIT_RE.test(piece);
 }
 
 interface PhoneRun {
@@ -274,17 +336,21 @@ function weakLookalikeDigits(token: string): string | null {
 
 const NUMBER_WORD_ALTERNATION = "zero|nought|one|two|three|four|five|six|seven|eight|nine|oh";
 /** Number words glued to digits or to each other: "zero8zero3", "onetwothree", "4Five6Seven". */
-const GLUED_NUMBER_TOKEN_RE = new RegExp(`^(?:${NUMBER_WORD_ALTERNATION}|[0-9])+$`, "i");
-const GLUED_NUMBER_PART_RE = new RegExp(`${NUMBER_WORD_ALTERNATION}|[0-9]`, "gi");
+const GLUED_NUMBER_TOKEN_RE = new RegExp(`^(?:${NUMBER_WORD_ALTERNATION}|[0-9oO])+$`, "i");
+const GLUED_NUMBER_PART_RE = new RegExp(`${NUMBER_WORD_ALTERNATION}|[0-9oO]`, "gi");
 
 /** "zero8zero3" -> "0803". Needs a real digit plus a word, or two words: "one" and "phone" stay words. */
 function gluedNumberDigits(token: string): string | null {
   if (!GLUED_NUMBER_TOKEN_RE.test(token)) return null;
   const parts = token.match(GLUED_NUMBER_PART_RE) ?? [];
   const words = parts.filter((part) => part.length > 1).length;
-  const realDigits = parts.length - words;
+  const realDigits = parts.filter((part) => part.length === 1 && part >= "0" && part <= "9").length;
+  // A lone letter o only reads as zero next to real digits ("o8o3onetwo…").
+  if (realDigits === 0 && parts.some((part) => part === "o" || part === "O")) return null;
   if (words === 0 || (words === 1 && realDigits === 0)) return null;
-  return parts.map((part) => (part.length > 1 ? NUMBER_WORDS[part.toLowerCase()] : part)).join("");
+  return parts
+    .map((part) => (part.length > 1 ? NUMBER_WORDS[part.toLowerCase()] : part === "o" || part === "O" ? "0" : part))
+    .join("");
 }
 
 /**
@@ -302,7 +368,8 @@ function digitLikeToken(token: string): { digits: string; disguised: boolean } |
   const strong = /^[0-9oOlI|]+$/.test(token);
   if (!strong) {
     if (!/^[0-9oOlI|sSbBzZGgqiEeTtAa]+$/.test(token)) return null;
-    const real = token.replace(/[^0-9]/g, "").length;
+    // o / O / l / I / | already read as digits, so they count towards "mostly digits".
+    const real = token.replace(/[^0-9oOlI|]/g, "").length;
     if (token.length < 7 || real * 10 < token.length * 7) return null;
   }
   let digits = "";
@@ -346,6 +413,8 @@ function collectPhoneRuns(text: string): PhoneRun[] {
   let plus = false;
   let startIndex = -1;
   let pendingMultiplier = 0;
+  /** Groups in the current run that were written as words. */
+  let wordGroups = 0;
 
   const wordNear = (words: ReadonlySet<string>, from: number, step: 1 | -1, reach: number): boolean => {
     let seen = 0;
@@ -377,6 +446,7 @@ function collectPhoneRuns(text: string): PhoneRun[] {
     }
     groups = [];
     disguised = [];
+    wordGroups = 0;
     obfuscated = false;
     plus = false;
     startIndex = -1;
@@ -409,7 +479,17 @@ function collectPhoneRuns(text: string): PhoneRun[] {
       continue;
     }
 
-    const word = NUMBER_WORDS[lower];
+    // A joining word inside a number that is being read out, or that opened with a
+    // mobile prefix ("0803 then 123 then 4567"), does not end the number.
+    if (
+      FILLER_WORDS.has(lower) &&
+      groups.length > 0 &&
+      (wordGroups >= 2 || groups.some((group) => /^(?:0|234)[789][01]/.test(group)))
+    ) {
+      continue;
+    }
+
+    const word = NUMBER_WORDS[lower] ?? (wordGroups >= 2 ? PIDGIN_NUMBER_WORDS[lower] : undefined);
     const like = word === undefined ? digitLikeToken(token.text) : null;
 
     if (word === undefined && like === null) {
@@ -442,6 +522,7 @@ function collectPhoneRuns(text: string): PhoneRun[] {
     if (evasive) obfuscated = true;
     groups.push(pendingMultiplier > 0 && numeric.length === 1 ? numeric.repeat(pendingMultiplier) : numeric);
     disguised.push(evasive);
+    if (word !== undefined) wordGroups += 1;
     pendingMultiplier = 0;
   }
   flush(tokens.length);
@@ -483,30 +564,25 @@ function hasDisguisedWindow(run: PhoneRun): boolean {
 
 /**
  * A mobile number cut in two and placed in different sentences or fields:
- * "…code 0803. … batch 1234567". Looks at digit groups in order across the whole
- * text, whatever stands between them, and only accepts the unmistakable case — a
- * group that opens with a Nigerian mobile prefix, completed to exactly eleven
- * digits by the next one or two groups of three or more digits.
+ * "…code 0803. … batch 1234567", or the first half in the URL handle and the rest
+ * in the title. Looks at the digit groups of the whole text, whatever stands
+ * between them, and accepts only the unmistakable case: a group that opens with a
+ * Nigerian mobile prefix, completed to exactly eleven digits by ONE other group.
+ * How far away the other piece may sit depends on how unmistakable it is: six or
+ * seven missing digits can be anywhere in the text (the URL handle is read last,
+ * the title first), five a few numbers away, and a short piece must be the very
+ * next or previous number — "open 0700 to 2100" and "0803 mm by 1234 mm" are not
+ * phone numbers.
  */
 function hasSplitNigerianMobile(text: string): boolean {
   const groups = text.match(/\d+/g) ?? [];
   for (let i = 0; i < groups.length; i += 1) {
     const first = groups[i];
     if (first.length < 4 || first.length > 8 || !/^0[789][01]/.test(first)) continue;
-    let joined = first;
-    for (let j = i + 1; j < groups.length && j <= i + 2; j += 1) {
-      if (groups[j].length < 3) break;
-      joined += groups[j];
-      if (joined.length === 11) return true;
-      if (joined.length > 11) break;
-    }
-    // …or by ONE later group of exactly the missing length, a few numbers on
-    // ("…kettle 0803" in the title, "360 degree base … batch 1234567" in the body).
     const missing = 11 - first.length;
-    if (missing >= 5) {
-      for (let j = i + 1; j < groups.length && j <= i + 6; j += 1) {
-        if (groups[j].length === missing) return true;
-      }
+    const reach = missing >= 6 ? groups.length : missing === 5 ? 6 : 1;
+    for (let j = Math.max(0, i - reach); j < groups.length && j <= i + reach; j += 1) {
+      if (j !== i && groups[j].length === missing) return true;
     }
   }
   return false;
@@ -576,6 +652,13 @@ function classifyPhoneRun(run: PhoneRun): ContactHit | null {
     return { kind: "phone", confidence: n >= 10 ? "high" : "medium", evidence: "cued_number" };
   }
 
+  // Ten digits in one block is the shape of a bank account number (and of a mobile
+  // number without its zero). Unless the text says what it is — an ISBN, a part
+  // number, a barcode — a person looks.
+  if (!run.labelled && run.groups.some((group) => group.length === 10)) {
+    return { kind: "phone", confidence: "medium", evidence: "ten_digit_number" };
+  }
+
   if (run.obfuscated) {
     return { kind: "phone", confidence: "medium", evidence: "obfuscated_short" };
   }
@@ -624,9 +707,9 @@ const WEBMAIL_HINT_RE = new RegExp(String.raw`\b(?:${WEBMAIL})\s*(?:\.|${DOT_SPE
 
 // ---- Messaging apps, handles, links -----------------------------------------
 
-const APP_NAMES = String.raw`${WHATSAPP}|telegram|viber|wechat|imessage|snapchat|instagram|facebook|messenger|tiktok`;
+const APP_NAMES = String.raw`${WHATSAPP}|telegram|viber|wechat|imessage|snapchat|instagram|facebook|messenger|tiktok|botim|truecaller|discord|skype|threads`;
 const APP_SHORT = String.raw`signal|ig|insta|fb|wa|w\/a|snap`;
-const CONTACT_VERBS = "add|chat|message|msg|contact|reach|text|ping|hit|find|follow|dm|call|order|buy|pay|send";
+const CONTACT_VERBS = "add|chat|message|msg|contact|reach|text|ping|hit|find|follow|dm|call|order|buy|pay|send|buzz|holla|hmu";
 
 /** "message me on WhatsApp", "add us on Telegram", "DM me via IG". */
 const APP_STEER_PRONOUN_RE = new RegExp(
@@ -648,12 +731,28 @@ const APP_LABEL_RE = new RegExp(
   String.raw`\b(?:${APP_NAMES}|ig|insta|fb|snap)\s*(?:me|us|number|no\.?|line|handle|id|page)?\s*(?::|@|[-–—]\s*(?=[\d@+]))`,
   "i",
 );
-/** "available on WhatsApp", "our Facebook page", "find Ade Shop on Facebook". */
+/**
+ * The seller sending the buyer to an app: "available on WhatsApp for orders",
+ * "find our page on Facebook". A product that merely works with an app, or copy
+ * that names one ("also available on Telegram", "follow the latest styles on
+ * Instagram"), is not that — it needs the seller ("our", "my") or a reason to go
+ * there (orders, enquiries).
+ */
 const APP_DESTINATION_RE = new RegExp(
-  String.raw`\b(?:available|reachable|active|online)\s+on\s+(?:${APP_NAMES})\b|\b(?:${APP_NAMES}|ig|insta|fb)\s+(?:page|handle|channel|group|account|profile)\b|\b(?:find|search|follow|check|add|like)\s+(?:us|me|[^.\n]{1,40}?)\s+on\s+(?:${APP_NAMES}|ig|insta|fb)\b`,
+  String.raw`\b(?:available|reachable|active|online)\s+on\s+(?:${APP_NAMES})\b(?=[^.\n]{0,30}\b(?:for|to)\s+(?:orders?|enquir\w+|inquir\w+|more|details|chat|contact|buy|purchase)\b)|\b(?:find|search|follow|check|add|like|visit)\s+(?:our|my)\s+[a-z]+\s+on\s+(?:${APP_NAMES}|ig|insta|fb)\b`,
+  "i",
+);
+/** "find Ade Shop NG on Facebook" — a NAME to look up on an app. Checked for the capital in code. */
+const FIND_NAME_ON_APP_RE = new RegExp(
+  String.raw`\b(?:find|search(?:\s+for)?|look\s+for|check)\s+([A-Za-z][\w&'-]*(?:\s+[A-Za-z][\w&'-]*){0,3})\s+on\s+(?:${APP_NAMES}|ig|insta|fb)\b`,
   "i",
 );
 const APP_MENTION_RE = new RegExp(String.raw`\b(?:${APP_NAMES})\b`, "i");
+/** "hmu on ig", "we dey for tiktok", "price na for WhatsApp", "message my personal line". */
+const APP_SLANG_RE = new RegExp(
+  String.raw`\b(?:hmu|holla|buzz|ping)\b[^.\n]{0,20}\b(?:on|via|at)\s+(?:${APP_NAMES}|${APP_SHORT})\b|\b(?:we|i)\s+dey\s+(?:for|on)\s+(?:${APP_NAMES}|${APP_SHORT})\b|\b(?:price|prices|order|orders|payment)\s+(?:na|is|dey)\s+(?:for|on)\s+(?:${APP_NAMES}|${APP_SHORT})\b|\b(?:message|text|call|reach|contact|dm|msg)\s+(?:me\s+on\s+)?my\s+(?:personal\s+|private\s+|direct\s+)?(?:line|number|phone)\b|\b(?:dm|message|text|msg|send)\b[^.\n]{0,30}\bto\s+my\s+(?:personal\s+|private\s+)?(?:line|number|phone)\b|\b(?:holla|hmu|buzz|ping)\s+(?:at\s+)?@?(?=[a-z0-9_.]{0,30}(?:_|\.[a-z0-9]|[a-z]{3}[a-z0-9]{0,20}\d))[a-z0-9][a-z0-9_.]{2,29}\b`,
+  "i",
+);
 const DM_RE =
   /\b(?:dm\s+(?:me|us)|inbox\s+(?:me|us)|slide\s+into|(?:dm|inbox|pm)\s+for\s+(?:price|prices|details|info|more|orders?|enquir\w+)|send\s+(?:me\s+|us\s+)?a\s+dm|all\s+(?:our\s+|my\s+)?socials?|(?:our|my)\s+socials?|social\s+media\s+(?:handle|page)s?)\b/i;
 /** "check my store name for my number" — the contact was moved somewhere the rules do not read together. */
@@ -718,7 +817,7 @@ const DISGUISED_DOT_DOMAIN_RE =
   /\b[a-z0-9][a-z0-9-]{2,40}(?:\s?(?:\[\.\]|\(\.\)|,|•|·)\s?|\.\s+)(?:com\.ng|com|org)\b/;
 /** "adeshop dot com", "adeshop .com". Only top-level domains that are not words ("polka dot net fabric"). */
 const SPELLED_DOMAIN_RE =
-  /\b[a-z0-9][a-z0-9-]{2,40}(?:\s+\.\s*|\s+dot\s+|\s*\(\s*dot\s*\)\s*|\s*\[\s*dot\s*\]\s*)(?:com\.ng|com|ng|org|io|africa)\b/i;
+  /\b[a-z0-9][a-z0-9-]{2,40}(?:\s+\.\s*|\s+dot\s+|\s*\(\s*dot\s*\)\s*|\s*\[\s*dot\s*\]\s*)(?:com\.ng|com|ng|org|io|africa)\b|\b[a-z0-9][a-z0-9-]{2,40}\s*(?:\(\s*dot\s*\)|\[\s*dot\s*\])\s*(?:store|shop|online|site|app|link|net|co|me|live)\b|\b(?!polka\b)[a-z0-9][a-z0-9-]{3,40}\s+dot\s+(?:store|shop|online|site)\b/i;
 
 /** "@shopname" — needs a letter, and is not a price ("@5000", "@N5000"). */
 const HANDLE_RE = /(?:^|[\s(,;])@(?!(?:ngn|n|₦)?\s?\d)(?=[a-zA-Z0-9_.]{0,29}[a-zA-Z])[a-zA-Z0-9_.]{3,30}\b/i;
@@ -729,14 +828,35 @@ const HANDLE_APPS = "ig|insta|instagram|tiktok|snapchat|snap|facebook|fb|twitter
  * followed by a handle-shaped word: letters with a "_", a "." or a digit in it.
  */
 const APP_THEN_HANDLE_RE = new RegExp(
-  String.raw`\b(?:${HANDLE_APPS})\s{0,3}(?:is|:|-|–|handle|page|name|username|id|at)?\s{0,3}@?(?=[a-z0-9_.]{0,30}[a-z])(?=[a-z0-9_.]{0,30}[0-9_.])[a-z0-9][a-z0-9_.]{2,29}[a-z0-9]\b`,
+  // The app name is a whole word and something separates it from the handle
+  // ("Snapchat." is not "snap" + "chat."). Handle-shaped means: an underscore, a
+  // dot INSIDE the word, or letters followed by a digit — "1080p" and "Reels." are not.
+  String.raw`\b(?:${HANDLE_APPS})\b(?:\s{1,3}(?:(?:is|handle|page|name|username|id|at)\s{1,3})?|\s{0,3}[:@–-]\s{0,3})@?(?=[a-z0-9_.]{0,30}(?:_|\.[a-z0-9]|[a-z]{3}[a-z0-9]{0,20}\d))[a-z0-9][a-z0-9_.]{2,29}[a-z0-9]\b`,
   "i",
 );
 /** "search adeshop on Instagram", "we are adeshop_ng on tiktok". */
 const HANDLE_ON_APP_RE = new RegExp(
-  String.raw`\b(?:search|find|follow|check|add|we\s+are|i\s+am|i'?m)\s+(?:for\s+|out\s+|us\s+as\s+|me\s+as\s+)?@?[a-z0-9][a-z0-9_.]{2,29}\s+on\s+(?:${HANDLE_APPS})\b`,
+  // Handle-shaped as above, or written with its "@": "find inspiration on TikTok" is neither.
+  String.raw`\b(?:search|find|follow|check|add|we\s+are|i\s+am|i'?m)\s+(?:for\s+|out\s+|us\s+as\s+|me\s+as\s+)?(?:@[a-z0-9][a-z0-9_.]{2,29}|(?=[a-z0-9_.]{0,30}(?:_|\.[a-z0-9]|[a-z]{3}[a-z0-9]{0,20}\d))[a-z0-9][a-z0-9_.]{2,29})\s+on\s+(?:${HANDLE_APPS})\b`,
   "i",
 );
+/** "search adeshop on Instagram": one plain word to look up. A person looks (it may be an ordinary word). */
+const WORD_ON_APP_RE = new RegExp(
+  String.raw`\b(?:search|find|follow|ping|buzz|holla|we\s+are|i\s+am|i'?m|we\s+dey\s+(?:for|on)\s+(?:${HANDLE_APPS})\s+as)\s+(?:for\s+)?([a-z][a-z0-9]{3,29})(?:\s+on\s+(?:${HANDLE_APPS})\b|\b(?<=\bas\s[a-z0-9]{4,30}))`,
+  "i",
+);
+/** Ordinary words that follow "find … on Instagram" in honest copy. */
+const NOT_A_HANDLE = new Set([
+  "more", "inspiration", "ideas", "them", "videos", "reviews", "prices", "deals", "tutorials", "styles",
+  "tips", "content", "photos", "pictures", "trends", "looks", "outfits", "designs", "recipes", "samples",
+  "examples", "updates", "people", "friends", "everything", "anything", "something", "others", "live",
+]);
+/** "drop your number", "leave your contact in a review" — asking the BUYER for a way to reach them. */
+const CONTACT_REQUEST_RE =
+  /\b(?:drop|leave|put|send|share|give)\s+(?:me\s+|us\s+)?(?:your|ur)\s+(?:number|contact|digits|phone|whatsapp|line)\b/i;
+/** "link in bio", "my linktree", "scan the QR code to order". */
+const LINK_IN_BIO_RE =
+  /\blink\s+(?:is\s+)?in\s+(?:my\s+|our\s+|the\s+)?bio\b|\b(?:in|on)\s+(?:my|our)\s+bio\b|\b(?:is|are)\s+in\s+the\s+bio\b|\blinktree\b|\bscan\s+(?:the\s+|our\s+|my\s+|this\s+)?qr(?:\s+code)?\b[^.\n]{0,30}\b(?:order|pay|buy|contact|chat|reach)\b/i;
 /** "the number is on the picture" — the contact was moved where text rules cannot read it. */
 const CONTACT_IN_IMAGE_RE =
   /\b(?:number|contact|phone|whatsapp|digits|line)\s+(?:is|are)\s+(?:on|in)\s+the\s+(?:picture|photo|image|pic|flyer|banner)s?\b/i;
@@ -756,7 +876,7 @@ export function detectContactDetails(input: string): ContactDetailsResult {
   }
 
   // A wa.me / t.me link is a phone number or a handle by another name.
-  if (CONTACT_LINK_RE.test(text)) {
+  if (CONTACT_LINK_RE.test(text) || LINK_IN_BIO_RE.test(text)) {
     hits.push({ kind: "link", confidence: "high", evidence: "contact_link" });
   } else if (URL_RE.test(text)) {
     hits.push({ kind: "link", confidence: "medium", evidence: "url" });
@@ -807,7 +927,7 @@ export function detectContactDetails(input: string): ContactDetailsResult {
       }
     }
   }
-  if (CONTACT_IN_IMAGE_RE.test(text) || CONTACT_ELSEWHERE_RE.test(text)) {
+  if (CONTACT_IN_IMAGE_RE.test(text) || CONTACT_ELSEWHERE_RE.test(text) || CONTACT_REQUEST_RE.test(text)) {
     strongestPhone = { kind: "phone", confidence: "high", evidence: "contact_elsewhere" };
   } else if (
     (!strongestPhone || strongestPhone.confidence === "low") &&
@@ -822,7 +942,8 @@ export function detectContactDetails(input: string): ContactDetailsResult {
     APP_POSSESSIVE_RE.test(text) ||
     APP_CHANNEL_RE.test(text) ||
     APP_LABEL_RE.test(text) ||
-    APP_DESTINATION_RE.test(text)
+    APP_DESTINATION_RE.test(text) ||
+    APP_SLANG_RE.test(text)
   ) {
     hits.push({ kind: "messaging_app", confidence: "high", evidence: "app_steer" });
   } else if (DM_RE.test(text)) {
@@ -832,8 +953,17 @@ export function detectContactDetails(input: string): ContactDetailsResult {
     hits.push({ kind: "messaging_app", confidence: "low", evidence: "app_mention" });
   }
 
-  if (APP_THEN_HANDLE_RE.test(text) || HANDLE_ON_APP_RE.test(text)) {
+  const named = FIND_NAME_ON_APP_RE.exec(text);
+  const word = WORD_ON_APP_RE.exec(text);
+  if (
+    APP_THEN_HANDLE_RE.test(text) ||
+    HANDLE_ON_APP_RE.test(text) ||
+    // A capitalised name to look up ("find Ade Shop NG on Facebook"), not "find the latest styles on …".
+    (named !== null && /^[A-Z]/.test(named[1]))
+  ) {
     hits.push({ kind: "social_handle", confidence: "high", evidence: "app_handle" });
+  } else if (word !== null && !NOT_A_HANDLE.has(word[1].toLowerCase())) {
+    hits.push({ kind: "social_handle", confidence: "medium", evidence: "word_on_app" });
   } else if (HANDLE_RE.test(text) && !hits.some((hit) => hit.kind === "email")) {
     hits.push({ kind: "social_handle", confidence: "medium", evidence: "handle" });
   }

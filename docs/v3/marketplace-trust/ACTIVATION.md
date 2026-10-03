@@ -28,7 +28,8 @@ is safe. It needs no other pending migration.
 API has reloaded, the app cannot see the new functions and will quietly keep using the old review
 path — safe, but not what you want to test.
 
-**4. Verify.** Run file 3. Every row must say `PASS`. The second result lists who can approve a
+**4. Verify.** Run file 3. Every row must say `PASS` (it also checks that every existing store is
+either recorded as pre-gate or on the new-store register). The second result lists who can approve a
 listing by hand from now on — **confirm your own account is in it**. If it is not, give the
 account the `marketplace_owner` role (Staff → Roles) before going further.
 
@@ -127,10 +128,19 @@ refuses the delete. Take the listings out of the catalogue first (or move them),
 
 **A listing's id cannot be changed.**
 
-**A store approved without documents is on probation.** With the flag on, identity and payout
-documents are optional on an application. If you approve one that has none, the store opens with
-the new-store limits and needs a verified identity before its first payout, exactly like a store
-the gate opened.
+**Every store opened from now on needs a verified identity before its first payout** — whether the
+gate opened it or a person approved it, and with the flag off too. Nobody reviews identity
+documents when a store opens (the review queue does not show them), so the payout is where identity
+is checked. Stores that already exist when you apply the migration keep the payout path they have:
+the migration records each of them once, against its current owner. The seller verifies identity
+from their account (Verification); staff review it as they do today.
+
+**A store's owner and type are fixed.** An application that names the handle of another store is
+refused when you approve it, with a notice saying so. The company's own store is never handed to an
+account.
+
+**A listing a person rejected stays a person's decision.** With the flag on, a seller pressing
+Publish again on a listing you rejected (or sent back for changes) is held for you, not published.
 
 **The dev demo seed** (`apps/marketplace/scripts/seed-marketplace.mjs`) inserts demo vendor
 listings as already approved; against a database with this migration those rows are refused. The
@@ -140,6 +150,9 @@ production catalogue bootstrap is unaffected (company inventory is allowed).
 console is refused unless the acting account holds a marketplace staff role. Step 4 lists who does.
 (The approval also carries the time it was made; if an account on that list is still refused, the
 application server's clock is more than a few minutes away from the database's.)
+
+**A live listing always keeps at least one picture.** Removing the last picture of a live listing
+by hand is refused; take the listing out of the catalogue first.
 
 **The plan allowance still applies.** A store on the launch plan can hold three listings. That is
 the existing commercial limit; the new-store limits sit on top of it.

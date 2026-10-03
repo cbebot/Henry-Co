@@ -121,13 +121,12 @@ create index if not exists marketplace_listing_gate_verdicts_recent_idx
 create table if not exists public.marketplace_seller_probation (
   vendor_id uuid primary key references public.marketplace_vendors (id) on delete cascade,
   owner_user_id uuid not null,
-  -- instant_onboarding          : opened by the gate, no human approval
-  -- staff_approved_no_documents : a person approved the application, but it carried
-  --                               no identity + payout documents (they are optional
-  --                               once instant publish is on) — same limits, same
-  --                               identity check at payout
+  -- instant_onboarding : opened by the gate, no human approval
+  -- staff_approved     : opened by a person (the legacy approval). Nobody reviews
+  --                      identity documents at approval, so the store starts under
+  --                      the same limits and the same identity check at payout.
   source text not null default 'instant_onboarding'
-    check (source in ('instant_onboarding', 'staff_approved_no_documents')),
+    check (source in ('instant_onboarding', 'staff_approved')),
   onboarding_verdict_id uuid,
   started_at timestamptz not null default now(),
   graduated_at timestamptz,
@@ -138,10 +137,14 @@ create table if not exists public.marketplace_listing_enforcement (
   id uuid primary key default gen_random_uuid(),
   product_id uuid not null,
   vendor_id uuid,
-  -- policy  : a deterministic rule found a violation on a live listing
-  -- reports : distinct-reporter threshold reached
-  -- risk    : mirrors a STAFF-applied V3-40 hold/freeze on the listing
-  kind text not null check (kind in ('policy', 'reports', 'risk')),
+  -- The handle the listing had. A hold binds the listing id AND store + handle, so
+  -- a row that is deleted and re-created under the same handle inherits it.
+  slug text,
+  -- policy         : a deterministic rule found a violation on a live listing
+  -- reports        : distinct-reporter threshold reached
+  -- risk           : mirrors a STAFF-applied V3-40 hold/freeze on the listing
+  -- staff_decision : a person rejected the listing or asked for changes
+  kind text not null check (kind in ('policy', 'reports', 'risk', 'staff_decision')),
   status text not null default 'active' check (status in ('active', 'lifted', 'upheld')),
   reasons text[] not null default '{}'::text[],
   evidence jsonb not null default '{}'::jsonb,
@@ -160,6 +163,14 @@ create unique index if not exists marketplace_listing_enforcement_one_active
   where status = 'active';
 create index if not exists marketplace_listing_enforcement_vendor_idx
   on public.marketplace_listing_enforcement (vendor_id, created_at desc);
+
+alter table public.marketplace_listing_enforcement add column if not exists slug text;
+alter table public.marketplace_listing_enforcement drop constraint if exists marketplace_listing_enforcement_kind_check;
+alter table public.marketplace_listing_enforcement add constraint marketplace_listing_enforcement_kind_check
+  check (kind in ('policy', 'reports', 'risk', 'staff_decision'));
+create index if not exists marketplace_listing_enforcement_handle_idx
+  on public.marketplace_listing_enforcement (vendor_id, slug)
+  where status in ('active', 'upheld');
 
 create table if not exists public.marketplace_image_fingerprints (
   -- Canonical first-party media reference (media://public/marketplace-images/...).
@@ -182,7 +193,7 @@ alter table public.marketplace_image_fingerprints add column if not exists phash
 
 alter table public.marketplace_seller_probation drop constraint if exists marketplace_seller_probation_source_check;
 alter table public.marketplace_seller_probation add constraint marketplace_seller_probation_source_check
-  check (source in ('instant_onboarding', 'staff_approved_no_documents'));
+  check (source in ('instant_onboarding', 'staff_approved'));
 
 create index if not exists marketplace_image_fingerprints_sha_idx
   on public.marketplace_image_fingerprints (sha256);
@@ -376,6 +387,30 @@ as $$
   );
 $$;
 
+-- A listing only a PERSON can put (back) in the catalogue: an open reports or risk
+-- take-down, one a person upheld, or a person's own rejection / request for
+-- changes. Matched on the listing id AND on store + handle, so deleting the row
+-- and creating it again under the same handle does not shed it. A `policy`
+-- take-down is not one of these: it lifts itself when the seller's fix passes.
+create or replace function public.marketplace_gate_human_hold(p_product_id uuid, p_vendor_id uuid, p_slug text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select exists (
+    select 1
+      from public.marketplace_listing_enforcement e
+     where e.kind <> 'policy'
+       and e.status in ('active', 'upheld')
+       and (
+         (p_product_id is not null and e.product_id = p_product_id)
+         or (p_vendor_id is not null and p_slug is not null and e.vendor_id = p_vendor_id and e.slug = p_slug)
+       )
+  );
+$$;
+
 -- ---------------------------------------------------------------------------
 -- 4. THE GUARD — BEFORE INSERT OR UPDATE on marketplace_products.
 --    Validates only. Consumption / recording happens in the AFTER trigger,
@@ -449,12 +484,10 @@ begin
    limit 1
    for update;
 
-  -- A hide that needs a human cannot be lifted by an engine verdict: while one is
-  -- open the engine verdict is simply not usable, and only (B) can publish.
-  v_human_hold := exists (
-    select 1 from public.marketplace_listing_enforcement e
-    where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
-  );
+  -- What a person has to decide cannot be decided by an engine verdict: while such
+  -- a hold stands — open, or upheld by a person — the engine verdict is simply not
+  -- usable, and only (B) can publish.
+  v_human_hold := public.marketplace_gate_human_hold(new.id, new.vendor_id, new.slug);
 
   -- Variants are buyer-visible and the engine does not screen them: a listing that
   -- carries any is a person's decision, never the engine's.
@@ -582,10 +615,17 @@ declare
   v_old_hash text;
 begin
   if new.approval_status is distinct from 'approved' then
-    -- A staff rejection upholds any open hide.
+    -- A PERSON's rejection (or request for changes) upholds any open hide and binds
+    -- the engine from then on: pressing Publish again goes back to a person. Only a
+    -- genuine staff decision counts — a bare status write upholds nothing.
     if tg_op = 'UPDATE'
-       and new.approval_status = 'rejected'
-       and old.approval_status is distinct from 'rejected'
+       and new.approval_status in ('rejected', 'changes_requested')
+       and old.approval_status is distinct from new.approval_status
+       and new.reviewed_by is not null
+       and new.reviewed_at is not null
+       and new.reviewed_at is distinct from old.reviewed_at
+       and public.marketplace_gate_caller_is_trusted()
+       and public.marketplace_gate_is_staff(new.reviewed_by)
     then
       update public.marketplace_listing_enforcement e
          set status = 'upheld',
@@ -593,6 +633,15 @@ begin
              resolved_by = new.reviewed_by,
              resolution = 'upheld_by_staff'
        where e.product_id = new.id and e.status = 'active';
+      if not public.marketplace_gate_human_hold(new.id, new.vendor_id, new.slug) then
+        insert into public.marketplace_listing_enforcement
+          (product_id, vendor_id, slug, kind, status, reasons, evidence, prior_status, engine_version,
+           resolved_at, resolved_by, resolution)
+        values
+          (new.id, new.vendor_id, new.slug, 'staff_decision', 'upheld', '{}'::text[],
+           jsonb_build_object('decision', new.approval_status), coalesce(old.approval_status, 'draft'), 'db_guard',
+           now(), new.reviewed_by, 'upheld_by_staff');
+      end if;
     end if;
     return null;
   end if;
@@ -623,12 +672,10 @@ begin
    for update;
 
   -- Mirrors the guard exactly: an engine verdict is not what published this row
-  -- if a staff-only hide was open or the listing carries variants — the staff
-  -- branch was.
-  if v_verdict_id is not null and not exists (
-    select 1 from public.marketplace_listing_enforcement e
-    where e.product_id = new.id and e.status = 'active' and e.kind <> 'policy'
-  ) and not exists (
+  -- if a person's hold stood or the listing carries variants — the staff branch was.
+  if v_verdict_id is not null
+     and not public.marketplace_gate_human_hold(new.id, new.vendor_id, new.slug)
+     and not exists (
     select 1 from public.marketplace_product_variants x where x.product_id = new.id
   ) then
     update public.marketplace_listing_gate_verdicts v
@@ -688,12 +735,14 @@ begin
      clock_timestamp());
 
   if not v_company then
+    -- A person's approval settles everything that stood against the listing.
     update public.marketplace_listing_enforcement e
        set status = 'lifted',
            resolved_at = now(),
            resolved_by = new.reviewed_by,
            resolution = 'restored_by_staff'
-     where e.product_id = new.id and e.status = 'active';
+     where e.status in ('active', 'upheld')
+       and (e.product_id = new.id or (e.vendor_id = new.vendor_id and e.slug = new.slug));
   end if;
 
   return null;
@@ -734,10 +783,32 @@ begin
     return new; -- reorder / cover change
   end if;
 
+  -- A picture is never moved off a live listing: a variant of that listing may
+  -- still show it, and what it shows would then change with no decision behind it.
+  if tg_op = 'UPDATE' and new.product_id is distinct from old.product_id then
+    select p.approval_status, p.inventory_owner_type, p.vendor_id
+      into v_status, v_owner_type, v_vendor
+      from public.marketplace_products p
+     where p.id = old.product_id
+       for share;
+    if found and v_status = 'approved' and not (
+      public.marketplace_gate_caller_is_trusted()
+      and v_owner_type = 'company'
+      and public.marketplace_gate_is_company_vendor(v_vendor)
+    ) then
+      raise exception 'marketplace_media_guard: a picture cannot be moved off a live listing'
+        using errcode = 'P0001', hint = 'media_not_covered';
+    end if;
+  end if;
+
+  -- The listing row is LOCKED while it is read (FOR SHARE): a publish that is
+  -- still in flight in another transaction has to finish first, so this guard
+  -- never judges a listing "not live" a moment before it goes live.
   select p.approval_status, p.inventory_owner_type, p.vendor_id
     into v_status, v_owner_type, v_vendor
     from public.marketplace_products p
-   where p.id = new.product_id;
+   where p.id = new.product_id
+     for share;
 
   if not found or v_status is distinct from 'approved' then
     return new;
@@ -768,6 +839,55 @@ begin
     using errcode = 'P0001', hint = 'media_not_covered';
 end;
 $$;
+
+-- A live listing is never left without a picture. Removing ONE picture of several
+-- is the seller's own choice (the gate's gallery sync adds before it removes), but
+-- the last one goes only with the listing out of the catalogue.
+create or replace function public.marketplace_product_media_delete_guard()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_status text;
+  v_owner_type text;
+  v_vendor uuid;
+begin
+  if old.kind is distinct from 'image' then
+    return old;
+  end if;
+  select p.approval_status, p.inventory_owner_type, p.vendor_id
+    into v_status, v_owner_type, v_vendor
+    from public.marketplace_products p
+   where p.id = old.product_id
+     for share;
+  if not found or v_status is distinct from 'approved' then
+    return old; -- not live, or the listing itself is being deleted
+  end if;
+  if public.marketplace_gate_caller_is_trusted()
+     and v_owner_type = 'company'
+     and public.marketplace_gate_is_company_vendor(v_vendor)
+  then
+    return old;
+  end if;
+  -- Rows this same statement already deleted are not visible here, so a statement
+  -- that removes every picture is refused when it reaches the last one.
+  if not exists (
+    select 1 from public.marketplace_product_media m
+     where m.product_id = old.product_id and m.id <> old.id and m.kind = 'image'
+  ) then
+    raise exception 'marketplace_media_guard: a live listing cannot be left without a picture'
+      using errcode = 'P0001', hint = 'media_not_covered';
+  end if;
+  return old;
+end;
+$$;
+
+drop trigger if exists marketplace_product_media_delete_guard on public.marketplace_product_media;
+create trigger marketplace_product_media_delete_guard
+  before delete on public.marketplace_product_media
+  for each row execute function public.marketplace_product_media_delete_guard();
 
 drop trigger if exists marketplace_product_media_guard on public.marketplace_product_media;
 create trigger marketplace_product_media_guard
@@ -812,10 +932,13 @@ begin
          then array[new.product_id, old.product_id]
          else array[new.product_id] end
   loop
+    -- Locked while read, for the same reason as the media guard: a publish in
+    -- flight elsewhere must finish before this row is judged "not live".
     select p.approval_status, p.inventory_owner_type, p.vendor_id
       into v_status, v_owner_type, v_vendor
       from public.marketplace_products p
-     where p.id = v_product;
+     where p.id = v_product
+       for share;
 
     if found and v_status = 'approved' and not (
       public.marketplace_gate_caller_is_trusted()
@@ -909,13 +1032,16 @@ begin
       into v_pid, v_product
       from public.marketplace_products p
      where p.slug = p_slug;
-    if v_pid is not null then
-      select jsonb_build_object('id', e.id, 'kind', e.kind, 'reasons', to_jsonb(e.reasons), 'created_at', e.created_at)
-        into v_hide
-        from public.marketplace_listing_enforcement e
-       where e.product_id = v_pid and e.status = 'active'
-       limit 1;
-    end if;
+    -- The take-down that stands against this listing: an open one, or one a person
+    -- upheld (which binds the engine until a person approves). By id or by handle.
+    select jsonb_build_object('id', e.id, 'kind', e.kind, 'status', e.status,
+                              'reasons', to_jsonb(e.reasons), 'created_at', e.created_at)
+      into v_hide
+      from public.marketplace_listing_enforcement e
+     where ((v_pid is not null and e.product_id = v_pid) or (e.vendor_id = p_vendor_id and e.slug = p_slug))
+       and (e.status = 'active' or (e.status = 'upheld' and e.kind <> 'policy'))
+     order by (e.status = 'active') desc, e.created_at desc
+     limit 1;
   end if;
 
   return jsonb_build_object(
@@ -1052,9 +1178,28 @@ begin
     elsif coalesce(v_row.base_price, 0) <= 0 then
       v_outcome := 'reject';
       v_reasons := v_reasons || 'price_invalid'::text;
-    elsif v_existing_id is not null and exists (
-      select 1 from public.marketplace_listing_enforcement e
-      where e.product_id = v_existing_id and e.status = 'active' and e.kind <> 'policy'
+    elsif public.marketplace_gate_human_hold(v_existing_id, p_vendor_id, v_row.slug) then
+      -- An open reports/risk take-down, one a person upheld, or a person's rejection.
+      v_outcome := 'hold';
+      v_reasons := v_reasons || 'enforcement_hold_active'::text;
+    elsif exists (
+      -- The same item listed again under another handle: one of its pictures is a
+      -- picture of a listing of this store that a person has to decide.
+      select 1
+        from public.marketplace_listing_enforcement e
+        join public.marketplace_product_media m on m.product_id = e.product_id
+       where e.vendor_id = p_vendor_id
+         and e.kind <> 'policy'
+         and e.status in ('active', 'upheld')
+         and (
+           m.url = any (v_media)
+           or exists (
+             select 1
+               from public.marketplace_image_fingerprints held
+               join public.marketplace_image_fingerprints posted on posted.sha256 = held.sha256
+              where held.ref = m.url and posted.ref = any (v_media)
+           )
+         )
     ) then
       v_outcome := 'hold';
       v_reasons := v_reasons || 'enforcement_hold_active'::text;
@@ -1249,9 +1394,9 @@ begin
   end if;
 
   insert into public.marketplace_listing_enforcement
-    (product_id, vendor_id, kind, reasons, evidence, prior_status, engine_version)
+    (product_id, vendor_id, slug, kind, reasons, evidence, prior_status, engine_version)
   values
-    (v_row.id, v_row.vendor_id, p_kind, v_reasons, coalesce(p_evidence, '{}'::jsonb), v_row.approval_status,
+    (v_row.id, v_row.vendor_id, v_row.slug, p_kind, v_reasons, coalesce(p_evidence, '{}'::jsonb), v_row.approval_status,
      coalesce(nullif(btrim(p_engine_version), ''), 'unknown'))
   on conflict (product_id) where status = 'active' do nothing
   returning id into v_id;
@@ -1411,12 +1556,16 @@ $$;
 --     the same transaction as the store, no TS branch can open an instant store
 --     that escapes the caps or the payout identity guard.
 -- ---------------------------------------------------------------------------
+drop function if exists public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text);
 create or replace function public.marketplace_gate_instant_onboard(
   p_actor uuid,
   p_application_id uuid,
   p_reasons text[],
   p_signals jsonb,
-  p_engine_version text
+  p_engine_version text,
+  -- sha256 of "<handle>|<store name>|<story>" AS SCREENED by the caller. The store
+  -- is built from the application row, so the row must still be what was screened.
+  p_profile_hash text
 ) returns jsonb
 language plpgsql
 security definer
@@ -1432,6 +1581,7 @@ declare
   v_score numeric;
   v_verdict_id uuid;
   v_slug text;
+  v_profile_hash text;
 begin
   if p_actor is null then
     raise exception 'marketplace_gate_instant_onboard: actor is required' using errcode = 'insufficient_privilege';
@@ -1488,6 +1638,16 @@ begin
       using errcode = 'P0001', hint = 'prior_human_decision';
   end if;
 
+  -- The row is locked from here on. What it says NOW must be what the caller
+  -- screened: a draft save that slipped in between the screen and this call
+  -- changes the hash, and the store is not opened on text nobody checked.
+  v_profile_hash := encode(sha256(convert_to(
+    v_slug || '|' || btrim(v_app.store_name) || '|' || coalesce(v_app.story, ''), 'UTF8')), 'hex');
+  if p_profile_hash is null or p_profile_hash <> v_profile_hash then
+    raise exception 'marketplace_gate_instant_onboard: the application changed after it was screened'
+      using errcode = 'P0001', hint = 'profile_changed';
+  end if;
+
   select v.id, v.owner_user_id into v_vendor_id, v_owner
     from public.marketplace_vendors v
    where v.slug = v_slug;
@@ -1517,6 +1677,8 @@ begin
      array['New seller', case when v_identity then 'Identity verified' else 'Identity checked at payout' end],
      v_app.normalized_email, v_app.contact_phone)
   returning id into v_vendor_id;
+  -- (Two applicants racing for one handle: the unique index refuses the second.
+  -- The handler below turns that into the same answer as the check above.)
 
   if exists (
     select 1 from public.marketplace_role_memberships m
@@ -1537,7 +1699,7 @@ begin
      actor_user_id, consumed_at)
   values
     ('seller', v_vendor_id, v_slug,
-     encode(sha256(convert_to(v_slug || '|' || btrim(v_app.store_name) || '|' || coalesce(v_app.story, ''), 'UTF8')), 'hex'),
+     v_profile_hash,
      'publish', 'policy_engine', coalesce(p_reasons, '{}'::text[]), coalesce(p_signals, '{}'::jsonb),
      coalesce(nullif(btrim(p_engine_version), ''), 'unknown'), p_actor, clock_timestamp())
   returning id into v_verdict_id;
@@ -1550,10 +1712,11 @@ begin
     set source = 'instant_onboarding',
         onboarding_verdict_id = excluded.onboarding_verdict_id;
 
+  -- No note: the column is shown to the seller, and what happened is on the ledger.
   update public.marketplace_vendor_applications a
      set status = 'approved',
          reviewed_at = now(),
-         review_note = 'Opened by the instant-publish gate. Identity is checked at the first payout.'
+         review_note = null
    where a.id = p_application_id;
 
   return jsonb_build_object(
@@ -1563,20 +1726,22 @@ begin
     'verdict_id', v_verdict_id,
     'identity_verified', v_identity
   );
+exception
+  when unique_violation then
+    raise exception 'marketplace_gate_instant_onboard: store handle is taken'
+      using errcode = 'P0001', hint = 'store_handle_taken';
 end;
 $$;
 
 -- ---------------------------------------------------------------------------
--- 10b. A store a PERSON opens without documents is on probation too.
---      With instant publish on, the identity + payout documents are optional on
---      every application. One the gate holds goes to the staff queue as it is,
---      and a routine approval there would open an ordinary store: no documents,
---      no limits, no identity check at payout. This trigger closes that for every
---      path that creates a store (the marketplace console, the hub, a future
---      route): if the owner's application carries no documents, the store starts
---      on probation, exactly like an instant one.
---      With the flag off an application cannot be submitted without documents,
---      so nothing is enrolled and the old flow is unchanged.
+-- 10b. Every NEW store starts on the probation register — whoever opened it.
+--      The human approval path never reviewed identity documents (the review
+--      queue does not show them, and any string passes as one), so "a person
+--      approved it" says nothing about who the seller is. A store that is created
+--      — or handed an owner — after this gate is installed gets a probation row:
+--      the new-store limits apply while instant publish is on, and the identity
+--      check at payout applies whichever way the flag points.
+--      Stores that existed before the gate are untouched (see the waivers below).
 -- ---------------------------------------------------------------------------
 create or replace function public.marketplace_vendors_probation_enroll()
 returns trigger
@@ -1584,47 +1749,102 @@ language plpgsql
 security definer
 set search_path = public, pg_temp
 as $$
-declare
-  v_docs jsonb;
 begin
   if new.owner_user_id is null or new.owner_type is not distinct from 'company' then
     return null;
   end if;
-
-  select a.documents_json into v_docs
-    from public.marketplace_vendor_applications a
-   where a.user_id = new.owner_user_id
-   order by a.created_at desc
-   limit 1;
-  if not found then
-    return null; -- not opened from an application
-  end if;
-
-  if coalesce(v_docs -> 'founderIdentity' ->> 'fileUrl', '') <> ''
-     and coalesce(v_docs -> 'payoutProof' ->> 'fileUrl', '') <> ''
+  if tg_op = 'UPDATE'
+     and new.owner_user_id is not distinct from old.owner_user_id
+     and old.owner_type is distinct from 'company'
   then
-    return null; -- the documents were handed over for the human review
+    return null; -- nothing about who owns the store changed
   end if;
 
   insert into public.marketplace_seller_probation (vendor_id, owner_user_id, source)
-  values (new.id, new.owner_user_id, 'staff_approved_no_documents')
-  on conflict (vendor_id) do nothing;
+  values (new.id, new.owner_user_id, 'staff_approved')
+  on conflict (vendor_id) do update
+    set owner_user_id = excluded.owner_user_id,
+        source = excluded.source,
+        onboarding_verdict_id = null,
+        started_at = now(),
+        graduated_at = null,
+        graduated_reason = null
+  where public.marketplace_seller_probation.owner_user_id is distinct from excluded.owner_user_id;
   return null;
 end;
 $$;
 
 drop trigger if exists marketplace_vendors_probation_enroll on public.marketplace_vendors;
 create trigger marketplace_vendors_probation_enroll
-  after insert on public.marketplace_vendors
+  after insert or update of owner_user_id, owner_type on public.marketplace_vendors
   for each row execute function public.marketplace_vendors_probation_enroll();
+
+-- A store never changes hands, and a seller's store never becomes company
+-- inventory, by an UPDATE. The legacy approval writes the store with an upsert on
+-- its handle: without this, approving an application that names an existing
+-- store's handle would hand that store — and its balance — to the applicant.
+create or replace function public.marketplace_vendors_owner_guard()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  -- What kind of store it is never changes: a seller's store does not become the
+  -- company's catalogue, and the company's store is never handed to a seller.
+  if new.owner_type is distinct from old.owner_type then
+    raise exception 'marketplace_vendor_guard: a store''s type cannot be changed'
+      using errcode = 'P0001', hint = 'store_type_immutable';
+  end if;
+  if new.owner_user_id is distinct from old.owner_user_id
+     and (old.owner_user_id is not null or old.owner_type is not distinct from 'company')
+  then
+    raise exception 'marketplace_vendor_guard: a store''s owner cannot be changed'
+      using errcode = 'P0001', hint = 'store_owner_immutable';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists marketplace_vendors_owner_guard on public.marketplace_vendors;
+create trigger marketplace_vendors_owner_guard
+  before update of owner_user_id, owner_type on public.marketplace_vendors
+  for each row execute function public.marketplace_vendors_owner_guard();
 
 -- ---------------------------------------------------------------------------
 -- 11. Payout identity. Identity no longer stands in front of a listing, so it
 --     must stand in front of the money. payoutEligibility in TS is the first
---     wall; this is the second. It applies to stores on the probation register —
---     the ones that never handed documents to a human review — and it can only
---     REFUSE. No payment object is read or written.
+--     wall; this is the second, and it FAILS CLOSED: a payout needs a verified
+--     owner. The only exception is a store that existed before this gate was
+--     installed — recorded once, below, against the owner it had then. A store
+--     with no owner, a new owner or no record is refused. It can only REFUSE:
+--     no payment object is read or written.
 -- ---------------------------------------------------------------------------
+do $$
+begin
+  -- Created and filled ONCE. A second apply finds the table and leaves it alone:
+  -- stores opened since the first apply must not be waived by a re-run.
+  if to_regclass('public.marketplace_seller_identity_waivers') is null then
+    create table public.marketplace_seller_identity_waivers (
+      vendor_id uuid primary key references public.marketplace_vendors (id) on delete cascade,
+      -- The waiver is the OWNER's: it stops applying if the store's owner is not this account.
+      owner_user_id uuid not null,
+      reason text not null default 'pre_gate' check (reason in ('pre_gate')),
+      created_at timestamptz not null default now()
+    );
+    insert into public.marketplace_seller_identity_waivers (vendor_id, owner_user_id, reason)
+    select v.id, v.owner_user_id, 'pre_gate'
+      from public.marketplace_vendors v
+     where v.owner_user_id is not null
+       and v.owner_type is distinct from 'company'
+       and not exists (select 1 from public.marketplace_seller_probation p where p.vendor_id = v.id);
+  end if;
+end $$;
+
+alter table public.marketplace_seller_identity_waivers enable row level security;
+revoke all on public.marketplace_seller_identity_waivers from public, anon, authenticated, service_role;
+grant select on public.marketplace_seller_identity_waivers to service_role;
+
 create or replace function public.marketplace_gate_payout_eligibility(p_vendor_id uuid)
 returns jsonb
 language plpgsql
@@ -1637,8 +1857,10 @@ declare
   v_status text;
   v_identity boolean;
   v_tracked boolean;
+  v_waived boolean;
+  v_owner_type text;
 begin
-  select v.owner_user_id, v.status into v_owner, v_status
+  select v.owner_user_id, v.status, v.owner_type into v_owner, v_status, v_owner_type
     from public.marketplace_vendors v
    where v.id = p_vendor_id;
   if not found then
@@ -1646,11 +1868,17 @@ begin
   end if;
   v_identity := public.marketplace_gate_identity_verified(v_owner);
   v_tracked := exists (select 1 from public.marketplace_seller_probation p where p.vendor_id = p_vendor_id);
+  v_waived := v_owner is not null and exists (
+    select 1 from public.marketplace_seller_identity_waivers w
+    where w.vendor_id = p_vendor_id and w.owner_user_id = v_owner
+  );
   return jsonb_build_object(
     'vendor_found', true,
     'vendor_status', v_status,
     'owner_user_id', v_owner,
     'identity_verified', v_identity,
+    'identity_waived', v_waived,
+    'company_store', v_owner_type is not distinct from 'company',
     'instant_onboarded', v_tracked
   );
 end;
@@ -1664,35 +1892,46 @@ set search_path = public, pg_temp
 as $$
 declare
   v_owner uuid;
+  v_owner_type text;
+  -- Read tolerantly: 'Requested' and ' requested ' are the same request.
+  v_status text := lower(btrim(coalesce(new.status, 'requested')));
 begin
   if new.vendor_id is null then
     return new;
   end if;
-  -- Only a request that is open or being paid matters; a frozen or rejected one
-  -- moves no money. An update is re-checked when it changes the status OR the
-  -- store the request belongs to (a request cannot be re-pointed past the wall).
-  if coalesce(new.status, 'requested') not in ('requested', 'approved', 'released') then
+  -- A request that is plainly closed moves no money. Everything else — open,
+  -- being paid, or a status this guard has never heard of — is checked.
+  if v_status in ('rejected', 'frozen', 'cancelled', 'canceled', 'declined', 'failed', 'void') then
     return new;
   end if;
+  -- An update is re-checked when it changes the status OR the store the request
+  -- belongs to (a request cannot be re-pointed past the wall).
   if tg_op = 'UPDATE'
-     and new.status is not distinct from old.status
+     and lower(btrim(coalesce(old.status, 'requested'))) = v_status
      and new.vendor_id is not distinct from old.vendor_id
   then
     return new;
   end if;
 
-  select p.owner_user_id into v_owner
-    from public.marketplace_seller_probation p
-   where p.vendor_id = new.vendor_id;
-  if not found then
-    return new; -- a store whose documents went through the human review
+  select v.owner_user_id, v.owner_type into v_owner, v_owner_type
+    from public.marketplace_vendors v
+   where v.id = new.vendor_id;
+  if not found or v_owner_type is not distinct from 'company' then
+    return new;
   end if;
 
-  if not public.marketplace_gate_identity_verified(v_owner) then
-    raise exception 'marketplace_payout_identity_guard: identity verification is required before a payout'
-      using errcode = 'P0001', hint = 'identity_unverified';
+  if v_owner is not null and public.marketplace_gate_identity_verified(v_owner) then
+    return new;
   end if;
-  return new;
+  if v_owner is not null and exists (
+    select 1 from public.marketplace_seller_identity_waivers w
+    where w.vendor_id = new.vendor_id and w.owner_user_id = v_owner
+  ) then
+    return new; -- a store that existed before the gate, still with the owner it had
+  end if;
+
+  raise exception 'marketplace_payout_identity_guard: identity verification is required before a payout'
+    using errcode = 'P0001', hint = 'identity_unverified';
 end;
 $$;
 
@@ -1700,6 +1939,21 @@ drop trigger if exists marketplace_payout_identity_guard on public.marketplace_p
 create trigger marketplace_payout_identity_guard
   before insert or update on public.marketplace_payout_requests
   for each row execute function public.marketplace_payout_identity_guard();
+
+-- Accounts old enough to count as independent reporters. Read from auth.users —
+-- a profile row is the user's own to edit, its dates included.
+create or replace function public.marketplace_gate_established_accounts(p_users uuid[], p_min_age_days integer default 7)
+returns setof uuid
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select u.id
+    from auth.users u
+   where u.id = any (coalesce(p_users, '{}'::uuid[]))
+     and u.created_at <= now() - make_interval(days => greatest(coalesce(p_min_age_days, 7), 0));
+$$;
 
 -- ---------------------------------------------------------------------------
 -- 12. Grants. Supabase grants EXECUTE on every new function to anon and
@@ -1722,6 +1976,10 @@ revoke all on function public.marketplace_product_media_guard() from public, ano
 revoke all on function public.marketplace_payout_identity_guard() from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_product_variant_guard() from public, anon, authenticated, service_role;
 revoke all on function public.marketplace_vendors_probation_enroll() from public, anon, authenticated, service_role;
+revoke all on function public.marketplace_vendors_owner_guard() from public, anon, authenticated, service_role;
+revoke all on function public.marketplace_product_media_delete_guard() from public, anon, authenticated, service_role;
+revoke all on function public.marketplace_gate_human_hold(uuid, uuid, text) from public, anon, authenticated;
+revoke all on function public.marketplace_gate_established_accounts(uuid[], integer) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_seller_state(uuid, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_listing_verdict(uuid, uuid, jsonb, text[], text, text[], jsonb, text, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_record_rescan(uuid, text) from public, anon, authenticated;
@@ -1729,7 +1987,7 @@ revoke all on function public.marketplace_gate_rescan_candidates(text, integer) 
 revoke all on function public.marketplace_gate_hide_listing(uuid, text, text[], jsonb, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid, bigint) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_image_matches(uuid, text, text[], integer) from public, anon, authenticated;
-revoke all on function public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text) from public, anon, authenticated;
+revoke all on function public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text, text) from public, anon, authenticated;
 revoke all on function public.marketplace_gate_payout_eligibility(uuid) from public, anon, authenticated;
 
 grant execute on function public.marketplace_gate_probation_caps() to service_role;
@@ -1740,7 +1998,8 @@ grant execute on function public.marketplace_gate_rescan_candidates(text, intege
 grant execute on function public.marketplace_gate_hide_listing(uuid, text, text[], jsonb, text) to service_role;
 grant execute on function public.marketplace_gate_register_image(text, text, bigint, bigint, uuid, uuid, bigint) to service_role;
 grant execute on function public.marketplace_gate_image_matches(uuid, text, text[], integer) to service_role;
-grant execute on function public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text) to service_role;
+grant execute on function public.marketplace_gate_instant_onboard(uuid, uuid, text[], jsonb, text, text) to service_role;
+grant execute on function public.marketplace_gate_established_accounts(uuid[], integer) to service_role;
 grant execute on function public.marketplace_gate_payout_eligibility(uuid) to service_role;
 
 -- A trigger added to a guarded table by a request role would run BEFORE or AFTER

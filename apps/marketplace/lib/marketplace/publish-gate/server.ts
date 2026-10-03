@@ -334,10 +334,11 @@ export async function registerUploadedImage(
 
 export type ImageMatch = { ref: string; relation: "foreign_ref" | "other_seller" | "same_seller" };
 
+/** Matches the registry reports; NULL when it could not be asked (the caller treats that as "not compared"). */
 export async function readImageMatches(
   admin: GateAdmin,
   input: { vendorId: string; slug: string; refs: ReadonlyArray<string> },
-): Promise<ImageMatch[]> {
+): Promise<ImageMatch[] | null> {
   if (input.refs.length === 0) return [];
   try {
     const { data, error } = await admin.rpc("marketplace_gate_image_matches", {
@@ -345,7 +346,7 @@ export async function readImageMatches(
       p_slug: input.slug,
       p_refs: [...input.refs],
     });
-    if (error || !Array.isArray(data)) return [];
+    if (error || !Array.isArray(data)) return null;
     const matches: ImageMatch[] = [];
     for (const entry of data as Array<Record<string, unknown>>) {
       const ref = typeof entry?.ref === "string" ? entry.ref : null;
@@ -357,7 +358,7 @@ export async function readImageMatches(
     }
     return matches;
   } catch {
-    return [];
+    return null;
   }
 }
 
@@ -613,7 +614,11 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
       listingId: seller?.product?.id ?? null,
     }),
   ]);
-  const matches = await readImageMatches(admin, { vendorId: request.vendorId, slug: draft.slug, refs: images.refs });
+  const matchRead = await readImageMatches(admin, { vendorId: request.vendorId, slug: draft.slug, refs: images.refs });
+  const matches = matchRead ?? [];
+  // A comparison that could not be made counts like a picture that could not be
+  // fingerprinted: a store on probation does not publish on it.
+  const notCompared = fingerprints.missing + (matchRead === null ? images.refs.length : 0);
 
   const policyInput: ListingGateInput = {
     listing: {
@@ -636,7 +641,7 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
       matches,
       hashes: fingerprints.hashes,
       knownBadHashes: knownBadImageHashes(),
-      unfingerprinted: fingerprints.missing,
+      unfingerprinted: notCompared,
     },
     seller,
     vendor: request.vendor,
@@ -646,7 +651,13 @@ export async function runListingGate(admin: GateAdmin, request: ListingGateReque
     locale: request.locale,
   };
 
-  let verdict = evaluateListingPolicy(policyInput);
+  // The floor is pure and should never throw; if it does, nothing publishes on it.
+  let verdict: GateVerdict;
+  try {
+    verdict = evaluateListingPolicy(policyInput);
+  } catch {
+    verdict = unavailableVerdict();
+  }
 
   // The AI step is consulted only on a deterministic "publish", and only to add.
   if (verdict.outcome === "publish" && request.aiScan && !request.dryRun) {

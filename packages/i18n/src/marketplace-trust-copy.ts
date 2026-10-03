@@ -188,6 +188,8 @@ export type MarketplaceTrustCopy = {
     subjectStore: string;
     /** The database refused a restore because the acting account is not marketplace staff. */
     staffRoleRequired: string;
+    /** A seller application was not approved: its handle belongs to another store. */
+    storeHandleTaken: string;
   };
 };
 
@@ -440,6 +442,7 @@ const EN: MarketplaceTrustCopy = {
     unavailable: "The gate ledger is not available on this database yet.",
     subjectStore: "Store opening",
     staffRoleRequired: "The database refused this: your account is not on the marketplace staff list. Add the marketplace owner role to your account, then try again.",
+    storeHandleTaken: "That store handle already belongs to another store, so nothing was approved. Ask the applicant to choose another handle.",
   },
 };
 
@@ -586,6 +589,7 @@ const FR: DeepPartial<MarketplaceTrustCopy> = {
     unavailable: "Le registre du contrôle n'est pas encore disponible sur cette base.",
     subjectStore: "Ouverture de boutique",
     staffRoleRequired: "La base de données a refusé : votre compte ne figure pas dans l'équipe Marketplace. Ajoutez le rôle de propriétaire Marketplace à votre compte, puis réessayez.",
+    storeHandleTaken: "Cet identifiant de boutique appartient déjà à une autre boutique : rien n'a été approuvé. Demandez au candidat d'en choisir un autre.",
   },
 };
 
@@ -732,6 +736,7 @@ const ES: DeepPartial<MarketplaceTrustCopy> = {
     unavailable: "El registro del control aún no está disponible en esta base de datos.",
     subjectStore: "Apertura de tienda",
     staffRoleRequired: "La base de datos lo rechazó: tu cuenta no está en el equipo de Marketplace. Añade el rol de propietario de Marketplace a tu cuenta y vuelve a intentarlo.",
+    storeHandleTaken: "Ese identificador de tienda ya pertenece a otra tienda, así que no se aprobó nada. Pide al solicitante que elija otro.",
   },
 };
 
@@ -878,6 +883,7 @@ const PT: DeepPartial<MarketplaceTrustCopy> = {
     unavailable: "O registo do controlo ainda não está disponível nesta base de dados.",
     subjectStore: "Abertura de loja",
     staffRoleRequired: "A base de dados recusou: a sua conta não está na equipa do Marketplace. Adicione a função de proprietário do Marketplace à sua conta e tente de novo.",
+    storeHandleTaken: "Esse identificador de loja já pertence a outra loja, por isso nada foi aprovado. Peça ao candidato que escolha outro.",
   },
 };
 
@@ -1024,6 +1030,7 @@ const DE: DeepPartial<MarketplaceTrustCopy> = {
     unavailable: "Das Kontrollregister ist in dieser Datenbank noch nicht verfügbar.",
     subjectStore: "Shop-Eröffnung",
     staffRoleRequired: "Die Datenbank hat das abgelehnt: Ihr Konto steht nicht auf der Marketplace-Teamliste. Fügen Sie Ihrem Konto die Rolle Marketplace-Inhaber hinzu und versuchen Sie es erneut.",
+    storeHandleTaken: "Dieser Shop-Name gehört bereits einem anderen Shop, daher wurde nichts genehmigt. Bitten Sie die Bewerberin oder den Bewerber, einen anderen zu wählen.",
   },
 };
 
@@ -1170,6 +1177,7 @@ const IT: DeepPartial<MarketplaceTrustCopy> = {
     unavailable: "Il registro del controllo non è ancora disponibile su questo database.",
     subjectStore: "Apertura negozio",
     staffRoleRequired: "Il database ha rifiutato: il tuo account non è nel team Marketplace. Aggiungi il ruolo di proprietario Marketplace al tuo account e riprova.",
+    storeHandleTaken: "Questo identificativo appartiene già a un altro negozio, quindi non è stato approvato nulla. Chiedi al richiedente di sceglierne un altro.",
   },
 };
 
@@ -1317,6 +1325,7 @@ const AR: DeepPartial<MarketplaceTrustCopy> = {
     unavailable: "سجل البوابة غير متاح على قاعدة البيانات هذه بعد.",
     subjectStore: "فتح متجر",
     staffRoleRequired: "رفضت قاعدة البيانات العملية: حسابك ليس ضمن فريق السوق. أضف دور مالك السوق إلى حسابك ثم حاول من جديد.",
+    storeHandleTaken: "هذا المعرّف يخص متجرًا آخر، لذلك لم تتم الموافقة على أي شيء. اطلب من المتقدم اختيار معرّف آخر.",
   },
 };
 
@@ -1464,6 +1473,7 @@ const ZH: DeepPartial<MarketplaceTrustCopy> = {
     unavailable: "此数据库上尚无关卡记录。",
     subjectStore: "店铺开通",
     staffRoleRequired: "数据库拒绝了此操作：您的账户不在市场团队名单中。请为账户添加市场所有者角色后重试。",
+    storeHandleTaken: "该店铺标识已属于另一家店铺，因此未批准任何内容。请让申请人另选一个标识。",
   },
 };
 

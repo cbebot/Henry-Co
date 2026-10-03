@@ -87,7 +87,9 @@ async function main() {
   const { classifyImage, storageKeyOf } = await import("../lib/marketplace/publish-gate/image-refs");
   const { perceptualHashAvailable } = await import("../lib/marketplace/publish-gate/image-fingerprint");
   const { instantListingUpsert } = await import("../lib/marketplace/publish-gate/listing-write");
-  const { isMissingRpc, registerUploadedImage, runListingGate } = await import("../lib/marketplace/publish-gate/server");
+  const { isMissingRpc, readStandingMediaRefs, readStoreUploaders, registerUploadedImage, runListingGate } = await import(
+    "../lib/marketplace/publish-gate/server"
+  );
 
   const admin = createAdminSupabase();
   console.log(`gate-backfill → ${new URL(url).host}   mode: ${apply ? "APPLY" : "dry run"}   actor: ${actor}`);
@@ -134,6 +136,21 @@ async function main() {
         }
       }
 
+      // A picture is recorded as a store's only when one of that store's own members
+      // uploaded it. A reference to someone else's upload is recorded with no store,
+      // so referencing a picture first never makes a store its "first owner".
+      const membersOf = new Map<string, Set<string>>();
+      const isMember = async (vendorId: string | null, uploader: string | null) => {
+        if (!vendorId || !uploader) return false;
+        if (!membersOf.has(vendorId)) {
+          const members = new Set((await readStoreUploaders(admin, vendorId)).map((id) => id.toLowerCase()));
+          const { data: store } = await admin.from("marketplace_vendors").select("owner_user_id").eq("id", vendorId).maybeSingle();
+          const owner = (store as { owner_user_id?: string | null } | null)?.owner_user_id;
+          if (owner) members.add(owner.toLowerCase());
+          membersOf.set(vendorId, members);
+        }
+        return membersOf.get(vendorId)?.has(uploader.toLowerCase()) ?? false;
+      };
       const candidates: Array<{ ref: string; key: string; uploader: string | null; vendorId: string | null }> = [];
       for (const row of rows) {
         summary.fingerprints.seen += 1;
@@ -173,7 +190,7 @@ async function main() {
             ref: candidate.ref,
             bytes: new Uint8Array(await download.data.arrayBuffer()),
             uploaderId: candidate.uploader,
-            vendorId: candidate.vendorId,
+            vendorId: (await isMember(candidate.vendorId, candidate.uploader)) ? candidate.vendorId : null,
           });
           if (ok) summary.fingerprints.registered += 1;
           else summary.fingerprints.failed += 1;
@@ -242,13 +259,16 @@ async function main() {
             .eq("kind", "image")
             .order("sort_order", { ascending: true });
           const existingMedia = ((media ?? []) as Array<{ url: string }>).map((row) => row.url);
+          // Judged exactly as --apply will judge it: the pictures already on the row are
+          // posted again, and only those a standing verdict covers are kept unchecked.
+          const covered = await readStandingMediaRefs(admin, String(product.id));
           const preview = await runListingGate(admin, {
             actorId: actor,
             vendorId,
             vendor: null,
             draft,
             postedImages: existingMedia,
-            existingMedia,
+            existingMedia: existingMedia.filter((ref) => covered.includes(ref)),
             existingCurrency: typeof product.currency === "string" ? product.currency : null,
             openDisputeCount: 0,
             locale: "en",
@@ -293,7 +313,11 @@ async function main() {
     console.log("pending:", JSON.stringify(summary.pending));
   }
 
-  console.log(apply ? "done." : "dry run complete — nothing was changed. Re-run with --apply to do it.");
+  console.log(
+    apply
+      ? "done."
+      : "dry run complete — no listing, picture or fingerprint was changed. Re-run with --apply to do it.",
+  );
 }
 
 main().catch((cause) => {
