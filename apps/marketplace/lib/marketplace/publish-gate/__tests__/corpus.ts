@@ -332,12 +332,22 @@ export const MAY_HOLD: ReadonlyArray<string> = [
  *     same sentence about the store's own page on this marketplace;
  *   - "message me on Line app": "line" is an everyday word;
  *   - "08031234 and size 42 and 567": a mobile number with an ordinary number
- *     between its pieces (held in the description, not in every field).
+ *     between its pieces (held in the description, not in every field);
+ *   - round 4: "0 80312 34567 8" — grouped exactly like a UPC-A barcode, which
+ *     honest listings print without a label ("0 70330 60301 6"); "adeshop.Shop" — a
+ *     lower-case word, a full stop and a capital is a missing space after a full
+ *     stop ("Good item.Net weight"); one digit at a time with a word between every
+ *     digit (a digit alone in the prose is never a piece: "a two litre kettle"); a
+ *     two-letter name before "at gmail".
  */
 export const KNOWN_LIMITS: ReadonlyArray<string> = [
   "order through my page",
   "message me on Line app",
   "08031234 and size 42 and 567",
+  "0 80312 34567 8",
+  "adeshop.Shop",
+  "0 a 8 a 0 a 3 a 1 a 2 a 3 a 4 a 5 a 6 a 7",
+  "ab at gmail",
 ];
 
 /** Round 3: more honest lines a Nigerian marketplace sees (reviewer C, r3-b1). Each must publish. */
@@ -732,4 +742,281 @@ export const HIGH_RISK_R3: ReadonlyArray<{ title: string; price: number; held: b
   { title: "Vivo Barefoot running shoes, size 43", price: 120_000, held: false },
   { title: "PS5 games: FC 25 and GTA V discs", price: 60_000, held: false },
   { title: "Nintendo Switch games bundle, 3 cartridges", price: 90_000, held: false },
+];
+
+// ---- adversarial round 4 ----------------------------------------------------
+//
+// Two tiers, enforced in code (LITERAL_EVIDENCE in @henryco/trust/contact, and
+// the account reader in the listing ruleset): REFUSED only for a datum in its
+// literal, standard form; HELD for every reading that rebuilds one from a
+// disguise. Round 4 found honest lines refused by reconstructions (a watch
+// "dial", "calls", Pidgin "tree", "double", the particle "o", price ranges read
+// as an account number, "<word> at iCloud", "no.1", "Imo", "colour#2045",
+// "UPC-A"), and disguises that published (pieces with longer gaps, bracketed
+// "at", capitalised domains, arrows and quotes between an app and a handle,
+// account numbers in five groups or two halves).
+
+/** Round 4: honest lines aimed at the rules that refused them (reviewer C, r4-a and r4-b). Each must publish. */
+export const HONEST_TEXT_R4: ReadonlyArray<string> = [
+  // a watch "dial" and phone "calls" beside long references and band lists
+  "Omega Seamaster 300M 210.30.42.20.03.001, blue dial, full set.",
+  "Omega Speedmaster Moonwatch 310.30.42.50.01.001 with black dial.",
+  "Black dial Omega Constellation 131.10.39.20.01.001.",
+  "Tissot PRX T137.407.11.041.00, blue dial, 40mm.",
+  "Rolex Datejust 126334-0001, blue dial, 2021 card.",
+  "Omega Aqua Terra 220.10.41.21.03.004, blue dial, box and papers.",
+  "Dual SIM, VoLTE calls, 4G bands 1/3/5/7/8/20/28/38/40/41.",
+  "HD voice calls on GSM 850/900/1800/1900.",
+  "Calls: 2G 850/900/1800/1900, 3G 850/900/2100.",
+  "Clear calls on 4G LTE bands 1, 3, 5, 7, 8, 20, 28, 38, 40, 41.",
+  // Pidgin "tree", "double"/"triple", the particle "o" beside sizes and prices
+  "Artificial Christmas tree 150 180 210 cm, with stand.",
+  "Christmas tree (120, 150, 180, 210 cm) available.",
+  "Cat tree 120 150 180 cm, sisal posts.",
+  "Christmas tree 120/150/180/210cm, warm white lights.",
+  "Single ₦25,000, double ₦45,000, triple ₦60,000.",
+  "Wall socket: double ₦15,000, triple ₦20,000 per carton.",
+  "Burger: double ₦12,500, triple ₦15,000.",
+  "Bunk bed: double ₦135,000, triple ₦185,000.",
+  "Price na 25,000 o, 30,000 for two.",
+  "Last price 45,000 o! 50,000 with delivery.",
+  // price ranges beside money words, bank landmarks and an account word
+  "Payment plan: ₦20,000-₦35,000 monthly.",
+  "Pay ₦10,000-₦15,000 depending on size.",
+  "Pay on delivery: ₦10,000-₦15,000 depending on the size.",
+  "Payment on delivery accepted; ₦25,000-₦30,000 by size.",
+  "Ownership transfer fee ₦10,000-₦15,000.",
+  "Paid ₦45,000-₦60,000 at the mall, ours is cheaper.",
+  "Installation paid separately: 10,000-15,000 naira.",
+  "Transfer case for Toyota Hilux, ₦45,000-₦60,000 depending on model.",
+  "Deposit box, small/large: ₦25,000/₦30,000.",
+  "Fund raising T-shirts ₦10,000/₦12,000.",
+  "Pickup beside GTBank, Allen Avenue. Prices ₦10,000-₦15,000 by size.",
+  "Pickup at UBA junction, Ikeja. Sizes S/M/L: ₦10,000/₦15,000.",
+  "Shop 12, opposite Zenith Bank, Wuse 2. ₦25,000-₦30,000.",
+  "Handmade by Chioma Uba, ₦20,000-₦35,000 depending on size.",
+  "Opposite First Bank, Ikeja. ₦25000 then ₦30000 for the bigger size.",
+  "Netflix-ready TV; business account invoices for ₦45,000/₦50,000 models.",
+  "Sizes 40-45. Price ₦25,000/₦30,000 for kids/adults.",
+  // "<word> at iCloud / Outlook / Gmail"
+  "Not locked at iCloud, clean IMEI.",
+  "Backed up at iCloud, factory reset done.",
+  "Signed out at iCloud and Google.",
+  "Comes with Office: good at Outlook, Word and Excel.",
+  "Log in at Gmail to set up the tablet.",
+  // a rank, a missing space after a full stop, "Imo" the state, a colour code
+  "We are no.1 on Instagram for wigs.",
+  "Instagram no.1 hair vendor in Lagos.",
+  "TikTok no.1 bestselling lip gloss.",
+  "Facebook page no.1 for kids wear.",
+  "Delivery within Imo is free.Outside Imo is 5000.",
+  "Imo: free.Lagos: 2500.",
+  "Snap is easy.Just press the button.",
+  "Hang tag shows colour#2045 on each piece.",
+  // "plus" in a model name, a US barcode with or without its label
+  "iPhone 8 Plus 64/128/256 available.",
+  "Galaxy S21 Plus 128/256/512 GB, 2021.",
+  "UPC-A 0 70330 60301 6 on the pack.",
+  "Imported US pack, 0 70330 60301 6 on the side.",
+  // the round-4 fixes, from the other side (D3): dates, Title Case, lists, prose digits, platforms
+  "Best before 08/11/2026, net weight 500 g.",
+  "Brand New.Shop Now while stock lasts.",
+  "Comes with a free Gmail and iCloud backup guide.",
+  "Best before 09/11/2026, 250 ml bottle.",
+  "Expiry 07/05/2027. Pack of 120 tablets.",
+  "Made 08.03.2025, batch 4567.",
+  "MFD 2025-08-03, EXP 2027-08-02, 500 g.",
+  "Contact.Me via the chat on this page.",
+  "Best Quality.Shop Now",
+  "Rated No.1 on TikTok for wigs.",
+  "Sizes 08 10 12 14 16.",
+  "Sizes 07 08 09 10 11 available.",
+  "Prices: 15000, 25000, 30000 depending on size.",
+  "Ring sizes 6 7 8 9 10 11 12, gold plated.",
+  "Opening hours 0900 to 1700, closed Sunday. 365 days support.",
+  "Free delivery in Lekki. 2 to 3 days elsewhere, 10 percent off for 3 or more.",
+  "Dial pad works, 4G calls and SMS fine, 2 SIM slots.",
+  "Watch with blue dial 41mm, ref 116610LN, box and papers 2019.",
+  "Zenith Bank POS terminal, model K11, with 10 paper rolls.",
+  "First Bank branded umbrella, pack of 12.",
+  "Available at Gmail-friendly price, works with Outlook and iCloud.",
+  "Twin pack: double 2 litre bottles.",
+  "Double bed frame 6 x 6, triple layer foam.",
+  "Bought from Amazon, still sealed in the box.",
+];
+
+/** Round 4: evasions carrying a datum a reader recovers (reviewer C, r4-a, r4-b and the report). None may publish. */
+export const EVASIONS_R4: ReadonlyArray<string> = [
+  // a mobile number in pieces with longer gaps
+  "Call 0803 (that's MTN), then 123, then 4567",
+  "Call 0803 - remove the dashes - 123 - 4567",
+  "WhatsApp 0803 (my MTN line) 123 (no spaces) 4567",
+  "Call 0803 ✨✨✨✨✨✨✨ 123 ✨✨✨✨✨✨✨ 4567",
+  "0803 . . . . . . . 123 . . . . . . . 4567",
+  "zero eight zero three (my MTN line) one two three (no spaces) four five six seven",
+  "My line: 0803, the following digits 123 and finally 4567",
+  "Call 0803 afterwards 123 afterwards 4567",
+  "Call 080 ✨✨✨✨✨✨✨ 31234567",
+  "Call 080 . . . . . . . 3123 . . . . . . . 4567",
+  "Call 0803 (Glo/MTN/Airtel) 123 4567",
+  "0803 abeg no vex 123 4567",
+  // emails with a bracketed or odd "at"
+  "adeshop(at)gmail",
+  "adeshop [at] gmail",
+  "adeshop [at] outlook",
+  "adeshop(at)yahoo",
+  "adeshop{at}yahoo",
+  "adeshop gmail com",
+  "Mail adeshop on gmail",
+  "adeshop(@)gmail",
+  "adeshop\u{1F300}gmail\u{1F300}com",
+  // links in any letter case, and their look-alikes
+  "Visit AdeShop.Store for more designs",
+  "Shop more at AdeFashion.Online",
+  "More styles: AdeShop.Bumpa.Shop",
+  "Adeshop.Shop",
+  "Ade-Fashion.Online",
+  "adeshop.c0m",
+  "www adeshop com",
+  "adeshop dotcom",
+  "adeshop .store",
+  // a handle after an arrow, a quote, a bracket, a pipe or a slash
+  "IG: \"adeshop_ng\"",
+  "TikTok: “adeshop_ng”",
+  "IG: ‘adeshop_ng’",
+  "IG \u{1F449} adeshop_ng",
+  "Insta \u{1F449} adeshop_ng",
+  "IG → adeshop_ng",
+  "IG -> adeshop_ng",
+  "IG=>adeshop_ng",
+  "Instagram (adeshop_ng)",
+  "IG (adeshop_ng)",
+  "Follow adeshop_ng on I.G",
+  "Insta » adeshop.ng",
+  "TikTok \u{1F449} adeshop.ng",
+  "Facebook \u{1F449} Ade.Shop.NG",
+  "Snapchat \u{1F449} adeshop22",
+  "Telegram \u{1F449} adeshop_ng",
+  "IG | adeshop_ng",
+  "IG / adeshop_ng",
+  // account numbers in five groups, or in two halves, beside a bank word
+  "GTB 01 57 39 28 46",
+  "Acct: 01 57 39 28 46 (Zenith)",
+  "First Bank 01 57 39 28 46 Ade Stores",
+  "Opay 81 57 39 28 46",
+  "Kuda: 0 157 392 84 6",
+  "UBA 015 739 2 8 46",
+  "Account no is 015 73 92 84 6, First Bank",
+  "Send to 01-57-39-28-46 (UBA)",
+  "GTB: 01573 and 92846",
+  "Account: 01573, 92846 (GTB)",
+  // ctl
+  "GTB 0157 392 846",
+  "GTB 0157 39 28 46",
+  "Zenith: 015-739-284-6",
+  "IG: adeshop_ng",
+  "adeshop@gmail.com",
+  "Call 0803 (MTN) then 123 then 4567",
+  // the round-4 fixes, attacked (D3)
+  "08 03 12 34 567",
+  "Call: 0803–123–4567",
+  "0803 123 4567",
+  "Call 0803 (the MTN one) and then 123 4567",
+  "0803 ... my line ... 1234567",
+  "zero eight zero three 123 4567",
+  "Visit Ade.Shop",
+  "ade.shop",
+  "adeshop . com",
+  "adeshop(.)store",
+  "adeshop[dot]com",
+  "adeshop AT gmail DOT com",
+  "Mail me: adeshop at gmail",
+  "adeshop_ng on IG",
+  "IG ➡️ adeshop_ng",
+  "Add me on snap adeshop22",
+  "Insta handle - adeshop_ng",
+  "0123 456 789 GTB",
+  "Zenith Bank: 0123456789",
+  "A/C 0123456789",
+  "0123456789 is my GTB",
+  "Account: 2,034,567,891 (GTB)",
+  "UBA • 0123 • 456 • 789",
+];
+
+/**
+ * Round 4: the literal, standard form of each datum — refused (not just held) in
+ * every field. The tier test pins the other direction: a reading rebuilt from a
+ * disguise is never refused by itself.
+ */
+export const LITERAL_R4: ReadonlyArray<string> = [
+  "Call 08031234567",
+  "0803 123 4567",
+  "0803-123-4567",
+  "0803.123.4567",
+  "+234 803 123 4567",
+  "2348031234567",
+  "adeshop@gmail.com",
+  "ada_obi at gmail.com",
+  "https://adeshop.store/item",
+  "adeshop.store",
+  "AdeShop.Store",
+  "ADESHOP.STORE",
+  "adeshop.com.ng",
+  "IG: adeshop_ng",
+  "IG @adeshop_ng",
+  "follow @adeshop_ng",
+  "we are adeshop_ng on instagram",
+  "wa.me/2348031234567",
+  "GTB 0123 456 789",
+  "GTB 0123456789",
+  "Send money to 0123456789",
+  "Account number: 0123-456-789",
+  "0123456789 (Zenith)",
+  "*737*1*5000*0123456789#",
+];
+
+/**
+ * Round 4: the same data rebuilt from a disguise — HELD for a person in every
+ * field, never refused by itself (the two-tier rule).
+ */
+export const RECONSTRUCTED_R4: ReadonlyArray<string> = [
+  // look-alike letters, words, multipliers, one digit per group, odd or mixed separators
+  "o8o 3123 4567",
+  "o8o3 l23 4567",
+  "zero eight zero three one two three four five six seven",
+  "zero eight zero three double one two three four five six",
+  "0 8 0 3 1 2 3 4 5 6 7",
+  "0803_123_4567",
+  "0803/123/4567",
+  "(0803) 123 4567",
+  "0803 | 123 | 4567",
+  "0803 123-4567",
+  "0803 wan tu tree fo faiv siks sevin",
+  // pieces joined across words or gaps, cue words, a dropped zero, other countries
+  "0803 na 123 na 4567",
+  "Call 0803 (that's MTN), then 123, then 4567",
+  "My line starts 0803, middle 123, ends 4567",
+  "my number 8031234567",
+  "call 2025550143 anytime",
+  "+44 7911 123456",
+  // a spelled or bracketed "at" or "dot", a provider without its domain
+  "adeshop at gmail",
+  "ada at gmail.com",
+  "adeshop(at)gmail.com",
+  "ada at example dot com",
+  "adeshop@gmail",
+  "adeshop dot com",
+  "adeshop[.]com",
+  "telegram dot me slash adeshop",
+  // a handle behind an arrow, a weak app name, slang, a name to look up
+  "IG \u{1F449} adeshop_ng",
+  "Snap: adeshop22",
+  "holla at adeshop_ng",
+  "find Ade Shop on Twitter",
+  // an account number in five groups, odd separators, halves, pieces, or with the bank elsewhere
+  "GTB 01 57 39 28 46",
+  "GTB: 01573 and 92846",
+  "Kuda 0123_456_789",
+  "first 5 digits 01234, last 5 digits 56789, GTB",
+  "Bank: Kuda. Ref: 0123456789.",
 ];

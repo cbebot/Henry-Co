@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { detectContactDetails } from "../contact.ts";
+import { detectContactDetails, LITERAL_EVIDENCE } from "../contact.ts";
 
 const RANK = { low: 0, medium: 1, high: 2 };
 
@@ -9,16 +9,39 @@ function strongest(text, kind) {
   return hits.reduce((best, hit) => (best === null || RANK[hit.confidence] > RANK[best] ? hit.confidence : best), null);
 }
 
-// ---- recall: every way a seller writes a phone number to dodge a filter ----
+// ---- the refuse tier: a mobile number written the standard way ----------------
+// (Digits of other scripts, full-width digits, keycaps and invisible characters
+// render as the digits they are: the text is read as it renders.)
 
 const PHONES_HIGH = [
   ["plain local", "Call 08031234567 for more"],
   ["spaced groups", "0803 123 4567"],
   ["dashes", "0803-123-4567"],
+  ["dashes with spaces", "0803 - 123 - 4567"],
   ["dots", "0803.123.4567"],
+  ["four groups", "0803 123 45 67"],
   ["country code with plus", "+234 803 123 4567"],
   ["country code without plus", "2348031234567"],
   ["00 prefix", "002348031234567"],
+  ["full-width digits", "０８０３１２３４５６７"],
+  ["keycap emoji", "0️⃣8️⃣0️⃣3️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣"],
+  ["arabic-indic digits", "٠٨٠٣١٢٣٤٥٦٧"],
+  ["zero-width joiners inside", "0803​123​4567"],
+  ["glued to a word", "call08031234567"],
+  ["two numbers with a slash", "08031234567/08021234567"],
+  ["other mobile prefixes", "0701 234 5678"],
+  ["091 prefix", "09123456789"],
+];
+
+for (const [name, text] of PHONES_HIGH) {
+  test(`phone, high confidence (literal) — ${name}`, () => {
+    assert.equal(strongest(text, "phone"), "high", JSON.stringify(detectContactDetails(text)));
+  });
+}
+
+// ---- the hold tier: every way a seller rebuilds a phone number to dodge a filter ----
+
+const PHONES_HELD = [
   ["letter o for zero (the classic)", "o8o 3123 4567"],
   ["letter O for zero, uppercase", "O8O31234567"],
   ["letter l for one", "o8o3l234567"],
@@ -33,25 +56,69 @@ const PHONES_HIGH = [
   ["slashes", "0803/123/4567"],
   ["brackets", "(0803) 123 4567"],
   ["newlines", "0803\n123\n4567"],
-  ["full-width digits", "０８０３１２３４５６７"],
-  ["keycap emoji", "0️⃣8️⃣0️⃣3️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣"],
-  ["arabic-indic digits", "٠٨٠٣١٢٣٤٥٦٧"],
-  ["zero-width joiners inside", "0803​123​4567"],
-  ["two numbers with a slash", "08031234567/08021234567"],
+  ["mixed separators", "0803 123-4567"],
+  ["pipes", "0803 | 123 | 4567"],
+  ["emoji between groups", "0803🔥123🔥4567"],
   ["plus written as a word", "plus two three four eight zero three one two three four five six seven"],
-  ["other mobile prefixes", "0701 234 5678"],
-  ["091 prefix", "09123456789"],
   ["foreign number with plus", "+44 7911 123456"],
   ["cued ten-digit without trunk zero", "whatsapp 8031234567"],
   ["cued foreign number", "call 2025550143 anytime"],
   ["disguised non-nigerian number", "2o2 555 o143 99"],
+  ["pieces with an aside between them", "Call 0803 (that's MTN), then 123, then 4567"],
+  ["pieces with a row of dots", "0803 . . . . . . . 123 . . . . . . . 4567"],
+  ["pieces with three words between", "0803 abeg no vex 123 4567"],
+  ["spelled pieces with asides", "zero eight zero three (my MTN line) one two three (no spaces) four five six seven"],
 ];
 
-for (const [name, text] of PHONES_HIGH) {
-  test(`phone, high confidence — ${name}`, () => {
-    assert.equal(strongest(text, "phone"), "high", JSON.stringify(detectContactDetails(text)));
+for (const [name, text] of PHONES_HELD) {
+  test(`phone, held for a person (reconstructed) — ${name}`, () => {
+    assert.equal(strongest(text, "phone"), "medium", JSON.stringify(detectContactDetails(text)));
   });
 }
+
+test("THE TIERS: a reading rebuilt from a disguise is never high, and only literal evidence ever is", () => {
+  for (const [, text] of PHONES_HELD) {
+    for (const hit of detectContactDetails(text).hits) assert.notEqual(hit.confidence, "high", `${text} -> ${hit.kind}:${hit.evidence}`);
+  }
+  for (const text of [
+    "adeshop at gmail",
+    "ada at gmail.com",
+    "adeshop(at)gmail",
+    "adeshop [at] outlook",
+    "adeshop{at}yahoo",
+    "adeshop(@)gmail",
+    "adeshop gmail com",
+    "Mail adeshop on gmail",
+    "adeshop@gmail",
+    "adeshop<at>gmail<dot>com",
+    "adeshop dot com",
+    "adeshop.c0m",
+    "www adeshop com",
+    "adeshop dotcom",
+    "adeshop .store",
+    "telegram dot me slash adeshop",
+    "IG 👉 adeshop_ng",
+    'IG: "adeshop_ng"',
+    "IG (adeshop_ng)",
+    "IG | adeshop_ng",
+    "Follow adeshop_ng on I.G",
+    "Snap: adeshop22",
+    "holla at adeshop_ng",
+    "find Ade Shop on Twitter",
+    "user adeshop#1234",
+    "telegram 5550101",
+    "WhatsApp 0803 na 123 na 4567",
+  ]) {
+    const result = detectContactDetails(text);
+    assert.equal(result.highest, "medium", `${text} -> ${JSON.stringify(result)}`);
+  }
+  // Structural: whatever the input, a "high" hit carries literal evidence.
+  for (const text of [...PHONES_HIGH.map(([, t]) => t), "IG: adeshop_ng", "adeshop.store", "ada.obi@example.com", "follow @ade_shop"]) {
+    for (const hit of detectContactDetails(text).hits) {
+      if (hit.confidence === "high") assert.ok(LITERAL_EVIDENCE.has(hit.evidence), `${text} -> ${hit.evidence}`);
+    }
+  }
+});
 
 test("a short cued number is held, not rejected", () => {
   assert.equal(strongest("call 5550101 after six", "phone"), "medium");
@@ -93,16 +160,52 @@ for (const [name, text] of NOT_PHONES) {
 
 // ---- email -----------------------------------------------------------------
 
-test("emails, plain and disguised, are high confidence", () => {
+test("an email written as one is high confidence", () => {
   for (const text of [
     "mail me: ada.obi@example.com",
+    "ada.obi@example.com",
+    "ada @ example.com",
+    "ada_obi at gmail.com",
+    "adeshop22 at yahoo.com",
+    "email me: ada at yahoo.com",
+  ]) {
+    assert.equal(strongest(text, "email"), "high", text);
+  }
+});
+
+test("an email rebuilt from a disguise is held, never refused", () => {
+  for (const text of [
     "ada (at) example (dot) com",
     "ada [at] example.com",
     "ada at example dot com",
     "ada at gmail.com",
     "adaobi at yahoo dot com",
+    "adeshop@gmail",
+    "adeshop @ gmail",
+    "adeshop at gmail",
+    "adeshop(at)gmail",
+    "adeshop [at] gmail",
+    "adeshop{at}yahoo",
+    "adeshop(@)gmail",
+    "adeshop gmail com",
+    "adeshop🌀gmail🌀com",
+    "Mail adeshop on gmail",
+    "gmail: adeshop",
   ]) {
-    assert.equal(strongest(text, "email"), "high", text);
+    assert.equal(strongest(text, "email"), "medium", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
+  }
+});
+
+test("an ordinary word before 'at iCloud / Outlook / Gmail' is not an address", () => {
+  for (const text of [
+    "Not locked at iCloud, clean IMEI.",
+    "Backed up at iCloud, factory reset done.",
+    "Signed out at iCloud and Google.",
+    "Comes with Office: good at Outlook, Word and Excel.",
+    "Log in at Gmail to set up the tablet.",
+    "Available at Outlook stores nationwide.",
+  ]) {
+    assert.equal(detectContactDetails(text).highest, null, `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
   }
 });
 
@@ -166,29 +269,87 @@ test("naming an app as a product feature is not a contact attempt", () => {
   }
 });
 
-test("an app named next to a number or handle lifts both to high", () => {
-  const result = detectContactDetails("telegram 5550101");
-  assert.equal(result.highest, "high", JSON.stringify(result));
+test("an app named next to a number or handle is as sure as that number or handle, never surer", () => {
+  assert.equal(strongest("telegram 0803 123 4567", "messaging_app"), "high");
+  assert.equal(strongest("telegram 5550101", "messaging_app"), "medium");
+  assert.equal(detectContactDetails("telegram 5550101").highest, "medium");
 });
 
-test("handles need a letter and are not prices", () => {
-  assert.equal(strongest("follow @adaobi_store", "social_handle"), "medium");
+test("handles need a letter and are not prices; '@' and a word that can only be a handle is one", () => {
+  assert.equal(strongest("follow @adaobi_store", "social_handle"), "high");
+  assert.equal(strongest("follow @adaobi", "social_handle"), "medium");
   for (const text of ["2 pieces @5000 each", "@N5000 only", "sold @ 3500"]) {
     assert.equal(strongest(text, "social_handle"), null, text);
   }
 });
 
+test("a rank, a full stop with no space after it, Imo the state and a colour code are not handles", () => {
+  for (const text of [
+    "We are no.1 on Instagram for wigs.",
+    "Instagram no.1 hair vendor in Lagos.",
+    "TikTok no.1 bestselling lip gloss.",
+    "Facebook page no.1 for kids wear.",
+    "Delivery within Imo is free.Outside Imo is 5000.",
+    "Imo: free.Lagos: 2500.",
+    "Snap is easy.Just press the button.",
+    "Hang tag shows colour#2045 on each piece.",
+  ]) {
+    const got = detectContactDetails(text).highest;
+    assert.ok(got === null || got === "low", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
+  }
+});
+
+test("a handle after an arrow, a quote, a bracket, a pipe or a slash is held", () => {
+  for (const text of [
+    "IG 👉 adeshop_ng",
+    "IG → adeshop_ng",
+    "IG => adeshop_ng",
+    'IG: "adeshop_ng"',
+    "TikTok: “adeshop_ng”",
+    "IG (adeshop_ng)",
+    "Instagram (adeshop_ng)",
+    "IG | adeshop_ng",
+    "IG / adeshop_ng",
+    "Snapchat 👉 adeshop22",
+    "Follow adeshop_ng on I.G",
+  ]) {
+    assert.equal(strongest(text, "social_handle"), "medium", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
+  }
+});
+
 // ---- links -----------------------------------------------------------------
 
-test("contact links are high, other links are held", () => {
+test("links and domains on a known top-level domain are high, in any letter case; others are held", () => {
   assert.equal(strongest("wa.me/2348031234567", "link"), "high");
   assert.equal(strongest("join t.me/adaobi", "link"), "high");
   assert.equal(strongest("see https://my-own-shop.example/item", "link"), "medium");
-  assert.equal(strongest("visit adaobistore.com.ng today", "link"), "medium");
+  for (const text of [
+    "visit adaobistore.com.ng today",
+    "https://adeshop.store/item",
+    "adeshop.store",
+    "ADESHOP.STORE",
+    "Visit AdeShop.Store for more designs",
+    "Shop more at AdeFashion.Online",
+    "More styles: AdeShop.Bumpa.Shop",
+    "Adeshop.Shop",
+    "Ade-Fashion.Online",
+    "www.adeshop.com",
+  ]) {
+    assert.equal(strongest(text, "link"), "high", text);
+  }
+  for (const text of ["adeshop.c0m", "www adeshop com", "adeshop dotcom", "adeshop .store", "adeshop[.]com", "Visit Adeshop.Shop Now", "find us on facebook.com"]) {
+    assert.equal(strongest(text, "link"), "medium", text);
+  }
 });
 
 test("a missing space after a full stop is not a domain", () => {
-  for (const text of ["Good item.Net weight 5kg", "Brand new.Me and my brother", "In stock now.Shop with us", "Lovely.Co-ord set"]) {
+  for (const text of [
+    "Good item.Net weight 5kg",
+    "Brand new.Me and my brother",
+    "In stock now.Shop with us",
+    "Lovely.Co-ord set",
+    "Brand New.Shop Now while stock lasts.",
+  ]) {
     assert.equal(strongest(text, "link"), null, text);
   }
 });
@@ -197,7 +358,7 @@ test("a missing space after a full stop is not a domain", () => {
 
 const highest = (text) => detectContactDetails(text).highest;
 
-test("a number read out in pieces with any short word between them is a phone number", () => {
+test("a number read out in pieces with anything between them is caught, and held (a reconstruction)", () => {
   for (const text of [
     "0803 na 123 na 4567",
     "0803 or 123 or 4567",
@@ -214,8 +375,32 @@ test("a number read out in pieces with any short word between them is a phone nu
     "o-eight-o-tree wan-tu-tree fo-faiv-siks-sevin",
     "KET-2000 0803 x 123 x 4567",
     "0803, one, two, three, four, five, six, seven",
+    "Call 0803 - remove the dashes - 123 - 4567",
+    "My line: 0803, the following digits 123 and finally 4567",
+    "Call 080 . . . . . . . 3123 . . . . . . . 4567",
   ]) {
-    assert.equal(strongest(text, "phone"), "high", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
+    assert.equal(strongest(text, "phone"), "medium", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
+  }
+});
+
+test("watch references, band lists, Christmas tree sizes, prices and dates are not phone numbers", () => {
+  for (const text of [
+    "Omega Seamaster 300M 210.30.42.20.03.001, blue dial, full set.",
+    "Tissot PRX T137.407.11.041.00, blue dial, 40mm.",
+    "Rolex Datejust 126334-0001, blue dial, 2021 card.",
+    "Dual SIM, VoLTE calls, 4G bands 1/3/5/7/8/20/28/38/40/41.",
+    "HD voice calls on GSM 850/900/1800/1900.",
+    "Artificial Christmas tree 150 180 210 cm, with stand.",
+    "Christmas tree 120/150/180/210cm, warm white lights.",
+    "Single ₦25,000, double ₦45,000, triple ₦60,000.",
+    "Price na 25,000 o, 30,000 for two.",
+    "Galaxy S21 Plus 128/256/512 GB, 2021.",
+    "UPC-A 0 70330 60301 6 on the pack.",
+    "Imported US pack, 0 70330 60301 6 on the side.",
+    "Best before 08/11/2026, net weight 500 g.",
+  ]) {
+    const got = strongest(text, "phone");
+    assert.ok(got === null || got === "low", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
   }
 });
 
@@ -320,40 +505,107 @@ test("ordinary product sentences that share words with a contact request pass", 
   }
 });
 
-test("a handle, an email or a spelled link tied to an app is refused", () => {
+test("a handle or an address written the standard way and tied to an app is refused", () => {
   for (const text of [
     "my snap: adeshop22",
     "my tg: adeshop_ng",
-    "find Ade Shop on Twitter",
     "ping me on discord, user adeshop#1234",
-    "adeshop at outlook",
-    "adeshop at g-mail",
-    "adeshop<at>gmail<dot>com",
-    "telegram dot me slash adeshop",
+    "IG: adeshop_ng",
+    "IG @adeshop_ng",
+    "we are adeshop_ng on instagram",
   ]) {
     assert.equal(highest(text), "high", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
   }
 });
 
-test("account numbers: one number however it is separated, and halves", async () => {
-  const { collapseTenDigitRuns, hasSplitTenDigitNumber } = await import("../contact.ts");
-  for (const [text, collapsed] of [
-    ["GTB 0123/456/789", "GTB 0123456789"],
-    ["GTB 0123 - 456 - 789", "GTB 0123456789"],
-    ["acct no 0123,456,789 zenith", "acct no 0123456789 zenith"],
-    ["Kuda 0123_456_789", "Kuda 0123456789"],
-    ["UBA (0123) 456789", "UBA (0123456789"],
-    ["GTB 0123 456 789, 2 day delivery", "GTB 0123456789, 2 day delivery"],
-  ]) {
-    assert.equal(collapseTenDigitRuns(text), collapsed, text);
+test("a handle-shaped word on a named app is refused, with or without a verb before it", () => {
+  for (const text of ["adeshop_ng on IG", "find adeshop_ng on Instagram", "we are ade.shop on tiktok"]) {
+    assert.equal(strongest(text, "social_handle"), "high", text);
   }
-  // Sizes and times stay as they are.
-  assert.equal(collapseTenDigitRuns("sizes 10 12 14 16 18"), "sizes 10 12 14 16 18");
-  assert.equal(collapseTenDigitRuns("03.3100.3600/69.M3100"), "03.3100.3600/69.M3100");
+  for (const text of ["Follow trends on Instagram", "Shop @home on Instagram", "Rated No.1 on TikTok for wigs."]) {
+    assert.notEqual(strongest(text, "social_handle"), "high", text);
+  }
+});
+
+test("pieces are not taken from lists, dates or a digit on its own in the prose", () => {
+  for (const text of [
+    "Sizes 08 10 12 14 16.\nA two litre kettle with one year warranty.",
+    "Sizes 07 08 09 10 11 available.\nA two litre kettle with auto shut-off and one year warranty.",
+    "Best before 09/11/2026, 250 ml bottle.",
+    "Made 08.03.2025, batch 4567.",
+  ]) {
+    const got = strongest(text, "phone");
+    assert.ok(got === null || got === "low", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
+  }
+  // …but a lone number word in an aside does not hide the number around it.
+  assert.equal(strongest("Call 0803 (the MTN one) and then 123 4567", "phone"), "medium");
+});
+
+test("a provider joined to a word with a hyphen is not a label ('Gmail-friendly')", () => {
+  assert.equal(strongest("Available at Gmail-friendly price, works with Outlook and iCloud.", "email"), null);
+  assert.equal(strongest("gmail - adeshop", "email"), "medium");
+});
+
+test("a name to look up, a provider without its domain or a spelled link is held", () => {
+  for (const text of [
+    "find Ade Shop on Twitter",
+    "adeshop at outlook",
+    "adeshop at g-mail",
+    "adeshop<at>gmail<dot>com",
+    "telegram dot me slash adeshop",
+  ]) {
+    assert.equal(highest(text), "medium", `${text} -> ${JSON.stringify(detectContactDetails(text))}`);
+  }
+});
+
+test("account numbers: standard (one block, up to three plain groups) or loose; prices and lists are never one", async () => {
+  const { findTenDigitNumbers, hasSplitTenDigitNumber } = await import("../contact.ts");
+  const read = (text) => findTenDigitNumbers(text).numbers.map((number) => (number.standard ? "standard" : "loose"));
+  for (const text of [
+    "GTB 0123456789",
+    "GTB 0123 456 789",
+    "GTB 0123 - 456 - 789",
+    "GTB 0123  456  789",
+    "01234-56789 GTB",
+    "GTB 0123 456 789, 2 day delivery",
+    "KET-2000 0123 456 789 GTB",
+    "KET-2000 0123456789 (Zenith)",
+  ]) {
+    assert.deepEqual(read(text), ["standard"], text);
+  }
+  assert.deepEqual(read("Account: 2,034,567,891 (GTB)"), ["loose"]);
+  for (const text of [
+    "GTB 0123/456/789",
+    "acct no 0123,456,789 zenith",
+    "Kuda 0123_456_789",
+    "UBA (0123) 456789",
+    "GTB 0157 39 28 46",
+    "GTB 01 57 39 28 46",
+    "Kuda: 0 157 392 84 6",
+    "Send to 01-57-39-28-46 (UBA)",
+    "GTB: 01573 and 92846",
+    "Account: 01573, 92846 (GTB)",
+    "Kuda o123456789",
+  ]) {
+    assert.deepEqual(read(text), ["loose"], text);
+  }
+  for (const text of [
+    "sizes 10 12 14 16 18",
+    "Sizes 36 37 38 39 40",
+    "03.3100.3600/69.M3100",
+    "Pay ₦10,000-₦15,000 depending on size.",
+    "Installation paid separately: 10,000-15,000 naira.",
+    "Deposit box, small/large: ₦25,000/₦30,000.",
+    "Pay 15000-25000 depending on size.",
+    "Opposite First Bank, Ikeja. ₦25000 then ₦30000 for the bigger size.",
+  ]) {
+    assert.deepEqual(read(text), [], text);
+  }
   for (const text of ["first 5 digits 01234, last 5 digits 56789", "GTB: 01234 then 56789", "ends with 56789, starts with 01234"]) {
     assert.equal(hasSplitTenDigitNumber(text), true, text);
   }
   assert.equal(hasSplitTenDigitNumber("Was 25000 now 18500"), false);
+  assert.equal(hasSplitTenDigitNumber("Opposite First Bank, Ikeja. ₦25000 then ₦30000 for the bigger size."), false);
 });
 
 test("every detector is linear: 100,000 characters screen well under a second", () => {
@@ -368,6 +620,14 @@ test("every detector is linear: 100,000 characters screen well under a second", 
     "at signs": fill("@abcde "),
     "app then word": fill("ig abcd. "),
     "contact requests": fill("drop your number "),
+    "prefixes with long gaps": fill("0803 . . . . . . . . . . . . . . . . . . . . . . . . . . . 1 "),
+    "spelled digits with asides": fill("zero (my MTN line) "),
+    "dates beside numbers": fill("08/11/2026, 500 g "),
+    "domains in every case": fill("Ab.Shop AB.SHOP ab.shop "),
+    "apps behind arrows": fill("IG 👉 ab IG (abc "),
+    "words before at": fill("abc at gmail "),
+    "account groups": fill("01 57 39 28 4"),
+    "halves": fill("01573 and 92846 "),
   };
   for (const [name, text] of Object.entries(HOSTILE)) {
     const started = performance.now();

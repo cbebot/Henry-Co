@@ -7,12 +7,16 @@ import { contentIsHighRisk, evaluateListingPolicy, evaluateStorePolicy, TEXT_LIM
 import {
   EVASIONS,
   EVASIONS_R3,
+  EVASIONS_R4,
   HIGH_RISK_R3,
   HONEST_STORE_NAMES,
   HONEST_TEXT,
   HONEST_TEXT_R3,
+  HONEST_TEXT_R4,
   KNOWN_LIMITS,
+  LITERAL_R4,
   MAY_HOLD,
+  RECONSTRUCTED_R4,
 } from "./corpus";
 
 const REF = "media://public/marketplace-images/product/11111111-1111-4111-8111-111111111111/a.jpg";
@@ -122,6 +126,56 @@ describe("content rules: round 3 honest lines publish in the title, the summary 
   }
 });
 
+describe("content rules: round 4 honest lines publish in the title, the summary, the description and a store story", () => {
+  for (const text of HONEST_TEXT_R4) {
+    it(`publishes: ${text.slice(0, 60)}`, () => {
+      for (const field of ["title", "summary", "description"] as const) {
+        const verdict = evaluateListingPolicy(listing({ [field]: `${BASE[field]} ${text}` }));
+        assert.equal(
+          verdict.outcome,
+          "publish",
+          `${field}: ${JSON.stringify(verdict.reasons)} ${JSON.stringify(verdict.signals.moderationDetail)}`,
+        );
+      }
+      const store = evaluateStorePolicy({ storeName: "Ade Kitchen", categoryFocus: "", story: `We sell kitchen goods. ${text}`, locale: "en" });
+      assert.equal(store.outcome, "publish", `store story: ${JSON.stringify(store.moderationDetail)}`);
+    });
+  }
+});
+
+describe("content rules: two tiers — refused only for a literal datum, held for a reconstruction", () => {
+  for (const text of LITERAL_R4) {
+    it(`refuses the literal form in every field: ${JSON.stringify(text)}`, () => {
+      for (const field of FIELDS) {
+        const verdict = evaluateListingPolicy(listing({ [field]: `${BASE[field]} ${text}` }));
+        assert.equal(verdict.outcome, "reject", `${field}: ${JSON.stringify(verdict.signals.moderationDetail)}`);
+        assert.ok(
+          verdict.reasons.includes("contact_details") || verdict.reasons.includes("off_platform_payment"),
+          `${field}: ${JSON.stringify(verdict.reasons)}`,
+        );
+      }
+      const store = evaluateStorePolicy({ storeName: "Ade Shop", categoryFocus: "", story: `We sell kettles. ${text}`, locale: "en" });
+      assert.equal(store.outcome, "reject", "store story");
+    });
+  }
+
+  for (const text of RECONSTRUCTED_R4) {
+    it(`holds the reconstruction for a person, never refuses: ${JSON.stringify(text)}`, () => {
+      for (const field of FIELDS) {
+        const verdict = evaluateListingPolicy(listing({ [field]: `${BASE[field]} ${text}` }));
+        assert.equal(
+          verdict.outcome,
+          "hold",
+          `${field}: ${JSON.stringify(verdict.reasons)} ${JSON.stringify(verdict.signals.moderationDetail)}`,
+        );
+        assert.ok(!verdict.signals.moderationDetail.some((token) => token.endsWith(":high") || token === "scam:payment_diversion"));
+      }
+      const store = evaluateStorePolicy({ storeName: "Ade Shop", categoryFocus: "", story: `We sell kettles. ${text}`, locale: "en" });
+      assert.equal(store.outcome, "hold", `store story: ${JSON.stringify(store.moderationDetail)}`);
+    });
+  }
+});
+
 describe("content rules: a very long field cannot stall the request", () => {
   // Each of these took 15 to 45 SECONDS (round 1), or never finished (round 3:
   // a look-alike after a phone number, 100,000 characters killed after 150 s),
@@ -190,8 +244,24 @@ describe("content rules: contact details and payment steering never publish", ()
     });
   }
 
+  for (const payload of EVASIONS_R4) {
+    it(`does not publish (round 4): ${JSON.stringify(payload).slice(0, 60)}`, () => {
+      for (const field of FIELDS) {
+        const verdict = evaluateListingPolicy(listing({ [field]: `${BASE[field]} ${payload}` }));
+        assert.notEqual(verdict.outcome, "publish", `published in ${field}`);
+      }
+      const story = evaluateStorePolicy({ storeName: "Ade Shop", categoryFocus: "", story: `We sell kettles. ${payload}`, locale: "en" });
+      assert.notEqual(story.outcome, "publish", "published in a store story");
+      const name = evaluateStorePolicy({ storeName: `Ade Kitchen ${payload}`, categoryFocus: "", story: "We sell kettles.", locale: "en" });
+      assert.notEqual(name.outcome, "publish", "published as a store name");
+    });
+  }
+
   it("the documented limits are not also in the must-not-publish list", () => {
-    for (const limit of KNOWN_LIMITS) assert.equal(EVASIONS_R3.includes(limit), false, limit);
+    for (const limit of KNOWN_LIMITS) {
+      assert.equal(EVASIONS_R3.includes(limit), false, limit);
+      assert.equal(EVASIONS_R4.includes(limit), false, limit);
+    }
   });
 
   it("a number in the listing's URL handle is screened like any other text", () => {

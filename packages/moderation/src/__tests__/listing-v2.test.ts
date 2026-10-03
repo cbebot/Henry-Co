@@ -135,19 +135,27 @@ describe("listing_v2 — hate", () => {
 });
 
 describe("listing_v2 — contact details", () => {
-  it("rejects an unmistakable phone number, however it is written", () => {
-    for (const text of [
-      "Call 08031234567",
-      "o8o 3123 4567 for quick response",
-      "zero eight zero three one two three four five six seven",
-      "0 8 0 3 1 2 3 4 5 6 7",
-      "+234 803 123 4567",
-    ]) {
+  it("rejects a phone number written the standard way", () => {
+    for (const text of ["Call 08031234567", "0803 123 4567 for quick response", "0803-123-4567", "+234 803 123 4567"]) {
       const verdict = v2(text);
       assert.equal(verdict.decision, "reject", text);
       assert.equal(verdict.unambiguous, true, text);
       assert.ok(verdict.reasons.includes("pii_leak"), text);
       assert.ok(verdict.detail?.includes("contact:phone:high"), text);
+    }
+  });
+  it("holds a phone number rebuilt from a disguise — a person looks, nothing is refused by itself", () => {
+    for (const text of [
+      "o8o 3123 4567 for quick response",
+      "zero eight zero three one two three four five six seven",
+      "0 8 0 3 1 2 3 4 5 6 7",
+      "0803 na 123 na 4567",
+      "Call 0803 (that's MTN), then 123, then 4567",
+    ]) {
+      const verdict = v2(text);
+      assert.equal(verdict.decision, "hold", `${text} -> ${JSON.stringify(verdict)}`);
+      assert.equal(verdict.unambiguous, false, text);
+      assert.ok(verdict.detail?.includes("contact:phone:medium"), text);
     }
   });
   it("rejects an email, and an app steer that carries a number or a handle", () => {
@@ -165,8 +173,14 @@ describe("listing_v2 — contact details", () => {
       assert.equal(verdict.unambiguous, false, text);
     }
   });
+  it("rejects a handle or a link written the standard way", () => {
+    for (const text of ["follow @adaobi_store", "visit adeshop.store", "Visit AdeShop.Store for more designs"]) {
+      const verdict = v2(text);
+      assert.equal(verdict.decision, "reject", `${text} -> ${JSON.stringify(verdict)}`);
+    }
+  });
   it("holds what merely looks like contact", () => {
-    for (const text of ["call 5550101 after six", "see https://my-own-shop.example/item", "follow @adaobi_store"]) {
+    for (const text of ["call 5550101 after six", "see https://my-own-shop.example/item", "follow @adaobi", "IG 👉 adeshop_ng"]) {
       const verdict = v2(text);
       assert.equal(verdict.decision, "hold", `${text} -> ${JSON.stringify(verdict)}`);
       assert.equal(verdict.unambiguous, false, text);
@@ -181,23 +195,58 @@ describe("listing_v2 — contact details", () => {
 });
 
 describe("listing_v2 — scam language", () => {
-  it("rejects an account number given to pay into, however it is written", () => {
+  it("rejects an account number written as one and named as the place to pay", () => {
     for (const text of [
       "GTB 0123 456 789",
-      "Send money to 0123/456/789",
+      "GTB 0123456789",
+      "Opay: 8031234567",
       "Account: 0123 - 456 - 789 (Access)",
+      "send to 0123456789 GTB",
+      "Send money to 0123456789",
+      "*737*1*5000*0123 456 789#",
+      "my aza is 0123456789",
+      "wire it to 0123456789",
+      "number to credit: 0123456789",
+      "0123456789 send alert",
+    ]) {
+      const verdict = v2(text);
+      assert.equal(verdict.decision, "reject", `${text} -> ${JSON.stringify(verdict)}`);
+      assert.ok(verdict.detail?.includes("scam:payment_diversion"), text);
+    }
+  });
+  it("holds an account number a person has to rebuild — never refused by itself", () => {
+    for (const text of [
+      "Send money to 0123/456/789",
       "acct no 0123,456,789 zenith",
       "Bank: Kuda. Ref: 0123456789.",
       "Opay. Code 8031234567.",
       "first 5 digits 01234, last 5 digits 56789, GTB",
       "GTB: 01234 then 56789",
-      "*737*1*5000*0123 456 789#",
-      "my aza is 0123456789",
-      "wire it to 0123456789",
+      "GTB 01 57 39 28 46",
+      "GTB 0157 39 28 46",
+      "Kuda: 0 157 392 84 6",
+      "Account: 01573, 92846 (GTB)",
+      "Send to 01-57-39-28-46 (UBA)",
     ]) {
       const verdict = v2(text);
-      assert.equal(verdict.decision, "reject", `${text} -> ${JSON.stringify(verdict)}`);
-      assert.ok(verdict.detail?.includes("scam:payment_diversion"), text);
+      assert.equal(verdict.decision, "hold", `${text} -> ${JSON.stringify(verdict)}`);
+      assert.ok(!verdict.detail?.includes("scam:payment_diversion"), text);
+      assert.ok(verdict.detail?.includes("scam:account_suspected"), `${text} -> ${JSON.stringify(verdict.detail)}`);
+    }
+  });
+  it("prices, landmarks and surnames are not an account number", () => {
+    for (const text of [
+      "Pay ₦10,000-₦15,000 depending on size.",
+      "Installation paid separately: 10,000-15,000 naira.",
+      "Pickup beside GTBank, Allen Avenue. Prices ₦10,000-₦15,000 by size.",
+      "Shop 12, opposite Zenith Bank, Wuse 2. ₦25,000-₦30,000.",
+      "Handmade by Chioma Uba, ₦20,000-₦35,000 depending on size.",
+      "Opposite First Bank, Ikeja. ₦25000 then ₦30000 for the bigger size.",
+      "Netflix-ready TV; business account invoices for ₦45,000/₦50,000 models.",
+      "Pay 15000-25000 depending on size.",
+    ]) {
+      const verdict = v2(text);
+      assert.equal(verdict.decision, "approve", `${text} -> ${JSON.stringify(verdict)}`);
     }
   });
   it("holds steering with no account number — a phrase is never refused", () => {
@@ -318,7 +367,12 @@ describe("listing_v2 through the pipeline — the AI can only add", () => {
     assert.equal(r.shortCircuited, true);
     assert.equal(r.scanner, "deterministic_rule");
   });
+  it("an AI approve cannot lower a hold for a reconstructed number", () => {
+    const r = evaluate(listing("o8o 3123 4567"), { ...opts, aiResult: ai("approve") });
+    assert.equal(r.decision, "hold");
+  });
   it("carries a version so standing verdicts can be re-scanned when rules move", () => {
     assert.match(LISTING_RULESET_VERSION, /^listing_v2\.\d+$/);
+    assert.equal(LISTING_RULESET_VERSION, "listing_v2.3");
   });
 });

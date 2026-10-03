@@ -326,37 +326,60 @@ first place. The storage origin and the optional delivery base in front of it
 
 ### 3.9 Content rules — what they catch and what they do not
 
-**Refused only for a datum; held for a phrase.** A listing is refused only when it carries a
-concrete way to reach or pay the seller outside the platform: a number that rebuilds into a phone
-number, an email, a link, a handle tied to an app, or an account number with a bank, wallet or
-account word anywhere in the listing. A phrase with no datum — "message me on WhatsApp", "pay me
-directly", "link in bio", "drop your number" — is held for a person, and the phrase rules are
-narrowed so ordinary product sentences ("put your phone on the pad", "heat transfer only", "pay
-directly at checkout", "part number 90915-10003") do not fire at all.
+**Two tiers.** A listing is **refused** only when it carries a way to reach or pay the seller
+outside the platform written in a plain, standard form; anything the rules have to *reconstruct*
+from a disguise is **held** for a person (a hold costs a person a look; refusing an honest seller is
+the expensive error). The tier is enforced in one place (`packages/trust/contact.ts`, the literal-
+evidence clamp; `listing-v2.ts`, `paymentCoordinate`) and pinned by tests: a reconstruction is never
+refused.
 
-The datum is found however it is dressed: look-alike letters and digits from other scripts,
-invisible characters, any separator, a number glued to a word, number words glued together or read
-out with joining words, Pidgin digit words, a dropped leading zero, a number in up to three pieces
-in any order with any short word between them, a number cut across fields, an account number in
-halves, behind a label or across a sentence break, USSD transfer codes, links without a scheme,
-handles named next to an app, a mailbox provider with or without its dot. Labels (part, serial,
-IMEI, barcode, ISBN…) are read before cue words, and only real Nigerian mobile prefixes count, so
-clock times, dimensions and product codes are not read as phone numbers. The listing's URL handle
-(decoded) and the store's handle are screened like any other text.
+Refused (`contact_details`, `off_platform_payment`):
+- an 11-digit Nigerian mobile (070x, 080x, 081x, 090x, 091x; with or without 234 / +234 / 00234),
+  in one block or up to four groups with one consistent separator (space, dash or dot) — digits from
+  other scripts and full-width or keycap digits count as digits, invisible characters are removed;
+- an email `name@domain.tld` (and `name at domain.tld` when the name is handle-like or the text says
+  it is an address);
+- a link: messaging, social, shortener or checkout hosts with a path, any link with or without its
+  scheme on a known top-level domain, and a bare domain written as one (any case for camelCase,
+  hyphenated, numbered or `www` names and for the common top-level domains);
+- an app handle: "<app>: handle", "<app> @handle", "<app> handle", "handle on <app>", an "@handle"
+  that can only be a handle, a Discord tag;
+- a ten-digit account number written as one, named as the place to pay (a bank or wallet right
+  before or after it, an account word, "send / transfer / pay … to / into"), and USSD transfer
+  codes carrying one — never a number behind a product label.
+
+Held (`contact_suspected`, `scam_language`): look-alike letters, spelled, Pidgin or "oh" digits,
+"double"/"triple", one digit per word, odd or mixed separators, a number in pieces joined across
+anything within 60 characters or placed by words ("starts… ends…"), a number cut across fields, a
+mobile inside a longer labelled code, cue-word numbers, a dropped leading zero, foreign numbers, a
+lone ten-digit block; emails without a domain or with a bracketed or spelled "at"/"dot"; links on
+unknown or look-alike top-level domains, spelled or spaced dots, platform domains, "link in bio",
+QR steering; handles after arrows, quotes, brackets or pipes, weak labels and plain words named on an
+app; account numbers in loose groups or halves beside a bank, wallet, account or money word; and
+the steering phrases ("message me on WhatsApp", "pay me directly", "drop your number"). The phrase
+rules are narrowed so ordinary product sentences ("put your phone on the pad", "heat transfer only",
+"pay directly at checkout", "part number 90915-10003", "Christmas tree 150 180 210 cm", "double
+₦45,000", "blue dial", price ranges) do not fire at all. Labels (part, serial, IMEI, barcode, UPC-A,
+ISBN…) are read before cue words, and only real mobile prefixes count, so clock times, dimensions,
+watch references and product codes are not read as phone numbers. The listing's URL handle (decoded)
+and the store's handle are screened like any other text.
 
 Text beyond a sane size is refused before any rule runs (`listing_too_long`: a title or name over
 300 characters, a description or store story over 20,000, any other field over 1,000). Every
 pattern is bounded and the detectors are linear: a 100,000-character field is screened in under
 200 ms. Corpora hold the rules in place in both directions (`publish-gate/__tests__/corpus.ts`):
-the ordinary listing lines of three adversarial rounds must publish (a short, justified list may be
-held but never refused), and their evasions must not publish, in every field.
+the ordinary listing lines of four adversarial rounds must publish (a short, justified list may be
+held but never refused), their evasions must not publish, in every field, and the plain forms above
+must be refused everywhere while their disguised forms are held.
 
 Known limits, by design of a deterministic floor: a number spelled only in Yoruba, Igbo or Hausa
-words, a number written backwards or with an arithmetic hint, a few look-alike glyphs nobody would
-read as digits, steering in ordinary words ("order through my page", "message me on Line"), a plain
-word after an app name or a bare ten-digit number with no bank word (held, not refused — a rule
-cannot tell them from an ordinary word or a serial number), and anything inside a picture. Those are
-what the optional AI screen and the report-based take-down are for.
+words, a number written backwards or with an arithmetic hint, one digit at a time with a word between
+every digit, a number grouped exactly like a barcode ("0 80312 34567 8"), a number whose middle reads
+as a date, an ordinary number placed between the pieces ("08031234 and size 42 and 567"), a lowercase
+name before a capitalised everyday top-level domain ("adeshop.Shop", the shape of a missing space),
+a two-letter or ordinary-word name before "at gmail", steering in ordinary words ("order through my
+page", "message me on Line"), and anything inside a picture. Those are what the optional AI screen and
+the report-based take-down are for.
 
 ## 4. Flag OFF is the current behaviour
 

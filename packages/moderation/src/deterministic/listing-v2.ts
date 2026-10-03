@@ -24,26 +24,24 @@
 //   hate:construct · profanity · contact:<kind>:<confidence> · scam:<kind> ·
 //   signal:urgency · signal:address · image:known_bad
 //
-// One rule decides refuse-or-hold for contact and payment: the text is REFUSED
-// only when it carries a concrete datum — a phone number, an email, a link, a
-// handle tied to an app, or an account number beside a bank or wallet word
-// (scam:payment_diversion). A phrase with no datum ("pay me directly", "transfer
-// only", "link in bio") is HELD for a person (scam:payment_steering,
-// contact:*:medium), and is narrowed so ordinary product sentences do not fire.
+// Two tiers decide refuse-or-hold for contact and payment. The text is REFUSED
+// only for a datum written in its literal, standard form — a phone number, an
+// email, a link, a handle tied to an app (contact:*:high, see LITERAL_EVIDENCE in
+// @henryco/trust/contact), or a ten-digit account number written as one (in one
+// block or up to three plainly separated groups) with a bank, wallet, account or
+// "send to" word naming it as the place to pay (scam:payment_diversion). Every
+// reading that rebuilds a datum from a disguise, and every phrase with no datum
+// ("pay me directly", "transfer only", "link in bio"), is HELD for a person
+// (contact:*:medium, scam:account_suspected, scam:payment_steering).
 // ---------------------------------------------------------------------------
 
-import {
-  collapseTenDigitRuns,
-  detectContactDetails,
-  foldForScreening,
-  hasSplitTenDigitNumber,
-} from "@henryco/trust/contact";
+import { detectContactDetails, findTenDigitNumbers, foldForScreening, hasSplitTenDigitNumber } from "@henryco/trust/contact";
 import type { DetectorVerdict, ModerationDecision, ModerationInput, ModerationReason, ModerationSeverity } from "../types";
 import { detectProfanity } from "./profanity";
 import { checkImageHashes } from "./image-hash";
 
 /** Bump when a rule changes: standing verdicts minted under an older value are re-scanned. */
-export const LISTING_RULESET_VERSION = "listing_v2.2";
+export const LISTING_RULESET_VERSION = "listing_v2.3";
 
 interface Rule {
   re: RegExp;
@@ -211,21 +209,33 @@ const ACCOUNT_PHRASE_RE =
  * an account number ("ref", "code", "batch") is not on this list.
  */
 const PRODUCT_LABELS = String.raw`isbn(?:-?1[03])?|imei\d?|meid|serial|s\/?n|model|part|p\/?n|oem|mpn|barcode|ean|upc|gtin|article|product\s+id|item\s+(?:no|number|code)|iuc|smartcard|waybill|awb|tracking|hs\s+code|nafdac|vin|chassis|engine|meter|asin`;
-/** A ten-digit number standing on its own (after collapseTenDigitRuns), not behind a product label. */
-const TEN = String.raw`(?<![0-9A-Za-z])(?<!\b(?:${PRODUCT_LABELS})(?:\s{0,2}(?:no|number|num|nr|id|code))?\.?\s{0,3}[:#.\-]?\s{0,3})\d{10}(?![0-9A-Za-z])`;
-const TEN_RE = new RegExp(TEN, "i");
-/** "account … 0123456789" close together, for the plain word "account". */
-const ACCOUNT_NEAR_TEN_RE = new RegExp(String.raw`\baccount\b[^\n]{0,40}?${TEN}|${TEN}[^\n]{0,20}?\baccount\b`, "i");
-/** "send money to 0123456789", "number to credit: 0123456789", "wire it to 0123456789". */
-const MONEY_VERB_TEN_RE = new RegExp(
-  String.raw`\b(?:send|sent|transfer|pay|paid|credit|deposit|wire|fund|remit|lodge)\w{0,8}\b[^\n.]{0,24}?${TEN}`,
+/** A product label right before a number: "serial 2304123456", "ISBN 0141439513", "part no. 1234567890". */
+const PRODUCT_LABEL_BEFORE_RE = new RegExp(
+  String.raw`\b(?:${PRODUCT_LABELS})(?:\s{0,2}(?:no|number|num|nr|id|code))?\.?\s{0,3}[:#.\-]?\s{0,3}$`,
   "i",
 );
+/** A bank or wallet right before the number, as the place to pay: "GTB 0123456789", "Opay: 8031234567", "GTB, 0123 456 789", "Zenith account number 0123456789". */
+const BANK_BEFORE_RE = new RegExp(
+  String.raw`\b(?:${BANK_NAMES})\b[\s:,.\-–—(]{0,4}(?:(?:account|acct|acc|a\/c)\b\.?(?:\s{0,2}(?:no\b\.?|number\b|num\b|#))?[\s:.\-–—]{0,4}(?:is\s{1,3})?)?$`,
+  "i",
+);
+/** …or right after it: "0123456789 GTB", "0123 456 789 (Zenith)". */
+const BANK_AFTER_RE = new RegExp(
+  String.raw`^[\s,]{0,3}(?:\(\s{0,2})?(?:${BANK_NAMES})\b(?![\s-]{0,3}(?:(?:bank|mfb)\b[\s-]{0,3})?${PRODUCT_NOUN}\b)`,
+  "i",
+);
+/** The account named right before it: "account number 0123456789", "my aza is 0123456789", "Acct: 0123456789". */
+const ACCOUNT_BEFORE_RE =
+  /\b(?:acct|aza|a\/c|acc|account)\b\.?\s{0,2}(?:no\b\.?|number\b|num\b|#|details?\b)?\s{0,3}(?:is\s{1,3}|na\s{1,3}|[:=\-–—]\s{0,3})?$/i;
+/** Money sent to it: "send money to 0123456789", "wire it to 0123456789", "number to credit: 0123456789". */
+const MONEY_TO_BEFORE_RE =
+  /\b(?:send|sent|transfer|pay|paid|credit|deposit|wire|fund|remit|lodge)\w{0,8}\b[^\n.]{0,24}?\b(?:to|into)\b[^\n.]{0,16}$|\b(?:to|into)\s{1,3}(?:credit|pay|send|transfer|deposit|fund)\w{0,4}\s{0,3}[:\-–—]?\s{0,3}$/i;
 /** "0123456789 send alert", "0123456789 for payment". */
-const TEN_ALERT_RE = new RegExp(
-  String.raw`${TEN}[^\n.]{0,16}?\b(?:send\s+alert|credit\s+alert|drop\s+alert|for\s+(?:payment|transfer|alert))\b`,
-  "i",
-);
+const ALERT_AFTER_RE = /^[^\n.]{0,16}?\b(?:send\s+alert|credit\s+alert|drop\s+alert|for\s+(?:payment|transfer|alert))\b/i;
+/** A money word near a number that does not say the number is where the money goes. */
+const MONEY_NEAR_RE = /\b(?:send|sent|transfer|pay|paid|credit|deposit|wire|fund|remit|lodge)\w{0,8}\b/i;
+/** An account, bank or wallet word near a number. */
+const ACCOUNT_WORD_RE = /\b(?:acct|aza|a\/c|acc|account|bank|wallet)\b/i;
 /** "acct 01234567890 (drop the last zero)": eleven digits beside an account word. A person looks. */
 const ELEVEN_NEAR_ACCOUNT_RE = new RegExp(
   String.raw`\b(?:account|acct|acc|aza|${BANK_NAMES})\b[^\n.]{0,20}?(?<![0-9A-Za-z])\d{11}(?![0-9A-Za-z])`,
@@ -233,27 +243,59 @@ const ELEVEN_NEAR_ACCOUNT_RE = new RegExp(
 );
 /** A USSD transfer code: "*737*1*5000*0123456789#", "*894*0123 456 789#". */
 const USSD_RE = /\*\d{2,4}(?:\*[\d\s.-]{1,24}){1,5}#/g;
+/** A USSD segment holding a number written as one: one block, or up to three groups with one plain separator. */
+const USSD_STANDARD_SEGMENT_RE = /^\s{0,2}\d{1,10}(?:([ .-])\d{1,10}(?:\1\d{1,10})?)?\s{0,2}$/;
 
 /**
- * The text carries a coordinate to pay into: an account number (ten digits as
- * one number, however it is separated, or in placed halves) beside a bank,
- * wallet or account word anywhere in the text, or right after a money verb, or
- * inside a USSD transfer code. This — and only this — refuses.
+ * Where the text puts a coordinate to pay into, off the platform.
+ *
+ *   "refuse" — a ten-digit account number written as one (one block, or up to
+ *              three groups with one plain separator) that the text names as the
+ *              place to pay: a bank or wallet right beside it, the account named
+ *              right before it, "send/transfer/pay … to" it, "send alert" after
+ *              it, or a USSD transfer code that carries it;
+ *   "hold"   — every other reading: a number written as one with a bank or
+ *              account word elsewhere in the text, a number in four or more
+ *              groups or with odd separators or in two halves ("GTB 01 57 39 28
+ *              46", "GTB: 01573 and 92846") beside a bank, wallet, account or
+ *              money word, an account number placed in pieces.
+ *
+ * A bank named as a landmark ("opposite Zenith Bank") or a surname ("Chioma Uba")
+ * never refuses, and prices are never an account number ("₦10,000-₦15,000").
  */
-function carriesPaymentCoordinate(text: string): boolean {
-  const collapsed = collapseTenDigitRuns(text);
-  const ten = TEN_RE.test(collapsed);
-  const bankWord = BANK_WORD_RE.test(text) || ACCOUNT_PHRASE_RE.test(text);
-  if (ten && (bankWord || ACCOUNT_NEAR_TEN_RE.test(collapsed) || MONEY_VERB_TEN_RE.test(collapsed) || TEN_ALERT_RE.test(collapsed))) {
-    return true;
+function paymentCoordinate(input: string): "refuse" | "hold" | null {
+  const { text, numbers } = findTenDigitNumbers(input);
+  const bankAnywhere = BANK_WORD_RE.test(text) || ACCOUNT_PHRASE_RE.test(text);
+  let hold = false;
+  for (const number of numbers) {
+    const before = text.slice(Math.max(0, number.start - 64), number.start);
+    const after = text.slice(number.end, number.end + 32);
+    if (PRODUCT_LABEL_BEFORE_RE.test(before)) continue;
+    if (number.standard) {
+      if (
+        BANK_BEFORE_RE.test(before) ||
+        BANK_AFTER_RE.test(after) ||
+        ACCOUNT_BEFORE_RE.test(before) ||
+        MONEY_TO_BEFORE_RE.test(before) ||
+        ALERT_AFTER_RE.test(after)
+      ) {
+        return "refuse";
+      }
+      if (bankAnywhere || MONEY_NEAR_RE.test(before.slice(-32))) hold = true;
+      continue;
+    }
+    const near = `${text.slice(Math.max(0, number.start - 48), number.start)} ${after}`;
+    if (BANK_WORD_RE.test(near) || ACCOUNT_WORD_RE.test(near) || MONEY_NEAR_RE.test(near)) hold = true;
   }
-  if (bankWord && hasSplitTenDigitNumber(text)) return true;
   for (const match of text.matchAll(USSD_RE)) {
     for (const segment of match[0].slice(1, -1).split("*")) {
-      if (segment.replace(/\D/g, "").length === 10) return true;
+      if (segment.replace(/\D/g, "").length !== 10) continue;
+      if (USSD_STANDARD_SEGMENT_RE.test(segment)) return "refuse";
+      hold = true;
     }
   }
-  return false;
+  if (!hold && bankAnywhere && hasSplitTenDigitNumber(text)) hold = true;
+  return hold ? "hold" : null;
 }
 
 const WALLETS = String.raw`opay|o-pay|palm\s?pay|monie\s?point|kuda|paga|fair\s?money|kudimoney|eyowo|chipper\s+cash`;
@@ -411,13 +453,19 @@ export function runListingRulesetV2(input: ModerationInput, opts: ListingRuleset
     else raise("hold", "medium");
   }
 
-  // 5. Scam language. A coordinate to pay into, off the platform, is refused
-  //    outright; steering with no coordinate, and the rest, holds for a person.
-  //    Urgency on its own is ordinary sales copy and only a signal.
-  if (carriesPaymentCoordinate(text)) {
+  // 5. Scam language. A coordinate to pay into, written as one and named as the
+  //    place to pay, is refused outright; a coordinate a person has to rebuild,
+  //    steering with no coordinate, and the rest, hold for a person. Urgency on
+  //    its own is ordinary sales copy and only a signal.
+  const payment = paymentCoordinate(text);
+  if (payment === "refuse") {
     detail.push("scam:payment_diversion");
     reasons.add("scam_suspected");
     raise("reject", "high");
+  } else if (payment === "hold") {
+    detail.push("scam:account_suspected");
+    reasons.add("scam_suspected");
+    raise("hold", "high");
   }
   if (STEERING.some((re) => re.test(text))) {
     detail.push("scam:payment_steering");

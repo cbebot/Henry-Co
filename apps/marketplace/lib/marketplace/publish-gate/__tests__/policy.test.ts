@@ -143,7 +143,7 @@ const CASES: Record<GateReasonCode, () => GateVerdict> = {
       },
     }),
   contact_details: () =>
-    evaluateListingPolicy(withListing({ description: "Lovely kettle, boils fast. Call o8o 3123 4567 to order today." })),
+    evaluateListingPolicy(withListing({ description: "Lovely kettle, boils fast. Call 0803 123 4567 to order today." })),
   off_platform_payment: () =>
     evaluateListingPolicy(withListing({ deliveryNote: "Pay into GTB 0123 456 789 and save the fee." })),
   incomplete_listing: () => verdictOf({ images: { refs: [], notFirstParty: [], foreignRefs: [], matches: [] } }),
@@ -359,15 +359,22 @@ describe("the store profile check at onboarding", () => {
     assert.deepEqual(verdict.reasons.filter((code) => reasonClass(code) !== "signal"), []);
   });
 
-  it("contact details in the story are refused, however they are written", () => {
+  it("contact details in the story are refused when written plainly", () => {
+    for (const story of ["Great store. Call 08031234567 to order.", "Great store. Reach us on 0803 123 4567 any time."]) {
+      const verdict = profile({ story });
+      assert.equal(verdict.outcome, "reject", story);
+      assert.ok(verdict.reasons.includes("contact_details"), story);
+    }
+  });
+
+  it("disguised contact details in the story go to a person (held, never published)", () => {
     for (const story of [
-      "Great store. Call 08031234567 to order.",
       "Great store. Reach us on o8o 3123 4567 any time.",
       "Great store. WhatsApp zero eight zero three one two three four five six seven.",
     ]) {
       const verdict = profile({ story });
-      assert.equal(verdict.outcome, "reject", story);
-      assert.ok(verdict.reasons.includes("contact_details"), story);
+      assert.equal(verdict.outcome, "hold", story);
+      assert.ok(verdict.reasons.includes("contact_suspected"), story);
     }
   });
 
