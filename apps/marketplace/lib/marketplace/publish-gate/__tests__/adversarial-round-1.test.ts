@@ -195,7 +195,7 @@ describe("round 1 — what a new store is held on", () => {
 
 describe("round 1 — onboarding", () => {
   it("an application a person rejected or sent back is never re-decided by the gate", () => {
-    assert.ok(SELLER_ROUTE.includes('const decidedByPerson = existingStatus === "rejected" || existingStatus === "changes_requested";'));
+    assert.ok(SELLER_ROUTE.includes('existingStatus === "rejected" ||\n    existingStatus === "changes_requested" ||'));
     // Round 3: the decision travels into the onboarding, which answers a store owner
     // first and returns everything else to a person before any opening.
     assert.ok(SELLER_ROUTE.includes("priorDecision: decidedByPerson,"));

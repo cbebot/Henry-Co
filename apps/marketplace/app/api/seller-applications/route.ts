@@ -285,7 +285,7 @@ export async function POST(request: Request) {
   const admin = createAdminSupabase();
   const { data: existing } = await admin
     .from("marketplace_vendor_applications")
-    .select("id, status, submitted_at, agreement_accepted_at")
+    .select("id, status, submitted_at, agreement_accepted_at, reviewed_by")
     .eq("user_id", viewer.user.id)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -360,7 +360,12 @@ export async function POST(request: Request) {
   // An application a person has already rejected, or sent back for changes, is not
   // re-decided by the gate: submitting it again returns it to a person (the database
   // refuses it too). An account that already owns a store is answered as such first.
-  const decidedByPerson = existingStatus === "rejected" || existingStatus === "changes_requested";
+  // (A re-submission rewrites the status and keeps the person's stamp: a stamped
+  // application that is not approved is one a person decided.)
+  const decidedByPerson =
+    existingStatus === "rejected" ||
+    existingStatus === "changes_requested" ||
+    (Boolean(existing?.reviewed_by) && existingStatus !== "approved");
   if (instantPublish && mode === "submit" && storeVerdict) {
     const trustCopy = getMarketplaceTrustCopy(gateLocale);
     const result = await instantOnboard(admin, {

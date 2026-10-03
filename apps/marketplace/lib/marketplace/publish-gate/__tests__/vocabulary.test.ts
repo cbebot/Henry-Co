@@ -147,6 +147,7 @@ describe("lockstep with the migration", () => {
         "probation_daily_cap",
         "probation_listing_cap",
         "probation_price_cap",
+        "risk_hold_active",
         "seller_not_active",
       ],
     );

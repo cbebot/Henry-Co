@@ -403,7 +403,10 @@ export function evaluateListingPolicy(rawInput: ListingGateInput): GateVerdict {
     // The database could not tell us the store's standing: nothing publishes on a guess.
     codes.push("gate_unavailable");
   } else {
-    if (seller.vendor.status !== "approved") codes.push("seller_not_active");
+    // A person's "no" to the account stands (the state reads "revoked"): a person decides
+    // each listing. A store that is not active cannot publish at all.
+    if (seller.vendor.status === "revoked") codes.push("risk_hold_active");
+    else if (seller.vendor.status !== "approved") codes.push("seller_not_active");
 
     if (input.isNew && seller.plan.listingRows >= seller.plan.listingCap) {
       codes.push("plan_listing_limit");

@@ -115,15 +115,15 @@ already_applied(item, ok, why) as (
     ('state: gate ledger already exists',
      to_regclass('public.marketplace_listing_gate_verdicts') is not null,
      'true -> the migration was applied before (it is idempotent; re-applying is safe)'),
-    ('state: accounts a person turned down (recorded as revoked at apply)',
+    ('state: accounts whose latest decided application is not approved (recorded at apply)',
      not exists (
        select 1
          from (select distinct on (a.user_id) a.user_id, a.status
                  from public.marketplace_vendor_applications a
                 where a.user_id is not null and a.reviewed_at is not null
                 order by a.user_id, a.reviewed_at desc, a.id) latest
-        where latest.status in ('rejected', 'changes_requested')),
-     'no -> those accounts are recorded as revoked when the migration is applied: with the flag on, the gate publishes nothing for them until you approve an application of theirs again'),
+        where latest.status is distinct from 'approved'),
+     'no -> those accounts (turned down, sent back, or re-submitted since a decision) are recorded at apply: with the flag on, their listings go to you until you approve an application of theirs again; approving the pending ones first avoids that'),
     ('state: no store of company type names an owner',
      not exists (select 1 from public.marketplace_vendors v where v.owner_type = 'company' and v.owner_user_id is not null),
      'no -> those stores count as their owner''s stores (probation, identity at payout); tell the engineer which')

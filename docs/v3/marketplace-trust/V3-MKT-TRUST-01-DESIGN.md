@@ -169,10 +169,12 @@ nothing.
 application of the account — "Revoke approval" included, and whatever the application said before —
 is recorded in its own table by a trigger on the decision itself: the seller's re-submission
 rewrites the application row and must not undo it. Decisions made before the gate existed are
-recorded once, when the table is first created (each account's latest decided application). While
-it stands, the engine publishes nothing for the account's stores — a publish verdict minted before
-it is not usable after it — and opens no store for it; a person's approval of an application of the
-same account lifts it. Listings already live stay live, as they always did: a person decides about
+recorded once, when the table is first created, failing closed: every account whose latest decided
+application is not approved now — a rejection, a request for changes, or one the seller has since
+re-submitted (a row alone cannot tell that from a re-submission after an approval). While it stands,
+the account's listings go to a person (`risk_hold_active`) — a publish verdict minted before it is
+not usable after it — and the gate opens no store for it; a person's approval of an application of
+the same account lifts it. A store that is not active cannot publish at all (`seller_not_active`). Listings already live stay live, as they always did: a person decides about
 them. Approvals open (or re-open) the store first and mark the application approved only once that
 landed, so a refused store step changes nothing.
 

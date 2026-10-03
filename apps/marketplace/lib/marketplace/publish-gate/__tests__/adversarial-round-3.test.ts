@@ -39,7 +39,10 @@ describe("round 3 — a person's revocation stands", () => {
     assert.ok(MIGRATION.includes("  after update on public.marketplace_vendor_applications\n"));
     // Round 4: one predicate — the verdict RPC, the guard and the AFTER trigger all ask it.
     assert.ok(MIGRATION.includes("       and not public.marketplace_gate_owner_revoked(v.owner_user_id)"));
-    assert.ok(MIGRATION.includes("    if not public.marketplace_gate_vendor_may_publish(p_vendor_id) then"));
+    // Round 5: the verdict RPC holds a revoked account's listing for a person; the guard and the
+    // AFTER trigger never use an engine verdict for it.
+    assert.ok(MIGRATION.includes("    elsif public.marketplace_gate_owner_revoked(\n"));
+    assert.ok(MIGRATION.includes("     and public.marketplace_gate_vendor_may_publish(new.vendor_id)\n  then"));
   });
 
   it("closes an owner's application only when the store is open and its approval stands", () => {

@@ -428,9 +428,13 @@ $$;
 -- for the account's stores and opens no store for it — a person decides. A person's
 -- approval of an application of the same account lifts it.
 
--- Decisions made BEFORE the gate: every account whose latest decided application a
--- person rejected or sent back. Run once, when the table is first created; never
--- records an account that already has an open row.
+-- Decisions made BEFORE the gate, recorded failing closed: every account whose latest
+-- decided application is not approved now. That covers a rejection or a request for
+-- changes — and one the seller has since re-submitted (the re-submission rewrote the
+-- status and left the person's stamp), which a row alone cannot tell apart from a
+-- re-submission after an approval. Such an account's listings go to a person until a
+-- person approves an application of it again. Run once, when the table is first
+-- created; never records an account that already has an open row.
 create or replace function public.marketplace_gate_seed_revocations()
 returns integer
 language plpgsql
@@ -448,7 +452,7 @@ begin
        where a.user_id is not null and a.reviewed_at is not null
        order by a.user_id, a.reviewed_at desc, a.id
     ) latest
-   where latest.status in ('rejected', 'changes_requested')
+   where latest.status is distinct from 'approved'
      and not exists (
        select 1 from public.marketplace_seller_revocations r
         where r.owner_user_id = latest.user_id and r.lifted_at is null
@@ -1474,9 +1478,14 @@ begin
     v_outcome := 'reject';
     v_reasons := array['listing_conflict'];
   elsif v_outcome = 'publish' then
-    if not public.marketplace_gate_vendor_may_publish(p_vendor_id) then
+    if v_vendor_status is distinct from 'approved' then
       v_outcome := 'reject';
       v_reasons := v_reasons || 'seller_not_active'::text;
+    elsif public.marketplace_gate_owner_revoked(
+            (select v.owner_user_id from public.marketplace_vendors v where v.id = p_vendor_id)) then
+      -- A person's "no" to the account stands: every listing goes to a person.
+      v_outcome := 'hold';
+      v_reasons := v_reasons || 'risk_hold_active'::text;
     elsif length(btrim(coalesce(v_row.title, ''))) = 0 then
       v_outcome := 'reject';
       v_reasons := v_reasons || 'incomplete_listing'::text;

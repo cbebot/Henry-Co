@@ -2369,8 +2369,8 @@ begin
     a_user, va, public.mkt_trust_test_listing('mkt-trust-t-r10', 'R10 clean', 1500),
     '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
   reset role;
-  if v ->> 'outcome' <> 'reject' or not (v -> 'reasons' ? 'seller_not_active') then
-    raise warning 'VIOLATION R10b: a seller whose approval a person revoked could still publish: %', v; violations := violations + 1;
+  if v ->> 'outcome' <> 'hold' or not (v -> 'reasons' ? 'risk_hold_active') then
+    raise warning 'VIOLATION R10b: a seller whose approval a person revoked was not sent to a person: %', v; violations := violations + 1;
   end if;
   set local role service_role;
   v := public.marketplace_gate_seller_state(va, null);
@@ -3132,6 +3132,25 @@ begin
     end if;
   end;
 
+  -- ---- S17. an inactive store is refused; a revoked account's listing goes to a person
+  declare
+    v17 uuid;
+  begin
+    insert into public.marketplace_vendors (id, slug, name, owner_user_id, owner_type, status)
+      values ('b1000000-0000-4000-8000-000000000017', 'mkt-trust-t-s17-store', 'S17 Store', a_user, 'vendor', 'suspended')
+      returning id into v17;
+    insert into public.marketplace_role_memberships (user_id, normalized_email, scope_type, scope_id, role, is_active)
+      values (a_user, 'seller-a@mkt-trust.test', 'vendor', v17, 'vendor', true);
+    set local role service_role;
+    v := public.marketplace_gate_record_listing_verdict(
+      a_user, v17, public.mkt_trust_test_listing('mkt-trust-t-s17', 'S17 clean', 1500),
+      '{}'::text[], 'publish', '{}'::text[], '{}'::jsonb, 'test');
+    reset role;
+    if v ->> 'outcome' <> 'reject' or not (v -> 'reasons' ? 'seller_not_active') then
+      raise warning 'VIOLATION S17: an inactive store was not refused: %', v; violations := violations + 1;
+    end if;
+  end;
+
   -- ---- S9. at onboarding, a look-alike of another store's handle is that handle
   insert into public.marketplace_vendors (slug, name, owner_user_id, owner_type, status)
     values ('mkt-trust-t-S9-Shop', 'S9 Shop', outsider, 'vendor', 'approved');
@@ -3194,9 +3213,10 @@ begin
        where owner_user_id = 'a1000000-0000-4000-8000-000000000017' and lifted_at is null) <> 1 then
     raise warning 'VIOLATION S10c: an account was recorded twice'; violations := violations + 1;
   end if;
+  -- failing closed: re-submitted since a decision cannot be told from re-submitted after a rejection
   if (select count(*) from public.marketplace_seller_revocations
-       where owner_user_id = 'a1000000-0000-4000-8000-000000000018') <> 0 then
-    raise warning 'VIOLATION S10d: a re-submitted application was read as a rejection'; violations := violations + 1;
+       where owner_user_id = 'a1000000-0000-4000-8000-000000000018' and lifted_at is null) <> 1 then
+    raise warning 'VIOLATION S10d: an application re-submitted since a person''s decision was not recorded'; violations := violations + 1;
   end if;
   delete from public.marketplace_vendor_applications where user_id in (
     'a1000000-0000-4000-8000-000000000015', 'a1000000-0000-4000-8000-000000000016',
